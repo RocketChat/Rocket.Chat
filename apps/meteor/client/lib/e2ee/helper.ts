@@ -33,7 +33,10 @@ export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encr
 	return output;
 }
 
-export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>, ivLength: 12 | 16 = 16): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
+export function splitVectorAndEncryptedData(
+	cipherText: Uint8Array<ArrayBuffer>,
+	ivLength: 12 | 16 = 16,
+): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
 	const vector = cipherText.slice(0, ivLength);
 	const encryptedData = cipherText.slice(ivLength);
 
@@ -74,7 +77,7 @@ export async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: Buff
 export function decryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	if (key.algorithm.name === 'AES-GCM') {
 		return decryptAesGcm(iv, key, data);
-	} 
+	}
 	return decryptAesCbc(iv, key, data);
 }
 
@@ -176,11 +179,40 @@ export function readFileAsArrayBuffer(file: File) {
 	});
 }
 
-export const generateMnemonicPhrase = async (length: number): Promise<string> => {
-	const { default: wordList} = await import('./wordList');
-	const randomBuffer = crypto.getRandomValues(new Uint8Array(length));
-	return Array.from(randomBuffer, (value) => wordList[value % wordList.length]).join(' ');
-};
+/**
+ * Generates 12 uniformly random words from the word list.
+ *
+ * @remarks
+ * Uses rejection sampling to ensure uniform distribution.
+ * {@link https://en.wikipedia.org/wiki/Rejection_sampling}
+ *
+ * @returns A space-separated passphrase.
+ */
+export async function generatePassphrase() {
+	const { wordlist } = await import('./wordList');
+
+	// Number of words in the passphrase
+	const WORD_COUNT = 12;
+	// We use 32-bit random numbers, so the maximum value is 2^32 - 1
+	const MAX_UINT32 = 0xffffffff;
+
+	const range = wordlist.length;
+	const rejectionThreshold = Math.floor(MAX_UINT32 / range) * range;
+
+	const words: string[] = [];
+	const buf = new Uint32Array(1);
+
+	for (let i = 0; i < WORD_COUNT; i++) {
+		let v: number;
+		do {
+			crypto.getRandomValues(buf);
+			v = buf[0];
+		} while (v >= rejectionThreshold);
+		words.push(wordlist[v % range]);
+	}
+
+	return words.join(' ');
+}
 
 export async function createSha256HashFromText(data: string) {
 	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));

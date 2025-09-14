@@ -35,7 +35,7 @@ import { Messages, Rooms, Subscriptions } from '../../stores';
 // import { RoomManager } from '../RoomManager';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
-const log = createLogger('E2ERoom');
+const log = createLogger('Room');
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -747,28 +747,11 @@ export class E2ERoom extends Emitter {
 		message: Required<IMessage>['content'],
 	): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
 		const span = log.span('decrypt').set('rid', this.roomId);
-		const { kid, iv, ciphertext } = this.parse(message);
-		span.set('kid', kid);
-		span.set('iv', iv.toString());
-		span.set('ciphertext', ciphertext.toString());
+		const payload = this.parse(message);
+		span.set('payload', payload);
+		const { kid, iv, ciphertext } = payload;
 
-		let key;
-		if (kid !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === kid);
-			if (oldRoomKey) {
-				key = oldRoomKey.E2EKey;
-			} else if (this.groupSessionKey) {
-				key = this.groupSessionKey;
-				span.warn('No matching old key found, using current group key');
-			} else {
-				span.error('No matching key found');
-			}
-		} else {
-			if (!this.groupSessionKey) {
-				span.error('No group session key found');
-			}
-			key = this.groupSessionKey;
-		}
+		const key = this.retrieveDecryptionKey(kid);
 
 		if (!key) {
 			span.error('No decryption key found.');
@@ -787,6 +770,11 @@ export class E2ERoom extends Emitter {
 			span.set('error', error).error('Error decrypting message');
 			return { msg: t('E2E_Key_Error') };
 		}
+	}
+
+	private retrieveDecryptionKey(kid: string): CryptoKey | null {
+		const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === kid);
+		return oldRoomKey?.E2EKey ?? this.groupSessionKey;
 	}
 
 	provideKeyToUser(keyId: string) {

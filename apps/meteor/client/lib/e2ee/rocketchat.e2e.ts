@@ -25,7 +25,7 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
-	generateMnemonicPhrase,
+	generatePassphrase,
 	decryptAes,
 } from './helper';
 import { createLogger } from './logger';
@@ -125,10 +125,7 @@ class E2E extends Emitter {
 	}
 
 	async onSubscriptionChanged(sub: SubscriptionWithRoom): Promise<void> {
-		const span = log.span('onSubscriptionChanged')
-			.set('subscription_id', sub._id)
-			.set('room_id', sub.rid)
-			.set('encrypted', sub.encrypted);
+		const span = log.span('onSubscriptionChanged').set('subscription_id', sub._id).set('room_id', sub.rid).set('encrypted', sub.encrypted);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
@@ -219,9 +216,7 @@ class E2E extends Emitter {
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
 				.map(async (sub) => {
 					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
-					span
-						.set('subscription_id', sub._id)
-						.set('room_id', sub.rid);
+					span.set('subscription_id', sub._id).set('room_id', sub.rid);
 
 					if (!e2eRoom) {
 						return;
@@ -512,7 +507,7 @@ class E2E extends Emitter {
 	}
 
 	async createRandomPassword(): Promise<string> {
-		const randomPassword = await generateMnemonicPhrase(12);
+		const randomPassword = await generatePassphrase();
 		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
