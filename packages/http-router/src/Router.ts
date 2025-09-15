@@ -88,6 +88,11 @@ export class Router<
 		};
 	}>;
 
+	// Cache a routed Hono instance for in-memory dispatch to avoid re-creating per call
+	private dispatchedRouter?: Hono;
+
+	private dispatchedRouterDirty = true;
+
 	constructor(readonly base: TBasePath) {
 		super();
 		this.innerRouter = new Hono();
@@ -291,6 +296,9 @@ export class Router<
 			return c.body((contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any, statusCode as StatusCode);
 		});
 		this.registerTypedRoutes(method, subpath, options);
+		// Mark dispatched router as dirty so it gets rebuilt on next dispatch
+		this.dispatchedRouterDirty = true;
+		this.dispatchedRouter = undefined;
 		return this;
 	}
 
@@ -384,6 +392,9 @@ export class Router<
 		if (typeof innerRouter === 'function') {
 			this.innerRouter.use(innerRouter as any);
 		}
+		// Mark dispatched router as dirty so it gets rebuilt on next dispatch
+		this.dispatchedRouterDirty = true;
+		this.dispatchedRouter = undefined;
 		return this as any;
 	}
 
@@ -409,9 +420,17 @@ export class Router<
 	public async dispatch(path: string, init?: RequestInit, env?: unknown): Promise<Response> {
 		const normalized = path.startsWith('/') ? path : `/${path}`;
 		const fullPath = `${this.base}${normalized}`.replaceAll('//', '/');
-		const hono = new Hono();
-		const routed = hono.route(this.base, this.innerRouter);
+		const routed = this.getRoutedHono();
 		return routed.request(fullPath, init as any, env as any);
+	}
+
+	private getRoutedHono(): Hono {
+		if (!this.dispatchedRouter || this.dispatchedRouterDirty) {
+			const hono = new Hono();
+			this.dispatchedRouter = hono.route(this.base, this.innerRouter);
+			this.dispatchedRouterDirty = false;
+		}
+		return this.dispatchedRouter;
 	}
 }
 

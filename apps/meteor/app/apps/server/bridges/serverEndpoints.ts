@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { ServerEndpointsBridge } from '@rocket.chat/apps-engine/server/bridges/ServerEndpointsBridge';
 import type { IServerEndpointCallInfo, IServerEndpointResponse } from '@rocket.chat/apps-engine/server/bridges/ServerEndpointsBridge';
@@ -53,7 +55,7 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 		};
 
 		if (info.body !== undefined && info.body !== null && ['POST', 'PUT', 'PATCH'].includes(info.method)) {
-			if (typeof info.body === 'string' || (global as any).Buffer?.isBuffer?.(info.body)) {
+			if (typeof info.body === 'string' || (typeof info.body === 'object' && Buffer.isBuffer(info.body as any))) {
 				(init.headers as Headers).set('content-type', (headers['content-type'] as string) || 'text/plain');
 				init.body = info.body as BodyInit;
 			} else {
@@ -133,10 +135,10 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 		// Durable cleanup: prune expired server-endpoint tokens for this user on cache miss
 		await this.pruneExpiredServerEndpointTokens(appUser._id);
 
-		// Tag token with a type so we can identify it later for cleanup
-		const stamped: any = await Accounts._generateStampedLoginToken();
-		stamped.type = 'serverEndpointApp';
-		await Accounts._insertLoginToken(appUser._id, stamped);
+		// Tag token with a type so we can identify it later for cleanup (type-safe)
+		const baseStamped = (await Accounts._generateStampedLoginToken()) as { token: string; when: Date };
+		const stamped = { ...baseStamped, type: 'serverEndpointApp' as const };
+		await Accounts._insertLoginToken(appUser._id, stamped as typeof baseStamped & { type: 'serverEndpointApp' });
 		await User.ensureLoginTokensLimit(appUser._id);
 
 		const value: CacheEntry = {
@@ -175,10 +177,10 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 		// Durable cleanup: prune expired server-endpoint tokens for this user on cache miss
 		await this.pruneExpiredServerEndpointTokens(userId);
 
-		// Tag token with a type so we can identify it later for cleanup
-		const stamped: any = await Accounts._generateStampedLoginToken();
-		stamped.type = 'serverEndpointImpersonation';
-		await Accounts._insertLoginToken(userId, stamped);
+		// Tag token with a type so we can identify it later for cleanup (type-safe)
+		const baseStamped = (await Accounts._generateStampedLoginToken()) as { token: string; when: Date };
+		const stamped = { ...baseStamped, type: 'serverEndpointImpersonation' as const };
+		await Accounts._insertLoginToken(userId, stamped as typeof baseStamped & { type: 'serverEndpointImpersonation' });
 		await User.ensureLoginTokensLimit(userId);
 
 		const entry: CacheEntry = {
