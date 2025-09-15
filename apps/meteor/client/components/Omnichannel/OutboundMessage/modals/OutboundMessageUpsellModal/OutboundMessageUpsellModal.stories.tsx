@@ -3,8 +3,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import OutboundMessageUpsellModal from './OutboundMessageUpsellModal';
 
-// @ts-expect-error __meteor_runtime_config__ is not defined in the type definitions
-global.__meteor_runtime_config__ = {
+const g = globalThis as typeof globalThis & {
+	__meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string };
+};
+
+g.__meteor_runtime_config__ = {
+	...(g.__meteor_runtime_config__ ?? {}),
 	ROOT_URL_PATH_PREFIX: '',
 };
 
