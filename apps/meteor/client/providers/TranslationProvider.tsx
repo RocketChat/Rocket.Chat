@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
+import { capitalize } from '@rocket.chat/string-helpers';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
@@ -119,7 +120,7 @@ const useI18next = (lng: string): typeof i18next => {
 				if (typeof value !== 'string') {
 					return value;
 				}
-				return value.charAt(0).toUpperCase() + value.slice(1);
+				return capitalize(value);
 			});
 		});
 	}
