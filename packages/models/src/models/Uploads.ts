@@ -47,10 +47,6 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		});
 	}
 
-	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null> {
-		return this.findOne({ 'federation.mxcUri': mxcUri });
-	}
-
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null> {
 		return this.findOne({ 'federation.mediaId': mediaId, 'federation.serverName': serverName });
 	}

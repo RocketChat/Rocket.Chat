@@ -15,8 +15,6 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 		options?: Omit<FindOptions<IUpload>, 'sort'>,
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
-	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null>;
-
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;
 
 	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<Document | UpdateResult>;

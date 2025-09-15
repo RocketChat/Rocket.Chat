@@ -102,7 +102,7 @@ export class MatrixMediaService {
 				throw new Error('Invalid MXC URI');
 			}
 
-			const uploadAlreadyExists = await Uploads.findByFederationMxcUri(mxcUri);
+			const uploadAlreadyExists = await Uploads.findByFederationMediaIdAndServerName(parts.mediaId, parts.serverName);
 			if (uploadAlreadyExists) {
 				return uploadAlreadyExists._id;
 			}
