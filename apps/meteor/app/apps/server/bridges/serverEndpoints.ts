@@ -10,8 +10,8 @@ import { API } from '../../../api/server/api';
 
 type CacheEntry = { userId: string; token: string; hashedToken: string; expiresAt: number; timer?: NodeJS.Timeout };
 
-const IMPERSONATION_TOKEN_TTL_MS = 60 * 1000; // 1 minute
-const APP_USER_TOKEN_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const IMPERSONATION_TOKEN_TTL_MS = 3 * 60 * 1000; // 3 minutes
+const APP_USER_TOKEN_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 	private readonly tokenCache = new Map<string, CacheEntry>();
@@ -130,7 +130,12 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 			throw new Error(`App user not found for appId ${appId}`);
 		}
 
-		const stamped = await Accounts._generateStampedLoginToken();
+		// Durable cleanup: prune expired server-endpoint tokens for this user on cache miss
+		await this.pruneExpiredServerEndpointTokens(appUser._id);
+
+		// Tag token with a type so we can identify it later for cleanup
+		const stamped: any = await Accounts._generateStampedLoginToken();
+		stamped.type = 'serverEndpointApp';
 		await Accounts._insertLoginToken(appUser._id, stamped);
 		await User.ensureLoginTokensLimit(appUser._id);
 
@@ -167,7 +172,12 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 			this.tokenCache.delete(cacheKey);
 		}
 
-		const stamped = await Accounts._generateStampedLoginToken();
+		// Durable cleanup: prune expired server-endpoint tokens for this user on cache miss
+		await this.pruneExpiredServerEndpointTokens(userId);
+
+		// Tag token with a type so we can identify it later for cleanup
+		const stamped: any = await Accounts._generateStampedLoginToken();
+		stamped.type = 'serverEndpointImpersonation';
 		await Accounts._insertLoginToken(userId, stamped);
 		await User.ensureLoginTokensLimit(userId);
 
@@ -222,6 +232,29 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 			);
 		} catch {
 			this.orch.debugLog(`Failed to remove stale login token for user ${userId}`);
+		}
+	}
+
+	private async pruneExpiredServerEndpointTokens(userId: string) {
+		try {
+			const now = Date.now();
+			const appThreshold = new Date(now - APP_USER_TOKEN_TTL_MS);
+			const impThreshold = new Date(now - IMPERSONATION_TOKEN_TTL_MS);
+			await Users.updateOne(
+				{ _id: userId },
+				{
+					$pull: {
+						'services.resume.loginTokens': {
+							$or: [
+								{ type: 'serverEndpointApp', when: { $lt: appThreshold } },
+								{ type: 'serverEndpointImpersonation', when: { $lt: impThreshold } },
+							],
+						},
+					},
+				},
+			);
+		} catch {
+			this.orch.debugLog(`Failed to prune expired server endpoint tokens for user ${userId}`);
 		}
 	}
 }
