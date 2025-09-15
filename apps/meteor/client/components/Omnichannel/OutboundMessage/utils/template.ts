@@ -54,8 +54,8 @@ export const parseComponentText = (
 	}));
 };
 
-export const replacePlaceholders = (text = '', replacer: (substring: string, index: number) => string) => {
-	return text.replace(placeholderPattern, replacer);
+export const replacePlaceholders = (text = '', replacer: (substring: string, captured: number) => string) => {
+	return text.replace(placeholderPattern, (match, captured) => replacer(match, captured));
 };
 
 const replaceLineBreaks = (text: string) => {
@@ -73,8 +73,14 @@ export const processTemplatePreviewText = (text: string, parameters: TemplatePar
 		return processedText;
 	}
 
-	return replacePlaceholders(processedText, (placeholder, index) => {
-		const parameter = parameters[index - 1];
+	return replacePlaceholders(processedText, (placeholder, captured) => {
+		const index = Number(captured) - 1;
+
+		if (!Number.isFinite(index) || index < 0) {
+			return placeholder;
+		}
+
+		const parameter = parameters[index];
 		return parameter?.value || placeholder;
 	});
 };
