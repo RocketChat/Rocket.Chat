@@ -116,6 +116,7 @@ export class MatrixMediaService {
 				throw new Error('Download from remote server returned null content.');
 			}
 
+			// TODO: Make uploadFile support Partial<IUpload> to avoid calling a DB update right after the upload to set the federation info
 			const uploadedFile = await Upload.uploadFile({
 				userId: metadata.userId || 'federation',
 				buffer,
