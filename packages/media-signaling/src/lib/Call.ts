@@ -524,6 +524,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateClientState();
 		this.reportStates();
 		this.mayReportStates = false;
+		this.clearStateTimeouts();
 	}
 
 	public setMuted(muted: boolean): void {
@@ -969,6 +970,13 @@ export class ClientMediaCall implements IClientMediaCall {
 			clearTimeout(handler.handler);
 			this.stateTimeoutHandlers.delete(handler);
 		}
+	}
+
+	private clearStateTimeouts(): void {
+		for (const handler of this.stateTimeoutHandlers.values()) {
+			clearTimeout(handler.handler);
+		}
+		this.stateTimeoutHandlers.clear();
 	}
 
 	private onWebRTCInternalStateChange(stateName: keyof WebRTCInternalStateMap): void {

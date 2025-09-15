@@ -108,6 +108,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
+	public endSession(): void {
+		this.disableStateReport();
+		for (const call of this.knownCalls.values()) {
+			call.ignore();
+		}
+	}
+
 	public getCallData(callId: string): IClientMediaCall | null {
 		return this.knownCalls.get(callId) || null;
 	}
