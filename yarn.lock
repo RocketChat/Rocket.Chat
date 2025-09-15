@@ -4937,13 +4937,13 @@ __metadata:
   linkType: hard
 
 "@playwright/test@npm:^1.52.0":
-  version: 1.55.0
-  resolution: "@playwright/test@npm:1.55.0"
+  version: 1.52.0
+  resolution: "@playwright/test@npm:1.52.0"
   dependencies:
-    playwright: "npm:1.55.0"
+    playwright: "npm:1.52.0"
   bin:
     playwright: cli.js
-  checksum: 10/bfaede669b0583ee6ec48bfe9ff531cac58da1b83031907d5d0fd71c33bab6766669a23359e401066d97c8e8fa76566900f71be7b290d12213ebb3530a82afbb
+  checksum: 10/e18a4eb626c7bc6cba212ff2e197cf9ae2e4da1c91bfdf08a744d62e27222751173e4b220fa27da72286a89a3b4dea7c09daf384d23708f284b64f98e9a63a88
   languageName: node
   linkType: hard
 
@@ -11980,7 +11980,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0, @types/node@npm:>=4.0.0":
+"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0, @types/node@npm:>=4.0.0, @types/node@npm:~22.16.1":
   version: 22.16.1
   resolution: "@types/node@npm:22.16.1"
   dependencies:
@@ -12000,15 +12000,6 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:~22.16.1":
-  version: 22.16.5
-  resolution: "@types/node@npm:22.16.5"
-  dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/ba45b5c9113cbc5edb12960fcfe7e80db2c998af5c1931264240695b27d756570d92462150b95781bd67a03aa82111cc970ab0f4504eb99213edff8bf425354e
   languageName: node
   linkType: hard
 
@@ -19296,13 +19287,13 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-playwright@npm:~2.2.0":
-  version: 2.2.2
-  resolution: "eslint-plugin-playwright@npm:2.2.2"
+  version: 2.2.0
+  resolution: "eslint-plugin-playwright@npm:2.2.0"
   dependencies:
     globals: "npm:^13.23.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10/861bb486e30e607a3c38bf46b69b01e759a2e7db3d7e79eabb18aa006c505b632b6c6f24e8402b59b8a9b5f94a72ed454fd5a934265081028a1ca0dd4582019f
+  checksum: 10/f17255ab715a7b57b30080d3b279b4088041bcc4733c4727ba495052ce500a5bd020b4235287da48e4251281d39039e1d55ab37904cbc4522dcf0a1ae6775b39
   languageName: node
   linkType: hard
 
@@ -20640,19 +20631,6 @@ __metadata:
     combined-stream: "npm:^1.0.8"
     mime-types: "npm:^2.1.12"
   checksum: 10/7264aa760a8cf09482816d8300f1b6e2423de1b02bba612a136857413fdc96d7178298ced106817655facc6b89036c6e12ae31c9eb5bdc16aabf502ae8a5d805
-  languageName: node
-  linkType: hard
-
-"form-data@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "form-data@npm:4.0.4"
-  dependencies:
-    asynckit: "npm:^0.4.0"
-    combined-stream: "npm:^1.0.8"
-    es-set-tostringtag: "npm:^2.1.0"
-    hasown: "npm:^2.0.2"
-    mime-types: "npm:^2.1.12"
-  checksum: 10/a4b62e21932f48702bc468cc26fb276d186e6b07b557e3dd7cc455872bdbb82db7db066844a64ad3cf40eaf3a753c830538183570462d3649fdfd705601cbcfb
   languageName: node
   linkType: hard
 
@@ -28952,44 +28930,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.55.0":
-  version: 1.55.0
-  resolution: "playwright-core@npm:1.55.0"
-  bin:
-    playwright-core: cli.js
-  checksum: 10/843376a8e2c1100d3f0625b2c85a69dc4418a0b268bdc7da6cf28252f6dc50c299c734f090a67c7f36cfa9140dacf5b95e817664e69642bcbaf06eea4d216c35
-  languageName: node
-  linkType: hard
-
 "playwright-qase-reporter@npm:^2.1.3":
-  version: 2.1.6
-  resolution: "playwright-qase-reporter@npm:2.1.6"
+  version: 2.1.3
+  resolution: "playwright-qase-reporter@npm:2.1.3"
   dependencies:
     chalk: "npm:^4.1.2"
-    qase-javascript-commons: "npm:~2.4.2"
+    qase-javascript-commons: "npm:~2.3.3"
     uuid: "npm:^9.0.0"
   peerDependencies:
     "@playwright/test": ">=1.16.3"
-  checksum: 10/e6dec661445dc593f9ea32d3ec0e601447f6db36266b45f2fc4f643d9359081cfc496966c3f3a2d139bbc61b8b4703a3dc2829a59524683ba4083086b655cf98
+  checksum: 10/4427e4b4c7a0916358ab6116791da5fc05cc065d1eae95c8ca0c49f14b44fc81e0054fee57227e6eec4edfc1b2a38460e73bb402676774621f26a1e6d81ada37
   languageName: node
   linkType: hard
 
-"playwright@npm:1.55.0":
-  version: 1.55.0
-  resolution: "playwright@npm:1.55.0"
-  dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.55.0"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: 10/df02529693923b9b671822dac8a2ac8a8471c9142a05e14a24f8d0038a7dcf705712363991a070fc927466bbbe70e485145cf7a77882613822f56960afc4b892
-  languageName: node
-  linkType: hard
-
-"playwright@npm:^1.14.0":
+"playwright@npm:1.52.0, playwright@npm:^1.14.0":
   version: 1.52.0
   resolution: "playwright@npm:1.52.0"
   dependencies:
@@ -30242,15 +30196,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.4.2":
-  version: 2.4.3
-  resolution: "qase-javascript-commons@npm:2.4.3"
+"qase-javascript-commons@npm:~2.3.3":
+  version: 2.3.5
+  resolution: "qase-javascript-commons@npm:2.3.5"
   dependencies:
     ajv: "npm:^8.12.0"
     async-mutex: "npm:~0.5.0"
     chalk: "npm:^4.1.2"
     env-schema: "npm:^5.2.0"
-    form-data: "npm:^4.0.4"
+    form-data: "npm:^4.0.0"
     lodash.get: "npm:^4.4.2"
     lodash.merge: "npm:^4.6.2"
     lodash.mergewith: "npm:^4.6.2"
@@ -30259,7 +30213,7 @@ __metadata:
     qase-api-v2-client: "npm:~1.0.1"
     strip-ansi: "npm:^6.0.1"
     uuid: "npm:^9.0.0"
-  checksum: 10/fe6c77b2a17aa39b384c767a78463256246d58a370b99a93215a70a9c00f90db673acb38056c00706c6bb0889ffa22fdbc145b23aeb5e20cd9066098fcfafa17
+  checksum: 10/8028f9424bf97054f1974c3b663a438f97ebf2f3f487cf9260a3d28047abe2883c870087f1619e67ce5334cc3c88361c08e9566b36052fd316b2bac3096e0712
   languageName: node
   linkType: hard
 
