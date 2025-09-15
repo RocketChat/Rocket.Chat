@@ -31,25 +31,21 @@ export const useMediaCallRoomAction = () => {
 
 	const peerId = getPeerId(uids, ownUserId);
 
-	const { data: peerInfo } = useUserInfoQuery(
-		{ userId: peerId as string },
-		{
-			enabled: !!peerId,
-			select: (data) => {
-				if (!data?.user?._id) {
-					return undefined;
-				}
+	const { data } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
 
-				return {
-					userId: data.user._id,
-					displayName: data.user.name || data.user.username || '',
-					avatarUrl: data.user.username
-						? getAvatarUrl({ username: data.user.username, etag: data.user.avatarETag })
-						: getAvatarUrl({ userId: data.user._id }),
-				};
-			},
-		},
-	);
+	const peerInfo = useMemo(() => {
+		if (!data?.user?._id) {
+			return undefined;
+		}
+
+		return {
+			userId: data.user._id,
+			displayName: data.user.name || data.user.username || '',
+			avatarUrl: data.user.username
+				? getAvatarUrl({ username: data.user.username, etag: data.user.avatarETag })
+				: getAvatarUrl({ userId: data.user._id }),
+		};
+	}, [data, getAvatarUrl]);
 
 	const { action, title, icon } = useMediaCallAction(peerInfo as PeerInfo | undefined);
 
