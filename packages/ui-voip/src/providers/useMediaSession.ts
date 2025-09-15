@@ -119,10 +119,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 
 			const avatarUrl = (() => {
-				if (contact.avatarUrl) {
-					return contact.avatarUrl;
-				}
-
 				if (contact.username) {
 					return getAvatarUrl({ username: contact.username });
 				}
@@ -146,19 +142,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held } });
 		};
 
-		const offCbs = [
-			instance.on('callContactUpdate', updateSessionState),
-			instance.on('callStateChange', updateSessionState),
-			// instance.on('callClientStateChange', updateSessionState),
-			instance.on('newCall', updateSessionState),
-			instance.on('acceptedCall', updateSessionState),
-			instance.on('activeCall', updateSessionState),
-			instance.on('endedCall', updateSessionState),
-		];
-
-		return () => {
-			offCbs.forEach((off) => off());
-		};
+		return instance.on('sessionStateChange', updateSessionState);
 	}, [getAvatarUrl, instance]);
 
 	const cbs = useMemo(() => {
