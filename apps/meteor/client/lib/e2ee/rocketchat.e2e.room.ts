@@ -35,7 +35,7 @@ import { Messages, Rooms, Subscriptions } from '../../stores';
 // import { RoomManager } from '../RoomManager';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
-const log = createLogger('Room');
+const log = createLogger('E2E:Room');
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -325,6 +325,7 @@ export class E2ERoom extends Emitter {
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
 				this.setState('READY');
+				span.info('Group key imported');
 				return;
 			}
 		} catch (error) {
@@ -501,6 +502,7 @@ export class E2ERoom extends Emitter {
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
 			if (!users.length) {
+				span.info('No users to encrypt the key for');
 				return;
 			}
 
@@ -515,6 +517,7 @@ export class E2ERoom extends Emitter {
 			for await (const user of users) {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
 				if (!encryptedGroupKey) {
+					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
@@ -536,6 +539,7 @@ export class E2ERoom extends Emitter {
 	async encryptOldKeysForParticipant(publicKey: string, oldRoomKeys: { E2EKey: string; e2eKeyId: string; ts: Date }[]) {
 		const span = log.span('encryptOldKeysForParticipant');
 		if (!oldRoomKeys || oldRoomKeys.length === 0) {
+			span.info('Nothing to do');
 			return;
 		}
 

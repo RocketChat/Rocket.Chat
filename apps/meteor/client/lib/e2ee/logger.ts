@@ -10,30 +10,6 @@ const isDebugEnabled = (): boolean => {
 	return debug;
 };
 
-interface IConsoleWithContext extends Console {
-	/**
-	 * Creates a new console context with the given label.
-	 * @remarks
-	 * This is currently only supported in Chromium-based browsers.
-	 * {@link https://blogs.windows.com/msedgedev/2025/04/22/contextual-logging-with-console-context/ | More info}
-	 */
-	context(label: string): Console;
-}
-
-const console = ((): IConsoleWithContext => {
-	if ('context' in globalThis.console) {
-		return globalThis.console as IConsoleWithContext;
-	}
-
-	return {
-		...globalThis.console,
-
-		context() {
-			return globalThis.console;
-		},
-	};
-})();
-
 const noopSpan: ISpan = {
 	set(_key: string, _value: unknown) {
 		return this;
@@ -57,7 +33,7 @@ class Logger {
 	}
 
 	span(label: string): ISpan {
-		return isDebugEnabled() ? new Span(new WeakRef(this), label, console.context(this.title)) : noopSpan;
+		return isDebugEnabled() ? new Span(new WeakRef(this), label, console) : noopSpan;
 	}
 }
 
