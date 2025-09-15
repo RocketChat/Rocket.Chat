@@ -34,7 +34,7 @@ import type {
 	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { DeleteResult, WithId } from 'mongodb';
+import type { WithId } from 'mongodb';
 
 import { ajv } from './Ajv';
 import type { Deprecated } from '../helpers/Deprecated';
@@ -3903,12 +3903,6 @@ export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCu
 const POSTLivechatRemoveCustomFieldSuccessSchema = {
 	type: 'object',
 	properties: {
-		acknowledged: {
-			type: 'boolean',
-		},
-		deletedCount: {
-			type: 'number',
-		},
 		success: {
 			type: 'boolean',
 			enum: [true],
@@ -3917,7 +3911,7 @@ const POSTLivechatRemoveCustomFieldSuccessSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatRemoveCustomFieldSuccess = ajv.compile<DeleteResult>(POSTLivechatRemoveCustomFieldSuccessSchema);
+export const POSTLivechatRemoveCustomFieldSuccess = ajv.compile<void>(POSTLivechatRemoveCustomFieldSuccessSchema);
 
 export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactManager'> & {
 	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;

@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeCustomField'(_id) {
-		methodDeprecationLogger.method('livechat:removeCustomField', '8.0.0', '/v1/livechat/custom-fields.remove');
+		methodDeprecationLogger.method('livechat:removeCustomField', '8.0.0', '/v1/livechat/custom-fields.delete');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

@@ -92,7 +92,7 @@ API.v1.addRoute(
 );
 
 const livechatCustomFieldsEndpoints = API.v1.post(
-	'livechat/custom-fields.remove',
+	'livechat/custom-fields.delete',
 	{
 		response: {
 			200: POSTLivechatRemoveCustomFieldSuccess,
@@ -106,14 +106,12 @@ const livechatCustomFieldsEndpoints = API.v1.post(
 	async function action() {
 		const { _id } = this.bodyParams;
 
-		const customField = await LivechatCustomField.findOneById(_id, { projection: { _id: 1 } });
-		if (!customField) {
-			return API.v1.failure('custom-field-not-found');
+		const result = await LivechatCustomField.removeById(_id);
+		if (result.deletedCount === 0) {
+			return API.v1.failure('Custom field not found');
 		}
 
-		const result = await LivechatCustomField.removeById(_id);
-
-		return API.v1.success({ ...result });
+		return API.v1.success();
 	},
 );
 

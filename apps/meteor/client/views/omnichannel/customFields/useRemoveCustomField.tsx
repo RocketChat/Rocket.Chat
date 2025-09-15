@@ -8,7 +8,7 @@ export const useRemoveCustomField = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const removeCustomField = useEndpoint('POST', '/v1/livechat/custom-fields.remove');
+	const removeCustomField = useEndpoint('POST', '/v1/livechat/custom-fields.delete');
 	const queryClient = useQueryClient();
 
 	const handleDelete = useEffectEvent((id: string) => {
