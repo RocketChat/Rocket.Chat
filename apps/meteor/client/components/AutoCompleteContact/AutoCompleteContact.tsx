@@ -24,7 +24,7 @@ type AutoCompleteContactProps = Omit<
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value' | 'onChange'
 > & {
 	value: string;
-	onChange: (value: string, contact: Serialized<ILivechatContactWithManagerData> | undefined) => void;
+	onChange: (value: string) => void;
 	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactElement;
 };
 
