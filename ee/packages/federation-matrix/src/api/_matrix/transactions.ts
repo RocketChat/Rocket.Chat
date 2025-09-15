@@ -202,6 +202,54 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
+const GetStateIdsParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+	required: ['event_id'],
+};
+
+const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
+
+const GetStateIdsResponseSchema = {
+	type: 'object',
+	properties: {
+		stateIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+};
+
+const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
+const GetStateParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+};
+const isGetStateParamsProps = ajv.compile<{
+	event_id: string;
+}>(GetStateParamsSchema);
+
+const GetStateResponseSchema = {
+	type: 'object',
+	properties: {
+		state: {
+			type: 'object',
+		},
+	},
+};
+
+const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
+
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 	const { event, config } = services;
 
@@ -253,6 +301,66 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 			)
 
+			// GET /_matrix/federation/v1/state_ids/{roomId}
+
+			.get(
+				'/v1/state_ids/:roomId',
+				{
+					params: isGetStateIdsParamsProps,
+					response: {
+						200: isGetStateIdsResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+
+					if (!eventId) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						};
+					}
+
+					const stateIds = await event.getStateIds(roomId, eventId);
+
+					return {
+						body: stateIds,
+						statusCode: 200,
+					};
+				},
+			)
+			.get(
+				'/v1/state/:roomId',
+				{
+					params: isGetStateParamsProps,
+					response: {
+						200: isGetStateResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+
+					if (!eventId) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						};
+					}
+					const state = await event.getState(roomId, eventId);
+					return {
+						statusCode: 200,
+						body: state,
+					};
+				},
+			)
 			// GET /_matrix/federation/v1/event/{eventId}
 			.get(
 				'/v1/event/:eventId',
