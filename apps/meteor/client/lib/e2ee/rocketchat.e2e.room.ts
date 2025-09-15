@@ -363,7 +363,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportSessionKey(key: string) {
-		key = key.slice(12);
+		if (key.includes('-')) {
+			key = key.slice(36)
+		} else {
+			key = key.slice(12);
+		}
 		const decodedKey = Base64.decode(key);
 
 		if (!e2e.privateKey) {
@@ -377,7 +381,10 @@ export class E2ERoom extends Emitter {
 	async importGroupKey(groupKey: string) {
 		const span = log.span('importGroupKey');
 		// Get existing group key
-		const keyID = groupKey.slice(0, 36);
+
+		const keyIDLength = groupKey.includes('-') ? 36 : 12;
+
+		const keyID = groupKey.slice(0, keyIDLength);
 
 		span.set('kid', keyID);
 
@@ -386,7 +393,7 @@ export class E2ERoom extends Emitter {
 			return true;
 		}
 
-		groupKey = groupKey.slice(36);
+		groupKey = groupKey.slice(keyIDLength);
 		const decodedGroupKey = Base64.decode(groupKey);
 		span.set('group_key', groupKey);
 
