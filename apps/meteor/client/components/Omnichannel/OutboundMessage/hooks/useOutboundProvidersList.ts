@@ -19,7 +19,7 @@ const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: U
 	const hasModule = useHasLicenseModule('outbound-messaging');
 
 	return useQuery<OutboundProvidersResponse, Error, TData>({
-		queryKey: omnichannelQueryKeys.outboundProviders(),
+		queryKey: omnichannelQueryKeys.outboundProviders({ type }),
 		queryFn: () => getProviders({ type }),
 		retry: 3,
 		enabled: hasModule && enabled,
