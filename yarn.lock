@@ -4936,7 +4936,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:~1.55.0":
+"@playwright/test@npm:^1.52.0":
   version: 1.55.0
   resolution: "@playwright/test@npm:1.55.0"
   dependencies:
@@ -6912,7 +6912,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     bcrypt: "npm:^5.1.1"
@@ -6990,7 +6990,7 @@ __metadata:
     "@types/adm-zip": "npm:^0.5.7"
     "@types/debug": "npm:^4.1.12"
     "@types/lodash.clonedeep": "npm:^4.5.9"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/semver": "npm:^7.5.8"
     "@types/stack-trace": "npm:0.0.33"
     "@types/uuid": "npm:~10.0.0"
@@ -7048,7 +7048,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.31.25"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -7221,7 +7221,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.31.25"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/underscore": "npm:^1.13.0"
@@ -7837,7 +7837,7 @@ __metadata:
     "@rocket.chat/peggy-loader": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@typescript-eslint/parser": "npm:~5.58.0"
     babel-loader: "npm:~9.2.1"
     eslint: "npm:~8.45.0"
@@ -7900,7 +7900,7 @@ __metadata:
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
     "@opentelemetry/sdk-node": "npm:^0.54.2"
     "@parse/node-apn": "npm:^6.3.0"
-    "@playwright/test": "npm:~1.55.0"
+    "@playwright/test": "npm:^1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^3.4.5"
     "@rocket.chat/account-utils": "workspace:^"
@@ -8015,7 +8015,6 @@ __metadata:
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
     "@types/imap": "npm:^0.8.42"
     "@types/jest": "npm:~30.0.0"
-    "@types/js-yaml": "npm:~4.0.9"
     "@types/jsdom": "npm:^21.1.7"
     "@types/jsdom-global": "npm:^3.0.7"
     "@types/jsrsasign": "npm:^10.5.15"
@@ -8034,7 +8033,7 @@ __metadata:
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/node-rsa": "npm:^1.1.4"
     "@types/nodemailer": "npm:^6.4.17"
     "@types/oauth2-server": "npm:^3.0.18"
@@ -8119,7 +8118,7 @@ __metadata:
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-no-floating-promise: "npm:~2.0.0"
-    eslint-plugin-playwright: "npm:~2.2.2"
+    eslint-plugin-playwright: "npm:~2.2.0"
     eslint-plugin-prettier: "npm:~5.2.6"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
@@ -8198,8 +8197,8 @@ __metadata:
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
-    playwright-core: "npm:~1.55.0"
-    playwright-qase-reporter: "npm:^2.1.5"
+    playwright-core: "npm:~1.52.0"
+    playwright-qase-reporter: "npm:^2.1.3"
     postcss: "npm:~8.4.49"
     postcss-custom-properties: "npm:^14.0.6"
     postcss-easy-import: "npm:^4.0.0"
@@ -8370,7 +8369,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/chai": "npm:~4.3.20"
     "@types/ejson": "npm:^2.2.2"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/sinon": "npm:^10.0.20"
     chai: "npm:^4.5.0"
     ejson: "npm:^2.2.3"
@@ -8441,7 +8440,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     date-fns: "npm:~4.1.0"
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
@@ -8478,7 +8477,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/react": "npm:~18.3.23"
@@ -8593,7 +8592,7 @@ __metadata:
   dependencies:
     "@rocket.chat/eslint-config": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
@@ -8632,7 +8631,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.31.25"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -8664,7 +8663,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     babel-jest: "npm:~30.0.5"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
@@ -8697,7 +8696,7 @@ __metadata:
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -8746,7 +8745,7 @@ __metadata:
     "@octokit/core": "npm:^5.0.1"
     "@octokit/plugin-throttling": "npm:^6.1.0"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     mdast-util-to-string: "npm:2.0.0"
     remark-parse: "npm:9.0.0"
@@ -8763,7 +8762,7 @@ __metadata:
   dependencies:
     "@changesets/types": "npm:^6.0.0"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     dataloader: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
     node-fetch: "npm:^2.7.0"
@@ -8886,7 +8885,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -9088,7 +9087,6 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
-    ts-node: "npm:~10.9.2"
     typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
@@ -9257,7 +9255,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:~7.26.10"
     "@faker-js/faker": "npm:~8.0.2"
-    "@playwright/test": "npm:~1.55.0"
+    "@playwright/test": "npm:^1.52.0"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
@@ -11682,7 +11680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-yaml@npm:^4.0.9, @types/js-yaml@npm:~4.0.9":
+"@types/js-yaml@npm:^4.0.9":
   version: 4.0.9
   resolution: "@types/js-yaml@npm:4.0.9"
   checksum: 10/a0ce595db8a987904badd21fc50f9f444cb73069f4b95a76cc222e0a17b3ff180669059c763ec314bc4c3ce284379177a9da80e83c5f650c6c1310cafbfaa8e6
@@ -12005,7 +12003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:~22.16.1, @types/node@npm:~22.16.5":
+"@types/node@npm:~22.16.1":
   version: 22.16.5
   resolution: "@types/node@npm:22.16.5"
   dependencies:
@@ -19297,7 +19295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-playwright@npm:~2.2.2":
+"eslint-plugin-playwright@npm:~2.2.0":
   version: 2.2.2
   resolution: "eslint-plugin-playwright@npm:2.2.2"
   dependencies:
@@ -28945,7 +28943,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0, playwright-core@npm:>=1.2.0":
+"playwright-core@npm:1.52.0, playwright-core@npm:>=1.2.0, playwright-core@npm:~1.52.0":
   version: 1.52.0
   resolution: "playwright-core@npm:1.52.0"
   bin:
@@ -28954,7 +28952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.55.0, playwright-core@npm:~1.55.0":
+"playwright-core@npm:1.55.0":
   version: 1.55.0
   resolution: "playwright-core@npm:1.55.0"
   bin:
@@ -28963,16 +28961,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-qase-reporter@npm:^2.1.5":
-  version: 2.1.5
-  resolution: "playwright-qase-reporter@npm:2.1.5"
+"playwright-qase-reporter@npm:^2.1.3":
+  version: 2.1.6
+  resolution: "playwright-qase-reporter@npm:2.1.6"
   dependencies:
     chalk: "npm:^4.1.2"
-    qase-javascript-commons: "npm:~2.4.1"
+    qase-javascript-commons: "npm:~2.4.2"
     uuid: "npm:^9.0.0"
   peerDependencies:
     "@playwright/test": ">=1.16.3"
-  checksum: 10/7f0b5079563fe9207c8a6eb5c48f48cfac9e9d21cb4b058264843c875f93789313e8bdf761a77f9596dc04a5bd915e4cf7c397bd49be1dd5fe0e1237cf7065be
+  checksum: 10/e6dec661445dc593f9ea32d3ec0e601447f6db36266b45f2fc4f643d9359081cfc496966c3f3a2d139bbc61b8b4703a3dc2829a59524683ba4083086b655cf98
   languageName: node
   linkType: hard
 
@@ -30244,9 +30242,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.4.1":
-  version: 2.4.1
-  resolution: "qase-javascript-commons@npm:2.4.1"
+"qase-javascript-commons@npm:~2.4.2":
+  version: 2.4.3
+  resolution: "qase-javascript-commons@npm:2.4.3"
   dependencies:
     ajv: "npm:^8.12.0"
     async-mutex: "npm:~0.5.0"
@@ -30261,7 +30259,7 @@ __metadata:
     qase-api-v2-client: "npm:~1.0.1"
     strip-ansi: "npm:^6.0.1"
     uuid: "npm:^9.0.0"
-  checksum: 10/6a0b4263414fcbee2a5bed562a9dd14cff2ce780590a92e73aa43424231495f58db2031f54d0fee8d7ffd8f92256702af668af2a50b996603b0e7c21b1f26582
+  checksum: 10/fe6c77b2a17aa39b384c767a78463256246d58a370b99a93215a70a9c00f90db673acb38056c00706c6bb0889ffa22fdbc145b23aeb5e20cd9066098fcfafa17
   languageName: node
   linkType: hard
 
@@ -31780,7 +31778,7 @@ __metadata:
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.23"
     "@types/fibers": "npm:^3.1.4"
-    "@types/node": "npm:~22.16.5"
+    "@types/node": "npm:~22.16.1"
     "@types/ws": "npm:^8.5.13"
     ajv: "npm:^8.17.1"
     bcrypt: "npm:^5.1.1"
@@ -34655,7 +34653,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.2, ts-node@npm:~10.9.2":
+"ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:
