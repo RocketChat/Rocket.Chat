@@ -170,7 +170,10 @@ export class UserActorSignalProcessor {
 
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
-			await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
+			const ringUpdateResult = await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
+			if (ringUpdateResult.modifiedCount) {
+				MediaCallDirector.scheduleExpirationCheckByCallId(this.callId);
+			}
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
