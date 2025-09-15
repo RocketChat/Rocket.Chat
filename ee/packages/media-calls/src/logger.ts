@@ -1,3 +1,3 @@
 import { Logger } from '@rocket.chat/logger';
 
-export const logger = new Logger('MediaSignalingServer');
+export const logger = new Logger('MediaCallsServer');

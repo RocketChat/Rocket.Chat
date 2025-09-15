@@ -51,8 +51,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			logger.error({ msg: 'Media Call Server failed to hangup expired calls', error });
 		});
 
-		if (await MediaCalls.hasUnfinishedCalls()) {
-			callServer.scheduleExpirationCheck();
+		try {
+			if (await MediaCalls.hasUnfinishedCalls()) {
+				callServer.scheduleExpirationCheck();
+			}
+		} catch (error) {
+			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', error });
 		}
 	}
 
