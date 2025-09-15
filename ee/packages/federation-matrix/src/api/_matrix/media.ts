@@ -3,13 +3,10 @@ import crypto from 'crypto';
 import type { HomeserverServices } from '@hs/federation-sdk';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
 import { canAccessMedia } from '../middlewares';
-
-const logger = new Logger('federation-matrix:media');
 
 const MediaDownloadParamsSchema = {
 	type: 'object',
@@ -100,6 +97,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				const { mediaId } = c.req.param();
 				const { serverName } = config;
 
+				// TODO: Add file streaming support
 				const result = await getMediaFile(mediaId, serverName);
 				if (!result) {
 					return {
@@ -138,51 +136,17 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 		{
 			params: isMediaDownloadParamsProps,
 			response: {
-				200: isBufferResponseProps,
-				401: isErrorResponseProps,
-				403: isErrorResponseProps,
 				404: isErrorResponseProps,
 			},
 			tags: ['Federation', 'Media'],
 		},
-		canAccessMedia(federationAuth),
-		async (context: any) => {
-			try {
-				const { mediaId } = context.req.param();
-				const { serverName } = config;
-
-				const result = await getMediaFile(mediaId, serverName);
-				if (!result) {
-					return {
-						statusCode: 404,
-						body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
-					};
-				}
-
-				const { file, buffer } = result;
-
-				const mimeType = file.type || 'application/octet-stream';
-				const fileName = file.name || mediaId;
-
-				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
-
-				return {
-					statusCode: 200,
-					headers: {
-						...SECURITY_HEADERS,
-						'content-type': multipartResponse.contentType,
-						'content-length': String(multipartResponse.body.length),
-					},
-					body: multipartResponse.body,
-				};
-			} catch (error) {
-				logger.error('Federation thumbnail error:', error);
-				return {
-					statusCode: 500,
-					body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
-				};
-			}
-		},
+		async () => ({
+			statusCode: 404,
+			body: {
+				errcode: 'M_UNRECOGNIZED',
+				error: 'This endpoint is not implemented on the homeserver side',
+			},
+		}),
 	);
 
 	return router;
