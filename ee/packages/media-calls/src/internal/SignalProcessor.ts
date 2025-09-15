@@ -14,6 +14,7 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
+import { stipSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
@@ -28,7 +29,7 @@ export class GlobalSignalProcessor {
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal, uid });
+		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal: stipSensitiveDataFromSignal(signal), uid });
 
 		switch (signal.type) {
 			case 'register':
@@ -59,7 +60,7 @@ export class GlobalSignalProcessor {
 		try {
 			const call = await MediaCalls.findOneById(signal.callId);
 			if (!call) {
-				logger.error({ msg: 'call not found', method: 'GlobalSignalProcessor.processCallSignal', signal });
+				logger.error({ msg: 'call not found', method: 'GlobalSignalProcessor.processCallSignal', signal: stipSensitiveDataFromSignal(signal) });
 				throw new Error('invalid-call');
 			}
 
