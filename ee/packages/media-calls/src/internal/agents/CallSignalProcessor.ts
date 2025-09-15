@@ -192,7 +192,12 @@ export class UserActorSignalProcessor {
 
 	protected async clientIsUnavailable(): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.clientIsUnavailable', role: this.role, uid: this.actorId });
-		// Ignore 'unavailable' responses as some other client session may have a different answer
+		// Ignore 'unavailable' responses from unsigned clients as some other client session may have a different answer
+		if (!this.signed) {
+			return;
+		}
+
+		await MediaCallDirector.hangup(this.call, this.agent, 'unavailable');
 	}
 
 	protected async clientHasAccepted(): Promise<void> {
