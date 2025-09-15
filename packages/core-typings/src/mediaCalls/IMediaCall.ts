@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
 import type { RequiredField } from '../utils';
 
 export type MediaCallActorType = 'user' | 'sip';
@@ -9,7 +10,9 @@ export type MediaCallActor<T extends MediaCallActorType = MediaCallActorType> = 
 	contractId?: string;
 };
 
-export type MediaCallSignedActor<T extends MediaCallActor = MediaCallActor> = RequiredField<T, 'contractId'>;
+export type MediaCallSignedEntity<T extends MediaCallActor> = RequiredField<T, 'contractId'>;
+
+export type MediaCallSignedActor<T extends MediaCallActorType = MediaCallActorType> = MediaCallSignedEntity<MediaCallActor<T>>;
 
 export type ServerActor = {
 	type: 'server';
@@ -22,19 +25,18 @@ export type MediaCallContactInformation = {
 	sipExtension?: string;
 };
 
-export type MediaCallContact<T extends MediaCallActor = MediaCallActor> = T & MediaCallContactInformation;
+export type MediaCallContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallActor<T> & MediaCallContactInformation;
 
-export type TypedMediaCallContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<MediaCallActor<T>>;
+export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallSignedEntity<MediaCallContact<T>>;
 
-export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<
-	MediaCallSignedActor<MediaCallActor<T>>
->;
+/* The list of call states that may actually be stored on the collection is smaller than the list of call states that may be computed by the client class */
+export type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
 
-	state: 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
+	state: MediaCallState;
 
 	createdBy: MediaCallActor;
 	createdAt: Date;
@@ -42,6 +44,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	caller: MediaCallSignedContact;
 	callee: MediaCallContact;
 
+	ended: boolean;
 	endedBy?: MediaCallActor | ServerActor;
 	endedAt?: Date;
 	hangupReason?: string;
@@ -55,4 +58,6 @@ export interface IMediaCall extends IRocketChatRecord {
 	transferredBy?: MediaCallSignedActor;
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
+
+	uids: IUser['_id'][];
 }

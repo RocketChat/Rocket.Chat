@@ -75,10 +75,10 @@ export class UserActorSignalProcessor {
 	public async processSignal(signal: ClientMediaSignal): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal });
 
-		// The code will only reach this point if one of the three following conditions are true:
+		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
-		// 2. the call has not been accepted yet and the signal came from a valid sesison from the callee
+		// 3. the call has not been accepted yet and the signal came from a valid sesison from the callee
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);

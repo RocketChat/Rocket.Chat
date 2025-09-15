@@ -3,7 +3,6 @@
 	"version": "0.3.37",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"@types/ws": "^8.5.13",
@@ -35,6 +34,7 @@
 	"dependencies": {
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^"
 	}
 }

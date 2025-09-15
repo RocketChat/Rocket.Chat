@@ -1,11 +1,11 @@
-import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
-import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { CallRejectedReason, ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
 import { MediaCallDirector } from './CallDirector';
 import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
-import type { GetActorContactOptions, InternalCallParams } from '../definition/common';
+import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
@@ -60,7 +60,12 @@ export class MediaCallServer implements IMediaCallServer {
 		try {
 			await this.createCall(fullParams);
 		} catch (error) {
-			logger.error({ msg: 'Failed to create a requested call', params, error });
+			let rejectionReason: CallRejectedReason = 'unsupported';
+			if (error && typeof error === 'object' && error instanceof CallRejectedError) {
+				rejectionReason = error.callRejectedReason;
+			} else {
+				logger.error({ msg: 'Failed to create a requested call', params, error });
+			}
 
 			const originalId = params.requestedCallId || params.parentCallId;
 
@@ -69,21 +74,22 @@ export class MediaCallServer implements IMediaCallServer {
 					type: 'rejected-call-request',
 					callId: originalId,
 					toContractId: params.requestedBy.contractId,
-					reason: 'unsupported',
+					reason: rejectionReason,
 				});
+			} else {
+				throw error;
 			}
-			throw error;
 		}
 	}
 
-	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
+	public async createCall(params: InternalCallParams): Promise<void> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
 		if (params.callee.type === 'sip') {
 			throw new Error('Outgoing SIP calls are not yet implemented.');
 		}
 
-		return InternalCallProvider.createCall(params);
+		await InternalCallProvider.createCall(params);
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {

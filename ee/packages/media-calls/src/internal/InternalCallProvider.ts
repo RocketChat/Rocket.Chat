@@ -1,13 +1,25 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
+import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseCallProvider } from '../base/BaseCallProvider';
-import type { InternalCallParams } from '../definition/common';
+import { CallRejectedError, type InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'InternalCallProvider.createCall', params });
+		if (params.caller.type !== 'user' || params.callee.type !== 'user') {
+			throw new CallRejectedError('unsupported');
+		}
+
+		if (await MediaCalls.hasUnfinishedCallsByUid(params.caller.id)) {
+			throw new CallRejectedError('busy');
+		}
+		if (await MediaCalls.hasUnfinishedCallsByUid(params.callee.id)) {
+			throw new CallRejectedError('unavailable');
+		}
+
 		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.callee, 'callee');
 

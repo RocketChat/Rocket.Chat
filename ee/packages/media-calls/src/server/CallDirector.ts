@@ -154,8 +154,11 @@ export class MediaCallDirector {
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'MediaCallDirector.createCall', params });
 		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer, parentCallId, requestedBy } = params;
+		logger.debug({
+			msg: 'MediaCallDirector.createCall',
+			params: { caller, callee, requestedCallId, requestedService, hasOffer: Boolean(webrtcOffer), parentCallId, requestedBy },
+		});
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -198,6 +201,12 @@ export class MediaCallDirector {
 			callee,
 
 			expiresAt: MediaCallDirector.getNewExpirationTime(),
+			uids: [
+				// add actor ids to uids field if their type is 'user', to make it easy to identify any call an user was part of
+				...(caller.type === 'user' ? [caller.id] : []),
+				...(callee.type === 'user' ? [callee.id] : []),
+			],
+			ended: false,
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
@@ -329,7 +338,7 @@ export class MediaCallDirector {
 		return Boolean(result.modifiedCount);
 	}
 
-	private static async hangupCallByIdAndNotifyAgents(
+	public static async hangupCallByIdAndNotifyAgents(
 		callId: string,
 		agents: IMediaCallAgent[],
 		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
@@ -346,7 +355,7 @@ export class MediaCallDirector {
 		);
 	}
 
-	private static async hangupDetachedCall(
+	public static async hangupDetachedCall(
 		call: MediaCallHeader,
 		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
 	): Promise<void> {
