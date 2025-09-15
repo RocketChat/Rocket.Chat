@@ -1,8 +1,11 @@
-import { Modal, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect, useState, type ComponentProps } from 'react';
+import { useEffect, useId, useState } from 'react';
+import type { KeyboardEvent, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import OutboundMessageCloseConfirmationModal from './OutboundMessageCloseConfirmationModal';
 import OutboundMessageWizard from '../../components/OutboundMessageWizard';
 
 export type OutboundMessageModalProps = {
@@ -14,6 +17,8 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 	const { t } = useTranslation();
 	const router = useRouter();
 	const [initialRoute] = useState(router.getLocationPathname());
+	const [isClosing, setClosingConfirmation] = useState(false);
+	const modalId = useId();
 
 	useEffect(() => {
 		// NOTE: close the modal when the route changes.
@@ -27,16 +32,33 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		});
 	}, [initialRoute, onClose, router]);
 
+	const handleKeyDown = useEffectEvent((e: KeyboardEvent<HTMLDivElement>): void => {
+		if (e.key !== 'Escape') {
+			return;
+		}
+
+		e.stopPropagation();
+		e.preventDefault();
+
+		// Toggle confirmation visibility on Esc.
+		setClosingConfirmation(!isClosing);
+	});
+
 	return (
-		<Modal>
-			<ModalHeader>
-				<ModalTitle>{t('Outbound_Message')}</ModalTitle>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent pbe={16}>
-				<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
-			</ModalContent>
-		</Modal>
+		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : 'block'}>
+				<ModalHeader>
+					<ModalTitle id={modalId}>{t('Outbound_Message')}</ModalTitle>
+					<ModalClose onClick={() => setClosingConfirmation(true)} />
+				</ModalHeader>
+
+				<ModalContent pbe={16}>
+					<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
+				</ModalContent>
+			</Modal>
+
+			{isClosing ? <OutboundMessageCloseConfirmationModal onConfirm={onClose} onCancel={() => setClosingConfirmation(false)} /> : null}
+		</ModalBackdrop>
 	);
 };
 
