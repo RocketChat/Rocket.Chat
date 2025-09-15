@@ -22,13 +22,13 @@ import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useEmojiOne } from '../../../app/emoji-emojione/client/hooks/useEmojiOne';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useIframeLoginListener } from '../../hooks/iframe/useIframeLoginListener';
-// import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
+import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { appLayout } from '../../lib/appLayout';
-// import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
+import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
 	useEffect(() => {
@@ -46,9 +46,9 @@ const AppLayout = () => {
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
-	// useNotificationPermission();
+	useNotificationPermission();
 	useEmojiOne();
-	// useRedirectToSetupWizard();
+	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
 	useNextcloudOAuth();

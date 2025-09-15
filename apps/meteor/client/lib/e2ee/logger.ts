@@ -1,20 +1,31 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-type LogLevel = 'info' | 'warn' | 'error';
+import { getConfig } from '../utils/getConfig';
 
-const styles: Record<LogLevel, string> = {
-	info: 'font-weight: bold;',
-	warn: 'color: black; background-color: yellow; font-weight: bold;',
-	error: 'color: white; background-color: red; font-weight: bold;',
+let debug: boolean | undefined = undefined;
+
+const isDebugEnabled = (): boolean => {
+	if (debug === undefined) {
+		debug = getConfig('debug') === 'true' || getConfig('debug-e2e') === 'true';
+	}
+
+	return debug;
 };
 
 
-interface ConsoleWithContext extends Console {
+
+interface IConsoleWithContext extends Console {
+	/** 
+	 * Creates a new console context with the given label.
+	 * @remarks
+	 * This is currently only supported in Chromium-based browsers.
+	 * {@link https://blogs.windows.com/msedgedev/2025/04/22/contextual-logging-with-console-context/ | More info}
+	 */
 	context(label: string): Console;
 }
 
-const console = ((): ConsoleWithContext => {
+const console = ((): IConsoleWithContext => {
+
 	if ('context' in globalThis.console) {
-		return globalThis.console as ConsoleWithContext;
+		return globalThis.console as IConsoleWithContext;
 	}
 
 	return {
@@ -26,6 +37,15 @@ const console = ((): ConsoleWithContext => {
 	};
 })();
 
+const noopSpan: ISpan = {
+	set(_key: string, _value: unknown) {
+		return this;
+	},
+	info(_message: string) { /**/ },
+	warn(_message: string) { /**/ },
+	error(_message: string, _error?: unknown) { /**/ },
+};
+
 class Logger {
 	title: string;
 
@@ -33,22 +53,25 @@ class Logger {
 		this.title = title;
 	}
 
-	span(label: string) {
-		return new Span(new WeakRef(this), label, console.context(this.title));
-	}
-
-	instrument(label: string, fn: () => void) {
-		const span = this.span(label);
-		try {
-			span.info('start');
-			fn();
-			span.info('end');
-		} catch (error) {
-			span.error('error', error);
-			throw error;
-		}
+	span(label: string): ISpan {
+		return isDebugEnabled() ? new Span(new WeakRef(this), label, console.context(this.title)) : noopSpan;
 	}
 }
+
+interface ISpan {
+	set(key: string, value: unknown): this;
+	info(message: string): void;
+	warn(message: string): void;
+	error(message: string, error?: unknown): void;
+}
+
+type LogLevel = 'info' | 'warn' | 'error';
+
+const styles: Record<LogLevel, string> = {
+	info: 'font-weight: bold;',
+	warn: 'color: black; background-color: yellow; font-weight: bold;',
+	error: 'color: white; background-color: red; font-weight: bold;',
+};
 
 class Span {
 	private logger: WeakRef<Logger>;

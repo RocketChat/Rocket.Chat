@@ -3,7 +3,7 @@ import { type ReactNode } from 'react';
 
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
-// import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
+import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
 import { useFontStylePreference } from '../hooks/loggedIn/useFontStylePreference';
 import { useForceLogout } from '../hooks/loggedIn/useForceLogout';
 import { useLogoutCleanup } from '../hooks/loggedIn/useLogoutCleanup';
@@ -38,7 +38,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useRestrictedRoles();
 	// These 3 hooks below need to be called in this order due to the way our `setModal` works.
 	// TODO: reevaluate `useSetModal`
-	// useFingerprintChange();
+	useFingerprintChange();
 	useRootUrlChange();
 	useTwoFactorAuthSetupCheck();
 	//
