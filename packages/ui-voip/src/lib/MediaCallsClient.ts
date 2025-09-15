@@ -87,9 +87,9 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 		this.session.on('newCall', ({ call }) => this.onNewCall(call));
 		this.session.on('acceptedCall', ({ call }) => this.onAcceptedCall(call));
-		this.session.on('endedCall', ({ call }) => this.onEndedCall(call));
-		this.session.on('hiddenCall', ({ call }) => this.onHiddenCall(call));
-		this.session.on('callContactUpdate', ({ call }) => this.onCallContactUpdate(call));
+		this.session.on('endedCall', () => this.onEndedCall());
+		this.session.on('hiddenCall', () => this.onHiddenCall());
+		this.session.on('sessionStateChange', () => this.onSessionStateUpdate());
 	}
 
 	public async init() {
@@ -435,7 +435,12 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	private onNewCall(call: IClientMediaCall): void {
-		console.log('onNewCall');
+		console.log('onNewCall', call);
+		if (call.hidden) {
+			this.emit('stateChanged');
+			return;
+		}
+
 		const contact = this.getCallContactInfo(call) as ContactInfo;
 
 		if (call.role === 'callee') {
@@ -449,6 +454,11 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	private onAcceptedCall(call: IClientMediaCall): void {
 		console.log('onAcceptedCall');
 
+		if (call.hidden) {
+			this.emit('stateChanged');
+			return;
+		}
+
 		const remoteMediaStream = call.getRemoteMediaStream();
 		this.remoteStream = new RemoteStream(remoteMediaStream);
 		this.playRemoteStream();
@@ -458,12 +468,12 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.emit('stateChanged');
 	}
 
-	private onCallContactUpdate(call: IClientMediaCall): void {
-		console.log('call contact update', call.contact);
+	private onSessionStateUpdate(): void {
+		console.log('session status update');
 		this.emit('stateChanged');
 	}
 
-	private onEndedCall(_call: IClientMediaCall): void {
+	private onEndedCall(): void {
 		console.log('onEndedCall');
 
 		this.remoteStream?.clear();
@@ -471,7 +481,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.emit('stateChanged');
 	}
 
-	private onHiddenCall(_call: IClientMediaCall): void {
+	private onHiddenCall(): void {
 		console.log('onHiddenCall');
 
 		this.emit('callterminated');
