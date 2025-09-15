@@ -155,9 +155,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			setModal(null);
 		};
 
-		const onConfirm = (_kind: 'user' | 'sip', _id: string) => {
-			session.forwardCall(/* kind, id */);
-			console.log('forwarded call', _kind, _id);
+		const onConfirm = (kind: 'user' | 'sip', id: string) => {
+			session.forwardCall(kind, id);
 			setModal(null);
 		};
 

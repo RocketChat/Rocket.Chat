@@ -26,7 +26,7 @@ type MediaSession = SessionInfo & {
 
 	changeDevice: (deviceId: string) => Promise<void>;
 
-	forwardCall: () => void;
+	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
 };
 
@@ -229,8 +229,17 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			instance.setDeviceId(deviceId);
 		};
 
-		const forwardCall = () => {
-			// dispatch({ type: 'forwardCall' });
+		const forwardCall = (type: 'user' | 'sip', id: string) => {
+			if (!instance) {
+				return;
+			}
+
+			const mainCall = instance.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			mainCall.transfer({ type, id });
 		};
 
 		const sendTone = (_tone: string) => {
