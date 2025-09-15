@@ -70,7 +70,25 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			return undefined;
 		}
 
-		return window.sessionStorage.getItem(SESSION_ID_KEY) ?? undefined;
+		const oldSessionId = window.sessionStorage.getItem(SESSION_ID_KEY);
+
+		if (!oldSessionId) {
+			return undefined;
+		}
+
+		window.sessionStorage.removeItem(SESSION_ID_KEY);
+		return oldSessionId;
+	}
+
+	private randomStringFactory(userId: string) {
+		const dateString = new Date().toISOString();
+		const sessionId = `${userId}/${dateString}`;
+
+		if (window.sessionStorage) {
+			window.sessionStorage.setItem(SESSION_ID_KEY, sessionId);
+		}
+
+		return sessionId;
 	}
 
 	private makeInstance(userId: string) {
@@ -85,7 +103,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
-			randomStringFactory: () => new Date().toISOString(),
+			randomStringFactory: () => this.randomStringFactory(userId),
 			// logger: console,
 			oldSessionId: this.oldSessionId,
 		});
