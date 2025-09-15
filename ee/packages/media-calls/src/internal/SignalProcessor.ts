@@ -14,7 +14,7 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
-import { stipSensitiveDataFromSignal } from '../server/stripSensitiveData';
+import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
@@ -29,7 +29,7 @@ export class GlobalSignalProcessor {
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal: stipSensitiveDataFromSignal(signal), uid });
+		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		switch (signal.type) {
 			case 'register':
@@ -42,7 +42,7 @@ export class GlobalSignalProcessor {
 			return this.processCallSignal(uid, signal);
 		}
 
-		logger.error({ msg: 'Unrecognized media signal', signal });
+		logger.error({ msg: 'Unrecognized media signal', signal: stripSensitiveDataFromSignal(signal) });
 	}
 
 	protected sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
@@ -60,7 +60,11 @@ export class GlobalSignalProcessor {
 		try {
 			const call = await MediaCalls.findOneById(signal.callId);
 			if (!call) {
-				logger.error({ msg: 'call not found', method: 'GlobalSignalProcessor.processCallSignal', signal: stipSensitiveDataFromSignal(signal) });
+				logger.error({
+					msg: 'call not found',
+					method: 'GlobalSignalProcessor.processCallSignal',
+					signal: stripSensitiveDataFromSignal(signal),
+				});
 				throw new Error('invalid-call');
 			}
 
@@ -69,7 +73,13 @@ export class GlobalSignalProcessor {
 
 			// The user must be either the caller or the callee, if its none or both, we can't process it
 			if (isCaller === isCallee) {
-				logger.error({ msg: 'failed to identify actor role in the call', method: 'processSignal', signal, isCaller, isCallee });
+				logger.error({
+					msg: 'failed to identify actor role in the call',
+					method: 'processSignal',
+					signal: stripSensitiveDataFromSignal(signal),
+					isCaller,
+					isCallee,
+				});
 				throw new Error('invalid-call');
 			}
 

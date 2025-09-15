@@ -13,7 +13,7 @@ export function stripSensitiveDataFromSdp<T extends RTCSessionDescriptionInit | 
 	};
 }
 
-export function stipSensitiveDataFromSignal<T extends ClientMediaSignal | ServerMediaSignal>(signal: T): Partial<T> {
+export function stripSensitiveDataFromSignal<T extends ClientMediaSignal | ServerMediaSignal>(signal: T): Partial<T> {
 	const { ...data } = signal;
 
 	if ('sdp' in data) {

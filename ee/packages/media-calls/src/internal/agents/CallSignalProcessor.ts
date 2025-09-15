@@ -16,7 +16,7 @@ import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
-import { stipSensitiveDataFromSignal, stripSensitiveDataFromSdp } from '../../server/stripSensitiveData';
+import { stripSensitiveDataFromSignal, stripSensitiveDataFromSdp } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
 	public get contractId(): string {
@@ -74,7 +74,7 @@ export class UserActorSignalProcessor {
 	}
 
 	public async processSignal(signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal: stipSensitiveDataFromSignal(signal) });
+		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal) });
 
 		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
