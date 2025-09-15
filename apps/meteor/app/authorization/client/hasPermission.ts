@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
-import { watch } from '../../../client/lib/cachedStores';
+import { watch } from '../../../client/meteor/watch';
 import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
