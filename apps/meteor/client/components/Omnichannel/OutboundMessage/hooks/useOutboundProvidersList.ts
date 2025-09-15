@@ -14,7 +14,7 @@ type UseOutboundProvidersListProps<TData> = Omit<UseQueryOptions<OutboundProvide
 };
 
 const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: UseOutboundProvidersListProps<TData>) => {
-	const { type = 'phone', enabled = true, staleTime = 1000 * 60 * 5, ...queryOptions } = options || {};
+	const { type = 'phone', enabled = true, staleTime, ...queryOptions } = options || {};
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
 	const hasModule = useHasLicenseModule('outbound-messaging');
 
