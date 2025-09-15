@@ -42,6 +42,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 
 	const sendOutboundMessage = useEndpointMutation('POST', '/v1/omnichannel/outbound/providers/:id/message', {
 		keys: { id: provider?.providerId || '' },
+		onError: () => undefined, // error being handled in handleSend
 	});
 
 	const {
@@ -111,15 +112,15 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			});
 
 			onSuccess?.();
-		} catch (e) {
+		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
 
 			// only console.error when in debug mode
 			const urlParams = new URLSearchParams(window.location.search);
 			const debug = urlParams.get('debug') === 'true';
 
-			if (debug && e instanceof Error) {
-				console.error(e.message);
+			if (debug) {
+				console.error(error);
 			}
 
 			onError?.();
