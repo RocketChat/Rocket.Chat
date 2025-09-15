@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import type { LoginPage } from '../login';
+import { LoginPage } from '../login';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
@@ -11,6 +11,7 @@ export class HomeSidenav {
 
 	constructor(page: Page) {
 		this.page = page;
+		this.login = new LoginPage(page);
 	}
 
 	get advancedSettingsAccordion(): Locator {
