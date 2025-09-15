@@ -420,6 +420,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
+			// TODO: Handle multiple files
 			const file = message.files[0];
 			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
 
