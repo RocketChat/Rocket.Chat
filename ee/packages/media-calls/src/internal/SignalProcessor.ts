@@ -13,7 +13,7 @@ import { MediaCalls } from '@rocket.chat/models';
 import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
-import { UserActorAgent } from './agents/BaseUserAgent';
+import { UserActorAgent } from './agents/UserActorAgent';
 
 export type SignalProcessorEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
@@ -189,7 +189,7 @@ export class GlobalSignalProcessor {
 		}
 
 		const services = signal.supportedServices ?? [];
-		const requestedService = services.includes('webrtc') ? 'webrtc' : services.shift();
+		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
 
 		const params: InternalCallParams = {
 			caller: {

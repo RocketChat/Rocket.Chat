@@ -423,6 +423,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
+			sessionId: this.sessionId,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });

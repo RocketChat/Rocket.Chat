@@ -58,10 +58,9 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWait
 
 			if (timeoutFn) {
 				timeoutFn();
-				flagAsDone();
 			}
 
-			if (data.promiseReject) {
+			if (data.promiseReject && !data.done) {
 				data.promiseReject(new Error('timeout'));
 			}
 		}, timeout);

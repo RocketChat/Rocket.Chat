@@ -5,9 +5,7 @@ import { Users } from '@rocket.chat/models';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
-import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
-import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
-import { UserActorCallerAgent } from '../internal/agents/CallerAgent';
+import { UserActorAgent } from '../internal/agents/UserActorAgent';
 import { logger } from '../logger';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
@@ -120,15 +118,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	protected async getAgentForUserActorAndRole(actor: MediaCallContact, role: CallRole): Promise<UserActorAgent | null> {
-		if (role === 'caller') {
-			return new UserActorCallerAgent(actor);
-		}
-
-		if (role === 'callee') {
-			return new UserActorCalleeAgent(actor);
-		}
-
-		return null;
+		return new UserActorAgent(actor, role);
 	}
 
 	protected async getAgentForSipActorAndRole(_actor: MediaCallContact, _role: CallRole): Promise<IMediaCallAgent | null> {

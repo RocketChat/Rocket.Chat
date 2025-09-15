@@ -207,12 +207,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		const iceGatheringData = getExternalWaiter({
 			timeout: this.config.iceGatheringTimeout,
 			timeoutFn: () => {
-				if (this.iceGatheringWaiters.has(iceGatheringData)) {
-					this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering - timeout');
-					this.clearIceGatheringData(iceGatheringData);
-					this.iceGatheringTimedOut = true;
-					this.changeInternalState('iceUntrickler');
+				if (!this.iceGatheringWaiters.has(iceGatheringData)) {
+					return;
 				}
+
+				this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering - timeout');
+				this.clearIceGatheringData(iceGatheringData);
+				this.iceGatheringTimedOut = true;
+				this.changeInternalState('iceUntrickler');
 			},
 		});
 

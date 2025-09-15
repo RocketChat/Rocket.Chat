@@ -154,8 +154,11 @@ export class MediaCallDirector {
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'MediaCallDirector.createCall', params });
 		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer, parentCallId, requestedBy } = params;
+		logger.debug({
+			msg: 'MediaCallDirector.createCall',
+			params: { caller, callee, requestedCallId, requestedService, hasOffer: Boolean(webrtcOffer), parentCallId, requestedBy },
+		});
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {

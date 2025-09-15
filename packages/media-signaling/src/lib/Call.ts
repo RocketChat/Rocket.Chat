@@ -28,6 +28,7 @@ export interface IClientMediaCallConfig {
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
+	sessionId: string;
 
 	iceGatheringTimeout: number;
 }
@@ -685,7 +686,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.config.logger?.debug('ClientMediaCall.processOfferRequest', signal);
 
-		if (!signal.toContractId && !this.signed) {
+		if (!this.isSignalTargetingThisSession(signal)) {
 			this.config.logger?.error('Received an unsigned offer request.');
 			return;
 		}
@@ -786,14 +787,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		if (!signal.toContractId && !this.signed) {
-			this.config.logger?.error('Received an unsigned SDP signal');
+		if (!this.isSignalTargetingThisSession(signal)) {
+			this.config.logger?.error('Received an offer request that is unsigned, or signed to a different session.');
 			return;
 		}
 
 		if (this.shouldIgnoreWebRTC()) {
 			return;
 		}
+
 		this.requireWebRTC();
 
 		if (signal.sdp.type === 'offer') {
@@ -1055,6 +1057,14 @@ export class ClientMediaCall implements IClientMediaCall {
 	private throwError(error: string): never {
 		this.config.logger?.error(error);
 		throw new Error(error);
+	}
+
+	private isSignalTargetingThisSession(signal: ServerMediaSignalRemoteSDP | ServerMediaSignalRequestOffer): boolean {
+		if (signal.toContractId) {
+			return signal.toContractId === this.config.sessionId;
+		}
+
+		return this.signed;
 	}
 
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
