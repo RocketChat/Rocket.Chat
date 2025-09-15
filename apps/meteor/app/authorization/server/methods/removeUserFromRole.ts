@@ -4,16 +4,8 @@ import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope?: string): Promise<boolean>;
-	}
-}
 
 export const removeUserFromRole = async (userId: string, roleId: string, username: IUser['username'], scope?: string): Promise<boolean> => {
 	if (!(await hasPermissionAsync(userId, 'access-permissions'))) {
@@ -29,21 +21,11 @@ export const removeUserFromRole = async (userId: string, roleId: string, usernam
 		});
 	}
 
-	let role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
+	const role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
 	if (!role) {
-		role = await Roles.findOneByName<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
-		if (!role) {
-			throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
-				method: 'authorization:removeUserFromRole',
-			});
-		}
-
-		methodDeprecationLogger.deprecatedParameterUsage(
-			'authorization:removeUserFromRole',
-			'role',
-			'7.0.0',
-			({ parameter, method, version }) => `Calling ${method} with ${parameter} names is deprecated and will be removed ${version}`,
-		);
+		throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
+			method: 'authorization:removeUserFromRole',
+		});
 	}
 
 	const user = await Users.findOneByUsernameIgnoringCase(username, {
