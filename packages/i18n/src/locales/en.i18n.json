@@ -638,6 +638,8 @@
   "Apps_Permissions_upload_write": "Upload files to this server",
   "Apps_Permissions_user_read": "Access user information",
   "Apps_Permissions_user_write": "Modify user information",
+  "Apps_Permissions_server-endpoints_call": "Call internal server endpoints",
+  "Apps_Permissions_server-endpoints_impersonate": "Impersonate a user when calling server endpoints",
   "Apps_Private_App_Is_Exempt": "{{appName}} is already installed and exempt from the app limit policy.\nExempted apps cannot be updated.",
   "Apps_Settings": "App's Settings",
   "Apps_User_Already_Exists": "The username \"{{username}}\" is already being used. Rename or remove the user using it to install this App",
