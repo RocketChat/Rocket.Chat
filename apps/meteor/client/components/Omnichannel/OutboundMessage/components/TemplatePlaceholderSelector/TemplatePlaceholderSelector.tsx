@@ -1,5 +1,4 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import type { Button } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
@@ -8,7 +7,7 @@ import { useAgentSection } from './hooks/useAgentSection';
 import { useContactSection } from './hooks/useContactSection';
 import { useCustomFieldsSection } from './hooks/useCustomFieldsSection';
 
-type PlaceholderSelectorProps = Pick<ComponentProps<typeof Button>, 'mis' | 'disabled'> & {
+type PlaceholderSelectorProps = Pick<ComponentProps<typeof PlaceholderButton>, 'mis' | 'disabled'> & {
 	contact?: Serialized<ILivechatContact>;
 	onSelect(value: string): void;
 	onOpenChange?(isOpen: boolean): void;
