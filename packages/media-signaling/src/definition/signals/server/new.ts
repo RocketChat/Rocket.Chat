@@ -8,6 +8,7 @@ export type ServerMediaSignalNewCall = {
 	service: CallService;
 	kind: 'direct';
 	role: CallRole;
+	self: CallContact;
 	contact: CallContact;
 
 	/** This will only be sent to the caller, with the id it used to request this call */

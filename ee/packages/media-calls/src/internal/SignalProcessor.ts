@@ -150,6 +150,9 @@ export class GlobalSignalProcessor {
 				service: call.service,
 				kind: call.kind,
 				role: 'caller',
+				self: {
+					...call.caller,
+				},
 				contact: {
 					...call.callee,
 				},
@@ -164,6 +167,9 @@ export class GlobalSignalProcessor {
 				service: call.service,
 				kind: call.kind,
 				role: 'callee',
+				self: {
+					...call.callee,
+				},
 				contact: {
 					...call.caller,
 				},
@@ -268,6 +274,9 @@ export class GlobalSignalProcessor {
 			service: call.service,
 			kind: call.kind,
 			role: 'caller',
+			self: {
+				...call.caller,
+			},
 			contact: {
 				...call.callee,
 			},
@@ -278,6 +287,7 @@ export class GlobalSignalProcessor {
 	}
 
 	private rejectCallRequest(uid: IUser['_id'], rejection: Omit<ServerMediaSignalRejectedCallRequest, 'type'>): never {
+		logger.info({ msg: 'Call Request Rejected', uid, rejection });
 		this.sendSignal(uid, { type: 'rejected-call-request', ...rejection });
 
 		throw new Error(rejection.reason);
