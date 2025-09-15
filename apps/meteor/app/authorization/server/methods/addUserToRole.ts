@@ -4,16 +4,8 @@ import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: string | undefined): Promise<boolean>;
-	}
-}
 
 export const addUserToRole = async (userId: string, roleId: string, username: IUser['username'], scope?: string): Promise<boolean> => {
 	if (!(await hasPermissionAsync(userId, 'access-permissions'))) {
@@ -29,21 +21,12 @@ export const addUserToRole = async (userId: string, roleId: string, username: IU
 		});
 	}
 
-	let role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
-	if (!role) {
-		role = await Roles.findOneByName<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
+	const role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
 
-		if (!role) {
-			throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
-				method: 'authorization:addUserToRole',
-			});
-		}
-		methodDeprecationLogger.deprecatedParameterUsage(
-			'authorization:addUserToRole',
-			'role',
-			'7.0.0',
-			({ parameter, method, version }) => `Calling ${method} with \`${parameter}\` names is deprecated and will be removed ${version}`,
-		);
+	if (!role) {
+		throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
+			method: 'authorization:addUserToRole',
+		});
 	}
 
 	if (role._id === 'admin' && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
