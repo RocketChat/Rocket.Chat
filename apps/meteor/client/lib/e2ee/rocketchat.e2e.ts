@@ -336,7 +336,7 @@ class E2E extends Emitter {
 				onConfirm: () => {
 					Accounts.storageLocation.removeItem('e2e.randomPassword');
 					this.setState('READY');
-					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
+					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
@@ -401,8 +401,8 @@ class E2E extends Emitter {
 		if (randomPassword) {
 			this.setState('SAVE_PASSWORD');
 			this.openAlert({
-				title: () => t('Save_your_encryption_password'),
-				html: () => t('Click_here_to_view_and_copy_your_password'),
+				title: () => t('Save_your_new_E2EE_password'),
+				html: () => t('Click_here_to_view_and_save_your_new_E2EE_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -556,7 +556,7 @@ class E2E extends Emitter {
 			const showAlert = () => {
 				this.openAlert({
 					title: () => t('Enter_your_E2E_password'),
-					html: () => t('Click_here_to_enter_your_encryption_password'),
+					html: () => t('Click_here_to_enter_your_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
@@ -602,7 +602,7 @@ class E2E extends Emitter {
 				await this.createAndLoadKeys();
 				this.setState('READY');
 			}
-			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
+			dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
 			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
