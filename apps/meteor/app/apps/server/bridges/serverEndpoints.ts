@@ -221,7 +221,7 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 				},
 			);
 		} catch {
-			// ignore cleanup errors
+			this.orch.debugLog(`Failed to remove stale login token for user ${userId}`);
 		}
 	}
 }
