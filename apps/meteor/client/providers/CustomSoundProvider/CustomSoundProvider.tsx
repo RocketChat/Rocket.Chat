@@ -47,7 +47,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		audio.volume = volume;
 		audio.loop = loop;
 		audio.id = soundId;
-		audio.play().catch();
+		audio.play();
 
 		audioRefs.current = [...audioRefs.current, audio];
 
