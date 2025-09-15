@@ -9,9 +9,10 @@ import type { ComponentProps } from 'react';
 
 import RecipientStep from './RecipientStep';
 import * as stories from './RecipientStep.stories';
-import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
-import type { MessageFormSubmitPayload } from '../forms/MessageForm';
+import { createFakeContact } from '../../../../../../../tests/mocks/data';
+import { createFakeProviderMetadata } from '../../../../../../../tests/mocks/data/outbound-message';
 import type RecipientForm from '../forms/RecipientForm';
+import type { RecipientFormSubmitPayload } from '../forms/RecipientForm';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -21,15 +22,15 @@ jest.mock('tinykeys', () => ({
 }));
 
 let isSubmitting = false;
-let currentOnSubmit: (payload: MessageFormSubmitPayload) => void = () => undefined;
-const mockMessageForm = jest.fn().mockImplementation((props) => {
+let currentOnSubmit: (payload: RecipientFormSubmitPayload) => void = () => undefined;
+const mockRecipientForm = jest.fn().mockImplementation((props) => {
 	currentOnSubmit = props.onSubmit;
 	return <div data-testid='recipient-form'>{props.renderActions?.({ isSubmitting })}</div>;
 });
 
 jest.mock('../forms/RecipientForm', () => ({
 	__esModule: true,
-	default: (props: ComponentProps<typeof RecipientForm>) => mockMessageForm(props),
+	default: (props: ComponentProps<typeof RecipientForm>) => mockRecipientForm(props),
 }));
 
 const steps = new StepsLinkedList([
@@ -87,15 +88,13 @@ describe('RecipientStep', () => {
 	});
 
 	it('should call onSubmit with form values when form submits successfully', async () => {
-		const expectedPayload: MessageFormSubmitPayload = {
-			templateId: 'template-id',
-			template: createFakeOutboundTemplate(),
-			templateParameters: {
-				body: [
-					{ type: 'text', format: 'text', value: 'param1' },
-					{ type: 'text', format: 'text', value: 'param2' },
-				],
-			},
+		const expectedPayload: RecipientFormSubmitPayload = {
+			contact: createFakeContact({ _id: 'contact-id' }),
+			contactId: 'contact-id',
+			providerId: 'provider-id',
+			provider: createFakeProviderMetadata({ providerId: 'provider-id' }),
+			recipient: '',
+			sender: '',
 		};
 
 		const onSubmit = jest.fn();
