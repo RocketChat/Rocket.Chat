@@ -23,6 +23,10 @@ export class LoginPage {
 		await expect(this.page.getByRole('main')).toBeVisible();
 	}
 
+	async waitForLogout() {
+		await expect(this.loginButton).toBeVisible();
+	}
+
 	async loginByUserState(userState: IUserState) {
 		// Creates a login token for the user
 		const connection = await MongoClient.connect(constants.URL_MONGODB);
