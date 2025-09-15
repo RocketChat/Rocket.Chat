@@ -235,7 +235,9 @@ const GetStateParamsSchema = {
 		},
 	},
 };
-const isGetStateParamsProps = ajv.compile(GetStateParamsSchema);
+const isGetStateParamsProps = ajv.compile<{
+	event_id: string
+}>(GetStateParamsSchema);
 
 const GetStateResponseSchema = {
 	type: 'object',
@@ -251,7 +253,7 @@ const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
 
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, config, profile } = services;
+	const { event, config } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
@@ -315,7 +317,18 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
-					const stateIds = await profile.getStateIds(roomId, eventId!);
+					
+					if(!eventId) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						}
+					}
+					
+					const stateIds = await event.getStateIds(roomId, eventId);
 
 					return {
 						body: stateIds,
@@ -334,7 +347,17 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
-					const state = await profile.getState(roomId, eventId!);
+
+					if(!eventId) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						}
+					}
+					const state = await event.getState(roomId, eventId);
 					return {
 						statusCode: 200,
 						body: state,
