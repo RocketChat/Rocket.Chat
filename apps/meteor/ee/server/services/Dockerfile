@@ -42,6 +42,9 @@ COPY --from=build /app/packages/core-typings/dist /app/packages/core-typings/dis
 COPY --from=build /app/packages/rest-typings/package.json /app/packages/rest-typings/package.json
 COPY --from=build /app/packages/rest-typings/dist /app/packages/rest-typings/dist
 
+COPY --from=build /app/packages/media-signaling/package.json /app/packages/media-signaling/package.json
+COPY --from=build /app/packages/media-signaling/dist /app/packages/media-signaling/dist
+
 COPY --from=build /app/packages/model-typings/package.json /app/packages/model-typings/package.json
 COPY --from=build /app/packages/model-typings/dist /app/packages/model-typings/dist
 
