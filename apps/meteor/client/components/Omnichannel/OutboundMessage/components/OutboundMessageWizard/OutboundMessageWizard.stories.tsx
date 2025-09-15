@@ -67,13 +67,15 @@ const meta = {
 	parameters: {
 		controls: { hideNoControlsWarning: true },
 	},
-	decorators: (Story) => (
-		<AppRoot>
-			<Box maxWidth={600} margin='auto'>
-				<Story />
-			</Box>
-		</AppRoot>
-	),
+	decorators: [
+		(Story) => (
+			<AppRoot>
+				<Box maxWidth={600} margin='auto'>
+					<Story />
+				</Box>
+			</AppRoot>
+		),
+	],
 } satisfies Meta<typeof OutboundMessageWizard>;
 
 export default meta;

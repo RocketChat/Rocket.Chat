@@ -63,15 +63,17 @@ const meta = {
 	parameters: {
 		controls: { hideNoControlsWarning: true },
 	},
-	decorators: (Story) => (
-		<AppRoot>
-			<WizardContext.Provider value={mockWizardApi}>
-				<Box maxWidth={600} margin='auto'>
-					<Story />
-				</Box>
-			</WizardContext.Provider>
-		</AppRoot>
-	),
+	decorators: [
+		(Story) => (
+			<AppRoot>
+				<WizardContext.Provider value={mockWizardApi}>
+					<Box maxWidth={600} margin='auto'>
+						<Story />
+					</Box>
+				</WizardContext.Provider>
+			</AppRoot>
+		),
+	],
 } satisfies Meta<typeof RecipientStep>;
 
 export default meta;

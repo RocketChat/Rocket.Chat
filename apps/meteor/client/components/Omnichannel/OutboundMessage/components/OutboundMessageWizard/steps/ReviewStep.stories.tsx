@@ -27,13 +27,15 @@ const meta = {
 	parameters: {
 		controls: { hideNoControlsWarning: true },
 	},
-	decorators: (Story) => (
-		<WizardContext.Provider value={mockWizardApi}>
-			<Box maxWidth={600} margin='auto'>
-				<Story />
-			</Box>
-		</WizardContext.Provider>
-	),
+	decorators: [
+		(Story) => (
+			<WizardContext.Provider value={mockWizardApi}>
+				<Box maxWidth={600} margin='auto'>
+					<Story />
+				</Box>
+			</WizardContext.Provider>
+		),
+	],
 } satisfies Meta<typeof ReviewStep>;
 
 export default meta;
