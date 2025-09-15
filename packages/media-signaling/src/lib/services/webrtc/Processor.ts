@@ -113,6 +113,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.remoteStream.stopAudio();
+
+		this.unregisterPeerEvents();
 	}
 
 	public startNewNegotiation(): void {
@@ -238,6 +240,23 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		peer.onnegotiationneeded = () => this.onNegotiationNeeded();
 		peer.onicegatheringstatechange = () => this.onIceGatheringStateChange();
 		peer.onsignalingstatechange = () => this.onSignalingStateChange();
+	}
+
+	private unregisterPeerEvents() {
+		try {
+			const { peer } = this;
+
+			peer.ontrack = null as any;
+			peer.onicecandidate = null as any;
+			peer.onicecandidateerror = null as any;
+			peer.onconnectionstatechange = null as any;
+			peer.oniceconnectionstatechange = null as any;
+			peer.onnegotiationneeded = null as any;
+			peer.onicegatheringstatechange = null as any;
+			peer.onsignalingstatechange = null as any;
+		} catch {
+			// suppress exceptions here
+		}
 	}
 
 	private restartIce() {
