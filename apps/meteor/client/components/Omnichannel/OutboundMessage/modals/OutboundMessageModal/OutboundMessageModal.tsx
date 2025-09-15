@@ -1,11 +1,11 @@
-import { Box, Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { KeyboardEvent, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import OutboundMessageCloseConfirmation from './OutboundMessageCloseConfirmation';
+import OutboundMessageCloseConfirmationModal from './OutboundMessageCloseConfirmationModal';
 import OutboundMessageWizard from '../../components/OutboundMessageWizard';
 
 export type OutboundMessageModalProps = {
@@ -18,6 +18,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 	const router = useRouter();
 	const [initialRoute] = useState(router.getLocationPathname());
 	const [isClosing, setClosingConfirmation] = useState(false);
+	const modalId = useId();
 
 	useEffect(() => {
 		// NOTE: close the modal when the route changes.
@@ -46,19 +47,24 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 
 	return (
 		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
-			<Modal onKeyDown={handleKeyDown}>
+			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : 'block'} onKeyDown={handleKeyDown}>
 				<ModalHeader>
-					<ModalTitle>{t('Outbound_Message')}</ModalTitle>
-					{!isClosing ? <ModalClose onClick={() => setClosingConfirmation(true)} /> : null}
+					<ModalTitle id={modalId}>{t('Outbound_Message')}</ModalTitle>
+					<ModalClose onClick={() => setClosingConfirmation(true)} />
 				</ModalHeader>
-				<ModalContent pbe={16}>
-					<Box display={isClosing ? 'none' : 'block'}>
-						<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
-					</Box>
 
-					{isClosing ? <OutboundMessageCloseConfirmation onConfirm={onClose} onCancel={() => setClosingConfirmation(false)} /> : null}
+				<ModalContent pbe={16}>
+					<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
 				</ModalContent>
 			</Modal>
+
+			{isClosing ? (
+				<OutboundMessageCloseConfirmationModal
+					onConfirm={onClose}
+					onCancel={() => setClosingConfirmation(false)}
+					onKeyDown={handleKeyDown}
+				/>
+			) : null}
 		</ModalBackdrop>
 	);
 };
