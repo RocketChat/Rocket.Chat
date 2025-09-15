@@ -110,9 +110,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public endSession(): void {
 		this.disableStateReport();
+
+		// best‑effort: stop capturing audio
+		void this.setInputTrack(null).catch(() => undefined);
+
 		for (const call of this.knownCalls.values()) {
+			this.ignoredCalls.add(call.callId);
 			call.ignore();
 		}
+
+		this.knownCalls.clear();
 	}
 
 	public getCallData(callId: string): IClientMediaCall | null {
@@ -237,6 +244,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			const localCall = this.knownCalls.get(signal.requestedCallId);
 			if (localCall) {
 				this.knownCalls.set(signal.callId, localCall);
+				this.knownCalls.delete(signal.requestedCallId);
 				return localCall;
 			}
 		}
