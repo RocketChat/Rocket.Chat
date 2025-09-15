@@ -225,6 +225,8 @@ describe('media-signaling/Session', () => {
 		// Verify session properties
 		expect(session.sessionId).toBe(mockSessionId);
 		expect(session.userId).toBe('userId');
+
+		session.endSession();
 	});
 
 	it('should send a call request signal when startCall is called', async () => {
@@ -281,6 +283,8 @@ describe('media-signaling/Session', () => {
 			type: 'user',
 			id: 'userId2',
 		});
+
+		session.endSession();
 	});
 
 	it('should emit newCall event when call is initialized', async () => {
@@ -315,6 +319,8 @@ describe('media-signaling/Session', () => {
 		expect(newCallEvents).toHaveLength(1);
 		expect(newCallEvents[0]).toHaveProperty('call');
 		expect(newCallEvents[0].call.callId).toBe(mockCallId);
+
+		session.endSession();
 	});
 
 	it('should handle a whole call as a callee', async () => {
@@ -464,6 +470,8 @@ describe('media-signaling/Session', () => {
 		expect(endedCallEvents).toHaveLength(0);
 		await session.processSignal(hangupSignal);
 		expect(endedCallEvents).toHaveLength(1);
+
+		session.endSession();
 	});
 
 	it('should handle a whole call as a caller', async () => {
@@ -652,5 +660,7 @@ describe('media-signaling/Session', () => {
 		expect(endedCallEvents).toHaveLength(0);
 		await session.processSignal(hangupSignal);
 		expect(endedCallEvents).toHaveLength(1);
+
+		session.endSession();
 	});
 });
