@@ -29,6 +29,8 @@ import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
+type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
+
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
@@ -399,14 +401,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
-	private determineFileMessageType(fileType?: string): 'm.image' | 'm.file' | 'm.video' | 'm.audio' {
-		if (!fileType) return 'm.file';
 
-		if (fileType.startsWith('image/')) return 'm.image';
-		if (fileType.startsWith('video/')) return 'm.video';
-		if (fileType.startsWith('audio/')) return 'm.audio';
+	private readonly fileTypes: Record<string, MatrixFileTypes> = {
+		image: 'm.image',
+		video: 'm.video',
+		audio: 'm.audio',
+		file: 'm.file',
+	};
 
-		return 'm.file';
+	private getMatrixMessageType(mimeType?: string): MatrixFileTypes {
+		const mainType = mimeType?.split('/')[0];
+
+		if (!mainType) {
+			throw new Error(`Unknown file type: ${mimeType}`);
+		}
+
+		return this.fileTypes[mainType] ?? this.fileTypes.file;
 	}
 
 	private async handleFileMessage(
@@ -424,7 +434,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const file = message.files[0];
 			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
 
-			const msgtype = this.determineFileMessageType(file.type);
+			const msgtype = this.getMatrixMessageType(file.type);
 			const fileContent = {
 				body: file.name,
 				msgtype,
