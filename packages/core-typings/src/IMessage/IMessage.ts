@@ -375,6 +375,7 @@ export type IE2EEMessage = IMessage & {
 
 export type IE2EEPinnedMessage = IMessage & {
 	t: 'message_pinned_e2e';
+	attachments: [MessageAttachment & { content: EncryptedContent }];
 };
 
 export interface IOTRMessage extends IMessage {

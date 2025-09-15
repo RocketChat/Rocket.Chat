@@ -685,29 +685,28 @@ class E2E extends Emitter {
 	}
 
 	async decryptPinnedMessage(message: IE2EEPinnedMessage) {
+		const span = log.span('decryptPinnedMessage').set('message', message);
+		const [pinnedMessage] = message.attachments;
+
+		if (!pinnedMessage) {
+			span.warn('No pinned message found');
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+
+		if (!e2eRoom) {
+			span.warn('No e2eRoom found');
+			return message;
+		}
+
+		const data = await e2eRoom.decrypt(pinnedMessage.content);
+
+		message.attachments[0].text = data.msg ?? data.text;
+
+		span.set('decryptedPinnedMessage', message).info('pinned message decrypted');
+
 		return message;
-		// const pinnedMessage = message?.attachments?.[0]?.;
-
-		// if (!pinnedMessage) {
-		// 	return message;
-		// }
-
-		// const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		// if (!e2eRoom) {
-		// 	return message;
-		// }
-
-		// const data = await e2eRoom.decrypt({ ciphertext: pinnedMessage });
-
-		// if (!data) {
-		// 	return message;
-		// }
-
-		// const decryptedPinnedMessage = { ...message } as IMessage & { attachments: MessageAttachment[] };
-		// decryptedPinnedMessage.attachments[0].text = typeof data.msg === 'undefined' ? data.text : data.msg;
-
-		// return decryptedPinnedMessage;
 	}
 
 	async decryptPendingMessages(): Promise<void> {
