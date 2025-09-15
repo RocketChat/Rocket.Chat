@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizard from '../../components/OutboundMessageWizard';
 
-type OutboundMessageModalProps = {
+export type OutboundMessageModalProps = {
 	defaultValues?: ComponentProps<typeof OutboundMessageWizard>['defaultValues'];
 	onClose: () => void;
 };

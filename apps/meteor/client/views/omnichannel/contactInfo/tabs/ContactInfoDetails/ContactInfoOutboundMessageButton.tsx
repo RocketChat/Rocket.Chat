@@ -1,14 +1,13 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type OutboundMessageModal from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
+import type { OutboundMessageModalProps } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 
 type ContactInfoOutboundMessageButtonProps = {
-	defaultValues?: ComponentProps<typeof OutboundMessageModal>['defaultValues'];
+	defaultValues?: OutboundMessageModalProps['defaultValues'];
 };
 
 const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutboundMessageButtonProps) => {
