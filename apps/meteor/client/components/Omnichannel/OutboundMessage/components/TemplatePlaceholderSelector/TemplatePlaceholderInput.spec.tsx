@@ -1,13 +1,14 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ComponentProps } from 'react';
 
 import TemplatePlaceholderInput from './TemplatePlaceholderInput';
 import type TemplatePlaceholderSelector from './TemplatePlaceholderSelector';
 
 const appRoot = mockAppRoot().build();
 
-jest.mock('./TemplatePlaceholderSelector', () => ({ onSelect, onOpenChange }: React.ComponentProps<typeof TemplatePlaceholderSelector>) => (
+jest.mock('./TemplatePlaceholderSelector', () => ({ onSelect, onOpenChange }: ComponentProps<typeof TemplatePlaceholderSelector>) => (
 	<div>
 		<button type='button' onClick={() => onSelect('Selected value')}>
 			Placeholder
