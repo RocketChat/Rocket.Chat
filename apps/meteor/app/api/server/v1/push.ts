@@ -146,7 +146,7 @@ const pushEndpoints = API.v1.post(
 			intervalTimeInMS: 1000,
 		},
 		permissionsRequired: ['test-push-notifications'],
-		body: ajv.compile<undefined>({}),
+		body: ajv.compile<undefined>({ type: 'object', additionalProperties: false }),
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
