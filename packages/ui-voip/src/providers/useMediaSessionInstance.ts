@@ -74,6 +74,10 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 	}
 
 	private makeInstance(userId: string) {
+		if (this.sessionInstance !== null) {
+			this.sessionInstance.disableStateReport();
+		}
+
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
 			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
@@ -100,7 +104,6 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			return this.sessionInstance;
 		}
 
-		// TODO: maybe we need a cleanup step on the instance?
 		return this.makeInstance(userId);
 	}
 
