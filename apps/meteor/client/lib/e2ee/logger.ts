@@ -10,10 +10,8 @@ const isDebugEnabled = (): boolean => {
 	return debug;
 };
 
-
-
 interface IConsoleWithContext extends Console {
-	/** 
+	/**
 	 * Creates a new console context with the given label.
 	 * @remarks
 	 * This is currently only supported in Chromium-based browsers.
@@ -23,17 +21,16 @@ interface IConsoleWithContext extends Console {
 }
 
 const console = ((): IConsoleWithContext => {
-
 	if ('context' in globalThis.console) {
 		return globalThis.console as IConsoleWithContext;
 	}
 
 	return {
 		...globalThis.console,
-		
-		context(_label: string) {
-			return globalThis.console
-		}
+
+		context() {
+			return globalThis.console;
+		},
 	};
 })();
 
@@ -41,9 +38,15 @@ const noopSpan: ISpan = {
 	set(_key: string, _value: unknown) {
 		return this;
 	},
-	info(_message: string) { /**/ },
-	warn(_message: string) { /**/ },
-	error(_message: string, _error?: unknown) { /**/ },
+	info(_message: string) {
+		/**/
+	},
+	warn(_message: string) {
+		/**/
+	},
+	error(_message: string, _error?: unknown) {
+		/**/
+	},
 };
 
 class Logger {
@@ -90,11 +93,11 @@ class Span {
 
 	private log(level: LogLevel, message: string) {
 		this.console.groupCollapsed(`%c[${this.logger.deref()?.title}:${this.label}]%c ${message}`, styles[level], 'font-weight: normal;');
-		this.console.dir(Object.fromEntries(this.attributes.entries()), { });
+		this.console.dir(Object.fromEntries(this.attributes.entries()), {});
 		this.console.groupEnd();
 		this.console.trace();
 	}
-	
+
 	set(key: string, value: unknown) {
 		this.attributes.set(key, value);
 		return this;

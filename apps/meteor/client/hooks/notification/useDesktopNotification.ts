@@ -24,7 +24,6 @@ export const useDesktopNotification = () => {
 
 		const { message } = notification.payload;
 
-
 		if (message.t === 'e2e' && message.content) {
 			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
 			if (e2eRoom) {

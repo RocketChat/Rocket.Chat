@@ -32,12 +32,7 @@ export const useE2EERoomAction = () => {
 	const { otrState } = useOTR();
 
 	const isE2EERoomNotReady = () => {
-		if (
-			e2eeRoomState === 'NOT_STARTED' ||
-			e2eeRoomState === 'DISABLED' ||
-			e2eeRoomState === 'ERROR' ||
-			e2eeRoomState === 'WAITING_KEYS'
-		) {
+		if (e2eeRoomState === 'NOT_STARTED' || e2eeRoomState === 'DISABLED' || e2eeRoomState === 'ERROR' || e2eeRoomState === 'WAITING_KEYS') {
 			return true;
 		}
 

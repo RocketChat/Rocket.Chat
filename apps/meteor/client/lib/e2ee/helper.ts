@@ -183,8 +183,7 @@ export function readFileAsArrayBuffer(file: File) {
  * Generates 12 uniformly random words from the word list.
  *
  * @remarks
- * Uses rejection sampling to ensure uniform distribution.
- * {@link https://en.wikipedia.org/wiki/Rejection_sampling}
+ * Uses {@link https://en.wikipedia.org/wiki/Rejection_sampling | rejection sampling} to ensure uniform distribution.
  *
  * @returns A space-separated passphrase.
  */

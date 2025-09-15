@@ -59,7 +59,7 @@ export async function notifyDesktopUser({
 				}),
 				...('content' in message && {
 					content: message.content,
-				})
+				}),
 			},
 			name,
 			audioNotificationValue,
