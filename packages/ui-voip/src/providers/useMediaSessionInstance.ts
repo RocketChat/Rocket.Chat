@@ -96,6 +96,10 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			this.sessionInstance.disableStateReport();
 		}
 
+		if (!this.webrtcProcessorFactory || !this.sendSignalFn) {
+			return null;
+		}
+
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
 			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
@@ -127,6 +131,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	public setSendSignalFn(sendSignalFn: SignalTransport) {
 		this.sendSignalFn = sendSignalFn;
+		this.change();
 		return () => {
 			this.sendSignalFn = null;
 		};
@@ -134,12 +139,30 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
 		this._webrtcProcessorFactory = factory;
+		this.change();
 	}
 }
 
 const mediaSession = new MediaSessionStore();
 
 export const useMediaSessionInstance = (userId?: string) => {
+	const iceServers = useIceServers();
+	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
+
+	const notifyUserStream = useStream('notify-user');
+	const writeStream = useWriteStream('notify-user');
+
+	useEffect(() => {
+		mediaSession.setWebRTCProcessorFactory(
+			(config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout }),
+		);
+	}, [iceServers, iceGatheringTimeout]);
+
+	useEffect(() => {
+		// TODO: This stream is not typed.
+		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
+	}, [writeStream, userId]);
+
 	const instance = useSyncExternalStore(
 		useCallback((callback) => {
 			return mediaSession.onChange(callback);
@@ -148,17 +171,6 @@ export const useMediaSessionInstance = (userId?: string) => {
 			return mediaSession.getInstance(userId);
 		}, [userId]),
 	);
-
-	const iceServers = useIceServers();
-	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
-
-	const notifyUserStream = useStream('notify-user');
-	const writeStream = useWriteStream('notify-user');
-
-	useEffect(() => {
-		// TODO: This stream is not typed.
-		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
-	}, [writeStream, userId]);
 
 	useEffect(() => {
 		if (!instance) {
@@ -173,12 +185,6 @@ export const useMediaSessionInstance = (userId?: string) => {
 			unsubNotification();
 		};
 	}, [instance, notifyUserStream]);
-
-	useEffect(() => {
-		mediaSession.setWebRTCProcessorFactory(
-			(config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout }),
-		);
-	}, [iceServers, iceGatheringTimeout]);
 
 	return instance ?? undefined;
 };
