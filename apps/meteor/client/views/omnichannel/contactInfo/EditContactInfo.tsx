@@ -177,13 +177,19 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		};
 
 		if (contactData) {
-			editContact.mutate({ contactId: contactData?._id, ...payload });
-			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact(contactData?._id) });
+			await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() }),
+				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contactSearch() }),
+			]);
 			return;
 		}
 
-		createContact.mutate(payload);
-		queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() });
+		await createContact.mutateAsync(payload);
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() }),
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contactSearch() }),
+		]);
 	};
 
 	const formId = useId();
