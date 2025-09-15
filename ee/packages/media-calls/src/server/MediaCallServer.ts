@@ -70,6 +70,8 @@ export class MediaCallServer implements IMediaCallServer {
 			const originalId = params.requestedCallId || params.parentCallId;
 
 			if (originalId && params.requestedBy?.type === 'user') {
+				logger.info({ msg: 'Call Request Rejected', uid: params.requestedBy.id, rejectionReason });
+
 				this.sendSignal(params.requestedBy.id, {
 					type: 'rejected-call-request',
 					callId: originalId,

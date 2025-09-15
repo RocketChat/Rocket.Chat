@@ -168,6 +168,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			service: call.service,
 			kind: call.kind,
 			role: this.role,
+			self: this.getMyCallActor(call),
 			contact: this.getOtherCallActor(call),
 			...(call.parentCallId && { replacingCallId: call.parentCallId }),
 			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),

@@ -285,7 +285,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		// If the call was requested by this specific session, assume we're signed already.
-		if (this._role === 'caller' && this.acceptedLocally && (signal.requestedCallId === this.localCallId || Boolean(oldCall))) {
+		if (
+			this._role === 'caller' &&
+			this.acceptedLocally &&
+			this.contractState !== 'ignored' &&
+			(signal.requestedCallId === this.localCallId || Boolean(oldCall))
+		) {
 			this.contractState = 'pre-signed';
 		}
 
