@@ -48,9 +48,9 @@ export const createFakeOutboundTemplate = (overrides: Partial<IOutboundProviderT
 			text: 'Need to reschedule? Tap below to reply',
 		},
 	],
-	createdAt: '', // ISO 8601 timestamp
+	createdAt: new Date().toISOString(), // ISO 8601 timestamp
 	createdBy: '',
-	modifiedAt: '', // ISO 8601 timestamp
+	modifiedAt: new Date().toISOString(), // ISO 8601 timestamp
 	modifiedBy: '',
 	namespace: '',
 	wabaAccountId: '',
@@ -58,7 +58,7 @@ export const createFakeOutboundTemplate = (overrides: Partial<IOutboundProviderT
 	phoneNumber: '+5547998461115',
 	partnerId: '',
 	externalId: '',
-	updatedExternal: '', // ISO 8601 timestamp
+	updatedExternal: new Date().toISOString(), // ISO 8601 timestamp
 	rejectedReason: '',
 	...overrides,
 });
