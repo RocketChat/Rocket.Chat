@@ -1,6 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
+import type { PeerInfo } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
@@ -30,9 +31,27 @@ export const useMediaCallRoomAction = () => {
 
 	const peerId = getPeerId(uids, ownUserId);
 
-	const { data: peerInfo } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
+	const { data: peerInfo } = useUserInfoQuery(
+		{ userId: peerId as string },
+		{
+			enabled: !!peerId,
+			select: (data) => {
+				if (!data?.user?._id) {
+					return undefined;
+				}
 
-	const { action, title, icon } = useMediaCallAction(true);
+				return {
+					userId: data.user._id,
+					displayName: data.user.name || data.user.username || '',
+					avatarUrl: data.user.username
+						? getAvatarUrl({ username: data.user.username, etag: data.user.avatarETag })
+						: getAvatarUrl({ userId: data.user._id }),
+				};
+			},
+		},
+	);
+
+	const { action, title, icon } = useMediaCallAction(peerInfo as PeerInfo | undefined);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!peerId) {
@@ -44,24 +63,8 @@ export const useMediaCallRoomAction = () => {
 			title: title as TranslationKey,
 			icon,
 			featured: true,
-			action: () => {
-				const { user } = peerInfo || {};
-
-				if (user) {
-					const avatarUrl = user.username
-						? getAvatarUrl({ username: user.username, etag: user.avatarETag })
-						: getAvatarUrl({ userId: peerId });
-
-					return action({
-						userId: peerId,
-						displayName: user.name || user.username || '',
-						avatarUrl,
-					});
-				}
-
-				return action();
-			},
+			action: () => action(),
 			groups: ['direct'] as const,
 		};
-	}, [peerId, title, icon, peerInfo, action, getAvatarUrl]);
+	}, [peerId, title, icon, action]);
 };

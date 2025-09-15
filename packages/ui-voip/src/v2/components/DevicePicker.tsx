@@ -105,7 +105,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 	return (
 		<GenericMenu
-			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings')}
+			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings_lowercase')}
 			sections={[micSection, speakerSection]}
 			disabled={disabled}
 			placement='top-end'

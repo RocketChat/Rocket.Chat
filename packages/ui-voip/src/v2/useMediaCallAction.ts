@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, useMediaCallContext } from './MediaCallContext';
 
-export const useMediaCallAction = (direct = false): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } => {
+export const useMediaCallAction = (callee?: PeerInfo): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } => {
 	const { t } = useTranslation();
 
 	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallContext();
@@ -38,10 +38,18 @@ export const useMediaCallAction = (direct = false): { title: string; icon: IconN
 			};
 		}
 
+		if (callee) {
+			return {
+				title: t('Voice_call__user_', { user: getDisplayName(callee) }),
+				icon: 'phone',
+				action: () => onToggleWidget(callee),
+			};
+		}
+
 		return {
 			title: t('New_voice_call'),
-			icon: direct ? 'phone' : 'dialpad',
-			action: (callee?: PeerInfo) => onToggleWidget(callee),
+			icon: 'dialpad',
+			action: () => onToggleWidget(),
 		};
-	}, [direct, onEndCall, onToggleWidget, peerInfo, state, t]);
+	}, [state, peerInfo, callee, t, onEndCall, onToggleWidget]);
 };
