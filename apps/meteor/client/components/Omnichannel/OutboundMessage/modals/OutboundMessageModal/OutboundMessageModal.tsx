@@ -40,14 +40,13 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		e.stopPropagation();
 		e.preventDefault();
 
-		// If the confirmation is already being shown, close it.
-		// Otherwise, show the confirmation.
+		// Toggle confirmation visibility on Esc.
 		setClosingConfirmation(!isClosing);
 	});
 
 	return (
-		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
-			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : 'block'} onKeyDown={handleKeyDown}>
+		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : 'block'}>
 				<ModalHeader>
 					<ModalTitle id={modalId}>{t('Outbound_Message')}</ModalTitle>
 					<ModalClose onClick={() => setClosingConfirmation(true)} />
@@ -58,13 +57,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 				</ModalContent>
 			</Modal>
 
-			{isClosing ? (
-				<OutboundMessageCloseConfirmationModal
-					onConfirm={onClose}
-					onCancel={() => setClosingConfirmation(false)}
-					onKeyDown={handleKeyDown}
-				/>
-			) : null}
+			{isClosing ? <OutboundMessageCloseConfirmationModal onConfirm={onClose} onCancel={() => setClosingConfirmation(false)} /> : null}
 		</ModalBackdrop>
 	);
 };
