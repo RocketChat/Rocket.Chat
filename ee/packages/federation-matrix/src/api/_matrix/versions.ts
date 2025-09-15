@@ -38,12 +38,10 @@ export const getFederationVersionsRoutes = (services: HomeserverServices) => {
 			license: ['federation'],
 		},
 		async () => {
-			const serverConfig = config.getServerConfig();
-
 			const response = {
 				server: {
-					name: serverConfig.name,
-					version: serverConfig.version,
+					name: config.serverName,
+					version: config.version,
 				},
 			};
 

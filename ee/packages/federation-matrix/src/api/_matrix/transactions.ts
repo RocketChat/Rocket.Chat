@@ -15,6 +15,45 @@ const SendTransactionParamsSchema = {
 
 const isSendTransactionParamsProps = ajv.compile(SendTransactionParamsSchema);
 
+const GetEventParamsSchema = {
+	type: 'object',
+	properties: {
+		eventId: {
+			type: 'string',
+			description: 'Event ID',
+		},
+	},
+	required: ['eventId'],
+	additionalProperties: false,
+};
+
+const isGetEventParamsProps = ajv.compile(GetEventParamsSchema);
+
+const GetEventResponseSchema = {
+	type: 'object',
+	properties: {
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		pdus: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'Persistent data units (PDUs)',
+		},
+	},
+	required: ['origin_server_ts', 'origin', 'pdus'],
+};
+
+const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
+
 const EventHashSchema = {
 	type: 'object',
 	properties: {
@@ -94,12 +133,21 @@ const EventBaseSchema = {
 			nullable: true,
 		},
 	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events', 'origin'],
+	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events'],
 };
 
 const SendTransactionBodySchema = {
 	type: 'object',
 	properties: {
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
 		pdus: {
 			type: 'array',
 			items: EventBaseSchema,
@@ -117,7 +165,7 @@ const SendTransactionBodySchema = {
 			nullable: true,
 		},
 	},
-	required: ['pdus'],
+	required: ['origin', 'origin_server_ts', 'pdus'],
 };
 
 const isSendTransactionBodyProps = ajv.compile(SendTransactionBodySchema);
@@ -155,40 +203,88 @@ const ErrorResponseSchema = {
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event } = services;
+	const { event, config } = services;
 
-	return new Router('/federation').put(
-		'/v1/send/:txnId',
-		{
-			params: isSendTransactionParamsProps,
-			body: isSendTransactionBodyProps,
-			response: {
-				200: isSendTransactionResponseProps,
-				400: isErrorResponseProps,
-			},
-			tags: ['Federation'],
-			license: ['federation'],
-		},
-		async (c) => {
-			const body = await c.req.json();
-
-			const { pdus = [], edus = [] } = body;
-
-			if (pdus.length > 0) {
-				await event.processIncomingPDUs(pdus);
-			}
-
-			if (edus.length > 0) {
-				await event.processIncomingEDUs(edus);
-			}
-
-			return {
-				body: {
-					pdus: {},
-					edus: {},
+	// PUT /_matrix/federation/v1/send/{txnId}
+	return (
+		new Router('/federation')
+			.put(
+				'/v1/send/:txnId',
+				{
+					params: isSendTransactionParamsProps,
+					body: isSendTransactionBodyProps,
+					response: {
+						200: isSendTransactionResponseProps,
+						400: isErrorResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				statusCode: 200,
-			};
-		},
+				async (c) => {
+					const body = await c.req.json();
+
+					try {
+						await event.processIncomingTransaction(body);
+					} catch (error: any) {
+						// TODO custom error types?
+						if (error.message === 'too-many-concurrent-transactions') {
+							return {
+								statusCode: 429,
+								body: {
+									errorcode: 'M_UNKNOWN',
+									error: 'Too many concurrent transactions',
+								},
+							};
+						}
+
+						return {
+							statusCode: 400,
+							body: {},
+						};
+					}
+
+					return {
+						body: {
+							pdus: {},
+							edus: {},
+						},
+						statusCode: 200,
+					};
+				},
+			)
+
+			// GET /_matrix/federation/v1/event/{eventId}
+			.get(
+				'/v1/event/:eventId',
+				{
+					params: isGetEventParamsProps,
+					response: {
+						200: isGetEventResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				async (c) => {
+					const eventData = await event.getEventById(c.req.param('eventId'));
+					if (!eventData) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						};
+					}
+
+					return {
+						body: {
+							origin_server_ts: new Date().getTime(),
+							origin: config.serverName,
+							pdus: [eventData.event],
+						},
+						statusCode: 200,
+					};
+				},
+			)
 	);
 };
