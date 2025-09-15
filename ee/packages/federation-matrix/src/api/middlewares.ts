@@ -1,35 +1,18 @@
 import type { EventAuthorizationService } from '@hs/federation-sdk';
+import { errCodes } from '@hs/federation-sdk';
 import type { Context, Next } from 'hono';
-import type { ContentfulStatusCode } from 'hono/utils/http-status';
-
-const errCodes: Record<string, { errcode: string; error: string; status: ContentfulStatusCode }> = {
-	M_UNAUTHORIZED: {
-		errcode: 'M_UNAUTHORIZED',
-		error: 'Invalid or missing signature',
-		status: 401,
-	},
-	M_FORBIDDEN: {
-		errcode: 'M_FORBIDDEN',
-		error: 'Access denied',
-		status: 403,
-	},
-	M_UNKNOWN: {
-		errcode: 'M_UNKNOWN',
-		error: 'Internal server error while processing request',
-		status: 500,
-	},
-};
 
 export const canAccessEvent = (federationAuth: EventAuthorizationService) => async (c: Context, next: Next) => {
-	const { eventId } = c.req.param();
-
 	try {
+		const url = new URL(c.req.url);
+		const path = url.search ? `${c.req.path}${url.search}` : c.req.path;
+
 		const verificationResult = await federationAuth.canAccessEventFromAuthorizationHeader(
-			eventId,
+			c.req.param('eventId'),
 			c.req.header('Authorization') || '',
 			c.req.method,
-			c.req.path,
-			await c.req.json(),
+			path,
+			undefined,
 		);
 
 		if (!verificationResult.authorized) {
