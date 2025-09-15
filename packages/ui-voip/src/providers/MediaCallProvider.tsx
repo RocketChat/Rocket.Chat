@@ -7,8 +7,9 @@ import {
 	Device,
 	useUser,
 	useSetModal,
+	useSelectedDevices,
 } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useCallSounds } from './useCallSounds';
@@ -35,7 +36,20 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
+	const { audioInput } = useSelectedDevices() || {};
+
 	const requestDevice = useDevicePermissionPrompt2();
+
+	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
+	// But we're only using the changeDevice method from the session
+	// So I'll just destructure it here
+	const { changeDevice } = session;
+
+	useEffect(() => {
+		if (audioInput?.id) {
+			changeDevice(audioInput.id);
+		}
+	}, [audioInput?.id, changeDevice]);
 
 	useCallSounds(
 		session.state,
@@ -65,15 +79,21 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			return;
 		}
 
-		if ('userId' in peerInfo) {
+		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
-			session.startCall(peerInfo.userId, 'user', stream.getTracks()[0]);
+			stopTracks(stream);
+		} catch (error) {
+			console.error('Media Call - Error requesting device', error);
+			return;
+		}
+
+		if ('userId' in peerInfo) {
+			session.startCall(peerInfo.userId, 'user');
 			return;
 		}
 
 		if ('number' in peerInfo) {
-			const stream = await requestDevice({ actionType: 'outgoing' });
-			session.startCall(peerInfo.number, 'sip', stream.getTracks()[0]);
+			session.startCall(peerInfo.number, 'sip');
 			return;
 		}
 
@@ -87,9 +107,14 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			return;
 		}
 
-		const stream = await requestDevice({ actionType: 'incoming' });
+		try {
+			const stream = await requestDevice({ actionType: 'incoming' });
+			stopTracks(stream);
+		} catch (error) {
+			return;
+		}
 
-		session.acceptCall(stream.getTracks()[0]);
+		session.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -106,14 +131,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			},
 		} as const;
 
-		if (session.state === 'new') {
-			void requestDevice(parameters).then(async (stream) => {
-				stopTracks(stream);
-				setInputMediaDevice(device);
-			});
-			return;
-		}
-
 		if (device.type === 'audiooutput') {
 			if (!audioElement.current) return;
 			setOutputMediaDevice({ outputDevice: device, HTMLAudioElement: audioElement.current });
@@ -122,13 +139,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 		if (device.type === 'audioinput') {
 			void requestDevice(parameters).then(async (stream) => {
-				try {
-					await session.changeDevice(stream.getTracks()[0]);
-					setInputMediaDevice(device);
-				} catch (error) {
-					stopTracks(stream);
-					console.error('Error changing device', error);
-				}
+				stopTracks(stream);
+				setInputMediaDevice(device);
 			});
 
 			return;

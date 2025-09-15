@@ -21,10 +21,10 @@ type MediaSession = SessionInfo & {
 	selectPeer: (peerInfo: PeerInfo) => void;
 
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip', track: MediaStreamTrack) => Promise<void>;
-	acceptCall: (track: MediaStreamTrack) => Promise<void>;
+	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
+	acceptCall: () => Promise<void>;
 
-	changeDevice: (newTrack: MediaStreamTrack) => Promise<void>;
+	changeDevice: (deviceId: string) => Promise<void>;
 
 	forwardCall: () => void;
 	sendTone: (tone: string) => void;
@@ -34,6 +34,7 @@ const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole
 	switch (callState) {
 		case 'active':
 		case 'accepted':
+		case 'renegotiating':
 			return 'ongoing';
 		case 'none':
 		case 'ringing':
@@ -196,7 +197,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			mainCall.reject();
 		};
 
-		const acceptCall = async (track: MediaStreamTrack) => {
+		const acceptCall = async () => {
 			if (!instance) {
 				return;
 			}
@@ -205,30 +206,27 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!call || call.state !== 'ringing') {
 				return;
 			}
-
-			await call.setInputTrack(track);
 			call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip', inputTrack: MediaStreamTrack) => {
+		const startCall = async (id: string, kind: 'user' | 'sip') => {
 			if (!instance) {
 				return;
 			}
 
 			try {
-				await instance.startCall(kind, id, { inputTrack });
+				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
 		};
 
-		const changeDevice = async (newTrack: MediaStreamTrack) => {
-			const mainCall = instance?.getMainCall();
-			if (!mainCall) {
+		const changeDevice = async (deviceId: string) => {
+			if (!instance) {
 				return;
 			}
 
-			await mainCall.setInputTrack(newTrack);
+			instance.setDeviceId(deviceId);
 		};
 
 		const forwardCall = () => {
