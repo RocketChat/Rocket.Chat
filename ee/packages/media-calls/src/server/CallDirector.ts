@@ -10,7 +10,7 @@ import type { InternalCallParams, MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
-const EXPIRATION_CHECK_DELAY = 1000;
+const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
@@ -18,6 +18,9 @@ export type CreateCallParams = InternalCallParams & {
 
 	webrtcOffer?: RTCSessionDescriptionInit;
 };
+
+// expiration checks by call id
+const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>();
 
 export class MediaCallDirector {
 	public static async hangup(call: IMediaCall, actorAgent: IMediaCallAgent, reason: CallHangupReason): Promise<void> {
@@ -43,6 +46,7 @@ export class MediaCallDirector {
 			return;
 		}
 
+		this.scheduleExpirationCheckByCallId(call._id);
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
 
@@ -64,6 +68,8 @@ export class MediaCallDirector {
 		if (!stateResult.modifiedCount) {
 			return false;
 		}
+
+		this.scheduleExpirationCheckByCallId(call._id);
 
 		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
@@ -224,6 +230,8 @@ export class MediaCallDirector {
 			throw new Error('failed-to-retrieve-call');
 		}
 
+		this.scheduleExpirationCheckByCallId(newCall._id);
+
 		if (webrtcOffer) {
 			await this.startNewNegotiation(newCall, 'caller', webrtcOffer);
 		}
@@ -260,15 +268,29 @@ export class MediaCallDirector {
 		return this.hangupDetachedCall(call, { endedBy: call.transferredBy, reason: 'transfer' });
 	}
 
-	public static async hangupExpiredCalls(): Promise<void> {
+	public static async hangupExpiredCalls(): Promise<void>;
+
+	public static async hangupExpiredCalls(expectedCallId: string): Promise<boolean>;
+
+	public static async hangupExpiredCalls(expectedCallId?: string): Promise<boolean | void> {
 		logger.debug('MediaCallDirector.hangupExpiredCalls');
+
+		let expectedCallWasExpired = false;
 
 		const result = MediaCalls.findAllExpiredCalls<MediaCallHeader>({
 			projection: { _id: 1, caller: 1, callee: 1 },
 		});
 
 		for await (const call of result) {
+			if (expectedCallId && call._id === expectedCallId) {
+				expectedCallWasExpired = true;
+			}
+
 			await this.hangupByServer(call, 'timeout');
+		}
+
+		if (typeof expectedCallId === 'string') {
+			return expectedCallWasExpired;
 		}
 	}
 
@@ -278,14 +300,40 @@ export class MediaCallDirector {
 
 	public static async renewCallId(callId: string): Promise<void> {
 		await MediaCalls.setExpiresAtById(callId, this.getNewExpirationTime());
-		this.scheduleExpirationCheck();
+		this.scheduleExpirationCheckByCallId(callId);
+	}
+
+	public static scheduleExpirationCheckByCallId(callId: string): void {
+		const oldHandler = scheduledExpirationChecks.get(callId);
+		if (oldHandler) {
+			clearTimeout(oldHandler);
+			scheduledExpirationChecks.delete(callId);
+		}
+
+		const handler = setTimeout(async () => {
+			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheckByCallId.timeout', callId });
+			scheduledExpirationChecks.delete(callId);
+
+			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((error) =>
+				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }),
+			);
+
+			if (!expectedCallWasExpired) {
+				const call = await MediaCalls.findOneById(callId, { projection: { ended: 1 } });
+				if (call && !call.ended) {
+					this.scheduleExpirationCheckByCallId(callId);
+				}
+			}
+		}, EXPIRATION_CHECK_TIMEOUT);
+
+		scheduledExpirationChecks.set(callId, handler);
 	}
 
 	public static scheduleExpirationCheck(): void {
-		setTimeout(
-			() => this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error })),
-			EXPIRATION_TIME + EXPIRATION_CHECK_DELAY,
-		);
+		setTimeout(async () => {
+			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheck.timeout' });
+			await this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }));
+		}, EXPIRATION_CHECK_TIMEOUT);
 	}
 
 	public static async runOnCallCreatedForAgent(
