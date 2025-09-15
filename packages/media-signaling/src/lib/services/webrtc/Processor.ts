@@ -7,7 +7,7 @@ import type { ServiceStateValue } from '../../../definition/services/IServicePro
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
-	public emitter: Emitter<WebRTCProcessorEvents>;
+	public readonly emitter: Emitter<WebRTCProcessorEvents>;
 
 	private peer: RTCPeerConnection;
 

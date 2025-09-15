@@ -79,7 +79,7 @@ export class UserActorSignalProcessor {
 		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
-		// 3. the call has not been accepted yet and the signal came from a valid sesison from the callee
+		// 3. the call has not been accepted yet and the signal came from a valid session from the callee
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
@@ -103,7 +103,11 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp: stripSensitiveDataFromSdp(sdp) });
+		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp: stripSensitiveDataFromSdp(sdp), signed: this.signed });
+
+		if (!this.signed) {
+			return;
+		}
 
 		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}

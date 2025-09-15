@@ -17,6 +17,7 @@ COPY ./packages/core-typings packages/core-typings
 COPY ./packages/eslint-config packages/eslint-config
 COPY ./packages/tsconfig packages/tsconfig
 COPY ./packages/rest-typings packages/rest-typings
+COPY ./packages/media-signaling packages/media-signaling
 COPY ./packages/model-typings packages/model-typings
 COPY ./packages/models packages/models
 
