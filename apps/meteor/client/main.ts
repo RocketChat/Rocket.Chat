@@ -3,7 +3,7 @@ import './startup/accounts';
 import './startup/fakeUserPresence';
 
 import('@rocket.chat/fuselage-polyfills')
-	.then(() => import('./meteorOverrides'))
+	.then(() => import('./meteor/overrides'))
 	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => import('./startup'))
