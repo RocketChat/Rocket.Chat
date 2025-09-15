@@ -9,7 +9,16 @@ import type {
 	Serialized,
 	SettingValue,
 } from '@rocket.chat/core-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamerCallback,
+	StreamerCallbackArgs,
+	StreamerEvents,
+	StreamKeys,
+	StreamNames,
+} from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
@@ -53,9 +62,35 @@ type Mutable<T> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface MockedAppRootEvents {
+// interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
+// 	'update-modal': void;
+// }
+// Extract all key values from objects that have a 'key' property
+type ExtractKeys<T, N extends string> = T extends readonly (infer U)[]
+	? U extends { key: infer K }
+		? K extends string
+			? string extends K
+				? never
+				: `stream-${N}-${K}`
+			: never
+		: never
+	: never;
+
+// Union of all key values from all streams
+type AllStreamerEventKeys = {
+	[K in keyof StreamerEvents]: ExtractKeys<StreamerEvents[K], K>;
+}[keyof StreamerEvents];
+
+type MockedAppRootEvents = {
 	'update-modal': void;
-}
+} & Record<AllStreamerEventKeys, any>;
+
+export type StreamControllerRef<N extends StreamNames> = {
+	controller?: {
+		emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => void;
+		has: (eventName: StreamKeys<N>) => boolean;
+	};
+};
 
 const empty = [] as const;
 
@@ -253,6 +288,30 @@ export class MockedAppRootBuilder {
 		};
 
 		this.server.callEndpoint = outerFn;
+
+		return this;
+	}
+
+	withStream<N extends StreamNames>(streamName: N, ref: StreamControllerRef<N>): this {
+		const innerFn = this.server.getStream;
+
+		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
+			if (innerStreamName === (streamName as StreamNames)) {
+				ref.controller = {
+					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
+						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
+					},
+					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
+				};
+
+				return <K extends StreamKeys<N>>(eventName: K, callback: StreamerCallback<N, K>) =>
+					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
+			}
+
+			return innerFn(innerStreamName);
+		};
+
+		this.server.getStream = outerFn;
 
 		return this;
 	}
@@ -551,6 +610,21 @@ export class MockedAppRootBuilder {
 		}
 
 		this.i18n.on('initialized', addResources);
+		return this;
+	}
+
+	// Manually changes the language in the i18next instance
+	// To be used with languages other than the default one
+	withDefaultLanguage(lng: string): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.changeLanguage(lng);
+			return this;
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.changeLanguage(lng);
+		});
+
 		return this;
 	}
 
