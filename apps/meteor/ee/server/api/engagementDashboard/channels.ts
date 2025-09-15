@@ -10,7 +10,7 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/channels/list': {
-			GET: (params: { start: string; end: string; offset?: number; count?: number; hideRoomsWithNoActivity?: boolean }) => {
+			GET: (params: { start: string; end: string; offset?: number; count?: number }) => {
 				channels: {
 					room: {
 						_id: IRoom['_id'];
