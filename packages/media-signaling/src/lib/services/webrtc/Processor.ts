@@ -43,6 +43,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private stopped = false;
 
+	private iceCandidateCount = 0;
+
+	private lastSetLocalDescription: string | null = null;
+
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
@@ -83,6 +87,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		const offer = await this.peer.createOffer();
+		if (this.lastSetLocalDescription && offer.sdp !== this.lastSetLocalDescription && !iceRestart) {
+			this.startNewNegotiation();
+		}
+
+		this.lastSetLocalDescription = offer.sdp || null;
 		await this.peer.setLocalDescription(offer);
 
 		return this.getLocalDescription();
@@ -120,6 +129,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public startNewNegotiation(): void {
 		this.iceGatheringFinished = false;
 		this.clearIceGatheringWaiters(new Error('new-negotiation'));
+		this.iceCandidateCount = 0;
 	}
 
 	public async createAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }> {
@@ -140,6 +150,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		const answer = await this.peer.createAnswer();
 
+		this.lastSetLocalDescription = answer.sdp || null;
 		await this.peer.setLocalDescription(answer);
 
 		return this.getLocalDescription();
@@ -182,7 +193,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit }> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription');
+		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription', this.iceCandidateCount);
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
@@ -192,6 +203,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		if (!sdp) {
 			throw new Error('no-local-sdp');
+		}
+
+		// If we don't have any ice candidate, trigger a service error.
+		if (this.iceCandidateCount === 0) {
+			this.emitter.emit('internalError', { critical: true, error: 'no-ice-candidates' });
 		}
 
 		return {
@@ -213,7 +229,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 					return;
 				}
 
-				this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering - timeout');
+				this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering.timeout', this.iceCandidateCount);
 				this.clearIceGatheringData(iceGatheringData);
 				this.iceGatheringTimedOut = true;
 				this.changeInternalState('iceUntrickler');

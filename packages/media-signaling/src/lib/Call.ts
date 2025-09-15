@@ -1002,6 +1002,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private onWebRTCNegotiationNeeded(): void {
 		if (this._state !== 'active' || !this.currentNegotiationId) {
+			this.config.logger?.warn('WebRTCProcessor requested a renegotiation while in a state that should not trigger any.', {
+				state: this._state,
+				currentNegotiationId: this.currentNegotiationId,
+			});
 			return;
 		}
 
