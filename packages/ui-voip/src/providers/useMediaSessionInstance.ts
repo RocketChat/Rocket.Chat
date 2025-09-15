@@ -28,6 +28,8 @@ export type SessionInfo = EmptySession | CallSession;
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
+const SESSION_ID_KEY = 'rcx-media-session-id';
+
 class MediaSessionStore extends Emitter<{ change: void }> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
@@ -63,6 +65,14 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		return Promise.resolve();
 	}
 
+	private get oldSessionId() {
+		if (!window.sessionStorage) {
+			return undefined;
+		}
+
+		return window.sessionStorage.getItem(SESSION_ID_KEY) ?? undefined;
+	}
+
 	private makeInstance(userId: string) {
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
@@ -70,6 +80,10 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
+			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
+			randomStringFactory: () => new Date().toISOString(),
+			// logger: console,
+			oldSessionId: this.oldSessionId,
 		});
 
 		this.change();
