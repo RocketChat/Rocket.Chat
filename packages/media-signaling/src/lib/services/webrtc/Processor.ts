@@ -193,7 +193,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit }> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription', this.iceCandidateCount);
+		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription');
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
@@ -205,6 +205,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			throw new Error('no-local-sdp');
 		}
 
+		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription - ice candidates: ', this.iceCandidateCount);
 		// If we don't have any ice candidate, trigger a service error.
 		if (this.iceCandidateCount === 0) {
 			this.emitter.emit('internalError', { critical: true, error: 'no-ice-candidates' });
@@ -288,6 +289,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceCandidate', event.candidate);
+		this.iceCandidateCount++;
 	}
 
 	private onIceCandidateError(event: RTCPeerConnectionIceErrorEvent) {
