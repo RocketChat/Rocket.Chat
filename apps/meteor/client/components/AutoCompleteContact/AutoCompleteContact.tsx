@@ -21,7 +21,7 @@ type OptionProps = {
 
 type AutoCompleteContactProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
-	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value'
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value' | 'onChange'
 > & {
 	value: string;
 	onChange: (value: string, contact: Serialized<ILivechatContactWithManagerData> | undefined) => void;
