@@ -357,7 +357,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private async maybeStartInputTrack(): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.maybeStartInputTrack');
 		for (const call of this.knownCalls.values()) {
-			if (!call.mayNeedInputTrack()) {
+			if (!call.needsInputTrack()) {
 				continue;
 			}
 
