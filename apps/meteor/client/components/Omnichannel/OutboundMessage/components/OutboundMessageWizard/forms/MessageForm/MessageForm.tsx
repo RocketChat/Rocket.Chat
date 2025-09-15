@@ -13,6 +13,7 @@ import type { TemplateParameters } from '../../../../definitions/template';
 import { extractParameterMetadata } from '../../../../utils/template';
 import TemplateSelect from '../../../TemplateSelect';
 import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
+import { cxp } from '../../utils/cx';
 import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
@@ -109,7 +110,10 @@ const MessageForm = (props: MessageFormProps) => {
 						<TemplateSelect
 							aria-labelledby={`${messageFormId}-template`}
 							aria-invalid={!!errors.templateId}
-							aria-describedby={errors.templateId && `${messageFormId}-template-error`}
+							aria-describedby={cxp(messageFormId, {
+								'template-error': !!errors.templateId,
+								'template-hint': true,
+							})}
 							placeholder={t('Select_template')}
 							error={errors.templateId?.message}
 							templates={templates || []}
@@ -118,11 +122,11 @@ const MessageForm = (props: MessageFormProps) => {
 						/>
 					</FieldRow>
 					{errors.templateId && (
-						<FieldError aria-live='assertive' id={`${templateId}-contact-error`}>
+						<FieldError aria-live='assertive' id={`${templateId}-template-error`}>
 							{errors.templateId.message}
 						</FieldError>
 					)}
-					<FieldHint>
+					<FieldHint id={`${messageFormId}-template-hint`}>
 						{/* TODO: Change to the correct address */}
 						<a href='https://rocket.chat' target='_blank' rel='noopener noreferrer'>
 							{t('Learn_more')}
