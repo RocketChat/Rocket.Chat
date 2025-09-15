@@ -282,7 +282,7 @@ LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(any
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
-LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; } // TODO: Accept parenthesis
+LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
 FilePath = $(URLScheme URLBody+)
 
@@ -297,7 +297,7 @@ URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 URLBody
   = (
     !(Extra+ (Whitespace / EndOfLine) / Whitespace)
-    (AnyText / [*\[\/\]\^_`{}~(])
+    (AnyText / [*\[\/\]\^_`{}~()])
   )+
 
 URLAuthority = $("//" URLAuthorityUserInfo? URLAuthorityHost)

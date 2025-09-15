@@ -42,6 +42,16 @@ test.each([
       ]),
     ],
   ],
+  [
+    '[link](https://example.com/query?this=(is)&a=problem)',
+    [
+      paragraph([
+        link('https://example.com/query?this=(is)&a=problem', [
+          plain('link'),
+        ]),
+      ]),
+    ],
+  ],
   ['[](https://rocket.chat)', [paragraph([link('https://rocket.chat')])]],
   [
     '[ ](https://rocket.chat)',
