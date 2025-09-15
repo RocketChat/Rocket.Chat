@@ -28,7 +28,7 @@ const RecipientField = ({ control, contact, type, disabled = false, isLoading = 
 		name: 'recipient',
 		rules: {
 			validate: {
-				noPhoneNumber: () => (contact ? !!contact.phones?.length : true),
+				noPhoneNumber: () => (type === 'phone' && contact ? !!contact.phones?.length : true),
 				required: (value) => (!value ? t('Required_field', { field: t('To') }) : true),
 			},
 		},
