@@ -104,9 +104,9 @@ const livechatCustomFieldsEndpoints = API.v1.post(
 		body: isPOSTLivechatRemoveCustomFields,
 	},
 	async function action() {
-		const { _id } = this.bodyParams;
+		const { customFieldId } = this.bodyParams;
 
-		const result = await LivechatCustomField.removeById(_id);
+		const result = await LivechatCustomField.removeById(customFieldId);
 		if (result.deletedCount === 0) {
 			return API.v1.failure('Custom field not found');
 		}

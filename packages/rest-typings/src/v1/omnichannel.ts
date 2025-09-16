@@ -3884,17 +3884,17 @@ const LivechatTriggerWebhookCallParamsSchema = {
 export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
 type POSTLivechatRemoveCustomFields = {
-	_id: string;
+	customFieldId: string;
 };
 
 const POSTLivechatRemoveCustomFieldsSchema = {
 	type: 'object',
 	properties: {
-		_id: {
+		customFieldId: {
 			type: 'string',
 		},
 	},
-	required: ['_id'],
+	required: ['customFieldId'],
 	additionalProperties: false,
 };
 

@@ -14,7 +14,7 @@ export const useRemoveCustomField = () => {
 	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteAgent = async () => {
 			try {
-				await removeCustomField({ _id: id });
+				await removeCustomField({ customFieldId: id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
 				queryClient.invalidateQueries({
 					queryKey: ['livechat-customFields'],

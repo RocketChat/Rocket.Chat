@@ -45,7 +45,7 @@ export const deleteCustomField = (customFieldID: string) =>
 			.post(api('livechat/custom-fields.delete'))
 			.set(credentials)
 			.send({
-				_id: customFieldID,
+				customFieldId: customFieldID,
 			})
 			.end((err: Error, res: Response): void => {
 				if (err) {
