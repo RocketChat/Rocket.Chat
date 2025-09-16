@@ -19,6 +19,9 @@ import {
 	isPOSTLivechatRoomCloseByUserParams,
 	isPOSTLivechatRoomsCloseAll,
 	isPOSTLivechatRoomsCloseAllSuccessResponse,
+	POSTLivechatRemoveRoomSuccess,
+	isPOSTLivechatRemoveRoomParams,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
