@@ -10,12 +10,14 @@ import {
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -427,3 +429,26 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatRoomsEndpoitns = API.v1.post(
+	'livechat/rooms.delete',
+	{
+		response: {
+			200: {},
+			400: validateBadRequestErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['remove-closed-livechat-room'],
+		body: {},
+	},
+	async function action() {
+		console.log(this.userId);
+	},
+);
+
+type LivechatRoomsEndpoint = ExtractRoutesFromAPI<typeof livechatRoomsEndpoitns>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatRoomsEndpoint {}
+}
