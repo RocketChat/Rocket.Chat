@@ -1,0 +1,412 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders AppLogsItem without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Filters
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <form
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label"
+                    for="timeFilter"
+                    id="timeFilterLabel"
+                  >
+                    Time
+                  </label>
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-labelledby="react-aria-:r8: timeFilterLabel"
+                    class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                    id="timeFilter"
+                    type="button"
+                  >
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          name="timeFilter"
+                          tabindex="-1"
+                        >
+                          <option />
+                          <option
+                            value="all"
+                          >
+                            all
+                          </option>
+                          <option
+                            value="today"
+                          >
+                            today
+                          </option>
+                          <option
+                            value="last5Minutes"
+                          >
+                            last5Minutes
+                          </option>
+                          <option
+                            value="last15Minutes"
+                          >
+                            last15Minutes
+                          </option>
+                          <option
+                            value="last30Minutes"
+                          >
+                            last30Minutes
+                          </option>
+                          <option
+                            value="last1Hour"
+                          >
+                            last1Hour
+                          </option>
+                          <option
+                            value="thisWeek"
+                          >
+                            thisWeek
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-css-uyvtjh"
+                      id="react-aria-:r8:"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                    >
+                      
+                    </i>
+                  </button>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label"
+                    for="timeFilter"
+                  >
+                    Logs_from
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-omrq7i"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
+                    >
+                      <input
+                        aria-label="Start_Date"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                        name="startDate"
+                        size="1"
+                        type="date"
+                        value=""
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
+                    >
+                      <input
+                        aria-label="Start_Time"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                        name="startTime"
+                        size="1"
+                        type="time"
+                        value=""
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label"
+                    for="timeFilter"
+                  >
+                    Until
+                  </label>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-omrq7i"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
+                    >
+                      <input
+                        aria-label="End_Date"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                        name="endDate"
+                        size="1"
+                        type="date"
+                        value=""
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
+                    >
+                      <input
+                        aria-label="End_Time"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                        name="endTime"
+                        size="1"
+                        type="time"
+                        value=""
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label"
+                    for="instanceFilter"
+                    id="instanceFilterLabel"
+                  >
+                    Instance
+                  </label>
+                  <div
+                    aria-busy="true"
+                    aria-labelledby="instanceFilterLabel"
+                    class="rcx-box rcx-box--full rcx-skeleton__input"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label"
+                    for="severityFilter"
+                    id="severityFilterLabel"
+                  >
+                    Severity
+                  </label>
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-label="Severity"
+                    aria-labelledby="react-aria-:rg: react-aria-:rb: severityFilterLabel"
+                    class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                    id="severityFilter"
+                    type="button"
+                  >
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          name="severity"
+                          tabindex="-1"
+                        >
+                          <option />
+                          <option
+                            value="all"
+                          >
+                            all
+                          </option>
+                          <option
+                            value="0"
+                          >
+                            0
+                          </option>
+                          <option
+                            value="1"
+                          >
+                            1
+                          </option>
+                          <option
+                            value="2"
+                          >
+                            2
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                      id="react-aria-:rg:"
+                    >
+                      All
+                    </span>
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                    >
+                      
+                    </i>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-m843eh"
+        >
+          <button
+            aria-label="Clear_filters"
+            class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-1qcz93u"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Clear_filters
+            </span>
+          </button>
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;

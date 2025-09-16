@@ -2,11 +2,11 @@ import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHo
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { RoomManager } from '../lib/RoomManager';
 import { baseURI } from '../lib/baseURI';
+import { Rooms } from '../stores';
 
 // FIXME: replace non-null assertions with proper error handling
 
@@ -30,7 +30,11 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
-		const { name: slugifiedName, _id: id } = Rooms.findOne(RoomManager.opened)!;
+		const room = RoomManager.opened ? Rooms.state.get(RoomManager.opened) : undefined;
+		if (!room) {
+			throw new Error('Room not found');
+		}
+		const { name: slugifiedName, _id: id } = room;
 
 		let cachedMembers: IExternalComponentUserInfo[] = [];
 		try {

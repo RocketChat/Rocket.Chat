@@ -1,22 +1,30 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import type { IMessage, IRoom, IUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
+import type { Condition, Filter } from 'mongodb';
 import { useEffect } from 'react';
 
 import type { MessageList } from '../../lib/lists/MessageList';
+import { modifyMessageOnFilesDelete } from '../../lib/utils/modifyMessageOnFilesDelete';
 
-type NotifyRoomRidDeleteMessageBulkEvent = {
+type NotifyRoomRidDeleteBulkEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
 	ignoreDiscussion: boolean;
-	ts: FieldExpression<Date>;
+	ts: Condition<Date>;
 	users: string[];
 	ids?: string[]; // message ids have priority over ts
-	showDeletedStatus?: boolean;
-};
+} & (
+	| {
+			filesOnly: true;
+			replaceFileAttachmentsWith?: MessageAttachment;
+	  }
+	| {
+			filesOnly?: false;
+	  }
+);
 
-const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
+const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((message: IMessage) => boolean) => {
 	const query: Filter<IMessage> = {};
 
 	if (params.ids) {
@@ -36,7 +44,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((me
 		query['u.username'] = { $in: params.users };
 	}
 
-	return createPredicateFromFilter<IMessage>(query);
+	return createPredicateFromFilter(query);
 };
 
 export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {
@@ -59,6 +67,14 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
 			const matchDeleteCriteria = createDeleteCriteria(params);
+			if (params.filesOnly) {
+				return messageList.batchHandle(async () => {
+					const items = messageList.items.filter(matchDeleteCriteria).map((message) => {
+						return modifyMessageOnFilesDelete(message, params.replaceFileAttachmentsWith);
+					});
+					return { items };
+				});
+			}
 			messageList.prune(matchDeleteCriteria);
 		});
 

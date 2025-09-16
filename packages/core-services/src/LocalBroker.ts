@@ -150,9 +150,9 @@ export class LocalBroker implements IBroker {
 	 * Registers services to be started. We're assuming that each service will only have one level of dependencies.
 	 */
 	private registerPendingServices(services: string[] = []): void {
-		for (const service of services) {
-			this.pendingServices.add(service);
-		}
+		services
+			.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted)
+			.forEach((service) => this.pendingServices.add(service));
 	}
 
 	/**

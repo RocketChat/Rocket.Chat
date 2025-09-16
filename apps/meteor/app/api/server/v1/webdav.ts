@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IWebdavAccount, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import { WebdavAccounts } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import type { DeleteResult } from 'mongodb';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -48,20 +48,7 @@ const webdavGetMyAccountsEndpoints = API.v1.get(
 				required: ['success', 'accounts'],
 				additionalProperties: false,
 			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					message: {
-						type: 'string',
-					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['success', 'message'],
-				additionalProperties: false,
-			}),
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
 	async function action() {
@@ -121,37 +108,8 @@ const webdavRemoveAccountEndpoints = API.v1.post(
 				required: ['result', 'success'],
 				additionalProperties: false,
 			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					errorType: {
-						type: 'string',
-					},
-					error: {
-						type: 'string',
-					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['success', 'errorType', 'error'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					message: {
-						type: 'string',
-					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['success', 'message'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
 	async function action() {

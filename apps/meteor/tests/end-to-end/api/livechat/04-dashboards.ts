@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
@@ -34,6 +34,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	let department: ILivechatDepartment;
+	let roomList: IOmnichannelRoom[];
 	const agents: {
 		credentials: Credentials;
 		user: IUser & { username: string };
@@ -109,9 +110,9 @@ describe('LIVECHAT - dashboards', function () {
 			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 		});
 
-		const results = await Promise.all(promises);
+		const chatInfo = await Promise.all(promises);
 
-		const chatInfo = results.map((result) => ({ room: result.room, visitor: result.visitor }));
+		roomList = chatInfo.map((info) => info.room);
 
 		// simulate messages being exchanged between agents and visitors
 		await simulateRealtimeConversation(chatInfo);
@@ -129,6 +130,13 @@ describe('LIVECHAT - dashboards', function () {
 		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
 
 		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
+	});
+
+	after(async () => {
+		if (!IS_EE) {
+			return;
+		}
+		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
@@ -704,6 +712,28 @@ describe('LIVECHAT - dashboards', function () {
 			expect(chatDurationValues.longest).to.be.greaterThan(avgClosedRoomChatDuration);
 			expect(chatDurationValues.longest).to.be.lessThan(avgClosedRoomChatDuration + 20);
 		});
+	});
+
+	describe('livechat/analytics/dashboards/charts-data', () => {
+		it('should return the correct data structure for the charts', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts-data'))
+				.query({ chartName: 'Total_conversations', start: yesterday, end: today })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+
+			expect(result.body).to.have.property('chartLabel', 'Total_conversations');
+			expect(result.body).to.have.property('dataLabels').to.be.an('array');
+			expect(result.body).to.have.property('dataPoints').to.be.an('array');
+		});
+
+		// it('should return the correct data structure but empty for unavailable data');
 	});
 
 	describe('livechat/analytics/agent-overview', () => {

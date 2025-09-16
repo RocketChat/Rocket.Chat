@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,7 +8,8 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
-import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
+import { notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
+import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -58,7 +60,7 @@ API.v1.addRoute(
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
-			const visitor = await registerGuest(guest);
+			const visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 			if (!visitor) {
 				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',
@@ -140,18 +142,19 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
-		const { _id, token } = visitor;
-		const result = await removeGuest({ _id, token });
-		if (!result.modifiedCount) {
+		const { _id } = visitor;
+		try {
+			await removeContactsByVisitorId({ _id });
+			return API.v1.success({
+				visitor: {
+					_id,
+					ts: new Date().toISOString(),
+				},
+			});
+		} catch (e) {
+			livechatLogger.error(e);
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
-
-		return API.v1.success({
-			visitor: {
-				_id,
-				ts: new Date().toISOString(),
-			},
-		});
 	},
 });
 

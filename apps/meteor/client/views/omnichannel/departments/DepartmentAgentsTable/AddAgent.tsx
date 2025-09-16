@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import type { IDepartmentAgent } from '../definitions';
 
 type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
@@ -19,7 +19,7 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 
 	const [userId, setUserId] = useState('');
 
-	const getAgent = useEndpointAction('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
+	const { mutateAsync: getAgent } = useEndpointMutation('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

@@ -8,7 +8,7 @@ describe('with window.RocketChatDesktop set', () => {
 	beforeEach(() => {
 		window.RocketChatDesktop = {
 			openInternalVideoChatWindow: jest.fn(),
-		};
+		} as any;
 	});
 
 	afterAll(() => {

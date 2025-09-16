@@ -747,6 +747,32 @@ describe('LIVECHAT - visitors', () => {
 				.expect(200);
 		});
 
+		it('should remove the rooms associated with the visitor if any', async () => {
+			const createdVisitor = await createVisitor();
+			const room = await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request.get(api('livechat/room')).query({ rid: room._id }).set(credentials).expect(400);
+		});
+
+		it('should remove the contact associated with the visitor if any', async () => {
+			const createdVisitor = await createVisitor();
+			const room = await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId }).expect(404);
+		});
+
 		it('should return a visitor when the query params is all valid', async () => {
 			const createdVisitor = await createVisitor();
 			await request

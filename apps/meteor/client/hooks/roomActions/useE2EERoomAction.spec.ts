@@ -2,23 +2,21 @@ import { imperativeModal } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { E2EEState } from '../../../app/e2e/client/E2EEState';
-import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
-import { dispatchToastMessage } from '../../lib/toast';
+import { E2EEState } from '../../lib/e2ee/E2EEState';
+import { e2e } from '../../lib/e2ee/rocketchat.e2e';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import { useOTR } from '../useOTR';
 import { useE2EERoomAction } from './useE2EERoomAction';
 
+const dispatchToastMessage = jest.fn();
+
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useSetting: jest.fn(),
 	usePermission: jest.fn(),
 	useEndpoint: jest.fn(),
-}));
-
-jest.mock('../../lib/toast', () => ({
-	dispatchToastMessage: jest.fn(),
+	useToastMessageDispatch: jest.fn(() => dispatchToastMessage),
 }));
 
 jest.mock('@rocket.chat/ui-client', () => ({
@@ -38,7 +36,7 @@ jest.mock('../useOTR', () => ({
 	useOTR: jest.fn(),
 }));
 
-jest.mock('../../../app/e2e/client/rocketchat.e2e', () => ({
+jest.mock('../../lib/e2ee/rocketchat.e2e', () => ({
 	e2e: {
 		isReady: jest.fn(),
 	},

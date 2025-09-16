@@ -5,7 +5,7 @@ import { CollapsiblePanel } from './CollapsiblePanel';
 import { CollapsibleRegion } from './CollapsibleRegion';
 
 export default {
-	title: 'Components/CollapsiblePanel',
+	title: 'Marketplace/AppDetailsPage/AppLogs/Components/CollapsiblePanel',
 	component: CollapsiblePanel,
 
 	args: {
