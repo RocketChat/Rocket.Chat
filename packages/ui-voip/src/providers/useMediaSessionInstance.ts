@@ -14,6 +14,7 @@ interface BaseSession {
 	muted: boolean;
 	held: boolean;
 	startedAt: Date | null; // todo not sure if I need this
+	hidden: boolean;
 }
 
 interface EmptySession extends BaseSession {
@@ -30,6 +31,19 @@ export type SessionInfo = EmptySession | CallSession;
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
 const SESSION_ID_KEY = 'rcx-media-session-id';
+
+const logger = {
+	logs: [] as string[],
+	log: (...args: any[]) => {
+		logger.logs.push(JSON.stringify(args));
+	},
+	debug: (...args: any[]) => logger.log(...args),
+	info: (...args: any[]) => logger.log(...args),
+	warn: (...args: any[]) => logger.log(...args),
+	error: (...args: any[]) => logger.log(...args),
+};
+
+console.log(logger);
 
 class MediaSessionStore extends Emitter<{ change: void }> {
 	private sessionInstance: MediaSignalingSession | null = null;
@@ -109,7 +123,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory: () => this.randomStringFactory(userId),
-			// logger,
+			logger,
 			oldSessionId: this.oldSessionId,
 		});
 

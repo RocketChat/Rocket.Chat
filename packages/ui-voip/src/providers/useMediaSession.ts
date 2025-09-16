@@ -12,6 +12,7 @@ const defaultSessionInfo: SessionInfo = {
 	muted: false,
 	held: false,
 	startedAt: new Date(),
+	hidden: false,
 };
 
 type MediaSession = SessionInfo & {
@@ -32,7 +33,6 @@ type MediaSession = SessionInfo & {
 };
 
 const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
-	console.log('deriveWidgetStateFromCallState', callState, callRole);
 	switch (callState) {
 		case 'active':
 		case 'accepted':
@@ -127,14 +127,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				return;
 			}
 
-			const { contact, state: callState, role, muted, held } = mainCall;
+			const { contact, state: callState, role, muted, held, hidden } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 			const connectionState = deriveConnectionStateFromCallState(callState);
 
 			if (contact.type === 'sip') {
 				dispatch({
 					type: 'instance_updated',
-					payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held, connectionState },
+					payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held, connectionState, hidden },
 				});
 				return;
 			}
@@ -160,10 +160,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
 			// Also as of now, there is no sip calls to handle.
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held, connectionState } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held, connectionState, hidden } });
 		};
 
-		return instance.on('sessionStateChange', updateSessionState);
+		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
+
+		return () => {
+			offCbs.forEach((offCb) => offCb());
+		};
 	}, [getAvatarUrl, instance]);
 
 	const cbs = useMemo(() => {

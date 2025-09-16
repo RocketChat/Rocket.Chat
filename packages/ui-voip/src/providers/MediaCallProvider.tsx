@@ -46,21 +46,26 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const { changeDevice } = session;
 
 	useEffect(() => {
-		if (audioInput?.id) {
+		if (audioInput?.id && !session.hidden) {
 			changeDevice(audioInput.id);
 		}
-	}, [audioInput?.id, changeDevice]);
+	}, [audioInput?.id, changeDevice, session.hidden]);
 
 	useCallSounds(
-		session.state,
+		session.hidden ? 'closed' : session.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
 					return;
 				}
-				return instance.on('endedCall', () => callback());
+				return instance.on('endedCall', () => {
+					if (session.hidden) {
+						return;
+					}
+					callback();
+				});
 			},
-			[instance],
+			[instance, session.hidden],
 		),
 	);
 
@@ -212,6 +217,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		muted: session.muted,
 		held: session.held,
 		peerInfo: session.peerInfo,
+		hidden: session.hidden,
 		onMute,
 		onHold,
 		onDeviceChange,
