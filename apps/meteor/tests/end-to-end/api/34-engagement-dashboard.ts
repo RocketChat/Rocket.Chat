@@ -21,13 +21,16 @@ describe('[Engagement Dashboard]', function () {
 
 	(isEnterprise ? describe : describe.skip)('[/engagement-dashboard/channels/list]', () => {
 		let testRoom: IRoom;
+		let emptyRoom: IRoom;
 
 		before(async () => {
 			testRoom = (await createRoom({ type: 'c', name: `channel.test.engagement.${Date.now()}-${Math.random()}` })).body.channel;
+			emptyRoom = (await createRoom({ type: 'c', name: `channel.test.engagement.empty.${Date.now()}-${Math.random()}` })).body.channel;
 		});
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testRoom._id });
+			await deleteRoom({ type: 'c', roomId: emptyRoom._id });
 		});
 
 		it('should fail if user does not have the view-engagement-dashboard permission', async () => {
@@ -117,6 +120,8 @@ describe('[Engagement Dashboard]', function () {
 		});
 
 		it('should succesfuly return results', async () => {
+			await sendSimpleMessage({ roomId: testRoom._id });
+
 			await request
 				.get(api('engagement-dashboard/channels/list'))
 				.set(credentials)
@@ -164,13 +169,12 @@ describe('[Engagement Dashboard]', function () {
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels');
-					const channelRecord = res.body.channels.find(({ room }: { room: { _id: string } }) => room._id === testRoom._id);
+					const channelRecord = res.body.channels.find(({ room }: { room: { _id: string } }) => room._id === emptyRoom._id);
 					expect(channelRecord).to.be.undefined;
 				});
 		});
 
 		it('should correctly count messages diff compared to last week when there are messages in a room', async () => {
-			await sendSimpleMessage({ roomId: testRoom._id });
 			await request
 				.get(api('engagement-dashboard/channels/list'))
 				.set(credentials)
