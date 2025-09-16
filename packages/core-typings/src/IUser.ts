@@ -227,6 +227,7 @@ export interface IUser extends IRocketChatRecord {
 	federated?: boolean;
 	// @deprecated
 	federation?: {
+		version?: `${number}.${number}.${number}`;
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
@@ -258,6 +259,16 @@ export interface IRegisterUser extends IUser {
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
+
+export interface IUserNativeFederated extends IUser {
+	federated: true;
+	federation: {
+		version: `${number}.${number}.${number}`;
+	};
+}
+
+export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
+	isUserFederated(user) && 'federation' in user && user.federation?.version === '0.0.0';
 
 export type IUserDataEvent = {
 	id: unknown;

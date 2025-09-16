@@ -106,7 +106,18 @@ export interface IRoomFederated extends IRoom {
 	federated: true;
 }
 
-export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
+export interface IRoomNativeFederated extends IRoom {
+	federated: true;
+	federation: {
+		version: `${number}.${number}.${number}`;
+	};
+}
+
+export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && room.federated === true;
+
+export const isRoomNativeFederated = (room: Partial<IRoom>): room is IRoomNativeFederated =>
+	isRoomFederated(room) && 'federation' in room && room.federation !== undefined;
+
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 	inserted: boolean;
