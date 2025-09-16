@@ -1,13 +1,16 @@
+import { IncomingMessage, ServerResponse } from 'http';
+
 import { WebApp } from 'meteor/webapp';
 import { monitorEventLoopDelay } from 'perf_hooks';
+
 import { SystemLogger } from '../lib/logger/system';
 
 /**
  * A shared handler for liveness probes to reduce code duplication.
  * Sets common headers and sends a standard 200 OK response.
- * @param {object} res The HTTP response object.
+ * @param res The HTTP response object.
  */
-const sendLivenessResponse = (res) => {
+const sendLivenessResponse = (res: ServerResponse) => {
 	// Set headers to prevent any caching of the health check response.
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 	res.setHeader('Pragma', 'no-cache');
@@ -23,7 +26,7 @@ const sendLivenessResponse = (res) => {
  * Responds with 200 OK if the process is running.
  * Used by orchestrators (Kubernetes) to decide whether to restart the container.
  */
-WebApp.rawConnectHandlers.use('/livez', (_req, res) => {
+WebApp.rawConnectHandlers.use('/livez', (_req: IncomingMessage, res: ServerResponse) => {
 	sendLivenessResponse(res);
 });
 
@@ -32,11 +35,10 @@ WebApp.rawConnectHandlers.use('/livez', (_req, res) => {
  * Maintained for backward compatibility. Behaves like the /livez probe.
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
-WebApp.rawConnectHandlers.use('/health', (_req, res) => {
+WebApp.rawConnectHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
 	SystemLogger.info('Deprecated /health endpoint was called. Please update to /livez or /readyz.');
 	sendLivenessResponse(res);
 });
-
 
 /**
  * Readiness Probe Configuration
@@ -49,13 +51,13 @@ eventLoopHistogram.enable();
 
 // Configurable thresholds for readiness checks.
 const READINESS_THRESHOLDS = {
-	EVENT_LOOP_LAG_MS: process.env.EVENT_LOOP_LAG_MS || 70,
-	HEAP_USAGE_PERCENT: process.env.HEAP_USAGE_PERCENT || 0.85, // 85%
+	EVENT_LOOP_LAG_MS: Number(process.env.EVENT_LOOP_LAG_MS) || 70,
+	HEAP_USAGE_PERCENT: Number(process.env.HEAP_USAGE_PERCENT) || 0.85, // 85%
 };
 
 /**
  * Checks event loop lag, a key indicator of Node.js saturation.
- * @returns {object} The status and p99 lag.
+ * @returns The status and p99 lag.
  */
 function checkEventLoopLag() {
 	// Get the 99th percentile value from the histogram (in nanoseconds).
@@ -73,12 +75,10 @@ function checkEventLoopLag() {
 
 /**
  * Checks heap memory usage against a configured threshold.
- * @returns {object} The status and memory usage percentage.
+ * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const memoryData = process.memoryUsage();
-	const heapUsed = memoryData.heapUsed;
-	const heapTotal = memoryData.heapTotal;
+	const { heapUsed, heapTotal } = process.memoryUsage();
 	const usageRatio = heapUsed / heapTotal;
 
 	if (usageRatio > READINESS_THRESHOLDS.HEAP_USAGE_PERCENT) {
@@ -92,7 +92,7 @@ function checkMemoryUsage() {
  * Aggregates all readiness checks. Returns 200 OK if healthy, otherwise 503.
  * A 503 status tells the orchestrator to stop sending traffic to this instance.
  */
-WebApp.rawConnectHandlers.use('/readyz', async (_req, res) => {
+WebApp.rawConnectHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 	res.setHeader('Pragma', 'no-cache');
 	res.setHeader('Expires', '0');
