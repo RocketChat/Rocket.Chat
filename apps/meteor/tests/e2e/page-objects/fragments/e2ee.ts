@@ -3,6 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { Modal } from './modal';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
+import { LoginPage } from '../login';
 
 abstract class E2EEBanner {
 	constructor(protected root: Locator) {}
@@ -96,8 +97,11 @@ export class EnterE2EEPasswordModal extends Modal {
 }
 
 export class ResetE2EEPasswordModal extends Modal {
+	private readonly login: LoginPage;
+
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Reset E2EE password' }));
+		this.login = new LoginPage(page);
 	}
 
 	private get resetE2EEPasswordButton() {
@@ -107,6 +111,7 @@ export class ResetE2EEPasswordModal extends Modal {
 	async confirmReset() {
 		await this.resetE2EEPasswordButton.click();
 		await this.waitForDismissal();
+		await this.login.waitForIt();
 	}
 }
 
