@@ -1,15 +1,6 @@
 import { Stream } from './Stream';
-import type { IMediaSignalLogger } from '../../../definition';
 
 export class LocalStream extends Stream {
-	private audioTransceiver: RTCRtpTransceiver;
-
-	constructor(mediaStream: MediaStream, peer: RTCPeerConnection, logger?: IMediaSignalLogger) {
-		super(mediaStream, peer, logger);
-		// Ensures the peer will always have an audio transceiver, even if we have no audio track yet
-		this.audioTransceiver = this.peer.addTransceiver('audio', { direction: 'sendrecv' });
-	}
-
 	public async setTrack(newTrack: MediaStreamTrack | null): Promise<void> {
 		if (newTrack && newTrack?.kind !== 'audio') {
 			return;
@@ -17,14 +8,36 @@ export class LocalStream extends Stream {
 		this.logger?.debug('LocalStream.setTrack');
 
 		if (newTrack) {
-			if (!this.setAudioTrack(newTrack)) {
+			const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
+			if (matchingTrack) {
+				matchingTrack.enabled = this.enabled;
 				return;
 			}
-		} else {
-			this.removeAudioTracks();
+
+			newTrack.enabled = this.enabled;
 		}
 
+		this.removeAudioTracks();
+		if (newTrack) {
+			this.mediaStream.addTrack(newTrack);
+			await this.setRemoteTrack(newTrack);
+		}
+	}
+
+	private async setRemoteTrack(newTrack: MediaStreamTrack | null): Promise<void> {
+		// If the peer doesn't yet have any audio track, send it to them
 		this.logger?.debug('LocalStream.setRemoteTrack');
-		await this.audioTransceiver.sender.replaceTrack(newTrack);
+		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === 'audio');
+		if (!sender) {
+			if (newTrack) {
+				this.logger?.debug('LocalStream.setRemoteTrack.addTrack');
+				// This will require a re-negotiation
+				this.peer.addTrack(newTrack, this.mediaStream);
+			}
+			return;
+		}
+
+		// If the peer already has a track of the same kind, we can just replace it with the new track with no issues
+		await sender.replaceTrack(newTrack);
 	}
 }

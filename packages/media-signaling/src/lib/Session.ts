@@ -324,16 +324,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.inputTrack = newInputTrack;
 
 		for await (const call of this.knownCalls.values()) {
-			if (newInputTrack && (call.hidden || call.isOver())) {
-				continue;
-			}
-
-			await call.setInputTrack(newInputTrack);
+			await call.setInputTrack(newInputTrack).catch((error) => {
+				if (newInputTrack) {
+					throw error;
+				}
+			});
 		}
 
 		if (oldInputTrack) {
 			this.config.logger?.debug('MediaSignalingSession.setInputTrack.stopOldTrack');
-			oldInputTrack.stop();
+			try {
+				oldInputTrack.stop();
+			} catch {
+				//
+			}
 		}
 	}
 

@@ -47,6 +47,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private lastSetLocalDescription: string | null = null;
 
+	private addedEmptyTransceiver = false;
+
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
@@ -83,12 +85,23 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		await this.initializeLocalMediaStream();
 
+		if (!this.addedEmptyTransceiver) {
+			// If there's no audio transceivers yet, add a new one; since it's an offer, the track can be set later
+			const transceivers = this.peer
+				.getTransceivers()
+				.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+
+			if (!transceivers.length) {
+				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
+				this.addedEmptyTransceiver = true;
+			}
+		}
+
 		if (iceRestart) {
 			this.restartIce();
 		}
 
-		// offerToReceiveAudio should not be needed if an audio transceiver was added, but there's no harm in using it anyway
-		const offer = await this.peer.createOffer({ offerToReceiveAudio: true });
+		const offer = await this.peer.createOffer();
 		if (this.lastSetLocalDescription && offer.sdp !== this.lastSetLocalDescription && !iceRestart) {
 			this.startNewNegotiation();
 		}
@@ -143,8 +156,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (sdp.type !== 'offer') {
 			throw new Error('invalid-webrtc-offer');
 		}
+		if (!this.inputTrack) {
+			throw new Error('no-input-track');
+		}
 
 		await this.initializeLocalMediaStream();
+
+		const transceivers = this.peer
+			.getTransceivers()
+			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+
+		if (!transceivers.length) {
+			throw new Error('no-audio-transceiver');
+		}
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.startNewNegotiation();

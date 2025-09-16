@@ -62,13 +62,11 @@ export class Stream {
 		const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
 		if (matchingTrack) {
 			this.logger?.debug('Stream.setAudioTrack.return', 'track found by id');
-			matchingTrack.enabled = this.enabled;
 			return false;
 		}
 
 		this.removeAudioTracks();
 		this.mediaStream.addTrack(newTrack);
-		newTrack.enabled = this.enabled;
 		return true;
 	}
 }
