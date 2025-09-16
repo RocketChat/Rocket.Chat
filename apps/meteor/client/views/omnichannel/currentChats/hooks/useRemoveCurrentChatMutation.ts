@@ -4,8 +4,8 @@ import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-quer
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 export const useRemoveCurrentChatMutation = (
-	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,
-): UseMutationResult<void, Error, IRoom['_id']> => {
+	options?: Omit<UseMutationOptions<null, Error, IRoom['_id']>, 'mutationFn'>,
+): UseMutationResult<null, Error, IRoom['_id']> => {
 	const removeRoom = useEndpoint('POST', '/v1/livechat/rooms.delete');
 	const queryClient = useQueryClient();
 
