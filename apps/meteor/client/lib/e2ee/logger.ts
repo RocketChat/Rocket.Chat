@@ -70,8 +70,8 @@ class Span {
 	private log(level: LogLevel, message: string) {
 		this.console.groupCollapsed(`%c[${this.logger.deref()?.title}:${this.label}]%c ${message}`, styles[level], 'font-weight: normal;');
 		this.console.dir(Object.fromEntries(this.attributes.entries()), {});
-		this.console.groupEnd();
 		this.console.trace();
+		this.console.groupEnd();
 	}
 
 	set(key: string, value: unknown) {
