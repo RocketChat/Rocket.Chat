@@ -231,7 +231,160 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Room creation completed successfully', room._id);
 		} catch (error) {
+			console.log(error);
 			this.logger.error('Failed to create room:', error);
+			throw error;
+		}
+	}
+
+	async ensureFederatedUsersExistLocally(members: (IUser | string)[]): Promise<void> {
+		try {
+			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: members.length });
+
+			for await (const member of members) {
+				let username: string;
+
+				if (typeof member === 'string') {
+					username = member;
+				} else {
+					username = member.username as string;
+				}
+
+				if (!username.includes(':') && !username.includes('@')) {
+					continue;
+				}
+
+				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
+
+				const existingUser = await Users.findOneByUsername(username);
+				if (existingUser) {
+					const existingBridge = await MatrixBridgedUser.getExternalUserIdByLocalUserId(existingUser._id);
+					if (!existingBridge) {
+						const remoteDomain = externalUserId.split(':')[1] || this.serverName;
+						await MatrixBridgedUser.createOrUpdateByLocalId(existingUser._id, externalUserId, true, remoteDomain);
+					}
+					continue;
+				}
+
+				this.logger.debug('Creating federated user locally', { externalUserId, username });
+
+				const remoteDomain = externalUserId.split(':')[1] || this.serverName;
+				const localName = username.split(':')[0]?.replace('@', '') || username;
+
+				const newUser = {
+					username,
+					name: localName,
+					type: 'user' as const,
+					status: UserStatus.OFFLINE,
+					active: true,
+					roles: ['user'],
+					requirePasswordChange: false,
+					federated: true,
+					createdAt: new Date(),
+					_updatedAt: new Date(),
+				};
+
+				const { insertedId } = await Users.insertOne(newUser);
+				await MatrixBridgedUser.createOrUpdateByLocalId(insertedId, externalUserId, true, remoteDomain);
+
+				this.logger.debug('Successfully created federated user locally', { userId: insertedId, externalUserId });
+			}
+		} catch (error) {
+			this.logger.error('Failed to ensure federated users exist locally:', error);
+		}
+	}
+
+	async createDirectMessageRoom(room: IRoom, members: (IUser | string)[], creatorId: IUser['_id']): Promise<void> {
+		try {
+			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping DM room creation');
+				return;
+			}
+
+			const creator = await Users.findOneById(creatorId);
+			if (!creator) {
+				throw new Error('Creator not found in members list');
+			}
+
+			const matrixUserId = `@${creator.username}:${this.serverName}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(creator._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(creator._id, matrixUserId, true, this.serverName);
+			}
+
+			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+
+			let matrixRoomResult: { room_id: string; event_id?: string };
+			if (members.length === 2) {
+				const otherMember = members.find((member) => {
+					if (typeof member === 'string') {
+						return true; // Remote user
+					}
+					return member._id !== creatorId;
+				});
+				if (!otherMember) {
+					throw new Error('Other member not found for 1-on-1 DM');
+				}
+				let otherMemberMatrixId: string;
+				if (typeof otherMember === 'string') {
+					otherMemberMatrixId = otherMember.startsWith('@') ? otherMember : `@${otherMember}`;
+				} else if (otherMember.username?.includes(':')) {
+					otherMemberMatrixId = otherMember.username.startsWith('@') ? otherMember.username : `@${otherMember.username}`;
+				} else {
+					otherMemberMatrixId = `@${otherMember.username}:${this.serverName}`;
+				}
+				const roomId = await this.homeserverServices.room.createDirectMessageRoom(actualMatrixUserId, otherMemberMatrixId);
+				matrixRoomResult = { room_id: roomId };
+			} else {
+				// For group DMs (more than 2 members), create a private room
+				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
+				matrixRoomResult = await this.homeserverServices.room.createRoom(actualMatrixUserId, roomName, 'invite');
+			}
+
+			const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
+			if (!mapping) {
+				await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
+			}
+
+			for await (const member of members) {
+				if (typeof member !== 'string' && member._id === creatorId) continue;
+
+				try {
+					let memberMatrixUserId: string;
+					let memberId: string | undefined;
+
+					if (typeof member === 'string') {
+						memberMatrixUserId = member.startsWith('@') ? member : `@${member}`;
+						memberId = undefined;
+					} else if (member.username?.includes(':')) {
+						memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
+						memberId = member._id;
+					} else {
+						memberMatrixUserId = `@${member.username}:${this.serverName}`;
+						memberId = member._id;
+					}
+
+					if (memberId) {
+						const existingMemberMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(memberId);
+
+						if (!existingMemberMatrixUserId) {
+							await MatrixBridgedUser.createOrUpdateByLocalId(memberId, memberMatrixUserId, true, this.serverName);
+						}
+					}
+
+					if (members.length > 2) {
+						await this.homeserverServices.invite.inviteUserToRoom(memberMatrixUserId, matrixRoomResult.room_id, actualMatrixUserId);
+					}
+				} catch (error) {
+					this.logger.error('Error creating or updating bridged user for DM:', error);
+				}
+			}
+			await Rooms.setAsFederated(room._id);
+			this.logger.debug('Direct message room creation completed successfully', room._id);
+		} catch (error) {
+			this.logger.error('Failed to create direct message room:', error);
 			throw error;
 		}
 	}
@@ -261,7 +414,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const parsedMessage = await toExternalMessageFormat({
 				message: message.msg,
 				externalRoomId: matrixRoomId,
-				homeServerDomain: await this.serverName,
+				homeServerDomain: this.serverName,
 			});
 			if (!message.tmid) {
 				if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
@@ -371,7 +524,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 		const messageToReplyTo = await Messages.findOneById(messageToReplyToId);
-		if (!messageToReplyTo || !messageToReplyTo.federation?.eventId) {
+		if (!messageToReplyTo?.federation?.eventId) {
 			return;
 		}
 
@@ -680,7 +833,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const parsedMessage = await toExternalMessageFormat({
 				message: newContent,
 				externalRoomId: matrixRoomId,
-				homeServerDomain: await this.serverName,
+				homeServerDomain: this.serverName,
 			});
 			const eventId = await this.homeserverServices.message.updateMessage(
 				matrixRoomId,
@@ -772,7 +925,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		} else if (role === 'moderator') {
 			powerLevel = 50;
 		}
-
 		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
 	}
 }

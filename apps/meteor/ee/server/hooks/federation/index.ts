@@ -207,6 +207,28 @@ beforeChangeRoomRole.add(
 	'federation-matrix-before-change-room-role',
 );
 
+callbacks.add(
+	'beforeCreateDirectRoom',
+	async (members: IUser[] | string[]): Promise<void> => {
+		await FederationMatrix.ensureFederatedUsersExistLocally(members);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-before-create-direct-room',
+);
+
+callbacks.add(
+	'afterCreateDirectRoom',
+	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): Promise<void> => {
+		if (!room || !params || !params.creatorId || !params.creatorId) {
+			return;
+		}
+
+		await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-create-direct-room',
+);
+
 export const setupTypingEventListenerForRoom = (roomId: string): void => {
 	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
 		if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
