@@ -6,6 +6,7 @@ import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
+import { decodePrefixedBase64 } from './codec';
 import {
 	toString,
 	toArrayBuffer,
@@ -364,46 +365,39 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportSessionKey(key: string) {
-		if (key.includes('-')) {
-			key = key.slice(36)
-		} else {
-			key = key.slice(12);
-		}
-		const decodedKey = Base64.decode(key);
+		const span = log.span('exportSessionKey').set('key', key);
+		// The length of a base64 encoded block of 256 bytes is always 344 characters
+		const [prefix, decodedKey] = decodePrefixedBase64(key);
+
+		span.set('prefix', prefix);
 
 		if (!e2e.privateKey) {
+			span.error('Private key not found');
 			throw new Error('Private key not found');
 		}
 
 		const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
+		span.info('Key decrypted');
 		return toString(decryptedKey);
 	}
 
 	async importGroupKey(groupKey: string) {
 		const span = log.span('importGroupKey');
-		// Get existing group key
+		const [kid, decodedKey] = decodePrefixedBase64(groupKey);
 
-		const keyIDLength = groupKey.includes('-') ? 36 : 12;
+		span.set('kid', kid);
 
-		const keyID = groupKey.slice(0, keyIDLength);
-
-		span.set('kid', keyID);
-
-		if (this.keyID === keyID && this.groupSessionKey) {
+		if (this.keyID === kid && this.groupSessionKey) {
 			span.info('Key already imported');
 			return true;
 		}
-
-		groupKey = groupKey.slice(keyIDLength);
-		const decodedGroupKey = Base64.decode(groupKey);
-		span.set('group_key', groupKey);
 
 		// Decrypt obtained encrypted session key
 		try {
 			if (!e2e.privateKey) {
 				throw new Error('Private key not found');
 			}
-			const decryptedKey = await decryptRSA(e2e.privateKey, decodedGroupKey);
+			const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
 			span.set('error', error).error('Error decrypting group key');
@@ -413,7 +407,7 @@ export class E2ERoom extends Emitter {
 		// When a new e2e room is created, it will be initialized without an e2e key id
 		// This will prevent new rooms from storing `undefined` as the keyid
 		if (!this.keyID) {
-			this.keyID = this.roomKeyId || keyID || crypto.randomUUID();
+			this.keyID = this.roomKeyId || kid || crypto.randomUUID();
 		}
 
 		// Import session key for use.
