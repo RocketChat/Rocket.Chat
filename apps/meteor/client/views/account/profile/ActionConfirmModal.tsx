@@ -2,12 +2,13 @@ import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError 
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { InputError } from './DeleteAccountError';
 
 import GenericModal from '../../../components/GenericModal';
 
 type ActionConfirmModalProps = {
 	isPassword: boolean;
-	onConfirm: (input: string, setInputError: (message: string) => void) => void;
+	onConfirm: (input: string) => Promise<void>;
 	onCancel: () => void;
 };
 
@@ -24,18 +25,22 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 		setError,
 		setFocus,
 		formState: { errors },
-	} = useForm<{ credential: string}>({
+	} = useForm<{ credential: string }>({
 		defaultValues: { credential: '' },
 		mode: 'onBlur',
 	});
 
-	const handleSave = handleSubmit(({ credential }) =>{
-		onConfirm(credential, (message) =>{
-			if (message) {
-				setError( 'credential', { message });
+	const handleSave = handleSubmit(async ({ credential }) => {
+		try {
+			await onConfirm(credential);
+			onCancel();
+		} catch (error) {
+			if (error instanceof InputError) {
+				setError('credential', { message: error.message });
 				setFocus('credential');
+				return;
 			}
-		});
+		}
 	});
 
 	return (
@@ -54,11 +59,11 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			<FieldGroup w='full'>
 				<Field>
 					<FieldRow>
-						<Controller 
+						<Controller
 							name='credential'
 							control={control}
 							rules={{ required: t('Invalid_field') }}
-							render={({ field }) => 
+							render={({ field }) =>
 								isPassword ? (
 									<PasswordInput
 										{...field}
@@ -66,7 +71,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 										aria-labelledby={actionTextId}
 										aria-describedby={errors.credential ? errorId : undefined}
 										aria-invalid={Boolean(errors.credential)}
-										aria-required="true"									
+										aria-required='true'
 									/>
 								) : (
 									<TextInput
@@ -76,16 +81,17 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 										aria-labelledby={actionTextId}
 										aria-describedby={errors.credential ? errorId : undefined}
 										aria-invalid={Boolean(errors.credential)}
-										aria-required="true"
+										aria-required='true'
 									/>
 								)
 							}
 						/>
 					</FieldRow>
 					{errors.credential && (
-						<FieldError aria-live="assertive" id={errorId}>{errors.credential.message}</FieldError>
+						<FieldError aria-live='assertive' id={errorId}>
+							{errors.credential.message}
+						</FieldError>
 					)}
-
 				</Field>
 			</FieldGroup>
 		</GenericModal>

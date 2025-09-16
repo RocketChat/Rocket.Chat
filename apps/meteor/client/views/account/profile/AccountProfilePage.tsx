@@ -21,6 +21,7 @@ import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
+import { InputError } from './DeleteAccountError';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {
@@ -92,7 +93,7 @@ const AccountProfilePage = (): ReactElement => {
 	);
 
 	const handleDeleteOwnAccount = useCallback(async () => {
-		const handleConfirm = async (passwordOrUsername: string, setInputError: (message: string) => void ): Promise<void> => {
+		const handleConfirm = async (passwordOrUsername: string): Promise<void> => {
 			try {
 				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
@@ -104,12 +105,10 @@ const AccountProfilePage = (): ReactElement => {
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
 				}
 
-				if (
-					error.errorType === 'error-invalid-password'
-				) {
-					setInputError(t('Invalid_password'));
-					return;
+				if (error.errorType === 'error-invalid-password') {
+					throw new InputError(t('Invalid_password'));
 				}
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 
