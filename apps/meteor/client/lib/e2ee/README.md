@@ -48,6 +48,7 @@ Whenever a group's membership changes (a user is added or removed), a completely
 - [fix: Disabled E2EE room instances creation](https://github.com/RocketChat/Rocket.Chat/pull/32857)
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
+- [fix: Server not notifying users of E2EE key suggestions](https://github.com/RocketChat/Rocket.Chat/pull/33435)
 - [feat: E2EE room key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
 - [chore: Upgrade `@tanstack/query` to v5](https://github.com/RocketChat/Rocket.Chat/pull/33898)
 - [fix: Allow any user in e2ee room to create and propagate room keys](https://github.com/RocketChat/Rocket.Chat/pull/34038)
