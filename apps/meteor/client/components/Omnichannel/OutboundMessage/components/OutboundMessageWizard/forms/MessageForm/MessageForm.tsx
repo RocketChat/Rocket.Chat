@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import TemplatePlaceholderField from './components/TemplatePlaceholderField';
 import TemplatePreviewForm from './components/TemplatePreviewField';
+import { OUTBOUND_DOCS_LINK } from '../../../../constants';
 import type { TemplateParameters } from '../../../../definitions/template';
 import { extractParameterMetadata } from '../../../../utils/template';
 import TemplateSelect from '../../../TemplateSelect';
@@ -128,7 +129,7 @@ const MessageForm = (props: MessageFormProps) => {
 					)}
 					<FieldHint id={`${messageFormId}-template-hint`}>
 						{/* TODO: Change to the correct address */}
-						<a href='https://rocket.chat' target='_blank' rel='noopener noreferrer'>
+						<a href={OUTBOUND_DOCS_LINK} target='_blank' rel='noopener noreferrer'>
 							{t('Learn_more')}
 						</a>
 					</FieldHint>
