@@ -73,8 +73,9 @@ export const omnichannelQueryKeys = {
 		productivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
 			[...omnichannelQueryKeys.analytics.all(departmentId), 'productivity-totals', dateRange] as const,
 	},
-	contactSearch: (query?: { filter: string; limit?: number }) => [...omnichannelQueryKeys.all, 'contacts', query] as const,
-	contact: (contactId?: string) => [...omnichannelQueryKeys.all, 'contact', contactId] as const,
+	contacts: (query?: { filter: string; limit?: number }) =>
+		!query ? [...omnichannelQueryKeys.all, 'contacts'] : ([...omnichannelQueryKeys.all, 'contacts', query] as const),
+	contact: (contactId?: string) => [...omnichannelQueryKeys.contacts(), contactId] as const,
 	outboundProviders: ({ type }: { type: IOutboundProvider['providerType'] }) =>
 		[...omnichannelQueryKeys.all, 'outbound', 'providers', { type }] as const,
 	outboundProviderMetadata: (providerId: string) => [...omnichannelQueryKeys.all, 'outbound', 'provider', 'metadata', providerId] as const,

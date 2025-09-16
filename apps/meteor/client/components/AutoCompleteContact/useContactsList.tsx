@@ -28,7 +28,7 @@ export const useContactsList = (options: ContactOptions) => {
 	const { filter, limit = DEFAULT_QUERY_LIMIT } = options;
 
 	return useInfiniteQuery({
-		queryKey: omnichannelQueryKeys.contactSearch({ filter, limit }),
+		queryKey: omnichannelQueryKeys.contacts({ filter, limit }),
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { contacts, ...data } = await getContacts({
 				searchText: filter,

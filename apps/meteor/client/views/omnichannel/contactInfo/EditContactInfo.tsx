@@ -178,18 +178,12 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 		if (contactData) {
 			await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() }),
-				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contactSearch() }),
-			]);
+			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
 			return;
 		}
 
 		await createContact.mutateAsync(payload);
-		await Promise.all([
-			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() }),
-			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contactSearch() }),
-		]);
+		await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
 	};
 
 	const formId = useId();
