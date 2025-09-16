@@ -1,4 +1,5 @@
 import type { HomeserverServices } from '@hs/federation-sdk';
+import type { EventID } from '@hs/room';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -239,7 +240,7 @@ export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 			const { roomId, stateKey } = c.req.param();
 			const body = await c.req.json();
 
-			const response = await sendJoin.sendJoin(roomId, stateKey, body);
+			const response = await sendJoin.sendJoin(roomId, stateKey as EventID, body);
 
 			return {
 				body: response,
