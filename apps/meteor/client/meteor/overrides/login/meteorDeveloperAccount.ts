@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+// eslint-disable-next-line import/no-duplicates
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
+// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
