@@ -2,9 +2,26 @@
 	"name": "@rocket.chat/i18n",
 	"version": "1.10.0",
 	"private": true,
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"typings": "./dist/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/esm/index.js",
+			"require": "./dist/cjs/index.js",
+			"types": "./dist/esm/index.d.ts"
+		},
+		"./dist/resources": {
+			"import": "./dist/resources.mjs",
+			"require": "./dist/resources.js",
+			"types": "./dist/resources.d.ts"
+		},
+		"./dist/languages": {
+			"import": "./dist/languages.mjs",
+			"require": "./dist/languages.js",
+			"types": "./dist/languages.d.ts"
+		}
+	},
+	"main": "./dist/cjs/index.js",
+	"types": "./dist/esm/index.d.ts",
 	"files": [
 		"/dist"
 	],
