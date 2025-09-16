@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-export const useEncryptedRoomDescription = (roomType: 'channel' | 'team') => {
+export const useEncryptedRoomDescription = (roomType: 'channel' | 'team' | 'discussion') => {
 	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 
