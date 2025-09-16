@@ -25,7 +25,7 @@ const ContactInfoPhoneEntry = ({ contactId, value, ...props }: ContactInfoPhoneE
 			value={parseOutboundPhoneNumber(value)}
 			actions={[
 				<IconButton key={`${value}-copy`} onClick={() => copy()} tiny icon='copy' title={t('Copy')} />,
-				isCallReady ? <ContactInfoCallButton phoneNumber={value} /> : null,
+				isCallReady ? <ContactInfoCallButton key={`${value}-call`} phoneNumber={value} /> : null,
 				<ContactInfoOutboundMessageButton key={`${value}-outbound-message`} defaultValues={{ contactId, recipient: value }} />,
 			]}
 		/>
