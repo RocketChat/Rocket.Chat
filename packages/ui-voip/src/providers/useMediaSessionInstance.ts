@@ -5,10 +5,11 @@ import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts'
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 
 import { useIceServers } from '../hooks/useIceServers';
-import type { PeerInfo, State } from '../v2/MediaCallContext';
+import type { ConnectionState, PeerInfo, State } from '../v2/MediaCallContext';
 
 interface BaseSession {
 	state: State;
+	connectionState: ConnectionState;
 	peerInfo?: PeerInfo;
 	muted: boolean;
 	held: boolean;
@@ -96,7 +97,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			this.sessionInstance.disableStateReport();
 		}
 
-		if (!this.webrtcProcessorFactory || !this.sendSignalFn) {
+		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
 			return null;
 		}
 
@@ -108,7 +109,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory: () => this.randomStringFactory(userId),
-			// logger: console,
+			// logger,
 			oldSessionId: this.oldSessionId,
 		});
 
