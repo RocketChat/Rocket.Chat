@@ -6,7 +6,7 @@ import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
-import { decodePrefixedBase64 } from './codec';
+import { decodePrefixedBase64, encodePrefixedBase64 } from './codec';
 import {
 	toString,
 	toArrayBuffer,
@@ -552,7 +552,7 @@ export class E2ERoom extends Emitter {
 					continue;
 				}
 				const encryptedKey = await encryptRSA(userKey, toArrayBuffer(oldRoomKey.E2EKey));
-				const encryptedKeyToString = oldRoomKey.e2eKeyId + Base64.encode(new Uint8Array(encryptedKey));
+				const encryptedKeyToString = encodePrefixedBase64(oldRoomKey.e2eKeyId, new Uint8Array(encryptedKey));
 
 				keys.push({ ...oldRoomKey, E2EKey: encryptedKeyToString });
 			}
@@ -575,10 +575,11 @@ export class E2ERoom extends Emitter {
 		// Encrypt session key for this user with his/her public key
 		try {
 			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
-			const encryptedUserKeyToString = this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
+			const encryptedUserKeyToString = encodePrefixedBase64(this.keyID, new Uint8Array(encryptedUserKey));
+			span.info('Group key encrypted for participant');
 			return encryptedUserKeyToString;
 		} catch (error) {
-			return span.set('error', error).error('Error encrypting user key');
+			return span.error('Error encrypting user key', error);
 		}
 	}
 
@@ -739,8 +740,8 @@ export class E2ERoom extends Emitter {
 		}
 		// v1: kid + base64(vector + ciphertext)
 		const message = typeof payload === 'string' ? payload : payload.ciphertext;
-		const kid = message.slice(0, 12);
-		const [iv, ciphertext] = splitVectorAndEncryptedData(Base64.decode(message.slice(12)));
+		const [kid, decoded] = decodePrefixedBase64(message);
+		const [iv, ciphertext] = splitVectorAndEncryptedData(decoded);
 		return {
 			kid,
 			iv,
@@ -769,7 +770,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
 			const ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
-			span.set('decrypted', ret).info('decrypted');
+			span.info('decrypted');
 			return ret;
 		} catch (error) {
 			span.set('error', error).error('Error decrypting message');
