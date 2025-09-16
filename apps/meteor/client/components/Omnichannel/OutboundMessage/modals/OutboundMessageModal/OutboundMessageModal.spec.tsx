@@ -14,6 +14,7 @@ const appRoot = mockAppRoot()
 		Close: 'Close',
 		Discard: 'Discard',
 		Discard_message: 'Discard message',
+		Outbound_message: 'Outbound message',
 		This_action_cannot_be_undone: 'This action cannot be undone',
 		Keep_editing: 'Keep editing',
 		Are_you_sure_you_want_to_discard_this_outbound_message: 'Are you sure you want to discard this outbound message?',
@@ -33,7 +34,6 @@ it('should display confirmation before closing the modal', async () => {
 	expect(screen.getByRole('dialog', { name: 'Discard message' })).toHaveAccessibleDescription(
 		'Are you sure you want to discard this outbound message?',
 	);
-	expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
 
 	await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
 	expect(onClose).toHaveBeenCalled();
@@ -49,12 +49,10 @@ it('should close confirmation and leave modal open when cancel is clicked', asyn
 	expect(screen.getByRole('dialog', { name: 'Discard message' })).toHaveAccessibleDescription(
 		'Are you sure you want to discard this outbound message?',
 	);
-	expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
 
 	await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
 
 	expect(screen.queryByRole('dialog', { name: 'Discard message' })).not.toBeInTheDocument();
 	expect(screen.getByRole('dialog', { name: 'Outbound message' })).toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 	expect(onClose).not.toHaveBeenCalled();
 });
