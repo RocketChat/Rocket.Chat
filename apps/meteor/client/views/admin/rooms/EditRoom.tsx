@@ -1,5 +1,5 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Button,
