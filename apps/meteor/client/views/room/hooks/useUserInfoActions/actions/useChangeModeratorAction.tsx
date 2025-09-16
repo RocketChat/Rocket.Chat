@@ -143,9 +143,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ userId: uid }));
 
-
 	const roomIsFederated = isRoomFederated(room);
-
 
 	const changeModeratorOption = useMemo(
 		() =>
