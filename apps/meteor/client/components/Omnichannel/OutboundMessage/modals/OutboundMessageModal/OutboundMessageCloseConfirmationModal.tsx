@@ -1,6 +1,7 @@
 import {
 	Button,
 	Modal,
+	ModalClose,
 	ModalContent,
 	ModalFooter,
 	ModalFooterAnnotation,
@@ -24,6 +25,7 @@ const OutboundMessageCloseConfirmationModal = ({ onConfirm, onCancel }: Outbound
 		<Modal aria-labelledby={`${modalId}-title`} aria-describedby={`${modalId}-description`} open>
 			<ModalHeader>
 				<ModalTitle id={`${modalId}-title`}>{t('Discard_message')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onCancel} />
 			</ModalHeader>
 			<ModalContent>
 				<p aria-live='assertive' id={`${modalId}-description`}>

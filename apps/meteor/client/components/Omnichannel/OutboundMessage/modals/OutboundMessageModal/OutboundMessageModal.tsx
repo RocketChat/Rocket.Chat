@@ -49,7 +49,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : 'block'}>
 				<ModalHeader>
 					<ModalTitle id={modalId}>{t('Outbound_message')}</ModalTitle>
-					<ModalClose onClick={() => setClosingConfirmation(true)} />
+					<ModalClose aria-label={t('Close')} onClick={() => setClosingConfirmation(true)} />
 				</ModalHeader>
 
 				<ModalContent pbe={16}>
