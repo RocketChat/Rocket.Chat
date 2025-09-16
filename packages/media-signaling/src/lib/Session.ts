@@ -186,6 +186,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 
+		this.config.logger?.debug('MediaSignalingSession.setDeviceId');
 		await this.setInputTrack(null);
 		await this.startInputTrack();
 	}
@@ -314,7 +315,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.setInputTrack');
+		this.config.logger?.debug('MediaSignalingSession.setInputTrack', Boolean(newInputTrack));
 		const { inputTrack: oldInputTrack } = this;
 		if (newInputTrack === oldInputTrack) {
 			return;
@@ -323,10 +324,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.inputTrack = newInputTrack;
 
 		for await (const call of this.knownCalls.values()) {
+			if (newInputTrack && (call.hidden || call.isOver())) {
+				continue;
+			}
+
 			await call.setInputTrack(newInputTrack);
 		}
 
 		if (oldInputTrack) {
+			this.config.logger?.debug('MediaSignalingSession.setInputTrack.stopOldTrack');
 			oldInputTrack.stop();
 		}
 	}
@@ -340,6 +346,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async updateInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.updatingInputTrack', this.callsToGetUserMedia);
 		this.updatingInputTrack = true;
 
 		try {
@@ -350,7 +357,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 			await this.maybeStartInputTrack();
 		} finally {
-			this.updatingInputTrack = this.callsToGetUserMedia > 0;
+			this.updatingInputTrack = false;
+			this.config.logger?.debug('MediaSignalingSession.updatingInputTrack.finally', this.callsToGetUserMedia);
 		}
 	}
 
@@ -374,7 +382,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async startInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.startInputTrack');
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack', this.callsToGetUserMedia);
 
 		this.currentDeviceId = this.deviceId;
 
@@ -385,6 +393,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		} finally {
 			this.callsToGetUserMedia--;
 		}
+
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		// If there's multiple simultaneous attempts to get the track, only process the output of the last one
 		if (this.callsToGetUserMedia > 0) {

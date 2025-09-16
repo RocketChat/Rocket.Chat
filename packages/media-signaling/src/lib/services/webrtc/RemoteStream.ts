@@ -1,7 +1,7 @@
 import { Stream } from './Stream';
 
 export class RemoteStream extends Stream {
-	public setTrack(newTrack: MediaStreamTrack, _peer: RTCPeerConnection): void {
+	public setTrack(newTrack: MediaStreamTrack): void {
 		this.setAudioTrack(newTrack);
 	}
 }

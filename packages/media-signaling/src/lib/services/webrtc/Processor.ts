@@ -53,10 +53,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
 
-		this.localStream = new LocalStream(this.localMediaStream);
-		this.remoteStream = new RemoteStream(this.remoteMediaStream);
-
 		this.peer = new RTCPeerConnection(config.rtc);
+
+		this.localStream = new LocalStream(this.localMediaStream, this.peer, this.config.logger);
+		this.remoteStream = new RemoteStream(this.remoteMediaStream, this.peer, this.config.logger);
+
 		this.emitter = new Emitter();
 		this.registerPeerEvents();
 	}
@@ -86,7 +87,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			this.restartIce();
 		}
 
-		const offer = await this.peer.createOffer();
+		// offerToReceiveAudio should not be needed if an audio transceiver was added, but there's no harm in using it anyway
+		const offer = await this.peer.createOffer({ offerToReceiveAudio: true });
 		if (this.lastSetLocalDescription && offer.sdp !== this.lastSetLocalDescription && !iceRestart) {
 			this.startNewNegotiation();
 		}
@@ -122,8 +124,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.remoteStream.stopAudio();
-
 		this.unregisterPeerEvents();
+
+		this.peer.close();
 	}
 
 	public startNewNegotiation(): void {
@@ -315,7 +318,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
 		// Received a remote stream
-		this.remoteStream.setTrack(event.track, this.peer);
+		this.remoteStream.setTrack(event.track);
 	}
 
 	private onConnectionStateChange() {
@@ -367,8 +370,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private async loadInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.loadInputTrack');
 		this.localMediaStreamInitialized = true;
-		await this.localStream.setTrack(this.inputTrack, this.peer);
+		await this.localStream.setTrack(this.inputTrack);
 	}
 
 	private onIceGatheringComplete() {
