@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { normalizeI18nInterpolations } from './normalize.mjs';
+import { normalizeI18nInterpolations } from './normalize.mts';
 
 export async function build() {
 	const rootDirectory = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -19,7 +19,7 @@ export async function build() {
 	);
 
 	// normalize the interpolations and collect the stats
-	const countsByNormalization = {
+	const countsByNormalization: Record<string, number> = {
 		__: 0,
 		sprintf: 0,
 		i18nextComponentsArray: 0,
@@ -31,7 +31,7 @@ export async function build() {
 	// const languageLength = resources.reduce((max, resource) => Math.max(max, resource.language.length), 0);
 	// const statKeyLength = Object.keys(countsByNormalization).reduce((max, key) => Math.max(max, key.length), 0);
 	for (const resource of resources) {
-		resource.content = normalizeI18nInterpolations(resource.content, resource.language, (statName) => {
+		resource.content = normalizeI18nInterpolations(resource.content, resource.language, (statName: string) => {
 			countsByNormalization[statName]++;
 			// console.log(`${statName.padEnd(statKeyLength)} ${resource.language.padStart(languageLength)} ${JSON.stringify(record.key)}`);
 		});
@@ -57,12 +57,15 @@ export async function build() {
 	}
 
 	// ./resources
-	const allResources = resources.reduce((acc, resource) => {
-		return {
-			...acc,
-			[resource.language]: resource.content,
-		};
-	}, {});
+	const allResources = resources.reduce(
+		(acc, resource) => {
+			return {
+				...acc,
+				[resource.language]: resource.content,
+			};
+		},
+		{} as Record<string, Record<string, string>>,
+	);
 	const allResourcesSerialized = JSON.stringify(allResources, null, 2);
 
 	await writeFile(join(distDirectory, 'resources.mjs'), `export default ${allResourcesSerialized};`);
@@ -104,35 +107,6 @@ exports.default = ${languagesSerialized};`,
 		`declare const languages: string[];
 export default languages;`,
 	);
-
-	// 	// ./index
-	// 	await writeFile(join(distDirectory, 'index.mjs'), `export * from './esm/index.js';`);
-
-	// 	await writeFile(
-	// 		join(distDirectory, 'index.js'),
-	// 		`"use strict";
-	// var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-	// 		if (k2 === undefined) k2 = k;
-	// 		var desc = Object.getOwnPropertyDescriptor(m, k);
-	// 		if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-	// 			desc = { enumerable: true, get: function() { return m[k]; } };
-	// 		}
-	// 		Object.defineProperty(o, k2, desc);
-	// }) : (function(o, m, k, k2) {
-	// 		if (k2 === undefined) k2 = k;
-	// 		o[k2] = m[k];
-	// }));
-	// var __exportStar = (this && this.__exportStar) || function(m, exports) {
-	// 		for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-	// };
-	// var __importDefault = (this && this.__importDefault) || function (mod) {
-	// 		return (mod && mod.__esModule) ? mod : { "default": mod };
-	// };
-	// Object.defineProperty(exports, "__esModule", { value: true });
-	// __exportStar(require("./cjs/index"), exports);`,
-	// 	);
-
-	// 	await writeFile(join(distDirectory, 'index.d.ts'), `export * from './esm/index';`);
 }
 
 if (import.meta.url.startsWith('file:')) {

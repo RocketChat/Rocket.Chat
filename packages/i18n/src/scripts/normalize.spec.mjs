@@ -1,4 +1,4 @@
-import { normalizeI18nInterpolations } from './normalize.mjs';
+import { normalizeI18nInterpolations } from './normalize.mts';
 
 describe('normalizeI18nInterpolations', () => {
 	it('should return the same object if there are no interpolations', async () => {

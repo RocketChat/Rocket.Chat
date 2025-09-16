@@ -3,10 +3,11 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist/cjs",
-		"declaration": true,
-		"target": "ESNext",
-		"module": "CommonJS"
+		"declaration": false,
+		"verbatimModuleSyntax": false,
+		"module": "CommonJS",
+		"moduleResolution": "node10"
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts"]
+	"exclude": ["node_modules", "**/*.spec.ts", "./src/scripts/**/*"]
 }

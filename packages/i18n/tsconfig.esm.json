@@ -3,10 +3,8 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist/esm",
-		"declaration": true,
-		"target": "ESNext",
-		"module": "ESNext"
+		"declaration": true
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts"]
+	"exclude": ["node_modules", "**/*.spec.ts", "./src/scripts/**/*"]
 }

@@ -13,41 +13,39 @@ const replacements = {
 	},
 };
 
-const replaceI18nInterpolation = (translation) => {
-	if (!translation) {
-		return [undefined, false];
-	}
+const replaceI18nInterpolation = (translation: string) => {
+	if (!translation) return [undefined, false] as const;
 	const exist = translation?.match(replacements.__.regex);
-	return [translation?.replace(replacements.__.regex, replacements.__.replacement), Boolean(exist)];
+	return [translation?.replace(replacements.__.regex, replacements.__.replacement), Boolean(exist)] as const;
 };
 
-const replaceSprintfInterpolation = (translation) => {
+const replaceSprintfInterpolation = (translation: string) => {
 	const exist = translation?.match(replacements.sprintf.regex);
-
-	return [undefined, Boolean(exist)];
+	return [undefined, Boolean(exist)] as const;
 };
 
-const replaceI18nextComponentsArrayInterpolation = (translation) => {
+const replaceI18nextComponentsArrayInterpolation = (translation: string) => {
 	const exist = translation?.match(replacements.i18nextComponentsArray.regex);
-	return [undefined, Boolean(exist)];
+	return [undefined, Boolean(exist)] as const;
 };
 
-const replaceNullValuesInterpolation = (translation) => {
-	return [undefined, translation === null];
+const replaceNullValuesInterpolation = (translation: string) => {
+	return [undefined, translation === null] as const;
 };
 
-const generator = (fn, id) => (dictionary, language, cb) => {
-	return Object.entries(dictionary).reduce((dic, [key, value]) => {
-		const [replacement, exist] = fn(value);
-		if (exist) {
-			cb?.(id, { language, key });
-		}
-		if (replacement) {
-			dic[key] = replacement;
-		}
-		return dic;
-	}, dictionary);
-};
+const generator =
+	(fn: (translation: string) => readonly [string | undefined, boolean], id: string) =>
+	(dictionary: Record<string, any>, language: string, cb?: (id: string, info: { language: string; key: string }) => void) =>
+		Object.entries(dictionary).reduce((dic, [key, value]) => {
+			const [replacement, exist] = fn(value);
+			if (exist) {
+				cb?.(id, { language, key });
+			}
+			if (replacement) {
+				dic[key] = replacement;
+			}
+			return dic;
+		}, dictionary);
 
 const replaceI18nInterpolations = generator(replaceI18nInterpolation, '__');
 
@@ -57,7 +55,11 @@ const replaceI18nextComponentsArrayInterpolations = generator(replaceI18nextComp
 
 const replaceNullValues = generator(replaceNullValuesInterpolation, 'nullValues');
 
-const replaceNestedPlurals = (dictionary, language, cb) => {
+const replaceNestedPlurals = (
+	dictionary: Record<string, any>,
+	language: string,
+	cb: (statName: string, info: { language: string; key: string }) => void,
+) => {
 	const entries = [];
 	const plurals = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
@@ -81,14 +83,18 @@ const replaceNestedPlurals = (dictionary, language, cb) => {
 	return Object.fromEntries(entries);
 };
 
-export const pipe =
-	(...fns) =>
-	(y, ...x) =>
+const pipe =
+	<Y, X extends any[]>(...fns: ((y: Y, ...x: X) => Y)[]) =>
+	(y: Y, ...x: X) =>
 		fns.reduce((v, f) => {
 			return f(v, ...x);
 		}, y);
 
-export const normalizeI18nInterpolations = (dictionary, language, cb) => {
+export const normalizeI18nInterpolations = (
+	dictionary: Record<string, any>,
+	language: string,
+	cb: (statName: string, info: { language: string; key: string }) => void,
+) => {
 	const result = pipe(
 		replaceNestedPlurals,
 		replaceNullValues,
