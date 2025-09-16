@@ -5,6 +5,7 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
+import { MediaCallNegotiations } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
@@ -127,8 +128,11 @@ export class IncomingSipCall extends BaseSipCall {
 			return this.processEndedCall(call);
 		}
 
-		if (call.state === 'accepted' && this.lastCallState !== 'accepted' && call.webrtcAnswer) {
-			return this.flagAsAccepted(call.webrtcAnswer);
+		if (call.state === 'accepted' && this.lastCallState !== 'accepted') {
+			const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+			if (negotiation?.answer) {
+				return this.flagAsAccepted(negotiation.answer);
+			}
 		}
 	}
 

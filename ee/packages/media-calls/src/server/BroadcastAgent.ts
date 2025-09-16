@@ -36,8 +36,14 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 		// there's no point in broadcasting onCallCreated as it can only be called from within the call provider
 	}
 
-	public async onRemoteDescriptionChanged(callId: string, _description: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId });
+	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
+
+		this.reportCallUpdated(callId);
+	}
+
+	public async onCallTransferred(callId: string): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onCallTransferred', callId });
 
 		this.reportCallUpdated(callId);
 	}

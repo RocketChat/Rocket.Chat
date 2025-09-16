@@ -1,5 +1,5 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallSignedActor } from '@rocket.chat/core-typings';
-import { MediaCalls } from '@rocket.chat/models';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest } from 'drachtio-srf';
 
@@ -78,18 +78,19 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		if (this.lastCallState === 'none') {
-			if (!call.webrtcOffer) {
-				return;
-			}
-
 			return this.createDialog(call);
 		}
 	}
 
 	protected async createDialog(call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'OutgoingSipCall.createDialog', call });
-		if (this.lastCallState !== 'none' || !call.webrtcOffer || this.sipDialog) {
+		if (this.lastCallState !== 'none' || this.sipDialog) {
 			logger.debug({ msg: 'invalid state to create an outgoing dialog' });
+			return;
+		}
+
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		if (!negotiation?.offer) {
 			return;
 		}
 
@@ -105,7 +106,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			this.sipDialog = await this.session.createSipDialog(
 				this.call.callee.id,
 				{
-					localSdp: call.webrtcOffer.sdp,
+					localSdp: negotiation.offer.sdp,
 					callingName: call.caller.displayName,
 					callingNumber: call.caller.sipExtension,
 				},
