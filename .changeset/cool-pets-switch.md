@@ -3,4 +3,4 @@
 "@rocket.chat/rest-typings": patch
 ---
 
-Adds deprecation warning on `livechat:removeCustomField` with new endpoint replacing it; `livechat/custom-fields.remove`
+Adds deprecation warning on `livechat:removeCustomField` with new endpoint replacing it; `livechat/custom-fields.delete`
