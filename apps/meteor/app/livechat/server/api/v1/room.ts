@@ -1,5 +1,12 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoom,
+	IUser,
+	SelectedAgent,
+	TransferByData,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -10,9 +17,8 @@ import {
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
-	validateBadRequestErrorResponse,
-	isPOSTLivechatRemoveRoomParams,
-	POSTLivechatRemoveRoomSuccess,
+	isPOSTLivechatRoomsCloseAll,
+	isPOSTLivechatRoomsCloseAllSuccessResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
@@ -462,6 +468,31 @@ const livechatRoomsEndpoints = API.v1.post(
 		await removeOmnichannelRoom(roomId);
 
 		return API.v1.success();
+	},
+).post(
+	'livechat/rooms.removeAllClosedRooms',
+	{
+		response: {
+			200: isPOSTLivechatRoomsCloseAllSuccessResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['remove-closed-livechat-rooms'],
+		body: isPOSTLivechatRoomsCloseAll,
+	},
+	async function action() {
+		livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
+
+		const params = this.bodyParams;
+
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
+		const promises: Promise<void>[] = [];
+		await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
+			promises.push(removeOmnichannelRoom(_id));
+		});
+		await Promise.all(promises);
+
+		livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
+		return API.v1.success({ removedRooms: promises.length });
 	},
 );
 
