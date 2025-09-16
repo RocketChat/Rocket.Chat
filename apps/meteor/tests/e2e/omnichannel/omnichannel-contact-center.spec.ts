@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 
 import { createToken } from '../../../client/lib/utils/createToken';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from '../page-objects/omnichannel-section';
@@ -30,17 +29,6 @@ const DELETE_CONTACT = {
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	emails: [faker.internet.email().toLowerCase()],
 	phones: [faker.phone.number('+############')],
-};
-
-const NEW_CUSTOM_FIELD = {
-	searchable: true,
-	field: 'hiddenCustomField',
-	label: 'hiddenCustomField',
-	defaultValue: 'test_contact_center_hidden_customField',
-	scope: 'visitor',
-	visibility: 'hidden',
-	required: true,
-	regexp: '',
 };
 
 const URL = {
@@ -72,10 +60,6 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeAll(async ({ api }) => {
 		// Add contacts
 		await Promise.all([api.post('/omnichannel/contacts', EXISTING_CONTACT), api.post('/omnichannel/contacts', DELETE_CONTACT)]);
-
-		if (IS_EE) {
-			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
-		}
 	});
 
 	test.afterAll(async ({ api }) => {
