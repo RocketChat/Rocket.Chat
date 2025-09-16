@@ -48,11 +48,11 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 	switch (callState) {
 		case 'renegotiating':
 			return 'RECONNECTING';
+		case 'ringing':
 		case 'active':
 			return 'CONNECTED';
 		case 'none':
 		case 'accepted':
-		case 'ringing':
 		default:
 			return 'CONNECTING';
 	}
