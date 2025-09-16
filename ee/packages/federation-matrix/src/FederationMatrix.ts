@@ -566,7 +566,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (!matrixEventId) {
 				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
-			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId, matrixUserId);
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, matrixUserId);
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
@@ -690,7 +690,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				const redactionEventId = await this.homeserverServices.message.unsetReaction(
 					matrixRoomId,
-					eventId,
+					eventId as EventID,
 					reactionKey,
 					existingMatrixUserId,
 				);
@@ -708,7 +708,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async getEventById(eventId: string): Promise<any | null> {
+	async getEventById(eventId: EventID): Promise<any | null> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available');
 			return null;
