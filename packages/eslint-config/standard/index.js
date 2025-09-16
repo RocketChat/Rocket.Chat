@@ -65,6 +65,14 @@ module.exports = {
 					},
 					{
 						selector: 'parameter',
+						format: null,
+						filter: {
+							regex: '^Story$',
+							match: true,
+						},
+					},
+					{
+						selector: 'parameter',
 						format: ['camelCase'],
 						modifiers: ['unused'],
 						leadingUnderscore: 'require',
@@ -114,6 +122,7 @@ module.exports = {
 					node: {
 						extensions: ['.js', '.ts', '.tsx'],
 					},
+					typescript: {},
 				},
 			},
 		},

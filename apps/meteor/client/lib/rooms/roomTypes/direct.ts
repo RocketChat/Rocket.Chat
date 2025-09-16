@@ -1,18 +1,15 @@
-import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
-import { settings } from '../../../../app/settings/client';
-import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
+import { Users, Rooms, Subscriptions } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -38,7 +35,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.JOIN_CODE:
 					return false;
 				case RoomSettingsEnum.E2E:
-					return settings.get('E2E_Enable') === true;
+					return settings.watch('E2E_Enable') === true;
 				default:
 					return true;
 			}
@@ -69,14 +66,14 @@ roomCoordinator.add(
 					return undefined;
 				}
 
-				return Subscriptions.findOne({ rid: roomData._id });
+				return Subscriptions.state.find((record) => record.rid === roomData._id);
 			})();
 
 			if (!subscription) {
 				return;
 			}
 
-			if (settings.get('UI_Use_Real_Name') && subscription.fname) {
+			if (settings.watch('UI_Use_Real_Name') && subscription.fname) {
 				return subscription.fname;
 			}
 
@@ -98,11 +95,6 @@ roomCoordinator.add(
 			}
 		},
 
-		condition() {
-			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
-		},
-
 		getAvatarPath(room) {
 			if (!room) {
 				return '';
@@ -120,10 +112,10 @@ roomCoordinator.add(
 				}) as string;
 			}
 
-			const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
-			if (sub?.name) {
-				const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
-				return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+			const subscriptionName = Subscriptions.state.find((record) => record.rid === room._id)?.name;
+			if (subscriptionName) {
+				const { username, avatarETag } = Users.state.find((record) => record.username === subscriptionName) || {};
+				return getUserAvatarURL(username || subscriptionName, avatarETag);
 			}
 
 			return getUserAvatarURL(room.name || this.roomName(room) || '');
@@ -146,14 +138,11 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Filter<ISubscription> = {
-				t: 'd',
-				$or: [{ name: identifier }, { rid: identifier }],
-			};
+			const predicate = (record: SubscriptionWithRoom) => record.t === 'd' && (record.name === identifier || record.rid === identifier);
 
-			const subscription = Subscriptions.findOne(query);
+			const subscription = Subscriptions.state.find(predicate);
 			if (subscription?.rid) {
-				return Rooms.findOne(subscription.rid);
+				return Rooms.state.get(subscription.rid);
 			}
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,

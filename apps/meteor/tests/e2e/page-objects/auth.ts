@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import type { FrameLocator, Locator, Page } from '@playwright/test';
 
 export class Registration {
 	private readonly page: Page;
@@ -33,10 +33,6 @@ export class Registration {
 
 	get goToRegister(): Locator {
 		return this.page.locator('role=link[name="Create an account"]');
-	}
-
-	get backToLogin(): Locator {
-		return this.page.locator('role=link[name="Back to Login"]');
 	}
 
 	get btnRegister(): Locator {
@@ -81,5 +77,21 @@ export class Registration {
 
 	get registrationDisabledCallout(): Locator {
 		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
+	}
+
+	get loginIframe(): FrameLocator {
+		return this.page.frameLocator('iframe[title="Login"]');
+	}
+
+	get loginIframeForm(): Locator {
+		return this.loginIframe.locator('#login-form');
+	}
+
+	get loginIframeSubmitButton(): Locator {
+		return this.loginIframe.locator('#submit');
+	}
+
+	get loginIframeError(): Locator {
+		return this.loginIframe.locator('#login-error', { hasText: 'Login failed' });
 	}
 }

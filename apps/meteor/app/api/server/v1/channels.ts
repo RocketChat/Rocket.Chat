@@ -311,6 +311,7 @@ API.v1.addRoute(
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				_hidden: { $ne: true },
 			};
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
@@ -466,11 +467,11 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const moderators = (
-				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-					projection: { u: 1 },
-				}).toArray()
-			).map((sub: ISubscription) => sub.u);
+			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+				projection: { u: 1, _id: 0 },
+			})
+				.map((sub) => sub.u)
+				.toArray();
 
 			return API.v1.success({
 				moderators,

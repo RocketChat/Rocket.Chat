@@ -13,11 +13,12 @@ import {
 	E2EEKeyDecodeFailureBanner,
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
+	ResetE2EEPasswordModal,
 	SaveE2EEPasswordBanner,
 	SaveE2EEPasswordModal,
 } from './page-objects/fragments/e2ee';
+import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
-import { HomeFlextabExportMessages } from './page-objects/fragments/home-flextab-exportMessages';
 import { LoginPage } from './page-objects/login';
 import { test, expect } from './utils/test';
 
@@ -87,6 +88,28 @@ test.describe('initial setup', () => {
 		await accountSecurityPage.goto();
 		await accountSecurityPage.resetE2EEPassword();
 
+		await loginPage.loginByUserState(Users.admin);
+	});
+
+	test('should reset e2e password from the modal', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const loginPage = new LoginPage(page);
+		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
+
+		// Logout
+		await sidenav.logout();
+
+		// Login again
+		await loginPage.loginByUserState(Users.admin);
+
+		// Reset E2EE password
+		await enterE2EEPasswordBanner.click();
+		await enterE2EEPasswordModal.forgotPassword();
+		await resetE2EEPasswordModal.confirmReset();
+
+		// restore login
 		await loginPage.loginByUserState(Users.admin);
 	});
 
@@ -176,8 +199,10 @@ test.describe('basic features', () => {
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(messageText);
 
+		// Log out
 		await sidenav.logout();
 
+		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
 		// Navigate to the encrypted channel WITHOUT entering the password
@@ -272,7 +297,7 @@ test.describe('basic features', () => {
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
 		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new HomeFlextabExportMessages(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
@@ -281,8 +306,34 @@ test.describe('basic features', () => {
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
-		await expect(exportMessagesTab.sendEmailMethod).not.toBeVisible();
+		await expect(exportMessagesTab.method).toContainClass('disabled'); // FIXME: looks like the component have an a11y issue
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+	});
+
+	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const encryptedRoomPage = new EncryptedRoomPage(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
+
+		const channelName = faker.string.uuid();
+
+		await sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
+
+		await encryptedRoomPage.sendMessage('This is a message to export as PDF.');
+		await encryptedRoomPage.showExportMessagesTab();
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+
+		// Select Output format as PDF
+		await exportMessagesTab.setOutputFormat('PDF');
+
+		// select messages to be exported
+		await exportMessagesTab.selectAllMessages();
+
+		// Wait for download event and match format
+		const download = await exportMessagesTab.downloadMessages();
+		expect(download.suggestedFilename()).toMatch(/\.pdf$/);
 	});
 });
 
@@ -958,8 +1009,6 @@ test.describe.serial('e2ee room setup', () => {
 		// Logout to remove e2ee keys
 		await poHomeChannel.sidenav.logout();
 
-		await page.locator('role=button[name="Login"]').waitFor();
-
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
 
@@ -1030,7 +1079,7 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await poHomeChannel.sidenav.userProfileMenu.click();
+		await poHomeChannel.sidenav.btnUserProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();
@@ -1100,7 +1149,7 @@ test.describe('e2ee support legacy formats', () => {
 		// send old format encrypted message via API
 		const msg = await page.evaluate(async (rid) => {
 			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
-			const { e2e } = require('/app/e2e/client/rocketchat.e2e.ts');
+			const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
 			const e2eRoom = await e2e.getInstanceByRoomId(rid);
 			return e2eRoom.encrypt({ _id: 'id', msg: 'Old format message' });
 		}, rid);

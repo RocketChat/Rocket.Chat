@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -513,6 +513,60 @@ describe('[Chat]', () => {
 					message = { _id: res.body.message._id };
 				})
 				.end(done);
+		});
+
+		it('should not parse urls when parseUrls=false is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.not.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls=true is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls is not provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: undefined,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
 		});
 
 		describe('text message allowed size', () => {

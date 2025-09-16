@@ -156,7 +156,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
-	findUsersInRoles(roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: FindOptions<IUser>) {
+	findUsersInRoles: IUsersModel['findUsersInRoles'] = (roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: any) => {
 		roles = ([] as string[]).concat(roles);
 
 		const query = {
@@ -164,7 +164,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.find(query, options);
-	}
+	};
 
 	countUsersInRoles(roles: IRole['_id'][] | IRole['_id']) {
 		roles = ([] as string[]).concat(roles);
@@ -504,9 +504,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T>(query, options);
 	}
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			ldap: true,
+			active: true,
 			_id: {
 				$nin: userIds,
 			},

@@ -1,5 +1,5 @@
 export async function resolveDate(dateInput: unknown) {
-	const parseISO = await import('date-fns/parseISO').then((m) => m.default);
+	const { parseISO } = await import('date-fns/parseISO');
 	if (dateInput instanceof Date) {
 		return dateInput;
 	}

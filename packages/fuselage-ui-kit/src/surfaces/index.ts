@@ -3,10 +3,7 @@ import { BannerSurfaceRenderer } from './BannerSurfaceRenderer';
 import ContextualBarSurface from './ContextualBarSurface';
 import { ContextualBarSurfaceRenderer } from './ContextualBarSurfaceRenderer';
 import { FuselageMessageSurfaceRenderer } from './FuselageMessageSurfaceRenderer';
-import {
-  FuselageSurfaceRenderer,
-  renderTextObject,
-} from './FuselageSurfaceRenderer';
+import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
 import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
 import { ModalSurfaceRenderer } from './ModalSurfaceRenderer';
@@ -19,19 +16,8 @@ export const modalParser = new ModalSurfaceRenderer();
 export const contextualBarParser = new ContextualBarSurfaceRenderer();
 
 export const UiKitBanner = createSurfaceRenderer(BannerSurface, bannerParser);
-export const UiKitMessage = createSurfaceRenderer(
-  MessageSurface,
-  messageParser,
-);
+export const UiKitMessage = createSurfaceRenderer(MessageSurface, messageParser);
 export const UiKitModal = createSurfaceRenderer(ModalSurface, modalParser);
-export const UiKitContextualBar = createSurfaceRenderer(
-  ContextualBarSurface,
-  contextualBarParser,
-);
+export const UiKitContextualBar = createSurfaceRenderer(ContextualBarSurface, contextualBarParser);
 
-export {
-  createSurfaceRenderer,
-  Surface,
-  FuselageSurfaceRenderer,
-  renderTextObject,
-};
+export { createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObject };

@@ -5,14 +5,16 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
+// eslint-disable-next-line import/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -66,14 +68,21 @@ export type Prettify<T> = {
 
 type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
 
-export type ExtractRoutesFromAPI<T> =
-	T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never;
+type UnionToIntersection<U> = (U extends any ? (x: U) => any : never) extends (x: infer I) => any ? I : never;
+
+export type ExtractRoutesFromAPI<T> = Prettify<
+	UnionToIntersection<
+		T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never
+	>
+>;
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
 		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
 			? (
-					params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>,
+					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
+						? [params?: never]
+						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
 			: K2 extends 'POST'
 				? (
@@ -518,7 +527,7 @@ export class APIClass<
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string): string {
+	public getFullRouteName(route: string, method: string): string {
 		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
@@ -576,7 +585,7 @@ export class APIClass<
 		TSubPathPattern extends string,
 		TOptions extends TypedOptions,
 		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
-	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
+	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
@@ -627,7 +636,7 @@ export class APIClass<
 	}
 
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		method: Method,
+		method: MinimalRoute['method'],
 		subpath: TSubPathPattern,
 		options: TOptions,
 		action: TypedAction<TOptions, TSubPathPattern>,
@@ -824,7 +833,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
+							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
 						let result;

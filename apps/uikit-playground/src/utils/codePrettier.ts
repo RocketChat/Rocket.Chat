@@ -1,10 +1,11 @@
-import prettier from 'prettier';
-import pluginBabel from 'prettier/parser-babel';
+import { formatWithCursor } from 'prettier/standalone';
+import * as pluginBabel from 'prettier/plugins/babel';
+import * as pluginEstree from 'prettier/plugins/estree';
 
 const codePrettier = (code: string, cursor: number) =>
-  prettier.formatWithCursor(code, {
+  formatWithCursor(code, {
     parser: 'json',
-    plugins: [pluginBabel],
+    plugins: [pluginBabel, pluginEstree],
     tabWidth: 4,
     useTabs: true,
     singleQuote: false,

@@ -26,10 +26,6 @@ export class OmnichannelTransferChatModal {
 		return this.dialog.locator('role=button[name="Forward"]');
 	}
 
-	get btnCancel(): Locator {
-		return this.dialog.locator('role=button[name="Cancel"]');
-	}
-
 	async selectDepartment(name: string) {
 		await this.inputFowardDepartment.click();
 		await this.inputFowardDepartment.fill(name);

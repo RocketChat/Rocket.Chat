@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { Messages, Subscriptions } from '../../../../../app/models/client';
+import { Messages, Subscriptions } from '../../../../stores';
 
 export const useUsersNameChanged = () => {
 	const notify = useStream('notify-logged');
@@ -41,16 +41,9 @@ export const useUsersNameChanged = () => {
 				}),
 			);
 
-			Subscriptions.update(
-				{
-					name: username,
-					t: 'd',
-				},
-				{
-					$set: {
-						fname: name,
-					},
-				},
+			Subscriptions.state.update(
+				(record) => record.name === username && record.t === 'd',
+				(record) => ({ ...record, fname: name }),
 			);
 		});
 	}, [notify, updateMessages]);

@@ -4,7 +4,7 @@ import { Suspense, useEffect } from 'react';
 
 import MarketPlaceSidebar from './MarketplaceSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
-import SidebarPortal from '../../sidebar/SidebarPortal';
+import SidebarPortal from '../../portals/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {

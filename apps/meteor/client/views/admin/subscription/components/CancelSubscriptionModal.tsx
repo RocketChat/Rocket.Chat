@@ -1,7 +1,6 @@
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
 import { DOWNGRADE_LINK } from '../utils/links';
 
 type CancelSubscriptionModalProps = {

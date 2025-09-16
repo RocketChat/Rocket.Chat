@@ -2,7 +2,7 @@ import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLiv
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { setCustomFields } from '../../lib/custom-fields';
+import { setCustomFields, setMultipleCustomFields } from '../../lib/custom-fields';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 import { findGuest } from '../lib/livechat';
 
@@ -30,27 +30,16 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token } = this.bodyParams;
-			const guest = await findGuest(token);
-			if (!guest) {
+			const visitor = await findGuest(token);
+			if (!visitor) {
 				throw new Error('invalid-token');
 			}
 
-			const fields = await Promise.all(
-				this.bodyParams.customFields.map(
-					async (customField: {
-						key: string;
-						value: string;
-						overwrite: boolean;
-					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
-						const data = Object.assign({ token }, customField);
-						await setCustomFields(data);
+			const result = await setMultipleCustomFields({ visitor, customFields: this.bodyParams.customFields });
 
-						return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-					},
-				),
-			);
-
-			return API.v1.success({ fields });
+			return API.v1.success({
+				fields: result.map(({ key, value, overwrite }) => ({ Key: key, value, overwrite })),
+			});
 		},
 	},
 );

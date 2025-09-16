@@ -2,8 +2,8 @@ import { lazy } from 'react';
 
 import RoomHeader from './RoomHeader';
 import type { RoomHeaderProps } from './RoomHeader';
-import { E2EEState } from '../../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import { E2EEState } from '../../../lib/e2ee/E2EEState';
+import { E2ERoomState } from '../../../lib/e2ee/E2ERoomState';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
 

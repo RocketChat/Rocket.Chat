@@ -1,11 +1,12 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
-import type { AsyncState } from '../../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
+import { miscQueryKeys } from '../../../../../lib/queryKeys';
 
 type LookupSettingInputProps = SettingInputProps & {
 	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
@@ -29,8 +30,14 @@ function LookupSettingInput({
 		onChangeValue?.(value);
 	};
 
-	const { value: options } = useEndpointData(lookupEndpoint) as AsyncState<{ data: { key: string; label: string }[] }>;
-	const values = options?.data || [];
+	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<{ data: { key: string; label: string }[] }>;
+	const { data: values = [] } = useQuery({
+		queryKey: miscQueryKeys.lookup(lookupEndpoint),
+		queryFn: async () => {
+			const { data = [] } = (await lookup()) ?? {};
+			return data as { key: string; label: string }[];
+		},
+	});
 
 	return (
 		<Field>
