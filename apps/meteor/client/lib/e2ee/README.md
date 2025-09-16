@@ -39,6 +39,7 @@ Whenever a group's membership changes (a user is added or removed), a completely
 - [[NEW] E2E password generator](github.com/RocketChat/Rocket.Chat/pull/24114)
 - [[IMPROVE] Quotes on E2EE Messages](https://github.com/RocketChat/Rocket.Chat/pull/26303)
 - [[IMPROVE] Require acceptance when setting new E2E Encryption key for another user](https://github.com/RocketChat/Rocket.Chat/pull/27556)
+- [refactor: Replace `Notifications` in favor of `sdk.stream`;](https://github.com/RocketChat/Rocket.Chat/issues/31409)
 - [chore: don't `ignoreUndefined`](https://github.com/RocketChat/Rocket.Chat/pull/31497)
 - [feat: Un-encrypted messages not allowed in E2EE rooms](https://github.com/RocketChat/Rocket.Chat/pull/32040)
 - [feat(E2EE): Async E2EE keys exchange](https://github.com/RocketChat/Rocket.Chat/pull/32197)
