@@ -143,9 +143,13 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ userId: uid }));
 
+
+	const roomIsFederated = isRoomFederated(room);
+
+
 	const changeModeratorOption = useMemo(
 		() =>
-			(isRoomFederated(room) && roomCanSetModerator) || (!isRoomFederated(room) && roomCanSetModerator && userCanSetModerator)
+			(roomIsFederated && roomCanSetModerator) || (!roomIsFederated && roomCanSetModerator && userCanSetModerator)
 				? {
 						content: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
 						icon: 'shield-blank' as const,
@@ -153,7 +157,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 						type: 'privileges' as UserInfoActionType,
 					}
 				: undefined,
-		[changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator, room],
+		[changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator, roomIsFederated],
 	);
 
 	return changeModeratorOption;
