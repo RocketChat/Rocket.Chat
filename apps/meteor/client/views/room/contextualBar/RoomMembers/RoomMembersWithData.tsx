@@ -1,9 +1,9 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
@@ -22,7 +22,16 @@ enum ROOM_MEMBERS_TABS {
 
 type validRoomType = 'd' | 'p' | 'c';
 
-const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
+// Added optional adminView to disable member row actions for admin modal usage
+const RoomMembersWithData = ({
+	rid,
+	adminView,
+	onClose: adminOnClose,
+}: {
+	rid: IRoom['_id'];
+	adminView?: boolean;
+	onClose?: () => void;
+}): ReactElement => {
 	const user = useUser();
 	const room = useUserRoom(rid);
 	const { closeTab } = useRoomToolbox();
@@ -30,9 +39,32 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const [text, setText] = useState('');
 	const subscription = useUserSubscription(rid);
 
+	// If opened from admin and room is not in client store, fetch room info and store it
+	const getAdminRoom = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
+
+	const fetchRoomData = useEffectEvent(async () => {
+		const roomData = await getAdminRoom({ rid });
+		if (roomData) {
+			// Import stores module and store room info
+			const Stores = await import('../../../../stores');
+			Stores.Rooms.state.store({ ...roomData, _id: rid } as IRoom);
+		}
+	});
+
+	useEffect(() => {
+		// If not admin view or room is already in client store, return
+		if (!adminView || room) {
+			return;
+		}
+
+		// Execute fetch room info operation
+		fetchRoomData();
+	}, [adminView, room, rid, fetchRoomData]);
+
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links', rid);
+	const hasManageMembersPermission = usePermission('manage-room-members-remotely');
 	const isFederated = room && isRoomFederated(room);
 
 	const canCreateInviteLinks =
@@ -46,7 +78,17 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { data, fetchNextPage, isPending, refetch, hasNextPage } = useMembersList(
-		useMemo(() => ({ rid, type, limit: 20, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
+		useMemo(
+			() => ({
+				rid,
+				type,
+				limit: 20,
+				debouncedText,
+				roomType: (room?.t as validRoomType) || 'p',
+				useAdminEndpoint: hasManageMembersPermission,
+			}),
+			[rid, type, debouncedText, room?.t, hasManageMembersPermission],
+		),
 	);
 
 	const hasPermissionToAddUsers = useAtLeastOnePermission(
@@ -54,7 +96,10 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		rid,
 	);
 
-	const canAddUsers = room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToAddUsers;
+	const canAddUsers =
+		room && user && isFederated
+			? Federation.isEditableByTheUser(user, room, subscription)
+			: hasPermissionToAddUsers || hasManageMembersPermission;
 
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
@@ -81,7 +126,15 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}, [setState]);
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
-		return <UserInfoWithData rid={rid} uid={state.userId} onClose={closeTab} onClickBack={handleBack} />;
+		return (
+			<UserInfoWithData
+				rid={rid}
+				uid={state.userId}
+				onClose={adminView && adminOnClose ? adminOnClose : closeTab}
+				onClickBack={handleBack}
+				hideDialog={adminView}
+			/>
+		);
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.INVITE) {
@@ -89,7 +142,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.ADD) {
-		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} />;
+		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} hideDialog={adminView} />;
 	}
 
 	return (
@@ -104,12 +157,13 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			setType={setType}
 			members={data?.pages?.flatMap((page) => page.members) ?? []}
 			total={data?.pages[data.pages.length - 1].total ?? 0}
-			onClickClose={closeTab}
+			onClickClose={adminView && adminOnClose ? adminOnClose : closeTab}
 			onClickView={openUserInfo}
 			loadMoreItems={hasNextPage ? fetchNextPage : () => undefined}
 			reload={refetch}
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
+			adminView={adminView}
 		/>
 	);
 };

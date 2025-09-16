@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AdminRoomMembers from './AdminRoomMembers';
 import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
 import { ContextualbarDialog } from '../../../components/Contextualbar';
@@ -28,7 +29,8 @@ const RoomsPage = (): ReactElement => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					<EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />
+					{context === 'edit' && <EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />}
+					{context === 'members' && <AdminRoomMembers rid={id || ''} onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

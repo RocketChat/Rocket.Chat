@@ -6365,6 +6365,8 @@
   "manage-own-integrations_description": "Permition to allow users to create and edit their own integration or webhooks",
   "manage-own-outgoing-integrations": "Manage Own Outgoing Integrations",
   "manage-own-outgoing-integrations_description": "Permission to allow users to create and edit their own outgoing integration or webhooks",
+  "manage-room-members-remotely": "Manage Room Members Remotely",
+  "manage-room-members-remotely_description": "Add, remove, and assign roles to members without being a room member",
   "manage-selected-settings": "Change Some Settings",
   "manage-selected-settings_description": "Permission to change settings which are explicitly granted to be changed",
   "manage-sounds": "Manage Sounds",

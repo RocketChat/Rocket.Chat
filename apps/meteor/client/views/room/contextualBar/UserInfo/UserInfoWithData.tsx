@@ -30,9 +30,10 @@ type UserInfoWithDataProps = {
 	rid: IRoom['_id'];
 	onClose: () => void;
 	onClickBack?: () => void;
+	hideDialog?: boolean;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack, hideDialog }: UserInfoWithDataProps): ReactElement => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -86,6 +87,34 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 		};
 	}, [data, getRoles]);
+
+	// If hideDialog is true, render content without ContextualbarDialog wrapper
+	if (hideDialog) {
+		return (
+			<>
+				<ContextualbarHeader>
+					{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+					{!onClickBack && <ContextualbarIcon name='user' />}
+					<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+					{onClose && <ContextualbarClose onClick={onClose} />}
+				</ContextualbarHeader>
+
+				{isPending && (
+					<ContextualbarContent>
+						<FormSkeleton />
+					</ContextualbarContent>
+				)}
+
+				{isError && !user && (
+					<ContextualbarContent pb={16}>
+						<Callout type='danger'>{t('User_not_found')}</Callout>
+					</ContextualbarContent>
+				)}
+
+				{!isPending && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
+			</>
+		);
+	}
 
 	return (
 		<ContextualbarDialog>

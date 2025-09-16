@@ -53,6 +53,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const room = useUserRoom(rid);
 	const { _id: uid, username } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
 	const userSubscription = useUserSubscription(rid);
 	const setModal = useSetModal();
@@ -60,19 +61,13 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	if (!room) {
-		throw Error('Room not provided');
-	}
-
-	const { roomCanSetOwner } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
-	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
-
-	const toggleOwnerEndpoint = useEndpoint('POST', getEndpoint(room.t, isOwner));
+	// Move all hooks before the conditional return
+	const toggleOwnerEndpoint = useEndpoint('POST', room?.t ? getEndpoint(room.t, isOwner) : '/v1/channels.addOwner');
 
 	const toggleOwnerMutation = useMutation({
 		mutationFn: async ({ roomId, userId }: { roomId: string; userId: string }) => {
 			await toggleOwnerEndpoint({ roomId, userId });
-
+			const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 			return t(isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_', {
 				username,
 				room_name: roomName,
@@ -87,7 +82,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	});
 
 	const handleChangeOwner = useCallback(() => {
-		if (!isRoomFederated(room)) {
+		if (!room || !isRoomFederated(room)) {
 			return toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid });
 		}
 
@@ -131,18 +126,24 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 
 	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
 
-	const changeOwnerOption = useMemo(
-		() =>
-			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
-				? {
-						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
-						icon: 'shield-check' as const,
-						onClick: changeOwnerAction,
-						type: 'privileges' as UserInfoActionType,
-					}
-				: undefined,
-		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],
-	);
+	const changeOwnerOption = useMemo(() => {
+		// If room is not yet available (admin modal initial render), do not throw; simply hide action
+		if (!room) {
+			return undefined;
+		}
+
+		const { roomCanSetOwner } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
+
+		return (isRoomFederated(room) && roomCanSetOwner) ||
+			(!isRoomFederated(room) && (roomCanSetOwner || hasManageRemotely) && (userCanSetOwner || hasManageRemotely))
+			? {
+					content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
+					icon: 'shield-check' as const,
+					onClick: changeOwnerAction,
+					type: 'privileges' as UserInfoActionType,
+				}
+			: undefined;
+	}, [room, uid, userSubscription, isOwner, hasManageRemotely, userCanSetOwner, t, changeOwnerAction]);
 
 	return changeOwnerOption;
 };

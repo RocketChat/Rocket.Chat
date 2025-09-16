@@ -3,8 +3,9 @@ import type { IRoom, RoomAdminFieldsType, Serialized } from '@rocket.chat/core-t
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { useRouter, usePermission } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
@@ -26,22 +27,11 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
 	const formatDate = useFormatDate();
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room as IRoom);
 	const roomName = getRoomDisplayName(room);
-
-	const getRoomType = (
-		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
-	): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
-		if (room.teamMain) {
-			return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
-		}
-		if (isDiscussion(room as IRoom)) {
-			return 'Discussion';
-		}
-		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
-	};
 
 	const onClick = useCallback(
 		(rid: string) => (): void =>
@@ -54,6 +44,48 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 			}),
 		[router],
 	);
+
+	const actions = useMemo(
+		() => ({
+			manageMembers: {
+				icon: 'members' as const,
+				content: t('Manage room members'),
+				onClick: () => {
+					router.navigate({
+						name: 'admin-rooms',
+						params: {
+							context: 'members',
+							id: _id,
+						},
+					});
+				},
+			},
+		}),
+		[t, router, _id],
+	);
+
+	const menuOptions = Object.entries(actions).map(([_key, item]) => {
+		return {
+			...item,
+			id: item.content || '',
+			content: item.content,
+		};
+	});
+
+	// Check if More actions button should be displayed
+	const shouldShowMoreActions = hasManageRemotely && type !== 'l' && type !== 'd';
+
+	const getRoomType = (
+		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
+	): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
+		if (room.teamMain) {
+			return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
+		}
+		if (isDiscussion(room as IRoom)) {
+			return 'Discussion';
+		}
+		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
+	};
 
 	return (
 		<GenericTableRow action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
@@ -87,6 +119,17 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}
+			<GenericTableCell
+				onClick={(e): void => {
+					e.stopPropagation();
+				}}
+			>
+				<Box display='flex' justifyContent='flex-end'>
+					{shouldShowMoreActions && (
+						<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />
+					)}
+				</Box>
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

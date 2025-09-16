@@ -80,6 +80,7 @@ async function findPrivateGroupByIdOrName({
 	params,
 	checkedArchived = true,
 	userId,
+	allowRemoteManagement = true,
 }: {
 	params:
 		| {
@@ -90,6 +91,7 @@ async function findPrivateGroupByIdOrName({
 		  };
 	userId: string;
 	checkedArchived?: boolean;
+	allowRemoteManagement?: boolean;
 }): Promise<{
 	rid: string;
 	open: boolean;
@@ -102,7 +104,11 @@ async function findPrivateGroupByIdOrName({
 
 	const user = await Users.findOneById(userId, { projections: { username: 1 } });
 
-	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+	// Allow access if user has manage-room-members-remotely permission OR can normally access the room
+	const hasManageRemotely = allowRemoteManagement && (await hasPermissionAsync(userId, 'manage-room-members-remotely'));
+	const canAccess = hasManageRemotely || (user && (await canAccessRoomAsync(room, user)));
+
+	if (!room || !user || !canAccess) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
@@ -398,6 +404,7 @@ API.v1.addRoute(
 				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 				checkedArchived: false,
+				allowRemoteManagement: false, // Files access requires room membership
 			});
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -497,6 +504,7 @@ API.v1.addRoute(
 				params: this.queryParams,
 				userId: this.userId,
 				checkedArchived: false,
+				allowRemoteManagement: false, // History access requires room membership
 			});
 
 			let latestDate = new Date();
@@ -779,6 +787,7 @@ API.v1.addRoute(
 					...(roomName && { roomName }),
 				},
 				userId: this.userId,
+				allowRemoteManagement: false, // Messages access requires room membership
 			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();

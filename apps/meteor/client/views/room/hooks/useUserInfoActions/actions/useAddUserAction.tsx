@@ -9,6 +9,7 @@ import {
 	useToastMessageDispatch,
 	useAtLeastOnePermission,
 	useEndpoint,
+	usePermission,
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -32,26 +33,29 @@ export const useAddUserAction = (
 	const currentUser = useUser();
 	const subscription = useUserSubscription(rid);
 	const dispatchToastMessage = useToastMessageDispatch();
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 
 	const { username, _id: uid } = user;
 
-	if (!room) {
-		throw Error('Room not provided');
-	}
-
+	// Can request both permissions regardless of room availability (uses room?.t)
 	const hasPermissionToAddUsers = useAtLeastOnePermission(
 		useMemo(() => [room?.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room?.t]),
 		rid,
 	);
 
+	// Check if user can add users based on room type and permissions
 	const userCanAdd =
-		room && user && isRoomFederated(room)
-			? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
-			: hasPermissionToAddUsers;
+		hasManageRemotely ||
+		(room &&
+			!room.archived &&
+			((isRoomFederated(room) && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)) ||
+				(!isRoomFederated(room) && hasPermissionToAddUsers)));
 
-	const { roomCanInvite } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
+	const { roomCanInvite } = room
+		? getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription })
+		: ({ roomCanInvite: false } as any);
 
-	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
+	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room?.t === 'p' ? 'p' : 'c']);
 
 	const handleAddUser = useEffectEvent(async ({ users }: { users: string[] }) => {
 		const [username] = users;
@@ -64,11 +68,8 @@ export const useAddUserAction = (
 	const addUserOptionAction = useEffectEvent(async () => {
 		try {
 			const users = [username as string];
-			if (isRoomFederated(room)) {
-				addClickHandler.mutate({
-					users,
-					handleSave: handleAddUser,
-				});
+			if (room && isRoomFederated(room)) {
+				addClickHandler.mutate({ users, handleSave: handleAddUser });
 			} else {
 				await handleAddUser({ users });
 			}
@@ -80,7 +81,7 @@ export const useAddUserAction = (
 
 	const addUserOption = useMemo(
 		() =>
-			roomCanInvite && userCanAdd && room.archived !== true
+			(roomCanInvite || hasManageRemotely) && userCanAdd
 				? {
 						content: t('add-to-room'),
 						icon: 'user-plus' as const,
@@ -88,7 +89,7 @@ export const useAddUserAction = (
 						type: 'management' as const,
 					}
 				: undefined,
-		[roomCanInvite, userCanAdd, room.archived, t, addUserOptionAction],
+		[roomCanInvite, userCanAdd, t, addUserOptionAction, hasManageRemotely],
 	);
 
 	return addUserOption;
