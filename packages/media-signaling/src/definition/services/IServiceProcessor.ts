@@ -1,6 +1,6 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-export type DefaultServiceStateMap = Record<string, string>;
+export type DefaultServiceStateMap = Record<string, unknown>;
 
 export type ServiceStateEvent<ServiceStateMap extends DefaultServiceStateMap, K extends keyof ServiceStateMap = keyof ServiceStateMap> = {
 	[P in keyof ServiceStateMap]: ServiceStateMap[P] extends infer U ? { stateName: P; stateValue: U } : { stateName: P; stateValue: string };
@@ -12,7 +12,6 @@ export type ServiceStateValue<ServiceStateMap extends DefaultServiceStateMap, K 
 >['stateValue'];
 
 export type ServiceProcessorEvents<ServiceStateMap extends DefaultServiceStateMap> = {
-	stateChange: string;
 	internalStateChange: keyof ServiceStateMap;
 	internalError: { critical: boolean; error: string | Error };
 	negotiationNeeded: void;

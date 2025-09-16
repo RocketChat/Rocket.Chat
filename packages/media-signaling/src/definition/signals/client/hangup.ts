@@ -17,10 +17,12 @@ export const clientMediaSignalHangupSchema: JSONSchemaType<ClientMediaSignalHang
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -28,6 +30,18 @@ export const clientMediaSignalHangupSchema: JSONSchemaType<ClientMediaSignalHang
 		},
 		reason: {
 			type: 'string',
+			enum: [
+				'normal',
+				'remote',
+				'rejected',
+				'unavailable',
+				'transfer',
+				'timeout',
+				'signaling-error',
+				'service-error',
+				'media-error',
+				'error',
+			],
 			nullable: false,
 		},
 	},

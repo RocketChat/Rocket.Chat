@@ -2,7 +2,7 @@ import type { ClientState } from '../client';
 import type { CallState } from './IClientMediaCall';
 
 export type CallEvents = {
-	/* Triggered when the call's server state is changed on this client */
+	/* Triggered when the call's server state is changed on this client, with the old state as param */
 	stateChange: CallState;
 	/* Triggered when the call's client state is changed (based on user interaction or internal service state) */
 	clientStateChange: ClientState;

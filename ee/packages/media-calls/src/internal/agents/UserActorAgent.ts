@@ -1,4 +1,4 @@
-import type { IMediaCall } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -7,7 +7,7 @@ import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
 import { getMediaCallServer } from '../../server/injection';
 
-export abstract class UserActorAgent extends BaseMediaCallAgent {
+export class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
@@ -22,11 +22,29 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onCallAccepted', callId });
 
-		return this.sendSignal({
+		await this.sendSignal({
 			callId,
 			type: 'notification',
 			notification: 'accepted',
 			signedContractId,
+		});
+
+		if (this.role !== 'callee') {
+			return;
+		}
+
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
+		if (!negotiation?.offer) {
+			logger.debug('The call was accepted but the webrtc offer is not yet available.');
+			return;
+		}
+
+		await this.sendSignal({
+			callId,
+			toContractId: signedContractId,
+			type: 'remote-sdp',
+			sdp: negotiation.offer,
+			negotiationId: negotiation._id,
 		});
 	}
 
@@ -52,6 +70,11 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onCallCreated', call });
+
+		if (this.role === 'caller' && call.caller.contractId) {
+			// Pre-create the channel for the contractId that requested the call
+			await this.getOrCreateChannel(call, call.caller.contractId);
+		}
 
 		await this.sendSignal(this.buildNewCallSignal(call));
 	}
@@ -115,6 +138,29 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onCallTransferred(callId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onCallTransferred', callId });
+
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.transferredBy || !call?.transferredTo) {
+			return;
+		}
+
+		const actor = this.getMyCallActor(call);
+		// If we haven't signed yet, we can't be transferred
+		if (!actor.contractId) {
+			return;
+		}
+
+		getMediaCallServer().requestCall({
+			caller: actor as MediaCallSignedContact,
+			callee: call.transferredTo,
+			requestedService: call.service,
+			requestedBy: call.transferredBy,
+			parentCallId: call._id,
+		});
+	}
+
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
 		return {
 			callId: call._id,
@@ -122,7 +168,10 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 			service: call.service,
 			kind: call.kind,
 			role: this.role,
+			self: this.getMyCallActor(call),
 			contact: this.getOtherCallActor(call),
+			...(call.parentCallId && { replacingCallId: call.parentCallId }),
+			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),
 		};
 	}
 }

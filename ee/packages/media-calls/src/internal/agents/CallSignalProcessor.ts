@@ -1,13 +1,14 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
-import {
-	isPendingState,
-	type CallAnswer,
-	type CallHangupReason,
-	type CallRole,
-	type ClientMediaSignal,
-	type ClientMediaSignalError,
-	type ClientMediaSignalLocalState,
-	type ServerMediaSignal,
+import type { IMediaCall, IMediaCallChannel, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
+import type {
+	ClientMediaSignalTransfer,
+	CallAnswer,
+	CallHangupReason,
+	CallRole,
+	ClientMediaSignal,
+	ClientMediaSignalError,
+	ClientMediaSignalLocalState,
+	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -15,6 +16,7 @@ import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
+import { stripSensitiveDataFromSignal, stripSensitiveDataFromSdp } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
 	public get contractId(): string {
@@ -37,7 +39,7 @@ export class UserActorSignalProcessor {
 		return this.channel.role;
 	}
 
-	public get actor(): MediaCallActor {
+	public get actor(): MediaCallSignedActor {
 		return {
 			type: this.actorType,
 			id: this.actorId,
@@ -72,12 +74,12 @@ export class UserActorSignalProcessor {
 	}
 
 	public async processSignal(signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal });
+		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal) });
 
-		// The code will only reach this point if one of the three following conditions are true:
+		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
-		// 2. the call has not been accepted yet and the signal came from a valid sesison from the callee
+		// 3. the call has not been accepted yet and the signal came from a valid session from the callee
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
@@ -91,6 +93,8 @@ export class UserActorSignalProcessor {
 				return this.processError(signal.errorType, signal.errorCode);
 			case 'negotiation-needed':
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
+			case 'transfer':
+				return this.processCallTransfer(signal.to);
 		}
 	}
 
@@ -99,7 +103,11 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp });
+		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp: stripSensitiveDataFromSdp(sdp), signed: this.signed });
+
+		if (!this.signed) {
+			return;
+		}
 
 		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}
@@ -148,12 +156,24 @@ export class UserActorSignalProcessor {
 		}
 	}
 
+	private async processCallTransfer(to: ClientMediaSignalTransfer['to']): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processCallTransfer', to });
+		if (!isBusyState(this.call.state)) {
+			return;
+		}
+
+		return MediaCallDirector.transferCall(this.call, to, this.actor, this.agent);
+	}
+
 	protected async clientIsReachable(): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.clientIsReachable', role: this.role, uid: this.actorId });
 
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
-			await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
+			const ringUpdateResult = await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
+			if (ringUpdateResult.modifiedCount) {
+				MediaCallDirector.scheduleExpirationCheckByCallId(this.callId);
+			}
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
@@ -179,6 +199,12 @@ export class UserActorSignalProcessor {
 
 	protected async clientIsUnavailable(): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.clientIsUnavailable', role: this.role, uid: this.actorId });
+		// Ignore 'unavailable' responses from unsigned clients as some other client session may have a different answer
+		if (!this.signed) {
+			return;
+		}
+
+		await MediaCallDirector.hangup(this.call, this.agent, 'unavailable');
 	}
 
 	protected async clientHasAccepted(): Promise<void> {
@@ -242,7 +268,7 @@ export class UserActorSignalProcessor {
 
 	private async onSignalingError(errorMessage?: string): Promise<void> {
 		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
+		await MediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
 	}
 
 	private async onServiceError(errorMessage?: string): Promise<void> {

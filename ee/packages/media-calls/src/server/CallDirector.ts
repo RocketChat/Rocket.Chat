@@ -1,35 +1,26 @@
-import type {
-	AtLeast,
-	IMediaCall,
-	IMediaCallNegotiation,
-	MediaCallActor,
-	MediaCallSignedActor,
-	ServerActor,
-} from '@rocket.chat/core-typings';
-import type { CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
+import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedActor, ServerActor } from '@rocket.chat/core-typings';
+import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import type { MediaCallHeader } from '../definition/common';
+import type { InternalCallParams, MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
-const EXPIRATION_CHECK_DELAY = 1000;
+const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 
-export type CreateCallParams = {
-	caller: MediaCallSignedActor;
-	callee: MediaCallActor;
-	requestedCallId?: string;
-	requestedService?: CallService;
-
+export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
 
 	webrtcOffer?: RTCSessionDescriptionInit;
 };
+
+// expiration checks by call id
+const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>();
 
 export class MediaCallDirector {
 	public static async hangup(call: IMediaCall, actorAgent: IMediaCallAgent, reason: CallHangupReason): Promise<void> {
@@ -43,28 +34,8 @@ export class MediaCallDirector {
 		}
 	}
 
-	public static async hangupByServer(call: AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>, serverErrorCode: string): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.hangupByServer', callId: call._id, serverErrorCode });
-		try {
-			const endedBy = { type: 'server', id: 'server' } as ServerActor;
-
-			const modified = await this.hangupCallById(call._id, { endedBy, reason: serverErrorCode });
-			if (!modified) {
-				return;
-			}
-
-			// Try to notify the agents but there's no guarantee they are reachable
-			try {
-				const agents = await this.cast.getAgentsFromCall(call);
-				for (const agent of Object.values(agents)) {
-					agent?.onCallEnded(call._id).catch(() => null);
-				}
-			} catch {
-				// Ignore errors on the ended event
-			}
-		} catch (error) {
-			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, serverErrorCode });
-		}
+	public static async hangupByServer(call: MediaCallHeader, serverErrorCode: string): Promise<void> {
+		return this.hangupDetachedCall(call, { reason: serverErrorCode });
 	}
 
 	public static async activate(call: IMediaCall, actorAgent: IMediaCallAgent): Promise<void> {
@@ -75,6 +46,7 @@ export class MediaCallDirector {
 			return;
 		}
 
+		this.scheduleExpirationCheckByCallId(call._id);
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
 
@@ -89,11 +61,15 @@ export class MediaCallDirector {
 		// Once the state changes, negotiations need to be referred by id.
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
 
-		const stateResult = await MediaCalls.acceptCallById(call._id, data, this.getNewExpirationTime());
+		const { webrtcAnswer, ...acceptData } = data;
+
+		const stateResult = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
 			return false;
 		}
+
+		this.scheduleExpirationCheckByCallId(call._id);
 
 		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
@@ -184,8 +160,11 @@ export class MediaCallDirector {
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'MediaCallDirector.createCall', params });
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer, parentCallId, requestedBy } = params;
+		logger.debug({
+			msg: 'MediaCallDirector.createCall',
+			params: { caller, callee, requestedCallId, requestedService, hasOffer: Boolean(webrtcOffer), parentCallId, requestedBy },
+		});
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -210,21 +189,33 @@ export class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
+		const createdByActor = requestedBy || caller;
+
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
 			service,
 			kind: 'direct',
 			state: 'none',
 
-			createdBy: caller,
+			createdBy: {
+				type: createdByActor.type,
+				id: createdByActor.id,
+				contractId: createdByActor.contractId,
+			},
 			createdAt: new Date(),
 
 			caller,
 			callee,
 
 			expiresAt: MediaCallDirector.getNewExpirationTime(),
+			uids: [
+				// add actor ids to uids field if their type is 'user', to make it easy to identify any call an user was part of
+				...(caller.type === 'user' ? [caller.id] : []),
+				...(callee.type === 'user' ? [callee.id] : []),
+			],
+			ended: false,
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
-			...(webrtcOffer && { webrtcOffer }),
+			...(parentCallId && { parentCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -239,18 +230,67 @@ export class MediaCallDirector {
 			throw new Error('failed-to-retrieve-call');
 		}
 
+		this.scheduleExpirationCheckByCallId(newCall._id);
+
+		if (webrtcOffer) {
+			await this.startNewNegotiation(newCall, 'caller', webrtcOffer);
+		}
+
 		return newCall;
 	}
 
-	public static async hangupExpiredCalls(): Promise<void> {
+	public static async transferCall(
+		call: MediaCallHeader,
+		to: MediaCallContact,
+		by: MediaCallSignedActor,
+		agent: IMediaCallAgent,
+	): Promise<void> {
+		if (!agent.oppositeAgent) {
+			logger.error('Unable to transfer calls without a reference to the opposite agent.');
+			return;
+		}
+
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		await agent.oppositeAgent.onCallTransferred(call._id);
+	}
+
+	public static async hangupTransferredCallById(callId: string): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.hangupTransferredCallById', callId });
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.transferredBy) {
+			return;
+		}
+
+		return this.hangupDetachedCall(call, { endedBy: call.transferredBy, reason: 'transfer' });
+	}
+
+	public static async hangupExpiredCalls(): Promise<void>;
+
+	public static async hangupExpiredCalls(expectedCallId: string): Promise<boolean>;
+
+	public static async hangupExpiredCalls(expectedCallId?: string): Promise<boolean | void> {
 		logger.debug('MediaCallDirector.hangupExpiredCalls');
 
-		const result = MediaCalls.findAllExpiredCalls<Pick<IMediaCall, '_id' | 'caller' | 'callee'>>({
+		let expectedCallWasExpired = false;
+
+		const result = MediaCalls.findAllExpiredCalls<MediaCallHeader>({
 			projection: { _id: 1, caller: 1, callee: 1 },
 		});
 
 		for await (const call of result) {
+			if (expectedCallId && call._id === expectedCallId) {
+				expectedCallWasExpired = true;
+			}
+
 			await this.hangupByServer(call, 'timeout');
+		}
+
+		if (typeof expectedCallId === 'string') {
+			return expectedCallWasExpired;
 		}
 	}
 
@@ -260,14 +300,40 @@ export class MediaCallDirector {
 
 	public static async renewCallId(callId: string): Promise<void> {
 		await MediaCalls.setExpiresAtById(callId, this.getNewExpirationTime());
-		this.scheduleExpirationCheck();
+		this.scheduleExpirationCheckByCallId(callId);
+	}
+
+	public static scheduleExpirationCheckByCallId(callId: string): void {
+		const oldHandler = scheduledExpirationChecks.get(callId);
+		if (oldHandler) {
+			clearTimeout(oldHandler);
+			scheduledExpirationChecks.delete(callId);
+		}
+
+		const handler = setTimeout(async () => {
+			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheckByCallId.timeout', callId });
+			scheduledExpirationChecks.delete(callId);
+
+			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((error) =>
+				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }),
+			);
+
+			if (!expectedCallWasExpired) {
+				const call = await MediaCalls.findOneById(callId, { projection: { ended: 1 } });
+				if (call && !call.ended) {
+					this.scheduleExpirationCheckByCallId(callId);
+				}
+			}
+		}, EXPIRATION_CHECK_TIMEOUT);
+
+		scheduledExpirationChecks.set(callId, handler);
 	}
 
 	public static scheduleExpirationCheck(): void {
-		setTimeout(
-			() => this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error })),
-			EXPIRATION_TIME + EXPIRATION_CHECK_DELAY,
-		);
+		setTimeout(async () => {
+			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheck.timeout' });
+			await this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }));
+		}, EXPIRATION_CHECK_TIMEOUT);
 	}
 
 	public static async runOnCallCreatedForAgent(
@@ -320,7 +386,7 @@ export class MediaCallDirector {
 		return Boolean(result.modifiedCount);
 	}
 
-	private static async hangupCallByIdAndNotifyAgents(
+	public static async hangupCallByIdAndNotifyAgents(
 		callId: string,
 		agents: IMediaCallAgent[],
 		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
@@ -335,5 +401,32 @@ export class MediaCallDirector {
 				agent.onCallEnded(callId).catch((error) => logger.error({ msg: 'Failed to notify agent of a hangup', error, actor: agent.actor })),
 			),
 		);
+	}
+
+	public static async hangupDetachedCall(
+		call: MediaCallHeader,
+		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
+	): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.hangupDetachedCall', callId: call._id, params });
+		try {
+			const endedBy = params?.endedBy || ({ type: 'server', id: 'server' } as ServerActor);
+
+			const modified = await this.hangupCallById(call._id, { ...params, endedBy });
+			if (!modified) {
+				return;
+			}
+
+			// Try to notify the agents but there's no guarantee they are reachable
+			try {
+				const agents = await this.cast.getAgentsFromCall(call);
+				for (const agent of Object.values(agents)) {
+					agent?.onCallEnded(call._id).catch(() => null);
+				}
+			} catch {
+				// Ignore errors on the ended event
+			}
+		} catch (error) {
+			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, params });
+		}
 	}
 }

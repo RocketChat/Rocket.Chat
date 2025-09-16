@@ -2,6 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
+import type { InternalCallParams } from './common';
+
 export type MediaCallServerEvents = {
 	callUpdated: string;
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
@@ -12,7 +14,7 @@ export interface IMediaCallServerSettings {
 
 	internalCalls: {
 		requireExtensions: boolean;
-		routeExternally: 'never' | 'preferrably' | 'always';
+		routeExternally: 'never' | 'preferably' | 'always';
 	};
 
 	sip: {
@@ -44,4 +46,6 @@ export interface IMediaCallServer {
 	hangupExpiredCalls(): Promise<void>;
 	scheduleExpirationCheck(): void;
 	configure(settings: IMediaCallServerSettings): void;
+
+	requestCall(params: InternalCallParams): Promise<void>;
 }

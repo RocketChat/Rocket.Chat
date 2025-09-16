@@ -19,7 +19,7 @@ export class MediaSignalTransportWrapper {
 	public sendToServer<T extends ClientMediaSignalType>(callId: string, type: T, signal: ClientMediaSignalBody<T>) {
 		this.logger?.debug('MediaSignalTransportWrapper.sendToServer', type);
 		return this.sendSignal({
-			callId,
+			...(type !== 'register' && { callId }),
 			contractId: this.contractId,
 			type,
 			...signal,

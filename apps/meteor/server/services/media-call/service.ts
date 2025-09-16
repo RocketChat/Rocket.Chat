@@ -29,7 +29,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
-			logger.debug({ msg: 'new client signal', signal, uid });
+			logger.debug({ msg: 'new client signal', type: signal.type, uid });
 			callServer.receiveSignal(uid, signal);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
@@ -38,13 +38,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
 		try {
-			logger.debug({ msg: 'new client signal', signal, uid });
+			logger.debug({ msg: 'new client signal', uid });
 
 			const deserialized = await this.deserializeClientSignal(signal);
 
 			callServer.receiveSignal(uid, deserialized);
 		} catch (error) {
-			logger.error({ msg: 'failed to process client signal', error, signal, uid });
+			logger.error({ msg: 'failed to process client signal', error, uid });
 		}
 	}
 
@@ -53,8 +53,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			logger.error({ msg: 'Media Call Server failed to hangup expired calls', error });
 		});
 
-		if (await MediaCalls.hasUnfinishedCalls()) {
-			callServer.scheduleExpirationCheck();
+		try {
+			if (await MediaCalls.hasUnfinishedCalls()) {
+				callServer.scheduleExpirationCheck();
+			}
+		} catch (error) {
+			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', error });
 		}
 	}
 

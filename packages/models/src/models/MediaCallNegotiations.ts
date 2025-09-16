@@ -1,6 +1,6 @@
 import type { RocketChatRecordDeleted, IMediaCallNegotiation } from '@rocket.chat/core-typings';
 import type { IMediaCallNegotiationsModel } from '@rocket.chat/model-typings';
-import type { IndexDescription, Collection, Db, FindOptions, Document, FindCursor, UpdateResult } from 'mongodb';
+import type { IndexDescription, Collection, Db, FindOptions, Document, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -10,14 +10,7 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { callId: 1, requestTimestamp: -1, stableTimestamp: -1 }, unique: false, sparse: true }];
-	}
-
-	public async findAllByCallId<T extends Document = IMediaCallNegotiation>(
-		callId: IMediaCallNegotiation['callId'],
-		options?: FindOptions<T>,
-	): Promise<FindCursor<T>> {
-		return this.find({ callId }, options);
+		return [{ key: { callId: 1, requestTimestamp: -1 }, unique: false }];
 	}
 
 	public async findLatestByCallId<T extends Document = IMediaCallNegotiation>(
@@ -27,25 +20,6 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 		return this.findOne(
 			{
 				callId,
-			},
-			{
-				...options,
-				sort: {
-					requestTimestamp: -1,
-				},
-				limit: 1,
-			},
-		);
-	}
-
-	public async findActiveByCallId<T extends Document = IMediaCallNegotiation>(
-		callId: IMediaCallNegotiation['callId'],
-		options?: FindOptions<T>,
-	): Promise<T | null> {
-		return this.findOne(
-			{
-				callId,
-				stableTimestamp: { $exists: true },
 			},
 			{
 				...options,

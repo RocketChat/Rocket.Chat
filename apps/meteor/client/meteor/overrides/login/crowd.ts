@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callLoginMethod, handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod, handleLogin, type LoginCallback } from '../../../lib/2fa/overrideLoginMethod';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace

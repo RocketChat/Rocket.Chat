@@ -31,6 +31,7 @@ import type {
 	ILivechatContact,
 	ILivechatContactChannel,
 	IUser,
+	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -2134,6 +2135,46 @@ const GETLivechatConfigParamsSchema = {
 
 export const isGETLivechatConfigParams = ajv.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
 
+export const GETLivechatConfigRoutingSchema = {
+	type: 'object',
+	properties: {
+		config: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				previewRoom: {
+					type: 'boolean',
+				},
+				showConnecting: {
+					type: 'boolean',
+				},
+				showQueue: {
+					type: 'boolean',
+				},
+				showQueueLink: {
+					type: 'boolean',
+				},
+				returnQueue: {
+					type: 'boolean',
+				},
+				enableTriggerAction: {
+					type: 'boolean',
+				},
+				autoAssignAgent: {
+					type: 'boolean',
+				},
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatConfigRouting = ajv.compile<{ config: OmichannelRoutingConfig | undefined }>(GETLivechatConfigRoutingSchema);
+
 type POSTLivechatCustomFieldParams = {
 	token: string;
 	key: string;
@@ -3396,6 +3437,69 @@ const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
 export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
+
+type GETLivechatAnalyticsDashboardsChartDataParams = {
+	chartName: string;
+	start: string;
+	end: string;
+	departmentId?: string;
+};
+
+const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
+	type: 'object',
+	properties: {
+		chartName: {
+			type: 'string',
+		},
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['chartName', 'start', 'end'],
+};
+
+export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(
+	GETLivechatAnalyticsDashboardsChartDataParamsSchema,
+);
+
+const GETLivechatAnalyticsDashboardsChartDataSuccess = {
+	type: 'object',
+	properties: {
+		chartLabel: {
+			type: 'string',
+		},
+		dataLabels: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		dataPoints: {
+			type: 'array',
+			items: {
+				type: 'number',
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatAnalyticsDashboardsChartDataSuccessSchema = ajv.compile<{
+	chartLabel: string;
+	dataLabels: string[];
+	dataPoints: number[];
+}>(GETLivechatAnalyticsDashboardsChartDataSuccess);
 
 type PUTLivechatPriority = { name: string } | { reset: boolean };
 const PUTLivechatPrioritySchema = {

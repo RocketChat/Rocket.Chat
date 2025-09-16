@@ -1,4 +1,11 @@
-import type { IMediaCall, RocketChatRecordDeleted, MediaCallActorType } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	RocketChatRecordDeleted,
+	MediaCallActorType,
+	MediaCallSignedActor,
+	MediaCallContact,
+	IUser,
+} from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type {
 	IndexDescription,
@@ -22,7 +29,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: 1 }, unique: false },
-			{ key: { state: 1, expiresAt: 1 }, unique: false },
+			{ key: { ended: 1, uids: 1, expiresAt: 1 }, unique: false },
 			{
 				key: { 'caller.type': 1, 'caller.id': 1, 'callerRequestedId': 1 },
 				sparse: true,
@@ -30,19 +37,16 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		];
 	}
 
-	public async findOneByIdOrCallerRequestedId<T extends Document = IMediaCall>(
-		id: IMediaCall['_id'] | Required<IMediaCall>['callerRequestedId'],
+	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
+		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },
 		options?: FindOptions<T>,
 	): Promise<T | null> {
 		return this.findOne(
 			{
-				$or: [
-					// If we get an id, find any call with that id
-					{ _id: id },
-					// if we get a callerRequestedId, then only find it if it was created by the same actor
-					{ 'caller.type': caller.type, 'caller.id': caller.id, 'callerRequestedId': id },
-				],
+				'caller.type': caller.type,
+				'caller.id': caller.id,
+				'callerRequestedId': id,
 			},
 			options,
 		);
@@ -66,12 +70,8 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(
-		callId: string,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
-		expiresAt: Date,
-	): Promise<UpdateResult> {
-		const { calleeContractId, webrtcAnswer } = data;
+	public async acceptCallById(callId: string, data: { calleeContractId: string }, expiresAt: Date): Promise<UpdateResult> {
+		const { calleeContractId } = data;
 
 		return this.updateOne(
 			{
@@ -83,7 +83,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'state': 'accepted',
 					'callee.contractId': calleeContractId,
 					expiresAt,
-					...(webrtcAnswer && { webrtcAnswer }),
 				},
 			},
 		);
@@ -110,11 +109,12 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return this.updateOne(
 			{
 				_id: callId,
-				state: { $ne: 'hangup' },
+				ended: false,
 			},
 			{
 				$set: {
 					state: 'hangup',
+					ended: true,
 					endedAt: new Date(),
 					...(endedBy && { endedBy }),
 					...(reason && { hangupReason: reason }),
@@ -127,7 +127,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return this.updateOne(
 			{
 				_id: callId,
-				state: { $ne: 'hangup' },
+				ended: false,
 			},
 			{
 				$set: { expiresAt },
@@ -135,22 +135,65 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async transferCallById(callId: string, params: { by: MediaCallSignedActor; to: MediaCallContact }): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				state: {
+					$in: ['accepted', 'active'],
+				},
+				transferredAt: {
+					$exists: false,
+				},
+			},
+			{
+				$set: {
+					transferredAt: new Date(),
+					transferredBy: params.by,
+					transferredTo: params.to,
+				},
+			},
+		);
+	}
+
 	public findAllExpiredCalls<T extends Document = IMediaCall>(options?: FindOptions<T>): FindCursor<T> {
 		return this.find(
 			{
-				state: {
-					$ne: 'hangup',
-				},
+				ended: false,
 				expiresAt: {
-					$lt: new Date(),
+					$lte: new Date(),
 				},
 			},
 			options,
 		);
 	}
 
+	public findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				ended: false,
+				expiresAt: {
+					$gt: new Date(),
+				},
+				uids: uid,
+			},
+			options,
+		);
+	}
+
 	public async hasUnfinishedCalls(): Promise<boolean> {
-		const count = await this.countDocuments({ state: { $ne: 'hangup' } }, { limit: 1 });
+		const count = await this.countDocuments({ ended: false }, { limit: 1 });
+		return count > 0;
+	}
+
+	public async hasUnfinishedCallsByUid(uid: IUser['_id']): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				ended: false,
+				uids: uid,
+			},
+			{ limit: 1 },
+		);
 		return count > 0;
 	}
 }

@@ -18,3 +18,5 @@ export type ClientContractState =
 	| 'pre-signed' // the session that requested a call is assuming it will be signed into it
 	| 'self-signed' // the call has progressed beyond the signing stage without any signature confirmation
 	| 'ignored'; // the server signed a contract from a different session
+
+export type RandomStringFactory = () => string;
