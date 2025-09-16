@@ -25,7 +25,8 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationP
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
-	const fixedColumnStyle = css`
+	const tableCustomStyle = css`
+		// Makes the first column of the table sticky
 		tr > th {
 			&:first-child {
 				position: sticky;
@@ -43,6 +44,18 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationP
 				z-index: 11;
 			}
 		}
+
+		tr:hover {
+			td {
+				&:first-child {
+					background-color: ${Palette.surface['surface-hover']};
+				}
+			}
+			td > :nth-child(2) {
+				visibility: visible;
+				opacity: 1;
+			}
+		}
 	`;
 
 	return (
@@ -51,7 +64,7 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationP
 			{permissions?.length === 0 && <GenericNoResults />}
 			{permissions?.length > 0 && (
 				<>
-					<GenericTable className={[fixedColumnStyle]} fixed={false}>
+					<GenericTable className={[tableCustomStyle]} fixed={false}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
 							{roleList?.map(({ _id, name, description }) => <RoleHeader key={_id} _id={_id} name={name} description={description} />)}

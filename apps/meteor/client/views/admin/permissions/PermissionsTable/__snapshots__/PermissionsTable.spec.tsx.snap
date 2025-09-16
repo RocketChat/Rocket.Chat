@@ -38,7 +38,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-table__wrapper"
             >
               <table
-                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-1fepnl2"
+                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-1l69a2k"
               >
                 <thead
                   class="rcx-box rcx-box--full rcx-table__head"

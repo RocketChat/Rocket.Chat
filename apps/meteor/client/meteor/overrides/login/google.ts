@@ -1,12 +1,14 @@
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
+// eslint-disable-next-line import/no-duplicates
 import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
+// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { overrideLoginMethod, type LoginCallback } from '../../../lib/2fa/overrideLoginMethod';
+import { wrapRequestCredentialFn } from '../../../lib/wrapRequestCredentialFn';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace

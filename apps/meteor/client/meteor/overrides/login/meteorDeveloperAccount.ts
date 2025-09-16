@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+// eslint-disable-next-line import/no-duplicates
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
+// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { overrideLoginMethod } from '../../../lib/2fa/overrideLoginMethod';
+import { wrapRequestCredentialFn } from '../../../lib/wrapRequestCredentialFn';
 
 const { loginWithMeteorDeveloperAccount } = Meteor;
 const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(MeteorDeveloperAccounts);

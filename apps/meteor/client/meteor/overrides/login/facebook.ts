@@ -1,12 +1,14 @@
 import type { FacebookOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+// eslint-disable-next-line import/no-duplicates
 import { Facebook } from 'meteor/facebook-oauth';
 import { Meteor } from 'meteor/meteor';
+// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { overrideLoginMethod } from '../../../lib/2fa/overrideLoginMethod';
+import { wrapRequestCredentialFn } from '../../../lib/wrapRequestCredentialFn';
 
 const { loginWithFacebook } = Meteor;
 const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);

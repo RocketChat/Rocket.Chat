@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { PublicSettings } from '../stores';
+import { PublicSettings } from '../../stores';
 
 PublicSettings.use.subscribe((state) => {
 	const removedIds = new Set(Object.keys(Meteor.settings)).difference(new Set(state.records.keys()));
