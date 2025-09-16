@@ -3438,6 +3438,69 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
+type GETLivechatAnalyticsDashboardsChartDataParams = {
+	chartName: string;
+	start: string;
+	end: string;
+	departmentId?: string;
+};
+
+const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
+	type: 'object',
+	properties: {
+		chartName: {
+			type: 'string',
+		},
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['chartName', 'start', 'end'],
+};
+
+export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(
+	GETLivechatAnalyticsDashboardsChartDataParamsSchema,
+);
+
+const GETLivechatAnalyticsDashboardsChartDataSuccess = {
+	type: 'object',
+	properties: {
+		chartLabel: {
+			type: 'string',
+		},
+		dataLabels: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		dataPoints: {
+			type: 'array',
+			items: {
+				type: 'number',
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatAnalyticsDashboardsChartDataSuccessSchema = ajv.compile<{
+	chartLabel: string;
+	dataLabels: string[];
+	dataPoints: number[];
+}>(GETLivechatAnalyticsDashboardsChartDataSuccess);
+
 type PUTLivechatPriority = { name: string } | { reset: boolean };
 const PUTLivechatPrioritySchema = {
 	oneOf: [
