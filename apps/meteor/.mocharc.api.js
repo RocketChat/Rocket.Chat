@@ -6,6 +6,8 @@
 
 module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	...require('./.mocharc.base.json'), // see https://github.com/mochajs/mocha/issues/3916
+	reporter: 'mocha-multi-reporters',
+	reporterOptions: 'configFile=.mocharc.multi.json',
 	timeout: 10000,
 	bail: true,
 	retries: 0,

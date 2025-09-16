@@ -1,0 +1,6 @@
+{
+    "reporterEnabled": "spec, ./reporters/github-summary-mocha.js",
+    "reportersGithubSummaryMochaJsReporterOptions": {
+        "output": "test-summary-mocha-api.json"
+    }
+}
