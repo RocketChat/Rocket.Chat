@@ -11,6 +11,8 @@ import {
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 	validateBadRequestErrorResponse,
+	isPOSTLivechatRemoveRoomParams,
+	POSTLivechatRemoveRoomSuccess,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
@@ -29,7 +31,7 @@ import { closeRoom } from '../../lib/closeRoom';
 import { saveGuest } from '../../lib/guests';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
-import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { createRoom, removeOmnichannelRoom, saveRoomInfo } from '../../lib/rooms';
 import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
@@ -430,25 +432,42 @@ API.v1.addRoute(
 	},
 );
 
-const livechatRoomsEndpoitns = API.v1.post(
+const livechatRoomsEndpoints = API.v1.post(
 	'livechat/rooms.delete',
 	{
 		response: {
-			200: {},
+			200: POSTLivechatRemoveRoomSuccess,
 			400: validateBadRequestErrorResponse,
 		},
 		authRequired: true,
 		permissionsRequired: ['remove-closed-livechat-room'],
-		body: {},
+		body: isPOSTLivechatRemoveRoomParams,
 	},
 	async function action() {
-		console.log(this.userId);
+		const { roomId } = this.bodyParams;
+
+		const room = await LivechatRooms.findOneById(roomId);
+		if (!room) {
+			return API.v1.failure('error-invalid-room');
+		}
+
+		if (room.t !== 'l') {
+			return API.v1.failure('error-this-is-not-a-livechat-room');
+		}
+
+		if (room.open) {
+			return API.v1.failure('error-room-is-not-closed');
+		}
+
+		await removeOmnichannelRoom(roomId);
+
+		return API.v1.success();
 	},
 );
 
-type LivechatRoomsEndpoint = ExtractRoutesFromAPI<typeof livechatRoomsEndpoitns>;
+type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatRoomsEndpoint {}
+	interface Endpoints extends LivechatRoomsEndpoints {}
 }
