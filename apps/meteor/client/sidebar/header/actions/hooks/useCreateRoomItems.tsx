@@ -64,7 +64,7 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 
 	const createOutboundMessageItem: GenericMenuItemProps = {
 		id: 'outbound-message',
-		content: t('Outbound_Message'),
+		content: t('Outbound_message'),
 		icon: 'send',
 		onClick: () => outboundMessageModal.open(),
 	};

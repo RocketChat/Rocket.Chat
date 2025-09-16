@@ -6,7 +6,7 @@ import OutboundMessageModal from './OutboundMessageModal';
 
 jest.mock('../../components/OutboundMessageWizard', () => ({
 	__esModule: true,
-	default: () => <div>Outbound Message Wizard</div>,
+	default: () => <div>Outbound message Wizard</div>,
 }));
 
 const appRoot = mockAppRoot()
@@ -14,7 +14,6 @@ const appRoot = mockAppRoot()
 		Close: 'Close',
 		Discard: 'Discard',
 		Discard_message: 'Discard message',
-		Outbound_Message: 'Outbound Message',
 		This_action_cannot_be_undone: 'This action cannot be undone',
 		Keep_editing: 'Keep editing',
 		Are_you_sure_you_want_to_discard_this_outbound_message: 'Are you sure you want to discard this outbound message?',
@@ -25,7 +24,7 @@ it('should display confirmation before closing the modal', async () => {
 	const onClose = jest.fn();
 	render(<OutboundMessageModal onClose={onClose} />, { wrapper: appRoot });
 
-	expect(screen.getByRole('dialog', { name: 'Outbound Message' })).toBeInTheDocument();
+	expect(screen.getByRole('dialog', { name: 'Outbound message' })).toBeInTheDocument();
 	expect(screen.queryByRole('dialog', { name: 'Discard message' })).not.toBeInTheDocument();
 
 	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
@@ -55,7 +54,7 @@ it('should close confirmation and leave modal open when cancel is clicked', asyn
 	await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
 
 	expect(screen.queryByRole('dialog', { name: 'Discard message' })).not.toBeInTheDocument();
-	expect(screen.getByRole('dialog', { name: 'Outbound Message' })).toBeInTheDocument();
+	expect(screen.getByRole('dialog', { name: 'Outbound message' })).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 	expect(onClose).not.toHaveBeenCalled();
 });

@@ -3833,7 +3833,6 @@
   "Others": "Outros",
   "Out_of_seats": "Sem lugares",
   "Outbound_message": "Mensagem ativa",
-  "Outbound_Message": "Mensagem Ativa",
   "Outbound_message_agent_hint": "Deixe em branco para que qualquer agente do departamento designado possa gerenciar as respostas.",
   "Outbound_message_agent_hint_no_permission": "Você não tem permissão para atribuir um agente. A resposta será atribuída ao departamento.",
   "Outbound_message_department_hint": "Atribuir respostas a um departamento.",
