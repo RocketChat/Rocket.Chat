@@ -207,6 +207,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const contextValue = {
+		connectionState: session.connectionState,
 		state: session.state,
 		muted: session.muted,
 		held: session.held,

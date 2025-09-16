@@ -3,10 +3,11 @@ import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo } from 'react';
 
 import type { SessionInfo } from './useMediaSessionInstance';
-import type { PeerInfo, State } from '../v2/MediaCallContext';
+import type { ConnectionState, PeerInfo, State } from '../v2/MediaCallContext';
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
+	connectionState: 'CONNECTING' as const,
 	peerInfo: undefined,
 	muted: false,
 	held: false,
@@ -31,6 +32,7 @@ type MediaSession = SessionInfo & {
 };
 
 const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
+	console.log('deriveWidgetStateFromCallState', callState, callRole);
 	switch (callState) {
 		case 'active':
 		case 'accepted':
@@ -39,6 +41,20 @@ const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole
 		case 'none':
 		case 'ringing':
 			return callRole === 'callee' ? 'ringing' : 'calling';
+	}
+};
+
+const deriveConnectionStateFromCallState = (callState: CallState): ConnectionState => {
+	switch (callState) {
+		case 'renegotiating':
+			return 'RECONNECTING';
+		case 'active':
+			return 'CONNECTED';
+		case 'none':
+		case 'accepted':
+		case 'ringing':
+		default:
+			return 'CONNECTING';
 	}
 };
 
@@ -113,9 +129,13 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 			const { contact, state: callState, role, muted, held } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
+			const connectionState = deriveConnectionStateFromCallState(callState);
 
 			if (contact.type === 'sip') {
-				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held } });
+				dispatch({
+					type: 'instance_updated',
+					payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held, connectionState },
+				});
 				return;
 			}
 
@@ -140,7 +160,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
 			// Also as of now, there is no sip calls to handle.
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held, connectionState } });
 		};
 
 		return instance.on('sessionStateChange', updateSessionState);
