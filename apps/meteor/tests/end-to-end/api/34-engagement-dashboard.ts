@@ -148,14 +148,13 @@ describe('[Engagement Dashboard]', function () {
 				});
 		});
 
-		it('should not return empty rooms when the hideRoomsWithNoActivity param is provided', async () => {
+		it('should not return empty rooms', async () => {
 			await request
 				.get(api('engagement-dashboard/channels/list'))
 				.set(credentials)
 				.query({
 					end: new Date().toISOString(),
 					start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-					hideRoomsWithNoActivity: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -170,42 +169,7 @@ describe('[Engagement Dashboard]', function () {
 				});
 		});
 
-		it('should correctly count messages in an empty room', async () => {
-			await request
-				.get(api('engagement-dashboard/channels/list'))
-				.set(credentials)
-				.query({
-					end: new Date().toISOString(),
-					start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('offset', 0);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('channels');
-					expect(res.body.channels).to.be.an('array').that.is.not.empty;
-
-					const channelRecord = res.body.channels.find(({ room }: { room: { _id: string } }) => room._id === testRoom._id);
-					expect(channelRecord).not.to.be.undefined;
-
-					expect(channelRecord).to.be.an('object').that.is.not.empty;
-					expect(channelRecord).to.have.property('messages', 0);
-					expect(channelRecord).to.have.property('lastWeekMessages', 0);
-					expect(channelRecord).to.have.property('diffFromLastWeek', 0);
-					expect(channelRecord.room).to.be.an('object').that.is.not.empty;
-
-					expect(channelRecord.room).to.have.property('_id', testRoom._id);
-					expect(channelRecord.room).to.have.property('name', testRoom.name);
-					expect(channelRecord.room).to.have.property('ts', testRoom.ts);
-					expect(channelRecord.room).to.have.property('t', testRoom.t);
-					expect(channelRecord.room).to.have.property('_updatedAt', testRoom._updatedAt);
-				});
-		});
-
-		it('should correctly count messages diff compared to last week when the hideRoomsWithNoActivity param is provided and there are messages in a room', async () => {
+		it('should correctly count messages diff compared to last week when there are messages in a room', async () => {
 			await sendSimpleMessage({ roomId: testRoom._id });
 			await request
 				.get(api('engagement-dashboard/channels/list'))
@@ -213,7 +177,6 @@ describe('[Engagement Dashboard]', function () {
 				.query({
 					end: new Date().toISOString(),
 					start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-					hideRoomsWithNoActivity: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -275,14 +238,13 @@ describe('[Engagement Dashboard]', function () {
 				});
 		});
 
-		it('should correctly count messages from last week and diff when moving to the next week and providing the hideRoomsWithNoActivity param', async () => {
+		it('should correctly count messages from last week and diff when moving to the next week', async () => {
 			await request
 				.get(api('engagement-dashboard/channels/list'))
 				.set(credentials)
 				.query({
 					end: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString(),
 					start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-					hideRoomsWithNoActivity: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
