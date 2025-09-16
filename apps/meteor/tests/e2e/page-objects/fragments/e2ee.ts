@@ -111,7 +111,7 @@ export class ResetE2EEPasswordModal extends Modal {
 	async confirmReset() {
 		await this.resetE2EEPasswordButton.click();
 		await this.waitForDismissal();
-		await this.login.waitForLogout();
+		await this.login.waitForIt();
 	}
 }
 

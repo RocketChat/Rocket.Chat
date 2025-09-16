@@ -174,7 +174,7 @@ export class HomeSidenav {
 	async logout(): Promise<void> {
 		await this.btnUserProfileMenu.click();
 		await this.accountLogoutOption.click();
-		await this.login.waitForLogout();
+		await this.login.waitForIt();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
