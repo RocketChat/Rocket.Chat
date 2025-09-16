@@ -1,7 +1,7 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
+import { monitorEventLoopDelay } from 'perf_hooks';
 
 import { WebApp } from 'meteor/webapp';
-import { monitorEventLoopDelay } from 'perf_hooks';
 
 import { SystemLogger } from '../lib/logger/system';
 
@@ -118,3 +118,4 @@ WebApp.rawConnectHandlers.use('/readyz', async (_req: IncomingMessage, res: Serv
 	res.writeHead(statusCode);
 	res.end(JSON.stringify(body, null, 2));
 });
+
