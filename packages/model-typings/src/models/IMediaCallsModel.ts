@@ -18,5 +18,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
 	findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
-	hasUnfinishedCallsByUid(uid: IUser['_id']): Promise<boolean>;
+	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
 }
