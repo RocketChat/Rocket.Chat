@@ -30,6 +30,12 @@ const QueryProfileQuerySchema = {
 	type: 'object',
 	properties: {
 		user_id: UsernameSchema,
+		field: {
+			type: 'string',
+			enum: ['displayname', 'avatar_url'],
+			description: 'Profile field to query',
+			nullable: true,
+		},
 	},
 	required: ['user_id'],
 	additionalProperties: false,
@@ -351,9 +357,18 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				license: ['federation'],
 			},
 			async (c) => {
-				const { user_id: userId } = c.req.query();
+				const { user_id: userId, field } = c.req.query();
 
 				const response = await profile.queryProfile(userId);
+
+				if (field) {
+					return {
+						body: {
+							[field]: response[field as 'displayname' | 'avatar_url'] || null,
+						},
+						statusCode: 200,
+					};
+				}
 
 				return {
 					body: response,
