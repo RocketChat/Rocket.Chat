@@ -32,7 +32,6 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 	const handleSave = handleSubmit(async ({ credential }) => {
 		try {
 			await onConfirm(credential);
-			onCancel();
 		} catch (error) {
 			if (error instanceof InputError) {
 				setError('credential', { message: error.message });
