@@ -1,4 +1,5 @@
 import type { HomeserverServices } from '@hs/federation-sdk';
+import type { EventID } from '@hs/room';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -325,7 +326,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						};
 					}
 
-					const stateIds = await event.getStateIds(roomId, eventId);
+					const stateIds = await event.getStateIds(roomId, eventId as EventID);
 
 					return {
 						body: stateIds,
@@ -354,7 +355,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 							statusCode: 404,
 						};
 					}
-					const state = await event.getState(roomId, eventId);
+					const state = await event.getState(roomId, eventId as EventID);
 					return {
 						statusCode: 200,
 						body: state,
@@ -373,7 +374,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					license: ['federation'],
 				},
 				async (c) => {
-					const eventData = await event.getEventById(c.req.param('eventId'));
+					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {
 						return {
 							body: {
