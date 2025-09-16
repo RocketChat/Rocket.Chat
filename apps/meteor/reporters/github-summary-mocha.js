@@ -12,10 +12,8 @@ class GitHubSummaryMochaReporter {
 	constructor(runner, options) {
 		this.runner = runner;
 		this.testResults = new Map();
-		this.outputPath = process.env.GITHUB_SUMMARY_PATH ||
-		                 (options.reporterOptions && options.reporterOptions.output) ||
-		                 'test-summary-mocha.json';
-
+		this.outputPath =
+			process.env.GITHUB_SUMMARY_PATH || (options.reporterOptions && options.reporterOptions.output) || 'test-summary-mocha.json';
 
 		// Bind event handlers
 		this.runner.on('test end', this.onTestEnd.bind(this));
@@ -80,13 +78,10 @@ class GitHubSummaryMochaReporter {
 		// Walk up the suite hierarchy to collect all suite titles
 		const suiteTitles = [];
 		let suite = test.parent;
-		let topLevelSuite;
 
 		while (suite) {
 			if (suite.title && suite.title !== '') {
 				suiteTitles.push(suite.title);
-				// Keep track of the outermost describe block
-				topLevelSuite = suite;
 			}
 			suite = suite.parent;
 		}
@@ -143,7 +138,7 @@ class GitHubSummaryMochaReporter {
 			writeFileSync(this.outputPath, JSON.stringify(report, null, 2), 'utf8');
 			console.log(`✅ Mocha test summary written to ${this.outputPath}`);
 			console.log(
-				`📊 Summary: ${report.totals.total} tests (${report.totals.passed} passed, ${report.totals.failed} failed, ${report.totals.skipped} skipped)`
+				`📊 Summary: ${report.totals.total} tests (${report.totals.passed} passed, ${report.totals.failed} failed, ${report.totals.skipped} skipped)`,
 			);
 		} catch (error) {
 			console.error('❌ Failed to write Mocha test summary:', error);
