@@ -47,9 +47,9 @@ function parseJsonReport(content) {
  * @returns {string} Status icon emoji
  */
 function getStatusIcon(passed, failed) {
-  if (failed > 0) return '🔴';
-  if (passed > 0) return '🟢';
-  return '🟡';
+  if (failed > 0) return '❌';
+  if (passed > 0) return '✅';
+  return '⏭️';
 }
 
 /**
@@ -134,50 +134,19 @@ function generateMergedSummary(allSuites, allMetadata, includeLinks = false) {
   markdown += `- **❌ Failed**: ${totals.failed}\n`;
   markdown += `- **⏭️ Skipped**: ${totals.skipped}\n`;
 
-  if (totals.total > 0) {
-    const passRate = ((totals.passed / totals.total) * 100).toFixed(1);
+  // Calculate pass rate excluding skipped tests
+  const testsRun = totals.passed + totals.failed;
+  if (testsRun > 0) {
+    const passRate = ((totals.passed / testsRun) * 100).toFixed(1);
     markdown += `- **📈 Pass Rate**: ${passRate}%\n`;
   }
 
   markdown += '\n';
 
-  // Test run metadata
-  if (allMetadata.length > 0) {
-    const uniqueShards = [...new Set(allMetadata.map(m => m.shard).filter(Boolean))];
-    const uniqueTypes = [...new Set(allMetadata.map(m => m.type).filter(Boolean))];
-    const uniqueReleases = [...new Set(allMetadata.map(m => m.release).filter(Boolean))];
-
-    markdown += '### 📋 Test Run Info\n\n';
-    if (uniqueShards.length > 0) {
-      markdown += `- **Shards**: ${uniqueShards.join(', ')}\n`;
-    }
-    if (uniqueTypes.length > 0) {
-      const typeLabels = uniqueTypes.map(type => {
-        switch(type) {
-          case 'api': return '🔌 API';
-          case 'ui': return '🖥️ UI';
-          default: return type;
-        }
-      });
-      markdown += `- **Test Types**: ${typeLabels.join(', ')}\n`;
-    }
-    if (uniqueReleases.length > 0) {
-      const releaseLabels = uniqueReleases.map(release => {
-        switch(release) {
-          case 'ce': return 'Community Edition';
-          case 'ee': return 'Enterprise Edition';
-          default: return release;
-        }
-      });
-      markdown += `- **Releases**: ${releaseLabels.join(', ')}\n`;
-    }
-    markdown += '\n';
-  }
-
   // Test suites breakdown - separate tables by type
   markdown += '### 📋 Test Suites\n\n';
 
-  // Separate suites by type based on metadata
+  // Separate suites by type based on file paths
   const apiSuites = [];
   const uiSuites = [];
   const otherSuites = [];
@@ -373,16 +342,65 @@ async function main() {
           console.log(`  ✅ Found ${suites.size} test suites in ${file}`);
         }
 
-        // Merge suites
+        // Merge suites with proper shard handling
         for (const [name, suite] of suites) {
           if (!allSuites.has(name)) {
-            allSuites.set(name, { ...suite });
+            // First time seeing this suite - initialize with shard tracking
+            allSuites.set(name, {
+              ...suite,
+              shardResults: [{
+                shard: metadata?.shard || 'unknown',
+                passed: suite.passed,
+                failed: suite.failed,
+                skipped: suite.skipped,
+                total: suite.total,
+                hasFailures: suite.failed > 0
+              }]
+            });
           } else {
             const existing = allSuites.get(name);
-            existing.passed += suite.passed;
-            existing.failed += suite.failed;
-            existing.skipped += suite.skipped;
-            existing.total += suite.total;
+
+            // Add this shard's results
+            existing.shardResults.push({
+              shard: metadata?.shard || 'unknown',
+              passed: suite.passed,
+              failed: suite.failed,
+              skipped: suite.skipped,
+              total: suite.total,
+              hasFailures: suite.failed > 0
+            });
+
+            // Recalculate merged results based on shard logic:
+            // - Use the first shard's total count (should be the same across shards for the same suite)
+            // - Suite fails if ANY shard has failures
+            // - Suite passes only if ALL shards pass (no failures)
+            // - Individual test counts are calculated based on the assumption that
+            //   the same tests run across shards with potentially different outcomes
+
+            const firstShardTotal = existing.shardResults[0].total;
+            existing.total = firstShardTotal;
+
+            // Check if any shard has failures
+            const hasAnyFailures = existing.shardResults.some(r => r.hasFailures);
+
+            if (hasAnyFailures) {
+              // If any shard failed, we need to calculate how many unique tests failed
+              // We'll use the maximum failure count across shards as the failure count
+              // and adjust passed/skipped accordingly
+              const maxFailed = Math.max(...existing.shardResults.map(r => r.failed));
+              const maxSkipped = Math.max(...existing.shardResults.map(r => r.skipped));
+
+              existing.failed = maxFailed;
+              existing.skipped = maxSkipped;
+              existing.passed = Math.max(0, existing.total - existing.failed - existing.skipped);
+            } else {
+              // All shards passed - take the results from the first shard
+              // (they should all be the same since no failures occurred)
+              existing.passed = existing.shardResults[0].passed;
+              existing.failed = 0;
+              existing.skipped = existing.shardResults[0].skipped;
+            }
+
             // Keep the first occurrence's file path and line number
             if (!existing.filePath && suite.filePath) {
               existing.filePath = suite.filePath;
