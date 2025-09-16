@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import OutboundMessageUpsellModal from './OutboundMessageUpsellModal';
+import { CONTACT_SALES_LINK, OUTBOUND_DOCS_LINK } from '../../constants';
 
 const openExternalLink = jest.fn();
 jest.mock('../../../../../hooks/useExternalLink', () => ({
@@ -19,6 +20,7 @@ const appRoot = mockAppRoot().withJohnDoe().withTranslations('en', 'core', {
 	Outbound_message_upsell_annotation: 'Outbound_message_upsell_annotation',
 	No_phone_number_available_for_selected_channel: 'No phone number available for the selected channel',
 });
+
 describe('OutboundMessageUpsellModal', () => {
 	const onClose = jest.fn();
 
@@ -42,7 +44,7 @@ describe('OutboundMessageUpsellModal', () => {
 			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
 				render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
-				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
+				expect(openExternalLink).toHaveBeenCalledWith(OUTBOUND_DOCS_LINK);
 			});
 		});
 
@@ -62,13 +64,13 @@ describe('OutboundMessageUpsellModal', () => {
 			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
 				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
-				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
+				expect(openExternalLink).toHaveBeenCalledWith(OUTBOUND_DOCS_LINK);
 			});
 
 			it('should call openExternalLink with sales link when "Contact sales" is clicked', async () => {
 				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Contact sales' }));
-				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/contact-sales');
+				expect(openExternalLink).toHaveBeenCalledWith(CONTACT_SALES_LINK);
 			});
 
 			it('should not render the annotation', () => {
@@ -94,7 +96,7 @@ describe('OutboundMessageUpsellModal', () => {
 			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
 				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
-				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
+				expect(openExternalLink).toHaveBeenCalledWith(OUTBOUND_DOCS_LINK);
 			});
 		});
 
