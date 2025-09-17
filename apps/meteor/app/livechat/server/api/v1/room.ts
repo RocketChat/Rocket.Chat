@@ -473,8 +473,7 @@ const livechatRoomsEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	)
-	.post(
+	).post(
 		'livechat/rooms.removeAllClosedRooms',
 		{
 			response: {
