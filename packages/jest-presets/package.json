@@ -7,6 +7,20 @@
 		"build": "tsc",
 		"lint": "eslint ."
 	},
+	"type": "module",
+	"exports": {
+		"./server": {
+			"default": "./dist/server/index.js",
+			"types": "./dist/server/index.d.ts"
+		},
+		"./server/jest-preset": "./dist/server/jest-preset.js",
+		"./client": {
+			"default": "./dist/client/index.js",
+			"types": "./dist/client/index.d.ts"
+		},
+		"./client/jest-preset": "./dist/client/jest-preset.js",
+		"./client/jest-setup": "./dist/client/jest-setup.js"
+	},
 	"files": [
 		"/dist",
 		"/client",
