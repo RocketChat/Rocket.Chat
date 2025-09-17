@@ -1,18 +1,17 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 
-import { parseMeteorResponse } from '../parseMeteorResponse';
 import type { BaseTest } from '../test';
 
 type CustomField = Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
 
 export const removeCustomField = (api: BaseTest['api'], id: string) => {
-	return api.post('/v1/livechat/custom-fields.delete', {
+	return api.post('/livechat/custom-fields.delete', {
 		customFieldId: id,
 	});
 };
 
 export const createCustomField = async (api: BaseTest['api'], overwrites: Partial<CustomField>) => {
-	const response = await api.post('/v1/livechat/custom-fields.save', {
+	const response = await api.post('/livechat/custom-fields.save', {
 		customFieldId: null,
 		customFieldData: {
 			field: overwrites.field,
@@ -34,7 +33,7 @@ export const createCustomField = async (api: BaseTest['api'], overwrites: Partia
 		throw new Error(`Failed to create custom field [http status: ${response.status()}]`);
 	}
 
-	const customField = await parseMeteorResponse<CustomField & { _id: string }>(response);
+	const { customField } = await response.json();
 
 	return {
 		response,

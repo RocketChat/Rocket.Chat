@@ -134,7 +134,7 @@ const livechatCustomFieldsEndpoints = API.v1
 				...extraData,
 			});
 
-			return API.v1.success(result);
+			return API.v1.success({ customField: result });
 		},
 	)
 	.post(

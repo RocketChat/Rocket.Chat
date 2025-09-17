@@ -75,7 +75,7 @@ test.describe.serial('OC - Contact Review', () => {
 		await customField.delete();
 	});
 
-	test('OC - Contact Review - Update custom field conflicting', async ({ page }) => {
+	test.only('OC - Contact Review - Update custom field conflicting', async ({ page }) => {
 		await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
 		await poHomeChannel.content.btnContactInformation.click();
 

@@ -4057,48 +4057,56 @@ const POSTLivechatSaveCustomFieldSuccessSchema = {
 			type: 'boolean',
 			enum: [true],
 		},
-		label: {
-			type: 'string',
-		},
-		scope: {
-			type: 'string',
-			enum: ['visitor', 'room'],
-		},
-		visibility: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			nullable: true,
-		},
-		regexp: {
-			type: 'string',
-			nullable: true,
-		},
-		required: {
-			type: 'boolean',
-			nullable: true,
-		},
-		defaultValue: {
-			type: 'string',
-			nullable: true,
-		},
-		options: {
-			type: 'string',
-			nullable: true,
-		},
-		public: {
-			type: 'boolean',
-			nullable: true,
-		},
-		searchable: {
-			type: 'boolean',
-			nullable: true,
+		customField: {
+			type: 'object',
+			properties: {
+				label: {
+					type: 'string',
+				},
+				scope: {
+					type: 'string',
+					enum: ['visitor', 'room'],
+				},
+				visibility: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					nullable: true,
+				},
+				regexp: {
+					type: 'string',
+					nullable: true,
+				},
+				required: {
+					type: 'boolean',
+					nullable: true,
+				},
+				defaultValue: {
+					type: 'string',
+					nullable: true,
+				},
+				options: {
+					type: 'string',
+					nullable: true,
+				},
+				public: {
+					type: 'boolean',
+					nullable: true,
+				},
+				searchable: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
 		},
 	},
+	additionalProperties: false,
 };
 
-export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<ILivechatCustomField>(POSTLivechatSaveCustomFieldSuccessSchema);
+export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<{ customField: ILivechatCustomField }>(
+	POSTLivechatSaveCustomFieldSuccessSchema,
+);
 
 type POSTLivechatRemoveCustomFields = {
 	customFieldId: string;
