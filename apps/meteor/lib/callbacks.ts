@@ -1,3 +1,4 @@
+import type { ICreateRoomOptions } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	IRoom,
@@ -69,7 +70,14 @@ interface EventLikeCallbackSignatures {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
-	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
+	'federation.afterCreateFederatedRoom': (
+		room: IRoom,
+		second: {
+			owner: IUser;
+			originalMemberList: string[];
+			options?: ICreateRoomOptions;
+		},
+	) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;

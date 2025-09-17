@@ -266,7 +266,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
