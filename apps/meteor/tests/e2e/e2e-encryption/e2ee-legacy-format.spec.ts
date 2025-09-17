@@ -17,6 +17,34 @@ const settingsList = [
 
 preserveSettings(settingsList);
 
+const encryptLegacyMessage = async (page: Page, rid: string, messageText: string) => {
+	return page.evaluate(
+		async ({ rid, msg }: { rid: string; msg: string }) => {
+			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
+			const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
+			const e2eRoom = await e2e.getInstanceByRoomId(rid);
+			return e2eRoom.encrypt({ _id: 'id', msg });
+		},
+		{ rid, msg: messageText },
+	);
+};
+
+const sendEncryptedMessage = async (request: APIRequestContext, rid: string, encryptedMsg: string) => {
+	return request.post(`${BASE_API_URL}/chat.sendMessage`, {
+		headers: {
+			'X-Auth-Token': Users.userE2EE.data.loginToken,
+			'X-User-Id': Users.userE2EE.data._id,
+		},
+		data: {
+			message: {
+				rid,
+				msg: encryptedMsg,
+				t: 'e2e',
+			},
+		},
+	});
+};
+
 test.describe('E2EE Legacy Format', () => {
 	let poHomeChannel: HomeChannel;
 
@@ -35,34 +63,6 @@ test.describe('E2EE Legacy Format', () => {
 		await page.goto('/home');
 	});
 
-	const encryptLegacyMessage = async (page: Page, rid: string, messageText: string) => {
-		return page.evaluate(
-			async ({ rid, msg }: { rid: string; msg: string }) => {
-				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
-				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
-				const e2eRoom = await e2e.getInstanceByRoomId(rid);
-				return e2eRoom.encrypt({ _id: 'id', msg });
-			},
-			{ rid, msg: messageText },
-		);
-	};
-
-	const sendEncryptedMessage = async (request: APIRequestContext, rid: string, encryptedMsg: string) => {
-		return request.post(`${BASE_API_URL}/chat.sendMessage`, {
-			headers: {
-				'X-Auth-Token': Users.userE2EE.data.loginToken,
-				'X-User-Id': Users.userE2EE.data._id,
-			},
-			data: {
-				message: {
-					rid,
-					msg: encryptedMsg,
-					t: 'e2e',
-				},
-			},
-		});
-	};
-
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
@@ -77,12 +77,12 @@ test.describe('E2EE Legacy Format', () => {
 		// TODO: Fix this flakiness
 		await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
 
-		const rid = await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room');
+		const rid = (await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room')) || '';
 		expect(rid).toBeTruthy();
 
-		const encryptedMessage = await encryptLegacyMessage(page, rid as string, 'Old format message');
+		const encryptedMessage = await encryptLegacyMessage(page, rid, 'Old format message');
 
-		await sendEncryptedMessage(request, rid as string, encryptedMessage);
+		await sendEncryptedMessage(request, rid, encryptedMessage);
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
