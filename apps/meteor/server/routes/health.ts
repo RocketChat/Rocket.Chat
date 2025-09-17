@@ -14,7 +14,7 @@ const sendLivenessResponse = (res: ServerResponse) => {
 	// Set headers to prevent any caching of the health check response.
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 	res.setHeader('Pragma', 'no-cache');
-	res.setHeader('Expires', '0');
+	res.setHeader('Expires', 0);
 	res.setHeader('Content-Type', 'application/json');
 
 	res.writeHead(200);
@@ -95,7 +95,7 @@ function checkMemoryUsage() {
 WebApp.rawConnectHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
 	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 	res.setHeader('Pragma', 'no-cache');
-	res.setHeader('Expires', '0');
+	res.setHeader('Expires', 0);
 	res.setHeader('Content-Type', 'application/json');
 
 	const checks = {
