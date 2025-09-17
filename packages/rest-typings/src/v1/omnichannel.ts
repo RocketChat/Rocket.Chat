@@ -3416,6 +3416,9 @@ export const isPOSTLivechatInquiriesReturnAsInquiry = ajv.compile<POSTLivechatIn
 const POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema = {
 	type: 'object',
 	properties: {
+		result: {
+			type: 'boolean',
+		},
 		success: {
 			type: 'boolean',
 			enum: [true],
@@ -3424,7 +3427,7 @@ const POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatInquiriesReturnAsInquirySuccessResponse = ajv.compile<void>(
+export const POSTLivechatInquiriesReturnAsInquirySuccessResponse = ajv.compile<{ result: boolean }>(
 	POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema,
 );
 

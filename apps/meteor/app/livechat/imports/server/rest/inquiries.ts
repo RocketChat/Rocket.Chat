@@ -146,9 +146,9 @@ const livechatInquiriesEndpoints = API.v1.post(
 			return API.v1.failure('mac-limit-reached');
 		}
 
-		await returnRoomAsInquiry(room, departmentId);
+		const result = await returnRoomAsInquiry(room, departmentId);
 
-		return API.v1.success();
+		return API.v1.success({ result });
 	},
 );
 
