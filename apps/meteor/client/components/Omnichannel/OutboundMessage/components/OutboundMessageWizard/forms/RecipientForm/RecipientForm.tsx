@@ -1,5 +1,5 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -14,6 +14,7 @@ import ContactField from './components/ContactField';
 import RecipientField from './components/RecipientField';
 import SenderField from './components/SenderField';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
+import Form from '../../components/OutboundMessageForm';
 import { ContactNotFoundError, ProviderNotFoundError } from '../../utils/errors';
 
 export type RecipientFormData = {
@@ -175,43 +176,45 @@ const RecipientForm = (props: RecipientFormProps) => {
 	});
 
 	return (
-		<form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<FieldGroup>
-				<ContactField
-					control={control}
-					isError={isErrorContact || isContactNotFound}
-					isFetching={isFetchingContact}
-					onRetry={refetchContact}
-				/>
+		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
+			<Scrollable vertical>
+				<FieldGroup justifyContent='start' pi={2}>
+					<ContactField
+						control={control}
+						isError={isErrorContact || isContactNotFound}
+						isFetching={isFetchingContact}
+						onRetry={refetchContact}
+					/>
 
-				<ChannelField
-					control={control}
-					contact={contact}
-					disabled={!contactId}
-					isFetching={isFetchingProvider}
-					isError={isErrorProvider || isProviderNotFound}
-					onRetry={refetchProvider}
-				/>
+					<ChannelField
+						control={control}
+						contact={contact}
+						disabled={!contactId}
+						isFetching={isFetchingProvider}
+						isError={isErrorProvider || isProviderNotFound}
+						onRetry={refetchProvider}
+					/>
 
-				<RecipientField
-					control={control}
-					contact={contact}
-					type={provider?.providerType || 'phone'}
-					disabled={!providerId || !contact}
-					isLoading={isFetchingContact}
-				/>
+					<RecipientField
+						control={control}
+						contact={contact}
+						type={provider?.providerType || 'phone'}
+						disabled={!providerId || !contact}
+						isLoading={isFetchingContact}
+					/>
 
-				<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
-			</FieldGroup>
+					<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
+				</FieldGroup>
+			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end'>
+				<Box mbs={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>
 			)}
-		</form>
+		</Form>
 	);
 };
 

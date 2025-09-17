@@ -18,18 +18,16 @@ const RepliesStep = ({ defaultValues, onSubmit }: RepliesStepProps) => {
 	});
 
 	return (
-		<div>
-			<RepliesForm
-				defaultValues={defaultValues}
-				onSubmit={handleSubmit}
-				renderActions={({ isSubmitting }) => (
-					<WizardActions>
-						<WizardBackButton />
-						<WizardNextButton manual type='submit' loading={isSubmitting} />
-					</WizardActions>
-				)}
-			/>
-		</div>
+		<RepliesForm
+			defaultValues={defaultValues}
+			onSubmit={handleSubmit}
+			renderActions={({ isSubmitting }) => (
+				<WizardActions>
+					<WizardBackButton />
+					<WizardNextButton manual type='submit' loading={isSubmitting} />
+				</WizardActions>
+			)}
+		/>
 	);
 };
 
