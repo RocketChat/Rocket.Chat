@@ -76,9 +76,9 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		setState({ tab: ROOM_MEMBERS_TABS.ADD });
 	});
 
-	const handleBack = useCallback(() => {
+	const handleBack = useEffectEvent(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.LIST });
-	}, [setState]);
+	});
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
 		return <UserInfoWithData rid={rid} uid={state.userId} onClose={closeTab} onClickBack={handleBack} />;
