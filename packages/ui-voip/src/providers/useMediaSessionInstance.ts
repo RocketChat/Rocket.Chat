@@ -30,8 +30,6 @@ export type SessionInfo = EmptySession | CallSession;
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
-const SESSION_ID_KEY = 'rcx-media-session-id';
-
 const logger = {
 	logs: [] as string[],
 	log: (...args: any[]) => {
@@ -44,6 +42,18 @@ const logger = {
 };
 
 console.log(logger);
+
+const randomStringFactory = () => {
+	if (!window.crypto) {
+		return Math.random().toString(36).substring(2, 15);
+	}
+
+	return window.crypto.randomUUID();
+};
+
+const getSessionIdKey = (userId: string) => {
+	return `rcx-media-session-id-${userId}`;
+};
 
 class MediaSessionStore extends Emitter<{ change: void }> {
 	private sessionInstance: MediaSignalingSession | null = null;
@@ -80,30 +90,21 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		return Promise.resolve();
 	}
 
-	private get oldSessionId() {
+	private getOldSessionId(userId: string) {
 		if (!window.sessionStorage) {
 			return undefined;
 		}
 
-		const oldSessionId = window.sessionStorage.getItem(SESSION_ID_KEY);
+		const key = getSessionIdKey(userId);
+
+		const oldSessionId = window.sessionStorage.getItem(key);
 
 		if (!oldSessionId) {
 			return undefined;
 		}
 
-		window.sessionStorage.removeItem(SESSION_ID_KEY);
+		window.sessionStorage.removeItem(key);
 		return oldSessionId;
-	}
-
-	private randomStringFactory(userId: string) {
-		const dateString = new Date().toISOString();
-		const sessionId = `${userId}/${dateString}`;
-
-		if (window.sessionStorage) {
-			window.sessionStorage.setItem(SESSION_ID_KEY, sessionId);
-		}
-
-		return sessionId;
 	}
 
 	private makeInstance(userId: string) {
@@ -122,10 +123,14 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
-			randomStringFactory: () => this.randomStringFactory(userId),
+			randomStringFactory,
 			logger,
-			oldSessionId: this.oldSessionId,
+			oldSessionId: this.getOldSessionId(userId),
 		});
+
+		if (window.sessionStorage) {
+			window.sessionStorage.setItem(getSessionIdKey(userId), this.sessionInstance.sessionId);
+		}
 
 		this.change();
 
