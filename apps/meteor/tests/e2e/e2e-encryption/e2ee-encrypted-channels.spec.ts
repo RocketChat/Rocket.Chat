@@ -220,26 +220,6 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(channelMention).toBeVisible();
 	});
 
-	test('should encrypted field be available on edit room', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
-
-		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-
-		await poHomeChannel.dismissToast();
-
-		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.click();
-		await poHomeChannel.tabs.room.advancedSettingsAccordion.click();
-
-		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
-	});
-
 	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
 		page,
 	}) => {

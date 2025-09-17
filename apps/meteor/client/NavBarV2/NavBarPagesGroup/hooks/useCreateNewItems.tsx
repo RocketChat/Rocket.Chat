@@ -1,8 +1,9 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
+import { useOutboundMessageModal } from '../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import CreateChannelModal from '../actions/CreateChannelModal';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
 import CreateTeamModal from '../actions/CreateTeamModal';
@@ -20,11 +21,13 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
+	const canSendOutboundMessage = usePermission('outbound.send-messages');
 
 	const createChannel = useCreateRoomModal(CreateChannelModal);
 	const createTeam = useCreateRoomModal(CreateTeamModal);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const outboundMessageModal = useOutboundMessageModal();
 
 	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
@@ -58,11 +61,18 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 			createDiscussion();
 		},
 	};
+	const createOutboundMessageItem: GenericMenuItemProps = {
+		id: 'outbound-message',
+		content: t('Outbound_message'),
+		icon: 'send',
+		onClick: () => outboundMessageModal.open(),
+	};
 
 	return [
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam && canCreateChannel ? [createTeamItem] : []),
+		...(canSendOutboundMessage ? [createOutboundMessageItem] : []),
 	];
 };

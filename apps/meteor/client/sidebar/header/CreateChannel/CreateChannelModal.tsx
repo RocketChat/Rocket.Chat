@@ -12,7 +12,6 @@ import {
 	FieldRow,
 	FieldError,
 	FieldHint,
-	FieldDescription,
 	Accordion,
 	AccordionItem,
 	ModalHeader,
@@ -311,7 +310,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldDescription>
+								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>

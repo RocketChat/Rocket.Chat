@@ -57,8 +57,10 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(messageText);
 
+		// Log out
 		await sidenav.logout();
 
+		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
 		// Navigate to the encrypted channel WITHOUT entering the password

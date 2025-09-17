@@ -39,7 +39,10 @@ export const useRemoveUserAction = (
 	const { _id: uid } = user;
 
 	const hasPermissionToRemove = usePermission('remove-user', rid);
-	const userCanRemove = isRoomFederated(room)
+
+	const roomIsFederated = isRoomFederated(room);
+
+	const userCanRemove = roomIsFederated
 		? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
