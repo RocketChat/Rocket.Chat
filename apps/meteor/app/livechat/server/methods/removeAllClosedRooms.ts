@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { removeOmnichannelRoom } from '../lib/rooms';
 
 declare module '@rocket.chat/ddp-client' {
@@ -17,6 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeAllClosedRooms'(departmentIds) {
+		methodDeprecationLogger.method('livechat:removeAllClosedRooms', '8.0.0', '/v1/livechat/rooms.removeAllClosedRooms');
 		const logger = new Logger('livechat:removeAllClosedRooms');
 		const user = Meteor.userId();
 
