@@ -202,7 +202,7 @@ export const useDevicePermissionPrompt2 = () => {
 					requestDevice?.({
 						onReject: (...args) => {
 							reject(...args);
-							setModal(null);
+							setModal(<PermissionFlowModal type='denied' onCancel={() => setModal(null)} onConfirm={() => setModal(null)} />);
 						},
 						onAccept: (...args) => {
 							onAccept(...args);
