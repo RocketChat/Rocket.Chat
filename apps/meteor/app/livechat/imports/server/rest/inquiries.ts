@@ -146,9 +146,17 @@ const livechatInquiriesEndpoints = API.v1.post(
 			return API.v1.failure('mac-limit-reached');
 		}
 
-		const result = await returnRoomAsInquiry(room, departmentId);
+		try {
+			const result = await returnRoomAsInquiry(room, departmentId);
 
-		return API.v1.success({ result });
+			return API.v1.success({ result });
+		} catch (error) {
+			if (error instanceof Meteor.Error) {
+				return API.v1.failure(error.reason);
+			}
+
+			return API.v1.failure('error-returning-inquiry');
+		}
 	},
 );
 
