@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeAddUserToARoom } from '../../../../lib/callbacks/beforeAddUserToARoom';
-import { prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
@@ -116,6 +116,7 @@ async function createUsersSubscriptions({
 	await Rooms.incUsersCountById(room._id, subs.length);
 }
 
+// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
@@ -237,10 +238,10 @@ export const createRoom = async <T extends RoomType>(
 
 	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
 
-	if (shouldBeHandledByFederation) {
-		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
-		await federation.beforeCreateRoom(roomProps);
-	}
+	await beforeCreateRoomCallback.run({
+		owner,
+		room: roomProps,
+	});
 
 	if (type === 'c') {
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
