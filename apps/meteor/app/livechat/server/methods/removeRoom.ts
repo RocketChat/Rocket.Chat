@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeRoom'(rid) {
-		methodDeprecationLogger.method('livechat:removeCustomField', '8.0.0', '/v1/livechat/rooms.delete');
+		methodDeprecationLogger.method('livechat:removeRoom', '8.0.0', '/v1/livechat/rooms.delete');
 		const user = Meteor.userId();
 		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
