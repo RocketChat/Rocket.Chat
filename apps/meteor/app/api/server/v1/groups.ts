@@ -792,6 +792,7 @@ API.v1.addRoute(
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				_hidden: { $ne: true },
 			};
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
