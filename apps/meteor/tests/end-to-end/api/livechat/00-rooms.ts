@@ -2838,7 +2838,7 @@ describe('LIVECHAT - rooms', () => {
 			});
 			it('should throw an error if a valid custom field fails the check', async () => {
 				await request
-					.post('/v1/livechat/custom-fields.saveInfo')
+					.post(api('livechat/custom-fields.save'))
 					.set(credentials)
 					.send({
 						customFieldId: null,
