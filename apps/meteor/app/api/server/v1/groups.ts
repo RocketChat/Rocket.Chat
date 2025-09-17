@@ -37,7 +37,6 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { callbacks } from '../../../../lib/callbacks';
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -164,8 +163,6 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'moderator' });
-
 			await addRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
@@ -184,8 +181,6 @@ API.v1.addRoute(
 			});
 
 			const user = await getUserFromParams(this.bodyParams);
-			
-			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'owner' });
 
 			await addRoomOwner(this.userId, findResult.rid, user._id);
 
@@ -913,8 +908,6 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'user' });
-
 			await removeRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
@@ -933,8 +926,6 @@ API.v1.addRoute(
 			});
 
 			const user = await getUserFromParams(this.bodyParams);
-
-			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'user' });
 
 			await removeRoomOwner(this.userId, findResult.rid, user._id);
 

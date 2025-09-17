@@ -231,11 +231,6 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomTopic(rid, value, user);
 		}
 	},
-	async sidepanel({ value, rid, room }) {
-		if (JSON.stringify(value) !== JSON.stringify(room.sidepanel)) {
-			await Rooms.setSidepanelById(rid, value);
-		}
-	},
 	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
