@@ -22,6 +22,21 @@ import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
 import { LoginPage } from './page-objects/login';
 import { test, expect } from './utils/test';
 
+/**
+ * Click the banner to open the dialog to save the generated password
+ */
+const setupE2EEPassword = async (page: Page) => {
+	const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
+	const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
+
+	await saveE2EEPasswordBanner.click();
+	const password = await saveE2EEPasswordModal.getPassword();
+	await saveE2EEPasswordModal.confirm();
+	await saveE2EEPasswordBanner.waitForDisappearance();
+
+	return password;
+};
+
 test.beforeAll(async () => {
 	await injectInitialData();
 });
@@ -53,18 +68,12 @@ test.describe('initial setup', () => {
 
 	test('expect the randomly generated password to work', async ({ page }) => {
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
 		const sidenav = new HomeSidenav(page);
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		const password = await saveE2EEPasswordModal.getPassword();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		const password = await setupE2EEPassword(page);
 
 		// Log out
 		await sidenav.logout();
@@ -98,6 +107,8 @@ test.describe('initial setup', () => {
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
 
+		await setupE2EEPassword(page);
+
 		// Logout
 		await sidenav.logout();
 
@@ -116,8 +127,6 @@ test.describe('initial setup', () => {
 	test('expect to manually set a new password', async ({ page }) => {
 		const accountSecurityPage = new AccountSecurityPage(page);
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
@@ -125,10 +134,7 @@ test.describe('initial setup', () => {
 
 		const newPassword = faker.string.uuid();
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		// Set a new password
 		await accountSecurityPage.goto();
@@ -177,17 +183,13 @@ test.describe('basic features', () => {
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const sidenav = new HomeSidenav(page);
 
 		const channelName = faker.string.uuid();
 		const messageText = 'This is an encrypted message.';
 
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		await sidenav.createEncryptedChannel(channelName);
 
@@ -220,8 +222,6 @@ test.describe('basic features', () => {
 	test('expect placeholder text in place of encrypted file upload description', async ({ page }) => {
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const fileUploadModal = new FileUploadModal(page);
 		const sidenav = new HomeSidenav(page);
 
@@ -229,10 +229,7 @@ test.describe('basic features', () => {
 		const fileName = faker.system.commonFileName('txt');
 		const fileDescription = faker.lorem.sentence();
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		// Create an encrypted channel
 		await sidenav.createEncryptedChannel(channelName);
