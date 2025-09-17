@@ -250,7 +250,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				return;
 			}
 
-			instance.setDeviceId(deviceId);
+			instance.setDeviceId({ exact: deviceId });
 		};
 
 		const forwardCall = (type: 'user' | 'sip', id: string) => {
