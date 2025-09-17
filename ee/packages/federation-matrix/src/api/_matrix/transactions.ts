@@ -390,7 +390,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 
 					return {
 						body: {
-							origin_server_ts: eventData.origin_server_ts,
+							origin_server_ts: eventData.event.origin_server_ts,
 							origin: eventData.origin,
 							pdus: [eventData.event],
 						},
