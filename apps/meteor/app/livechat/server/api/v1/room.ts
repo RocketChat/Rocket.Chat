@@ -441,63 +441,65 @@ API.v1.addRoute(
 	},
 );
 
-const livechatRoomsEndpoints = API.v1.post(
-	'livechat/rooms.delete',
-	{
-		response: {
-			200: POSTLivechatRemoveRoomSuccess,
-			400: validateBadRequestErrorResponse,
+const livechatRoomsEndpoints = API.v1
+	.post(
+		'livechat/rooms.delete',
+		{
+			response: {
+				200: POSTLivechatRemoveRoomSuccess,
+				400: validateBadRequestErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['remove-closed-livechat-room'],
+			body: isPOSTLivechatRemoveRoomParams,
 		},
-		authRequired: true,
-		permissionsRequired: ['remove-closed-livechat-room'],
-		body: isPOSTLivechatRemoveRoomParams,
-	},
-	async function action() {
-		const { roomId } = this.bodyParams;
+		async function action() {
+			const { roomId } = this.bodyParams;
 
-		const room = await LivechatRooms.findOneById(roomId);
-		if (!room) {
-			return API.v1.failure('error-invalid-room');
-		}
+			const room = await LivechatRooms.findOneById(roomId);
+			if (!room) {
+				return API.v1.failure('error-invalid-room');
+			}
 
-		if (room.t !== 'l') {
-			return API.v1.failure('error-this-is-not-a-livechat-room');
-		}
+			if (room.t !== 'l') {
+				return API.v1.failure('error-this-is-not-a-livechat-room');
+			}
 
-		if (room.open) {
-			return API.v1.failure('error-room-is-not-closed');
-		}
+			if (room.open) {
+				return API.v1.failure('error-room-is-not-closed');
+			}
 
-		await removeOmnichannelRoom(roomId);
+			await removeOmnichannelRoom(roomId);
 
-		return API.v1.success();
-	},
-).post(
-	'livechat/rooms.removeAllClosedRooms',
-	{
-		response: {
-			200: isPOSTLivechatRoomsCloseAllSuccessResponse,
+			return API.v1.success();
 		},
-		authRequired: true,
-		permissionsRequired: ['remove-closed-livechat-rooms'],
-		body: isPOSTLivechatRoomsCloseAll,
-	},
-	async function action() {
-		livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
+	)
+	.post(
+		'livechat/rooms.removeAllClosedRooms',
+		{
+			response: {
+				200: isPOSTLivechatRoomsCloseAllSuccessResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['remove-closed-livechat-rooms'],
+			body: isPOSTLivechatRoomsCloseAll,
+		},
+		async function action() {
+			livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
 
-		const params = this.bodyParams;
+			const params = this.bodyParams;
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
-		const promises: Promise<void>[] = [];
-		await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
-			promises.push(removeOmnichannelRoom(_id));
-		});
-		await Promise.all(promises);
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
+			const promises: Promise<void>[] = [];
+			await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
+				promises.push(removeOmnichannelRoom(_id));
+			});
+			await Promise.all(promises);
 
-		livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
-		return API.v1.success({ removedRooms: promises.length });
-	},
-);
+			livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
+			return API.v1.success({ removedRooms: promises.length });
+		},
+	);
 
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
