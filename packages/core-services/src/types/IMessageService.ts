@@ -9,6 +9,17 @@ export interface IMessageService {
 		user: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage>;
+	saveMessageFromFederation({
+		fromId,
+		rid,
+		msg,
+		federation_event_id,
+	}: {
+		fromId: string;
+		rid: string;
+		msg: string;
+		federation_event_id: string;
+	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,
