@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatDepartment, Users, LivechatRooms } from '@rocket.chat/models';
 import {
@@ -16,9 +17,8 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { takeInquiry } from '../../../server/methods/takeInquiry';
-import { ExtractRoutesFromAPI } from '/app/api/server/ApiClass';
-import { Omnichannel } from '@rocket.chat/core-services';
-import { returnRoomAsInquiry } from '/app/livechat/server/lib/rooms';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
+import { returnRoomAsInquiry } from '../../../server/lib/rooms';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
@@ -152,7 +152,7 @@ const livechatInquiriesEndpoints = API.v1.post(
 	},
 );
 
-type LivechatInquiriesEndpoints = ExtractRoutesFromAPI<typeof livechatInquiriesEndpoints>
+type LivechatInquiriesEndpoints = ExtractRoutesFromAPI<typeof livechatInquiriesEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
