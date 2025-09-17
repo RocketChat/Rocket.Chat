@@ -226,14 +226,14 @@ export class FederationHooks {
 	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {
 		callbacks.add(
 			'afterRoomNameChange',
-			async (params: Record<string, any>): Promise<void> => {
-				if (!params?.rid || !params.name) {
+			async (params): Promise<void> => {
+				if (!params.room._id || !params.name) {
 					return;
 				}
 
 				throwIfFederationNotEnabledOrNotReady();
 
-				await callback(params.rid, params.name);
+				await callback(params.room._id, params.name);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-room-name-changed',
