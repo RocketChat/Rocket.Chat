@@ -4019,6 +4019,36 @@ const POSTLivechatRemoveRoomSuccessSchema = {
 
 export const POSTLivechatRemoveRoomSuccess = ajv.compile<void>(POSTLivechatRemoveRoomSuccessSchema);
 
+type POSTLivechatRemoveCustomFields = {
+	customFieldId: string;
+};
+
+const POSTLivechatRemoveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+	},
+	required: ['customFieldId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
+
+const POSTLivechatRemoveCustomFieldSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatRemoveCustomFieldSuccess = ajv.compile<void>(POSTLivechatRemoveCustomFieldSuccessSchema);
+
 export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactManager'> & {
 	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;
 };
