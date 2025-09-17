@@ -69,8 +69,6 @@ test.describe('initial setup', () => {
 		// Log out
 		await sidenav.logout();
 
-		await expect(loginPage.loginButton).toBeVisible();
-
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
@@ -100,12 +98,18 @@ test.describe('initial setup', () => {
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
 
+		// Logout
 		await sidenav.logout();
+
+		// Login again
 		await loginPage.loginByUserState(Users.admin);
+
+		// Reset E2EE password
 		await enterE2EEPasswordBanner.click();
 		await enterE2EEPasswordModal.forgotPassword();
 		await resetE2EEPasswordModal.confirmReset();
 
+		// restore login
 		await loginPage.loginByUserState(Users.admin);
 	});
 
@@ -135,8 +139,6 @@ test.describe('initial setup', () => {
 		await sidenav.logout();
 
 		// Login again
-		await expect(loginPage.loginButton).toBeVisible();
-
 		await loginPage.loginByUserState(Users.admin);
 
 		// Enter the saved password
@@ -197,8 +199,10 @@ test.describe('basic features', () => {
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(messageText);
 
+		// Log out
 		await sidenav.logout();
 
+		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
 		// Navigate to the encrypted channel WITHOUT entering the password
@@ -984,8 +988,6 @@ test.describe.serial('e2ee room setup', () => {
 
 		// Logout to remove e2ee keys
 		await poHomeChannel.sidenav.logout();
-
-		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });

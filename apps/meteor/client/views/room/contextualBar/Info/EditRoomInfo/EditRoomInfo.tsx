@@ -79,7 +79,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const query = useQueryClient();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const isFederated = useMemo(() => isRoomFederated(room), [room]);
+	const isFederated = isRoomFederated(room);
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
