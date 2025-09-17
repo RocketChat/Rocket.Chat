@@ -3989,6 +3989,117 @@ export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedR
 	POSTLivechatRoomsCloseAllSuccessResponseSchema,
 );
 
+const POSTLivechatSaveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+		customFieldData: {
+			type: 'object',
+			properties: {
+				field: {
+					type: 'string',
+				},
+				label: {
+					type: 'string',
+				},
+				scope: {
+					type: 'string',
+					enum: ['visitor', 'room'],
+				},
+				visibility: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					nullable: true,
+				},
+				regexp: {
+					type: 'string',
+					nullable: true,
+				},
+				required: {
+					type: 'boolean',
+					nullable: true,
+				},
+				defaultValue: {
+					type: 'string',
+					nullable: true,
+				},
+				options: {
+					type: 'string',
+					nullable: true,
+				},
+				public: {
+					type: 'boolean',
+					nullable: true,
+				},
+				searchable: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatSaveCustomFieldsParams = ajv.compile<{
+	customFieldId: string;
+	customFieldData: ILivechatCustomField & { field: string };
+}>(POSTLivechatSaveCustomFieldsSchema);
+
+const POSTLivechatSaveCustomFieldSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+		label: {
+			type: 'string',
+		},
+		scope: {
+			type: 'string',
+			enum: ['visitor', 'room'],
+		},
+		visibility: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+			nullable: true,
+		},
+		regexp: {
+			type: 'string',
+			nullable: true,
+		},
+		required: {
+			type: 'boolean',
+			nullable: true,
+		},
+		defaultValue: {
+			type: 'string',
+			nullable: true,
+		},
+		options: {
+			type: 'string',
+			nullable: true,
+		},
+		public: {
+			type: 'boolean',
+			nullable: true,
+		},
+		searchable: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+};
+
+export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<ILivechatCustomField>(POSTLivechatSaveCustomFieldSuccessSchema);
+
 type POSTLivechatRemoveCustomFields = {
 	customFieldId: string;
 };

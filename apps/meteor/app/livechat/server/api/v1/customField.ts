@@ -4,8 +4,11 @@ import {
 	isPOSTLivechatCustomFieldParams,
 	isPOSTLivechatCustomFieldsParams,
 	isPOSTLivechatRemoveCustomFields,
+	isPOSTLivechatSaveCustomFieldsParams,
 	POSTLivechatRemoveCustomFieldSuccess,
+	POSTLivechatSaveCustomFieldSuccess,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
@@ -92,12 +95,54 @@ API.v1.addRoute(
 );
 
 const livechatCustomFieldsEndpoints = API.v1.post(
+	'livechat/custom-fields.save',
+	{
+		response: {
+			200: POSTLivechatSaveCustomFieldSuccess,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'], // is this permission appropriate for the targeted action?
+		body: isPOSTLivechatSaveCustomFieldsParams,
+	},
+	async function action() {
+		const { customFieldId, customFieldData } = this.bodyParams;
+
+		if (!/^[0-9a-zA-Z-_]+$/.test(customFieldId)) {
+			return API.v1.failure('Invalid custom field name. Use only letters, numbers, hyphens and underscores.');
+		}
+
+		if (customFieldId) {
+			const customField = await LivechatCustomField.findOneById(customFieldId);
+			if (!customField) {
+				return API.v1.failure('Custom Field Not found');
+			}
+		}
+
+		if (!customFieldId) {
+			const customField = await LivechatCustomField.findOneById(customFieldData.field);
+			if (customField) {
+				return API.v1.failure('Custom Field already exists');
+			}
+		}
+
+		const { field, label, scope, visibility, ...extraData } = customFieldData;
+		const result = await LivechatCustomField.createOrUpdateCustomField(customFieldId, field, label, scope, visibility, {
+			...extraData,
+		});
+
+		return API.v1.success(result)
+	}
+).post(
 	'livechat/custom-fields.delete',
 	{
 		response: {
 			200: POSTLivechatRemoveCustomFieldSuccess,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'], // is this permission appropriate for the targeted action?
