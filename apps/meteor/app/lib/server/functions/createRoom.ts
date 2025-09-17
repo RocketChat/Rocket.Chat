@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeAddUserToARoom } from '../../../../lib/callbacks/beforeAddUserToARoom';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
@@ -64,13 +65,11 @@ async function createUsersSubscriptions({
 
 	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
-	const membersCursor = Users.findUsersByUsernames<Pick<IUser, '_id' | 'username' | 'settings' | 'federated' | 'roles'>>(members, {
-		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
-	});
+	const membersCursor = Users.findUsersByUsernames(members);
 
 	for await (const member of membersCursor) {
 		try {
-			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+			await beforeAddUserToARoom.run({ user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 		} catch (error) {
 			continue;
