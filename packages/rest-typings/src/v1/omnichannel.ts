@@ -4047,7 +4047,7 @@ const POSTLivechatSaveCustomFieldsSchema = {
 
 export const isPOSTLivechatSaveCustomFieldsParams = ajv.compile<{
 	customFieldId: string;
-	customFieldData: ILivechatCustomField & { field: string };
+	customFieldData: Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
 }>(POSTLivechatSaveCustomFieldsSchema);
 
 const POSTLivechatSaveCustomFieldSuccessSchema = {
