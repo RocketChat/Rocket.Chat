@@ -134,10 +134,10 @@ const livechatCustomFieldsEndpoints = API.v1
 				...extraData,
 			});
 
-			return API.v1.success(result)
-		}
+			return API.v1.success(result);
+		},
 	)
-		.post(
+	.post(
 		'livechat/custom-fields.delete',
 		{
 			response: {
