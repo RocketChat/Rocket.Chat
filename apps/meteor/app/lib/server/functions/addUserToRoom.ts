@@ -62,6 +62,8 @@ export const addUserToRoom = async function (
 		throw new Meteor.Error((error as any)?.message);
 	}
 
+	// TODO: are we calling this twice?
+
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
 	// Check if user is already in room
@@ -79,7 +81,7 @@ export const addUserToRoom = async function (
 
 		throw error;
 	}
-
+	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
