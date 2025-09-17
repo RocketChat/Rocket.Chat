@@ -31,11 +31,15 @@ const useMediaStream = (
 			useCallback(
 				(node) => {
 					// TODO remove node check when useSafeRefCallback is updated from fuselage.
-					if (!remoteStream || !node) {
+					if (!node) {
 						return;
 					}
 
 					actualRef.current = node;
+
+					if (!remoteStream) {
+						return;
+					}
 
 					node.srcObject = remoteStream;
 					node.play().catch((error) => {
