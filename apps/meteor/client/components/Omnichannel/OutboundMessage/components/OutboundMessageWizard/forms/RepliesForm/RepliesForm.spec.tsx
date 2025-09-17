@@ -7,7 +7,7 @@ import { axe } from 'jest-axe';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
 import RepliesForm from './RepliesForm';
-import { createFakeDepartment, createFakeUser } from '../../../../../../../tests/mocks/data';
+import { createFakeDepartment, createFakeUser } from '../../../../../../../../tests/mocks/data';
 
 jest.mock('tinykeys', () => ({
 	__esModule: true,
