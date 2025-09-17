@@ -7,7 +7,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
 import { getMatrixLocalDomain } from '../helpers/domain.builder';
-import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
 
 const logger = new Logger('federation-matrix:message');
@@ -34,7 +33,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 			const username = userPart.substring(1);
 
-			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const internalUsername = data.sender;
 			let user = await Users.findOneByUsername(internalUsername);
 
 			if (!user) {
@@ -243,7 +242,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug(`No RC message found for event ${data.redacts}`);
 				return;
 			}
-			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const internalUsername = data.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
 				logger.debug(`User not found: ${internalUsername}`);

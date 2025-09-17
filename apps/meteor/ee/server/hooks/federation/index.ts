@@ -8,7 +8,7 @@ import {
 	type IRoom,
 	type IUser,
 } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { MatrixBridgedRoom, Rooms } from '@rocket.chat/models';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { callbacks } from '../../../../lib/callbacks';
@@ -20,11 +20,24 @@ import { getFederationVersion } from '../../../../server/services/federation/uti
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
 
 // TODO: move this to the hooks folder
-callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members }) => {
+callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members, options }) => {
 	const federationVersion = getFederationVersion();
-	if (federationVersion === 'matrix') {
-		await FederationMatrix.createRoom(room, owner, members);
+	if (federationVersion === 'native') {
+		const federatedRoomId = options?.federatedRoomId;
+		// TODO: move this to the hooks folder
 		setupTypingEventListenerForRoom(room._id);
+
+		if (!federatedRoomId) {
+			// if room if exists, we don't want to create it again
+			// adds bridge record
+			await FederationMatrix.createRoom(room, owner, members);
+		} else {
+			// matrix room was already created and passed
+			const fromServer = federatedRoomId.split(':')[1];
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, federatedRoomId, fromServer);
+		}
+
+		await Rooms.setAsFederated(room._id);
 	}
 });
 
