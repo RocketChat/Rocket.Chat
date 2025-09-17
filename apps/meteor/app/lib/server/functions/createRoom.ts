@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeAddUserToARoom } from '../../../../lib/callbacks/beforeAddUserToARoom';
-import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
@@ -132,7 +132,7 @@ export const createRoom = async <T extends RoomType>(
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 
-	await beforeCreateRoomCallback.run({
+	await prepareCreateRoomCallback.run({
 		type,
 		// name,
 		// owner: ownerUsername,
