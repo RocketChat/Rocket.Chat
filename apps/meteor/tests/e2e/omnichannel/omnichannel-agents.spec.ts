@@ -107,7 +107,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test.only('OC - Edit agent  - Manage departments', async ({ page }) => {
+	test('OC - Edit agent  - Manage departments', async ({ page }) => {
 		await poOmnichannelAgents.selectUsername('user1');
 		await poOmnichannelAgents.btnAdd.click();
 		await poOmnichannelAgents.inputSearch.fill('user1');
@@ -115,7 +115,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await poOmnichannelAgents.btnEdit.click();
 		await poOmnichannelAgents.selectDepartment(department.data.name);
-		const response = page.waitForResponse('/v1/livechat/agents.saveInfo');
+		const response = page.waitForResponse('**/api/v1/livechat/agents.saveInfo');
 		await poOmnichannelAgents.btnSave.click();
 
 		/**
