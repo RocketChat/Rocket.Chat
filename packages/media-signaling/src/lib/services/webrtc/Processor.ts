@@ -47,16 +47,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private lastSetLocalDescription: string | null = null;
 
+	private addedEmptyTransceiver = false;
+
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
 
-		this.localStream = new LocalStream(this.localMediaStream);
-		this.remoteStream = new RemoteStream(this.remoteMediaStream);
-
 		this.peer = new RTCPeerConnection(config.rtc);
+
+		this.localStream = new LocalStream(this.localMediaStream, this.peer, this.config.logger);
+		this.remoteStream = new RemoteStream(this.remoteMediaStream, this.peer, this.config.logger);
+
 		this.emitter = new Emitter();
 		this.registerPeerEvents();
 	}
@@ -81,6 +84,18 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
 		await this.initializeLocalMediaStream();
+
+		if (!this.addedEmptyTransceiver) {
+			// If there's no audio transceivers yet, add a new one; since it's an offer, the track can be set later
+			const transceivers = this.peer
+				.getTransceivers()
+				.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+
+			if (!transceivers.length) {
+				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
+				this.addedEmptyTransceiver = true;
+			}
+		}
 
 		if (iceRestart) {
 			this.restartIce();
@@ -122,8 +137,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.remoteStream.stopAudio();
-
 		this.unregisterPeerEvents();
+
+		this.peer.close();
 	}
 
 	public startNewNegotiation(): void {
@@ -140,8 +156,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (sdp.type !== 'offer') {
 			throw new Error('invalid-webrtc-offer');
 		}
+		if (!this.inputTrack) {
+			throw new Error('no-input-track');
+		}
 
 		await this.initializeLocalMediaStream();
+
+		const transceivers = this.peer
+			.getTransceivers()
+			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+
+		if (!transceivers.length) {
+			throw new Error('no-audio-transceiver');
+		}
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.startNewNegotiation();
@@ -315,7 +342,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
 		// Received a remote stream
-		this.remoteStream.setTrack(event.track, this.peer);
+		this.remoteStream.setTrack(event.track);
 	}
 
 	private onConnectionStateChange() {
@@ -367,8 +394,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private async loadInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.loadInputTrack');
 		this.localMediaStreamInitialized = true;
-		await this.localStream.setTrack(this.inputTrack, this.peer);
+		await this.localStream.setTrack(this.inputTrack);
 	}
 
 	private onIceGatheringComplete() {
