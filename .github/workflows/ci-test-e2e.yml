@@ -120,6 +120,12 @@ jobs:
           mongodb-replica-set: rs0
 
       - uses: actions/checkout@v4
+      
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: /tmp/homeserver
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
