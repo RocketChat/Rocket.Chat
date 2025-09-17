@@ -12,7 +12,7 @@ export const removeCustomField = (api: BaseTest['api'], id: string) => {
 };
 
 export const createCustomField = async (api: BaseTest['api'], overwrites: Partial<CustomField>) => {
-	const response = await api.post('/method.call/livechat:saveCustomField', {
+	const response = await api.post('/v1/livechat/custom-fields.save', {
 		customFieldId: null,
 		customFieldData: {
 			field: overwrites.field,
