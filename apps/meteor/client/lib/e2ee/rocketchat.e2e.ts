@@ -613,30 +613,29 @@ class E2E extends Emitter {
 
 	parsePrivateKey(privateKey: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
 		const json: unknown = JSON.parse(privateKey);
-
 		if (typeof json !== 'object' || json === null) {
-			throw new Error('Invalid private key format');
+			throw new TypeError('Invalid private key format');
 		}
 
 		if ('iv' in json && 'ciphertext' in json && typeof json.iv === 'string' && typeof json.ciphertext === 'string') {
+			// v2: { iv: base64, ciphertext: base64 }
 			return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext) };
 		}
 
 		if ('$binary' in json && typeof json.$binary === 'string') {
-			// Old format, just base64 string
+			// v1: { $binary: base64(iv[16] + ciphertext) }
 			const binary = Base64.decode(json.$binary);
-			const [iv, ciphertext] = splitVectorAndEncryptedData(binary, 16);
+			const { iv, ciphertext } = splitVectorAndEncryptedData(binary, 16);
 			return { iv, ciphertext };
 		}
 
-		throw new Error('Invalid private key format');
+		throw new TypeError('Invalid private key format');
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		const password = await this.requestPasswordAlert();
-
-		const masterKey = await this.getMasterKey(password);
 		const { iv, ciphertext } = this.parsePrivateKey(privateKey);
+		const password = await this.requestPasswordAlert();
+		const masterKey = await this.getMasterKey(password);
 
 		try {
 			if (!masterKey) {

@@ -35,12 +35,11 @@ export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encr
 
 export function splitVectorAndEncryptedData(
 	cipherText: Uint8Array<ArrayBuffer>,
-	ivLength: 12 | 16 = 16,
-): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
-	const vector = cipherText.slice(0, ivLength);
-	const encryptedData = cipherText.slice(ivLength);
-
-	return [vector, encryptedData];
+	ivLength: 12 | 16,
+): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
+	const iv = cipherText.subarray(0, ivLength);
+	const ciphertext = cipherText.subarray(ivLength);
+	return { iv, ciphertext };
 }
 
 export async function encryptRSA(key: CryptoKey, data: BufferSource) {
@@ -85,7 +84,7 @@ export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data:
 	return crypto.subtle.encrypt({ name: 'AES-CTR', counter, length: 64 }, key, data);
 }
 
-export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+export async function decryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
@@ -128,10 +127,8 @@ export function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUs
 		keyData,
 		{
 			name: 'RSA-OAEP',
-			modulusLength: 2048,
-			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
 			hash: { name: 'SHA-256' },
-		} as any,
+		},
 		true,
 		keyUsages,
 	);
@@ -156,7 +153,7 @@ export function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<Key
 	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
-export function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKey) {
+export function deriveKey(salt: BufferSource, baseKey: CryptoKey) {
 	return crypto.subtle.deriveKey(
 		{ name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
 		baseKey,

@@ -741,7 +741,7 @@ export class E2ERoom extends Emitter {
 		// v1: kid + base64(vector + ciphertext)
 		const message = typeof payload === 'string' ? payload : payload.ciphertext;
 		const [kid, decoded] = decodePrefixedBase64(message);
-		const [iv, ciphertext] = splitVectorAndEncryptedData(decoded);
+		const { iv, ciphertext } = splitVectorAndEncryptedData(decoded, 16);
 		return {
 			kid,
 			iv,
