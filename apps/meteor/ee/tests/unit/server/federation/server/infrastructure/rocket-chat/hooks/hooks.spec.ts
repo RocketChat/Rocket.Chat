@@ -343,7 +343,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			expect(remove.callCount).to.be.equal(6);
 			expect(remove.getCall(0).calledWith('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room')).to.be.equal(true);
 			expect(remove.getCall(1).calledWith('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room')).to.be.equal(true);
-			expect(remove.getCall(2).calledWith('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room')).to.be.equal(true);
+			expect(remove.getCall(2).calledWith('federation.onAddUsersToRoom', 'federation-v2-on-add-users-to-a-room')).to.be.equal(true);
 			expect(remove.getCall(3).calledWith('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room')).to.be.equal(true);
 			expect(remove.getCall(4).calledWith('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room')).to.be.equal(true);
 			expect(remove.getCall(5).calledWith('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room')).to.be.equal(

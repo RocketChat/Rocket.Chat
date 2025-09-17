@@ -27,7 +27,7 @@ export class FederationHooksEE {
 
 	public static onUsersAddedToARoom(callback: (room: IRoom, addedUsers: IUser[] | Username[], inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
-			'federation.onAddUsersToARoom',
+			'federation.onAddUsersToRoom',
 			async (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.invitees || !params.inviter) {
 					return;
@@ -105,7 +105,7 @@ export class FederationHooksEE {
 	public static removeAllListeners(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
-		callbacks.remove('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room');
+		callbacks.remove('federation.onAddUsersToRoom', 'federation-v2-on-add-users-to-a-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
 		beforeAddUserToARoom.remove('federation-v2-before-add-user-to-the-room');

@@ -77,7 +77,7 @@ interface EventLikeCallbackSignatures {
 		message: IMessage,
 		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
 	) => void;
-	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
+	'federation.onAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
