@@ -16,7 +16,7 @@ import { useCallSounds } from './useCallSounds';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
-import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
+import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
 import MediaCallWidget from '../v2/MediaCallWidget';
 import TransferModal from '../v2/TransferModal';
@@ -116,6 +116,9 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
 		} catch (error) {
+			if (error instanceof PermissionRequestCancelledCallRejectedError) {
+				session.endCall();
+			}
 			return;
 		}
 

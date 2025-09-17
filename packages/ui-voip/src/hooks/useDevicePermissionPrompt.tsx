@@ -53,6 +53,13 @@ export const stopTracks = (stream: MediaStream) => {
 	});
 };
 
+export class PermissionRequestCancelledCallRejectedError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'PermissionRequestDeniedError';
+	}
+}
+
 // TODO: Remove this hook
 export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
@@ -193,7 +200,10 @@ export const useDevicePermissionPrompt2 = () => {
 
 				const onConfirm = () => {
 					requestDevice?.({
-						onReject: reject,
+						onReject: (...args) => {
+							reject(...args);
+							setModal(null);
+						},
 						onAccept: (...args) => {
 							onAccept(...args);
 							setModal(null);
@@ -202,11 +212,16 @@ export const useDevicePermissionPrompt2 = () => {
 					});
 				};
 
+				const modalType = getModalType(actionType, state);
+
 				const onCancel = () => {
-					reject();
+					if (modalType === 'incomingPrompt') {
+						reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
+					}
+
 					setModal(null);
 				};
-				setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
+				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},
 		[selectedDeviceId, state, setModal, queryClient, setInputMediaDevice, requestDevice],
