@@ -25,7 +25,7 @@ test.describe('E2EE Key Reset', () => {
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
-		await api.post('/im.delete', { roomId: `user2${Users.userE2EE.data.username}` });
+		await api.post('/im.delete', { username: 'user2' });
 	});
 
 	test.beforeEach(async ({ browser, page }) => {

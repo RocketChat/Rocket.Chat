@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { APIRequestContext, Page } from '@playwright/test';
 
 import { BASE_API_URL } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
@@ -26,13 +27,41 @@ test.describe('E2EE Legacy Format', () => {
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
-		await api.post('/im.delete', { roomId: `user2${Users.userE2EE.data.username}` });
+		await api.post('/im.delete', { username: 'user2' });
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
 	});
+
+	const encryptLegacyMessage = async (page: Page, rid: string, messageText: string) => {
+		return page.evaluate(
+			async ({ rid, msg }: { rid: string; msg: string }) => {
+				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
+				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
+				const e2eRoom = await e2e.getInstanceByRoomId(rid);
+				return e2eRoom.encrypt({ _id: 'id', msg });
+			},
+			{ rid, msg: messageText },
+		);
+	};
+
+	const sendEncryptedMessage = async (request: APIRequestContext, rid: string, encryptedMsg: string) => {
+		return request.post(`${BASE_API_URL}/chat.sendMessage`, {
+			headers: {
+				'X-Auth-Token': Users.userE2EE.data.loginToken,
+				'X-User-Id': Users.userE2EE.data._id,
+			},
+			data: {
+				message: {
+					rid,
+					msg: encryptedMsg,
+					t: 'e2e',
+				},
+			},
+		});
+	};
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
@@ -49,28 +78,11 @@ test.describe('E2EE Legacy Format', () => {
 		await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
 
 		const rid = await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room');
+		expect(rid).toBeTruthy();
 
-		// send old format encrypted message via API
-		const msg = await page.evaluate(async (rid) => {
-			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
-			const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
-			const e2eRoom = await e2e.getInstanceByRoomId(rid);
-			return e2eRoom.encrypt({ _id: 'id', msg: 'Old format message' });
-		}, rid);
+		const encryptedMessage = await encryptLegacyMessage(page, rid as string, 'Old format message');
 
-		await request.post(`${BASE_API_URL}/chat.sendMessage`, {
-			headers: {
-				'X-Auth-Token': Users.userE2EE.data.loginToken,
-				'X-User-Id': Users.userE2EE.data._id,
-			},
-			data: {
-				message: {
-					rid,
-					msg,
-					t: 'e2e',
-				},
-			},
-		});
+		await sendEncryptedMessage(request, rid as string, encryptedMessage);
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
