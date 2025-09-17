@@ -14,11 +14,11 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
-import { takeInquiry } from '../../../server/methods/takeInquiry';
-import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { returnRoomAsInquiry } from '../../../server/lib/rooms';
+import { takeInquiry } from '../../../server/methods/takeInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
