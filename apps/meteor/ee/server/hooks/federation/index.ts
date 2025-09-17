@@ -1,7 +1,11 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, type IMessage, type IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
 import { getFederationVersion } from '../../../../server/services/federation/utils';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -36,6 +40,27 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-v2-after-room-message-sent',
 );
+callbacks.add(
+	'federation.onAddUsersToRoom',
+	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
+	callbacks.priority.MEDIUM,
+	'native-federation-on-add-users-to-room ',
+);
+
+beforeAddUserToRoom.add(
+	async ({ user, inviter }, room) => {
+		if (!user.username || !inviter) {
+			return;
+		}
+		if (!isRoomNativeFederated(room)) {
+			return;
+		}
+		await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
+	},
+	callbacks.priority.MEDIUM,
+	'native-federation-on-before-add-users-to-room ',
+);
+
 callbacks.add(
 	'afterSetReaction',
 	async (message: IMessage, params: { user: IUser; reaction: string }): Promise<void> => {

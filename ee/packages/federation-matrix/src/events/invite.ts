@@ -4,6 +4,8 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '@rocket.chat/models';
 
+import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
+
 export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.accept-invite', async (data) => {
 		const room = await MatrixBridgedRoom.findOne({ mri: data.room_id });
@@ -12,19 +14,20 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 			return;
 		}
 
-		const localUser = await Users.findOneByUsername(data.sender);
+		const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+		const localUser = await Users.findOneByUsername(internalUsername);
 		if (localUser) {
 			await Room.addUserToRoom(room.rid, localUser);
 			return;
 		}
 
 		const { insertedId } = await Users.insertOne({
-			username: data.sender,
+			username: internalUsername,
 			type: 'user',
 			status: UserStatus.ONLINE,
 			active: true,
 			roles: ['user'],
-			name: data.content.displayname || data.sender,
+			name: data.content.displayname || internalUsername,
 			requirePasswordChange: false,
 			createdAt: new Date(),
 			_updatedAt: new Date(),
