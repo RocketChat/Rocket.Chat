@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Move quick reactions out of feature preview.
+Promotes quick reactions from preview state to stable
