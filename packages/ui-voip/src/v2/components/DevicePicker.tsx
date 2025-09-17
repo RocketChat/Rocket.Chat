@@ -112,6 +112,31 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			selectionMode='multiple'
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
+			onAction={(deviceId) => {
+				if (typeof deviceId !== 'string') {
+					return;
+				}
+
+				if (deviceId.includes('-input')) {
+					const id = deviceId.replace('-input', '');
+					const device = availableDevices?.audioInput?.find((device) => device.id === id);
+					if (device) {
+						onDeviceChange(device);
+					}
+					return;
+				}
+
+				if (deviceId.includes('-output')) {
+					const id = deviceId.replace('-output', '');
+					const device = availableDevices?.audioOutput?.find((device) => device.id === id);
+					if (device) {
+						onDeviceChange(device);
+					}
+					return;
+				}
+
+				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
+			}}
 			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
 		/>
 	);
