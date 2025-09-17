@@ -4,7 +4,8 @@ import { Users } from '@rocket.chat/models';
 import {
 	isGETAgentNextToken,
 	isPOSTLivechatAgentSaveInfoParams,
-	isPOSTLivechatAgentStatusProps, POSTLivechatAgentSaveInfoSuccessResponse,
+	isPOSTLivechatAgentStatusProps,
+	POSTLivechatAgentSaveInfoSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -13,12 +14,12 @@ import {
 import { API } from '../../../../api/server';
 import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 import { RoutingManager } from '../../lib/RoutingManager';
 import { getRequiredDepartment } from '../../lib/departmentsLib';
+import { saveAgentInfo } from '../../lib/omni-users';
 import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
-import { saveAgentInfo } from '/app/livechat/server/lib/omni-users';
-import { hasRoleAsync } from '/app/authorization/server/functions/hasRole';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -158,7 +159,7 @@ const livechatAgentsEndpoints = API.v1.post(
 		await saveAgentInfo(agentId, agentData, agentDepartments);
 
 		return API.v1.success();
-	}
+	},
 );
 
 type LivechatAgentsEndpoints = ExtractRoutesFromAPI<typeof livechatAgentsEndpoints>;
