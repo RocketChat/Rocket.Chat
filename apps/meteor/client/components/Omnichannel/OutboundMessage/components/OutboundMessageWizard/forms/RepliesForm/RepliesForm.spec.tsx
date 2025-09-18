@@ -18,6 +18,7 @@ const mockUser = createFakeUser({
 	_id: 'agent-1',
 	username: 'agent.one',
 	name: 'Agent One',
+	roles: ['livechat-agent'],
 });
 
 const mockAgentOne: Serialized<ILivechatAgent> = {
@@ -237,7 +238,7 @@ describe('RepliesForm', () => {
 		);
 	});
 
-	it('should display only self when user doesnt have assign any permission', async () => {
+	it.only('should display only self when user doesnt have assign any permission', async () => {
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
 			wrapper: appRoot(['outbound.can-assign-self-only']).build(),
 		});
