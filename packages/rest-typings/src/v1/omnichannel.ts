@@ -2282,6 +2282,7 @@ type POSTLivechatTranscriptParams = {
 	rid: string;
 	token: string;
 	email: string;
+	subject?: string;
 };
 
 const POSTLivechatTranscriptParamsSchema = {
@@ -2295,6 +2296,10 @@ const POSTLivechatTranscriptParamsSchema = {
 		},
 		email: {
 			type: 'string',
+		},
+		subject: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['rid', 'token', 'email'],
