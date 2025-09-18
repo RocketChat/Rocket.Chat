@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes an issue with deploying Apps that import libraries using native Node modules.
+Fixes an issue where apps that import node native modules with the optional `node:` specifier would fail to construct
