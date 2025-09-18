@@ -12,7 +12,12 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [...super.modelIndexes(), { key: { uploadedAt: -1 } }, { key: { rid: 1, _hidden: 1, typeGroup: 1 } }];
+		return [
+			...super.modelIndexes(),
+			{ key: { uploadedAt: -1 } },
+			{ key: { rid: 1, _hidden: 1, typeGroup: 1 } },
+			{ key: { 'federation.mediaId': 1, 'federation.serverName': 1 }, unique: true, sparse: true },
+		];
 	}
 
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
