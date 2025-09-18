@@ -1,4 +1,7 @@
+import { Federation, FederationEE, License } from '@rocket.chat/core-services';
+
 import { settings } from '../../../app/settings/server';
+import { beforeCreateRoomCallback } from '../../../lib/callbacks/beforeCreateRoomCallback';
 
 export function isFederationEnabled(): boolean {
 	return settings.get<boolean>('Federation_Matrix_enabled');
@@ -42,3 +45,12 @@ export class FederationMatrixInvalidConfigurationError extends Error {
 		this.name = 'FederationMatrixInvalidConfiguration';
 	}
 }
+
+beforeCreateRoomCallback.add(async ({ owner, room }) => {
+	const shouldBeHandledByFederation = room.federated === true || owner.username?.includes(':');
+
+	if (shouldBeHandledByFederation) {
+		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+		await federation.beforeCreateRoom(room);
+	}
+});

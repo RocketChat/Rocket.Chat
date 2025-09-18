@@ -99,7 +99,7 @@ export const updateMessage = async function (
 
 		// although this is an "afterSave" kind callback, we know they can extend message's properties
 		// so we wait for it to run before broadcasting
-		const data = await afterSaveMessage(msg, room, user._id);
+		const data = await afterSaveMessage(msg, room, user);
 
 		void notifyOnMessageChange({
 			id: msg._id,
