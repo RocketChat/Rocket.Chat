@@ -13,12 +13,12 @@ import {
 	// joinVectorAndEncryptedData,
 	splitVectorAndEncryptedData,
 	encryptRSA,
-	encryptAesGcm,
+	encryptAes,
 	decryptRSA,
 	// decryptAesGcm,
 	generateAesGcmKey,
 	exportJWKKey,
-	importAesGcmKey,
+	importAesKey,
 	importRSAKey,
 	readFileAsArrayBuffer,
 	encryptAESCTR,
@@ -361,7 +361,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key: string) {
-		return importAesGcmKey(JSON.parse(await this.exportSessionKey(key)));
+		return importAesKey(JSON.parse(await this.exportSessionKey(key)));
 	}
 
 	async exportSessionKey(key: string) {
@@ -412,7 +412,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await importAesGcmKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await importAesKey(JSON.parse(this.sessionKeyExportedString!));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
@@ -570,7 +570,6 @@ export class E2ERoom extends Emitter {
 		} catch (error) {
 			return span.set('error', error).error('Error importing user key');
 		}
-		// const vector = crypto.getRandomValues(new Uint8Array(16));
 
 		// Encrypt session key for this user with his/her public key
 		try {
@@ -585,9 +584,6 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(file: File) {
-		// if (!this.isSupportedRoomType(this.typeOfRoom)) {
-		// 	return;
-		// }
 		const span = log.span('encryptFile');
 
 		const fileArrayBuffer = await readFileAsArrayBuffer(file);
@@ -629,13 +625,21 @@ export class E2ERoom extends Emitter {
 	// Encrypts messages
 	async encryptText(data: Uint8Array<ArrayBuffer>) {
 		const span = log.span('encryptText');
-		const vector = crypto.getRandomValues(new Uint8Array(12));
 
 		try {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = await encryptAesGcm(vector.buffer, this.groupSessionKey, data);
+			const isAesCbc = this.groupSessionKey.algorithm.name === 'AES-CBC';
+			if (isAesCbc) {
+				span.warn('Using deprecated AES-CBC algorithm for encryption. Please upgrade to AES-GCM.');
+			}
+			// AES-GCM uses a 12 byte vector, while AES-CBC uses a 16 byte vector
+			// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#parameters
+			// https://www.rfc-editor.org/rfc/rfc5116.html#section-3.1
+			// https://tools.ietf.org/html/rfc3602#section-2
+			const vector = crypto.getRandomValues(new Uint8Array(isAesCbc ? 16 : 12));
+			const result = await encryptAes(vector, this.groupSessionKey, data);
 			const ciphertext = {
 				kid: this.keyID,
 				iv: Base64.encode(vector),
@@ -740,7 +744,7 @@ export class E2ERoom extends Emitter {
 		}
 		// v1: kid + base64(vector + ciphertext)
 		const message = typeof payload === 'string' ? payload : payload.ciphertext;
-		const [kid, decoded] = decodePrefixedBase64(message);
+		const [kid, decoded] = [message.slice(0, 12), Base64.decode(message.slice(12))];
 		const { iv, ciphertext } = splitVectorAndEncryptedData(decoded, 16);
 		return {
 			kid,
@@ -768,7 +772,7 @@ export class E2ERoom extends Emitter {
 		span.set('type', key.type);
 		span.set('usages', key.usages.toString());
 		try {
-			const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
+			const result = await decryptAes(iv, key, ciphertext);
 			const ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
 			span.info('decrypted');
 			return ret;

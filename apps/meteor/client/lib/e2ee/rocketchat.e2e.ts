@@ -18,7 +18,7 @@ import {
 	toArrayBuffer,
 	// joinVectorAndEncryptedData,
 	splitVectorAndEncryptedData,
-	encryptAesGcm,
+	encryptAes,
 	// decryptAesGcm,
 	generateRSAKey,
 	exportJWKKey,
@@ -513,19 +513,25 @@ class E2E extends Emitter {
 	}
 
 	async encodePrivateKey(privateKey: string, password: string) {
-		const masterKey = await this.getMasterKey(password);
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Error('No userId found');
+		}
+		const salt = `v2:${userId}:${crypto.randomUUID()}`;
+		const masterKey = await this.getMasterKey(password, { salt });
 
 		const vector = crypto.getRandomValues(new Uint8Array(12));
-		const result = await encryptAesGcm(vector.buffer, masterKey, toArrayBuffer(privateKey));
+		const result = await encryptAes(vector, masterKey, toArrayBuffer(privateKey));
 		return {
 			iv: Base64.encode(vector),
 			ciphertext: Base64.encode(new Uint8Array(result)),
+			salt,
 		};
 	}
 
-	async getMasterKey(password: string): Promise<CryptoKey> {
+	async getMasterKey(password: string, params: { salt: string }): Promise<CryptoKey> {
 		const baseKey = await importRawKey(toArrayBuffer(password));
-		const derivedKey = await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
+		const derivedKey = await deriveKey(params.salt, baseKey);
 		return derivedKey;
 	}
 
@@ -580,13 +586,13 @@ class E2E extends Emitter {
 
 	async decodePrivateKeyFlow() {
 		const password = await this.requestPasswordModal();
-		const masterKey = await this.getMasterKey(password);
 
 		if (!this.db_private_key) {
 			return;
 		}
 
-		const { iv, ciphertext } = this.parsePrivateKey(this.db_private_key);
+		const { iv, ciphertext, salt } = this.parsePrivateKey(this.db_private_key);
+		const masterKey = await this.getMasterKey(password, { salt });
 
 		try {
 			if (!masterKey) {
@@ -611,31 +617,39 @@ class E2E extends Emitter {
 		}
 	}
 
-	parsePrivateKey(privateKey: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
+	parsePrivateKey(privateKey: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer>; salt: string } {
 		const json: unknown = JSON.parse(privateKey);
 		if (typeof json !== 'object' || json === null) {
 			throw new TypeError('Invalid private key format');
 		}
 
-		if ('iv' in json && 'ciphertext' in json && typeof json.iv === 'string' && typeof json.ciphertext === 'string') {
-			// v2: { iv: base64, ciphertext: base64 }
-			return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext) };
+		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : Meteor.userId()!;
+
+		if (
+			'iv' in json &&
+			'ciphertext' in json &&
+			typeof json.iv === 'string' &&
+			typeof json.ciphertext === 'string'
+		) {
+			// v2: { iv: base64, ciphertext: base64, salt: string }
+			return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext), salt };
 		}
 
 		if ('$binary' in json && typeof json.$binary === 'string') {
 			// v1: { $binary: base64(iv[16] + ciphertext) }
 			const binary = Base64.decode(json.$binary);
 			const { iv, ciphertext } = splitVectorAndEncryptedData(binary, 16);
-			return { iv, ciphertext };
+			return { iv, ciphertext, salt };
 		}
 
 		throw new TypeError('Invalid private key format');
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		const { iv, ciphertext } = this.parsePrivateKey(privateKey);
+		// const span = log.span('decodePrivateKey');
+		const { iv, ciphertext, salt } = this.parsePrivateKey(privateKey);
 		const password = await this.requestPasswordAlert();
-		const masterKey = await this.getMasterKey(password);
+		const masterKey = await this.getMasterKey(password, { salt });
 
 		try {
 			if (!masterKey) {

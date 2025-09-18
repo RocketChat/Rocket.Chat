@@ -63,12 +63,12 @@ export async function decryptAesCbc(iv: BufferSource, key: CryptoKey, data: Buff
 	return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data);
 }
 
-export async function encryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
+async function encryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
 	return encrypted;
 }
 
-export async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
+async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 	return decrypted;
 }
@@ -78,6 +78,13 @@ export function decryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource)
 		return decryptAesGcm(iv, key, data);
 	}
 	return decryptAesCbc(iv, key, data);
+}
+
+export function encryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
+	if (key.algorithm.name === 'AES-GCM') {
+		return encryptAesGcm(iv, key, data);
+	}
+	return encryptAesCbc(iv, key, data);
 }
 
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
@@ -145,7 +152,12 @@ export function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<Ke
 /**
  * Imports an AES-GCM key from JWK format.
  */
-export function importAesGcmKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+export function importAesKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+	const isCBC = keyData.alg === 'A128CBC' || keyData.alg === 'A192CBC' || keyData.alg === 'A256CBC';
+	if (isCBC) {
+		console.warn('Importing an AES-CBC key. Consider migrating to AES-GCM for better security.');
+		return importAesCbcKey(keyData, keyUsages);
+	}
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-GCM' }, true, keyUsages);
 }
 
@@ -153,11 +165,21 @@ export function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<Key
 	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
-export function deriveKey(salt: BufferSource, baseKey: CryptoKey) {
+export function deriveKey(salt: string, baseKey: CryptoKey) {
+	if (salt.startsWith('v2:')) {
+		return crypto.subtle.deriveKey(
+			{ name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: 100_000, hash: 'SHA-256' },
+			baseKey,
+			{ name: 'AES-GCM', length: 256 },
+			true,
+			['encrypt', 'decrypt'],
+		);
+	}
+	// Legacy derivation for salts not starting with 'v2:'
 	return crypto.subtle.deriveKey(
-		{ name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
+		{ name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: 1000, hash: 'SHA-256' },
 		baseKey,
-		{ name: 'AES-GCM', length: 256 },
+		{ name: 'AES-CBC', length: 256 },
 		true,
 		['encrypt', 'decrypt'],
 	);

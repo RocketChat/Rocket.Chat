@@ -1,4 +1,4 @@
-import { Base64 } from "@rocket.chat/base64";
+import { Base64 } from '@rocket.chat/base64';
 
 // A 256-byte array always encodes to 344 characters in Base64.
 const DECODED_LENGTH = 256;
@@ -43,4 +43,3 @@ export const encodePrefixedBase64 = (prefix: string, data: Uint8Array<ArrayBuffe
 	// 4. Concatenate the prefix and the Base64 string
 	return prefix + base64Data;
 };
-
