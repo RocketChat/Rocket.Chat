@@ -58,8 +58,6 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async updatePartialAndReturnDocument(item: IAppStorageItem, { unsetPermissionsGranted = false } = {}): Promise<IAppStorageItem> {
-		console.log('updatePartialAndReturnDocument', item, unsetPermissionsGranted);
-
 		const updateQuery: UpdateFilter<IAppStorageItem> = {
 			$set: item,
 		};
@@ -73,30 +71,22 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async updateStatus(_id: string, status: AppStatus): Promise<boolean> {
-		console.log('updateStatus', _id, status);
-
 		const result = await this.db.updateOne({ _id }, { $set: { status } });
 		return result.modifiedCount > 0;
 	}
 
 	public async updateSetting(_id: string, setting: ISetting): Promise<boolean> {
-		console.log('updateSetting', _id, setting);
-
 		const result = await this.db.updateOne({ _id }, { $set: { [`settings.${setting.id}`]: setting } });
 
 		return result.modifiedCount > 0;
 	}
 
 	public async updateAppInfo(_id: string, info: IAppInfo): Promise<boolean> {
-		console.log('updateAppInfo', _id, info);
-
 		const result = await this.db.updateOne({ _id }, { $set: { info } });
 		return result.modifiedCount > 0;
 	}
 
 	public async updateMarketplaceInfo(_id: string, marketplaceInfo: IMarketplaceInfo[]): Promise<boolean> {
-		console.log('updateMarketplaceInfo', _id, marketplaceInfo);
-
 		const result = await this.db.updateOne({ _id }, { $set: { marketplaceInfo } });
 		return result.modifiedCount > 0;
 	}
