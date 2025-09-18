@@ -268,7 +268,7 @@ export interface IUserNativeFederated extends IUser {
 }
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
-	isUserFederated(user) && 'federation' in user && user.federation?.version === '0.0.0';
+	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'string';
 
 export type IUserDataEvent = {
 	id: unknown;
