@@ -1,7 +1,8 @@
 import { Divider, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
+import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
+import ContactInfoPhoneEntry from './ContactInfoPhoneEntry';
 import ContactManagerInfo from './ContactManagerInfo';
 import { ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -11,6 +12,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
 type ContactInfoDetailsProps = {
+	contactId: string;
 	emails?: string[];
 	phones?: string[];
 	createdAt: string;
@@ -18,22 +20,44 @@ type ContactInfoDetailsProps = {
 	contactManager?: string;
 };
 
-const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
 	return (
 		<ContextualbarScrollableContent>
-			{emails?.length ? <ContactInfoDetailsGroup type='email' label={t('Email')} values={emails} /> : null}
-			{phones?.length ? <ContactInfoDetailsGroup type='phone' label={t('Phone_number')} values={phones} /> : null}
-			{contactManager && <ContactManagerInfo userId={contactManager} />}
+			{emails?.length ? (
+				<Field>
+					<Label id={`${contactId}-emails`}>{t('Email')}</Label>
+					<ul aria-labelledby={`${contactId}-emails`}>
+						{emails.map((email) => (
+							<ContactInfoDetailsEntry key={email} is='li' icon='mail' value={email} />
+						))}
+					</ul>
+				</Field>
+			) : null}
+
+			{phones?.length ? (
+				<Field>
+					<Label id={`${contactId}-phones`}>{t('Phone')}</Label>
+					<ul aria-labelledby={`${contactId}-phones`}>
+						{phones.map((phone) => (
+							<ContactInfoPhoneEntry key={phone} is='li' contactId={contactId} value={phone} />
+						))}
+					</ul>
+				</Field>
+			) : null}
+
+			{contactManager ? <ContactManagerInfo userId={contactManager} /> : null}
+
 			<Margins block={4}>
 				{createdAt && (
 					<Field>
-						<Label>{t('Created_at')}</Label>
-						<Info>{formatDate(createdAt)}</Info>
+						<Label id={`${contactId}-created-at`}>{t('Created_at')}</Label>
+						<Info aria-labelledby={`${contactId}-created-at`}>{formatDate(createdAt)}</Info>
 					</Field>
 				)}
+
 				{customFieldEntries.length > 0 && (
 					<>
 						<Divider mi={-24} />
