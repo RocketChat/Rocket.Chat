@@ -20,48 +20,48 @@ async function getOrCreateFederatedUser(matrixUserId: string): Promise<IUser | n
 	}
 	const username = userPart.substring(1);
 
-	let user = await Users.findOneByUsername(matrixUserId);
-
-	if (!user) {
-		logger.info('Creating new federated user:', { username: matrixUserId, externalId: matrixUserId });
-
-		const userData: Partial<IUser> = {
-			username: matrixUserId,
-			name: username, // TODO: Fetch display name from Matrix profile
-			type: 'user',
-			status: UserStatus.ONLINE,
-			active: true,
-			roles: ['user'],
-			requirePasswordChange: false,
-			federated: true,
-			federation: {
-				version: 1,
-			},
-			createdAt: new Date(),
-			_updatedAt: new Date(),
-		};
-
-		const { insertedId } = await Users.insertOne(userData as IUser);
-
-		await MatrixBridgedUser.createOrUpdateByLocalId(
-			insertedId,
-			matrixUserId,
-			true, // isRemote = true for external Matrix users
-			domain,
-		);
-
-		user = await Users.findOneById(insertedId);
-		if (!user) {
-			logger.error('Failed to create user:', matrixUserId);
-			return null;
-		}
-
-		logger.info('Successfully created federated user:', { userId: user._id, username });
-	} else {
+	const user = await Users.findOneByUsername(matrixUserId);
+	if (user) {
 		await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, false, domain);
+		return user;
 	}
 
-	return user;
+	logger.info('Creating new federated user:', { username: matrixUserId, externalId: matrixUserId });
+
+	const userData = {
+		username: matrixUserId,
+		name: username, // TODO: Fetch display name from Matrix profile
+		type: 'user',
+		status: UserStatus.ONLINE,
+		active: true,
+		roles: ['user'],
+		requirePasswordChange: false,
+		federated: true,
+		federation: {
+			version: 1,
+		},
+		createdAt: new Date(),
+		_updatedAt: new Date(),
+	};
+
+	const { insertedId } = await Users.insertOne(userData);
+
+	await MatrixBridgedUser.createOrUpdateByLocalId(
+		insertedId,
+		matrixUserId,
+		true, // isRemote = true for external Matrix users
+		domain,
+	);
+
+	const newUser = await Users.findOneById(insertedId);
+	if (!newUser) {
+		logger.error('Failed to create user:', matrixUserId);
+		return null;
+	}
+
+	logger.info('Successfully created federated user:', { userId: newUser._id, username });
+
+	return newUser;
 }
 
 async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): Promise<IRoom | null> {
@@ -85,22 +85,24 @@ async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): 
 
 	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 
-	if (!existingSubscription) {
-		logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
+	if (existingSubscription) {
+		return room;
+	}
 
-		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
-			ts: new Date(),
-			open: false,
-			alert: false,
-			unread: 0,
-			userMentions: 0,
-			groupMentions: 0,
-		});
+	logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
 
-		if (insertedId) {
-			logger.debug('Successfully created subscription:', insertedId);
-			// TODO: Import and use notifyOnSubscriptionChangedById if needed
-		}
+	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
+		ts: new Date(),
+		open: false,
+		alert: false,
+		unread: 0,
+		userMentions: 0,
+		groupMentions: 0,
+	});
+
+	if (insertedId) {
+		logger.debug('Successfully created subscription:', insertedId);
+		// TODO: Import and use notifyOnSubscriptionChangedById if needed
 	}
 
 	return room;
