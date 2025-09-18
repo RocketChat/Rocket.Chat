@@ -219,7 +219,7 @@ describe('RepliesForm', () => {
 		getDepartmentMock.mockResolvedValue({ department: mockDepartment, agents: [] });
 		const handleSubmit = jest.fn();
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1', agentId: 'agent-1' }} onSubmit={handleSubmit} />, {
-			wrapper: appRoot().build(),
+			wrapper: appRoot([]).build(),
 		});
 
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
