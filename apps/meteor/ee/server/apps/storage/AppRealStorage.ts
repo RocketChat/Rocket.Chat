@@ -1,3 +1,7 @@
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
@@ -48,20 +52,52 @@ export class AppRealStorage extends AppMetadataStorage {
 		return items;
 	}
 
-	public async update({ permissionsGranted, ...item }: IAppStorageItem): Promise<IAppStorageItem> {
-		const updateQuery: UpdateFilter<IAppStorageItem> = {
-			$set: { ...item, ...(permissionsGranted && { permissionsGranted }) },
-			// Note: This is really important, since we currently store the permissionsGranted as null if none are present
-			//       in the App's manifest. So, if there was a permissionGranted and it was removed, we must see the app as having
-			//       no permissionsGranted at all (which means default permissions). So we must actively unset the field.
-			...(!permissionsGranted && { $unset: { permissionsGranted: 1 } }),
-		};
-
-		return this.db.findOneAndUpdate({ id: item.id, _id: item._id }, updateQuery, { returnDocument: 'after' });
-	}
-
 	public async remove(id: string): Promise<{ success: boolean }> {
 		await this.db.deleteOne({ id });
 		return { success: true };
+	}
+
+	public async updatePartialAndReturnDocument(item: IAppStorageItem, { unsetPermissionsGranted = false } = {}): Promise<IAppStorageItem> {
+		console.log('updatePartialAndReturnDocument', item, unsetPermissionsGranted);
+
+		const updateQuery: UpdateFilter<IAppStorageItem> = {
+			$set: item,
+		};
+
+		if (unsetPermissionsGranted) {
+			delete item.permissionsGranted;
+			updateQuery.$unset = { permissionsGranted: 1 };
+		}
+
+		return this.db.findOneAndUpdate({ _id: item._id }, updateQuery, { returnDocument: 'after' });
+	}
+
+	public async updateStatus(_id: string, status: AppStatus): Promise<boolean> {
+		console.log('updateStatus', _id, status);
+
+		const result = await this.db.updateOne({ _id }, { $set: { status } });
+		return result.modifiedCount > 0;
+	}
+
+	public async updateSetting(_id: string, setting: ISetting): Promise<boolean> {
+		console.log('updateSetting', _id, setting);
+
+		const result = await this.db.updateOne({ _id }, { $set: { [`settings.${setting.id}`]: setting } });
+
+		return result.modifiedCount > 0;
+	}
+
+	public async updateAppInfo(_id: string, info: IAppInfo): Promise<boolean> {
+		console.log('updateAppInfo', _id, info);
+
+		const result = await this.db.updateOne({ _id }, { $set: { info } });
+		return result.modifiedCount > 0;
+	}
+
+	public async updateMarketplaceInfo(_id: string, marketplaceInfo: IMarketplaceInfo[]): Promise<boolean> {
+		console.log('updateMarketplaceInfo', _id, marketplaceInfo);
+
+		const result = await this.db.updateOne({ _id }, { $set: { marketplaceInfo } });
+		return result.modifiedCount > 0;
 	}
 }
