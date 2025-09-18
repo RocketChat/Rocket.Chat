@@ -1,16 +1,14 @@
 import { createContext, Ref, useContext } from 'react';
 
-export const DragContext = createContext<{
+type DragContextValue = {
 	draggableRef: Ref<HTMLElement>;
 	boundingRef: Ref<HTMLElement>;
 	handleRef: Ref<HTMLElement>;
-}>({
-	draggableRef: null,
-	boundingRef: null,
-	handleRef: null,
-});
+};
 
-export const useDraggableWidget = () => {
+export const DragContext = createContext<DragContextValue | undefined>(undefined);
+
+export const useDraggableWidget = (): DragContextValue => {
 	const context = useContext(DragContext);
 	if (!context) {
 		throw new Error('useDraggableWidget - context unavailable');

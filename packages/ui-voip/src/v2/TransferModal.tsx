@@ -18,7 +18,6 @@ import type { PeerInfo as PeerInfoType } from './MediaCallContext';
 import { PeerAutocomplete, PeerInfo } from './components';
 
 type TransferModalProps = {
-	isLoading?: boolean;
 	onCancel(): void;
 	onConfirm(kind: 'user' | 'sip', id: string): void;
 };
