@@ -205,6 +205,7 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
+	'afterRoomTopicChange': (params: undefined, { room, topic, userId }: { room: IRoom; topic: string; userId: IUser['_id'] }) => void;
 };
 
 export type Hook =
@@ -212,7 +213,6 @@ export type Hook =
 	| keyof ChainedCallbackSignatures
 	| 'afterProcessOAuthUser'
 	| 'afterRoomArchived'
-	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
 	| 'beforeActivateUser'

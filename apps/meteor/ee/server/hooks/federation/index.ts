@@ -22,6 +22,9 @@ import { getFederationVersion } from '../../../../server/services/federation/uti
 
 // TODO: move this to the hooks folder
 callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members, options }) => {
+	if (!isRoomFederated(room)) {
+		return;
+	}
 	const federationVersion = getFederationVersion();
 	if (federationVersion === 'native') {
 		const federatedRoomId = options?.federatedRoomId;
@@ -45,6 +48,10 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 callbacks.add(
 	'afterSaveMessage',
 	async (message, { room, user }) => {
+		if (!isRoomFederated(room)) {
+			return;
+		}
+
 		const shouldBeHandledByFederation = room.federated === true || user.username?.includes(':');
 		const federationVersion = getFederationVersion();
 
@@ -85,12 +92,16 @@ callbacks.add(
 
 callbacks.add(
 	'federation.onAddUsersToRoom',
-	async ({ invitees, inviter }, room) =>
-		FederationMatrix.inviteUsersToRoom(
+	async ({ invitees, inviter }, room) => {
+		if (!isRoomFederated(room)) {
+			return;
+		}
+		await FederationMatrix.inviteUsersToRoom(
 			room,
 			invitees.map((invitee) => (typeof invitee === 'string' ? invitee : (invitee.username as string))),
 			inviter,
-		),
+		);
+	},
 	callbacks.priority.MEDIUM,
 	'native-federation-on-add-users-to-room ',
 );
@@ -137,7 +148,7 @@ callbacks.add(
 
 afterLeaveRoomCallback.add(
 	async (user: IUser, room: IRoom): Promise<void> => {
-		if (!room.federated) {
+		if (!isRoomFederated(room)) {
 			return;
 		}
 
@@ -149,7 +160,7 @@ afterLeaveRoomCallback.add(
 
 afterRemoveFromRoomCallback.add(
 	async (data: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom): Promise<void> => {
-		if (!room.federated) {
+		if (!isRoomFederated(room)) {
 			return;
 		}
 
@@ -172,10 +183,11 @@ callbacks.add(
 
 callbacks.add(
 	'afterRoomTopicChange',
-	async ({ room, name, userId }) => {
-		if (name && isRoomFederated(room)) {
-			await FederationMatrix.updateRoomTopic(room._id, name, userId);
+	async (_, { room, topic, userId }) => {
+		if (!isRoomFederated(room)) {
+			return;
 		}
+		await FederationMatrix.updateRoomTopic(room._id, topic, userId);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-room-topic-changed',
@@ -200,8 +212,11 @@ callbacks.add(
 );
 
 beforeChangeRoomRole.add(
-	async (params: { fromUserId: string; userId: string; roomId: string; role: 'moderator' | 'owner' | 'leader' | 'user' }) => {
-		await FederationMatrix.addUserRoleRoomScoped(params.roomId, params.fromUserId, params.userId, params.role);
+	async (params: { fromUserId: string; userId: string; room: IRoom; role: 'moderator' | 'owner' | 'leader' | 'user' }) => {
+		if (!isRoomFederated(params.room)) {
+			return;
+		}
+		await FederationMatrix.addUserRoleRoomScoped(params.room._id, params.fromUserId, params.userId, params.role);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-before-change-room-role',
@@ -219,10 +234,9 @@ callbacks.add(
 callbacks.add(
 	'afterCreateDirectRoom',
 	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): Promise<void> => {
-		if (!room || !params || !params.creatorId || !params.creatorId) {
+		if (!isRoomFederated(room)) {
 			return;
 		}
-
 		await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
 	},
 	callbacks.priority.HIGH,
