@@ -65,7 +65,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		});
 	}
 
-	await beforeChangeRoomRole.run({ fromUserId, userId, roomId: rid, role: 'moderator' });
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'moderator' });
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['moderator']) || ['moderator']);

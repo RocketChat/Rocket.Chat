@@ -65,7 +65,7 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 		});
 	}
 
-	await beforeChangeRoomRole.run({ fromUserId, userId, roomId: rid, role: 'owner' });
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'owner' });
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'owner');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['owner']) || ['owner']);
