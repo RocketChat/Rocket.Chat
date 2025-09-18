@@ -1916,8 +1916,6 @@
   "Enable_of_limit_apps_currently_enabled": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nWorkspaces on Community can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appName}} will be disabled by default.** Disable another {{context}} app or upgrade to Premium to enable this app.",
   "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} of {{limit}} {{context}} apps currently enabled.**  \n  \nCommunity app limit has been exceeded.  \n  \nWorkspaces on Community can have up to {{limit}} {{context}} apps enabled.  \n  \n**{{appName}} will be disabled by default.** You will need to disable at least {{exceed}} other {{context}} apps or upgrade to a Premium plan to enable this app.",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
-  "Enable_timestamp": "Timestamp in messages",
-  "Enable_timestamp_description": "Render Unix timestamps inside messages in your local (system) timezone.",
   "Enable_to_bypass_email_verification": "Enable to bypass email verification",
   "Enable_two-factor_authentication": "Enable two-factor authentication",
   "Enable_two-factor_authentication_callout_description": "Two-factor authentication (2FA) is now required for your account on this workspace. 2FA must be setup and enabled before you can proceed with other tasks.",
