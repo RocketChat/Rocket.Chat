@@ -7,7 +7,7 @@ import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
-import { getFederationVersion } from '../../../services/federation/utils';
+import { isFederationEnabled } from '../../../services/federation/utils';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -23,7 +23,7 @@ const getCurrentUserId = (): string | undefined => {
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
 		if (isRoomFederated(_room)) {
-			if (isRoomNativeFederated(_room) && getFederationVersion()) {
+			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
 				return true;
 			}
 			return false;
@@ -47,7 +47,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	async allowMemberAction(room, action, _userId) {
 		if (isRoomFederated(room)) {
-			if (isRoomNativeFederated(room) && getFederationVersion()) {
+			if (isRoomNativeFederated(room) && isFederationEnabled()) {
 				return true;
 			}
 			return false;

@@ -5,12 +5,8 @@ const loadBeforeLicense = async () => {
 	await registerEEBroker();
 };
 
-const loadAfterLicense = async () => {};
-
 export const startRocketChat = async () => {
 	await loadBeforeLicense();
 
 	await startLicense();
-
-	await loadAfterLicense();
 };

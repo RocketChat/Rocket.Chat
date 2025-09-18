@@ -18,6 +18,10 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+const isAFederatedUsername = (username: string) => {
+	return username.includes('@') && username.includes(':');
+};
+
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -84,7 +88,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
+			if (!newUser && !isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});

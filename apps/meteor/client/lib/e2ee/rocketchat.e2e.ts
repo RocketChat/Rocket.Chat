@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
-import { isE2EEMessage, isEncryptedContent } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -674,7 +674,7 @@ class E2E extends Emitter {
 			return file;
 		}
 
-		return isEncryptedContent(file) ? e2eRoom.decryptContent(file) : file;
+		return e2eRoom.decryptContent(file);
 	}
 
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
