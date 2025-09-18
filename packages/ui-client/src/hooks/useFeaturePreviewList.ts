@@ -5,9 +5,8 @@ export type FeaturesAvailable =
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
-	| 'realtimeMessageComposer';
+	| 'realtimeMessageComposer'
 	| 'secondarySidebar';
-
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -69,8 +68,8 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		group: 'Message',
 		value: false,
 		enabled: true,
-  },
-  {
+	},
+	{
 		name: 'secondarySidebar',
 		i18n: 'Filters_and_secondary_sidebar',
 		description: 'Filters_and_secondary_sidebar_description',
