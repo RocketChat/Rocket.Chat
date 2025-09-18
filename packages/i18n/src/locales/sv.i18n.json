@@ -1881,8 +1881,6 @@
   "Enable_of_limit_apps_currently_enabled": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}} appar aktiverade. \n  \n**{{appName}} är inaktiverad som standard.** Inaktivera en annan {{context}}-app eller uppgradera till Enterprise för att aktivera den här appen.",
   "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} av {{limit}} {{context}} appar som för närvarande är aktiverade.**  \n  \nGränsen för apparna i gemenskapsutgåvan har överskridits.  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}} appar aktiverade.  \n  \n**{{appName}} är inaktiverad som standard.** Du måste inaktivera minst {{exceed}} andra {{context}}-appar eller uppgradera till Enterprise för att aktivera den här appen.",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Aktivera automatisk stängning av rum som avbrutits av besökaren",
-  "Enable_timestamp": "Tidsstämpel i meddelanden",
-  "Enable_timestamp_description": "Återge Unix-tidsstämplar i meddelanden i din lokala (system-) tidszon.",
   "Enable_to_bypass_email_verification": "Aktivera för att kringgå e-postverifiering",
   "Enable_two-factor_authentication": "Aktivera tvåfaktorsautentisering",
   "Enable_two-factor_authentication_callout_description": "Tvåfaktorsautentisering (2FA) krävs nu för ditt konto på den här arbetsytan. 2FA måste konfigureras och aktiveras innan du kan fortsätta med andra uppgifter.",

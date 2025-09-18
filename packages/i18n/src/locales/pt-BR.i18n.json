@@ -1879,8 +1879,6 @@
   "Enable_of_limit_apps_currently_enabled": "**{{enabled}} de {{limit}} {{context}} aplicativos atualmente habilitados  \n  \nOs espaços de trabalho na Comunidade podem ter até {{limit}} {{context}} aplicativos ativados.  \n  \n** O{{appName}} será desativado por padrão.** Desative outro aplicativo {{context}} ou faça upgrade para o Premium para ativar esse aplicativo.",
   "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} de {{limit}} {{context}} aplicativos atualmente habilitados  \n  \nO limite de aplicativos da comunidade foi excedido.  \n  \nOs espaços de trabalho na Comunidade podem ter até {{limit}} {{context}} aplicativos ativados.  \n  \n**{{appName}} será desativado por padrão.** Você precisará desativar pelo menos {{exceed}} outros aplicativos {{context}} ou fazer upgrade para um plano Premium para ativar esse aplicativo.",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Habilitar o fechamento automático de salas abandonadas pelo visitante",
-  "Enable_timestamp": "Registro de data e hora nas mensagens",
-  "Enable_timestamp_description": "Renderiza os carimbos de data e hora Unix dentro das mensagens em seu fuso horário local (do sistema).",
   "Enable_to_bypass_email_verification": "Ativar para ignorar a verificação de e-mail",
   "Enable_two-factor_authentication": "Ativar autenticação de dois fatores por TOTP",
   "Enable_two-factor_authentication_callout_description": "A autenticação de dois fatores (2FA) agora é necessária para sua conta neste espaço de trabalho. a 2FA deve ser configurada e ativada antes que você possa prosseguir com outras tarefas.",
