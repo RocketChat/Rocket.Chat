@@ -12,7 +12,6 @@ import TemplatePlaceholderField from './components/TemplatePlaceholderField';
 import TemplatePreviewForm from './components/TemplatePreviewField';
 import type { TemplateParameters } from '../../../../definitions/template';
 import { extractParameterMetadata } from '../../../../utils/template';
-import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
 import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
@@ -78,10 +77,8 @@ const MessageForm = (props: MessageFormProps) => {
 		}
 	});
 
-	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
-
 	return (
-		<form ref={formRef} id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 

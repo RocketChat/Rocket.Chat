@@ -9,11 +9,6 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import RepliesForm from './RepliesForm';
 import { createFakeDepartment, createFakeUser } from '../../../../../../../../tests/mocks/data';
 
-jest.mock('tinykeys', () => ({
-	__esModule: true,
-	default: jest.fn().mockReturnValue(() => () => undefined),
-}));
-
 const mockDepartment = createFakeDepartment({
 	_id: 'department-1',
 	name: 'Department 1',

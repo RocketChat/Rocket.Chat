@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import AgentField from './components/AgentField';
 import DepartmentField from './components/DepartmentField';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
-import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
 import { FormFetchError } from '../../utils/errors';
 
 export type RepliesFormData = {
@@ -105,10 +104,8 @@ const RepliesForm = (props: RepliesFormProps) => {
 		}
 	});
 
-	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
-
 	return (
-		<form ref={formRef} id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<DepartmentField
 					control={control}
