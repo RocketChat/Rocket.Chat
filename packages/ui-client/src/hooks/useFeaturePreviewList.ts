@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'enable-timestamp-message-parser' | 'contextualbarResizable' | 'newNavigation' | 'secondarySidebar';
+export type FeaturesAvailable = 'contextualbarResizable' | 'newNavigation' | 'secondarySidebar';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -19,15 +19,6 @@ export type FeaturePreviewProps = {
 
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
-	{
-		name: 'enable-timestamp-message-parser',
-		i18n: 'Enable_timestamp',
-		description: 'Enable_timestamp_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/timestamp.png',
-		value: false,
-		enabled: true,
-	},
 	{
 		name: 'contextualbarResizable',
 		i18n: 'Contextualbar_resizable',
