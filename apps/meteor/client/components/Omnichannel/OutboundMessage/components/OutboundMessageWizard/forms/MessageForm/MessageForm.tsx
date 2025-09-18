@@ -1,20 +1,18 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
-import { useController, useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import TemplateField from './components/TemplateField';
 import TemplatePlaceholderField from './components/TemplatePlaceholderField';
 import TemplatePreviewForm from './components/TemplatePreviewField';
-import { OUTBOUND_DOCS_LINK } from '../../../../constants';
 import type { TemplateParameters } from '../../../../definitions/template';
 import { extractParameterMetadata } from '../../../../utils/template';
-import TemplateSelect from '../../../TemplateSelect';
 import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
-import { cxp } from '../../utils/cx';
 import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
@@ -47,7 +45,7 @@ const MessageForm = (props: MessageFormProps) => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting },
+		formState: { isSubmitting },
 		handleSubmit,
 		setValue,
 	} = useForm<MessageFormData>({
@@ -59,28 +57,10 @@ const MessageForm = (props: MessageFormProps) => {
 		},
 	});
 
-	const { field: templateIdField } = useController({
-		control,
-		name: 'templateId',
-		rules: {
-			validate: {
-				// NOTE: The order of these validations matters
-				templatesNotFound: () => (!templates?.length ? t('No_templates_available') : true),
-				templateNotFound: () => (templateId && !template ? t('Error_loading__name__information', { name: t('template') }) : true),
-				required: (value) => (!value?.trim() ? t('Required_field', { field: t('Template_message') }) : true),
-			},
-		},
-	});
-
 	const templateId = useWatch({ control, name: 'templateId' });
 	const template = useMemo(() => templates?.find((template) => template.id === templateId), [templates, templateId]);
 	const parametersMetadata = useMemo(() => (template ? extractParameterMetadata(template) : []), [template]);
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
-
-	const handleTemplateChange = useEffectEvent((value: string) => {
-		setValue('templateParameters', {});
-		templateIdField.onChange(value);
-	});
 
 	const submit = useEffectEvent(async (values: MessageFormData) => {
 		try {
@@ -103,37 +83,7 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<form ref={formRef} id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
-				<Field>
-					<FieldLabel is='span' required id={`${messageFormId}-template`}>
-						{t('Template')}
-					</FieldLabel>
-					<FieldRow>
-						<TemplateSelect
-							aria-labelledby={`${messageFormId}-template`}
-							aria-invalid={!!errors.templateId}
-							aria-describedby={cxp(messageFormId, {
-								'template-error': !!errors.templateId,
-								'template-hint': true,
-							})}
-							placeholder={t('Select_template')}
-							error={errors.templateId?.message}
-							templates={templates || []}
-							value={templateIdField.value}
-							onChange={handleTemplateChange}
-						/>
-					</FieldRow>
-					{errors.templateId && (
-						<FieldError aria-live='assertive' id={`${templateId}-template-error`}>
-							{errors.templateId.message}
-						</FieldError>
-					)}
-					<FieldHint id={`${messageFormId}-template-hint`}>
-						{/* TODO: Change to the correct address */}
-						<a href={OUTBOUND_DOCS_LINK} target='_blank' rel='noopener noreferrer'>
-							{t('Learn_more')}
-						</a>
-					</FieldHint>
-				</Field>
+				<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
 				{parametersMetadata.map((metadata) => (
 					<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
