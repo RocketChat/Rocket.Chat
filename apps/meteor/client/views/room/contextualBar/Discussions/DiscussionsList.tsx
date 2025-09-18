@@ -93,7 +93,6 @@ function DiscussionsList({
 								style={{
 									height: blockSize,
 									width: inlineSize,
-									overflow: 'hidden',
 								}}
 								totalCount={total}
 								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
