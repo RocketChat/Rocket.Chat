@@ -15,7 +15,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<Suspense fallback={null}>
-				<MarkupInteractionContext.Provider value={{ enableTimestamp: true }}>
+				<MarkupInteractionContext.Provider value={{}}>
 					<MessageContainer>
 						<MessageBody>
 							<Box
