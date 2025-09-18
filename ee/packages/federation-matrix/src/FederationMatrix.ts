@@ -31,6 +31,13 @@ import { MatrixMediaService } from './services/MatrixMediaService';
 
 type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
 
+export const fileTypes: Record<string, MatrixFileTypes> = {
+	image: 'm.image',
+	video: 'm.video',
+	audio: 'm.audio',
+	file: 'm.file',
+};
+
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
@@ -402,13 +409,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	private readonly fileTypes: Record<string, MatrixFileTypes> = {
-		image: 'm.image',
-		video: 'm.video',
-		audio: 'm.audio',
-		file: 'm.file',
-	};
-
 	private getMatrixMessageType(mimeType?: string): MatrixFileTypes {
 		const mainType = mimeType?.split('/')[0];
 
@@ -416,7 +416,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error(`Unknown file type: ${mimeType}`);
 		}
 
-		return this.fileTypes[mainType] ?? this.fileTypes.file;
+		return fileTypes[mainType] ?? fileTypes.file;
 	}
 
 	private async handleFileMessage(

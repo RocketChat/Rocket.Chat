@@ -6,6 +6,7 @@ import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
+import { fileTypes } from '../FederationMatrix';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -241,7 +242,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
 			const tmid = await getThreadMessageId(threadRootEventId);
 
-			const isMediaMessage = ['m.image', 'm.file', 'm.video', 'm.audio'].includes(msgtype);
+			const isMediaMessage = Object.values(fileTypes).includes(msgtype);
 
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
 			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
