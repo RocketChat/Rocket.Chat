@@ -13,22 +13,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-import {
-	toString,
-	toArrayBuffer,
-	// joinVectorAndEncryptedData,
-	splitVectorAndEncryptedData,
-	encryptAes,
-	// decryptAesGcm,
-	generateRSAKey,
-	exportJWKKey,
-	importRSAKey,
-	importRawKey,
-	deriveKey,
-	generatePassphrase,
-	decryptAes,
-} from './helper';
+import { splitVectorAndEncryptedData, generateRSAKey, exportJWKKey, importRSAKey, generatePassphrase } from './helper';
 import { createLogger } from './logger';
+import { getMasterKey, type Pbkdf2Options } from './pbkdf2';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
@@ -512,27 +499,23 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(privateKey: string, password: string) {
+	async encodePrivateKey(privateKey: string, password: string): Promise<{ iv: string; ciphertext: string } & Pbkdf2Options> {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Error('No userId found');
 		}
+
 		const salt = `v2:${userId}:${crypto.randomUUID()}`;
-		const masterKey = await this.getMasterKey(password, { salt });
+		const iterations = 100_000;
 
-		const vector = crypto.getRandomValues(new Uint8Array(12));
-		const result = await encryptAes(vector, masterKey, toArrayBuffer(privateKey));
+		const result = await getMasterKey(password, { salt, iterations }).encrypt(privateKey);
+
 		return {
-			iv: Base64.encode(vector),
-			ciphertext: Base64.encode(new Uint8Array(result)),
+			iv: Base64.encode(result.iv),
+			ciphertext: Base64.encode(new Uint8Array(result.ciphertext)),
 			salt,
+			iterations,
 		};
-	}
-
-	async getMasterKey(password: string, params: { salt: string }): Promise<CryptoKey> {
-		const baseKey = await importRawKey(toArrayBuffer(password));
-		const derivedKey = await deriveKey(params.salt, baseKey);
-		return derivedKey;
 	}
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
@@ -591,15 +574,11 @@ class E2E extends Emitter {
 			return;
 		}
 
-		const { iv, ciphertext, salt } = this.parsePrivateKey(this.db_private_key);
-		const masterKey = await this.getMasterKey(password, { salt });
+		const { iv, ciphertext, ...pbkdf2 } = this.parsePrivateKey(this.db_private_key);
+		const masterKey = getMasterKey(password, pbkdf2);
 
 		try {
-			if (!masterKey) {
-				throw new Error('Error getting master key');
-			}
-			const privKey = await decryptAes(iv, masterKey, ciphertext);
-			const privateKey = toString(privKey);
+			const privateKey = await masterKey.decrypt(iv, ciphertext);
 
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
@@ -617,46 +596,44 @@ class E2E extends Emitter {
 		}
 	}
 
-	parsePrivateKey(privateKey: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer>; salt: string } {
+	parsePrivateKey(privateKey: string): Pbkdf2Options & { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
 		const json: unknown = JSON.parse(privateKey);
+
 		if (typeof json !== 'object' || json === null) {
 			throw new TypeError('Invalid private key format');
-		}
-
-		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : Meteor.userId()!;
-
-		if (
-			'iv' in json &&
-			'ciphertext' in json &&
-			typeof json.iv === 'string' &&
-			typeof json.ciphertext === 'string'
-		) {
-			// v2: { iv: base64, ciphertext: base64, salt: string }
-			return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext), salt };
 		}
 
 		if ('$binary' in json && typeof json.$binary === 'string') {
 			// v1: { $binary: base64(iv[16] + ciphertext) }
 			const binary = Base64.decode(json.$binary);
 			const { iv, ciphertext } = splitVectorAndEncryptedData(binary, 16);
-			return { iv, ciphertext, salt };
+			return { iv, ciphertext, iterations: 1000, salt: Meteor.userId()! };
 		}
 
-		throw new TypeError('Invalid private key format');
+		if (!('iv' in json) || typeof json.iv !== 'string' || !('ciphertext' in json) || typeof json.ciphertext !== 'string') {
+			throw new TypeError('Invalid private key format');
+		}
+
+		// v2: { iv: base64, ciphertext: base64, salt: string, iterations: number }
+
+		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : Meteor.userId()!;
+		const iterations = 'iterations' in json && typeof json.iterations === 'number' ? json.iterations : 100_000;
+
+		return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext), salt, iterations };
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
 		// const span = log.span('decodePrivateKey');
-		const { iv, ciphertext, salt } = this.parsePrivateKey(privateKey);
 		const password = await this.requestPasswordAlert();
-		const masterKey = await this.getMasterKey(password, { salt });
+		const { iv, ciphertext, salt, iterations } = this.parsePrivateKey(privateKey);
+		const masterKey = await getMasterKey(password, { salt, iterations });
 
 		try {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const privKey = await decryptAes(iv, masterKey, ciphertext);
-			return toString(privKey);
+			const privKey = await masterKey.decrypt(iv, ciphertext);
+			return privKey;
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
 			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });

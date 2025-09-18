@@ -161,30 +161,6 @@ export function importAesKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUs
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-GCM' }, true, keyUsages);
 }
 
-export function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {
-	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
-}
-
-export function deriveKey(salt: string, baseKey: CryptoKey) {
-	if (salt.startsWith('v2:')) {
-		return crypto.subtle.deriveKey(
-			{ name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: 100_000, hash: 'SHA-256' },
-			baseKey,
-			{ name: 'AES-GCM', length: 256 },
-			true,
-			['encrypt', 'decrypt'],
-		);
-	}
-	// Legacy derivation for salts not starting with 'v2:'
-	return crypto.subtle.deriveKey(
-		{ name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: 1000, hash: 'SHA-256' },
-		baseKey,
-		{ name: 'AES-CBC', length: 256 },
-		true,
-		['encrypt', 'decrypt'],
-	);
-}
-
 export function readFileAsArrayBuffer(file: File) {
 	return new Promise<ArrayBuffer>((resolve, reject) => {
 		const reader = new FileReader();
