@@ -59,6 +59,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(instanceId: string, emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
+		const settingsSigningAlg = await Settings.get<string>('Federation_Service_Matrix_Signing_Algorithm');
+		const settingsSigningVersion = await Settings.get<string>('Federation_Service_Matrix_Signing_Version');
 		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
 
 		const siteUrl = await Settings.get<string>('Site_Url');
@@ -78,7 +80,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			matrixDomain: serverHostname,
 			version: process.env.SERVER_VERSION || '1.0',
 			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-			signingKey: settingsSigningKey,
+			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey.replace("ed25519 0 ","")}`, // Remove old prefix if exists
 			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 			database: {
 				uri: mongoUri,

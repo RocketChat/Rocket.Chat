@@ -39,6 +39,7 @@ import { createWebDavSettings } from './webdav';
 import { createWebRTCSettings } from './webrtc';
 
 await Promise.all([
+	createFederationServiceSettings(),
 	createAccountSettings(),
 	createAnalyticsSettings(),
 	createAssetsSettings(),
