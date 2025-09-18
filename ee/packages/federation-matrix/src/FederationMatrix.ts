@@ -411,9 +411,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private getMatrixMessageType(mimeType?: string): MatrixFileTypes {
 		const mainType = mimeType?.split('/')[0];
-
 		if (!mainType) {
-			throw new Error(`Unknown file type: ${mimeType}`);
+			return fileTypes.file;
 		}
 
 		return fileTypes[mainType] ?? fileTypes.file;
