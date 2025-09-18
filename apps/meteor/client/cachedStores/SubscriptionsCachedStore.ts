@@ -66,9 +66,10 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
 
-			...(room && isRoomNativeFederated(room) && {
-				federation: room.federation,
-			}),
+			...(room &&
+				isRoomNativeFederated(room) && {
+					federation: room.federation,
+				}),
 
 			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 		};

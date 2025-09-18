@@ -1,4 +1,11 @@
-import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import {
+	isOmnichannelRoom,
+	isRoomFederated,
+	isRoomNativeFederated,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -30,7 +37,6 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 
 	const enabled = useReactiveValue(
 		useCallback(() => {
-
 			if (isFederationBlocked) {
 				return false;
 			}

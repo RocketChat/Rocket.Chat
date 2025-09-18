@@ -1,10 +1,10 @@
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
-import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 
 export const useMembersListRoomAction = () => {
 	const room = useRoom();
@@ -14,7 +14,6 @@ export const useMembersListRoomAction = () => {
 
 	const isFederated = room && isRoomFederated(room);
 	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
-
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (broadcast && !permittedToViewBroadcastMemberList) {

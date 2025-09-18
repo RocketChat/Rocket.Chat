@@ -1,4 +1,11 @@
-import { type IMessage, type ISubscription, type IRoom, isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import {
+	type IMessage,
+	type ISubscription,
+	type IRoom,
+	isOmnichannelRoom,
+	isRoomFederated,
+	isRoomNativeFederated,
+} from '@rocket.chat/core-typings';
 import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +31,6 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 	if (isFederationBlocked) {
 		return null;
 	}
-
 
 	return (
 		<MessageToolbarItem
