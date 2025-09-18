@@ -6,7 +6,6 @@ import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
-import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);
@@ -14,7 +13,10 @@ const PublicRoomType = getPublicRoomType(roomCoordinator);
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
 		if (isRoomFederated(room)) {
-			return Federation.isRoomSettingAllowed(room, setting);
+			if (isRoomNativeFederated(room) && getFederationVersion()) {
+				return true;
+			}
+			return false;
 		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
