@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:sendTranscript'(token, rid, email, subject) {
-		methodDeprecationLogger.method('livechat:saveDepartment', '8.0.0', '/v1/livechat/department');
+		methodDeprecationLogger.method('livechat:sendTranscript', '8.0.0', '/v1/livechat/transcript');
 		check(rid, String);
 		check(email, String);
 
