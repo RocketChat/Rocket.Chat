@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentField from './components/AgentField';
 import DepartmentField from './components/DepartmentField';
-import { getAgentDerivedFromUser } from './utils';
+import { useAllowedAgents } from './hooks/useAllowedAgents';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
 import { FormFetchError } from '../../utils/errors';
 
@@ -74,25 +74,13 @@ const RepliesForm = (props: RepliesFormProps) => {
 		enabled: !!departmentId,
 	});
 
-	const agents = useMemo(() => {
-		try {
-			if (!departmentId) {
-				return [];
-			}
-
-			if (!canAssignSelfOnlyAgent && !canAssignAnyAgent) {
-				return [];
-			}
-
-			if (canAssignAnyAgent && queryAgents?.length) {
-				return queryAgents;
-			}
-
-			return [getAgentDerivedFromUser(user, departmentId)];
-		} catch {
-			return [];
-		}
-	}, [canAssignAnyAgent, canAssignSelfOnlyAgent, user, departmentId, queryAgents]);
+	const agents = useAllowedAgents({
+		user,
+		queryAgents,
+		departmentId: department?._id,
+		canAssignSelfOnlyAgent,
+		canAssignAnyAgent,
+	});
 
 	useEffect(() => {
 		isErrorDepartment && trigger('departmentId');
