@@ -163,6 +163,17 @@ describe('RecipientForm', () => {
 		expect(retryButton).toBeInTheDocument();
 	});
 
+	it('should show retry button when contact is unknown', async () => {
+		getContactMock.mockImplementationOnce(() => ({ contact: createFakeContactWithManagerData({ _id: 'contact-1', unknown: true }) }));
+
+		render(<RecipientForm defaultValues={{ contactId: 'contact-1' }} {...defaultProps} />, { wrapper: appRoot.build() });
+
+		await waitFor(() => expect(screen.getByLabelText('Contact*')).toHaveAccessibleDescription('Error loading contact information'));
+
+		const retryButton = screen.getByRole('button', { name: 'Retry' });
+		expect(retryButton).toBeInTheDocument();
+	});
+
 	it('should disable recipient field when contact fetch fails', async () => {
 		getContactMock.mockImplementationOnce(() => Promise.reject());
 		const defaultValues = {
