@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 
-export const saveRoomTopic = async function (
+export const saveRoomTopic = async (
 	rid: string,
 	roomTopic: string | undefined,
 	user: {
@@ -13,7 +13,7 @@ export const saveRoomTopic = async function (
 		_id: string;
 	},
 	sendMessage = true,
-) {
+) => {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomTopic',
@@ -28,6 +28,6 @@ export const saveRoomTopic = async function (
 	if (update && sendMessage) {
 		await Message.saveSystemMessage('room_changed_topic', rid, roomTopic || '', user);
 	}
-	await callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
+	await callbacks.run('afterRoomTopicChange', undefined, { room, topic: roomTopic, userId: user._id });
 	return update;
 };
