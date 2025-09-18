@@ -2,7 +2,7 @@ import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from 
 import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useEffect, useId, useMemo } from 'react';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentField from './components/AgentField';
 import DepartmentField from './components/DepartmentField';
+import { getAgentDerivedFromUser } from './utils';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
 import { FormFetchError } from '../../utils/errors';
 
@@ -41,6 +42,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const repliesFormId = useId();
+	const user = useUser();
 
 	const canAssignAllDepartments = usePermission('outbound.can-assign-queues');
 	const canAssignSelfOnlyAgent = usePermission('outbound.can-assign-self-only');
@@ -62,7 +64,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId ?? '' });
 
 	const {
-		data: { department, agents = [] } = {},
+		data: { department, agents: queryAgents = [] } = {},
 		isError: isErrorDepartment,
 		isFetching: isFetchingDepartment,
 		refetch: refetchDepartment,
@@ -71,6 +73,26 @@ const RepliesForm = (props: RepliesFormProps) => {
 		queryFn: () => getDepartment({ onlyMyDepartments: !canAssignAllDepartments ? 'true' : 'false' }),
 		enabled: !!departmentId,
 	});
+
+	const agents = useMemo(() => {
+		try {
+			if (!departmentId) {
+				return [];
+			}
+
+			if (!canAssignSelfOnlyAgent && !canAssignAnyAgent) {
+				return [];
+			}
+
+			if (canAssignAnyAgent && queryAgents?.length) {
+				return queryAgents;
+			}
+
+			return [getAgentDerivedFromUser(user, departmentId)];
+		} catch {
+			return [];
+		}
+	}, [canAssignAnyAgent, canAssignSelfOnlyAgent, user, departmentId, queryAgents]);
 
 	useEffect(() => {
 		isErrorDepartment && trigger('departmentId');
@@ -119,8 +141,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 				<AgentField
 					control={control}
 					agents={agents}
-					canAssignAny={canAssignAnyAgent}
-					canAssignSelfOnly={canAssignSelfOnlyAgent}
+					canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
 					disabled={!departmentId}
 					isLoading={isFetchingDepartment}
 				/>
