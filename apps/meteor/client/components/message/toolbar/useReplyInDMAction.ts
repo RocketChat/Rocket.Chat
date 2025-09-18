@@ -26,7 +26,7 @@ export const useReplyInDMAction = (
 		[message.u._id, user],
 	);
 
-	const shouldFindRoom = useMemo(() => !!user && canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
+	const shouldFindRoom = useMemo(() => !!user && !canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
 	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
@@ -39,7 +39,7 @@ export const useReplyInDMAction = (
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}
-		if (!!user && user._id !== message.u._id && canCreateDM) {
+		if (shouldFindRoom) {
 			if (!dmRoom || !dmSubs) {
 				return false;
 			}
