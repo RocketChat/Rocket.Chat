@@ -329,7 +329,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							if (!command.permission) {
 								return true;
 							}
-							
+
 							return hasAtLeastOnePermission(command.permission, rid);
 						})
 						.sort((a, b) => a._id.localeCompare(b._id))

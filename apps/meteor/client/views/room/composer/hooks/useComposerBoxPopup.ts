@@ -4,10 +4,9 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
+import { slashCommands } from '../../../../../app/utils/client';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
-
-import { slashCommands } from '../../../../../app/utils/client';
 
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
@@ -110,11 +109,13 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			let formattedParams = '';
 			if (command) {
 				const rawParams = command.params?.trim();
-				formattedParams = rawParams
-					? rawParams.startsWith('@') || rawParams.startsWith('#')
-						? `${rawParams.slice(1)}: ${rawParams.charAt(0)}`
-						: `${rawParams}: `
-					: '';
+				if (rawParams) {
+					if (rawParams.startsWith('@') || rawParams.startsWith('#')) {
+						formattedParams = `${rawParams.slice(1)}: ${rawParams.charAt(0)}`;
+					} else {
+						formattedParams = `${rawParams}: `;
+					}
+				}
 			}
 			chat?.composer?.replaceText(
 				(option.prefix ?? option.trigger ?? '') +
