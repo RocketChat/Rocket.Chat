@@ -1,9 +1,10 @@
-import { useAtLeastOnePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateRoomItems } from './useCreateRoomItems';
 import { useMatrixFederationItems } from './useMatrixFederationItems';
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
@@ -12,7 +13,7 @@ export const useCreateRoom = () => {
 	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
 
 	const { data } = useIsEnterprise();
-	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
+	const isMatrixEnabled = useIsFederationEnabled() && data?.isEnterprise;
 
 	const createRoomItems = useCreateRoomItems();
 	const matrixFederationSearchItems = useMatrixFederationItems({ isMatrixEnabled });
