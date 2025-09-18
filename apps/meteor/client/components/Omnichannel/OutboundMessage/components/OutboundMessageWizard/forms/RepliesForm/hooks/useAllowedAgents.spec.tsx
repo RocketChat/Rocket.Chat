@@ -5,7 +5,7 @@ import { useAllowedAgents } from './useAllowedAgents';
 import { createFakeUser } from '../../../../../../../../../tests/mocks/data';
 import { getAgentDerivedFromUser } from '../utils/getAgentDerivedFromUser';
 
-jest.mock('../utils', () => ({
+jest.mock('../utils/getAgentDerivedFromUser', () => ({
 	getAgentDerivedFromUser: jest.fn(),
 }));
 
