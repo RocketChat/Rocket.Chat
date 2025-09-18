@@ -238,7 +238,7 @@ describe('RepliesForm', () => {
 		);
 	});
 
-	it.only('should display only self when user doesnt have assign any permission', async () => {
+	it('should display only self when user doesnt have assign any permission', async () => {
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
 			wrapper: appRoot(['outbound.can-assign-self-only']).build(),
 		});
