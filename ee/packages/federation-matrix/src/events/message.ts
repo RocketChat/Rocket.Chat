@@ -123,6 +123,7 @@ async function getThreadMessageId(threadRootEventId: string | undefined): Promis
 }
 
 async function handleMediaMessage(
+	// TODO improve typing
 	content: any,
 	msgtype: string,
 	messageBody: string,
@@ -163,6 +164,8 @@ async function handleMediaMessage(
 	}
 
 	const fileUrl = `/file-upload/${fileRefId}/${encodeURIComponent(fileName)}`;
+
+	// TODO improve typing
 	const attachment: any = {
 		title: fileName,
 		type: 'file',
@@ -218,6 +221,7 @@ async function handleMediaMessage(
 export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
+			// TODO remove type casting
 			const content = data.content as any;
 			const msgtype = content?.msgtype;
 			const messageBody = content?.body?.toString();
