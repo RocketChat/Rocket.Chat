@@ -38,7 +38,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents, departmentUnit) {
-		methodDeprecationLogger.method('livechat:saveDeparment', '8.0.0', '/v1/livechat/department');
+		methodDeprecationLogger.method('livechat:saveDepartment', '8.0.0', '/v1/livechat/department');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
