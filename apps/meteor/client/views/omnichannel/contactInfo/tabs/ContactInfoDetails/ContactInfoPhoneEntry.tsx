@@ -1,4 +1,4 @@
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
