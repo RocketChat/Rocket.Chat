@@ -103,7 +103,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
-	findLatestFederationThreadMessageByTmid(tmid: string, roomId: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
+	findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null>;
 
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
 

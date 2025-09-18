@@ -499,7 +499,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
 		}
 
-		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message.rid);
+		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id);
 		const latestThreadEventId = latestThreadMessage?.federation?.eventId;
 
 		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
