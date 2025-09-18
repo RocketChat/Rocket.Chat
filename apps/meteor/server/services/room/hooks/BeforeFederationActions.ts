@@ -1,10 +1,15 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, type IRoom } from '@rocket.chat/core-typings';
 
-import { throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
+import { isFederationEnabled, throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class FederationActions {
-	public static blockIfRoomFederatedButServiceNotReady({ federated }: Pick<IRoom, 'federated'>) {
-		if (!federated) {
+	public static blockIfRoomFederatedButServiceNotReady(room: IRoom) {
+		if (!isRoomNativeFederated(room) && !isRoomFederated(room)) {
+			return;
+		}
+
+		if (!isFederationEnabled()) {
 			return;
 		}
 
