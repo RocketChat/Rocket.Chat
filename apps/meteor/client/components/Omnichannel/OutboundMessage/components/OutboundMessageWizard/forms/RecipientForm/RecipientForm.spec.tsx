@@ -17,6 +17,7 @@ const contactOneMock = createFakeContactWithManagerData({
 	_id: 'contact-1',
 	name: 'Contact 1',
 	phones: [{ phoneNumber: recipientOnePhoneNumber }],
+	unknown: false,
 	channels: [
 		createFakeContactChannel({
 			name: 'provider-1',
@@ -29,6 +30,7 @@ const contactTwoMock = createFakeContactWithManagerData({
 	_id: 'contact-2',
 	name: 'Contact 2',
 	phones: [{ phoneNumber: recipientTwoPhoneNumber }],
+	unknown: false,
 	channels: [
 		createFakeContactChannel({
 			name: 'provider-2',
