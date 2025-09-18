@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 import { isFederationReady, isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
@@ -63,6 +64,8 @@ export const addRoomOwner = async (fromUserId: IUser['_id'], rid: IRoom['_id'], 
 			method: 'addRoomOwner',
 		});
 	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, roomId: rid, role: 'owner' });
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'owner');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['owner']) || ['owner']);
