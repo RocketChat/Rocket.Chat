@@ -1,4 +1,4 @@
-import ByteBuffer from 'bytebuffer';
+import { Binary } from './binary';
 
 export type Pbkdf2Options = {
 	salt: string;
@@ -11,12 +11,13 @@ export type Pbkdf2 = {
 };
 
 export function getMasterKey(password: string, { salt, iterations }: Pbkdf2Options): Pbkdf2 {
+	const encodedPassword = Binary.toArrayBuffer(password);
+	const encodedSalt = Binary.toArrayBuffer(salt);
+
 	const deriveKey = async (mode: 'CBC' | 'GCM') => {
-		const encodedPassword = ByteBuffer.wrap(password, 'binary').toArrayBuffer();
-		const baseKey = await crypto.subtle.importKey('raw', encodedPassword, { name: 'PBKDF2' }, false, ['deriveKey']);
 		const derivedKey = await crypto.subtle.deriveKey(
-			{ name: 'PBKDF2', hash: 'SHA-256', salt: ByteBuffer.fromBinary(salt).toArrayBuffer(), iterations } satisfies Pbkdf2Params,
-			baseKey,
+			{ name: 'PBKDF2', hash: 'SHA-256', salt: encodedSalt, iterations } satisfies Pbkdf2Params,
+			await crypto.subtle.importKey('raw', encodedPassword, { name: 'PBKDF2' }, false, ['deriveKey']),
 			{ name: `AES-${mode}`, length: 256 } satisfies AesKeyGenParams,
 			true,
 			['encrypt', 'decrypt'],
@@ -29,16 +30,15 @@ export function getMasterKey(password: string, { salt, iterations }: Pbkdf2Optio
 			if (iv.length !== 12 && iv.length !== 16) {
 				throw new Error('Invalid IV length. Must be 12 (for AES-GCM) or 16 (for AES-CBC) bytes.');
 			}
-
 			const key = await deriveKey(iv.length === 16 ? 'CBC' : 'GCM');
 			const decrypted = await crypto.subtle.decrypt({ name: key.algorithm.name, iv }, key, data);
-			return ByteBuffer.wrap(decrypted).toString('binary');
+			return Binary.toString(decrypted);
 		},
 		encrypt: async (data) => {
 			// Always use AES-GCM for new data
-			const iv = crypto.getRandomValues(new Uint8Array(12));
 			const key = await deriveKey('GCM');
-			const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, ByteBuffer.fromBinary(data).toArrayBuffer());
+			const iv = crypto.getRandomValues(new Uint8Array(12));
+			const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, Binary.toArrayBuffer(data));
 			return { iv, ciphertext };
 		},
 	};
