@@ -5,7 +5,7 @@ import type { ISetting } from '../../definition/settings';
 import type { IMarketplaceInfo } from '../marketplace';
 
 export abstract class AppMetadataStorage {
-	constructor(private readonly engine: string) { }
+	constructor(private readonly engine: string) {}
 
 	public getEngine() {
 		return this.engine;
