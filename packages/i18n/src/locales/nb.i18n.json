@@ -1898,8 +1898,6 @@
   "Enable_of_limit_apps_currently_enabled": "**{{enabled}} av {{limit}} {{context}} apper er for øyeblikket aktivert.**  \n  \nArbeidsområder på Community-utgave kan ha opptil {{limit}} {{context}} apper aktivert.  \n  \n**{{appName}} vil bli deaktivert som standard.** Deaktiver en annen {{context}} app eller oppgrader til Premium for å aktivere denne appen.",
   "Enable_of_limit_apps_currently_enabled_exceeded": "**{{enabled}} av {{limit}} {{context}} apper er for øyeblikket aktivert.**  \n  \nGrensen for apper i Community-utgave er overskredet.  \n  \nArbeidsområder i Community-utgave kan ha opptil {{limit}} {{context}} apper aktivert.  \n  \n**{{appName}} vil være deaktivert som standard.** Du må deaktivere minst {{exceed}} andre {{context}} apper eller oppgradere til et Premium-abonnement for å aktivere denne appen.",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Aktiver automatisk stenging av rom som er forlatt av de besøkende",
-  "Enable_timestamp": "Tidsstempel i meldinger",
-  "Enable_timestamp_description": "Gjengi Unix-tidsstempler inne i meldinger i din lokale (system) tidssone.",
   "Enable_to_bypass_email_verification": "Aktiver for å omgå e-postbekreftelse",
   "Enable_two-factor_authentication": "Aktiver tofaktorautentisering via TOTP",
   "Enable_two-factor_authentication_callout_description": "To-faktor autentisering (2FA) er nå påkrevd for kontoen din på dette arbeidsområdet. 2FA må være konfigurert og aktivert før du kan fortsette med andre oppgaver.",
