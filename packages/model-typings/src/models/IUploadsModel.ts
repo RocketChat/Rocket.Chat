@@ -17,5 +17,5 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 
 	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;
 
-	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<Document | UpdateResult>;
+	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<UpdateResult>;
 }

@@ -51,7 +51,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		return this.findOne({ 'federation.mediaId': mediaId, 'federation.serverName': serverName });
 	}
 
-	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<Document | UpdateResult> {
+	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: fileId },
 			{ $set: { 'federation.mxcUri': info.mxcUri, 'federation.serverName': info.serverName, 'federation.mediaId': info.mediaId } },
