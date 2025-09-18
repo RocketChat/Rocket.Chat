@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
-import { beforeAddUserToARoom } from '../../../../lib/callbacks/beforeAddUserToARoom';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
@@ -57,7 +57,7 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await beforeAddUserToARoom.run({ user: userToBeAdded, inviter }, room);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

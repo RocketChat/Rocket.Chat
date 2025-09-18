@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
-import { beforeAddUserToARoom } from '../../../../../../lib/callbacks/beforeAddUserToARoom';
+import { beforeAddUserToRoom } from '../../../../../../lib/callbacks/beforeAddUserToRoom';
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { isFederationEnabled, throwIfFederationNotEnabledOrNotReady, throwIfFederationNotReady } from '../../../utils';
 
@@ -43,7 +43,7 @@ export class FederationHooks {
 	}
 
 	public static canAddFederatedUserToNonFederatedRoom(callback: (user: IUser | string, room: IRoom) => Promise<void>): void {
-		beforeAddUserToARoom.add(
+		beforeAddUserToRoom.add(
 			async (params, room: IRoom): Promise<void> => {
 				if (!params?.user || !room || !isFederationEnabled()) {
 					return;
@@ -57,7 +57,7 @@ export class FederationHooks {
 	}
 
 	public static canAddFederatedUserToFederatedRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => Promise<void>): void {
-		beforeAddUserToARoom.add(
+		beforeAddUserToRoom.add(
 			async (params, room: IRoom): Promise<void> => {
 				if (!params?.user || !params.inviter || !room || !isFederationEnabled()) {
 					return;
@@ -257,15 +257,15 @@ export class FederationHooks {
 	}
 
 	public static removeCEValidation(): void {
-		beforeAddUserToARoom.remove('federation-v2-can-add-federated-user-to-federated-room');
+		beforeAddUserToRoom.remove('federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
 	}
 
 	public static removeAllListeners(): void {
 		afterLeaveRoomCallback.remove('federation-v2-after-leave-room');
 		afterRemoveFromRoomCallback.remove('federation-v2-after-remove-from-room');
-		beforeAddUserToARoom.remove('federation-v2-can-add-federated-user-to-non-federated-room');
-		beforeAddUserToARoom.remove('federation-v2-can-add-federated-user-to-federated-room');
+		beforeAddUserToRoom.remove('federation-v2-can-add-federated-user-to-non-federated-room');
+		beforeAddUserToRoom.remove('federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
 		callbacks.remove('afterSetReaction', 'federation-v2-after-message-reacted');
 		callbacks.remove('afterUnsetReaction', 'federation-v2-after-message-unreacted');

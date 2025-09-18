@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
-import { beforeAddUserToARoom } from '../../../../lib/callbacks/beforeAddUserToARoom';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
@@ -69,7 +69,7 @@ async function createUsersSubscriptions({
 
 	for await (const member of membersCursor) {
 		try {
-			await beforeAddUserToARoom.run({ user: member, inviter: owner }, room);
+			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 		} catch (error) {
 			continue;

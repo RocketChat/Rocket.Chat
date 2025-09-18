@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
-import { beforeAddUserToARoom } from '../../../../../../../lib/callbacks/beforeAddUserToARoom';
+import { beforeAddUserToRoom } from '../../../../../../../lib/callbacks/beforeAddUserToRoom';
 import { throwIfFederationNotEnabledOrNotReady } from '../../../../../../../server/services/federation/utils';
 
 // biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
@@ -87,7 +87,7 @@ export class FederationHooksEE {
 	}
 
 	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom, inviter?: IUser) => Promise<void>): void {
-		beforeAddUserToARoom.add(
+		beforeAddUserToRoom.add(
 			async (params, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.user) {
 					return;
@@ -108,6 +108,6 @@ export class FederationHooksEE {
 		callbacks.remove('federation.onAddUsersToRoom', 'federation-v2-on-add-users-to-a-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
-		beforeAddUserToARoom.remove('federation-v2-before-add-user-to-the-room');
+		beforeAddUserToRoom.remove('federation-v2-before-add-user-to-the-room');
 	}
 }
