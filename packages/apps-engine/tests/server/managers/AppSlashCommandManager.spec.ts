@@ -384,7 +384,7 @@ export class AppSlashCommandManagerTestFixture {
 		failedItems.set('failure', asm);
 		(ascm as any).providedCommands.set('failMePlease', failedItems);
 		(ascm as any).touchedCommandsToApps.set('failure', 'failMePlease');
-		await Expect(() => ascm.executeCommand('failure', context)).not.toThrowAsync();
+		await Expect(() => ascm.executeCommand('failure', context)).toThrowAsync();
 
 		AppSlashCommandManagerTestFixture.doThrow = true;
 		await Expect(() => ascm.executeCommand('command', context)).not.toThrowAsync();

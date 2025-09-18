@@ -12,6 +12,8 @@ import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
 import { useTokenpassOAuth } from './hooks/customOAuth/useTokenpassOAuth';
 import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
+import { useDesktopFavicon } from './hooks/useDesktopFavicon';
+import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
@@ -65,6 +67,8 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoadMissedMessages();
+	useDesktopFavicon();
+	useDesktopTitle();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

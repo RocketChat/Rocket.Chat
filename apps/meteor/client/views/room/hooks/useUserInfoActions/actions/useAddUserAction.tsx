@@ -44,8 +44,10 @@ export const useAddUserAction = (
 		rid,
 	);
 
+	const roomIsFederated = isRoomFederated(room);
+
 	const userCanAdd =
-		room && user && isRoomFederated(room)
+		room && user && roomIsFederated
 			? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 			: hasPermissionToAddUsers;
 

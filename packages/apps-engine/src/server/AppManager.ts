@@ -58,6 +58,7 @@ export interface IAppManagerDeps {
 
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
+	keepSlashcommands?: boolean;
 }
 
 export class AppManager {
@@ -482,7 +483,7 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true });
+		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 
 		await app.setStatus(status, silent);
 
@@ -816,6 +817,7 @@ export class AppManager {
 			}
 		})();
 
+		// We don't keep slashcommands here as the update could potentially not provide the same list
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 		this.apps.set(app.getID(), app);
@@ -1040,6 +1042,8 @@ export class AppManager {
 			await app.call(AppMethod.INITIALIZE);
 			await app.setStatus(AppStatus.INITIALIZED, silenceStatus);
 
+			await this.commandManager.registerCommands(app.getID());
+
 			result = true;
 		} catch (e) {
 			let status = AppStatus.ERROR_DISABLED;
@@ -1076,9 +1080,13 @@ export class AppManager {
 		if (!opts.keepScheduledJobs) {
 			await this.schedulerManager.cleanUp(app.getID());
 		}
+
+		if (!opts.keepSlashcommands) {
+			await this.commandManager.unregisterCommands(app.getID());
+		}
+
 		this.listenerManager.unregisterListeners(app);
 		this.listenerManager.lockEssentialEvents(app);
-		await this.commandManager.unregisterCommands(app.getID());
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
@@ -1152,7 +1160,6 @@ export class AppManager {
 		}
 
 		if (enable) {
-			await this.commandManager.registerCommands(app.getID());
 			this.externalComponentManager.registerExternalComponents(app.getID());
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
@@ -1160,7 +1167,7 @@ export class AppManager {
 			this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app);
+			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 		}
 
 		if (saveToDb) {
