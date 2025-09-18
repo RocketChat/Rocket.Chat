@@ -28,7 +28,7 @@ function prepareEnvironment() {
 function buildRequire(): (module: string) => unknown {
     return (module: string): unknown => {
         // Normalize Node built-in specifiers: accept both 'crypto' and 'node:crypto'
-        const normalized = module.startsWith('node:') ? module.slice(5) : module;
+        const normalized = module.replace('node:', '');
 
         if (ALLOWED_NATIVE_MODULES.includes(normalized)) {
             return require(`node:${normalized}`);
