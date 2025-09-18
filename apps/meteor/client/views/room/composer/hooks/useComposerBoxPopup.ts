@@ -7,6 +7,8 @@ import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
+import { slashCommands } from '../../../../../app/utils/client';
+
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
 			getFilter?: () => string;
@@ -14,14 +16,6 @@ type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	  }
 	| undefined
 >;
-
-interface IItem {
-	_id: string;
-	sort?: number;
-	description?: string;
-	params?: string;
-	permission?: string;
-}
 
 type ComposerBoxPopupOptions<T extends { _id: string; sort?: number | undefined }> = ComposerPopupOption<T>;
 
@@ -92,7 +86,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
 	}, [items, option, suspended]);
-	const select = useEffectEvent((item: IItem) => {
+	const select = useEffectEvent((item: T) => {
 		if (!option) {
 			throw new Error('No popup is open');
 		}
@@ -110,11 +104,18 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				return;
 			}
 
-			// formattedParams formats command parameters by detecting '@' or '#' prefixes
-			const formattedParams =
-				item.params?.startsWith('@') || item.params?.startsWith('#')
-					? `${item.params.slice(1)}: ${item.params.charAt(0)}`
-					: `${item.params}: `;
+			// Format as "<label>: " or "<label>: @" or "<label>: #" to handle both commands with and without parameters.
+			// Used to retrieve the original parameters of the selected command.
+			const command = slashCommands.commands[option.getValue(item as T)];
+			let formattedParams = '';
+			if (command) {
+				const rawParams = command.params?.trim();
+				formattedParams = rawParams
+					? rawParams.startsWith('@') || rawParams.startsWith('#')
+						? `${rawParams.slice(1)}: ${rawParams.charAt(0)}`
+						: `${rawParams}: `
+					: '';
+			}
 			chat?.composer?.replaceText(
 				(option.prefix ?? option.trigger ?? '') +
 					option.getValue(item as T) +
