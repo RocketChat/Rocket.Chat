@@ -21,6 +21,7 @@ import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
+import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
 import { registerEvents } from './events';
 import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
@@ -160,6 +161,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const wellKnown = new Router('/.well-known');
 
 		matrix
+			.use(isLicenseEnabledMiddleware)
 			.use(getMatrixInviteRoutes(this.homeserverServices))
 			.use(getMatrixProfilesRoutes(this.homeserverServices))
 			.use(getMatrixRoomsRoutes(this.homeserverServices))
