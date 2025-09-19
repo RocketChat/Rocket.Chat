@@ -243,7 +243,8 @@ callbacks.add(
 	'federation-matrix-after-create-direct-room',
 );
 
-export const setupTypingEventListenerForRoom = (roomId: string): void => {
+// TODO: THIS IS NOT READY FOR PRODUCTION! IMPOSSIBLE TO ADD ONE LISTENER PER ROOM!
+const setupTypingEventListenerForRoom = (roomId: string): void => {
 	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
 		if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
 			void api.broadcast('user.typing', {
