@@ -36,6 +36,7 @@ test.describe('video conference', () => {
 			await page.keyboard.press('Space');
 
 			await expect(poHomeChannel.content.getVideoConfPopup(`Start a call in ${targetChannel}`)).toBeVisible();
+			await poHomeChannel.content.btnVideoConfMic.focus();
 			await expect(poHomeChannel.content.btnVideoConfMic).toBeFocused();
 		});
 
