@@ -8,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { Federation } from '../../../../server/services/federation/Federation';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
@@ -18,6 +17,10 @@ declare module '@rocket.chat/ddp-client' {
 		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
 	}
 }
+
+const isAFederatedUsername = (username: string) => {
+	return username.includes('@') && username.includes(':');
+};
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
@@ -85,7 +88,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
+			if (!newUser && !isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});
