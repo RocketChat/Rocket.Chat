@@ -1,11 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable =
-	| 'quickReactions'
-	| 'contextualbarResizable'
-	| 'newNavigation'
-	| 'secondarySidebar'
-	| 'expandableMessageComposer';
+export type FeaturesAvailable = 'contextualbarResizable' | 'newNavigation' | 'secondarySidebar' | 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -24,15 +19,6 @@ export type FeaturePreviewProps = {
 
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
-	{
-		name: 'quickReactions',
-		i18n: 'Quick_reactions',
-		description: 'Quick_reactions_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
-		value: false,
-		enabled: true,
-	},
 	{
 		name: 'contextualbarResizable',
 		i18n: 'Contextualbar_resizable',
