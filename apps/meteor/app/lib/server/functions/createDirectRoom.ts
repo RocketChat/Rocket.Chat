@@ -59,8 +59,6 @@ export async function createDirectRoom(
 		);
 	}
 
-	await callbacks.run('beforeCreateDirectRoom', members);
-
 	const membersUsernames: string[] = members
 		.map((member) => {
 			if (typeof member === 'string') {
@@ -97,6 +95,8 @@ export async function createDirectRoom(
 		uids,
 		...roomExtraData,
 	};
+
+	await callbacks.run('beforeCreateDirectRoom', members, roomInfo);
 
 	if (isNewRoom) {
 		const tmpRoom: { _USERNAMES?: (string | undefined)[] } & typeof roomInfo = {
