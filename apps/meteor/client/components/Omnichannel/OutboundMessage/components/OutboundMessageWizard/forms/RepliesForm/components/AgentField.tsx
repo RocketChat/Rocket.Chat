@@ -1,6 +1,5 @@
 import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useUserId } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -13,20 +12,14 @@ import type { RepliesFormData } from '../RepliesForm';
 type AgentFieldProps = {
 	control: Control<RepliesFormData>;
 	agents: Serialized<ILivechatDepartmentAgents>[];
-	canAssignAny?: boolean;
-	canAssignSelfOnly?: boolean;
+	canAssignAgent?: boolean;
 	disabled?: boolean;
 	isLoading?: boolean;
 };
 
-const AgentField = ({ control, agents, canAssignAny, canAssignSelfOnly, disabled = false, isLoading = false }: AgentFieldProps) => {
+const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoading = false }: AgentFieldProps) => {
 	const { t } = useTranslation();
 	const agentFieldId = useId();
-
-	const userId = useUserId();
-	const canAssignAgent = canAssignSelfOnly || canAssignAny;
-
-	const allowedAgents = canAssignAny ? agents : agents.filter((agent) => agent.agentId === userId);
 
 	const {
 		field: agentField,
@@ -50,7 +43,7 @@ const AgentField = ({ control, agents, canAssignAny, canAssignSelfOnly, disabled
 					})}
 					error={!!agentFieldError}
 					id={agentFieldId}
-					agents={allowedAgents}
+					agents={agents}
 					placeholder={isLoading ? t('Loading...') : t('Select_agent')}
 					disabled={disabled || isLoading || !canAssignAgent}
 					value={agentField.value}
