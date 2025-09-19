@@ -41,7 +41,6 @@ export class LoginPage {
 
 		// Injects the login token to the local storage
 		await this.page.evaluate((items) => {
-			window.localStorage.clear();
 			items.forEach(({ name, value }) => {
 				window.localStorage.setItem(name, value);
 			});

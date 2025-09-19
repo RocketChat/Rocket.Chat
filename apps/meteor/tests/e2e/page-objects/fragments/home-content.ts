@@ -1,8 +1,7 @@
-import { readFile } from 'node:fs/promises';
+import fs from 'fs/promises';
 
 import type { Locator, Page } from '@playwright/test';
 
-import { getFilePath } from '../../utils/getFilePath';
 import { expect } from '../../utils/test';
 
 export class HomeContent {
@@ -380,7 +379,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropTxtFile(): Promise<void> {
-		const contract = await readFile(getFilePath('any_file.txt'), 'utf-8');
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -396,7 +395,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropLstFile(): Promise<void> {
-		const contract = await readFile(getFilePath('lst-test.lst'), 'utf-8');
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'lst-test.lst', {
@@ -412,7 +411,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropTxtFileToThread(): Promise<void> {
-		const contract = await readFile(getFilePath('any_file.txt'), 'utf-8');
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -428,7 +427,7 @@ export class HomeContent {
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
