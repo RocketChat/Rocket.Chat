@@ -28,7 +28,7 @@ test.describe('E2EE Thread Messages', () => {
 		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
 	});
 
-	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
+	test('expect create a private encrypted channel and send an encrypted thread message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel', async () => {
@@ -56,8 +56,7 @@ test.describe('E2EE Thread Messages', () => {
 
 		await test.step('send encrypted reply on thread message', async () => {
 			await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
-			await poHomeChannel.content.inputThreadMessage.fill('This is an encrypted thread message also sent in channel');
-			await page.keyboard.press('Enter');
+			await poHomeChannel.content.sendMessageInThread('This is an encrypted thread message also sent in channel');
 		});
 
 		await test.step('verify all thread messages are encrypted', async () => {

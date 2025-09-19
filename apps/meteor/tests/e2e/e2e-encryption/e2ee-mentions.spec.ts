@@ -28,7 +28,7 @@ test.describe('E2EE Mentions', () => {
 		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
 	});
 
-	test('expect create a encrypted private channel and mention user', async ({ page }) => {
+	test('expect create an encrypted private channel and mention user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel', async () => {
@@ -44,7 +44,7 @@ test.describe('E2EE Mentions', () => {
 		});
 	});
 
-	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
+	test('expect create an encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel', async () => {
@@ -65,7 +65,7 @@ test.describe('E2EE Mentions', () => {
 		});
 	});
 
-	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
+	test('expect create an encrypted private channel, mention a channel and user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel', async () => {

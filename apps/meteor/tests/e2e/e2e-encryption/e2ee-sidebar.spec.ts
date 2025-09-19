@@ -32,7 +32,7 @@ test.describe('E2EE Channel Sidebar Integration', () => {
 		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
 	});
 
-	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
+	test('expect create a private channel, send unencrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
 		page,
 	}) => {
 		const channelName = faker.string.uuid();

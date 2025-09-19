@@ -55,7 +55,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 			await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 			await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
 			await disableEncryptionModal.disable();
-			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeHidden();
 		});
 
 		await test.step('send unencrypted message and verify no encryption', async () => {

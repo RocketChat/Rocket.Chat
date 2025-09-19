@@ -63,8 +63,8 @@ test.describe('E2EE Message Actions', () => {
 			createdChannels.push(channelName);
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-			await poHomeChannel.content.sendMessage('This message should be pinned and stared.');
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This message should be pinned and stared.');
+			await poHomeChannel.content.sendMessage('This message should be pinned and starred.');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This message should be pinned and starred.');
 			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
 		});
 
@@ -87,7 +87,7 @@ test.describe('E2EE Message Actions', () => {
 			await poHomeChannel.tabs.kebab.click();
 			await poHomeChannel.tabs.btnPinnedMessagesList.click();
 			await expect(poHomeChannel.content.pinnedMessagesDialog).toBeVisible();
-			await expect(poHomeChannel.content.lastPinnedMessage).toContainText('This message should be pinned and stared.');
+			await expect(poHomeChannel.content.lastPinnedMessage).toContainText('This message should be pinned and starred.');
 			await poHomeChannel.content.lastPinnedMessage.hover();
 			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastPinnedMessage).waitFor();
 			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastPinnedMessage).click();
@@ -99,7 +99,7 @@ test.describe('E2EE Message Actions', () => {
 			await poHomeChannel.tabs.kebab.click();
 			await poHomeChannel.tabs.btnStarredMessageList.click();
 			await expect(poHomeChannel.content.starredMessagesDialog).toBeVisible();
-			await expect(poHomeChannel.content.lastStarredMessage).toContainText('This message should be pinned and stared.');
+			await expect(poHomeChannel.content.lastStarredMessage).toContainText('This message should be pinned and starred.');
 			await poHomeChannel.content.lastStarredMessage.hover();
 			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastStarredMessage).waitFor();
 			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastStarredMessage).click();
