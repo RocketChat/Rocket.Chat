@@ -8,9 +8,11 @@ import {
 	useUser,
 	useSetModal,
 	useSelectedDevices,
+	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
 import { useMediaSession } from './useMediaSession';
@@ -23,6 +25,8 @@ import TransferModal from '../v2/TransferModal';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const user = useUser();
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setModal = useSetModal();
 
@@ -163,9 +167,10 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			setModal(null);
 		};
 
-		const onConfirm = (kind: 'user' | 'sip', id: string) => {
-			session.forwardCall(kind, id);
+		const onConfirm = (kind: 'user' | 'sip', peer: { displayName: string; id: string }) => {
+			session.forwardCall(kind, peer.id);
 			setModal(null);
+			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name: peer.displayName }) });
 		};
 
 		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
