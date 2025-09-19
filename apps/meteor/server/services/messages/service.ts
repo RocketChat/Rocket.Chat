@@ -101,7 +101,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(fromId, {
 			rid,
 			msg,
-			...(thread || {}),
+			...thread,
 			federation: { eventId: federation_event_id },
 		});
 	}

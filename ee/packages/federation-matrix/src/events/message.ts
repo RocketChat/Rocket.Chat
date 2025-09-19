@@ -202,7 +202,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					rid: internalRoomId,
 					msg: formatted,
 					federation_event_id: data.event_id,
-					...(thread ? { thread } : {}),
+					thread,
 				});
 				return;
 			}
@@ -218,7 +218,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				rid: internalRoomId,
 				msg: formatted,
 				federation_event_id: data.event_id,
-				...(thread ? { thread } : {}),
+				thread,
 			});
 		} catch (error) {
 			logger.error('Error processing Matrix message:', error);
