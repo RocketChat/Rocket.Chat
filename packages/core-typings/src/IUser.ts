@@ -263,7 +263,7 @@ export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>
 export interface IUserNativeFederated extends IUser {
 	federated: true;
 	federation: {
-		version: `${number}`;
+		version: number;
 	};
 }
 
