@@ -1,5 +1,5 @@
 import type { HomeserverServices, RoomService, StateService } from '@hs/federation-sdk';
-import type { PduMembershipEventContent, PersistentEventBase } from '@hs/room';
+import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@hs/room';
 import { Room } from '@rocket.chat/core-services';
 import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
@@ -149,7 +149,7 @@ async function joinRoom({
 	room,
 	state,
 }: {
-	inviteEvent: PersistentEventBase;
+	inviteEvent: PersistentEventBase<RoomVersion, 'm.room.member'>;
 	user: IUser;
 	room: RoomService;
 	state: StateService;
@@ -353,7 +353,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			const inviteEvent = await invite.processInvite(event, roomId, eventId, roomVersion);
 
 			void startJoiningRoom({
-				inviteEvent,
+				inviteEvent: inviteEvent as PersistentEventBase<RoomVersion, 'm.room.member'>, // TODO: change the processInvite return type
 				user: ourUser,
 				room,
 				state,
