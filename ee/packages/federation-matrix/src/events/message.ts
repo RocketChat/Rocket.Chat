@@ -114,15 +114,16 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				}
 			}
 
-			let tmid: string | undefined;
+			let thread: { tmid: string; tshow: boolean } | undefined;
 			if (isThreadMessage && threadRootEventId) {
 				const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
-				if (threadRootMessage) {
-					tmid = threadRootMessage._id;
-					logger.debug('Found thread root message:', { tmid, threadRootEventId });
-				} else {
+				if (!threadRootMessage) {
 					logger.warn('Thread root message not found for event:', threadRootEventId);
+					return;
 				}
+
+				const shouldSetTshow = !threadRootMessage?.tcount;
+				thread = { tmid: threadRootMessage._id, tshow: shouldSetTshow };
 			}
 
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
@@ -201,7 +202,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					rid: internalRoomId,
 					msg: formatted,
 					federation_event_id: data.event_id,
-					tmid,
+					thread,
 				});
 				return;
 			}
@@ -217,7 +218,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				rid: internalRoomId,
 				msg: formatted,
 				federation_event_id: data.event_id,
-				tmid,
+				thread,
 			});
 		} catch (error) {
 			logger.error('Error processing Matrix message:', error);
