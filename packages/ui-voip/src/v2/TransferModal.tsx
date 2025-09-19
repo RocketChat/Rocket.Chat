@@ -7,7 +7,6 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 	ModalHeader,
-	ModalIcon,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
@@ -28,13 +27,24 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 	const modalId = useId();
 
 	const [peer, setPeer] = useState<PeerInfoType | undefined>(undefined);
+	const [error, setError] = useState<string | undefined>(undefined);
 
 	const autocomplete = usePeerAutocomplete(setPeer, peer);
 
+	const onChangeValue = (value: string | string[]) => {
+		if (error) {
+			setError(undefined);
+		}
+		autocomplete.onChangeValue(value);
+	};
+
 	const confirm = () => {
 		if (!peer) {
+			setError(t('Field_required'));
 			return;
 		}
+
+		setError(undefined);
 
 		if ('userId' in peer) {
 			onConfirm('user', peer.userId);
@@ -52,12 +62,11 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 	return (
 		<Modal open aria-labelledby={modalId}>
 			<ModalHeader>
-				<ModalIcon color='danger' name='modal-warning' />
 				<ModalTitle id={modalId}>{t('Transfer_call')}</ModalTitle>
 				<ModalClose aria-label={t('Close')} onClick={onCancel} />
 			</ModalHeader>
 			<ModalContent>
-				<PeerAutocomplete {...autocomplete} />
+				<PeerAutocomplete {...autocomplete} error={error} onChangeValue={onChangeValue} />
 				{peer && (
 					<Box mb={8}>
 						<PeerInfo {...peer} />
@@ -69,7 +78,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm} disabled={!peer}>
+					<Button danger onClick={confirm} icon='phone-off'>
 						{t('Hang_up_and_transfer_call')}
 					</Button>
 				</ModalFooterControllers>
