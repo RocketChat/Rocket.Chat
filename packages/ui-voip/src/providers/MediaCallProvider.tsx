@@ -162,12 +162,17 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const onForward = () => {
-		console.log('forward');
+		const offCallback = instance?.once('endedCall', () => {
+			setModal(null);
+		});
+
 		const onCancel = () => {
+			offCallback?.();
 			setModal(null);
 		};
 
 		const onConfirm = (kind: 'user' | 'sip', peer: { displayName: string; id: string }) => {
+			offCallback?.();
 			session.forwardCall(kind, peer.id);
 			setModal(null);
 			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name: peer.displayName }) });
