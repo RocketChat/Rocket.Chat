@@ -14,7 +14,6 @@ import ContactField from './components/ContactField';
 import RecipientField from './components/RecipientField';
 import SenderField from './components/SenderField';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
-import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
 import { ContactNotFoundError, ProviderNotFoundError } from '../../utils/errors';
 
 export type RecipientFormData = {
@@ -78,7 +77,16 @@ const RecipientForm = (props: RecipientFormProps) => {
 		refetch: refetchContact,
 	} = useQuery({
 		queryKey: omnichannelQueryKeys.contact(contactId),
-		queryFn: () => getContact({ contactId }),
+		queryFn: async () => {
+			const data = await getContact({ contactId });
+
+			// TODO: Can be safely removed once unknown contacts handling is added to the endpoint
+			if (data?.contact && data.contact.unknown) {
+				throw new ContactNotFoundError();
+			}
+
+			return data;
+		},
 		staleTime: 5 * 60 * 1000,
 		select: (data) => data?.contact || undefined,
 		enabled: !!contactId,
@@ -175,10 +183,8 @@ const RecipientForm = (props: RecipientFormProps) => {
 		}
 	});
 
-	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
-
 	return (
-		<form ref={formRef} id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<ContactField
 					control={control}
