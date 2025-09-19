@@ -80,7 +80,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			matrixDomain: serverHostname,
 			version: process.env.SERVER_VERSION || '1.0',
 			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey.replace("ed25519 0 ","")}`, // Remove old prefix if exists
+			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey}`,
 			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 			database: {
 				uri: mongoUri,

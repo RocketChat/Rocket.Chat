@@ -14,9 +14,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 		await this.add('Federation_Service_Matrix_Signing_Algorithm', 'ed25519', {
 			type: 'select',
 			public: false,
-			values: [
-				{ key: 'ed25519', i18nLabel: 'ed25519' },
-			],
+			values: [{ key: 'ed25519', i18nLabel: 'ed25519' }],
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: 'ed25519',
