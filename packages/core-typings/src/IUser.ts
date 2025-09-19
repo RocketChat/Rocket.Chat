@@ -227,7 +227,7 @@ export interface IUser extends IRocketChatRecord {
 	federated?: boolean;
 	// @deprecated
 	federation?: {
-		version?: `${number}`;
+		version?: number;
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};

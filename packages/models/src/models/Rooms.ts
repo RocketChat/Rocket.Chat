@@ -1969,6 +1969,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id: (await this.insertOne(room)).insertedId,
 			_updatedAt: new Date(),
 			...room,
+			...(room.federated && {
+				federated: true,
+				federation: {
+					version: 1,
+				},
+			}),
 		};
 
 		return newRoom;
