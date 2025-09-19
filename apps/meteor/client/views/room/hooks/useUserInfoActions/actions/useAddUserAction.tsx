@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
@@ -46,9 +46,11 @@ export const useAddUserAction = (
 
 	const roomIsFederated = isRoomFederated(room);
 
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
+
 	const userCanAdd =
 		room && user && roomIsFederated
-			? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
+			? !isFederationBlocked && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 			: hasPermissionToAddUsers;
 
 	const { roomCanInvite } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
