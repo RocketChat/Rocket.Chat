@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
@@ -82,7 +82,18 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			sip: {
 				enabled: sipEnabled,
 			},
+			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 		};
+	}
+
+	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
+		if (callType === 'any') {
+			return Authorization.hasAtLeastOnePermission(uid, ['allow-internal-voice-calls', 'allow-external-voice-calls']);
+		}
+
+		const permissionId = `allow-${callType}-voice-calls`;
+
+		return Authorization.hasPermission(uid, permissionId);
 	}
 
 	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {

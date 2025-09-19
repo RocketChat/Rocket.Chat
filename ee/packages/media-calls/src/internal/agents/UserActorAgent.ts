@@ -152,7 +152,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			return;
 		}
 
-		getMediaCallServer().requestCall({
+		await getMediaCallServer().requestCall({
 			caller: actor as MediaCallSignedContact,
 			callee: call.transferredTo,
 			requestedService: call.service,

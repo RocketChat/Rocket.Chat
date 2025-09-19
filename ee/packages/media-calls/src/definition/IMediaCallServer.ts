@@ -19,6 +19,8 @@ export interface IMediaCallServerSettings {
 	sip: {
 		enabled: boolean;
 	};
+
+	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 }
 
 export interface IMediaCallServer {

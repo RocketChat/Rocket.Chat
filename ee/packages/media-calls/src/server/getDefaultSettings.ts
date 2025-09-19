@@ -10,5 +10,7 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 		sip: {
 			enabled: false,
 		},
+
+		permissionCheck: async () => false,
 	};
 }
