@@ -2,7 +2,11 @@ import { useMediaCallContext } from './MediaCallContext';
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall } from './views';
 
 const MediaCallWidget = () => {
-	const { state } = useMediaCallContext();
+	const { state, hidden } = useMediaCallContext();
+
+	if (hidden) {
+		return null;
+	}
 
 	switch (state) {
 		case 'ongoing':
