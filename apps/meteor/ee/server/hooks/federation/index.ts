@@ -17,6 +17,7 @@ import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemo
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
 import { getFederationVersion } from '../../../../server/services/federation/utils';
+import { FederationActions } from '../../../../server/services/messages/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
 
@@ -74,7 +75,7 @@ callbacks.add(
 );
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage) => {
+	async (message: IMessage, room) => {
 		if (!message.federation?.eventId) {
 			return;
 		}
@@ -122,12 +123,14 @@ beforeAddUserToRoom.add(
 
 callbacks.add(
 	'afterSetReaction',
-	async (message: IMessage, params: { user: IUser; reaction: string }): Promise<void> => {
+	async (message: IMessage, params): Promise<void> => {
 		// Don't federate reactions that came from Matrix
 		if (params.user.username?.includes(':')) {
 			return;
 		}
-		await FederationMatrix.sendReaction(message._id, params.reaction, params.user);
+		if (FederationActions.blockIfRoomFederatedButServiceNotReady(params.room)) {
+			await FederationMatrix.sendReaction(message._id, params.reaction, params.user);
+		}
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-set-reaction',
@@ -135,12 +138,14 @@ callbacks.add(
 
 callbacks.add(
 	'afterUnsetReaction',
-	async (_message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): Promise<void> => {
+	async (_message: IMessage, params): Promise<void> => {
 		// Don't federate reactions that came from Matrix
 		if (params.user.username?.includes(':')) {
 			return;
 		}
-		await FederationMatrix.removeReaction(params.oldMessage._id, params.reaction, params.user, params.oldMessage);
+		if (FederationActions.blockIfRoomFederatedButServiceNotReady(params.room)) {
+			await FederationMatrix.removeReaction(params.oldMessage._id, params.reaction, params.user, params.oldMessage);
+		}
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-unset-reaction',
@@ -224,8 +229,10 @@ beforeChangeRoomRole.add(
 
 callbacks.add(
 	'beforeCreateDirectRoom',
-	async (members: IUser[] | string[]): Promise<void> => {
-		await FederationMatrix.ensureFederatedUsersExistLocally(members);
+	async (members: IUser[] | string[], room): Promise<void> => {
+		if (FederationActions.blockIfRoomFederatedButServiceNotReady(room)) {
+			await FederationMatrix.ensureFederatedUsersExistLocally(members);
+		}
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-before-create-direct-room',
