@@ -1,9 +1,12 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../../../../lib/callbacks/beforeAddUserToRoom';
 import { throwIfFederationNotEnabledOrNotReady } from '../../../../../../../server/services/federation/utils';
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {
 		callbacks.add(
@@ -24,7 +27,7 @@ export class FederationHooksEE {
 
 	public static onUsersAddedToARoom(callback: (room: IRoom, addedUsers: IUser[] | Username[], inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
-			'federation.onAddUsersToARoom',
+			'federation.onAddUsersToRoom',
 			async (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.invitees || !params.inviter) {
 					return;
@@ -84,14 +87,15 @@ export class FederationHooksEE {
 	}
 
 	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom, inviter?: IUser) => Promise<void>): void {
-		callbacks.add(
-			'federation.beforeAddUserToARoom',
-			async (params: { user: IUser | string; inviter?: IUser }, room: IRoom) => {
+		beforeAddUserToRoom.add(
+			async (params, room: IRoom) => {
 				if (!room || !isRoomFederated(room) || !params || !params.user) {
 					return;
 				}
 				throwIfFederationNotEnabledOrNotReady();
-				await callback(params.user, room, params.inviter);
+
+				const inviter = (params.inviter && (await Users.findOneById(params.inviter._id))) || undefined;
+				await callback(params.user, room, inviter);
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-add-user-to-the-room',
@@ -101,9 +105,9 @@ export class FederationHooksEE {
 	public static removeAllListeners(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
-		callbacks.remove('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room');
+		callbacks.remove('federation.onAddUsersToRoom', 'federation-v2-on-add-users-to-a-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
-		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room');
+		beforeAddUserToRoom.remove('federation-v2-before-add-user-to-the-room');
 	}
 }

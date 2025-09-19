@@ -30,6 +30,7 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
@@ -67,7 +68,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
+
+	const federationEnabled = useIsFederationEnabled();
+
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
