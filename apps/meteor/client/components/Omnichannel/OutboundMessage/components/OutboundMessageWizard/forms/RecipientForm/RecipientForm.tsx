@@ -14,7 +14,6 @@ import ContactField from './components/ContactField';
 import RecipientField from './components/RecipientField';
 import SenderField from './components/SenderField';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
-import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
 import { ContactNotFoundError, ProviderNotFoundError } from '../../utils/errors';
 
 export type RecipientFormData = {
@@ -175,10 +174,8 @@ const RecipientForm = (props: RecipientFormProps) => {
 		}
 	});
 
-	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
-
 	return (
-		<form ref={formRef} id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<ContactField
 					control={control}
