@@ -77,7 +77,16 @@ const RecipientForm = (props: RecipientFormProps) => {
 		refetch: refetchContact,
 	} = useQuery({
 		queryKey: omnichannelQueryKeys.contact(contactId),
-		queryFn: () => getContact({ contactId }),
+		queryFn: async () => {
+			const data = await getContact({ contactId });
+
+			// TODO: Can be safely removed once unknown contacts handling is added to the endpoint
+			if (data?.contact && data.contact.unknown) {
+				throw new ContactNotFoundError();
+			}
+
+			return data;
+		},
 		staleTime: 5 * 60 * 1000,
 		select: (data) => data?.contact || undefined,
 		enabled: !!contactId,
