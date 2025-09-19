@@ -172,7 +172,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getKeyServerRoutes(this.homeserverServices))
 			.use(getFederationVersionsRoutes(this.homeserverServices));
 
-		wellKnown.use(getWellKnownRoutes(this.homeserverServices));
+		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
 
 		this.httpRoutes = { matrix, wellKnown };
 	}
