@@ -284,6 +284,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					roles: ['user'],
 					requirePasswordChange: false,
 					federated: true,
+					federation: {
+						version: 1,
+					},
 					createdAt: new Date(),
 					_updatedAt: new Date(),
 				};

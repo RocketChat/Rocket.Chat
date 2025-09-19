@@ -66,6 +66,9 @@ export async function saveLocalUserForExternalUserId(externalUserId: string, ori
 		name: getLocalNameForMatrixUserIdToSave(externalUserId),
 		requirePasswordChange: false,
 		federated: true,
+		federation: {
+			version: 1,
+		},
 		createdAt: new Date(),
 		_updatedAt: new Date(),
 	};
