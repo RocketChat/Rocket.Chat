@@ -14,13 +14,13 @@ export interface IMessageService {
 		rid,
 		msg,
 		federation_event_id,
-		tmid,
+		thread,
 	}: {
 		fromId: string;
 		rid: string;
 		msg: string;
 		federation_event_id: string;
-		tmid?: string;
+		thread?: { tmid: string; tshow: boolean };
 	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
