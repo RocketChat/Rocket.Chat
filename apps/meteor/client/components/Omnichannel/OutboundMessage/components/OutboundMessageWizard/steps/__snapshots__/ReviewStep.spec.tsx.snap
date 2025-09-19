@@ -6,24 +6,23 @@ exports[`ReviewStep renders Default without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-162rsse"
     >
-      <div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-ogq2n4"
+      >
         <div
-          class="rcx-box rcx-box--full rcx-css-1ir42z0"
-        >
-          <div
-            agentname="John Doe"
-            agentusername="johndoe"
-            contactname="Jane Smith"
-            data-testid="outbound-message-preview"
-            departmentname="Support"
-            providername="Rocket.Chat"
-            providertype="phone"
-            recipient="+0987654321"
-            sender="+1234567890"
-            template="[object Object]"
-            templateparameters="[object Object]"
-          />
-        </div>
+          agentname="John Doe"
+          agentusername="johndoe"
+          contactname="Jane Smith"
+          data-testid="outbound-message-preview"
+          departmentname="Support"
+          maxheight="500"
+          providername="Rocket.Chat"
+          providertype="phone"
+          recipient="+0987654321"
+          sender="+1234567890"
+          template="[object Object]"
+          templateparameters="[object Object]"
+        />
         <div
           class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >

@@ -1,5 +1,5 @@
 import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint, usePermission, useUser } from '@rocket.chat/ui-contexts';
@@ -13,6 +13,7 @@ import AgentField from './components/AgentField';
 import DepartmentField from './components/DepartmentField';
 import { useAllowedAgents } from './hooks/useAllowedAgents';
 import { omnichannelQueryKeys } from '../../../../../../../lib/queryKeys';
+import Form from '../../components/OutboundMessageForm';
 import { FormFetchError } from '../../utils/errors';
 
 export type RepliesFormData = {
@@ -115,25 +116,27 @@ const RepliesForm = (props: RepliesFormProps) => {
 	});
 
 	return (
-		<form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<FieldGroup>
-				<DepartmentField
-					control={control}
-					onlyMyDepartments={!canAssignAllDepartments}
-					isError={isErrorDepartment}
-					isFetching={isFetchingDepartment}
-					onRefetch={refetchDepartment}
-					onChange={() => setValue('agentId', '')}
-				/>
+		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
+			<Scrollable vertical>
+				<FieldGroup justifyContent='start' pi={2}>
+					<DepartmentField
+						control={control}
+						onlyMyDepartments={!canAssignAllDepartments}
+						isError={isErrorDepartment}
+						isFetching={isFetchingDepartment}
+						onRefetch={refetchDepartment}
+						onChange={() => setValue('agentId', '')}
+					/>
 
-				<AgentField
-					control={control}
-					agents={agents}
-					canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
-					disabled={!departmentId}
-					isLoading={isFetchingDepartment}
-				/>
-			</FieldGroup>
+					<AgentField
+						control={control}
+						agents={agents}
+						canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
+						disabled={!departmentId}
+						isLoading={isFetchingDepartment}
+					/>
+				</FieldGroup>
+			</Scrollable>
 
 			{customActions ?? (
 				<Box mbs={24} display='flex' justifyContent='end'>
@@ -142,7 +145,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 					</Button>
 				</Box>
 			)}
-		</form>
+		</Form>
 	);
 };
 
