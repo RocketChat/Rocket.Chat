@@ -1,13 +1,12 @@
 import { Omnichannel } from '@rocket.chat/core-services';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-
 import { Meteor } from 'meteor/meteor';
 
+import { RoutingManager } from './RoutingManager';
+import { isAgentAvailableToTakeContactInquiry } from './contacts/isAgentAvailableToTakeContactInquiry';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { RoutingManager } from '../lib/RoutingManager';
-import { isAgentAvailableToTakeContactInquiry } from '../lib/contacts/isAgentAvailableToTakeContactInquiry';
-import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
 
 export const takeInquiry = async (
 	userId: string,
