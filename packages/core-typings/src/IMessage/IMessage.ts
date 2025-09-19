@@ -268,7 +268,7 @@ export interface IFederatedMessage extends IMessage {
 
 export interface INativeFederatedMessage extends IMessage {
 	federation: {
-		version: `${number}.${number}.${number}`;
+		version: `${number}`;
 		eventId: string;
 	};
 }

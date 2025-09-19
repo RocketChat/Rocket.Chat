@@ -227,7 +227,7 @@ export interface IUser extends IRocketChatRecord {
 	federated?: boolean;
 	// @deprecated
 	federation?: {
-		version?: `${number}.${number}.${number}`;
+		version?: `${number}`;
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
@@ -263,7 +263,7 @@ export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>
 export interface IUserNativeFederated extends IUser {
 	federated: true;
 	federation: {
-		version: `${number}.${number}.${number}`;
+		version: `${number}`;
 	};
 }
 

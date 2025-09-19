@@ -3,7 +3,6 @@ import type { AtLeast, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { isFederationEnabled } from '../../federation/utils';
 
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class FederationActions {
 	public static shouldPerformAction(message: IMessage, room: AtLeast<IRoom, 'federated'>): boolean {
 		if (!isRoomFederated(room)) {
