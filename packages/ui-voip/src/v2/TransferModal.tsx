@@ -18,7 +18,7 @@ import { PeerAutocomplete, PeerInfo } from './components';
 
 type TransferModalProps = {
 	onCancel(): void;
-	onConfirm(kind: 'user' | 'sip', id: string): void;
+	onConfirm(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
 };
 
 const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
@@ -47,12 +47,12 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 		setError(undefined);
 
 		if ('userId' in peer) {
-			onConfirm('user', peer.userId);
+			onConfirm('user', { id: peer.userId, displayName: peer.displayName });
 			return;
 		}
 
 		if ('number' in peer) {
-			onConfirm('sip', peer.number);
+			onConfirm('sip', { id: peer.number, displayName: peer.number });
 			return;
 		}
 
