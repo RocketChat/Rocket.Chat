@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountProfile, HomeChannel } from '../page-objects';
+import { setupE2EEPassword } from './setupE2EEPassword';
 import { AccountSecurityPage } from '../page-objects/account-security';
 import { HomeSidenav } from '../page-objects/fragments';
 import {
@@ -10,8 +11,6 @@ import {
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
 	ResetE2EEPasswordModal,
-	SaveE2EEPasswordBanner,
-	SaveE2EEPasswordModal,
 } from '../page-objects/fragments/e2ee';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -57,18 +56,12 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 	test('expect the randomly generated password to work', async ({ page }) => {
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
 		const sidenav = new HomeSidenav(page);
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		const password = await saveE2EEPasswordModal.getPassword();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		const password = await setupE2EEPassword(page);
 
 		// Log out
 		await sidenav.logout();
@@ -102,6 +95,8 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
 
+		await setupE2EEPassword(page);
+
 		// Logout
 		await sidenav.logout();
 
@@ -120,8 +115,6 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	test('expect to manually set a new password', async ({ page }) => {
 		const accountSecurityPage = new AccountSecurityPage(page);
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 		const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
@@ -129,10 +122,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 		const newPassword = faker.string.uuid();
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		// Set a new password
 		await accountSecurityPage.goto();
