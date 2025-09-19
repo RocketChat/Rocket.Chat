@@ -35,7 +35,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 					{device.label}
 				</Box>
 			),
-			addon: <RadioButton onChange={() => onDeviceChange(device.id)} checked={device.id === selectedAudioDevices?.audioInput?.id} />,
+			addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioInput?.id} />,
 		})) || [];
 
 	const availableOutputDevice =
@@ -46,7 +46,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 					{device.label}
 				</Box>
 			),
-			addon: <RadioButton onChange={() => onDeviceChange(device.id)} checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
+			addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
 			onClick(e?: MouseEvent<HTMLElement>) {
 				e?.preventDefault();
 				e?.stopPropagation();

@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 
+import { setupE2EEPassword } from './setupE2EEPassword';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
-import { SaveE2EEPasswordBanner, SaveE2EEPasswordModal } from '../page-objects/fragments/e2ee';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -35,17 +35,13 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const sidenav = new HomeSidenav(page);
 
 		const channelName = faker.string.uuid();
 		const messageText = 'This is an encrypted message.';
 
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		await sidenav.createEncryptedChannel(channelName);
 
@@ -78,8 +74,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	test('expect placeholder text in place of encrypted file upload description', async ({ page }) => {
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const loginPage = new LoginPage(page);
-		const saveE2EEPasswordBanner = new SaveE2EEPasswordBanner(page);
-		const saveE2EEPasswordModal = new SaveE2EEPasswordModal(page);
 		const fileUploadModal = new FileUploadModal(page);
 		const sidenav = new HomeSidenav(page);
 
@@ -87,10 +81,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		const fileName = faker.system.commonFileName('txt');
 		const fileDescription = faker.lorem.sentence();
 
-		// Click the banner to open the dialog to save the generated password
-		await saveE2EEPasswordBanner.click();
-		await saveE2EEPasswordModal.confirm();
-		await saveE2EEPasswordBanner.waitForDisappearance();
+		await setupE2EEPassword(page);
 
 		// Create an encrypted channel
 		await sidenav.createEncryptedChannel(channelName);

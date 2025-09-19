@@ -7,10 +7,12 @@ import { useOutboundMessageModal } from '../../../../../components/Omnichannel/O
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 
 type ContactInfoOutboundMessageButtonProps = {
+	title?: string;
+	disabled?: boolean;
 	defaultValues?: OutboundMessageModalProps['defaultValues'];
 };
 
-const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutboundMessageButtonProps) => {
+const ContactInfoOutboundMessageButton = ({ defaultValues, disabled, title }: ContactInfoOutboundMessageButtonProps) => {
 	const { t } = useTranslation();
 	const outboundMessageModal = useOutboundMessageModal();
 
@@ -21,7 +23,15 @@ const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutbound
 		return null;
 	}
 
-	return <IconButton onClick={() => outboundMessageModal.open(defaultValues)} tiny icon='send' title={t('Outbound_message')} />;
+	return (
+		<IconButton
+			disabled={disabled}
+			onClick={() => outboundMessageModal.open(defaultValues)}
+			tiny
+			icon='send'
+			title={`${t('Outbound_message')} ${title ? `(${title})` : ''}`}
+		/>
+	);
 };
 
 export default ContactInfoOutboundMessageButton;
