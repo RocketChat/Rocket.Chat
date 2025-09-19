@@ -90,19 +90,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		rid,
 		msg,
 		federation_event_id,
-		tmid,
+		thread,
 	}: {
 		fromId: string;
 		rid: string;
 		msg: string;
 		federation_event_id: string;
-		tmid?: string;
+		thread?: { tmid: string; tshow: boolean };
 	}): Promise<IMessage> {
-		const threadParams = tmid ? { tmid, tshow: false } : {};
 		return executeSendMessage(fromId, {
 			rid,
 			msg,
-			...threadParams,
+			...(thread || {}),
 			federation: { eventId: federation_event_id },
 		});
 	}
