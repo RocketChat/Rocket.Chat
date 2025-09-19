@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
@@ -293,10 +293,15 @@ const MessageBox = ({
 			}
 
 			if (isRoomFederated(room)) {
+				// we are dropping the non native federation for now
+				if (!isRoomNativeFederated(room)) {
+					return false;
+				}
+
 				return federationMatrixEnabled;
 			}
 			return true;
-		}, [federationMatrixEnabled, room]),
+		}, [room, federationMatrixEnabled]),
 	);
 
 	const sizes = useContentBoxSize(textareaRef);
