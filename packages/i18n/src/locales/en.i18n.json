@@ -2128,6 +2128,7 @@
   "Federation_Matrix_homeserver_url_alert": "We recommend a new, empty homeserver, to use with our federation",
   "Federation_Matrix_hs_token": "Homeserver Token",
   "Federation_Matrix_id": "AppService ID",
+  "Federation_Matrix_Federated_Description_invalid_version": "This room was created by an old Federation version and it's blocked indeterminately. <1>Click here</1> for more information about Matrix Federation support",
   "Federation_Matrix_join_public_rooms_is_enterprise": "Join federated rooms is an Enterprise Edition feature",
   "Federation_Matrix_join_public_rooms_is_premium": "Join federated rooms is a Premium feature",
   "Federation_Matrix_losing_privileges": "Losing privileges",
