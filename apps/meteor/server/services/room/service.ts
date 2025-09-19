@@ -60,7 +60,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async addUserToRoom(
 		roomId: string,
-		user: Pick<IUser, '_id'> | string,
+		user: Pick<IUser, '_id'>,
 		inviter?: Pick<IUser, '_id' | 'username'>,
 		options?: {
 			skipSystemMessage?: boolean;
