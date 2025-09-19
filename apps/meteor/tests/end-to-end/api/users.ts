@@ -681,6 +681,53 @@ describe('[Users]', () => {
 			]),
 		);
 
+		it('should fail when request is without authentication credentials', async () => {
+			await request
+				.get(api('users.info'))
+				.query({
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
+		describe('authentication', () => {
+			before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+			it('should fail when request is without authentication credentials and Anonymous Read is enabled', async () => {
+				await request
+					.get(api('users.info'))
+					.query({
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					});
+			});
+
+			it('should fail when request is without token and Anonymous Read is enabled', async () => {
+				await request
+					.get(api('users.info'))
+					.query({
+						userId: targetUser._id,
+					})
+					.set({ 'X-User-Id': credentials['X-User-Id'] })
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					});
+			});
+		});
+
 		it('should return an error when the user does not exist', (done) => {
 			void request
 				.get(api('users.info'))

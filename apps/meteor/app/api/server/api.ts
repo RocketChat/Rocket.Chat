@@ -572,12 +572,15 @@ export class APIClass<TBasePath extends string = ''> {
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute(this.request);
 							this.user = user!;
-							this.userId = String(this.request.headers['x-user-id']);
-							this.token = (this.request.headers['x-auth-token'] &&
-								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
+							this.userId = this.user?._id;
+							const authToken = this.request.headers.get('x-auth-token');
+							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
-						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
+						const shouldPreventUserRead = !this.user && options.authRequired;
+
+						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR
