@@ -2163,6 +2163,8 @@
   "Federation_Service_Alert": "This feature is in beta and may not be stable. Please be aware that it may change, break, or even be removed in the future without any notice.",
   "Federation_Service_Matrix_Signing_Key": "Matrix server signing key",
   "Federation_Service_Matrix_Signing_Key_Description": "The private signing key used by your Matrix server to authenticate federation requests. Format should be: algorithm version base64<privateKey>. This is typically an Ed25519 algorithm key (version 4), encoded as base64. It is essential for secure communication between federated Matrix servers and should be kept confidential.",
+  "Federation_Service_Allow_List": "Domain Allow List",
+  "Federation_Service_Allow_List_Description": "Restrict federation to the given allow list of domains.",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
