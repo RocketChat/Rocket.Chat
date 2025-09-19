@@ -197,14 +197,19 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		try {
 			const matrixUserId = `@${owner.username}:${this.serverName}`;
-			const roomName = room.name || room.fname || 'Untitled Room';
+			const roomName = `${room.name}@${this.serverName}`;
+			const roomFname = `${room.name} @ ${this.serverName}`;
+			const matrixRoomName = room.name || room.fname || 'Unnamed Room';
 
 			// canonical alias computed from name
-			const matrixRoomResult = await this.homeserverServices.room.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
+			const matrixRoomResult = await this.homeserverServices.room.createRoom(matrixUserId, matrixRoomName, room.t === 'c' ? 'public' : 'invite');
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
 			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
+
+			await Rooms.setNameById(room._id, roomName, roomFname);
+			await Subscriptions.updateOne({ rid: room._id, 'u._id': owner._id }, { $set: { name: roomName, fname: roomFname } });
 
 			await saveExternalUserIdForLocalUser(owner, matrixUserId);
 
@@ -346,6 +351,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
 			if (!mapping) {
 				await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
+			}
+
+			// For group DMs, update room name to use Matrix room ID to avoid conflicts
+			if (members.length > 2) {
+				const [roomIdPart] = matrixRoomResult.room_id.split(':');
+				const updatedName = `${roomIdPart.replace('!', '')}@${this.serverName}`;
+				const originalName = room.name || room.fname || `Group chat with ${members.length} members`;
+				await Rooms.setNameById(room._id, updatedName, originalName);
 			}
 
 			for await (const member of members) {
