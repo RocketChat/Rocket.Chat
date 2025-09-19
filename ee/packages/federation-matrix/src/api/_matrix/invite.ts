@@ -1,5 +1,5 @@
 import type { HomeserverServices, RoomService, StateService } from '@hs/federation-sdk';
-import type { PersistentEventBase } from '@hs/room';
+import type { PduMembershipEventContent, PersistentEventBase } from '@hs/room';
 import { Room } from '@rocket.chat/core-services';
 import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
@@ -143,45 +143,6 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	}
 }
 
-async function isDirectMessage(matrixRoom: unknown, inviteEvent: PersistentEventBase): Promise<boolean> {
-	try {
-		const room = matrixRoom as { getEvent?: (type: string) => { content?: { is_direct?: boolean } } };
-		const creationEvent = room.getEvent?.('m.room.create');
-		if (creationEvent?.content?.is_direct) {
-			return true;
-		}
-
-		const roomWithEvents = matrixRoom as { getEvents?: (type: string) => Array<{ content?: { membership?: string }; stateKey?: string }> };
-		const memberEvents = roomWithEvents.getEvents?.('m.room.member');
-		const joinedMembers =
-			memberEvents?.filter((event) => event.content?.membership === 'join' || event.content?.membership === 'invite') || [];
-
-		if (joinedMembers.length === 2) {
-			return true;
-		}
-
-		const uniqueUsers = new Set<string>();
-		if (memberEvents) {
-			for (const event of memberEvents) {
-				if (event.content?.membership === 'join' || event.content?.membership === 'invite') {
-					if (event.stateKey) {
-						uniqueUsers.add(event.stateKey);
-					}
-				}
-			}
-		}
-		uniqueUsers.add(inviteEvent.sender);
-		if (inviteEvent.stateKey) {
-			uniqueUsers.add(inviteEvent.stateKey);
-		}
-
-		return uniqueUsers.size <= 2;
-	} catch (error) {
-		console.log('Could not determine if room is DM:', error);
-		return false;
-	}
-}
-
 async function joinRoom({
 	inviteEvent,
 	user, // ours trying to join the room
@@ -208,7 +169,7 @@ async function joinRoom({
 	}
 
 	// we only understand these two types of rooms, plus direct messages
-	const isDM = await isDirectMessage(matrixRoom, inviteEvent);
+	const isDM = inviteEvent.getContent<PduMembershipEventContent>().is_direct;
 
 	if (!isDM && !matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
 		throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
