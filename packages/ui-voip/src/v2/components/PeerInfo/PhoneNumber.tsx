@@ -6,9 +6,9 @@ type PhoneNumberProps = {
 
 const PhoneNumber = ({ number }: PhoneNumberProps) => {
 	return (
-		<Box display='flex' flexDirection='row'>
-			<Icon size='x20' name='phone' mie={8} />
-			<Box fontScale='p2b'>{`+${number}`}</Box>
+		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
+			<Icon size='x20' name='phone' mie={8} aria-hidden='true' />
+			<Box fontScale='p2b'>{number}</Box>
 		</Box>
 	);
 };
