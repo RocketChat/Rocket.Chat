@@ -113,7 +113,7 @@ export interface IRoomFederated extends IRoom {
 
 export interface IRoomNativeFederated extends IRoomFederated {
 	federation: {
-		version: `${number}`;
+		version: number;
 	};
 }
 

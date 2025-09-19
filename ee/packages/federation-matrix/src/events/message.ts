@@ -47,6 +47,9 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					roles: ['user'],
 					requirePasswordChange: false,
 					federated: true, // Mark as federated user
+					federation: {
+						version: 1,
+					},
 					createdAt: new Date(),
 					_updatedAt: new Date(),
 				};
