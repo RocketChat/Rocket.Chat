@@ -3,7 +3,7 @@ import { URL } from 'node:url';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService, FederationConfigurationStatus } from '@rocket.chat/core-services';
-import { isRoomFederated, type IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, IUser, type IRoom } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -22,6 +22,7 @@ import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/conv
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 import './infrastructure/rocket-chat/well-known';
 import { throwIfFederationNotEnabledOrNotReady } from './utils';
+import { FederationIntent } from './intent';
 
 function extractError(e: unknown) {
 	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
@@ -345,6 +346,13 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected async deactivateRemoteUser(remoteUserId: string): Promise<void> {
 		return this.bridge.deactivateUser(remoteUserId);
+	}
+
+	public getIntent(internalUser: IUser): FederationIntent {
+		return FederationIntent.create(internalUser, {
+			settings: this.internalSettingsAdapter,
+			bridge: this.bridge,
+		});
 	}
 }
 
