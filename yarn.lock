@@ -7738,6 +7738,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/http-router": "workspace:^"
+    "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
