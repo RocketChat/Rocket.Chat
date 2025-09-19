@@ -47,7 +47,6 @@ import './v1/voip/extensions';
 import './v1/voip/queues';
 import './v1/voip/omnichannel';
 import './v1/voip';
-import './v1/federation';
 import './v1/moderation';
 
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
