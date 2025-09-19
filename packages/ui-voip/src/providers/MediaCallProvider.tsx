@@ -201,8 +201,11 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	// const usersInfoEndpoint = useEndpoint('GET', '/v1/users.info');
 
 	const getAutocompleteOptions = async (filter: string) => {
+		const peerUsername = session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined;
+		const exceptions = [user?.username, peerUsername].filter(Boolean);
+
 		const { items } = await usersAutoCompleteEndpoint({
-			selector: JSON.stringify({ term: filter, exceptions: [user?.username] }),
+			selector: JSON.stringify({ term: filter, exceptions }),
 		});
 		return (
 			items.map((user) => {
