@@ -77,6 +77,7 @@ test.describe('iframe-authentication', () => {
 		});
 
 		await page.goto('/home');
+		await poUtils.mainContent.waitFor({ state: 'visible' });
 		await expect(poUtils.mainContent).toBeVisible();
 	});
 
