@@ -1,17 +1,25 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { useUserAvatarPath, useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
 import { useUserCard } from '../../../contexts/UserCardContext';
 import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'name'>): UserInfoAction | undefined => {
+export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'name'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const { t } = useTranslation();
 	const ownUserId = useUserId();
 	const { closeUserCard } = useUserCard();
 	const { state, onToggleWidget } = useMediaCallContext();
 	const getAvatarUrl = useUserAvatarPath();
+
+	const currentSubscription = useUserSubscription(rid);
+
+	const blocked = currentSubscription?.blocker || currentSubscription?.blocker;
+
+	if (blocked) {
+		return undefined;
+	}
 
 	const disabled = !['closed', 'new'].includes(state);
 

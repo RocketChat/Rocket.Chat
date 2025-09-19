@@ -81,7 +81,7 @@ export const useUserInfoActions = ({
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
-	const userMediaCall = useUserMediaCallAction(user);
+	const userMediaCall = useUserMediaCallAction(user, rid);
 
 	const userinfoActions = useMemo(
 		() => ({
