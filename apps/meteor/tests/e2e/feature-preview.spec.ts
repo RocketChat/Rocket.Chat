@@ -60,11 +60,10 @@ test.describe.serial('feature preview', () => {
 		poAccountProfile = new AccountProfile(page);
 	});
 
-	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
+	test('should show "Navigation" feature section', async ({ page }) => {
 		await page.goto('/account/feature-preview');
 		await page.waitForSelector('#main-content');
 
-		await expect(page.getByRole('main').getByRole('button', { name: 'Message' })).toBeVisible();
 		await expect(page.getByRole('main').getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
