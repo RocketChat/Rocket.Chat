@@ -108,18 +108,15 @@ async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): 
 	return room;
 }
 
-async function getThreadMessageId(threadRootEventId: string | undefined): Promise<string | undefined> {
-	if (!threadRootEventId) {
-		return undefined;
+async function getThreadMessageId(threadRootEventId: string): Promise<{ tmid: string; tshow: boolean } | undefined> {
+	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
+	if (!threadRootMessage) {
+		logger.warn('Thread root message not found for event:', threadRootEventId);
+		return;
 	}
 
-	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
-	if (threadRootMessage) {
-		logger.debug('Found thread root message:', { tmid: threadRootMessage._id, threadRootEventId });
-		return threadRootMessage._id;
-	}
-	logger.warn('Thread root message not found for event:', threadRootEventId);
-	return undefined;
+	const shouldSetTshow = !threadRootMessage?.tcount;
+	return { tmid: threadRootMessage._id, tshow: shouldSetTshow };
 }
 
 async function handleMediaMessage(
@@ -246,7 +243,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
 			const isQuoteMessage = replyToRelation?.['m.in_reply_to']?.event_id && !replyToRelation?.is_falling_back;
 			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
-			const tmid = await getThreadMessageId(threadRootEventId);
+			const thread = await getThreadMessageId(threadRootEventId);
 
 			const isMediaMessage = Object.values(fileTypes).includes(msgtype);
 
@@ -327,13 +324,13 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					rid: room._id,
 					msg: formatted,
 					federation_event_id: data.event_id,
-					tmid,
+					thread,
 				});
 				return;
 			}
 
 			if (isMediaMessage && content?.url) {
-				const result = await handleMediaMessage(content, msgtype, messageBody, user, room, data.event_id, tmid);
+				const result = await handleMediaMessage(content, msgtype, messageBody, user, room, data.event_id, thread?.tmid);
 				await Message.saveMessageFromFederation(result);
 			} else {
 				const formatted = toInternalMessageFormat({
@@ -347,7 +344,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					rid: room._id,
 					msg: formatted,
 					federation_event_id: data.event_id,
-					tmid,
+					thread,
 				});
 			}
 		} catch (error) {
