@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedActor, ServerActor } from '@rocket.chat/core-typings';
+import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedContact, ServerActor } from '@rocket.chat/core-typings';
 import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
@@ -15,8 +15,6 @@ const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
-
-	webrtcOffer?: RTCSessionDescriptionInit;
 };
 
 // expiration checks by call id
@@ -99,7 +97,7 @@ export class MediaCallDirector {
 		call: MediaCallHeader,
 		offerer: CallRole,
 		offer?: RTCSessionDescriptionInit,
-	): Promise<IMediaCallNegotiation['_id'] | null> {
+	): Promise<IMediaCallNegotiation['_id']> {
 		const newNegotiation: InsertionModel<IMediaCallNegotiation> = {
 			callId: call._id,
 			offerer,
@@ -160,10 +158,10 @@ export class MediaCallDirector {
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer, parentCallId, requestedBy } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy } = params;
 		logger.debug({
 			msg: 'MediaCallDirector.createCall',
-			params: { caller, callee, requestedCallId, requestedService, hasOffer: Boolean(webrtcOffer), parentCallId, requestedBy },
+			params: { caller, callee, requestedCallId, requestedService, parentCallId, requestedBy },
 		});
 
 		// The caller must always have a contract to create the call
@@ -189,18 +187,12 @@ export class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const createdByActor = requestedBy || caller;
-
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
 			service,
 			kind: 'direct',
 			state: 'none',
 
-			createdBy: {
-				type: createdByActor.type,
-				id: createdByActor.id,
-				contractId: createdByActor.contractId,
-			},
+			createdBy: requestedBy || caller,
 			createdAt: new Date(),
 
 			caller,
@@ -232,17 +224,13 @@ export class MediaCallDirector {
 
 		this.scheduleExpirationCheckByCallId(newCall._id);
 
-		if (webrtcOffer) {
-			await this.startNewNegotiation(newCall, 'caller', webrtcOffer);
-		}
-
 		return newCall;
 	}
 
 	public static async transferCall(
 		call: MediaCallHeader,
 		to: MediaCallContact,
-		by: MediaCallSignedActor,
+		by: MediaCallSignedContact,
 		agent: IMediaCallAgent,
 	): Promise<void> {
 		if (!agent.oppositeAgent) {

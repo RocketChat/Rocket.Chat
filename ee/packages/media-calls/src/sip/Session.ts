@@ -1,6 +1,6 @@
 import type { Socket } from 'net';
 
-import type { IMediaCall } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
@@ -81,15 +81,29 @@ export class SipServerSession {
 			cbProvisional?: (provisionalRes: Srf.SrfResponse) => void;
 		},
 	): Promise<Srf.Dialog> {
+		const uri = this.getExtensionUri(sipExtension);
+
+		return this.srf.createUAC(uri, opts, progressCallbacks);
+	}
+
+	public geContactUri(contact: MediaCallContact): string {
+		const sipExtension = contact.sipExtension || (contact.type === 'sip' && contact.id) || null;
+		const username = contact.username && `user-${contact.username}`;
+		const userId = contact.id && `user-${contact.id}`;
+
+		const sipUsername = sipExtension || username || userId;
+
+		return this.getExtensionUri(sipUsername || 'unknown');
+	}
+
+	public getExtensionUri(extension: string): string {
 		const { host, port } = this.settings.sip.sipServer;
 		if (!host) {
 			throw new Error('Sip Server Host is not configured');
 		}
 
 		const portStr = port ? `:${port}` : '';
-		const uri = `sip:${sipExtension}@${host}${portStr}`;
-
-		return this.srf.createUAC(uri, opts, progressCallbacks);
+		return `sip:${extension}@${host}${portStr}`;
 	}
 
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {

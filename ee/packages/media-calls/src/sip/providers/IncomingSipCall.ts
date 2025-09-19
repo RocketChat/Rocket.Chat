@@ -5,6 +5,7 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
+import { isBusyState } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
@@ -16,14 +17,20 @@ import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
+type IncomingSipCallNegotiation = {
+	id: string;
+	req: SrfRequest;
+	res: SrfResponse;
+	isFirst: boolean;
+	state: 'received' | 'complete';
+	offer: RTCSessionDescriptionInit | null;
+	answer: RTCSessionDescriptionInit | null;
+};
+
 export class IncomingSipCall extends BaseSipCall {
-	protected localDescription: RTCSessionDescriptionInit;
-
-	protected remoteDescription: RTCSessionDescriptionInit | null;
-
 	private sipDialog: Srf.Dialog | null;
 
-	private responseSent = false;
+	private inboundRenegotiations: Map<string, IncomingSipCallNegotiation>;
 
 	constructor(
 		session: SipServerSession,
@@ -33,17 +40,16 @@ export class IncomingSipCall extends BaseSipCall {
 		private readonly srf: Srf,
 		private readonly req: SrfRequest,
 		private readonly res: SrfResponse,
-		localDescription: RTCSessionDescriptionInit,
 	) {
 		super(session, call, agent, channel);
-		this.localDescription = localDescription;
-		this.remoteDescription = null;
 		this.sipDialog = null;
+		this.inboundRenegotiations = new Map();
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
 		logger.debug({ msg: 'IncomingSipCall.processInvite' });
 		if (!req.isNewInvite) {
+			logger.error({ msg: 'IncomingSipCall.processInvite received a request that is not a new invite.' });
 			throw new SipError(SipErrorCodes.NOT_IMPLEMENTED, 'not-a-new-invite');
 		}
 
@@ -80,15 +86,25 @@ export class IncomingSipCall extends BaseSipCall {
 
 			callerAgent,
 			calleeAgent,
-
-			webrtcOffer,
 		});
+
+		const negotiationId = await MediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
 		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
 
-		sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res, webrtcOffer);
+		sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res);
 
 		callerAgent.provider = sipCall;
+
+		sipCall.inboundRenegotiations.set(negotiationId, {
+			id: negotiationId,
+			req,
+			res,
+			state: 'received',
+			isFirst: true,
+			offer: webrtcOffer,
+			answer: null,
+		});
 
 		// Send the call to the callee client
 		await calleeAgent.onCallCreated(call);
@@ -108,6 +124,57 @@ export class IncomingSipCall extends BaseSipCall {
 			void MediaCallDirector.hangupByServer(this.call, 'failed-to-create-sip-dialog');
 		}
 
+		uas.on('modify', async (req, res) => {
+			const webrtcOffer: RTCSessionDescriptionInit = { type: 'offer', sdp: req.body };
+			let negotiationId: string | null = null;
+
+			logger.debug({
+				msg: 'IncomingSipCall triggered a renegotiation',
+				callingNumber: req?.callingNumber,
+				calledNumber: req?.calledNumber,
+			});
+			try {
+				negotiationId = await MediaCallDirector.startNewNegotiation(this.call, 'caller', webrtcOffer);
+
+				const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(this.call.callee, 'callee');
+				if (!calleeAgent) {
+					logger.error({ msg: 'Failed to retrieve callee agent', method: 'IncomingSipCall.uas.modify', callee: this.call.callee });
+					res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+					return;
+				}
+
+				this.inboundRenegotiations.set(negotiationId, {
+					id: negotiationId,
+					req,
+					res,
+					state: 'received',
+					isFirst: false,
+					offer: webrtcOffer,
+					answer: null,
+				});
+
+				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+
+				logger.debug({ msg: 'modify',  method: 'IncomingSipCall.createDialog', req });
+			} catch (error) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', error });
+
+				try {
+					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				} catch {
+					//
+				}
+
+				if (!negotiationId) {
+					return;
+				}
+
+				// If we got an error after the negotiation was registered on our side, the state is unpredictable, so hangup.
+				this.inboundRenegotiations.delete(negotiationId);
+				this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
+			}
+		});
+
 		uas.on('destroy', () => {
 			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
 			this.sipDialog = null;
@@ -124,15 +191,26 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
+		// if (call.transferredTo) {
+		// 	if (!this.sipDialog) {
+		// 		return;
+		// 	}
+
+		// 	this.sipDialog.request({
+		// 		method: 'REFER',
+		// 		headers: {
+		// 			// 'Refer-To'
+		// 		}
+		// 	})
+		// 	return;
+		// }
+
 		if (call.state === 'hangup') {
 			return this.processEndedCall(call);
 		}
 
-		if (call.state === 'accepted' && this.lastCallState !== 'accepted') {
-			const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
-			if (negotiation?.answer) {
-				return this.flagAsAccepted(negotiation.answer);
-			}
+		if (isBusyState(call.state)) {
+			return this.processNegotiations();
 		}
 	}
 
@@ -141,13 +219,13 @@ export class IncomingSipCall extends BaseSipCall {
 
 		switch (call.hangupReason) {
 			case 'service-error':
-				this.cancelPendingCall(SipErrorCodes.NOT_ACCEPTABLE_HERE);
+				this.cancelPendingInvites(SipErrorCodes.NOT_ACCEPTABLE_HERE);
 				break;
 			case 'rejected':
-				this.cancelPendingCall(SipErrorCodes.DECLINED);
+				this.cancelPendingInvites(SipErrorCodes.DECLINED);
 				break;
 			default:
-				this.cancelPendingCall(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+				this.cancelPendingInvites(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 				break;
 		}
 
@@ -164,68 +242,102 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 	}
 
-	private flagAsAccepted(remoteDescription: RTCSessionDescriptionInit): void {
-		logger.debug({ msg: 'IncomingSipCall.flagAsAccepted' });
-		this.remoteDescription = remoteDescription;
-		if (remoteDescription.sdp) {
-			this.lastCallState = 'accepted';
+	// protected async processReferredCall(call: IMediaCall): Promise<void> {
 
-			void this.createDialog(remoteDescription.sdp).catch(() => {
+	// }
+
+	private async getPendingInboundNegotiation(): Promise<IncomingSipCallNegotiation | null> {
+		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+			if (localNegotiation.answer) {
+				continue;
+			}
+
+			// If the negotiation does not exist, remove it from the list
+			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
+			// Negotiation will always exist; This is just a safe guard
+			if (!negotiation) {
+				logger.error({ msg: 'Invalid Negotiation reference on IncomingSipCall.', localNegotiation });
+				this.inboundRenegotiations.delete(localNegotiation.id);
+				if (localNegotiation.res) {
+					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				}
+				continue;
+			}
+
+			if (negotiation.answer) {
+				localNegotiation.answer = negotiation.answer;
+			}
+
+			return localNegotiation;
+		}
+
+		return null;
+	}
+
+	private async processNegotiations(): Promise<void> {
+		const localNegotiation = await this.getPendingInboundNegotiation();
+		if (!localNegotiation) {
+			// #TODO: Callee-initiated renegotiations (SIP callee must always do renegotiations politely)
+			return;
+		}
+
+		// If we don't have an sdp, we can't respond to it yet
+		if (!localNegotiation?.answer?.sdp) {
+			return;
+		}
+
+		if (localNegotiation.isFirst) {
+			return this.createDialog(localNegotiation.answer.sdp).catch(() => {
 				logger.error('Failed to create incoming call dialog.');
 				this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
 			});
 		}
+
+		localNegotiation.res.send(200, {
+			body: localNegotiation.answer.sdp,
+		});
 	}
 
-	private cancelPendingCall(errorCode: number): void {
+	private cancelPendingInvites(errorCode: number): void {
 		logger.debug({
-			msg: 'IncomingSipCall.cancelPendingCall',
+			msg: 'IncomingSipCall.cancelPendingInvites',
 			errorCode,
-			responseSent: this.responseSent,
 			hasDialog: Boolean(this.sipDialog),
+			negotiations: this.inboundRenegotiations.size,
 		});
 
-		if (this.responseSent || this.sipDialog) {
-			return;
-		}
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
+			// if it has an answer sdp, we already responded to it
+			if (localNegotiation.answer?.sdp) {
+				continue;
+			}
 
-		this.responseSent = true;
-		this.res.send(errorCode);
+			try {
+				localNegotiation.res.send(errorCode);
+			} catch {
+				//
+			}
+		}
+		this.inboundRenegotiations.clear();
 	}
 
 	private hangupPendingCall(errorCode: number): void {
 		logger.debug('IncomingSipCall.hangupPendingCall');
 
-		this.cancelPendingCall(errorCode);
+		this.cancelPendingInvites(errorCode);
 		void MediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {
-		logger.debug({ msg: 'IncomingSipCall.getCalleeFromInvite' });
-		let foundAnyIdentifier = false;
-
-		if (req.has('X-RocketChat-To-Uid')) {
-			const userId = req.get('X-RocketChat-To-Uid');
-			if (userId && typeof userId === 'string') {
-				foundAnyIdentifier = true;
-
-				const userContact = await MediaCallDirector.cast.getContactForUserId(userId, { requiredType: 'user' });
-				if (userContact) {
-					return userContact;
-				}
-			}
-		}
+		logger.debug({ msg: 'IncomingSipCall.getCalleeFromInvite', callingNumber: req.callingNumber, calledNumber: req.calledNumber });
 
 		if (req.calledNumber && typeof req.calledNumber === 'string') {
-			foundAnyIdentifier = true;
 			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.calledNumber, { requiredType: 'user' });
 			if (userContact) {
 				return userContact;
 			}
-		}
 
-		// If the invite had an id/extension but we couldn't match it to an user, respond with unavailable
-		if (foundAnyIdentifier) {
+			// If the invite had an id/extension but we couldn't match it to an user, respond with unavailable
 			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 		}
 
@@ -234,20 +346,13 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	private static async getRocketChatCallerFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
-		logger.debug({ msg: 'IncomingSipCall.getRocketChatCallerFromInvite' });
-		if (req.has('X-RocketChat-From-Uid')) {
-			const userId = req.get('X-RocketChat-From-Uid');
-
-			if (userId && typeof userId === 'string') {
-				const userContact = await MediaCallDirector.cast.getContactForUserId(userId, { preferredType: 'user' });
-				if (userContact) {
-					return userContact;
-				}
-			}
-		}
+		logger.debug({
+			msg: 'IncomingSipCall.getRocketChatCallerFromInvite',
+			callingNumber: req.callingNumber,
+			calledNumber: req.calledNumber,
+		});
 
 		if (req.callingNumber && typeof req.callingNumber === 'string') {
-			// #ToDo: Parse extension number from the callingNumber attribute
 			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.callingNumber, { preferredType: 'sip' });
 			if (userContact) {
 				return userContact;

@@ -105,8 +105,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	public async getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentForActorAndRole', actor, role });
-
 		if (actor.type === 'user') {
 			return this.getAgentForUserActorAndRole(actor, role);
 		}
@@ -115,14 +113,17 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 			return this.getAgentForSipActorAndRole(actor, role);
 		}
 
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForActorAndRole.null', actor, role });
 		return null;
 	}
 
 	protected async getAgentForUserActorAndRole(actor: MediaCallContact, role: CallRole): Promise<UserActorAgent | null> {
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForUserActorAndRole', id: actor.id, role });
 		return new UserActorAgent(actor, role);
 	}
 
 	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForSipActorAndRole', id: actor.id, role });
 		return new BroadcastActorAgent(actor, role);
 	}
 

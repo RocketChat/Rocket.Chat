@@ -2,7 +2,7 @@ import type {
 	IMediaCall,
 	RocketChatRecordDeleted,
 	MediaCallActorType,
-	MediaCallSignedActor,
+	MediaCallSignedContact,
 	MediaCallContact,
 	IUser,
 } from '@rocket.chat/core-typings';
@@ -135,7 +135,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async transferCallById(callId: string, params: { by: MediaCallSignedActor; to: MediaCallContact }): Promise<UpdateResult> {
+	public async transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: callId,

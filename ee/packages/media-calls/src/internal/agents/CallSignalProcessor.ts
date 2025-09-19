@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { IMediaCall, IMediaCallChannel, MediaCallActorType, MediaCallSignedActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
 	ClientMediaSignalTransfer,
@@ -162,7 +162,12 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		return MediaCallDirector.transferCall(this.call, to, this.actor, this.agent);
+		const self: MediaCallSignedContact = {
+			...this.agent.getMyCallActor(this.call),
+			...this.actor,
+		};
+
+		return MediaCallDirector.transferCall(this.call, to, self, this.agent);
 	}
 
 	protected async clientIsReachable(): Promise<void> {
