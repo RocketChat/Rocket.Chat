@@ -131,9 +131,11 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 
 	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
 
+	const roomIsFederated = isRoomFederated(room);
+
 	const changeOwnerOption = useMemo(
 		() =>
-			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
+			(roomIsFederated && roomCanSetOwner) || (!roomIsFederated && roomCanSetOwner && userCanSetOwner)
 				? {
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
@@ -141,7 +143,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						type: 'privileges' as UserInfoActionType,
 					}
 				: undefined,
-		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],
+		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, roomIsFederated],
 	);
 
 	return changeOwnerOption;

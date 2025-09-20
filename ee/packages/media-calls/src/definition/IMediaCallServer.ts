@@ -29,6 +29,8 @@ export interface IMediaCallServerSettings {
 			port: number;
 		};
 	};
+
+	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 }
 
 export interface IMediaCallServer {

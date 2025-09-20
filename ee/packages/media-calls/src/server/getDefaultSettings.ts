@@ -19,5 +19,7 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 				port: 5080,
 			},
 		},
+
+		permissionCheck: async () => false,
 	};
 }
