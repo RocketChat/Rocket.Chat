@@ -211,6 +211,9 @@ async function joinRoom({
 			name: inviteEvent.sender,
 			requirePasswordChange: false,
 			federated: true,
+			federation: {
+				version: 1,
+			},
 			createdAt: new Date(),
 			_updatedAt: new Date(),
 		};

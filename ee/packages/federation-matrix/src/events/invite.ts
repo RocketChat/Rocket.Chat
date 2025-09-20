@@ -30,6 +30,9 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 			createdAt: new Date(),
 			_updatedAt: new Date(),
 			federated: true,
+			federation: {
+				version: 1,
+			},
 		});
 		const serverName = data.sender.split(':')[1] || 'unknown';
 		const bridgedUser = await MatrixBridgedUser.findOne({ mui: data.sender });
