@@ -159,7 +159,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('federation-matrix.user.typing', ({ isTyping, roomId, username }) => {
+		service.onEvent('user-activity', ({ isTyping, roomId, username }) => {
 			notifications.notifyRoom(roomId, 'user-activity', username, isTyping ? ['user-typing'] : []);
 		});
 

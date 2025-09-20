@@ -1,8 +1,10 @@
 import { api, FederationMatrix } from '@rocket.chat/core-services';
 import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { MatrixBridgedRoom, Rooms } from '@rocket.chat/models';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';
+import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
@@ -226,14 +228,16 @@ callbacks.add(
 	'federation-matrix-after-create-direct-room',
 );
 
-export const setupInternalEDUEventListeners = async () => {
-	notifications.streamLocal.on(`user-activity`, ({ rid, username, activities }) => {
-		if (Array.isArray(activities) && (!activities.length || activities.includes('user-typing'))) {
-			void api.broadcast('user.typing', {
-				user: { username },
-				isTyping: activities.includes('user-typing'),
-				roomId: rid,
-			});
-		}
-	});
-};
+notifications.streamLocal.on(`user-activity`, ({ rid, username, activities }) => {
+	if (!License.hasModule('federation') || !settings.get('Federation_Service_Enabled')) {
+		return;
+	}
+
+	if (activities.includes('user-typing')) {
+		void api.broadcast('user.typing', {
+			user: { username },
+			isTyping: activities.includes('user-typing'),
+			roomId: rid,
+		});
+	}
+});
