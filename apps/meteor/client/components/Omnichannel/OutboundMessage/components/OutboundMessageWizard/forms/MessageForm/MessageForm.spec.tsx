@@ -7,11 +7,6 @@ import MessageForm from './MessageForm';
 import { createFakeContactWithManagerData } from '../../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate } from '../../../../../../../../tests/mocks/data/outbound-message';
 
-jest.mock('tinykeys', () => ({
-	__esModule: true,
-	default: jest.fn().mockReturnValue(() => () => undefined),
-}));
-
 const component = {
 	header: { type: 'header', text: 'New {{1}} appointment' },
 	body: { type: 'body', text: 'Hello {{1}}' },

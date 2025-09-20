@@ -1,4 +1,4 @@
-import type { ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -13,12 +13,12 @@ import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
-	contactId?: string;
+	contact?: Pick<ILivechatContact, '_id' | 'unknown'>;
 	canSendOutboundMessage?: boolean;
 };
 
 const ContactInfoChannelsItem = ({
-	contactId,
+	contact,
 	visitor,
 	details,
 	blocked,
@@ -55,13 +55,15 @@ const ContactInfoChannelsItem = ({
 			items.unshift({
 				id: 'outbound-message',
 				icon: 'send',
+				disabled: contact?.unknown,
+				tooltip: contact?.unknown ? t('error-unknown-contact') : undefined,
 				content: t('Outbound_message'),
-				onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
+				onClick: () => outboundMessageModal.open({ contactId: contact?._id, providerId: details.id }),
 			});
 		}
 
 		return items;
-	}, [blocked, canSendOutboundMessage, contactId, details.id, handleBlockContact, outboundMessageModal, t]);
+	}, [blocked, canSendOutboundMessage, contact?._id, contact?.unknown, details.id, handleBlockContact, outboundMessageModal, t]);
 
 	return (
 		<Box
