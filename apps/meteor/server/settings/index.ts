@@ -1,4 +1,3 @@
-import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -38,6 +37,7 @@ import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
 import { createWebRTCSettings } from './webrtc';
+import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
 	createFederationServiceSettings(),
