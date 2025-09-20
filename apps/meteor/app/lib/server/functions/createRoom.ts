@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -8,7 +8,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
@@ -64,13 +65,11 @@ async function createUsersSubscriptions({
 
 	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
-	const membersCursor = Users.findUsersByUsernames<Pick<IUser, '_id' | 'username' | 'settings' | 'federated' | 'roles'>>(members, {
-		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
-	});
+	const membersCursor = Users.findUsersByUsernames(members);
 
 	for await (const member of membersCursor) {
 		try {
-			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
+			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
 			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 		} catch (error) {
 			continue;
@@ -133,7 +132,7 @@ export const createRoom = async <T extends RoomType>(
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 
-	await beforeCreateRoomCallback.run({
+	await prepareCreateRoomCallback.run({
 		type,
 		// name,
 		// owner: ownerUsername,
@@ -238,10 +237,10 @@ export const createRoom = async <T extends RoomType>(
 
 	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
 
-	if (shouldBeHandledByFederation) {
-		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
-		await federation.beforeCreateRoom(roomProps);
-	}
+	await beforeCreateRoomCallback.run({
+		owner,
+		room: roomProps,
+	});
 
 	if (type === 'c') {
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
@@ -266,7 +265,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);

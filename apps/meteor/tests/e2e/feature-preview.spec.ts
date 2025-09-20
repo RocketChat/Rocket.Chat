@@ -440,10 +440,20 @@ test.describe.serial('feature preview', () => {
 			await user1Page.close();
 		});
 
-		test('sidepanel should open the respective parent room filter after opening a room through navbar search', async ({ page }) => {
+		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
+			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+		});
+
+		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
 			await page.goto('/home');
 			await poHomeChannel.sidenav.waitForHome();
-
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
@@ -453,8 +463,8 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.waitForChannel();
 
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
-			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidenav.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
+			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toHaveAttribute('aria-selected', 'true');
 		});
 
 		test('should show all filters and tablist on sidepanel', async ({ page }) => {

@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores';
@@ -53,6 +53,10 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room.federated,
+
+			...(isRoomNativeFederated(room) && {
+				federation: room.federation,
+			}),
 			...(() => {
 				const name = room.name || sub.name;
 				const fname = room.fname || sub.fname || name;

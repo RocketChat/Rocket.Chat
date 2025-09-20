@@ -5,9 +5,9 @@ import { Tracker } from 'meteor/tracker';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../cachedStores';
-import { watch } from '../lib/cachedStores';
 import { dispatchToastMessage } from '../lib/toast';
 import { useUserDataSyncReady } from '../lib/userData';
+import { watch } from '../meteor/watch';
 
 const watchMainReady = () => {
 	const uid = Meteor.userId();
