@@ -32,6 +32,8 @@ export class IncomingSipCall extends BaseSipCall {
 
 	private inboundRenegotiations: Map<string, IncomingSipCallNegotiation>;
 
+	private processedTransfer: boolean;
+
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
@@ -44,6 +46,7 @@ export class IncomingSipCall extends BaseSipCall {
 		super(session, call, agent, channel);
 		this.sipDialog = null;
 		this.inboundRenegotiations = new Map();
+		this.processedTransfer = false;
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -155,7 +158,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
-				logger.debug({ msg: 'modify',  method: 'IncomingSipCall.createDialog', req });
+				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req });
 			} catch (error) {
 				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', error });
 
@@ -191,26 +194,62 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
-		// if (call.transferredTo) {
-		// 	if (!this.sipDialog) {
-		// 		return;
-		// 	}
+		logger.debug({ msg: 'IncomingSipCall.reflectCall', call, lastCallState: this.lastCallState });
 
-		// 	this.sipDialog.request({
-		// 		method: 'REFER',
-		// 		headers: {
-		// 			// 'Refer-To'
-		// 		}
-		// 	})
-		// 	return;
-		// }
+		if (call.transferredTo && call.transferredBy) {
+			return this.processTransferredCall(call);
+		}
 
-		if (call.state === 'hangup') {
+		if (call.ended) {
 			return this.processEndedCall(call);
 		}
 
 		if (isBusyState(call.state)) {
 			return this.processNegotiations();
+		}
+	}
+
+	protected async processTransferredCall(call: IMediaCall): Promise<void> {
+		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
+			return;
+		}
+
+		if (!this.sipDialog || this.processedTransfer) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
+		this.processedTransfer = true;
+
+		try {
+			// Sip targets can only be referred to other sip users
+			const newCallee = await MediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
+			if (!newCallee) {
+				throw new Error('invalid-transfer');
+			}
+
+			const referTo = this.session.geContactUri(newCallee);
+			const referredBy = this.session.geContactUri(call.transferredBy);
+
+			const res = await this.sipDialog.request({
+				method: 'REFER',
+				headers: {
+					'Refer-To': referTo,
+					'Referred-By': referredBy,
+				},
+			} as unknown as SrfRequest);
+
+			if (res.status === 202) {
+				logger.debug({ msg: 'REFER was accepted', method: 'IncomingSipCall.processTransferredCall' });
+			}
+		} catch (error) {
+			logger.debug({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', error });
+			if (!call.ended) {
+				void MediaCallDirector.hangupByServer(call, 'sip-refer-failed');
+			}
+			return this.processEndedCall(call);
 		}
 	}
 
@@ -241,10 +280,6 @@ export class IncomingSipCall extends BaseSipCall {
 			sipDialog.destroy();
 		}
 	}
-
-	// protected async processReferredCall(call: IMediaCall): Promise<void> {
-
-	// }
 
 	private async getPendingInboundNegotiation(): Promise<IncomingSipCallNegotiation | null> {
 		for await (const localNegotiation of this.inboundRenegotiations.values()) {

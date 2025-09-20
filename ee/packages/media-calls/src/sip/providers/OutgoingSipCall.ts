@@ -76,7 +76,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'OutgoingSipCall.reflectCall', call, lastCallState: this.lastCallState });
-		if (call.transferredTo) {
+		if (call.transferredTo && call.transferredBy) {
 			return this.processTransferredCall(call);
 		}
 
