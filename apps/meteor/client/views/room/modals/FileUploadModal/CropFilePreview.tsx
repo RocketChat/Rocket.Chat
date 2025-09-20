@@ -1,3 +1,5 @@
+import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useState, useCallback, useEffect, type ReactElement } from 'react';
 import type { Area } from 'react-easy-crop';
 import Cropper from 'react-easy-crop';
@@ -82,62 +84,83 @@ async function getCroppedFile(imageSrc: string, crop: Area, original: File): Pro
 type FilePreviewProps = {
 	file: File;
 	onFileChange?: (file: File) => void;
-	startCropping?: boolean;
-	onCropDone?: () => void;
+	onCancel?: () => void;
 };
 
-const CropFilePreview = ({ file, onFileChange, startCropping, onCropDone }: FilePreviewProps): ReactElement => {
+const CropFilePreview = ({ file, onFileChange, onCancel }: FilePreviewProps): ReactElement => {
+	const t = useTranslation();
 	const fileType = getFileType(file.type);
-
 	const [crop, setCrop] = useState({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState(1);
 	const [croppedArea, setCroppedArea] = useState<Area | null>(null);
 	const [croppedImageURL, setCroppedImageURL] = useState<string | null>(null);
-	const [isCroppingInternal, setIsCroppingInternal] = useState(false);
-
-	const objUrl = URL.createObjectURL(file);
+	const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (startCropping) setIsCroppingInternal(true);
-	}, [startCropping]);
+		const url = URL.createObjectURL(file);
+		setObjectUrl(url);
+
+		return () => {
+			URL.revokeObjectURL(url);
+			if (croppedImageURL) {
+				URL.revokeObjectURL(croppedImageURL);
+			}
+		};
+	}, [file, croppedImageURL]);
 
 	const onCropComplete = useCallback((_area: Area, croppedAreaPixels: Area) => {
 		setCroppedArea(croppedAreaPixels);
 	}, []);
 
 	const handleCropDone = useCallback(async () => {
-		if (!croppedArea) return;
-		const croppedFile = await getCroppedFile(objUrl, croppedArea, file);
+		if (!croppedArea || !objectUrl) return;
+		const croppedFile = await getCroppedFile(objectUrl, croppedArea, file);
 		if (!croppedFile) return;
 
 		const previewUrl = URL.createObjectURL(croppedFile);
 		setCroppedImageURL(previewUrl);
 		onFileChange?.(croppedFile);
-		setIsCroppingInternal(false);
-		onCropDone?.();
-	}, [file, croppedArea, objUrl, onFileChange, onCropDone]);
-
-	if (fileType === FilePreviewType.IMAGE && !croppedImageURL && isCroppingInternal) {
-		return (
-			<div style={{ position: 'relative', width: '100%', height: 320 }}>
-				<Cropper
-					image={objUrl}
-					crop={crop}
-					zoom={zoom}
-					aspect={undefined}
-					onCropChange={setCrop}
-					onZoomChange={setZoom}
-					onCropComplete={onCropComplete}
-				/>
-				<button type='button' onClick={handleCropDone} style={{ position: 'absolute', bottom: 12, left: 12 }}>
-					Crop
-				</button>
-			</div>
-		);
-	}
+	}, [file, croppedArea, objectUrl, onFileChange]);
 
 	if (croppedImageURL) {
-		return <img src={croppedImageURL} alt='Cropped preview' style={{ maxWidth: '100%', maxHeight: 320 }} />;
+		return <img src={croppedImageURL} alt={t('Cropped_preview')} style={{ maxWidth: '100%', maxHeight: 320 }} />;
+	}
+
+	if (!objectUrl) {
+		return <GenericPreview file={file} />;
+	}
+
+	if (fileType === FilePreviewType.IMAGE && onCancel) {
+		return (
+			<Box display='flex' flexDirection='column' alignItems='center'>
+				<Box position='relative' width='100%' height='300px' borderRadius='x8' overflow='hidden' marginBlockEnd={16}>
+					<Cropper
+						image={objectUrl}
+						crop={crop}
+						zoom={zoom}
+						aspect={undefined}
+						onCropChange={setCrop}
+						onZoomChange={setZoom}
+						onCropComplete={onCropComplete}
+						style={{
+							containerStyle: {
+								width: '100%',
+								height: '100%',
+								position: 'relative',
+							},
+						}}
+					/>
+				</Box>
+				<ButtonGroup>
+					<Button secondary onClick={onCancel}>
+						{t('Cancel')}
+					</Button>
+					<Button primary onClick={handleCropDone}>
+						{t('Apply')}
+					</Button>
+				</ButtonGroup>
+			</Box>
+		);
 	}
 
 	if (shouldShowMediaPreview(file, fileType)) {

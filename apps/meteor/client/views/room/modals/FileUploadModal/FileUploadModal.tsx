@@ -46,7 +46,7 @@ const FileUploadModal = ({
 	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
 	const [currentFile, setCurrentFile] = useState<File>(file);
-	const [startCropping, setStartCropping] = useState(false);
+	const [isCropping, setIsCropping] = useState(false);
 	const {
 		register,
 		handleSubmit,
@@ -105,6 +105,27 @@ const FileUploadModal = ({
 
 	const descriptionRef = useMergedRefs(ref, autoFocusRef);
 
+	if (isCropping) {
+		return (
+			<Modal>
+				<ModalHeader>
+					<ModalTitle>{t('Crop_Image')}</ModalTitle>
+					<ModalClose onClick={() => setIsCropping(false)} />
+				</ModalHeader>
+				<ModalContent>
+					<CropFilePreview
+						file={currentFile}
+						onFileChange={(newFile) => {
+							setCurrentFile(newFile);
+							setIsCropping(false);
+						}}
+						onCancel={() => setIsCropping(false)}
+					/>
+				</ModalContent>
+			</Modal>
+		);
+	}
+
 	return (
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
@@ -119,20 +140,11 @@ const FileUploadModal = ({
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						{enablePreview ? (
-							<CropFilePreview
-								file={currentFile}
-								onFileChange={setCurrentFile}
-								startCropping={startCropping}
-								onCropDone={() => setStartCropping(false)}
-							/>
-						) : (
-							<FilePreview file={currentFile} />
-						)}
+						<FilePreview file={currentFile} />
 					</Box>
-					{enablePreview && currentFile.type.startsWith('image/') && !startCropping && (
-						<Button small onClick={() => setStartCropping(true)} mb={16}>
-							Crop
+					{enablePreview && currentFile.type.startsWith('image/') && (
+						<Button small onClick={() => setIsCropping(true)} mb={16}>
+							{t('Crop')}
 						</Button>
 					)}
 					<FieldGroup>
