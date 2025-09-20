@@ -53,8 +53,6 @@ await Promise.all([
 	createDiscussionsSettings(),
 	createEmailSettings(),
 	createE2ESettings(),
-	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
-	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 	createFileUploadSettings(),
 	createGeneralSettings(),
 	createIRCSettings(),
@@ -80,4 +78,10 @@ await Promise.all([
 	createUserDataSettings(),
 	createWebDavSettings(),
 	createWebRTCSettings(),
+]);
+
+// Run after all the other settings are created since it depends on some of them
+await Promise.all([
+	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 ]);
