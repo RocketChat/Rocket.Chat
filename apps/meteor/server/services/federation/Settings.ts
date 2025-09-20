@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { settings, settingsRegistry } from '../../../app/settings/server';
 
-export const createFederationServiceSettings = async (): Promise<void> => {
+export const addMatrixBridgeFederationSettings = async (): Promise<void> => {
 	await settingsRegistry.add('Federation_Matrix_enabled', false, {
 		readonly: true,
 		type: 'boolean',

@@ -1,3 +1,4 @@
+import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -52,8 +53,8 @@ await Promise.all([
 	createDiscussionsSettings(),
 	createEmailSettings(),
 	createE2ESettings(),
-	createFederationSettings(),
-	createFederationServiceSettings(),
+	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 	createFileUploadSettings(),
 	createGeneralSettings(),
 	createIRCSettings(),
