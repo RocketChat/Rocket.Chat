@@ -71,10 +71,6 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Join"]');
 	}
 
-	async openRoomInfo(): Promise<void> {
-		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
-	}
-
 	async joinRoom(): Promise<void> {
 		await this.btnJoinRoom.click();
 	}
@@ -93,13 +89,15 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		const responsePromise = this.page.waitForResponse(
-			(response) =>
-				/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-		);
-		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 
 		if (enforce) {
+			const responsePromise = this.page.waitForResponse(
+				(response) =>
+					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+			);
+
+			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+
 			const response = await (await responsePromise).json();
 
 			const mid = JSON.parse(response.message).result._id;
@@ -107,6 +105,8 @@ export class HomeContent {
 
 			await expect(messageLocator).toBeVisible();
 			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+		} else {
+			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 		}
 	}
 
@@ -505,10 +505,6 @@ export class HomeContent {
 		return this.page.locator('.rcx-videoconf-message-block');
 	}
 
-	get videoConfMessageBlockAvatars(): Locator {
-		return this.videoConfMessageBlock.getByLabel('figure');
-	}
-
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
@@ -591,10 +587,6 @@ export class HomeContent {
 
 	get btnDismissContactUnknownCallout() {
 		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
-	}
-
-	async expectLastMessageToHaveText(text: string): Promise<void> {
-		await expect(this.lastUserMessageBody).toHaveText(text);
 	}
 
 	get btnOptionStartDiscussion(): Locator {

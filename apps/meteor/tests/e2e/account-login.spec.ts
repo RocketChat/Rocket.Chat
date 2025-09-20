@@ -24,7 +24,8 @@ test.describe('Account Login', () => {
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.loginToken'))).not.toBeNull();
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.loginTokenExpires'))).not.toBeNull();
 		expect(await page.evaluate(() => localStorage.getItem('private_key'))).not.toBeNull();
-		expect(await page.evaluate(() => localStorage.getItem('public_key'))).not.toBeNull();
+		// public key acquisition takes time and now happens only after login cycle is complete
+		await page.waitForFunction(() => localStorage.getItem('public_key'));
 
 		await page.evaluate(() => {
 			localStorage.setItem('Meteor.loginTokenExpires', new Date().toString());

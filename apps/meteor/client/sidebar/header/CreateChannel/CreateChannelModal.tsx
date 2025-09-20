@@ -12,7 +12,6 @@ import {
 	FieldRow,
 	FieldError,
 	FieldHint,
-	FieldDescription,
 	Accordion,
 	AccordionItem,
 	ModalHeader,
@@ -31,6 +30,7 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
@@ -68,7 +68,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
+
+	const federationEnabled = useIsFederationEnabled();
+
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
@@ -109,23 +111,23 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-
-		if (broadcast) {
-			setValue('encrypted', false);
-		}
-
 		if (federated) {
 			// if room is federated, it cannot be encrypted or broadcast or readOnly
 			setValue('encrypted', false);
 			setValue('broadcast', false);
 			setValue('readOnly', false);
 		}
+	}, [federated, setValue]);
 
+	useEffect(() => {
+		if (!isPrivate) {
+			setValue('encrypted', false);
+		}
+	}, [isPrivate, setValue]);
+
+	useEffect(() => {
 		setValue('readOnly', broadcast);
-	}, [federated, setValue, broadcast, isPrivate]);
+	}, [broadcast, setValue]);
 
 	const validateChannelName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -175,10 +177,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
-		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
-	);
+	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
 
 	const createChannelFormId = useId();
 	const nameId = useId();
@@ -228,7 +227,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 								{errors.name.message}
 							</FieldError>
 						)}
-						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces_or_special_characters')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
@@ -307,14 +306,14 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 												id={encryptedId}
 												ref={ref}
 												checked={value}
-												disabled={e2eDisabled || federated}
+												disabled={e2eDisabled}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
 											/>
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>

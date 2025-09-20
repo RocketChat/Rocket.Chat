@@ -24,10 +24,6 @@ export class Sidebar {
 		return this.teamCollabFilters.getByRole('button', { name: 'All' });
 	}
 
-	get mentionsTeamCollabFilter(): Locator {
-		return this.teamCollabFilters.getByRole('button').filter({ hasText: 'Mentions' });
-	}
-
 	get favoritesTeamCollabFilter(): Locator {
 		return this.teamCollabFilters.getByRole('button', { name: 'Favorites' });
 	}

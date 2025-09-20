@@ -7,22 +7,29 @@ import {
 	isPublicRoom,
 	isTeamRoom,
 } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
+import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
+import { RoomManager } from '../../../lib/RoomManager';
+import { Rooms } from '../../../stores';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
-import { RoomsNavigationContext, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
-import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
+import {
+	RoomsNavigationContext,
+	getEmptyUnreadInfo,
+	getFilterKey,
+	isUnreadSubscription,
+	useSidePanelFilter,
+} from '../contexts/RoomsNavigationContext';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 
 const query = { open: { $ne: false } };
-const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -53,9 +60,6 @@ const updateGroupUnreadInfo = (
 	};
 };
 
-const isUnread = (room: SubscriptionWithRoom | ILivechatInquiryRecord) =>
-	'alert' in room && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus;
-
 const hasMention = (room: SubscriptionWithRoom) =>
 	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
 
@@ -64,10 +68,12 @@ type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 
 const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
-	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
+	const options = useSortQueryOptions();
 
-	const rooms = useUserSubscriptions(query, sortOptions);
+	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
@@ -90,8 +96,8 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 				getGroupSet(key).add(room);
 
-				if (isUnread(room)) {
-					getGroupSet(`${key}_unread`).add(room);
+				if (isUnreadSubscription(room)) {
+					// getGroupSet(`${key}_unread`).add(room);
 
 					const currentUnreadData = unreadGroupData.get(key) || getEmptyUnreadInfo();
 					const unreadInfo = updateGroupUnreadInfo(room, currentUnreadData);
@@ -104,26 +110,6 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (hasMention(room)) {
-					setGroupRoom('mentions', room);
-				}
-
-				if (favoritesEnabled && room.f) {
-					setGroupRoom('favorites', room);
-				}
-
-				if (isTeamRoom(room)) {
-					setGroupRoom('teams', room);
-				}
-
-				if (isDiscussionEnabled && isDiscussion(room)) {
-					setGroupRoom('discussions', room);
-				}
-
-				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
-					setGroupRoom('channels', room);
-				}
-
 				if (isOmnichannelRoom(room) && showOmnichannel) {
 					if (room.onHold) {
 						return setGroupRoom('onHold', room);
@@ -132,24 +118,111 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return setGroupRoom('inProgress', room);
 				}
 
+				setGroupRoom('all', room);
+
+				if (hasMention(room)) {
+					setGroupRoom('mentions', room);
+				}
+
+				if (room.f) {
+					setGroupRoom('favorites', room);
+				}
+
+				if (isDiscussionEnabled && isDiscussion(room)) {
+					setGroupRoom('discussions', room);
+					return;
+				}
+
+				if (sidebarShowUnread && isUnreadSubscription(room)) {
+					setGroupRoom('unread', room);
+					return;
+				}
+
+				if (!sidebarGroupByType) {
+					setGroupRoom('conversations', room);
+					return;
+				}
+
+				if (isTeamRoom(room)) {
+					setGroupRoom('teams', room);
+				}
+
+				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
+					setGroupRoom('channels', room);
+				}
+
 				if (isDirectMessageRoom(room)) {
 					setGroupRoom('directMessages', room);
 				}
-
-				setGroupRoom('all', room);
 			});
 
 			return [groups, unreadGroupData];
-		}, [rooms, showOmnichannel, queue, favoritesEnabled, isDiscussionEnabled]),
+		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, isDiscussionEnabled]),
 		50,
 	);
 };
 
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
-	const { currentFilter, setFilter } = useSidePanelFilters();
-	const { parentRid } = useSidePanelParentRid();
+	const {
+		sidePanel: { openSidePanel },
+	} = useLayout();
+	const { setParentRoom, parentRid } = useSidePanelParentRid();
+
+	const [currentFilter, unread, , setCurrentFilter] = useSidePanelFilter();
+
+	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
+		openSidePanel();
+		setCurrentFilter(getFilterKey(filter, unread));
+		setParentRoom(filter, parentRid);
+	});
 
 	const [groups, unreadGroupData] = useRoomsGroups();
+
+	const handleRoomOpened = useEffectEvent((rid: string) => {
+		const room = Rooms.use.getState().find((r) => r._id === rid);
+
+		if (!room) {
+			return;
+		}
+
+		if (!['teams', 'channels', 'directMessages'].includes(currentFilter)) {
+			return;
+		}
+
+		if (isTeamRoom(room)) {
+			setFilter('teams', unread, rid);
+			return;
+		}
+
+		if (isDirectMessageRoom(room)) {
+			setFilter('directMessages', unread, rid);
+			return;
+		}
+
+		if (room.teamId && currentFilter === 'teams') {
+			const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+
+			/**
+			 * if the room is the parent rid is still the same, don't change the filter
+			 * the filter decision is going to be done by `useRedirectToFilter` when the item is clicked
+			 **/
+			if (parentRid === teamRid) {
+				return;
+			}
+			setFilter('teams', unread, teamRid);
+			return;
+		}
+
+		if (room.prid) {
+			const parentRoom = Rooms.use.getState().find((r) => Boolean(r._id === room.prid));
+			setFilter(parentRoom?.teamMain ? 'teams' : 'channels', unread, parentRoom?._id);
+			return;
+		}
+
+		setFilter('channels', unread, rid);
+	});
+
+	useEffect(() => RoomManager.on('opened', handleRoomOpened), [handleRoomOpened]);
 
 	const contextValue = useMemo(() => {
 		return {

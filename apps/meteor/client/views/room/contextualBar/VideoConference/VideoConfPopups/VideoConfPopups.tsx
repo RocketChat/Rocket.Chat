@@ -5,13 +5,15 @@ import {
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
 	useVideoConfIncomingCalls,
+	VideoConfPopupSkeleton,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import { useEffect, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
-import VideoConfPopup from './VideoConfPopup';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
+
+const VideoConfPopup = lazy(() => import('./VideoConfPopup'));
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
 	const { callSounds } = useCustomSound();
@@ -46,13 +48,15 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 		<>
 			{(children || popups?.length > 0) && (
 				<VideoConfPopupPortal>
-					<FocusScope autoFocus contain restoreFocus>
-						<VideoConfPopupBackdrop>
-							{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
-								<VideoConfPopup key={id} id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
-							))}
+					{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
+						<VideoConfPopupBackdrop key={id}>
+							<Suspense fallback={<VideoConfPopupSkeleton />}>
+								<FocusScope restoreFocus>
+									<VideoConfPopup id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
+								</FocusScope>
+							</Suspense>
 						</VideoConfPopupBackdrop>
-					</FocusScope>
+					))}
 				</VideoConfPopupPortal>
 			)}
 		</>

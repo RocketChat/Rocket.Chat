@@ -1,8 +1,8 @@
-import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -48,15 +48,23 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 		title: 'Direct_Messages',
 		icon: 'at',
 	},
+	unread: {
+		title: 'Unread',
+		icon: 'flag',
+	},
+	conversations: {
+		title: 'Conversations',
+		icon: 'chat',
+	},
 };
 
 export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
 
-export const collapsibleFilters: SideBarFiltersKeys[] = ['teams', 'channels', 'directMessages'];
+export const collapsibleFilters: SideBarFiltersKeys[] = ['unread', 'conversations', 'teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
 export type SidePanelFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages';
+export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages' | 'conversations' | 'unread';
 export type SideBarFiltersUnreadKeys = `${SideBarFiltersKeys}_unread`;
 export type SideBarFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
@@ -93,7 +101,7 @@ export const useRoomsListContext = () => {
 };
 
 // Helper functions
-const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
+export const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
 	const [currentTab, unread] = currentFilter.split('_');
 	return [currentTab as SidePanelFiltersKeys, unread === 'unread'];
 };
@@ -156,22 +164,55 @@ export const useSideBarRoomsList = (): {
 	};
 };
 
+export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
+	if (subscription.hideUnreadStatus) {
+		return false;
+	}
+
+	return Boolean(
+		subscription.userMentions ||
+			subscription.groupMentions ||
+			subscription.tunread?.length ||
+			subscription.tunreadUser?.length ||
+			subscription.unread ||
+			subscription.alert,
+	);
+};
+
 export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	const [, unread] = useSidePanelFilter();
-	const roomSet = useRoomsListContext().groups.get(getFilterKey(tab, unread));
+	const roomSet = useRoomsListContext().groups.get(tab);
+
 	const roomsList = useMemo(() => {
 		if (!roomSet) {
 			return [];
 		}
 
-		return Array.from(roomSet);
-	}, [roomSet]);
+		if (!unread) {
+			return Array.from(roomSet);
+		}
+
+		return Array.from(roomSet)
+			.reduce(
+				(result, room) => {
+					if (isUnreadSubscription(room)) {
+						result[0].push(room);
+						return result;
+					}
+
+					result[1].push(room);
+					return result;
+				},
+				[[], []] as [Array<SubscriptionWithRoom | ILivechatInquiryRecord>, Array<SubscriptionWithRoom | ILivechatInquiryRecord>],
+			)
+			.flat();
+	}, [roomSet, unread]);
 	return roomsList;
 };
 
-export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread] => {
-	const { currentFilter } = useRoomsListContext();
-	return [...splitFilter(currentFilter), currentFilter];
+export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread, (filter: AllGroupsKeysWithUnread) => void] => {
+	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>('sidePanelFilters', getFilterKey('all', false));
+	return [...splitFilter(currentFilter), currentFilter, setCurrentFilter];
 };
 
 export const useUnreadOnlyToggle = (): [boolean, () => void] => {
@@ -205,4 +246,27 @@ export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
 			switchSidePanelTab('all');
 		}
 	}, [shouldRedirect, switchSidePanelTab]);
+};
+
+export const useRedirectToFilter = () => {
+	const switchSidePanelTab = useSwitchSidePanelTab();
+
+	const handleRedirect = useCallback(
+		(room: SubscriptionWithRoom) => {
+			if (isTeamRoom(room)) {
+				switchSidePanelTab('teams', { parentRid: room.rid });
+				return;
+			}
+
+			if (isDirectMessageRoom(room)) {
+				switchSidePanelTab('directMessages', { parentRid: room.rid });
+				return;
+			}
+
+			switchSidePanelTab('channels', { parentRid: room.prid || room.rid });
+		},
+		[switchSidePanelTab],
+	);
+
+	return handleRedirect;
 };

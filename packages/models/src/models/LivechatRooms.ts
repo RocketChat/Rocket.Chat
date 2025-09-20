@@ -2808,4 +2808,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({ open: true, contactId }, options);
 	}
+
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
+		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
+	}
 }

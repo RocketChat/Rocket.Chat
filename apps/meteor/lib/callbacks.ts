@@ -1,3 +1,4 @@
+import type { ICreateRoomOptions } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	IRoom,
@@ -47,8 +48,8 @@ interface EventLikeCallbackSignatures {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
-	'afterSaveMessage': (message: IMessage, params: { room: IRoom; uid?: string; roomUpdater?: Updater<IRoom> }) => void;
+	'afterRoomNameChange': (params: { room: IRoom; name: string; oldName: string; userId: IUser['_id'] }) => void;
+	'afterSaveMessage': (message: IMessage, params: { room: IRoom; user: IUser; roomUpdater?: Updater<IRoom> }) => void;
 	'afterOmnichannelSaveMessage': (message: IMessage, constant: { room: IOmnichannelRoom; roomUpdater: Updater<IOmnichannelRoom> }) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -69,7 +70,14 @@ interface EventLikeCallbackSignatures {
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
-	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
+	'federation.afterCreateFederatedRoom': (
+		room: IRoom,
+		second: {
+			owner: IUser;
+			originalMemberList: string[];
+			options?: ICreateRoomOptions;
+		},
+	) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;
@@ -77,8 +85,7 @@ interface EventLikeCallbackSignatures {
 		message: IMessage,
 		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
 	) => void;
-	'federation.beforeAddUserToARoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
-	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
+	'federation.onAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
@@ -151,10 +158,6 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.applyDepartmentRestrictions': (
-		query: FilterOperators<ILivechatDepartmentRecord>,
-		params: { userId: IUser['_id'] },
-	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.applyRoomRestrictions': (
 		query: FilterOperators<IOmnichannelRoom>,
 		params?: {

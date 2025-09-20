@@ -29,6 +29,8 @@ type RoomListRowProps = {
 
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
+	const href = roomCoordinator.getRouteLink(room.t, room) || '';
+
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const icon = (
@@ -85,10 +87,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		switchSidePanelTab('channels', { parentRid: room.rid });
 	}, [room, switchSidePanelTab]);
 
-	const buttonProps = useButtonPattern((e) => {
-		e.preventDefault();
-		handleClick();
-	});
+	const buttonProps = useButtonPattern(handleClick);
 
 	return (
 		<SidebarItem
@@ -96,6 +95,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			data-qa='sidebar-item'
 			data-unread={highlighted}
 			unread={highlighted}
+			href={href}
 			selected={selected}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
