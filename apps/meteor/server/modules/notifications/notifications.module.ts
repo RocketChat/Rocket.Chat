@@ -1,6 +1,7 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
+import { Emitter } from '@rocket.chat/emitter';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
@@ -46,6 +47,8 @@ export class NotificationsModule {
 	public readonly streamLocal: IStreamer<'local'>;
 
 	public readonly streamPresence: IStreamer<'user-presence'>;
+
+	public readonly inner = new Emitter<InnerEvents>();
 
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
@@ -487,6 +490,11 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
 	): void {
+		this.inner.emit(eventName, {
+			rid: room,
+			eventName,
+			args,
+		});
 		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
 	}
 

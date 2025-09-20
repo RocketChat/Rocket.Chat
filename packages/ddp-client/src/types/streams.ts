@@ -45,6 +45,7 @@ export interface StreamerEvents {
 
 	'notify-room': [
 		{ key: `${string}/user-activity`; args: [username: string, activities: string[]] },
+		/* @deprecated over UserActivity */
 		{ key: `${string}/typing`; args: [username: string, typing: boolean] },
 		{
 			key: `${string}/deleteMessageBulk`;
@@ -569,6 +570,16 @@ export interface StreamerEvents {
 		{
 			key: 'broadcast';
 			args: any[];
+		},
+		{
+			key: `user-activity`;
+			args: [
+				{
+					rid: string;
+					username: string;
+					activities: string[];
+				},
+			];
 		},
 	];
 }
