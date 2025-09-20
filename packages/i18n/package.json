@@ -5,30 +5,28 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./dist/esm/index.js",
-			"require": "./dist/cjs/index.js",
-			"types": "./dist/esm/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
 		},
 		"./dist/resources": {
-			"import": "./dist/resources.mjs",
-			"require": "./dist/resources.js",
-			"types": "./dist/resources.d.ts"
+			"types": "./dist/resources.d.ts",
+			"import": "./dist/resources.js",
+			"require": "./dist/resources.cjs"
 		},
 		"./dist/languages": {
-			"import": "./dist/languages.mjs",
-			"require": "./dist/languages.js",
-			"types": "./dist/languages.d.ts"
+			"types": "./dist/languages.d.ts",
+			"import": "./dist/languages.js",
+			"require": "./dist/languages.cjs"
 		}
 	},
-	"main": "./dist/cjs/index.js",
-	"types": "./dist/esm/index.d.ts",
+	"main": "./dist/index.cjs",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		".:build:cjs": "tsc -p tsconfig.cjs.json",
-		".:build:esm": "tsc -p tsconfig.esm.json",
-		"build": "node --experimental-transform-types ./src/scripts/build.mts && run .:build:esm && run .:build:cjs",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "jest",

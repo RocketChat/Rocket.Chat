@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -44,8 +44,6 @@ export async function build() {
 	console.log(`Number of keys using i18next components array (<number></number>): ${countsByNormalization.i18nextComponentsArray} keys`);
 	console.log(`Number of keys with nested plurals: ${countsByNormalization.nestedPlurals} keys`);
 
-	// purge dist directory
-	await rm(distDirectory, { recursive: true, force: true });
 	await mkdir(distDirectory, { recursive: true });
 
 	// write the files
@@ -68,10 +66,10 @@ export async function build() {
 	);
 	const allResourcesSerialized = JSON.stringify(allResources, null, 2);
 
-	await writeFile(join(distDirectory, 'resources.mjs'), `export default ${allResourcesSerialized};`);
+	await writeFile(join(distDirectory, 'resources.js'), `export default ${allResourcesSerialized};`);
 
 	await writeFile(
-		join(distDirectory, 'resources.js'),
+		join(distDirectory, 'resources.cjs'),
 		`"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ${allResourcesSerialized};`,
@@ -93,10 +91,10 @@ export default resources;`,
 	const languages = resources.map(({ language }) => language);
 	const languagesSerialized = JSON.stringify(languages, null, 2);
 
-	await writeFile(join(distDirectory, 'languages.mjs'), `export default ${languagesSerialized};`);
+	await writeFile(join(distDirectory, 'languages.js'), `export default ${languagesSerialized};`);
 
 	await writeFile(
-		join(distDirectory, 'languages.js'),
+		join(distDirectory, 'languages.cjs'),
 		`"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ${languagesSerialized};`,

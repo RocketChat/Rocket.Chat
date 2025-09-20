@@ -1,7 +1,7 @@
 import { isObject } from '@rocket.chat/tools';
 import type { i18n, TOptions } from 'i18next';
 
-import type { RocketchatI18nKeys } from '../resources.ts';
+import type { RocketchatI18nKeys } from './resources.ts';
 
 export type { RocketchatI18nKeys };
 
