@@ -16,6 +16,7 @@ import emojione from 'emojione';
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
 import { getKeyServerRoutes } from './api/_matrix/key/server';
+import { getMatrixMediaRoutes } from './api/_matrix/media';
 import { getMatrixProfilesRoutes } from './api/_matrix/profiles';
 import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
@@ -27,6 +28,16 @@ import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
 import { registerEvents } from './events';
 import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { MatrixMediaService } from './services/MatrixMediaService';
+
+type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
+
+export const fileTypes: Record<string, MatrixFileTypes> = {
+	image: 'm.image',
+	video: 'm.video',
+	audio: 'm.audio',
+	file: 'm.file',
+};
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -101,6 +112,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
+		MatrixMediaService.setHomeserverServices(instance.homeserverServices);
 		instance.buildMatrixHTTPRoutes();
 		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
 			if (!roomId || !username) {
@@ -172,7 +184,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
 			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes(this.homeserverServices));
+			.use(getFederationVersionsRoutes(this.homeserverServices))
+			.use(getMatrixMediaRoutes(this.homeserverServices));
 
 		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
 
@@ -398,6 +411,143 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
+	private getMatrixMessageType(mimeType?: string): MatrixFileTypes {
+		const mainType = mimeType?.split('/')[0];
+		if (!mainType) {
+			return fileTypes.file;
+		}
+
+		return fileTypes[mainType] ?? fileTypes.file;
+	}
+
+	private async handleFileMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		if (!message.files || message.files.length === 0) {
+			return null;
+		}
+
+		try {
+			// TODO: Handle multiple files
+			const file = message.files[0];
+			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
+
+			const msgtype = this.getMatrixMessageType(file.type);
+			const fileContent = {
+				body: file.name,
+				msgtype,
+				url: mxcUri,
+				info: {
+					mimetype: file.type,
+					size: file.size,
+				},
+			};
+
+			return this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+		} catch (error) {
+			this.logger.error('Failed to handle file message', {
+				messageId: message._id,
+				error,
+			});
+			throw error;
+		}
+	}
+
+	private async handleTextMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		const parsedMessage = await toExternalMessageFormat({
+			message: message.msg,
+			externalRoomId: matrixRoomId,
+			homeServerDomain: matrixDomain,
+		});
+
+		if (message.tmid) {
+			return this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain, parsedMessage);
+		}
+
+		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		}
+
+		return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+	}
+
+	private async handleThreadedMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+		parsedMessage: string,
+	): Promise<{ eventId: string } | null> {
+		if (!message.tmid) {
+			throw new Error('Thread message ID not found');
+		}
+
+		const threadRootMessage = await Messages.findOneById(message.tmid);
+		const threadRootEventId = threadRootMessage?.federation?.eventId;
+
+		if (!threadRootEventId) {
+			this.logger.warn('Thread root event ID not found, sending as regular message');
+			if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+				return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+			}
+			return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+		}
+
+		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id);
+		const latestThreadEventId = latestThreadMessage?.federation?.eventId;
+
+		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+			if (!quoteMessage) {
+				throw new Error('Failed to retrieve quote message');
+			}
+			return this.homeserverServices.message.sendReplyToInsideThreadMessage(
+				matrixRoomId,
+				quoteMessage.rawMessage,
+				quoteMessage.formattedMessage,
+				matrixUserId,
+				threadRootEventId,
+				quoteMessage.eventToReplyTo,
+			);
+		}
+
+		return this.homeserverServices.message.sendThreadMessage(
+			matrixRoomId,
+			message.msg,
+			parsedMessage,
+			matrixUserId,
+			threadRootEventId,
+			latestThreadEventId,
+		);
+	}
+
+	private async handleQuoteMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		if (!quoteMessage) {
+			throw new Error('Failed to retrieve quote message');
+		}
+		return this.homeserverServices.message.sendReplyToMessage(
+			matrixRoomId,
+			quoteMessage.rawMessage,
+			quoteMessage.formattedMessage,
+			quoteMessage.eventToReplyTo,
+			matrixUserId,
+		);
+	}
+
 	async sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void> {
 		try {
 			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
@@ -419,84 +569,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
 			let result;
-
-			const parsedMessage = await toExternalMessageFormat({
-				message: message.msg,
-				externalRoomId: matrixRoomId,
-				homeServerDomain: this.serverName,
-			});
-			if (!message.tmid) {
-				if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-					const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-					if (!quoteMessage) {
-						throw new Error('Failed to retrieve quote message');
-					}
-					result = await this.homeserverServices.message.sendReplyToMessage(
-						matrixRoomId,
-						quoteMessage.rawMessage,
-						quoteMessage.formattedMessage,
-						quoteMessage.eventToReplyTo,
-						actualMatrixUserId,
-					);
-				} else {
-					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
-				}
+			if (message.files && message.files.length > 0) {
+				result = await this.handleFileMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 			} else {
-				const threadRootMessage = await Messages.findOneById(message.tmid);
-				const threadRootEventId = threadRootMessage?.federation?.eventId;
-
-				if (threadRootEventId) {
-					const latestThreadMessage = await Messages.findOne(
-						{
-							'tmid': message.tmid,
-							'federation.eventId': { $exists: true },
-							'_id': { $ne: message._id }, // Exclude the current message
-						},
-						{ sort: { ts: -1 } },
-					);
-					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
-
-					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-						if (!quoteMessage) {
-							throw new Error('Failed to retrieve quote message');
-						}
-						result = await this.homeserverServices.message.sendReplyToInsideThreadMessage(
-							matrixRoomId,
-							quoteMessage.rawMessage,
-							quoteMessage.formattedMessage,
-							actualMatrixUserId,
-							threadRootEventId,
-							quoteMessage.eventToReplyTo,
-						);
-					} else {
-						result = await this.homeserverServices.message.sendThreadMessage(
-							matrixRoomId,
-							message.msg,
-							parsedMessage,
-							actualMatrixUserId,
-							threadRootEventId,
-							latestThreadEventId,
-						);
-					}
-				} else {
-					this.logger.warn('Thread root event ID not found, sending as regular message');
-					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-						if (!quoteMessage) {
-							throw new Error('Failed to retrieve quote message');
-						}
-						result = await this.homeserverServices.message.sendReplyToMessage(
-							matrixRoomId,
-							quoteMessage.rawMessage,
-							quoteMessage.formattedMessage,
-							quoteMessage.eventToReplyTo,
-							actualMatrixUserId,
-						);
-					} else {
-						result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
-					}
-				}
+				result = await this.handleTextMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 			}
 
 			if (!result) {
