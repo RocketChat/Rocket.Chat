@@ -1,15 +1,6 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 
-export interface IRouteContext {
-	params: any;
-	query: any;
-	body: any;
-	headers: Record<string, string>;
-	setStatus: (code: number) => void;
-	setHeader: (key: string, value: string) => void;
-}
-
 export interface IFederationMatrixService {
 	getAllRoutes(): {
 		matrix: Router<'/_matrix'>;
