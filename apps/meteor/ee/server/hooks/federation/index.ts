@@ -84,7 +84,7 @@ callbacks.add(
 		if (FederationActions.shouldPerformFederationAction(room)) {
 			await FederationMatrix.inviteUsersToRoom(
 				room,
-				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : (invitee.username as string))),
+				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : invitee.username)).filter((v) => v != null),
 				inviter,
 			);
 		}
