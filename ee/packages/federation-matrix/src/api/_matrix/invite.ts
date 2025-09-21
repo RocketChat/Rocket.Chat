@@ -236,7 +236,7 @@ async function joinRoom({
 				throw new Error('Sender user not found');
 			}
 			if (!inviteeUser?.username) {
-				throw new Error('inviteeUser user not found');
+				throw new Error('Invitee user not found');
 			}
 
 			// TODO: Rethink room name on DMs
