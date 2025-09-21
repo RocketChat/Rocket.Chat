@@ -243,8 +243,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				if (typeof member === 'string') {
 					username = member;
+				} else if (typeof member.username === 'string') {
+					username = member.username;
 				} else {
-					username = member.username as string;
+					continue;
 				}
 
 				if (!username.includes(':') && !username.includes('@')) {
