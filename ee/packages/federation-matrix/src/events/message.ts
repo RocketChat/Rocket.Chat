@@ -1,8 +1,8 @@
-import type { FileMessageType, MessageType } from '@hs/core';
+import type { FileMessageType, MessageType, FileMessageContent } from '@hs/core';
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import type { EventID } from '@hs/room';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
@@ -25,13 +25,13 @@ async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: s
 }
 
 async function handleMediaMessage(
-	// TODO improve typing
-	content: any,
+	url: string,
+	fileInfo: FileMessageContent['info'],
 	msgtype: MessageType,
 	messageBody: string,
 	user: IUser,
 	room: IRoom,
-	eventId: string,
+	eventId: EventID,
 	tmid?: string,
 ): Promise<{
 	fromId: string;
@@ -39,17 +39,13 @@ async function handleMediaMessage(
 	msg: string;
 	federation_event_id: string;
 	tmid?: string;
-	file: any;
-	files: any[];
-	attachments: any[];
 }> {
-	const fileInfo = content.info;
-	const mimeType = fileInfo.mimetype;
+	const mimeType = fileInfo?.mimetype;
 	const fileName = messageBody;
 
-	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(content.url, {
+	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(url, {
 		name: messageBody,
-		size: fileInfo.size,
+		size: fileInfo?.size,
 		type: mimeType,
 		roomId: room._id,
 		userId: user._id,
@@ -67,46 +63,43 @@ async function handleMediaMessage(
 
 	const fileUrl = `/file-upload/${fileRefId}/${encodeURIComponent(fileName)}`;
 
-	// TODO improve typing
-	const attachment: any = {
+	let attachment: FileAttachmentProps = {
 		title: fileName,
 		type: 'file',
 		title_link: fileUrl,
 		title_link_download: true,
+		description: '',
 	};
 
 	if (msgtype === 'm.image') {
-		attachment.image_url = fileUrl;
-		attachment.image_type = mimeType;
-		attachment.image_size = fileInfo.size || 0;
-		attachment.description = '';
-		if (fileInfo.w && fileInfo.h) {
-			attachment.image_dimensions = {
-				width: fileInfo.w,
-				height: fileInfo.h,
-			};
-		}
+		attachment = {
+			...attachment,
+			image_url: fileUrl,
+			image_type: mimeType,
+			image_size: fileInfo?.size || 0,
+			...(fileInfo?.w &&
+				fileInfo?.h && {
+					image_dimensions: {
+						width: fileInfo.w,
+						height: fileInfo.h,
+					},
+				}),
+		};
 	} else if (msgtype === 'm.video') {
-		attachment.video_url = fileUrl;
-		attachment.video_type = mimeType;
-		attachment.video_size = fileInfo.size || 0;
-		attachment.description = '';
+		attachment = {
+			...attachment,
+			video_url: fileUrl,
+			video_type: mimeType,
+			video_size: fileInfo?.size || 0,
+		};
 	} else if (msgtype === 'm.audio') {
-		attachment.audio_url = fileUrl;
-		attachment.audio_type = mimeType;
-		attachment.audio_size = fileInfo.size || 0;
-		attachment.description = '';
-	} else {
-		attachment.description = '';
+		attachment = {
+			...attachment,
+			audio_url: fileUrl,
+			audio_type: mimeType,
+			audio_size: fileInfo?.size || 0,
+		};
 	}
-
-	const fileData = {
-		_id: fileRefId,
-		name: fileName,
-		type: mimeType,
-		size: fileInfo.size || 0,
-		format: fileExtension,
-	};
 
 	return {
 		fromId: user._id,
@@ -114,9 +107,6 @@ async function handleMediaMessage(
 		msg: '',
 		federation_event_id: eventId,
 		tmid,
-		file: fileData,
-		files: [fileData],
-		attachments: [attachment],
 	};
 }
 
@@ -151,8 +141,6 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			const quoteMessageEventId = relation && 'm.in_reply_to' in relation && relation['m.in_reply_to']?.event_id;
 
 			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
-
-			const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
 
 			const isEditedMessage = relation?.rel_type === 'm.replace';
 			if (isEditedMessage && relation?.event_id && data.content['m.new_content']) {
@@ -236,8 +224,9 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			if (isMediaMessage && content?.url) {
-				const result = await handleMediaMessage(content, msgtype, messageBody, user, room, data.event_id, thread?.tmid);
+			const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
+			if (isMediaMessage && content.url) {
+				const result = await handleMediaMessage(content.url, content.info, msgtype, messageBody, user, room, data.event_id, thread?.tmid);
 				await Message.saveMessageFromFederation(result);
 			} else {
 				const formatted = toInternalMessageFormat({
