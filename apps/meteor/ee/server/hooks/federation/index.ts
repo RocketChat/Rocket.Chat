@@ -17,7 +17,8 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 		const federatedRoomId = options?.federatedRoomId;
 
 		if (!federatedRoomId) {
-			// if room if exists, we don't want to create it again
+			// if room exists, we don't want to create it again
+			// adds bridge record
 			await FederationMatrix.createRoom(room, owner, members);
 		} else {
 			// matrix room was already created and passed
