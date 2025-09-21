@@ -85,7 +85,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			version: process.env.SERVER_VERSION || '1.0',
 			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
 			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey}`,
-			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
+			signingKeyPath: process.env.CONFIG_FOLDER || './rocketchat.signing.key',
 			database: {
 				uri: mongoUri,
 				name: dbName,
