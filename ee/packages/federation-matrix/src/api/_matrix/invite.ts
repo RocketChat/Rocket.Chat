@@ -356,7 +356,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			const inviteEvent = await invite.processInvite(event, roomId, eventId, roomVersion);
 
 			void startJoiningRoom({
-				inviteEvent: inviteEvent as PersistentEventBase<RoomVersion, 'm.room.member'>, // TODO: change the processInvite return type
+				inviteEvent,
 				user: ourUser,
 				room,
 				state,
