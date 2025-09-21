@@ -108,7 +108,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			rid,
 			msg,
 			...thread,
-			federation: { eventId: federation_event_id },
+			federation: {
+				eventId: federation_event_id,
+				version: 1,
+			 },
 			...(file && { file }),
 			...(files && { files }),
 			...(attachments && { attachments }),
