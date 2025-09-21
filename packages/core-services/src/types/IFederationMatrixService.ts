@@ -34,6 +34,6 @@ export interface IFederationMatrixService {
 		userId: string,
 		role: 'moderator' | 'owner' | 'leader' | 'user',
 	): Promise<void>;
-	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: Pick<IUser, '_id' | 'username'>): Promise<void>;
+	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 }
