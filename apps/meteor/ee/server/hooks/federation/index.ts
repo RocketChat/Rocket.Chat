@@ -8,7 +8,6 @@ import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoom
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
-import { getFederationVersion } from '../../../../server/services/federation/utils';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -39,9 +38,8 @@ callbacks.add(
 	async (message, { room, user }) => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
 			const shouldBeHandledByFederation = room.federated === true || user.username?.includes(':');
-			const federationVersion = getFederationVersion();
 
-			if (shouldBeHandledByFederation && federationVersion === 'native') {
+			if (shouldBeHandledByFederation) {
 				try {
 					// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
 					// If message is federated, it will save external_message_id like into the message object
