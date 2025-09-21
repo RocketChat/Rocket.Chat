@@ -11,7 +11,7 @@ import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notify
 import { settings } from '../../app/settings/server';
 import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
-import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
+import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,7 +39,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		});
 	}
 
-	if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
+	if (isFederated && !isFederationEnabled()) {
 		throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 	}
 
