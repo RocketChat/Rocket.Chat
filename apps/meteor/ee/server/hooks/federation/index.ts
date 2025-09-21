@@ -51,7 +51,7 @@ callbacks.add(
 		}
 	},
 	callbacks.priority.HIGH,
-	'federation-v2-after-room-message-sent',
+	'native-federation-after-room-message-sent',
 );
 
 callbacks.add(
