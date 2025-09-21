@@ -430,22 +430,26 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
-			// TODO: Handle multiple files
-			const file = message.files[0];
-			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
+			let lastEventId: { eventId: string } | null = null;
 
-			const msgtype = this.getMatrixMessageType(file.type);
-			const fileContent = {
-				body: file.name,
-				msgtype,
-				url: mxcUri,
-				info: {
-					mimetype: file.type,
-					size: file.size,
-				},
-			};
+			for await (const file of message.files) {
+				const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
 
-			return this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+				const msgtype = this.getMatrixMessageType(file.type);
+				const fileContent = {
+					body: file.name,
+					msgtype,
+					url: mxcUri,
+					info: {
+						mimetype: file.type,
+						size: file.size,
+					},
+				};
+
+				lastEventId = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+			}
+
+			return lastEventId;
 		} catch (error) {
 			this.logger.error('Failed to handle file message', {
 				messageId: message._id,
