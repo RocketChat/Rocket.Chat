@@ -1193,8 +1193,6 @@
   "FEDERATION_Domain": "Домен",
   "FEDERATION_Domain_Alert": "Не змінюйте це після ввімкнення функції, ми ще не можемо обробити зміни домену.",
   "FEDERATION_Domain_Description": "Додайте домен, до якого повинен бути прив’язаний цей сервер - наприклад: @rocket.chat.",
-  "FEDERATION_Enabled": "Спроба інтегрувати підтримку федерації.",
-  "FEDERATION_Enabled_Alert": "Підтримка Федерації - це незавершена робота. Наразі використання у виробничій системі не рекомендується.",
   "FEDERATION_Public_Key": "Відкритий ключ",
   "FEDERATION_Public_Key_Description": "Цим ключем потрібно поділитися з Вашими пірами.",
   "FEDERATION_Status": "Статус",
