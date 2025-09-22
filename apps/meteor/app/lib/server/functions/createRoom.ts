@@ -190,6 +190,12 @@ export const createRoom = async <T extends RoomType>(
 		fname: name,
 		_updatedAt: now,
 		...extraData,
+		...(extraData.federated && {
+			federated: true,
+			federation: {
+				version: 1,
+			},
+		}),
 		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),
 		t: type,
 		msgs: 0,
