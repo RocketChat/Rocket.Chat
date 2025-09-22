@@ -3075,6 +3075,80 @@ export const isGETLivechatAgentsAgentIdDepartmentsParams = ajv.compile<GETLivech
 	GETLivechatAgentsAgentIdDepartmentsParamsSchema,
 );
 
+const POSTLivechatBusinessHoursSaveSchema = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string', nullable: true },
+		name: { type: 'string' },
+		active: { type: 'boolean' },
+		type: { type: 'string' },
+		daysOpen: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		daysTime: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'string' },
+					start: {
+						type: 'object',
+						properties: {
+							time: { type: 'string' },
+						},
+					},
+					finish: {
+						type: 'object',
+						properties: {
+							time: { type: 'string' },
+						},
+					},
+					open: { type: 'boolean' },
+				},
+				required: ['day', 'start', 'finish', 'open'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+		workHours: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'string' },
+					start: { type: 'string' },
+					finish: { type: 'string' },
+					open: { type: 'boolean' },
+				},
+				required: ['day', 'start', 'finish', 'open'],
+				additionalProperties: false,
+			},
+		},
+		timezone: { type: 'string' },
+		timezoneName: { type: 'string' },
+		departmentsToApplyBusinessHour: { type: 'string' },
+	},
+	required: ['name', 'active', 'type', 'workHours', 'timezone'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatBusinessHoursSaveParams = ajv.compile<ILivechatBusinessHour>(POSTLivechatBusinessHoursSaveSchema);
+
+const POSTLivechatBusinessHoursSaveSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const POSTLivechatBusinessHoursSaveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursSaveSuccessResponseSchema);
+
 type GETBusinessHourParams = { _id?: string; type?: string };
 
 const GETBusinessHourParamsSchema = {
