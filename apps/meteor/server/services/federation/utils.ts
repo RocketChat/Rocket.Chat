@@ -34,24 +34,6 @@ export function throwIfFederationNotEnabledOrNotReady(): void {
 	if (!isFederationEnabled()) {
 		throw new Error('Federation is not enabled');
 	}
-
-	if (!isFederationReady()) {
-		throw new Error('Federation configuration is invalid');
-	}
-}
-
-export function throwIfFederationEnabledButNotReady(): void {
-	if (!isFederationEnabled()) {
-		return;
-	}
-
-	throwIfFederationNotReady();
-}
-
-export function throwIfFederationNotReady(): void {
-	if (!isFederationReady()) {
-		throw new Error('Federation configuration is invalid');
-	}
 }
 
 export class FederationMatrixInvalidConfigurationError extends Error {
