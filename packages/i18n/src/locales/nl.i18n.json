@@ -1524,8 +1524,6 @@
   "FEDERATION_Domain": "Domein",
   "FEDERATION_Domain_Alert": "Wijzig dit niet nadat u de functie hebt ingeschakeld, we kunnen nog geen domeinwijzigingen verwerken.",
   "FEDERATION_Domain_Description": "Voeg het domein toe waaraan deze server moet worden gekoppeld, bijvoorbeeld: @rocket.chat.",
-  "FEDERATION_Enabled": "Poging om federatieondersteuning te integreren.",
-  "FEDERATION_Enabled_Alert": "Federatie-ondersteuning is een werk in uitvoering. Gebruik op een productiesysteem wordt op dit moment niet aanbevolen.",
   "FEDERATION_Public_Key": "Publieke sleutel",
   "FEDERATION_Public_Key_Description": "Dit is de sleutel die je moet delen met je collega's.",
   "FEDERATION_Status": "Toestand",

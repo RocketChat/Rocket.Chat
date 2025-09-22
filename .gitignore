@@ -61,3 +61,4 @@ storybook-static
 development/tempo-data/
 
 homeserver
+.env
