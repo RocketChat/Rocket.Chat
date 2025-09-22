@@ -22,6 +22,8 @@ import {
 	POSTLivechatRemoveRoomSuccess,
 	isPOSTLivechatRemoveRoomParams,
 	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
@@ -448,6 +450,8 @@ const livechatRoomsEndpoints = API.v1
 			response: {
 				200: POSTLivechatRemoveRoomSuccess,
 				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 			authRequired: true,
 			permissionsRequired: ['remove-closed-livechat-room'],
@@ -456,22 +460,16 @@ const livechatRoomsEndpoints = API.v1
 		async function action() {
 			const { roomId } = this.bodyParams;
 
-			const room = await LivechatRooms.findOneById(roomId);
-			if (!room) {
-				return API.v1.failure('error-invalid-room');
+			try {
+				await removeOmnichannelRoom(roomId);
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
+				return API.v1.failure('error-removing-room');
 			}
-
-			if (room.t !== 'l') {
-				return API.v1.failure('error-this-is-not-a-livechat-room');
-			}
-
-			if (room.open) {
-				return API.v1.failure('error-room-is-not-closed');
-			}
-
-			await removeOmnichannelRoom(roomId);
-
-			return API.v1.success();
 		},
 	)
 	.post(

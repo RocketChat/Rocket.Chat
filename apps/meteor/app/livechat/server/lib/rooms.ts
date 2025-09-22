@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type {
+import {
 	ILivechatVisitor,
 	IMessage,
 	IOmnichannelRoomInfo,
@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
 	TransferData,
+	isOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
@@ -260,6 +261,14 @@ export async function removeOmnichannelRoom(rid: string) {
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+	}
+
+	if (!isOmnichannelRoom(room)) {
+		throw new Meteor.Error('error-this-is-not-a-livechat-room');
+	}
+
+	if (room.open) {
+		throw new Meteor.Error('error-room-is-not-closed');
 	}
 
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid);
