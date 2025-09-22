@@ -205,7 +205,7 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		if (isBusyState(call.state)) {
-			return this.processNegotiations();
+			return this.processNegotiations(call);
 		}
 	}
 
@@ -309,11 +309,11 @@ export class IncomingSipCall extends BaseSipCall {
 		return null;
 	}
 
-	private async processNegotiations(): Promise<void> {
+	private async processNegotiations(call: IMediaCall): Promise<void> {
 		const localNegotiation = await this.getPendingInboundNegotiation();
 		if (!localNegotiation) {
-			// #TODO: Callee-initiated renegotiations (SIP callee must always do renegotiations politely)
-			return;
+			// Callee-initiated renegotiations are only processed if there's none initiated by the caller
+			return this.processCalleeNegotiation(call);
 		}
 
 		// If we don't have an sdp, we can't respond to it yet
@@ -331,6 +331,39 @@ export class IncomingSipCall extends BaseSipCall {
 		localNegotiation.res.send(200, {
 			body: localNegotiation.answer.sdp,
 		});
+	}
+
+	private async processCalleeNegotiation(call: IMediaCall): Promise<void> {
+		if (!this.sipDialog) {
+			return;
+		}
+
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		if (negotiation?.offerer !== 'callee' || !negotiation.offer?.sdp || negotiation.answer) {
+			return;
+		}
+
+		logger.debug('IncomingSipCall.processCalleeNegotiation');
+		let answer: string | void = undefined;
+		try {
+			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
+				logger.debug('modify failed');
+			});
+		} catch (error) {
+			logger.error({ msg: 'Error on IncomingSipCall.processCalleeNegotiation', error });
+		}
+
+		if (!answer) {
+			logger.error({ msg: 'No answer from callee initiated negotiation' });
+			return;
+		}
+
+		await mediaCallDirector.saveWebrtcSession(
+			call,
+			this.agent,
+			{ sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id },
+			this.session.sessionId,
+		);
 	}
 
 	private cancelPendingInvites(errorCode: number): void {

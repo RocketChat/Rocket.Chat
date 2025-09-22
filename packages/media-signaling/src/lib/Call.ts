@@ -1020,6 +1020,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const stateValue = this.webrtcProcessor.getInternalState(stateName);
 
 		if (this.serviceStates.get(stateName) !== stateValue) {
+			this.config.logger?.debug(stateName, stateValue);
 			this.serviceStates.set(stateName, stateValue);
 
 			switch (stateName) {
@@ -1077,9 +1078,10 @@ export class ClientMediaCall implements IClientMediaCall {
 					}
 					break;
 				case 'disconnected':
-					if (this.state === 'active') {
-						this.hangup('service-error');
-					}
+					// Disconnected state is temporary, so let's wait for it to change into something else before reacting.
+					// if (this.state === 'active') {
+					// 	this.hangup('service-error');
+					// }
 					break;
 			}
 		} catch (e) {
