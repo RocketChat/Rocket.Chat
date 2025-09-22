@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useState, type ComponentProps, RefCallback } from 'react';
+import { useState, type ComponentProps, RefCallback, ChangeEvent } from 'react';
 
 import { MessageComposerInput } from '../MessageComposer';
 
@@ -14,6 +14,14 @@ export type ExpandComposerButtonProps = ComponentProps<typeof Box> & {
 
 const MessageComposerInputExpandable = ({ dimensions, inputRef, ...props }: ExpandComposerButtonProps) => {
 	const [expanded, setExpanded] = useState(false);
+
+	const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+		props.onChange?.(event);
+		if (event.target.value.length === 0) {
+			setExpanded(false);
+		}
+	};
+
 	return (
 		<>
 			{dimensions.blockSize > 100 && (
@@ -28,7 +36,7 @@ const MessageComposerInputExpandable = ({ dimensions, inputRef, ...props }: Expa
 					<IconButton small icon={expanded ? 'arrow-collapse' : 'arrow-expand'} onClick={() => setExpanded(!expanded)}></IconButton>
 				</Box>
 			)}
-			<MessageComposerInput {...props} ref={inputRef} {...(!!expanded && { height: 500 })} {...(!!expanded && { maxHeight: 500 })} />
+			<MessageComposerInput {...props} ref={inputRef} onChange={onChange} {...(!!expanded && { height: 500 })} {...(!!expanded && { maxHeight: 500 })} />
 		</>
 	);
 };
