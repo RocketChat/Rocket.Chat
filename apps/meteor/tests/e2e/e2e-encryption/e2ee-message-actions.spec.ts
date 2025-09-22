@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { PinnedMessagesTab, StarredMessagesTab } from '../page-objects/fragments';
+import { E2EEMessageActions } from '../page-objects/fragments/e2ee';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -12,6 +14,9 @@ preserveSettings(settingsList);
 test.describe('E2EE Message Actions', () => {
 	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
+	let pinnedMessagesTab: PinnedMessagesTab;
+	let starredMessagesTab: StarredMessagesTab;
+	let e2eeMessageActions: E2EEMessageActions;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -21,6 +26,9 @@ test.describe('E2EE Message Actions', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		pinnedMessagesTab = new PinnedMessagesTab(page);
+		starredMessagesTab = new StarredMessagesTab(page);
+		e2eeMessageActions = new E2EEMessageActions(page);
 		await page.goto('/home');
 	});
 
@@ -46,12 +54,12 @@ test.describe('E2EE Message Actions', () => {
 
 		await test.step('verify disabled message menu actions', async () => {
 			await poHomeChannel.content.lastUserMessage.hover();
-			await expect(poHomeChannel.content.btnForwardMessageDisabled).toBeDisabled();
+			await e2eeMessageActions.expectForwardMessageToBeDisabled();
 
 			await poHomeChannel.content.openLastMessageMenu();
 
-			await expect(poHomeChannel.content.btnOptionReplyInDirectMessage).toHaveClass(/disabled/);
-			await expect(poHomeChannel.content.btnOptionCopyLink).toHaveClass(/disabled/);
+			await e2eeMessageActions.expectReplyInDirectMessageToBeDisabled();
+			await e2eeMessageActions.expectCopyLinkToBeDisabled();
 		});
 	});
 
@@ -86,24 +94,20 @@ test.describe('E2EE Message Actions', () => {
 		await test.step('verify pinned message and disabled copy link', async () => {
 			await poHomeChannel.tabs.kebab.click();
 			await poHomeChannel.tabs.btnPinnedMessagesList.click();
-			await expect(poHomeChannel.content.pinnedMessagesDialog).toBeVisible();
-			await expect(poHomeChannel.content.lastPinnedMessage).toContainText('This message should be pinned and starred.');
-			await poHomeChannel.content.lastPinnedMessage.hover();
-			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastPinnedMessage).waitFor();
-			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastPinnedMessage).click();
-			await expect(poHomeChannel.content.btnOptionCopyLink).toHaveClass(/disabled/);
+			await pinnedMessagesTab.expectToBeVisible();
+			await pinnedMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
+			await pinnedMessagesTab.openLastMessageMenu();
+			await e2eeMessageActions.expectCopyLinkToBeDisabled();
 			await poHomeChannel.btnContextualbarClose.click();
 		});
 
 		await test.step('verify starred message and disabled copy link', async () => {
 			await poHomeChannel.tabs.kebab.click();
 			await poHomeChannel.tabs.btnStarredMessageList.click();
-			await expect(poHomeChannel.content.starredMessagesDialog).toBeVisible();
-			await expect(poHomeChannel.content.lastStarredMessage).toContainText('This message should be pinned and starred.');
-			await poHomeChannel.content.lastStarredMessage.hover();
-			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastStarredMessage).waitFor();
-			await poHomeChannel.content.getMessageMoreButton(poHomeChannel.content.lastStarredMessage).click();
-			await expect(poHomeChannel.content.btnOptionCopyLink).toHaveClass(/disabled/);
+			await starredMessagesTab.expectToBeVisible();
+			await starredMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
+			await starredMessagesTab.openLastMessageMenu();
+			await e2eeMessageActions.expectCopyLinkToBeDisabled();
 		});
 	});
 });

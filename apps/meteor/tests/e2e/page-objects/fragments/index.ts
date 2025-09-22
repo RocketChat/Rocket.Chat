@@ -8,3 +8,5 @@ export * from './navbar';
 export * from './sidebar';
 export * from './sidepanel';
 export * from './report-message-modal';
+export * from './pinned-messages-tab';
+export * from './starred-messages-tab';
