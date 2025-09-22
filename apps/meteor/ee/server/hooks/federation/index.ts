@@ -1,8 +1,7 @@
-import { api, FederationMatrix } from '@rocket.chat/core-services';
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { MatrixBridgedRoom, Rooms } from '@rocket.chat/models';
 
-import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
@@ -16,8 +15,6 @@ import { FederationActions } from '../../../../server/services/room/hooks/Before
 callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members, options }) => {
 	if (FederationActions.shouldPerformFederationAction(room)) {
 		const federatedRoomId = options?.federatedRoomId;
-		// TODO: move this to the hooks folder
-		setupTypingEventListenerForRoom(room._id);
 
 		if (!federatedRoomId) {
 			// if room if exists, we don't want to create it again
@@ -225,23 +222,3 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-matrix-after-create-direct-room',
 );
-
-// TODO: THIS IS NOT READY FOR PRODUCTION! IMPOSSIBLE TO ADD ONE LISTENER PER ROOM!
-const setupTypingEventListenerForRoom = (roomId: string): void => {
-	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
-		if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
-			void api.broadcast('user.typing', {
-				user: { username },
-				isTyping: activity.includes('user-typing'),
-				roomId,
-			});
-		}
-	});
-};
-
-export const setupInternalEDUEventListeners = async () => {
-	const federatedRooms = await Rooms.findFederatedRooms({ projection: { _id: 1 } }).toArray();
-	for (const room of federatedRooms) {
-		setupTypingEventListenerForRoom(room._id);
-	}
-};

@@ -28,8 +28,8 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				return;
 			}
 
-			void api.broadcast('federation-matrix.user.typing', {
-				username: user.username,
+			void api.broadcast('user.activity', {
+				user: user.username,
 				isTyping: data.typing,
 				roomId: matrixRoom,
 			});
@@ -71,8 +71,9 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 			);
 
 			const { _id, username, statusText, roles, name } = user;
-			void api.broadcast('federation-matrix.user.presence.status', {
+			void api.broadcast('presence.status', {
 				user: { status, _id, username, statusText, roles, name },
+				previousStatus: undefined,
 			});
 			logger.debug(`Updated presence for user ${matrixUser.uid} to ${status} from Matrix federation`);
 		} catch (error) {
