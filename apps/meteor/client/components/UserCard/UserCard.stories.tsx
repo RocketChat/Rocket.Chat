@@ -17,7 +17,6 @@ const user = {
 };
 
 export default {
-	title: 'Components/UserCard',
 	component: UserCard,
 	parameters: {
 		layout: 'centered',

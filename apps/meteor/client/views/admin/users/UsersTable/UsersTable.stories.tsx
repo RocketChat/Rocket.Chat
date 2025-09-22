@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import UsersTable from './UsersTable';
 
 export default {
-	title: 'views/admin/UsersTable',
 	component: UsersTable,
 } satisfies Meta<typeof UsersTable>;
 
