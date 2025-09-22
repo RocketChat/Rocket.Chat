@@ -507,6 +507,127 @@ describe('Router', () => {
 		});
 	});
 
+	describe('Dispatch', () => {
+		it('should dispatch a GET request without express adapter', async () => {
+			const api = new Router('/api');
+			const handler = jest.fn(async () => ({
+				statusCode: 200 as const,
+				body: { message: 'ok' },
+			}));
+
+			api.get(
+				'status',
+				{
+					response: {
+						200: dummyValidator,
+					},
+				},
+				handler,
+			);
+
+			const response = await api.dispatch('status');
+
+			expect(handler).toHaveBeenCalledTimes(1);
+			expect(response.status).toBe(200);
+			expect(await response.json()).toEqual({ message: 'ok' });
+		});
+
+		it('should normalize paths and forward init options', async () => {
+			const api = new Router('/api');
+
+			api.post(
+				'echo',
+				{
+					response: {
+						201: dummyValidator,
+					},
+				},
+				async (c) => {
+					const payload = await c.req.json();
+					return {
+						statusCode: 201,
+						body: payload,
+					};
+				},
+			);
+
+			const response = await api.dispatch('/echo', {
+				method: 'POST',
+				body: JSON.stringify({ value: 42 }),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+
+			expect(response.status).toBe(201);
+			expect(await response.json()).toEqual({ value: 42 });
+		});
+
+		it('should rebuild cached router when routes change', async () => {
+			const api = new Router('/api');
+
+			api.get(
+				'initial',
+				{
+					response: {
+						200: dummyValidator,
+					},
+				},
+				async () => ({
+					statusCode: 200,
+					body: { initial: true },
+				}),
+			);
+
+			const firstResponse = await api.dispatch('initial');
+			expect(firstResponse.status).toBe(200);
+			expect(await firstResponse.json()).toEqual({ initial: true });
+
+			const missingResponse = await api.dispatch('new');
+			expect(missingResponse.status).toBe(404);
+
+			api.get(
+				'new',
+				{
+					response: {
+						200: dummyValidator,
+					},
+				},
+				async () => ({
+					statusCode: 200,
+					body: { fresh: true },
+				}),
+			);
+
+			const cachedResponse = await api.dispatch('new');
+			expect(cachedResponse.status).toBe(200);
+			expect(await cachedResponse.json()).toEqual({ fresh: true });
+		});
+
+		it('should pass environment values to the context', async () => {
+			const api = new Router('/api');
+
+			api.get(
+				'env',
+				{
+					response: {
+						200: dummyValidator,
+					},
+				},
+				async (c) => ({
+					statusCode: 200,
+					body: { env: c.env },
+				}),
+			);
+
+			const env = { SOME_FLAG: 'value' };
+			const response = await api.dispatch('env', undefined, env);
+
+			expect(response.status).toBe(200);
+			expect(await response.json()).toEqual({ env });
+		});
+	});
+
 	it('should fail if the query request is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();
