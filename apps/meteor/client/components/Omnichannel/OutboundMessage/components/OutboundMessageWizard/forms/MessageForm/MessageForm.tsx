@@ -1,5 +1,5 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
@@ -12,6 +12,7 @@ import TemplatePlaceholderField from './components/TemplatePlaceholderField';
 import TemplatePreviewForm from './components/TemplatePreviewField';
 import type { TemplateParameters } from '../../../../definitions/template';
 import { extractParameterMetadata } from '../../../../utils/template';
+import Form from '../../components/OutboundMessageForm';
 import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
@@ -78,16 +79,18 @@ const MessageForm = (props: MessageFormProps) => {
 	});
 
 	return (
-		<form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
-			<FieldGroup>
-				<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
+		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
+			<Scrollable vertical>
+				<FieldGroup justifyContent='start' pi={2}>
+					<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
-				{parametersMetadata.map((metadata) => (
-					<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
-				))}
+					{parametersMetadata.map((metadata) => (
+						<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
+					))}
 
-				{template ? <TemplatePreviewForm control={control} template={template} /> : null}
-			</FieldGroup>
+					{template ? <TemplatePreviewForm control={control} template={template} /> : null}
+				</FieldGroup>
+			</Scrollable>
 
 			{customActions ?? (
 				<Box mbs={24} display='flex' justifyContent='end'>
@@ -96,7 +99,7 @@ const MessageForm = (props: MessageFormProps) => {
 					</Button>
 				</Box>
 			)}
-		</form>
+		</Form>
 	);
 };
 

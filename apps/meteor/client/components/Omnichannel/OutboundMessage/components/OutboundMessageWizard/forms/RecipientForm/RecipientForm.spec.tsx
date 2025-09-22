@@ -17,6 +17,7 @@ const contactOneMock = createFakeContactWithManagerData({
 	_id: 'contact-1',
 	name: 'Contact 1',
 	phones: [{ phoneNumber: recipientOnePhoneNumber }],
+	unknown: false,
 	channels: [
 		createFakeContactChannel({
 			name: 'provider-1',
@@ -29,6 +30,7 @@ const contactTwoMock = createFakeContactWithManagerData({
 	_id: 'contact-2',
 	name: 'Contact 2',
 	phones: [{ phoneNumber: recipientTwoPhoneNumber }],
+	unknown: false,
 	channels: [
 		createFakeContactChannel({
 			name: 'provider-2',
@@ -154,6 +156,17 @@ describe('RecipientForm', () => {
 
 	it('should show retry button when contact fetch fails', async () => {
 		getContactMock.mockImplementationOnce(() => Promise.reject());
+
+		render(<RecipientForm defaultValues={{ contactId: 'contact-1' }} {...defaultProps} />, { wrapper: appRoot.build() });
+
+		await waitFor(() => expect(screen.getByLabelText('Contact*')).toHaveAccessibleDescription('Error loading contact information'));
+
+		const retryButton = screen.getByRole('button', { name: 'Retry' });
+		expect(retryButton).toBeInTheDocument();
+	});
+
+	it('should show retry button when contact is unknown', async () => {
+		getContactMock.mockImplementationOnce(() => ({ contact: createFakeContactWithManagerData({ _id: 'contact-1', unknown: true }) }));
 
 		render(<RecipientForm defaultValues={{ contactId: 'contact-1' }} {...defaultProps} />, { wrapper: appRoot.build() });
 

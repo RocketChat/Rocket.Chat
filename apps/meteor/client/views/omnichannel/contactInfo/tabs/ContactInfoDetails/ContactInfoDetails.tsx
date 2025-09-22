@@ -1,3 +1,4 @@
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { Divider, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +13,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
 type ContactInfoDetailsProps = {
-	contactId: string;
+	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 	emails?: string[];
 	phones?: string[];
 	createdAt: string;
@@ -20,7 +21,7 @@ type ContactInfoDetailsProps = {
 	contactManager?: string;
 };
 
-const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({ contact, emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
@@ -28,8 +29,8 @@ const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldE
 		<ContextualbarScrollableContent>
 			{emails?.length ? (
 				<Field>
-					<Label id={`${contactId}-emails`}>{t('Email')}</Label>
-					<ul aria-labelledby={`${contactId}-emails`}>
+					<Label id={`${contact._id}-emails`}>{t('Email')}</Label>
+					<ul aria-labelledby={`${contact._id}-emails`}>
 						{emails.map((email) => (
 							<ContactInfoDetailsEntry key={email} is='li' icon='mail' value={email} />
 						))}
@@ -39,10 +40,10 @@ const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldE
 
 			{phones?.length ? (
 				<Field>
-					<Label id={`${contactId}-phones`}>{t('Phone')}</Label>
-					<ul aria-labelledby={`${contactId}-phones`}>
+					<Label id={`${contact._id}-phones`}>{t('Phone')}</Label>
+					<ul aria-labelledby={`${contact._id}-phones`}>
 						{phones.map((phone) => (
-							<ContactInfoPhoneEntry key={phone} is='li' contactId={contactId} value={phone} />
+							<ContactInfoPhoneEntry key={phone} is='li' contact={contact} value={phone} />
 						))}
 					</ul>
 				</Field>
@@ -53,8 +54,8 @@ const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldE
 			<Margins block={4}>
 				{createdAt && (
 					<Field>
-						<Label id={`${contactId}-created-at`}>{t('Created_at')}</Label>
-						<Info aria-labelledby={`${contactId}-created-at`}>{formatDate(createdAt)}</Info>
+						<Label id={`${contact._id}-created-at`}>{t('Created_at')}</Label>
+						<Info aria-labelledby={`${contact._id}-created-at`}>{formatDate(createdAt)}</Info>
 					</Field>
 				)}
 

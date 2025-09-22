@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
 import { WizardActions, WizardBackButton } from '@rocket.chat/ui-client';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -16,10 +16,10 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 	const sendMutation = useMutation({ mutationFn: onSend });
 
 	return (
-		<div>
-			<Box maxHeight={500} overflowX='hidden' overflowY='auto'>
-				<OutboundMessagePreview {...props} />
-			</Box>
+		<Box display='flex' flexDirection='column' height='100%'>
+			<Scrollable vertical>
+				<OutboundMessagePreview {...props} maxHeight={500} />
+			</Scrollable>
 
 			<WizardActions annotation={t('Messages_cannot_be_unsent')}>
 				<WizardBackButton />
@@ -28,7 +28,7 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 					{t('Send')}
 				</Button>
 			</WizardActions>
-		</div>
+		</Box>
 	);
 };
 
