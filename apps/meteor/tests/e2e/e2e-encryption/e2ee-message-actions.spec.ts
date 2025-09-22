@@ -98,7 +98,7 @@ test.describe('E2EE Message Actions', () => {
 			await poHomeChannel.tabs.btnPinnedMessagesList.click();
 			await pinnedMessagesTab.expectToBeVisible();
 			await pinnedMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
-			await poHomeChannel.content.openLastMessageMenu();
+			await pinnedMessagesTab.openLastMessageMenu();
 			await e2eeMessageActions.expectCopyLinkToBeDisabled();
 			await poHomeChannel.btnContextualbarClose.click();
 		});
@@ -108,7 +108,7 @@ test.describe('E2EE Message Actions', () => {
 			await poHomeChannel.tabs.btnStarredMessageList.click();
 			await starredMessagesTab.expectToBeVisible();
 			await starredMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
-			await poHomeChannel.content.openLastMessageMenu();
+			await starredMessagesTab.openLastMessageMenu();
 			await e2eeMessageActions.expectCopyLinkToBeDisabled();
 		});
 	});

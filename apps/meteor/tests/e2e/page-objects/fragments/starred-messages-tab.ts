@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Message } from './message';
 import { expect } from '../../utils/test';
 
 export class StarredMessagesTab {
@@ -9,8 +10,8 @@ export class StarredMessagesTab {
 		this.root = page.getByRole('dialog', { name: 'Starred Messages' });
 	}
 
-	private get lastMessage(): Locator {
-		return this.root.locator('[data-qa-type="message"]').last();
+	private get lastMessage(): Message {
+		return new Message(this.root.locator('[data-qa-type="message"]').last());
 	}
 
 	async expectToBeVisible(): Promise<void> {
@@ -18,6 +19,10 @@ export class StarredMessagesTab {
 	}
 
 	async expectLastMessageToContainText(text: string): Promise<void> {
-		await expect(this.lastMessage).toContainText(text);
+		await expect(this.lastMessage.root).toContainText(text);
+	}
+
+	async openLastMessageMenu(): Promise<void> {
+		await this.lastMessage.openMenu();
 	}
 }
