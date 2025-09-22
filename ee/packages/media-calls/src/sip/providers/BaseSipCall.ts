@@ -2,7 +2,6 @@ import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
-import type { SrfRequest } from 'drachtio-srf';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
 import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
@@ -55,6 +54,6 @@ export abstract class BaseSipCall extends BaseCallProvider {
 				'Content-Type': 'application/dtmf-relay',
 			},
 			body: `Signal=${dtmf}\r\nDuration=${duration}`,
-		} as unknown as SrfRequest);
+		});
 	}
 }

@@ -1,8 +1,15 @@
 diff --git a/lib/@types/index.d.ts b/lib/@types/index.d.ts
-index f71a82f458c1432202be8d4585fc70ba94bee4a4..51da8bac2d63e25772b2f738e1fe29c0407ac2cd 100644
+index f71a82f458c1432202be8d4585fc70ba94bee4a4..b874ee9e1fa8a051f06d4824fc12161acfadb78a 100644
 --- a/lib/@types/index.d.ts
 +++ b/lib/@types/index.d.ts
-@@ -124,7 +124,7 @@ declare namespace Srf {
+@@ -119,12 +119,12 @@ declare namespace Srf {
+     on(messageType: "modify", callback: (req: SrfRequest, res: SrfResponse) => void): void;
+     once(messageType: string, callback: (msg: SrfResponse) => void): void;
+     listeners(messageType: string): any[];
+-    request(opts?: SrfRequest): Promise<SrfResponse>;
+-    request(opts: SrfRequest, callback?: (err: any, msg: SrfResponse) => void): void;
++    request(opts?: Partial<SrfRequest>): Promise<SrfResponse>;
++    request(opts: Partial<SrfRequest>, callback?: (err: any, msg: SrfResponse) => void): void;
    }
  
    export interface CreateUASOptions {

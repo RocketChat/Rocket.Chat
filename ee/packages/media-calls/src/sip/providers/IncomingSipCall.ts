@@ -242,7 +242,7 @@ export class IncomingSipCall extends BaseSipCall {
 					'Refer-To': referTo,
 					'Referred-By': referredBy,
 				},
-			} as unknown as SrfRequest);
+			});
 
 			if (res.status === 202) {
 				logger.debug({ msg: 'REFER was accepted', method: 'IncomingSipCall.processTransferredCall' });
