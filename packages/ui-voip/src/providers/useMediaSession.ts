@@ -265,8 +265,21 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			mainCall.transfer({ type, id });
 		};
 
-		const sendTone = (_tone: string) => {
-			// dispatch({ type: 'sendTone', payload: { tone } });
+		const sendTone = (tone: string) => {
+			if (!instance) {
+				return;
+			}
+
+			const mainCall = instance.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			try {
+				mainCall.sendDTMF(tone);
+			} catch (error) {
+				console.error('Error sending tone', error);
+			}
 		};
 
 		return {
