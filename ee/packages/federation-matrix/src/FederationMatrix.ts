@@ -30,7 +30,7 @@ import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
-type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
+export type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
 
 export const fileTypes: Record<string, MatrixFileTypes> = {
 	image: 'm.image',
