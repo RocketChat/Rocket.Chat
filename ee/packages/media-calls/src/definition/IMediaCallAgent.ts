@@ -18,6 +18,8 @@ export interface IMediaCallAgent {
 	/* Called when the sdp of the other actor is available, regardless of call state, or when this actor must provide an offer */
 	onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void>;
 
+	onDTMF(callId: string, tone: string, duration: number): Promise<void>;
+
 	onCallTransferred(callId: string): Promise<void>;
 
 	getMyCallActor(call: IMediaCall): MediaCallContact;

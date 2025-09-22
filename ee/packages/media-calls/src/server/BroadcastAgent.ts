@@ -1,4 +1,5 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
+import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
 import { BaseMediaCallAgent } from '../base/BaseAgent';
 import { logger } from '../logger';
@@ -16,19 +17,19 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public async onCallAccepted(callId: string, _signedContractId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallAccepted', callId });
 
-		this.reportCallUpdated(callId);
+		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallEnded', callId });
 
-		this.reportCallUpdated(callId);
+		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallActive', callId });
 
-		this.reportCallUpdated(callId);
+		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
@@ -39,23 +40,30 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
 
-		this.reportCallUpdated(callId);
+		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallTransferred', callId });
 
-		this.reportCallUpdated(callId);
+		this.reportCallUpdated({ callId });
 	}
 
-	protected reportCallUpdated(callId: string): void {
+	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'BroadcastActorAgent.onDTMF', callId, dtmf, duration });
+		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
+	}
+
+	protected reportCallUpdated(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
+		const { callId, ...otherParams } = params;
+
 		if (this.provider?.callId === callId) {
-			this.provider.reactToCallChanges().catch(() => {
-				getMediaCallServer().reportCallUpdate(callId);
+			this.provider.reactToCallChanges(otherParams).catch(() => {
+				getMediaCallServer().reportCallUpdate(params);
 			});
 			return;
 		}
 
-		getMediaCallServer().reportCallUpdate(callId);
+		getMediaCallServer().reportCallUpdate(params);
 	}
 }

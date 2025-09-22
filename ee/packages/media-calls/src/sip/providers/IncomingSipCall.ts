@@ -5,7 +5,7 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
-import { isBusyState } from '@rocket.chat/media-signaling';
+import { ClientMediaSignalBody, isBusyState } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
@@ -193,8 +193,11 @@ export class IncomingSipCall extends BaseSipCall {
 		void MediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
 	}
 
-	protected async reflectCall(call: IMediaCall): Promise<void> {
-		logger.debug({ msg: 'IncomingSipCall.reflectCall', call, lastCallState: this.lastCallState });
+	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+		logger.debug({ msg: 'IncomingSipCall.reflectCall', call, lastCallState: this.lastCallState, params });
+		if (params.dtmf && this.sipDialog) {
+			return this.sendDTMF(this.sipDialog, params.dtmf.dtmf, params.dtmf.duration || 2000);
+		}
 
 		if (call.transferredTo && call.transferredBy) {
 			return this.processTransferredCall(call);

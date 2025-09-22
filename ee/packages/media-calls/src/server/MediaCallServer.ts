@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
-import type { CallRejectedReason, ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { CallRejectedReason, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
 import { MediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
@@ -59,10 +59,10 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('signalRequest', { toUid, signal });
 	}
 
-	public reportCallUpdate(callId: string): void {
-		logger.debug({ msg: 'MediaCallServer.reportCallUpdate', callId });
+	public reportCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
+		logger.debug({ msg: 'MediaCallServer.reportCallUpdate', params });
 
-		this.emitter.emit('callUpdated', callId);
+		this.emitter.emit('callUpdated', params);
 	}
 
 	public async requestCall(params: InternalCallParams): Promise<void> {
@@ -106,8 +106,8 @@ export class MediaCallServer implements IMediaCallServer {
 		await InternalCallProvider.createCall(params);
 	}
 
-	public receiveCallUpdate(callId: string): void {
-		this.session.reactToCallUpdate(callId);
+	public receiveCallUpdate(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'>}): void {
+		this.session.reactToCallUpdate(params);
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {

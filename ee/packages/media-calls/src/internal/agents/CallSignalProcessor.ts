@@ -1,4 +1,10 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActorType, MediaCallSignedActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IMediaCallChannel,
+	MediaCallActorType,
+	MediaCallSignedActor,
+	MediaCallSignedContact,
+} from '@rocket.chat/core-typings';
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
 	ClientMediaSignalTransfer,
@@ -95,6 +101,8 @@ export class UserActorSignalProcessor {
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
 			case 'transfer':
 				return this.processCallTransfer(signal.to);
+			case 'dtmf':
+				return this.processDTMF(signal.dtmf, signal.duration);
 		}
 	}
 
@@ -168,6 +176,12 @@ export class UserActorSignalProcessor {
 		};
 
 		return MediaCallDirector.transferCall(this.call, to, self, this.agent);
+	}
+
+	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
+
+		this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
 	}
 
 	protected async clientIsReachable(): Promise<void> {

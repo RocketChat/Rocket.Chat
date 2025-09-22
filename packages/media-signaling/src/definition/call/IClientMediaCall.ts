@@ -88,4 +88,6 @@ export interface IClientMediaCall {
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
 	transfer(callee: { type: CallActorType; id: string }): void;
+
+	sendDTMF(dtmf: string, duration?: number): void;
 }

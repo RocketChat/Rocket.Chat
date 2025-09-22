@@ -1,6 +1,7 @@
 import type { Socket } from 'net';
 
 import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
+import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
@@ -37,15 +38,17 @@ export class SipServerSession {
 		this.initializeDrachtio();
 	}
 
-	public reactToCallUpdate(callId: string): void {
+	public reactToCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'>}): void {
+		const { callId, ...otherParams } = params;
+
 		const sipCall = this.knownCalls.get(callId);
 		if (!sipCall) {
 			// If we don't know this call, then it's probably being handled by a session in some other server instance
 			return;
 		}
 
-		sipCall.reactToCallChanges().catch((error) => {
-			logger.error({ msg: 'Failed to react to call changes', error, call: sipCall.call });
+		sipCall.reactToCallChanges(otherParams).catch((error) => {
+			logger.error({ msg: 'Failed to react to call changes', error, call: sipCall.call, otherParams });
 		});
 	}
 

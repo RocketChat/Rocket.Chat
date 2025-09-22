@@ -630,6 +630,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	public sendDTMF(dtmf: string, duration?: number): void {
+		if (!dtmf || !/^[0-9A-D#*,]$/.exec(dtmf)) {
+			throw new Error('Invalid DTMF tone.');
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'dtmf', {
+			dtmf,
+			duration,
+		});
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;

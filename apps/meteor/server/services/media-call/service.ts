@@ -15,8 +15,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	constructor() {
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
-		callServer.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
-		this.onEvent('media-call.updated', (callId) => callServer.receiveCallUpdate(callId));
+		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
+		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id.startsWith('VoIP_TeamCollab_')) {

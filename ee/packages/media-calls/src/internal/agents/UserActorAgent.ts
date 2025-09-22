@@ -161,6 +161,11 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration });
+		// internal calls have nothing to do with DTMFs
+	}
+
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
 		return {
 			callId: call._id,

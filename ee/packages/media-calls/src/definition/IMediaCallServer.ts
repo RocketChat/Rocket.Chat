@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
 import type { InternalCallParams } from './common';
 
 export type MediaCallServerEvents = {
-	callUpdated: string;
+	callUpdated: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> };
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
 };
 
@@ -38,11 +38,11 @@ export interface IMediaCallServer {
 
 	// functions that trigger events
 	sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
-	reportCallUpdate(callId: string): void;
+	reportCallUpdate(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 
 	// functions that are run on events
 	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;
-	receiveCallUpdate(callId: string): void;
+	receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 
 	// extra functions available to the service
 	hangupExpiredCalls(): Promise<void>;

@@ -10,6 +10,7 @@ import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialog: Srf.Dialog | null;
@@ -74,8 +75,12 @@ export class OutgoingSipCall extends BaseSipCall {
 		return call;
 	}
 
-	protected async reflectCall(call: IMediaCall): Promise<void> {
-		logger.debug({ msg: 'OutgoingSipCall.reflectCall', call, lastCallState: this.lastCallState });
+	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+		logger.debug({ msg: 'OutgoingSipCall.reflectCall', call, lastCallState: this.lastCallState, params });
+		if (params.dtmf && this.sipDialog) {
+			return this.sendDTMF(this.sipDialog, params.dtmf.dtmf, params.dtmf.duration || 2000);
+		}
+
 		if (call.transferredTo && call.transferredBy) {
 			return this.processTransferredCall(call);
 		}
