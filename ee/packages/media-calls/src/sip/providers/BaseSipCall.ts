@@ -20,10 +20,6 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.lastCallState = 'none';
 	}
 
-	public async updateCall(_call: IMediaCall): Promise<void> {
-		//
-	}
-
 	public async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		// If we already knew this call was over, there's nothing more to reflect
 		if (this.lastCallState === 'hangup') {

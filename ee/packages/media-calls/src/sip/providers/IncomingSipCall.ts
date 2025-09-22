@@ -5,7 +5,7 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
-import { ClientMediaSignalBody, isBusyState } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';

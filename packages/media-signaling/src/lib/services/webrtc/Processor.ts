@@ -166,25 +166,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			.getTransceivers()
 			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
 
-		console.log(transceivers.map((trans) => ({ currentDirection: trans.currentDirection, direction: trans.direction })));
-
 		if (!transceivers.length) {
 			throw new Error('no-audio-transceiver');
 		}
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.startNewNegotiation();
-			console.log('set remote description', sdp);
 			await this.peer.setRemoteDescription(sdp);
 		}
 
-		console.log('create answer');
 		const answer = await this.peer.createAnswer();
 
 		this.lastSetLocalDescription = answer.sdp || null;
-		console.log('set local description', answer);
 		await this.peer.setLocalDescription(answer);
-		console.log('get local description');
 
 		return this.getLocalDescription();
 	}
@@ -220,10 +214,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 	}
 
-	// private updateDirectionForAnswer(): void {
-	// 	//
-	// }
-
 	private changeInternalState(stateName: keyof WebRTCInternalStateMap): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.changeInternalState', stateName);
 		this.emitter.emit('internalStateChange', stateName);
@@ -247,8 +237,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.iceCandidateCount === 0) {
 			this.emitter.emit('internalError', { critical: true, error: 'no-ice-candidates' });
 		}
-
-		console.log('LOCAL DESCRIPTION', sdp);
 
 		return {
 			sdp,

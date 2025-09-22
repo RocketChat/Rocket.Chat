@@ -796,7 +796,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
-			console.log(e);
+			this.config.logger?.error(e);
 			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
 			throw e;
 		}

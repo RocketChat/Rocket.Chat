@@ -106,7 +106,7 @@ export class MediaCallServer implements IMediaCallServer {
 		await InternalCallProvider.createCall(params);
 	}
 
-	public receiveCallUpdate(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'>}): void {
+	public receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		this.session.reactToCallUpdate(params);
 	}
 
@@ -119,7 +119,7 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public configure(settings: IMediaCallServerSettings): void {
-		logger.debug({ msg: 'Media Server Configuration', settings });
+		logger.debug({ msg: 'Media Server Configuration' });
 		this.session.configure(settings);
 		this.settings = settings;
 	}
