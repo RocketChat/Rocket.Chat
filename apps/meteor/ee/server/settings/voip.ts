@@ -48,14 +48,14 @@ export function addSettings(): Promise<void> {
 
 					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {
 						type: 'string',
-						public: true,
+						public: false,
 						invalidValue: '',
 						enableQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_Drachtio_Port', 9022, {
 						type: 'int',
-						public: true,
+						public: false,
 						invalidValue: 9022,
 						enableQuery,
 					});
@@ -69,14 +69,14 @@ export function addSettings(): Promise<void> {
 
 					await this.add('VoIP_TeamCollab_SIP_Server_Host', '', {
 						type: 'string',
-						public: true,
+						public: false,
 						invalidValue: '',
 						enableQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_SIP_Server_Port', 5080, {
 						type: 'int',
-						public: true,
+						public: false,
 						invalidValue: 5080,
 						enableQuery,
 					});
@@ -85,14 +85,14 @@ export function addSettings(): Promise<void> {
 				await this.section('VoIP_TeamCollab_FreeSwitch', async function () {
 					await this.add('VoIP_TeamCollab_FreeSwitch_Host', '', {
 						type: 'string',
-						public: true,
+						public: false,
 						invalidValue: '',
 						enableQuery,
 					});
 
 					await this.add('VoIP_TeamCollab_FreeSwitch_Port', 8021, {
 						type: 'int',
-						public: true,
+						public: false,
 						invalidValue: 8021,
 						enableQuery,
 					});
