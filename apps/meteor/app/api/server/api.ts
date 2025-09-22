@@ -775,8 +775,8 @@ export class APIClass<
 							const user = await api.authenticatedRoute(this.request);
 							this.user = user!;
 							this.userId = this.user?._id;
-							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
+							this.token = (this.request.headers['x-auth-token'] &&
+								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
 						}
 
 						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
