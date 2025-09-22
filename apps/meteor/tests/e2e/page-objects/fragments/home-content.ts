@@ -79,34 +79,6 @@ export class HomeContent {
 		return this.page.getByRole('button', { name: channelName });
 	}
 
-	get btnForwardMessageDisabled(): Locator {
-		return this.page.getByRole('button', { name: 'Forward message not available on encrypted content' });
-	}
-
-	get btnOptionReplyInDirectMessage(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Reply in direct message' });
-	}
-
-	get btnOptionCopyLink(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Copy link' });
-	}
-
-	get pinnedMessagesDialog(): Locator {
-		return this.page.getByRole('dialog', { name: 'Pinned Messages' });
-	}
-
-	get starredMessagesDialog(): Locator {
-		return this.page.getByRole('dialog', { name: 'Starred Messages' });
-	}
-
-	get lastPinnedMessage(): Locator {
-		return this.pinnedMessagesDialog.locator('[data-qa-type="message"]').last();
-	}
-
-	get lastStarredMessage(): Locator {
-		return this.starredMessagesDialog.locator('[data-qa-type="message"]').last();
-	}
-
 	get lastIgnoredUserMessage(): Locator {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
