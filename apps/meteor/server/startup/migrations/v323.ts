@@ -11,12 +11,17 @@ addMigration({
 		try {
 			await AppLogs.col.dropIndex('appId_indexed_query');
 		} catch (e: any) {
-			if (e?.code !== 27 && e?.codeName !== 'IndexNotFound') throw e;
+			if (e?.code !== 27 && e?.codeName !== 'IndexNotFound') {
+				throw e;
+			}
 		}
+
 		try {
 			await AppLogs.col.dropIndex('general_logs_index');
 		} catch (e: any) {
-			if (e?.code !== 27 && e?.codeName !== 'IndexNotFound') throw e;
+			if (e?.code !== 27 && e?.codeName !== 'IndexNotFound') {
+				throw e;
+			}
 		}
 	},
 });
