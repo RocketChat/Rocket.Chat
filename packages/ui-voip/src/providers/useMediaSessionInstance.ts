@@ -30,19 +30,6 @@ export type SessionInfo = EmptySession | CallSession;
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
-const logger = {
-	logs: [] as string[],
-	log: (...args: any[]) => {
-		logger.logs.push(JSON.stringify(args));
-	},
-	debug: (...args: any[]) => logger.log(...args),
-	info: (...args: any[]) => logger.log(...args),
-	warn: (...args: any[]) => logger.log(...args),
-	error: (...args: any[]) => logger.log(...args),
-};
-
-console.log(logger);
-
 const randomStringFactory = () => {
 	if (!window.crypto) {
 		return Math.random().toString(36).substring(2, 15);
@@ -124,7 +111,6 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
-			logger,
 			oldSessionId: this.getOldSessionId(userId),
 		});
 
