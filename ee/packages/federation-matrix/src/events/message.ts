@@ -1,4 +1,6 @@
+import type { FileMessageType, MessageType } from '@hs/core';
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
+import type { EventID } from '@hs/room';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
@@ -108,7 +110,7 @@ async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): 
 	return room;
 }
 
-async function getThreadMessageId(threadRootEventId: string): Promise<{ tmid: string; tshow: boolean } | undefined> {
+async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
 	if (!threadRootMessage) {
 		logger.warn('Thread root message not found for event:', threadRootEventId);
@@ -122,7 +124,7 @@ async function getThreadMessageId(threadRootEventId: string): Promise<{ tmid: st
 async function handleMediaMessage(
 	// TODO improve typing
 	content: any,
-	msgtype: string,
+	msgtype: MessageType,
 	messageBody: string,
 	user: IUser,
 	room: IRoom,
@@ -218,8 +220,7 @@ async function handleMediaMessage(
 export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
-			// TODO remove type casting
-			const content = data.content as any;
+			const { content } = data;
 			const msgtype = content?.msgtype;
 			const messageBody = content?.body?.toString();
 
@@ -238,24 +239,26 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			const replyToRelation = content?.['m.relates_to'];
-			const threadRelation = content?.['m.relates_to'];
-			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
-			const isQuoteMessage = replyToRelation?.['m.in_reply_to']?.event_id && !replyToRelation?.is_falling_back;
-			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
-			const thread = await getThreadMessageId(threadRootEventId);
+			const relation = content['m.relates_to'];
 
-			const isMediaMessage = Object.values(fileTypes).includes(msgtype);
+			const isThreadMessage = relation && relation.rel_type === 'm.thread';
+			const threadRootEventId = isThreadMessage && relation.event_id;
 
-			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
-			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
+			const quoteMessageEventId = relation && 'm.in_reply_to' in relation && relation['m.in_reply_to']?.event_id;
+
+			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
+
+			const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
+
+			const isEditedMessage = relation?.rel_type === 'm.replace';
+			if (isEditedMessage && relation?.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
-				const originalMessage = await Messages.findOneByFederationId(data.content['m.relates_to'].event_id);
+				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', data.content['m.relates_to'].event_id);
+					logger.error('Original message not found for edit:', relation.event_id);
 					return;
 				}
-				if (originalMessage.federation?.eventId !== data.content['m.relates_to'].event_id) {
+				if (originalMessage.federation?.eventId !== relation.event_id) {
 					return;
 				}
 				if (originalMessage.msg === data.content['m.new_content']?.body) {
@@ -263,7 +266,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					return;
 				}
 
-				if (isQuoteMessage && room.name) {
+				if (quoteMessageEventId && room.name) {
 					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(
 						room.t as string,
 						room._id,
@@ -305,10 +308,10 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			if (isQuoteMessage && room.name) {
-				const originalMessage = await Messages.findOneByFederationId(replyToRelation?.['m.in_reply_to']?.event_id);
+			if (quoteMessageEventId && room.name) {
+				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
-					logger.error('Original message not found for quote:', replyToRelation?.['m.in_reply_to']?.event_id);
+					logger.error('Original message not found for quote:', quoteMessageEventId);
 					return;
 				}
 				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, room.name, originalMessage._id);
