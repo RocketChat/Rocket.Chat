@@ -58,7 +58,7 @@ const replaceNullValues = generator(replaceNullValuesInterpolation, 'nullValues'
 const replaceNestedPlurals = (
 	dictionary: Record<string, any>,
 	language: string,
-	cb: (statName: string, info: { language: string; key: string }) => void,
+	cb?: (statName: string, info: { language: string; key: string }) => void,
 ) => {
 	const entries = [];
 	const plurals = ['zero', 'one', 'two', 'few', 'many', 'other'];
@@ -93,7 +93,7 @@ const pipe =
 export const normalizeI18nInterpolations = (
 	dictionary: Record<string, any>,
 	language: string,
-	cb: (statName: string, info: { language: string; key: string }) => void,
+	cb?: (statName: string, info: { language: string; key: string }) => void,
 ) => {
 	const result = pipe(
 		replaceNestedPlurals,
