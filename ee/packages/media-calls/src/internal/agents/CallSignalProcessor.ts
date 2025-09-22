@@ -20,7 +20,7 @@ import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.ch
 
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
-import { MediaCallDirector } from '../../server/CallDirector';
+import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal, stripSensitiveDataFromSdp } from '../../server/stripSensitiveData';
 
@@ -107,7 +107,7 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async hangup(reason: CallHangupReason): Promise<void> {
-		return MediaCallDirector.hangup(this.call, this.agent, reason);
+		return mediaCallDirector.hangup(this.call, this.agent, reason);
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
@@ -117,7 +117,7 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
+		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}
 
 	private async processAnswer(answer: CallAnswer): Promise<void> {
@@ -158,7 +158,7 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		const negotiationId = await MediaCallDirector.startNewNegotiation(this.call, this.role);
+		const negotiationId = await mediaCallDirector.startNewNegotiation(this.call, this.role);
 		if (negotiationId) {
 			await this.requestWebRTCOffer({ negotiationId });
 		}
@@ -175,7 +175,7 @@ export class UserActorSignalProcessor {
 			...this.actor,
 		};
 
-		return MediaCallDirector.transferCall(this.call, to, self, this.agent);
+		return mediaCallDirector.transferCall(this.call, to, self, this.agent);
 	}
 
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
@@ -189,16 +189,16 @@ export class UserActorSignalProcessor {
 
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
-			const ringUpdateResult = await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
+			const ringUpdateResult = await MediaCalls.startRingingById(this.callId, mediaCallDirector.getNewExpirationTime());
 			if (ringUpdateResult.modifiedCount) {
-				MediaCallDirector.scheduleExpirationCheckByCallId(this.callId);
+				mediaCallDirector.scheduleExpirationCheckByCallId(this.callId);
 			}
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
 		if (this.role === 'caller' && this.signed) {
 			// When the signed caller's client is reached, we immediatelly start the first negotiation
-			const negotiationId = await MediaCallDirector.startFirstNegotiation(this.call);
+			const negotiationId = await mediaCallDirector.startFirstNegotiation(this.call);
 			if (negotiationId) {
 				await this.requestWebRTCOffer({ negotiationId });
 			}
@@ -212,7 +212,7 @@ export class UserActorSignalProcessor {
 		}
 
 		if (this.role === 'callee') {
-			return MediaCallDirector.hangup(this.call, this.agent, 'rejected');
+			return mediaCallDirector.hangup(this.call, this.agent, 'rejected');
 		}
 	}
 
@@ -223,7 +223,7 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		await MediaCallDirector.hangup(this.call, this.agent, 'unavailable');
+		await mediaCallDirector.hangup(this.call, this.agent, 'unavailable');
 	}
 
 	protected async clientHasAccepted(): Promise<void> {
@@ -233,14 +233,14 @@ export class UserActorSignalProcessor {
 		}
 
 		if (this.role === 'callee') {
-			await MediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
+			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
 		}
 	}
 
 	protected async clientIsActive(): Promise<void> {
 		const result = await MediaCallChannels.setActiveById(this.channel._id);
 		if (result.modifiedCount) {
-			await MediaCallDirector.activate(this.call, this.agent);
+			await mediaCallDirector.activate(this.call, this.agent);
 		}
 	}
 
@@ -276,7 +276,7 @@ export class UserActorSignalProcessor {
 
 	private async onSignalingError(errorMessage?: string): Promise<void> {
 		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await MediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
+		await mediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
 	}
 
 	private async onServiceError(errorMessage?: string): Promise<void> {
@@ -285,7 +285,7 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
+		await mediaCallDirector.hangup(this.call, this.agent, 'service-error');
 	}
 
 	private async onUnexpectedError(errorMessage?: string): Promise<void> {
@@ -296,6 +296,6 @@ export class UserActorSignalProcessor {
 			role: this.role,
 			state: this.call.state,
 		});
-		await MediaCallDirector.hangup(this.call, this.agent, 'error');
+		await mediaCallDirector.hangup(this.call, this.agent, 'error');
 	}
 }

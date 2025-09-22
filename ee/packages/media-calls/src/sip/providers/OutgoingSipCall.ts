@@ -1,4 +1,5 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest } from 'drachtio-srf';
@@ -7,10 +8,9 @@ import { BaseSipCall } from './BaseSipCall';
 import type { InternalCallParams } from '../../definition/common';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
-import { MediaCallDirector } from '../../server/CallDirector';
+import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
-import { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialog: Srf.Dialog | null;
@@ -42,7 +42,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			contractId: session.sessionId,
 		};
 
-		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(signedCallee, 'callee');
+		const calleeAgent = await mediaCallDirector.cast.getAgentForActorAndRole(signedCallee, 'callee');
 		if (!calleeAgent) {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
@@ -51,12 +51,12 @@ export class OutgoingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
 		}
 
-		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
+		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		if (!callerAgent) {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
-		const call = await MediaCallDirector.createCall({
+		const call = await mediaCallDirector.createCall({
 			...extraParams,
 			callee: signedCallee,
 			calleeAgent,
@@ -106,7 +106,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
-		const updateResult = await MediaCalls.startRingingById(call._id, MediaCallDirector.getNewExpirationTime());
+		const updateResult = await MediaCalls.startRingingById(call._id, mediaCallDirector.getNewExpirationTime());
 		if (!updateResult.modifiedCount) {
 			logger.debug({ msg: 'unable to set call state to ringing; skipping dialog creation.' });
 			return;
@@ -148,7 +148,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error });
 			const errorCode = this.getSipErrorCode(error);
 			if (errorCode) {
-				void MediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
+				void mediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
 				this.cancelAnyPendingRequest();
 				return;
 			}
@@ -157,7 +157,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		if (!this.sipDialog) {
 			logger.debug({ msg: 'OutgoingSipCall.createDialog - no dialog' });
 			this.cancelAnyPendingRequest();
-			void MediaCallDirector.hangupByServer(call, 'failed-to-create-sip-dialog');
+			void mediaCallDirector.hangupByServer(call, 'failed-to-create-sip-dialog');
 			return;
 		}
 
@@ -165,13 +165,13 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog.on('destroy', () => {
 			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
 			this.sipDialog = null;
-			void MediaCallDirector.hangup(call, this.agent, 'remote');
+			void mediaCallDirector.hangup(call, this.agent, 'remote');
 		});
 
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 
 		// This will not do anything if the call is no longer waiting to be accepted.
-		await MediaCallDirector.acceptCall(call, this.agent, {
+		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 		});
@@ -193,7 +193,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 		try {
 			// Sip targets can only be referred to other sip users
-			const newCallee = await MediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
+			const newCallee = await mediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
 			if (!newCallee) {
 				throw new Error('invalid-transfer');
 			}
@@ -215,7 +215,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		} catch (error) {
 			logger.debug({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error });
 			if (!call.ended) {
-				void MediaCallDirector.hangupByServer(call, 'sip-refer-failed');
+				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}
 			return this.processEndedCall();
 		}

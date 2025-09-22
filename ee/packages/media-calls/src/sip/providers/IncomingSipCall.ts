@@ -13,7 +13,7 @@ import type Srf from 'drachtio-srf';
 import { BaseSipCall } from './BaseSipCall';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
-import { MediaCallDirector } from '../../server/CallDirector';
+import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
@@ -69,7 +69,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'incoming call from', caller });
 		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
-		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
+		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
 		if (!callerAgent) {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
@@ -78,12 +78,12 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
 		}
 
-		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(callee, 'callee');
+		const calleeAgent = await mediaCallDirector.cast.getAgentForActorAndRole(callee, 'callee');
 		if (!calleeAgent) {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
-		const call = await MediaCallDirector.createCall({
+		const call = await mediaCallDirector.createCall({
 			caller,
 			callee,
 
@@ -91,7 +91,7 @@ export class IncomingSipCall extends BaseSipCall {
 			calleeAgent,
 		});
 
-		const negotiationId = await MediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
+		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
 		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
 
@@ -124,7 +124,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!uas) {
 			logger.debug({ msg: 'IncomingSipCall.createDialog - dialog creation failed' });
-			void MediaCallDirector.hangupByServer(this.call, 'failed-to-create-sip-dialog');
+			void mediaCallDirector.hangupByServer(this.call, 'failed-to-create-sip-dialog');
 		}
 
 		uas.on('modify', async (req, res) => {
@@ -137,9 +137,9 @@ export class IncomingSipCall extends BaseSipCall {
 				calledNumber: req?.calledNumber,
 			});
 			try {
-				negotiationId = await MediaCallDirector.startNewNegotiation(this.call, 'caller', webrtcOffer);
+				negotiationId = await mediaCallDirector.startNewNegotiation(this.call, 'caller', webrtcOffer);
 
-				const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(this.call.callee, 'callee');
+				const calleeAgent = await mediaCallDirector.cast.getAgentForActorAndRole(this.call.callee, 'callee');
 				if (!calleeAgent) {
 					logger.error({ msg: 'Failed to retrieve callee agent', method: 'IncomingSipCall.uas.modify', callee: this.call.callee });
 					res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
@@ -181,7 +181,7 @@ export class IncomingSipCall extends BaseSipCall {
 		uas.on('destroy', () => {
 			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
 			this.sipDialog = null;
-			void MediaCallDirector.hangup(this.call, this.agent, 'remote');
+			void mediaCallDirector.hangup(this.call, this.agent, 'remote');
 		});
 
 		this.sipDialog = uas;
@@ -190,7 +190,7 @@ export class IncomingSipCall extends BaseSipCall {
 	protected cancel(res: SipMessage): void {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res });
 
-		void MediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
@@ -228,7 +228,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		try {
 			// Sip targets can only be referred to other sip users
-			const newCallee = await MediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
+			const newCallee = await mediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
 			if (!newCallee) {
 				throw new Error('invalid-transfer');
 			}
@@ -250,7 +250,7 @@ export class IncomingSipCall extends BaseSipCall {
 		} catch (error) {
 			logger.debug({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', error });
 			if (!call.ended) {
-				void MediaCallDirector.hangupByServer(call, 'sip-refer-failed');
+				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}
 			return this.processEndedCall(call);
 		}
@@ -363,14 +363,14 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug('IncomingSipCall.hangupPendingCall');
 
 		this.cancelPendingInvites(errorCode);
-		void MediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
+		void mediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {
 		logger.debug({ msg: 'IncomingSipCall.getCalleeFromInvite', callingNumber: req.callingNumber, calledNumber: req.calledNumber });
 
 		if (req.calledNumber && typeof req.calledNumber === 'string') {
-			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.calledNumber, { requiredType: 'user' });
+			const userContact = await mediaCallDirector.cast.getContactForExtensionNumber(req.calledNumber, { requiredType: 'user' });
 			if (userContact) {
 				return userContact;
 			}
@@ -391,7 +391,7 @@ export class IncomingSipCall extends BaseSipCall {
 		});
 
 		if (req.callingNumber && typeof req.callingNumber === 'string') {
-			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.callingNumber, { preferredType: 'sip' });
+			const userContact = await mediaCallDirector.cast.getContactForExtensionNumber(req.callingNumber, { preferredType: 'sip' });
 			if (userContact) {
 				return userContact;
 			}
@@ -418,7 +418,7 @@ export class IncomingSipCall extends BaseSipCall {
 			displayName: displayName || sipExtension,
 		};
 
-		const contact = await MediaCallDirector.cast.getContactForExtensionNumber(sipExtension, { requiredType: 'sip' }, defaultContactInfo);
+		const contact = await mediaCallDirector.cast.getContactForExtensionNumber(sipExtension, { requiredType: 'sip' }, defaultContactInfo);
 
 		if (contact) {
 			return {

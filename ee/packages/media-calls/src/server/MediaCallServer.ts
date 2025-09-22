@@ -3,7 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { CallRejectedReason, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import { MediaCallDirector } from './CallDirector';
+import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
 import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
 import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
@@ -111,11 +111,11 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {
-		return MediaCallDirector.hangupExpiredCalls();
+		return mediaCallDirector.hangupExpiredCalls();
 	}
 
 	public scheduleExpirationCheck(): void {
-		MediaCallDirector.scheduleExpirationCheck();
+		mediaCallDirector.scheduleExpirationCheck();
 	}
 
 	public configure(settings: IMediaCallServerSettings): void {
@@ -154,14 +154,14 @@ export class MediaCallServer implements IMediaCallServer {
 			throw new CallRejectedError('forbidden');
 		}
 
-		const caller = await MediaCallDirector.cast.getContactForActor(params.caller, { requiredType: callerRequiredType });
+		const caller = await mediaCallDirector.cast.getContactForActor(params.caller, { requiredType: callerRequiredType });
 		if (!caller) {
 			logger.debug('Failed to load caller contact information');
 			throw new CallRejectedError('invalid-call-params');
 		}
 
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
-		const callee = await MediaCallDirector.cast.getContactForActor(params.callee, this.getCalleeContactOptions());
+		const callee = await mediaCallDirector.cast.getContactForActor(params.callee, this.getCalleeContactOptions());
 		if (!callee) {
 			logger.debug('Failed to load callee contact information');
 			throw new CallRejectedError('invalid-call-params');
