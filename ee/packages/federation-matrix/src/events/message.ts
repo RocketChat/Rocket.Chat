@@ -1,4 +1,6 @@
+import type { FileMessageType, MessageType } from '@hs/core';
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
+import type { EventID } from '@hs/room';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
@@ -6,7 +8,6 @@ import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
-import type { MatrixFileTypes } from '../FederationMatrix';
 import { fileTypes } from '../FederationMatrix';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
 import { MatrixMediaService } from '../services/MatrixMediaService';
@@ -109,7 +110,7 @@ async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): 
 	return room;
 }
 
-async function getThreadMessageId(threadRootEventId: string): Promise<{ tmid: string; tshow: boolean } | undefined> {
+async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
 	if (!threadRootMessage) {
 		logger.warn('Thread root message not found for event:', threadRootEventId);
@@ -123,7 +124,7 @@ async function getThreadMessageId(threadRootEventId: string): Promise<{ tmid: st
 async function handleMediaMessage(
 	// TODO improve typing
 	content: any,
-	msgtype: string,
+	msgtype: MessageType,
 	messageBody: string,
 	user: IUser,
 	room: IRoom,
@@ -247,7 +248,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 
 			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
 
-			const isMediaMessage = Object.values(fileTypes).includes(msgtype as MatrixFileTypes);
+			const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
 
 			const isEditedMessage = relation?.rel_type === 'm.replace';
 			if (isEditedMessage && relation?.event_id && data.content['m.new_content']) {

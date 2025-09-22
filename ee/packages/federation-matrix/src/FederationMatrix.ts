@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import type { PresenceState } from '@hs/core';
+import type { FileMessageType, PresenceState } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import type { EventID } from '@hs/room';
@@ -30,9 +30,7 @@ import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
-export type MatrixFileTypes = 'm.image' | 'm.video' | 'm.audio' | 'm.file';
-
-export const fileTypes: Record<string, MatrixFileTypes> = {
+export const fileTypes: Record<string, FileMessageType> = {
 	image: 'm.image',
 	video: 'm.video',
 	audio: 'm.audio',
@@ -411,7 +409,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	private getMatrixMessageType(mimeType?: string): MatrixFileTypes {
+	private getMatrixMessageType(mimeType?: string): FileMessageType {
 		const mainType = mimeType?.split('/')[0];
 		if (!mainType) {
 			return fileTypes.file;
