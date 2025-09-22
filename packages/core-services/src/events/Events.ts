@@ -151,12 +151,7 @@ export type EventSignatures = {
 		scope?: string;
 	}): void;
 	'user.updateCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
-	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
-	'federation-matrix.user.typing'(data: { username: string; isTyping: boolean; roomId: string }): void;
-	'federation-matrix.user.presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
-		previousStatus?: UserStatus;
-	}): void;
+	'user.activity'(data: { user: string; isTyping: boolean; roomId: string }): void;
 	'user.video-conference'(data: {
 		userId: IUser['_id'];
 		action: string;

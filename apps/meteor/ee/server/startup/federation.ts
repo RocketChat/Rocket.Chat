@@ -5,6 +5,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 
 import { settings } from '../../../app/settings/server';
+import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
 import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
@@ -26,6 +27,17 @@ export const startFederationService = async (): Promise<void> => {
 
 		logger.debug('Starting federation-matrix service');
 		federationMatrixService = await FederationMatrix.create(InstanceStatus.id());
+
+		StreamerCentral.on('broadcast', (name, eventName, args) => {
+			if (!federationMatrixService) {
+				return;
+			}
+			if (name === 'notify-room' && eventName.endsWith('user-activity')) {
+				const [rid] = eventName.split('/');
+				const [user, activity] = args;
+				void federationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
+			}
+		});
 
 		try {
 			api.registerService(federationMatrixService);
