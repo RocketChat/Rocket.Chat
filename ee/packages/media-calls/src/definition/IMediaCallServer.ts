@@ -38,7 +38,7 @@ export interface IMediaCallServer {
 
 	// functions that trigger events
 	sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
-	reportCallUpdate(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
+	reportCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 
 	// functions that are run on events
 	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;

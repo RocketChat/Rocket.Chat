@@ -38,7 +38,7 @@ export class SipServerSession {
 		this.initializeDrachtio();
 	}
 
-	public reactToCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'>}): void {
+	public reactToCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		const { callId, ...otherParams } = params;
 
 		const sipCall = this.knownCalls.get(callId);
