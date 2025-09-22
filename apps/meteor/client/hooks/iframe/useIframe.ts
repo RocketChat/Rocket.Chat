@@ -60,13 +60,14 @@ export const useIframe = () => {
 				return;
 			}
 
-			loginWithToken(await result.json(), async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+			const body = await result.json();
+			loginWithToken(body, async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
 				if (error) {
 					setIframeLoginUrl(url);
 				} else {
 					setIframeLoginUrl(undefined);
 				}
-				callback?.(error, await result.json());
+				callback?.(error, body);
 			});
 		} catch (error) {
 			setIframeLoginUrl(url);
