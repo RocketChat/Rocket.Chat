@@ -41,8 +41,6 @@ import {
 	LivechatTriggerRaw,
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
-	MatrixBridgedRoomRaw,
-	MatrixBridgedUserRaw,
 	MessageReadsRaw,
 	MessagesRaw,
 	MigrationsRaw,
@@ -132,8 +130,6 @@ registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
-registerModel('IMatrixBridgedRoomModel', new MatrixBridgedRoomRaw(db));
-registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
