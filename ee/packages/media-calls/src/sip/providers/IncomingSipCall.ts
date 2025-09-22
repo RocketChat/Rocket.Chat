@@ -85,7 +85,6 @@ export class IncomingSipCall extends BaseSipCall {
 		const call = await mediaCallDirector.createCall({
 			caller,
 			callee,
-
 			callerAgent,
 			calleeAgent,
 		});
@@ -123,6 +122,7 @@ export class IncomingSipCall extends BaseSipCall {
 		if (!uas) {
 			logger.debug({ msg: 'IncomingSipCall.createDialog - dialog creation failed' });
 			void mediaCallDirector.hangupByServer(this.call, 'failed-to-create-sip-dialog');
+			return;
 		}
 
 		uas.on('modify', async (req, res) => {

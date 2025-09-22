@@ -18,7 +18,7 @@ export function parseChannelUsername(channelName?: string): string | undefined {
 	// If we implement other kinds of channels in the future we should look into how their names are generated so that we may parse them here too.
 	// The format for external channels may depend on what the external service is, but extension@host should be quite standard
 	if (!channelName.startsWith('sofia/') || !channelName.includes('@')) {
-		logger.info({ msg: 'FreeSwitch event triggered with something other than a sofia or loopback channel.', channelName });
+		logger.debug({ msg: 'FreeSwitch event triggered with something other than a sofia or loopback channel.', channelName });
 		return;
 	}
 

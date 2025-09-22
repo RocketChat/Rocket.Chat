@@ -121,18 +121,18 @@ export class SipServerSession {
 				return;
 			}
 
-			logger.info({ msg: 'Connected to a drachtio server', hostport });
+			logger.debug({ msg: 'Connected to a drachtio server', hostport });
 		});
 
 		this.srf.on('error', (err: unknown, socket?: Socket) => this.onDrachtioError(err, socket));
 
 		this.srf.use((req, _res, next) => {
-			logger.info({ msg: 'Incoming message from Drachtio', method: req.method, source: req.source_address });
+			logger.debug({ msg: 'Incoming message from Drachtio', method: req.method, source: req.source_address });
 			next();
 		});
 
 		this.srf.invite((req, res) => {
-			logger.info('Received a call on drachtio.');
+			logger.debug('Received a call on drachtio.');
 
 			void this.processInvite(req, res).catch((error) => {
 				logger.error({ msg: 'Error processing Drachtio Invite', error });
