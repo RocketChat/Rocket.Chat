@@ -1,8 +1,8 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
-import type { SrfRequest } from 'drachtio-srf';
+import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import type { InternalCallParams } from '../../definition/common';
@@ -12,10 +12,21 @@ import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
+type OutgoingSipCallNegotiation = {
+	id: string;
+	req: SrfRequest;
+	res: SrfResponse;
+	isFirst: boolean;
+	offer: RTCSessionDescriptionInit | null;
+	answer: RTCSessionDescriptionInit | null;
+};
+
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialog: Srf.Dialog | null;
 
 	private sipDialogReq: SrfRequest | null;
+
+	private inboundRenegotiations: Map<string, OutgoingSipCallNegotiation>;
 
 	private processedTransfer: boolean;
 
@@ -29,6 +40,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog = null;
 		this.sipDialogReq = null;
 		this.processedTransfer = false;
+		this.inboundRenegotiations = new Map();
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
@@ -91,6 +103,10 @@ export class OutgoingSipCall extends BaseSipCall {
 
 		if (this.lastCallState === 'none') {
 			return this.createDialog(call);
+		}
+
+		if (isBusyState(call.state)) {
+			return this.processNegotiations(call);
 		}
 	}
 
@@ -168,12 +184,137 @@ export class OutgoingSipCall extends BaseSipCall {
 			void mediaCallDirector.hangup(call, this.agent, 'remote');
 		});
 
+		this.sipDialog.on('modify', async (req, res) => {
+			const webrtcOffer: RTCSessionDescriptionInit = { type: 'offer', sdp: req.body };
+			let negotiationId: string | null = null;
+
+			logger.debug({
+				msg: 'OutgoingSipCall received a renegotiation',
+				callingNumber: req?.callingNumber,
+				calledNumber: req?.calledNumber,
+			});
+
+			try {
+				negotiationId = await mediaCallDirector.startNewNegotiation(this.call, 'callee', webrtcOffer);
+
+				const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(this.call.caller, 'caller');
+				if (!callerAgent) {
+					logger.error({ msg: 'Failed to retrieve caller agent', method: 'OutgoingSipCall.uac.modify', caller: this.call.caller });
+					res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+					return;
+				}
+
+				this.inboundRenegotiations.set(negotiationId, {
+					id: negotiationId,
+					req,
+					res,
+					isFirst: false,
+					offer: webrtcOffer,
+					answer: null,
+				});
+
+				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+
+				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req });
+			} catch (error) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', error });
+
+				try {
+					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				} catch {
+					//
+				}
+
+				if (!negotiationId) {
+					return;
+				}
+
+				// If we got an error after the negotiation was registered on our side, the state is unpredictable - but it wasn't our side who needed this negotiation anyway
+				this.inboundRenegotiations.delete(negotiationId);
+			}
+		});
+
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 
 		// This will not do anything if the call is no longer waiting to be accepted.
 		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
+		});
+	}
+
+	protected async getPendingInboundNegotiation(): Promise<OutgoingSipCallNegotiation | null> {
+		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+			if (localNegotiation.answer) {
+				continue;
+			}
+
+			// If the negotiation does not exist, remove it from the list
+			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
+			// Negotiation will always exist; This is just a safe guard
+			if (!negotiation) {
+				logger.error({ msg: 'Invalid Negotiation reference on OutgoingSipCall.', localNegotiation });
+				this.inboundRenegotiations.delete(localNegotiation.id);
+				if (localNegotiation.res) {
+					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+				}
+				continue;
+			}
+
+			if (negotiation.answer) {
+				localNegotiation.answer = negotiation.answer;
+			}
+
+			return localNegotiation;
+		}
+
+		return null;
+	}
+
+	protected async processNegotiations(call: IMediaCall): Promise<void> {
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		if (negotiation?.offerer !== 'caller' || !negotiation.offer?.sdp || negotiation.answer) {
+			return this.processCalleeNegotiations();
+		}
+
+		if (!this.sipDialog) {
+			return;
+		}
+
+		logger.debug('OutgoingSipCall.processNegotiations');
+		let answer: string | void = undefined;
+		try {
+			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
+				logger.debug('modify failed');
+			});
+		} catch (error) {
+			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', error });
+		}
+
+		if (!answer) {
+			logger.error({ msg: 'No answer from callee initiated negotiation' });
+			// If a caller initiated negotiation fails, we need to hangup
+			void mediaCallDirector.hangupDetachedCall(call, { reason: 'renegotiation-failed', endedBy: call.caller });
+			return;
+		}
+
+		await mediaCallDirector.saveWebrtcSession(
+			call,
+			this.agent,
+			{ sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id },
+			this.session.sessionId,
+		);
+	}
+
+	protected async processCalleeNegotiations(): Promise<void> {
+		const localNegotiation = await this.getPendingInboundNegotiation();
+		// If we don't have an sdp, we can't respond to it yet
+		if (!localNegotiation?.answer?.sdp) {
+			return;
+		}
+
+		localNegotiation.res.send(200, {
+			body: localNegotiation.answer.sdp,
 		});
 	}
 
