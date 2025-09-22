@@ -1,5 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import {
+import { Omnichannel } from '@rocket.chat/core-services';
+import type {
 	ILivechatVisitor,
 	IMessage,
 	IOmnichannelRoomInfo,
@@ -7,8 +8,8 @@ import {
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
 	TransferData,
-	isOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
 	LivechatContacts,
@@ -42,7 +43,6 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { Omnichannel } from '@rocket.chat/core-services';
 
 export async function getRoom(
 	guest: ILivechatVisitor,
