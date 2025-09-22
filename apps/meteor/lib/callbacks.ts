@@ -48,7 +48,7 @@ interface EventLikeCallbackSignatures {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterRoomNameChange': (params: { room: IRoom; name: string; oldName: string; userId: IUser['_id'] }) => void;
+	'afterRoomNameChange': (params: { room: IRoom; name: string; oldName: string; user: IUser }) => void;
 	'afterSaveMessage': (message: IMessage, params: { room: IRoom; user: IUser; roomUpdater?: Updater<IRoom> }) => void;
 	'afterOmnichannelSaveMessage': (message: IMessage, constant: { room: IOmnichannelRoom; roomUpdater: Updater<IOmnichannelRoom> }) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -205,7 +205,7 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
-	'afterRoomTopicChange': (params: undefined, { room, topic, userId }: { room: IRoom; topic: string; userId: IUser['_id'] }) => void;
+	'afterRoomTopicChange': (params: undefined, { room, topic, user }: { room: IRoom; topic: string; user: IUser }) => void;
 };
 
 export type Hook =

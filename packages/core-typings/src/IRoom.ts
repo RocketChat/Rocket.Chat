@@ -114,6 +114,8 @@ export interface IRoomFederated extends IRoom {
 export interface IRoomNativeFederated extends IRoomFederated {
 	federation: {
 		version: number;
+		// Matrix's room ID. Example: !XqJXqZxXqJXq:matrix.org
+		mrid: string;
 	};
 }
 

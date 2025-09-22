@@ -194,6 +194,7 @@ export const createRoom = async <T extends RoomType>(
 			federated: true,
 			federation: {
 				version: 1,
+				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
 			},
 		}),
 		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),

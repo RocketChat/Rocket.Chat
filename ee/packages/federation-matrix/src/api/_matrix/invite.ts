@@ -3,7 +3,7 @@ import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from
 import { Room } from '@rocket.chat/core-services';
 import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
-import { MatrixBridgedRoom, MatrixBridgedUser, Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 const EventBaseSchema = {
@@ -176,32 +176,14 @@ async function joinRoom({
 	}
 
 	// need both the sender and the participating user to exist in the room
-	const internalSenderUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(inviteEvent.sender);
+	// TODO implement on model
+	const senderUser = await Users.findOne({ 'federation.mui': inviteEvent.sender }, { projection: { _id: 1 } });
 
-	let senderUserId: string;
+	let senderUserId = senderUser?._id;
 
-	if (!internalSenderUserId) {
-		// create locally
-		// what we were using previously
-		/*
-			public getStorageRepresentation(): Readonly<IUser> {
-				return {
-					_id: this.internalId,
-					username: this.internalReference.username || '',
-					type: this.internalReference.type,
-					status: this.internalReference.status,
-					active: this.internalReference.active,
-					roles: this.internalReference.roles,
-					name: this.internalReference.name,
-					requirePasswordChange: this.internalReference.requirePasswordChange,
-					createdAt: new Date(),
-					_updatedAt: new Date(),
-					federated: this.isRemote(),
-				};
-			}
-		*/
-
-		const user = {
+	// create locally
+	if (!senderUser) {
+		const createdUser = await Users.insertOne({
 			// let the _id auto generate we deal with usernames
 			username: inviteEvent.sender,
 			type: 'user',
@@ -213,31 +195,25 @@ async function joinRoom({
 			federated: true,
 			federation: {
 				version: 1,
+				mui: inviteEvent.sender,
+				origin: matrixRoom.origin,
 			},
 			createdAt: new Date(),
 			_updatedAt: new Date(),
-		};
-
-		const createdUser = await Users.insertOne(user);
+		});
 
 		senderUserId = createdUser.insertedId;
+	}
 
-		await MatrixBridgedUser.createOrUpdateByLocalId(senderUserId, inviteEvent.sender, true, matrixRoom.origin);
-	} else {
-		// already got the mapped sender
-		const user = await Users.findOneById(internalSenderUserId);
-		if (!user) {
-			throw new Error('user not found although should have as it is in mapping not processing invite');
-		}
-
-		senderUserId = user._id;
+	if (!senderUserId) {
+		throw new Error('Sender user ID not found');
 	}
 
 	let internalRoomId: string;
 
-	const internalMappedRoomId = await MatrixBridgedRoom.getLocalRoomId(inviteEvent.roomId);
+	const internalMappedRoom = await Rooms.findOne({ 'federation.mrid': inviteEvent.roomId });
 
-	if (!internalMappedRoomId) {
+	if (!internalMappedRoom) {
 		let roomType: 'c' | 'p' | 'd';
 
 		if (isDM) {
@@ -301,19 +277,15 @@ async function joinRoom({
 
 		internalRoomId = ourRoom._id;
 	} else {
-		const room = await Rooms.findOneById(internalMappedRoomId);
-		if (!room) {
-			throw new Error('room not found although should have as it is in mapping not processing invite');
-		}
-
-		internalRoomId = room._id;
+		internalRoomId = internalMappedRoom._id;
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
 
-	if (isDM) {
-		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, inviteEvent.roomId, matrixRoom.origin);
-	}
+	// TODO is this needed?
+	// if (isDM) {
+	// 	await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, inviteEvent.roomId, matrixRoom.origin);
+	// }
 }
 
 async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {

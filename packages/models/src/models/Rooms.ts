@@ -667,8 +667,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { 'federated': true, 'federation.mrid': mrid, 'federation.origin': origin } });
 	}
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult> {
@@ -1969,12 +1969,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id: (await this.insertOne(room)).insertedId,
 			_updatedAt: new Date(),
 			...room,
-			...(room.federated && {
-				federated: true,
-				federation: {
-					version: 1,
-				},
-			}),
 		};
 
 		return newRoom;
@@ -2218,5 +2212,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number) {
 		return this.countDocuments({ _id: rid, rolePrioritiesCreated: syncVersion });
+	}
+
+	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<number> {
+		// TODO implement
+		return 0;
 	}
 }

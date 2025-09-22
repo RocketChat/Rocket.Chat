@@ -28,6 +28,6 @@ export const saveRoomTopic = async (
 	if (update && sendMessage) {
 		await Message.saveSystemMessage('room_changed_topic', rid, roomTopic || '', user);
 	}
-	await callbacks.run('afterRoomTopicChange', undefined, { room, topic: roomTopic, userId: user._id });
+	await callbacks.run('afterRoomTopicChange', undefined, { room, topic: roomTopic, user });
 	return update;
 };
