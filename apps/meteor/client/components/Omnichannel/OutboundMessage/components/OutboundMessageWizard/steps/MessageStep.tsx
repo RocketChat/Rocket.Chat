@@ -18,20 +18,18 @@ const MessageStep = ({ contact, templates, defaultValues, onSubmit }: MessageSte
 	});
 
 	return (
-		<div>
-			<MessageForm
-				contact={contact}
-				templates={templates}
-				defaultValues={defaultValues}
-				onSubmit={handleSubmit}
-				renderActions={({ isSubmitting }) => (
-					<WizardActions>
-						<WizardBackButton />
-						<WizardNextButton manual type='submit' loading={isSubmitting} />
-					</WizardActions>
-				)}
-			/>
-		</div>
+		<MessageForm
+			contact={contact}
+			templates={templates}
+			defaultValues={defaultValues}
+			onSubmit={handleSubmit}
+			renderActions={({ isSubmitting }) => (
+				<WizardActions>
+					<WizardBackButton />
+					<WizardNextButton manual type='submit' loading={isSubmitting} />
+				</WizardActions>
+			)}
+		/>
 	);
 };
 

@@ -1,5 +1,6 @@
 import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -9,7 +10,7 @@ import AutoCompleteAgent from '../../../../AutoCompleteDepartmentAgent';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type AgentFieldProps = {
+type AgentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	agents: Serialized<ILivechatDepartmentAgents>[];
 	canAssignAgent?: boolean;
@@ -17,7 +18,7 @@ type AgentFieldProps = {
 	isLoading?: boolean;
 };
 
-const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoading = false }: AgentFieldProps) => {
+const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoading = false, ...props }: AgentFieldProps) => {
 	const { t } = useTranslation();
 	const agentFieldId = useId();
 
@@ -30,7 +31,7 @@ const AgentField = ({ control, agents, canAssignAgent, disabled = false, isLoadi
 	});
 
 	return (
-		<Field>
+		<Field {...props}>
 			<FieldLabel htmlFor={agentFieldId}>{`${t('Agent')} (${t('optional')})`}</FieldLabel>
 			<FieldRow>
 				<AutoCompleteAgent

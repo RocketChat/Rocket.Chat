@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isDirectMessageRoom, isTeamRoom, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
@@ -35,8 +35,13 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links', rid);
 	const isFederated = room && isRoomFederated(room);
 
+	// we are dropping the non native federation for now
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
+
 	const canCreateInviteLinks =
-		room && user && isFederated ? Federation.canCreateInviteLinks(user, room, subscription) : hasPermissionToCreateInviteLinks;
+		room && user && isFederated && !isFederationBlocked
+			? Federation.canCreateInviteLinks(user, room, subscription)
+			: hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
@@ -54,7 +59,10 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		rid,
 	);
 
-	const canAddUsers = room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToAddUsers;
+	const canAddUsers =
+		room && user && isFederated && !isFederationBlocked
+			? Federation.isEditableByTheUser(user, room, subscription)
+			: hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);

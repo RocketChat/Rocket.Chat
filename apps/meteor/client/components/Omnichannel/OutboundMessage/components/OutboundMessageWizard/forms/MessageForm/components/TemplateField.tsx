@@ -1,6 +1,7 @@
 import type { IOutboundProviderTemplate, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -11,13 +12,13 @@ import TemplateSelect from '../../../../TemplateSelect';
 import { cxp } from '../../../utils/cx';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplateFieldProps = {
+type TemplateFieldProps = ComponentProps<typeof Field> & {
 	control: Control<MessageFormData>;
 	templates: Serialized<IOutboundProviderTemplate>[] | undefined;
 	onChange?: (templateId: string) => void;
 };
 
-const TemplateField = ({ control, templates, onChange: onChangeExternal }: TemplateFieldProps) => {
+const TemplateField = ({ control, templates, onChange: onChangeExternal, ...props }: TemplateFieldProps) => {
 	const { t } = useTranslation();
 	const templateFieldId = useId();
 
@@ -46,7 +47,7 @@ const TemplateField = ({ control, templates, onChange: onChangeExternal }: Templ
 	});
 
 	return (
-		<Field>
+		<Field {...props}>
 			<FieldLabel is='span' required id={templateFieldId}>
 				{t('Template')}
 			</FieldLabel>
