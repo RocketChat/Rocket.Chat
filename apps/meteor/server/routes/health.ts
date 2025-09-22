@@ -32,8 +32,8 @@ const eventLoopHistogram = monitorEventLoopDelay();
 eventLoopHistogram.enable();
 
 const READINESS_THRESHOLDS = {
-	EVENT_LOOP_LAG_MS: Number(process.env['EVENT_LOOP_LAG_MS'] ?? '') || 70,
-	HEAP_USAGE_PERCENT: Number(process.env['HEAP_USAGE_PERCENT'] ?? '') || 0.85, // 85%
+	EVENT_LOOP_LAG_MS: Number(process.env.EVENT_LOOP_LAG_MS ?? '') || 70,
+	HEAP_USAGE_PERCENT: Number(process.env.HEAP_USAGE_PERCENT ?? '') || 0.85, // 85%
 };
 
 /**
