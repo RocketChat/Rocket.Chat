@@ -6,6 +6,7 @@ import type {
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +15,7 @@ import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../definitions/template';
 import TemplatePreview from '../TemplatePreview';
 
-type OutboundMessagePreviewProps = {
+type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
 	template?: IOutboundProviderTemplate;
 	contactName?: ILivechatContact['name'];
 	providerName?: IOutboundProviderMetadata['providerName'];
@@ -50,6 +51,7 @@ const OutboundMessagePreview = ({
 	sender: rawSender,
 	recipient: rawRecipient,
 	templateParameters,
+	...props
 }: OutboundMessagePreviewProps) => {
 	const { t } = useTranslation();
 
@@ -68,7 +70,7 @@ const OutboundMessagePreview = ({
 	}, [agentName, agentUsername, departmentName]);
 
 	return (
-		<div>
+		<Box {...props} is='section'>
 			<ul>
 				<Margins blockStart={24}>
 					<Box is='li' mbs={0}>
@@ -99,7 +101,7 @@ const OutboundMessagePreview = ({
 					<TemplatePreview template={template} parameters={templateParameters} />
 				</Box>
 			) : null}
-		</div>
+		</Box>
 	);
 };
 
