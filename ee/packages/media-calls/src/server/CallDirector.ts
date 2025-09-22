@@ -98,6 +98,7 @@ class MediaCallDirector {
 		offerer: CallRole,
 		offer?: RTCSessionDescriptionInit,
 	): Promise<IMediaCallNegotiation['_id']> {
+		logger.debug({ msg: 'Adding new negotiation', callId: call._id, offerer, hasOffer: Boolean(offer) });
 		const newNegotiation: InsertionModel<IMediaCallNegotiation> = {
 			callId: call._id,
 			offerer,

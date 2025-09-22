@@ -22,7 +22,6 @@ type IncomingSipCallNegotiation = {
 	req: SrfRequest;
 	res: SrfResponse;
 	isFirst: boolean;
-	state: 'received' | 'complete';
 	offer: RTCSessionDescriptionInit | null;
 	answer: RTCSessionDescriptionInit | null;
 };
@@ -103,7 +102,6 @@ export class IncomingSipCall extends BaseSipCall {
 			id: negotiationId,
 			req,
 			res,
-			state: 'received',
 			isFirst: true,
 			offer: webrtcOffer,
 			answer: null,
@@ -132,7 +130,7 @@ export class IncomingSipCall extends BaseSipCall {
 			let negotiationId: string | null = null;
 
 			logger.debug({
-				msg: 'IncomingSipCall triggered a renegotiation',
+				msg: 'IncomingSipCall received a renegotiation',
 				callingNumber: req?.callingNumber,
 				calledNumber: req?.calledNumber,
 			});
@@ -150,7 +148,6 @@ export class IncomingSipCall extends BaseSipCall {
 					id: negotiationId,
 					req,
 					res,
-					state: 'received',
 					isFirst: false,
 					offer: webrtcOffer,
 					answer: null,
