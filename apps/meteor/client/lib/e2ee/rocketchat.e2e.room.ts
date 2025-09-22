@@ -461,11 +461,11 @@ export class E2ERoom extends Emitter {
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
 			this.setState('READY');
-			span.set('kid', this.keyID).set('key', e2eNewKeys.e2eKey).info('Room key reset successfully');
+			span.set('kid', this.keyID).info('Room key reset successfully');
 
 			return e2eNewKeys;
 		} catch (error) {
-			span.set('error', error).error('Error resetting room key');
+			span.error('Error resetting room key', error);
 			throw error;
 		}
 	}
