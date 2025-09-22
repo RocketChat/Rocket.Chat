@@ -1,5 +1,6 @@
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -10,7 +11,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type DepartmentFieldProps = {
+type DepartmentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	onlyMyDepartments?: boolean;
 	isError: boolean;
@@ -26,6 +27,7 @@ const DepartmentField = ({
 	isFetching,
 	onRefetch,
 	onChange: onChangeExternal,
+	...props
 }: DepartmentFieldProps) => {
 	const { t } = useTranslation();
 	const departmentFieldId = useId();
@@ -49,7 +51,7 @@ const DepartmentField = ({
 	});
 
 	return (
-		<Field>
+		<Field {...props}>
 			<FieldLabel is='span' id={departmentFieldId}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
 			<FieldRow>
 				<AutoCompleteDepartment

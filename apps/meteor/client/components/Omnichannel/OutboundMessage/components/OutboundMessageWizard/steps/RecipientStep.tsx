@@ -19,18 +19,16 @@ const RecipientStep = ({ defaultValues, onDirty, onSubmit }: RecipientStepProps)
 	});
 
 	return (
-		<div>
-			<RecipientForm
-				defaultValues={defaultValues}
-				onDirty={onDirty}
-				onSubmit={handleSubmit}
-				renderActions={({ isSubmitting }) => (
-					<WizardActions>
-						<WizardNextButton manual type='submit' loading={isSubmitting} />
-					</WizardActions>
-				)}
-			/>
-		</div>
+		<RecipientForm
+			defaultValues={defaultValues}
+			onDirty={onDirty}
+			onSubmit={handleSubmit}
+			renderActions={({ isSubmitting }) => (
+				<WizardActions>
+					<WizardNextButton manual type='submit' loading={isSubmitting} />
+				</WizardActions>
+			)}
+		/>
 	);
 };
 
