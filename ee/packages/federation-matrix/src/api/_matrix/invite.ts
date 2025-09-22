@@ -229,7 +229,7 @@ async function joinRoom({
 		let ourRoom: { _id: string };
 
 		if (isDM) {
-			const senderUser = await Users.findOneById(senderUserId, { projection: { _id: 1, username: 1 } })
+			const senderUser = await Users.findOneById(senderUserId, { projection: { _id: 1, username: 1 } });
 			const inviteeUser = user;
 
 			if (!senderUser?.username) {

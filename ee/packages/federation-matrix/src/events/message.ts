@@ -39,6 +39,7 @@ async function handleMediaMessage(
 	msg: string;
 	federation_event_id: string;
 	tmid?: string;
+	attachments: [FileAttachmentProps];
 }> {
 	const mimeType = fileInfo?.mimetype;
 	const fileName = messageBody;
@@ -52,9 +53,9 @@ async function handleMediaMessage(
 	});
 
 	let fileExtension = '';
-	if (fileName && fileName.includes('.')) {
+	if (fileName?.includes('.')) {
 		fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-	} else if (mimeType && mimeType.includes('/')) {
+	} else if (mimeType?.includes('/')) {
 		fileExtension = mimeType.split('/')[1] || '';
 		if (fileExtension === 'jpeg') {
 			fileExtension = 'jpg';
@@ -107,6 +108,7 @@ async function handleMediaMessage(
 		msg: '',
 		federation_event_id: eventId,
 		tmid,
+		attachments: [attachment],
 	};
 }
 
@@ -114,8 +116,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
 			const { content } = data;
-			const msgtype = content?.msgtype;
-			const messageBody = content?.body?.toString();
+			const { msgtype } = content;
+			const messageBody = content.body.toString();
 
 			if (!messageBody && !msgtype) {
 				logger.debug('No message content found in event');

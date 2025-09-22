@@ -229,7 +229,7 @@ export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 		'/v2/send_join/:roomId/:stateKey',
 		{
 			params: isSendJoinParamsProps,
-			body:  isSendJoinEventProps,
+			body: isSendJoinEventProps,
 			response: {
 				200: isSendJoinResponseProps,
 			},
