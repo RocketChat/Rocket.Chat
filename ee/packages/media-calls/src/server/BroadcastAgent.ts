@@ -54,7 +54,7 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
 
-	protected reportCallUpdated(params: { callId: string, dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
+	protected reportCallUpdated(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		const { callId, ...otherParams } = params;
 
 		if (this.provider?.callId === callId) {
