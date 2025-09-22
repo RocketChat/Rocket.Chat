@@ -5,8 +5,8 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 
 import { settings } from '../../../app/settings/server';
-import { registerFederationRoutes } from '../api/federation';
 import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
+import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
 

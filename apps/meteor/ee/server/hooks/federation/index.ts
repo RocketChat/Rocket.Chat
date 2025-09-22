@@ -1,10 +1,7 @@
-import { api, FederationMatrix } from '@rocket.chat/core-services';
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { MatrixBridgedRoom, Rooms } from '@rocket.chat/models';
 
-import notifications from '../../../../app/notifications/server/lib/Notifications';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
