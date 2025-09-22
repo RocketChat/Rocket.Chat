@@ -31,7 +31,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-
 		return takeInquiry(uid, inquiryId, options);
 	},
 });
