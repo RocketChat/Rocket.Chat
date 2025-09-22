@@ -1,3 +1,4 @@
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +11,10 @@ import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 
 type ContactInfoPhoneEntryProps = Omit<ComponentProps<typeof ContactInfoDetailsEntry>, 'icon' | 'actions'> & {
-	contactId?: string;
+	contact?: Pick<ILivechatContact, '_id' | 'unknown'>;
 };
 
-const ContactInfoPhoneEntry = ({ contactId, value, ...props }: ContactInfoPhoneEntryProps) => {
+const ContactInfoPhoneEntry = ({ contact, value, ...props }: ContactInfoPhoneEntryProps) => {
 	const { t } = useTranslation();
 	const isCallReady = useIsCallReady();
 	const { copy } = useClipboardWithToast(value);
@@ -26,7 +27,12 @@ const ContactInfoPhoneEntry = ({ contactId, value, ...props }: ContactInfoPhoneE
 			actions={[
 				<IconButton key={`${value}-copy`} onClick={() => copy()} tiny icon='copy' title={t('Copy')} />,
 				isCallReady ? <ContactInfoCallButton key={`${value}-call`} phoneNumber={value} /> : null,
-				<ContactInfoOutboundMessageButton key={`${value}-outbound-message`} defaultValues={{ contactId, recipient: value }} />,
+				<ContactInfoOutboundMessageButton
+					key={`${value}-outbound-message`}
+					title={contact?.unknown ? t('error-unknown-contact') : undefined}
+					disabled={contact?.unknown}
+					defaultValues={{ contactId: contact?._id, recipient: value }}
+				/>,
 			]}
 		/>
 	);
