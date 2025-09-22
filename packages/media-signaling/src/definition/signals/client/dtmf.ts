@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-/** Client is DTMF tones to the other side of the call */
+/** Client is sending DTMF tones to the other side of the call */
 export type ClientMediaSignalDTMF = {
 	callId: string;
 	type: 'dtmf';

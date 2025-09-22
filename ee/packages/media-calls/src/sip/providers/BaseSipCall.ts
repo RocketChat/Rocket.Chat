@@ -47,8 +47,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected abstract reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void>;
 
-	protected sendDTMF(dialog: Srf.Dialog, dtmf: string, duration: number): void {
-		dialog.request({
+	protected async sendDTMF(dialog: Srf.Dialog, dtmf: string, duration: number): Promise<void> {
+		await dialog.request({
 			method: 'INFO',
 			headers: {
 				'Content-Type': 'application/dtmf-relay',
