@@ -22,5 +22,5 @@ export const Binary = {
 		}
 
 		return buffer;
-	}
-}
+	},
+};

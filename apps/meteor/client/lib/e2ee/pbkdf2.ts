@@ -23,7 +23,7 @@ export function getMasterKey(password: string, { salt, iterations }: Pbkdf2Optio
 			['encrypt', 'decrypt'],
 		);
 		return derivedKey;
-	}
+	};
 
 	return {
 		decrypt: async (iv, data) => {

@@ -626,7 +626,7 @@ class E2E extends Emitter {
 		// const span = log.span('decodePrivateKey');
 		const password = await this.requestPasswordAlert();
 		const { iv, ciphertext, salt, iterations } = this.parsePrivateKey(privateKey);
-		const masterKey = await getMasterKey(password, { salt, iterations });
+		const masterKey = getMasterKey(password, { salt, iterations });
 
 		try {
 			if (!masterKey) {
