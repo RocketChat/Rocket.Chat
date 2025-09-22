@@ -147,10 +147,10 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 
 	return (
 		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
-			<Wizard api={wizardApi}>
+			<Wizard api={wizardApi} display='flex' flexDirection='column' height='100%'>
 				<WizardTabs />
 
-				<Box mbs={16}>
+				<Box mbs={16} minHeight={0} flexGrow={1}>
 					<WizardContent id='recipient'>
 						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>
