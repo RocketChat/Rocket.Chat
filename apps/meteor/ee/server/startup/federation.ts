@@ -29,6 +29,9 @@ export const startFederationService = async (): Promise<void> => {
 		federationMatrixService = await FederationMatrix.create(InstanceStatus.id());
 
 		StreamerCentral.on('broadcast', (name, eventName, args) => {
+			if (!federationMatrixService) {
+				return;
+			}
 			if (name === 'notify-room' && eventName.endsWith('user-activity')) {
 				const [rid] = eventName.split('/');
 				const [user, activity] = args;
