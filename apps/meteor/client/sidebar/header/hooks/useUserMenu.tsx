@@ -29,12 +29,14 @@ export const useUserMenu = (user: IUser) => {
 		onClick: handleLogout,
 	};
 
-	const mediaCallItem = {
-		id: 'voice-call',
-		icon: mediaCallAction.icon,
-		content: mediaCallAction.title,
-		onClick: () => mediaCallAction.action(),
-	};
+	const mediaCallItem = mediaCallAction
+		? {
+				id: 'voice-call',
+				icon: mediaCallAction.icon,
+				content: mediaCallAction.title,
+				onClick: () => mediaCallAction.action(),
+			}
+		: undefined;
 
 	return [
 		{
@@ -45,9 +47,11 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Status'),
 			items: statusItems,
 		},
-		{
-			items: [mediaCallItem],
-		},
+		mediaCallItem
+			? {
+					items: [mediaCallItem],
+				}
+			: undefined,
 		{
 			title: t('Account'),
 			items: accountItems,

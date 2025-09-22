@@ -2,14 +2,20 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PeerInfo, useMediaCallContext } from './MediaCallContext';
+import { PeerInfo, useMediaCallExternalContext } from './MediaCallContext';
 
-export const useMediaCallAction = (callee?: PeerInfo): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } => {
+export const useMediaCallAction = (
+	callee?: PeerInfo,
+): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } | undefined => {
 	const { t } = useTranslation();
 
-	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallContext();
+	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallExternalContext();
 
 	return useMemo(() => {
+		if (state === 'unauthorized') {
+			return undefined;
+		}
+
 		const getDisplayName = (peerInfo: { displayName?: string; number?: string }) => {
 			return 'displayName' in peerInfo ? peerInfo?.displayName : peerInfo?.number;
 		};

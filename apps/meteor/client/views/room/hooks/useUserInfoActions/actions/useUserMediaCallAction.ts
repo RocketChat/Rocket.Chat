@@ -17,11 +17,15 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 
 	const blocked = currentSubscription?.blocker || currentSubscription?.blocker;
 
+	if (state === 'unauthorized') {
+		return undefined;
+	}
+
 	if (blocked) {
 		return undefined;
 	}
 
-	const disabled = !['closed', 'new'].includes(state);
+	const disabled = !['closed', 'new', 'unlicensed'].includes(state);
 
 	if (user._id === ownUserId) {
 		return undefined;

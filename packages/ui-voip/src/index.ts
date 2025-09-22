@@ -5,4 +5,4 @@ export * from './definitions/VoipSession';
 export * from './hooks';
 export * from './components';
 
-export * from './v2';
+export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, useMediaCallAction, type PeerInfo } from './v2';

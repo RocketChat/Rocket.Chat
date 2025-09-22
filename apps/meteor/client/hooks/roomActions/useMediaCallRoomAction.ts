@@ -47,12 +47,14 @@ export const useMediaCallRoomAction = () => {
 		};
 	}, [data, getAvatarUrl]);
 
-	const { action, title, icon } = useMediaCallAction(peerInfo as PeerInfo | undefined);
+	const callAction = useMediaCallAction(peerInfo as PeerInfo | undefined);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!peerId) {
+		if (!peerId || !callAction) {
 			return undefined;
 		}
+
+		const { action, title, icon } = callAction;
 
 		return {
 			id: 'start-voice-call',
@@ -62,5 +64,5 @@ export const useMediaCallRoomAction = () => {
 			action: () => action(),
 			groups: ['direct'] as const,
 		};
-	}, [peerId, title, icon, action]);
+	}, [peerId, callAction]);
 };
