@@ -114,24 +114,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		instance.homeserverServices = getAllServices();
 		MatrixMediaService.setHomeserverServices(instance.homeserverServices);
 		instance.buildMatrixHTTPRoutes();
-		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
-			if (!roomId || !username) {
-				return;
-			}
-			const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
-			if (!externalRoomId) {
-				return;
-			}
-			const localUser = await Users.findOneByUsername(username, { projection: { _id: 1 } });
-			if (!localUser) {
-				return;
-			}
-			const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
-			if (!externalUserId) {
-				return;
-			}
-			void instance.homeserverServices.edu.sendTypingNotification(externalRoomId, externalUserId, isTyping);
-		});
+
 		instance.onEvent(
 			'presence.status',
 			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
@@ -1001,5 +984,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			powerLevel = 50;
 		}
 		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
+	}
+
+	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
+		if (!rid || !user) {
+			return;
+		}
+		const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!externalRoomId) {
+			return;
+		}
+		const localUser = await Users.findOneByUsername(user, { projection: { _id: 1 } });
+		if (!localUser) {
+			return;
+		}
+		const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+		if (!externalUserId) {
+			return;
+		}
+
+		void this.homeserverServices.edu.sendTypingNotification(externalRoomId, externalUserId, isTyping);
 	}
 }

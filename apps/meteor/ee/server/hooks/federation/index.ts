@@ -227,17 +227,3 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-matrix-after-create-direct-room',
 );
-
-notifications.streamLocal.on(`user-activity`, ({ rid, username, activities }) => {
-	if (!License.hasModule('federation') || !settings.get('Federation_Service_Enabled')) {
-		return;
-	}
-
-	if (activities.includes('user-typing')) {
-		void api.broadcast('user.typing', {
-			user: { username },
-			isTyping: activities.includes('user-typing'),
-			roomId: rid,
-		});
-	}
-});

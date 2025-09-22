@@ -487,11 +487,6 @@ export class NotificationsModule {
 		eventName: E extends ExtractNotifyUserEventName<'notify-room', P> ? E : never,
 		...args: E extends ExtractNotifyUserEventName<'notify-room', P> ? StreamerCallbackArgs<'notify-room', `${P}/${E}`> : never
 	): void {
-		this.streamLocal.emit(eventName, {
-			rid: room,
-			eventName,
-			args,
-		});
 		return this.streamRoom.emit(`${room}/${eventName}`, ...args);
 	}
 
