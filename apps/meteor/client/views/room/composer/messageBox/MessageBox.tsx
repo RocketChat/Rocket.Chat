@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
@@ -12,11 +11,12 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
+	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -384,8 +384,6 @@ const MessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
-	const [expanded, setExpanded] = useState(false);
-
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -425,30 +423,36 @@ const MessageBox = ({
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<FeaturePreview feature='expandableMessageComposer'>
 					<FeaturePreviewOn>
-						{sizes.blockSize > 100 && (
-							<Box position='absolute' padding={8} style={{ top: 0, right: 0 }}>
-								<IconButton small icon={expanded ? 'arrow-collapse' : 'arrow-expand'} onClick={() => setExpanded(!expanded)}></IconButton>
-							</Box>
-						)}
+						<MessageComposerInputExpandable
+							dimensions={sizes}
+							inputRef={mergedRefs}
+							aria-label={composerPlaceholder}
+							name='msg'
+							disabled={isRecording || !canSend}
+							onChange={setTyping}
+							style={textAreaStyle}
+							placeholder={composerPlaceholder}
+							onPaste={handlePaste}
+							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+						/>
 					</FeaturePreviewOn>
-					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+					<FeaturePreviewOff>
+						<MessageComposerInput
+							ref={mergedRefs}
+							aria-label={composerPlaceholder}
+							name='msg'
+							disabled={isRecording || !canSend}
+							onChange={setTyping}
+							style={textAreaStyle}
+							placeholder={composerPlaceholder}
+							onPaste={handlePaste}
+							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+						/>
+					</FeaturePreviewOff>
 				</FeaturePreview>
-				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInput
-					ref={mergedRefs}
-					aria-label={composerPlaceholder}
-					name='msg'
-					disabled={isRecording || !canSend}
-					onChange={setTyping}
-					style={textAreaStyle}
-					placeholder={composerPlaceholder}
-					onPaste={handlePaste}
-					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-					{...(expanded && { height: 500 })}
-					{...(expanded && { maxHeight: 500 })}
-				/>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
