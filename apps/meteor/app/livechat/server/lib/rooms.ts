@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import {
+import type {
 	ILivechatVisitor,
 	IMessage,
 	IOmnichannelRoomInfo,
@@ -7,8 +7,8 @@ import {
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
 	TransferData,
-	isOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
 	LivechatContacts,
