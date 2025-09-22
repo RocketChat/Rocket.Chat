@@ -95,7 +95,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 						!isFederationBlocked && (
 							<Button
 								primary
-								disabled={addClickHandler.isPending}
+								disabled={addClickHandler.isPending || !isDirty}
 								onClick={() =>
 									addClickHandler.mutate({
 										users: getValues('users'),
