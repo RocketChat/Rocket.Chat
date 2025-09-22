@@ -63,14 +63,6 @@ export class HomeContent {
 		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}
 
-	getMessageEncryptedIcon(messageLocator: Locator): Locator {
-		return messageLocator.locator('.rcx-icon--name-key');
-	}
-
-	getMessageMoreButton(messageLocator: Locator): Locator {
-		return messageLocator.getByRole('button', { name: 'More' });
-	}
-
 	getUserMention(username: string): Locator {
 		return this.page.getByRole('button', { name: username });
 	}

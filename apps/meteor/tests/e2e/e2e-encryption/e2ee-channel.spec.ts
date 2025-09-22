@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -13,6 +14,7 @@ preserveSettings(settingsList);
 test.describe('E2EE Channel Basic Functionality', () => {
 	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
+	let encryptedRoomPage: EncryptedRoomPage;
 	let enableEncryptionModal: EnableRoomEncryptionModal;
 	let disableEncryptionModal: DisableRoomEncryptionModal;
 
@@ -27,7 +29,8 @@ test.describe('E2EE Channel Basic Functionality', () => {
 		poHomeChannel = new HomeChannel(page);
 		enableEncryptionModal = new EnableRoomEncryptionModal(page);
 		disableEncryptionModal = new DisableRoomEncryptionModal(page);
-		await page.goto('/home');
+		encryptedRoomPage = new EncryptedRoomPage(page);
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -47,7 +50,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 		await test.step('send encrypted message and verify encryption', async () => {
 			await poHomeChannel.content.sendMessage('hello world');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 
 		await test.step('disable encryption', async () => {
@@ -61,7 +64,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 		await test.step('send unencrypted message and verify no encryption', async () => {
 			await poHomeChannel.content.sendMessage('hello world not encrypted');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world not encrypted');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).not.toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
 		});
 
 		await test.step('re-enable encryption', async () => {
@@ -75,7 +78,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 		await test.step('send encrypted message again and verify encryption restored', async () => {
 			await poHomeChannel.content.sendMessage('hello world encrypted again');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world encrypted again');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 	});
 
@@ -104,7 +107,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 		await test.step('send encrypted message and verify', async () => {
 			await poHomeChannel.content.sendMessage('hello world');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 	});
 });

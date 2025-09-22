@@ -21,7 +21,7 @@ test.describe('E2EE Mentions', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

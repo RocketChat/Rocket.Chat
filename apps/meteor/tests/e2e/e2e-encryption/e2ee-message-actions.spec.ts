@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { PinnedMessagesTab, StarredMessagesTab } from '../page-objects/fragments';
 import { E2EEMessageActions } from '../page-objects/fragments/e2ee';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -17,7 +18,7 @@ test.describe('E2EE Message Actions', () => {
 	let pinnedMessagesTab: PinnedMessagesTab;
 	let starredMessagesTab: StarredMessagesTab;
 	let e2eeMessageActions: E2EEMessageActions;
-
+	let encryptedRoomPage: EncryptedRoomPage;
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -29,7 +30,8 @@ test.describe('E2EE Message Actions', () => {
 		pinnedMessagesTab = new PinnedMessagesTab(page);
 		starredMessagesTab = new StarredMessagesTab(page);
 		e2eeMessageActions = new E2EEMessageActions(page);
-		await page.goto('/home');
+		encryptedRoomPage = new EncryptedRoomPage(page);
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -49,7 +51,7 @@ test.describe('E2EE Message Actions', () => {
 		await test.step('send encrypted message', async () => {
 			await poHomeChannel.content.sendMessage('This is an encrypted message.');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 
 		await test.step('verify disabled message menu actions', async () => {
@@ -73,7 +75,7 @@ test.describe('E2EE Message Actions', () => {
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 			await poHomeChannel.content.sendMessage('This message should be pinned and starred.');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This message should be pinned and starred.');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 
 		await test.step('star the message', async () => {

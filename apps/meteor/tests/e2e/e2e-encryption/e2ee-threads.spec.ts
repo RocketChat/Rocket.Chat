@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -12,7 +13,7 @@ preserveSettings(settingsList);
 test.describe('E2EE Thread Messages', () => {
 	const createdChannels: string[] = [];
 	let poHomeChannel: HomeChannel;
-
+	let encryptedRoomPage: EncryptedRoomPage;
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -21,7 +22,8 @@ test.describe('E2EE Thread Messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		encryptedRoomPage = new EncryptedRoomPage(page);
+		await poHomeChannel.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -41,7 +43,7 @@ test.describe('E2EE Thread Messages', () => {
 		await test.step('send main thread message', async () => {
 			await poHomeChannel.content.sendMessage('This is the thread main message.');
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is the thread main message.');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastUserMessage)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 
 		await test.step('open reply in thread', async () => {
@@ -51,7 +53,7 @@ test.describe('E2EE Thread Messages', () => {
 
 		await test.step('verify main thread message is encrypted', async () => {
 			await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.mainThreadMessageText)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 
 		await test.step('send encrypted reply on thread message', async () => {
@@ -61,10 +63,10 @@ test.describe('E2EE Thread Messages', () => {
 
 		await test.step('verify all thread messages are encrypted', async () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is an encrypted thread message also sent in channel');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.lastThreadMessageText)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('This is an encrypted thread message also sent in channel');
 			await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
-			await expect(poHomeChannel.content.getMessageEncryptedIcon(poHomeChannel.content.mainThreadMessageText)).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 		});
 	});
 });
