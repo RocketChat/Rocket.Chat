@@ -3,12 +3,13 @@ import {
 	isPOSTLivechatBusinessHoursSaveParams,
 	POSTLivechatBusinessHoursSaveSuccessResponse,
 	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { findLivechatBusinessHour } from '../../../server/api/lib/businessHours';
-import { businessHourManager } from '/app/livechat/server/business-hour';
+import { businessHourManager } from '../../../server/business-hour';
 
 API.v1.addRoute(
 	'livechat/business-hour',
@@ -30,6 +31,7 @@ const livechatBusinessHoursEndpoints = API.v1.post(
 		response: {
 			200: POSTLivechatBusinessHoursSaveSuccessResponse,
 			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 		authRequired: true,
 		body: isPOSTLivechatBusinessHoursSaveParams,
@@ -43,7 +45,7 @@ const livechatBusinessHoursEndpoints = API.v1.post(
 		} catch (error: unknown) {
 			return API.v1.failure('error-saving-business-hour', error instanceof Error ? error.message : String(error));
 		}
-	}
+	},
 );
 
 type LivechatBusinessHoursEndpoints = ExtractRoutesFromAPI<typeof livechatBusinessHoursEndpoints>;
