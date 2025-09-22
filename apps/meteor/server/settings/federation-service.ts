@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settings, settingsRegistry } from '../../app/settings/server';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
 	await settingsRegistry.addGroup('Federation', async function () {
@@ -9,6 +9,17 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			modules: ['federation'],
 			invalidValue: false,
 			alert: 'Federation_Service_Alert',
+		});
+
+		const { hostname } = new URL(settings.get<string>('Site_Url') || 'https://example.com');
+
+		await this.add('Federation_Service_Domain', hostname, {
+			type: 'string',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: '',
+			alert: 'Federation_Service_Domain_Alert',
 		});
 
 		await this.add('Federation_Service_Matrix_Signing_Algorithm', 'ed25519', {

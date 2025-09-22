@@ -16,7 +16,8 @@ export const startFederationService = async (): Promise<void> => {
 	const shouldStartService = (): boolean => {
 		const hasLicense = License.hasModule('federation');
 		const isEnabled = settings.get('Federation_Service_Enabled') === true;
-		return hasLicense && isEnabled;
+		const hasDomain = !!settings.get('Federation_Service_Domain');
+		return hasLicense && isEnabled && hasDomain;
 	};
 
 	const startService = async (): Promise<void> => {
@@ -83,6 +84,18 @@ export const startFederationService = async (): Promise<void> => {
 	settings.watch('Federation_Service_Enabled', async (enabled) => {
 		logger.debug('Federation_Service_Enabled setting changed:', enabled);
 		if (shouldStartService()) {
+			await startService();
+		} else {
+			await stopService();
+		}
+	});
+
+	settings.watch('Federation_Service_Domain', async (domain) => {
+		logger.debug('Federation_Service_Domain setting changed:', domain);
+		if (shouldStartService()) {
+			if (domain !== federationMatrixService?.getServerName()) {
+				await stopService();
+			}
 			await startService();
 		} else {
 			await stopService();
