@@ -74,8 +74,6 @@ import type {
 	IVideoConferenceModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
-	IMatrixBridgedRoomModel,
-	IMatrixBridgedUserModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -116,8 +114,6 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
-	MatrixBridgedUserRaw,
-	MatrixBridgedRoomRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -213,8 +209,6 @@ export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel')
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
-export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
-export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
@@ -258,8 +252,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
-	registerModel('IMatrixBridgedUserModel', () => new MatrixBridgedUserRaw(db));
-	registerModel('IMatrixBridgedRoomModel', () => new MatrixBridgedRoomRaw(db));
 }
 
 if (!dbWatchersDisabled) {
