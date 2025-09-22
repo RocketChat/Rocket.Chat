@@ -28,8 +28,8 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				return;
 			}
 
-			void api.broadcast('user-activity', {
-				username: user.username,
+			void api.broadcast('user.activity', {
+				user: user.username,
 				isTyping: data.typing,
 				roomId: matrixRoom,
 			});
