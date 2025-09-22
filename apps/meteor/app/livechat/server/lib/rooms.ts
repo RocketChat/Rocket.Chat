@@ -9,7 +9,6 @@ import type {
 	IOmnichannelRoom,
 	TransferData,
 } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
 	LivechatContacts,
@@ -218,10 +217,6 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 	if (room.onHold) {
 		throw new Meteor.Error('error-room-onHold');
-	}
-
-	if (!isOmnichannelRoom(room)) {
-		throw new Meteor.Error('error-invalid-room-type');
 	}
 
 	if (!(await Omnichannel.isWithinMACLimit(room))) {

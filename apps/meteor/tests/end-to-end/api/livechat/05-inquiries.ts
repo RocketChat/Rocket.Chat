@@ -376,7 +376,7 @@ describe('LIVECHAT - inquiries', () => {
 				.expect(400);
 
 			expect(body).to.have.property('success', false);
-			expect(body).to.have.property('error', 'invalid-room');
+			expect(body).to.have.property('error', 'error-room-not-found');
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
