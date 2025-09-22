@@ -2,7 +2,7 @@
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useFeaturePreview, useSafeRefCallback } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -386,8 +386,6 @@ const MessageBox = ({
 
 	const [expanded, setExpanded] = useState(false);
 
-	const expandableMessageComposerEnabled = useFeaturePreview('expandableMessageComposer');
-
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -427,11 +425,16 @@ const MessageBox = ({
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{expandableMessageComposerEnabled && sizes.blockSize > 100 && (
-					<Box position='absolute' padding={8} style={{ top: 0, right: 0 }}>
-						<IconButton small icon={expanded ? 'arrow-collapse' : 'arrow-expand'} onClick={() => setExpanded(!expanded)}></IconButton>
-					</Box>
-				)}
+				<FeaturePreview feature='expandableMessageComposer'>
+					<FeaturePreviewOn>
+						{sizes.blockSize > 100 && (
+							<Box position='absolute' padding={8} style={{ top: 0, right: 0 }}>
+								<IconButton small icon={expanded ? 'arrow-collapse' : 'arrow-expand'} onClick={() => setExpanded(!expanded)}></IconButton>
+							</Box>
+						)}
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+				</FeaturePreview>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs}
