@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type {
+import {
 	ILivechatVisitor,
 	IMessage,
 	IOmnichannelRoomInfo,
@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
 	TransferData,
+	isOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
@@ -41,6 +42,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
+import { Omnichannel } from '@rocket.chat/core-services';
 
 export async function getRoom(
 	guest: ILivechatVisitor,
@@ -216,6 +218,14 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 	if (room.onHold) {
 		throw new Meteor.Error('error-room-onHold');
+	}
+
+	if (!isOmnichannelRoom(room)) {
+		throw new Meteor.Error('error-invalid-room-type');
+	}
+
+	if (!(await Omnichannel.isWithinMACLimit(room))) {
+		throw new Meteor.Error('error-mac-limit-exceeded');
 	}
 
 	if (!room.servedBy) {

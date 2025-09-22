@@ -1,4 +1,3 @@
-import { Omnichannel } from '@rocket.chat/core-services';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatDepartment, Users, LivechatRooms } from '@rocket.chat/models';
 import {
@@ -133,20 +132,12 @@ const livechatInquiriesEndpoints = API.v1.post(
 	async function action() {
 		const { roomId, departmentId } = this.bodyParams;
 
-		const room = await LivechatRooms.findOneById(roomId);
-		if (!room || room.t !== 'l') {
-			return API.v1.failure('invalid-room');
-		}
-
-		if (!room.open) {
-			return API.v1.failure('room-closed');
-		}
-
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			return API.v1.failure('mac-limit-reached');
-		}
-
 		try {
+			const room = await LivechatRooms.findOneById(roomId);
+			if (!room) {
+				return API.v1.failure('error-room-not-found');
+			}
+
 			const result = await returnRoomAsInquiry(room, departmentId);
 
 			return API.v1.success({ result });
