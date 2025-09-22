@@ -28,7 +28,7 @@ export function parseChannelUsername(channelName?: string): string | undefined {
 	// Originatee channels will have the format 'sofia/internal/contact_uri', assigned by freeswitch itself
 	// Example: sofia/internal/1000-LJZ8A9MhHv4Eh6ZQH-spo254ol@open.rocket.chat
 
-	return channelName.match(/sofia\/\s+\/(\d+)[\@\-]/)?.[1];
+	return channelName.match(/sofia\/\S+\/(\d+)[\@\-]/)?.[1];
 }
 
 export function parseContactUsername(contactNameOrUri: string): string | undefined {
