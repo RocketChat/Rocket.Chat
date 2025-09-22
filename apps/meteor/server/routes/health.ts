@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { Process } from 'node:process';
 import { monitorEventLoopDelay } from 'perf_hooks';
 
 import { WebApp } from 'meteor/webapp';
@@ -26,12 +27,13 @@ WebApp.rawConnectHandlers.use('/health', (_req: IncomingMessage, res: ServerResp
  * Readiness Probe Configuration
  * Defines tunable thresholds for readiness checks.
  */
+
 const eventLoopHistogram = monitorEventLoopDelay();
 eventLoopHistogram.enable();
 
 const READINESS_THRESHOLDS = {
-	EVENT_LOOP_LAG_MS: Number(process.env.EVENT_LOOP_LAG_MS) || 70,
-	HEAP_USAGE_PERCENT: Number(process.env.HEAP_USAGE_PERCENT) || 0.85, // 85%
+	EVENT_LOOP_LAG_MS: Number(process.env['EVENT_LOOP_LAG_MS'] ?? '') || 70,
+	HEAP_USAGE_PERCENT: Number(process.env['HEAP_USAGE_PERCENT'] ?? '') || 0.85, // 85%
 };
 
 /**
@@ -60,7 +62,7 @@ function checkEventLoopLag(shouldReset: boolean) {
  * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const { heapUsed, heapTotal } = process.memoryUsage();
+	const { heapUsed, heapTotal } = (process as Process).memoryUsage();
 	const usageRatio = heapUsed / heapTotal;
 	const usageValue = parseFloat((usageRatio * 100).toFixed(2));
 
