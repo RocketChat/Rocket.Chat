@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { RoutingManager } from './RoutingManager';
 import { isAgentAvailableToTakeContactInquiry } from './contacts/isAgentAvailableToTakeContactInquiry';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
 export const takeInquiry = async (
@@ -13,12 +12,6 @@ export const takeInquiry = async (
 	inquiryId: string,
 	options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
 ): Promise<void> => {
-	if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-			method: 'livechat:takeInquiry',
-		});
-	}
-
 	const inquiry = await LivechatInquiry.findOneById(inquiryId);
 
 	if (!inquiry) {

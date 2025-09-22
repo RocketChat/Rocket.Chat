@@ -3327,7 +3327,7 @@ type POSTLivechatInquiriesTakeParams = {
 	options?: {
 		clientAction: boolean;
 		forwardingToDepartment?: {
-			departmentId: string;
+			oldDepartmentId: string;
 			transferData: unknown;
 		};
 	};
@@ -3354,14 +3354,14 @@ const POSTLivechatInquiriesTakeParamsSchema = {
 					type: 'object',
 					nullable: true,
 					properties: {
-						departmentId: {
+						oldDepartmentId: {
 							type: 'string',
 						},
 						transferData: {
 							type: 'object',
 						},
 					},
-					required: ['departmentId', 'transferData'],
+					required: ['oldDepartmentId', 'transferData'],
 					additionalProperties: false,
 				},
 			},
