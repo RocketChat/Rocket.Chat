@@ -11,16 +11,16 @@ import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbar
 import useOutboundProvidersList from '../../../../../components/Omnichannel/OutboundMessage/hooks/useOutboundProvidersList';
 
 type ContactInfoChannelsProps = {
-	contactId: ILivechatContact['_id'];
+	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 };
 
-const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
+const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	const { t } = useTranslation();
 
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
 	const { data, isError, isPending } = useQuery({
-		queryKey: ['getContactChannels', contactId],
-		queryFn: () => getContactChannels({ contactId }),
+		queryKey: ['getContactChannels', contact._id],
+		queryFn: () => getContactChannels({ contactId: contact._id }),
 	});
 
 	const { data: providers = [] } = useOutboundProvidersList({
@@ -68,7 +68,7 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 									<ContactInfoChannelsItem
 										key={index}
 										{...data}
-										contactId={contactId}
+										contact={contact}
 										canSendOutboundMessage={data.details.id ? providers.includes(data.details.id) : false}
 									/>
 								)}
