@@ -1079,9 +1079,6 @@ export class ClientMediaCall implements IClientMediaCall {
 					break;
 				case 'disconnected':
 					// Disconnected state is temporary, so let's wait for it to change into something else before reacting.
-					// if (this.state === 'active') {
-					// 	this.hangup('service-error');
-					// }
 					break;
 			}
 		} catch (e) {
