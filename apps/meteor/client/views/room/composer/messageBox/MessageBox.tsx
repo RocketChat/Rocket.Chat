@@ -428,7 +428,7 @@ const MessageBox = ({
 					<FeaturePreviewOn>
 						<MessageComposerInputExpandable
 							dimensions={sizes}
-							inputRef={mergedRefs}
+							ref={mergedRefs}
 							aria-label={composerPlaceholder}
 							name='msg'
 							disabled={isRecording || !canSend}

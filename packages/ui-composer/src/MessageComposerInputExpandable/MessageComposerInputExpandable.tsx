@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useState, type ComponentProps, RefCallback, ChangeEvent } from 'react';
+import { useState, type ComponentProps, ChangeEvent, forwardRef } from 'react';
 
 import { MessageComposerInput } from '../MessageComposer';
 
@@ -9,10 +9,9 @@ export type ExpandComposerButtonProps = ComponentProps<typeof Box> & {
 		inlineSize: number;
 		blockSize: number;
 	}>;
-	inputRef: RefCallback<HTMLElement>;
 };
 
-const MessageComposerInputExpandable = ({ dimensions, inputRef, ...props }: ExpandComposerButtonProps) => {
+const MessageComposerInputExpandable = forwardRef<HTMLTextAreaElement, ExpandComposerButtonProps>(({ dimensions, ...props }, ref) => {
 	const [expanded, setExpanded] = useState(false);
 
 	const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -36,9 +35,17 @@ const MessageComposerInputExpandable = ({ dimensions, inputRef, ...props }: Expa
 					<IconButton small icon={expanded ? 'arrow-collapse' : 'arrow-expand'} onClick={() => setExpanded(!expanded)}></IconButton>
 				</Box>
 			)}
-			<MessageComposerInput {...props} ref={inputRef} onChange={onChange} {...(!!expanded && { height: 500 })} {...(!!expanded && { maxHeight: 500 })} />
+			<MessageComposerInput
+				{...props}
+				ref={ref}
+				onChange={onChange}
+				{...(!!expanded && { height: 500 })}
+				{...(!!expanded && { maxHeight: 500 })}
+			/>
 		</>
 	);
-};
+});
+
+MessageComposerInputExpandable.displayName = 'MessageComposerInputExpandable';
 
 export default MessageComposerInputExpandable;
