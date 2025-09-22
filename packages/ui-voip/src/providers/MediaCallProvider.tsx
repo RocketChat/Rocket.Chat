@@ -110,7 +110,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const onAccept = async () => {
-		console.log('onAccept');
 		if (session.state !== 'ringing') {
 			console.error('Cannot accept call in state', session.state);
 			return;
@@ -130,8 +129,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const onDeviceChange = (device: Device) => {
-		console.log('onDeviceChange', device);
-
 		const parameters = {
 			actionType: 'device-change',
 			constraints: {
@@ -182,12 +179,10 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const onTone = (tone: string) => {
-		console.log('tone', tone);
 		session.sendTone(tone);
 	};
 
 	const onEndCall = () => {
-		console.log('end call');
 		session.endCall();
 	};
 
@@ -198,7 +193,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const getAvatarPath = useUserAvatarPath();
 
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
-	// const usersInfoEndpoint = useEndpoint('GET', '/v1/users.info');
 
 	const getAutocompleteOptions = async (filter: string) => {
 		const peerUsername = session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined;

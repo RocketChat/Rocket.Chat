@@ -157,8 +157,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				username: contact.username,
 				avatarUrl,
 				callerId: contact.sipExtension,
-			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
-			// Also as of now, there is no sip calls to handle.
+			} as PeerInfo;
 
 			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held, connectionState, hidden } });
 		};
