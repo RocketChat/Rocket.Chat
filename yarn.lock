@@ -7555,7 +7555,7 @@ __metadata:
     zod: "npm:^3.22.4"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/c97524ce45dbf76d167072536015cf225470b7b25e466277419d4e53b80f83639e1bdc7fa024b0b19a348dd98f0878d5d9e953a36075f0183e4ee5a008f3013a
+  checksum: 10/d5f72dbf2c9f9c59daf569cf625a443388a872c5ad0818f9ef3a7782f170c1d25c1f72fcd7172ad3f1d7804a02ed362770f2ee201614dacf1d6585d396127e82
   languageName: node
   linkType: hard
 
