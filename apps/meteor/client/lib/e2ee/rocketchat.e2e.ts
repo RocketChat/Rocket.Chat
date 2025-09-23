@@ -10,7 +10,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
 import { splitVectorAndEncryptedData, generateRSAKey, exportJWKKey, importRSAKey, generatePassphrase } from './helper';
@@ -45,9 +44,9 @@ type KeyPair = {
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
 class E2E extends Emitter {
-	private started: boolean;
+	private userId: string | false = false;
 
-	private instancesByRoomId: Record<IRoom['_id'], E2ERoom>;
+	private instancesByRoomId: Record<IRoom['_id'], E2ERoom> = {};
 
 	private db_public_key: string | null | undefined;
 
@@ -57,15 +56,12 @@ class E2E extends Emitter {
 
 	public publicKey: string | undefined;
 
-	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
+	private keyDistributionInterval: ReturnType<typeof setInterval> | null = null;
 
 	private state: E2EEState;
 
 	constructor() {
 		super();
-		this.started = false;
-		this.instancesByRoomId = {};
-		this.keyDistributionInterval = null;
 
 		this.on('READY', async () => {
 			await this.onE2EEReady();
@@ -243,7 +239,7 @@ class E2E extends Emitter {
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom> {
 		const room = await this.waitForRoom(rid);
 
-		const userId = Meteor.userId();
+		const userId = this.getUserId();
 		if (!this.instancesByRoomId[rid] && userId) {
 			this.instancesByRoomId[rid] = new E2ERoom(userId, room);
 		}
@@ -331,15 +327,15 @@ class E2E extends Emitter {
 		});
 	}
 
-	async startClient(): Promise<void> {
+	async startClient(userId: string): Promise<void> {
 		const span = log.span('startClient');
-		if (this.started) {
+		if (this.userId === userId) {
 			return;
 		}
 
 		span.info(this.state);
 
-		this.started = true;
+		this.userId = userId;
 
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
@@ -354,7 +350,7 @@ class E2E extends Emitter {
 				this.setState('ENTER_PASSWORD');
 				private_key = await this.decodePrivateKey(this.db_private_key!);
 			} catch (error) {
-				this.started = false;
+				this.userId = false;
 				failedToDecodeKey = true;
 				this.openAlert({
 					title: "Wasn't possible to decode your encryption key to be imported.", // TODO: missing translation
@@ -363,7 +359,7 @@ class E2E extends Emitter {
 					closable: true,
 					icon: 'key',
 					action: async () => {
-						await this.startClient();
+						await this.startClient(userId);
 						this.closeAlert();
 					},
 				});
@@ -408,7 +404,7 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
-		this.started = false;
+		this.userId = false;
 		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
 		this.keyDistributionInterval = null;
 		this.setState('DISABLED');
@@ -430,6 +426,8 @@ class E2E extends Emitter {
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
+
+			span.info('fetched keys from db');
 		} catch (error) {
 			this.setState('ERROR');
 			span.error('Error fetching RSA keys: ', error);
@@ -500,7 +498,7 @@ class E2E extends Emitter {
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<{ iv: string; ciphertext: string } & Pbkdf2Options> {
-		const userId = Meteor.userId();
+		const { userId } = this;
 		if (!userId) {
 			throw new Error('No userId found');
 		}
@@ -574,8 +572,8 @@ class E2E extends Emitter {
 			return;
 		}
 
-		const { iv, ciphertext, ...pbkdf2 } = this.parsePrivateKey(this.db_private_key);
-		const masterKey = getMasterKey(password, pbkdf2);
+		const { iv, ciphertext, salt, iterations } = this.parsePrivateKey(this.db_private_key);
+		const masterKey = getMasterKey(password, { salt, iterations });
 
 		try {
 			const privateKey = await masterKey.decrypt(iv, ciphertext);
@@ -598,6 +596,7 @@ class E2E extends Emitter {
 
 	parsePrivateKey(privateKey: string): Pbkdf2Options & { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
 		const json: unknown = JSON.parse(privateKey);
+		const userId = this.getUserId();
 
 		if (typeof json !== 'object' || json === null) {
 			throw new TypeError('Invalid private key format');
@@ -607,7 +606,7 @@ class E2E extends Emitter {
 			// v1: { $binary: base64(iv[16] + ciphertext) }
 			const binary = Base64.decode(json.$binary);
 			const { iv, ciphertext } = splitVectorAndEncryptedData(binary, 16);
-			return { iv, ciphertext, iterations: 1000, salt: Meteor.userId()! };
+			return { iv, ciphertext, iterations: 1000, salt: userId };
 		}
 
 		if (!('iv' in json) || typeof json.iv !== 'string' || !('ciphertext' in json) || typeof json.ciphertext !== 'string') {
@@ -616,7 +615,7 @@ class E2E extends Emitter {
 
 		// v2: { iv: base64, ciphertext: base64, salt: string, iterations: number }
 
-		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : Meteor.userId()!;
+		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : userId;
 		const iterations = 'iterations' in json && typeof json.iterations === 'number' ? json.iterations : 100_000;
 
 		return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext), salt, iterations };
@@ -831,13 +830,25 @@ class E2E extends Emitter {
 		return sampleIds;
 	}
 
+	getUserId(): string {
+		const span = log.span('getUserId');
+		if (!this.userId) {
+			span.error('No userId found');
+
+			throw new Error('No userId found');
+		}
+
+		span.set('userId', this.userId).info('found userId');
+		return this.userId;
+	}
+
 	async initiateKeyDistribution() {
 		if (this.keyDistributionInterval) {
 			return;
 		}
 
 		const predicate = (record: IRoom) =>
-			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== Meteor.userId()));
+			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== this.getUserId()));
 
 		const span = log.span('initiateKeyDistribution');
 		const keyDistribution = async () => {
