@@ -24,7 +24,13 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
+export interface ISettingSlider extends Omit<ISettingBase, 'type'> {
+	type: 'slider';
+	minValue: number;
+	maxValue: number;
+}
+
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingSlider;
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
@@ -48,6 +54,7 @@ export interface ISettingBase extends IRocketChatRecord {
 		| 'group'
 		| 'date'
 		| 'lookup'
+		| 'slider'
 		| 'timespan';
 	public: boolean;
 	env: boolean;

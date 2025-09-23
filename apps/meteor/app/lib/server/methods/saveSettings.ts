@@ -90,13 +90,13 @@ Meteor.methods<ServerMethods>({
 						break;
 					case 'timespan':
 					case 'int':
+					case 'slider':
 						check(value, Number);
 						if (!Number.isInteger(value)) {
 							throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
 								method: 'saveSettings',
 							});
 						}
-
 						break;
 					case 'multiSelect':
 						check(value, Array);

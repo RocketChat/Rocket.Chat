@@ -19,6 +19,7 @@ import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
 import RoomPickSettingInput from './inputs/RoomPickSettingInput';
 import SelectSettingInput from './inputs/SelectSettingInput';
 import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
+import SliderSettingInput from './inputs/SliderSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 import TimespanSettingInput from './inputs/TimespanSettingInput';
 
@@ -41,6 +42,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	timezone: SelectTimezoneSettingInput,
 	lookup: LookupSettingInput,
 	timespan: TimespanSettingInput,
+	slider: SliderSettingInput,
 	date: GenericSettingInput, // @todo: implement
 	group: GenericSettingInput, // @todo: implement
 };
