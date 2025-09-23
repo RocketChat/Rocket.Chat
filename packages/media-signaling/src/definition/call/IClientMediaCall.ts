@@ -28,7 +28,7 @@ export type CallState =
 
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
-	| 'remote' // Server told the client to hang up
+	| 'remote' // The client was told the call is over
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
 	| 'transfer' // one of the users requested the other be transferred to someone else
@@ -57,7 +57,9 @@ export type CallRejectedReason =
 	| 'already-requested' // the request is valid, but a call matching its params is already underway
 	| 'unsupported' // no matching supported services between actors
 	| 'unavailable' // the callee is unavailable
-	| 'busy'; // the actor who requested the call is supposedly busy
+	| 'busy' // the actor who requested the call is supposedly busy
+	| 'invalid-call-params' // something is wrong with the params (eg. no valid route between caller and callee)
+	| 'forbidden'; // one of the actors on the call doesn't have permission for it
 
 export interface IClientMediaCall {
 	callId: string;
@@ -86,4 +88,6 @@ export interface IClientMediaCall {
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
 	transfer(callee: { type: CallActorType; id: string }): void;
+
+	sendDTMF(dtmf: string, duration?: number): void;
 }
