@@ -7,8 +7,12 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
-export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
+export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProcessTypes: { typing: boolean; presence: boolean }) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
+		if (!eduProcessTypes.typing) {
+			return;
+		}
+
 		try {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
@@ -33,10 +37,19 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	});
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
+		if (!eduProcessTypes.presence) {
+			return;
+		}
+
 		try {
 			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
 			if (!matrixUser) {
-				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
+				logger.debug(`No federated user found for Matrix user_id: ${data.user_id}`);
+				return;
+			}
+
+			if (!matrixUser.federated) {
+				logger.debug(`User ${matrixUser.username} is not federated, skipping presence update from Matrix`);
 				return;
 			}
 
@@ -47,6 +60,12 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 			};
 
 			const status = statusMap[data.presence] || UserStatus.OFFLINE;
+
+			if (matrixUser.status === status) {
+				logger.debug(`User ${matrixUser.username} already has status ${status}, skipping update`);
+				return;
+			}
+
 			await Users.updateOne(
 				{ _id: matrixUser._id },
 				{
