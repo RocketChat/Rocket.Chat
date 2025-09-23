@@ -239,13 +239,9 @@ async function joinRoom({
 				throw new Error('Invitee user not found');
 			}
 
-			// TODO: Rethink room name on DMs
-			// get the other user than ourself
-			const roomName = matrixRoom.name === senderUser.username ? inviteeUser.username : senderUser.username;
-
 			ourRoom = await Room.create(senderUserId, {
 				type: roomType,
-				name: roomName,
+				name: inviteEvent.sender,
 				members: [senderUser.username, inviteeUser.username],
 				options: {
 					federatedRoomId: inviteEvent.roomId,
