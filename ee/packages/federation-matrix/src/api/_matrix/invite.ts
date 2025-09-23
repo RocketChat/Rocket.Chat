@@ -238,13 +238,6 @@ async function joinRoom({
 	const internalMappedRoomId = await MatrixBridgedRoom.getLocalRoomId(inviteEvent.roomId);
 
 	if (!internalMappedRoomId) {
-		let roomName: string;
-		try {
-			roomName = matrixRoom.name || '';
-		} catch (error) {
-			roomName = inviteEvent.roomId.split(':')[0].replace('!', '') || 'Unnamed Room';
-		}
-
 		let roomType: 'c' | 'p' | 'd';
 
 		if (isDM) {
@@ -272,6 +265,10 @@ async function joinRoom({
 				throw new Error('inviteeUser user not found');
 			}
 
+			// TODO: Rethink room name on DMs
+			// get the other user than ourself
+			const roomName = matrixRoom.name === senderUser.username ? inviteeUser.username : senderUser.username;
+
 			ourRoom = await Room.create(senderUserId, {
 				type: roomType,
 				name: roomName,
@@ -285,6 +282,9 @@ async function joinRoom({
 				},
 			});
 		} else {
+			const roomFname = `${matrixRoom.name}:${matrixRoom.origin}`;
+			const roomName = inviteEvent.roomId.replace('!', '').replace(':', '_');
+
 			ourRoom = await Room.create(senderUserId, {
 				type: roomType,
 				name: roomName,
@@ -294,6 +294,7 @@ async function joinRoom({
 				},
 				extraData: {
 					federated: true,
+					fname: roomFname,
 				},
 			});
 		}
