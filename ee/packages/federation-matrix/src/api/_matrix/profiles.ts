@@ -1,5 +1,5 @@
-import type { HomeserverServices } from '@hs/federation-sdk';
-import type { RoomVersion } from '@hs/room';
+import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import type { RoomVersion } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 

@@ -1,5 +1,5 @@
-import type { HomeserverServices, RoomService, StateService } from '@hs/federation-sdk';
-import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@hs/room';
+import type { HomeserverServices, RoomService, StateService } from '@rocket.chat/federation-sdk';
+import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
 import { Room } from '@rocket.chat/core-services';
 import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';

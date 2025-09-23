@@ -21,11 +21,11 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.14.4",
-		"@hs/federation-sdk": "workspace:*",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:*",
 		"@rocket.chat/emitter": "^0.31.25",
 		"@rocket.chat/federation-matrix": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.1",
 		"@rocket.chat/http-router": "workspace:*",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/license": "workspace:^",

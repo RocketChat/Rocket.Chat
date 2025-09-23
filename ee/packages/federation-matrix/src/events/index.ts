@@ -1,4 +1,4 @@
-import type { HomeserverEventSignatures } from '@hs/federation-sdk';
+import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import type { Emitter } from '@rocket.chat/emitter';
 
 import { edus } from './edu';

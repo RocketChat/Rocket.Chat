@@ -1,6 +1,6 @@
-import type { FileMessageType, MessageType, FileMessageContent } from '@hs/core';
-import type { HomeserverEventSignatures } from '@hs/federation-sdk';
-import type { EventID } from '@hs/room';
+import type { FileMessageType, MessageType, FileMessageContent } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import type { EventID } from '@rocket.chat/federation-sdk';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';

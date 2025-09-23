@@ -27,7 +27,6 @@
 		"typescript": "~5.9.2"
 	},
 	"workspaces": [
-		"homeserver",
 		"apps/*",
 		"packages/*",
 		"ee/apps/*",
