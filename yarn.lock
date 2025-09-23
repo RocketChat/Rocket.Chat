@@ -7840,7 +7840,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/media-signaling@workspace:^, @rocket.chat/media-signaling@workspace:packages/media-signaling":
+"@rocket.chat/media-signaling@workspace:^, @rocket.chat/media-signaling@workspace:packages/media-signaling, @rocket.chat/media-signaling@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/media-signaling@workspace:packages/media-signaling"
   dependencies:
