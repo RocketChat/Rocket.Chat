@@ -94,9 +94,7 @@ test.describe('E2EE Message Actions', () => {
 		});
 
 		await test.step('verify pinned message and disabled copy link', async () => {
-			await poHomeChannel.tabs.kebab.click();
-			await poHomeChannel.tabs.btnPinnedMessagesList.click();
-			await pinnedMessagesTab.expectToBeVisible();
+			await pinnedMessagesTab.openTab();
 			await pinnedMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
 			await pinnedMessagesTab.openLastMessageMenu();
 			await e2eeMessageActions.expectCopyLinkToBeDisabled();
@@ -104,9 +102,7 @@ test.describe('E2EE Message Actions', () => {
 		});
 
 		await test.step('verify starred message and disabled copy link', async () => {
-			await poHomeChannel.tabs.kebab.click();
-			await poHomeChannel.tabs.btnStarredMessageList.click();
-			await starredMessagesTab.expectToBeVisible();
+			await starredMessagesTab.openTab();
 			await starredMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
 			await starredMessagesTab.openLastMessageMenu();
 			await e2eeMessageActions.expectCopyLinkToBeDisabled();

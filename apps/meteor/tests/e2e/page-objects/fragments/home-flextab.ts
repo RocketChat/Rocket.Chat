@@ -56,6 +56,7 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Teams Members"]');
 	}
 
+	// TODO: replace this with the room-toolbar
 	get kebab(): Locator {
 		return this.toolbarPrimaryActions.locator('role=button[name="Options"]');
 	}
@@ -94,13 +95,5 @@ export class HomeFlextab {
 
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
-	}
-
-	get btnPinnedMessagesList(): Locator {
-		return this.page.locator('[data-key="pinned-messages"]');
-	}
-
-	get btnStarredMessageList(): Locator {
-		return this.page.locator('[data-key="starred-messages"]');
 	}
 }
