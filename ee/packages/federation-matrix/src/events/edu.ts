@@ -3,35 +3,29 @@ import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
 export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
 		try {
-			const matrixRoom = await MatrixBridgedRoom.getLocalRoomId(data.room_id);
+			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
 				logger.debug(`No bridged room found for Matrix room_id: ${data.room_id}`);
 				return;
 			}
 
-			const matrixUser = await MatrixBridgedUser.findOne({ mui: data.user_id });
-			if (!matrixUser) {
+			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
+			if (!matrixUser?.username) {
 				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
 				return;
 			}
 
-			const user = await Users.findOneById(matrixUser.uid, { projection: { _id: 1, username: 1 } });
-			if (!user || !user.username) {
-				logger.debug(`User not found for uid: ${matrixUser.uid}`);
-				return;
-			}
-
 			void api.broadcast('user.activity', {
-				user: user.username,
+				user: matrixUser.username,
 				isTyping: data.typing,
-				roomId: matrixRoom,
+				roomId: matrixRoom._id,
 			});
 		} catch (error) {
 			logger.error('Error handling Matrix typing event:', error);
@@ -40,16 +34,9 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
 		try {
-			const matrixUser = await MatrixBridgedUser.findOne({ mui: data.user_id });
+			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
 			if (!matrixUser) {
 				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
-				return;
-			}
-			const user = await Users.findOneById(matrixUser.uid, {
-				projection: { _id: 1, username: 1, statusText: 1, roles: 1, name: 1, status: 1 },
-			});
-			if (!user) {
-				logger.debug(`User not found for uid: ${matrixUser.uid}`);
 				return;
 			}
 
@@ -61,7 +48,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 
 			const status = statusMap[data.presence] || UserStatus.OFFLINE;
 			await Users.updateOne(
-				{ _id: user._id },
+				{ _id: matrixUser._id },
 				{
 					$set: {
 						status,
@@ -70,12 +57,12 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				},
 			);
 
-			const { _id, username, statusText, roles, name } = user;
+			const { _id, username, statusText, roles, name } = matrixUser;
 			void api.broadcast('presence.status', {
 				user: { status, _id, username, statusText, roles, name },
 				previousStatus: undefined,
 			});
-			logger.debug(`Updated presence for user ${matrixUser.uid} to ${status} from Matrix federation`);
+			logger.debug(`Updated presence for user ${matrixUser._id} to ${status} from Matrix federation`);
 		} catch (error) {
 			logger.error('Error handling Matrix presence event:', error);
 		}

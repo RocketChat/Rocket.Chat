@@ -2,11 +2,11 @@ import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.accept-invite', async (data) => {
-		const room = await MatrixBridgedRoom.findOne({ mri: data.room_id });
+		const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
 		if (!room) {
 			console.warn(`No bridged room found for room_id: ${data.room_id}`);
 			return;
@@ -15,8 +15,13 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 		const internalUsername = data.sender;
 		const localUser = await Users.findOneByUsername(internalUsername);
 		if (localUser) {
-			await Room.addUserToRoom(room.rid, localUser);
+			await Room.addUserToRoom(room._id, localUser);
 			return;
+		}
+
+		const [, serverName] = data.sender.split(':');
+		if (!serverName) {
+			throw new Error('Invalid sender format, missing server name');
 		}
 
 		const { insertedId } = await Users.insertOne({
@@ -32,19 +37,16 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 			federated: true,
 			federation: {
 				version: 1,
+				mui: data.sender,
+				origin: serverName,
 			},
 		});
-		const serverName = data.sender.split(':')[1] || 'unknown';
-		const bridgedUser = await MatrixBridgedUser.findOne({ mui: data.sender });
 
-		if (!bridgedUser) {
-			await MatrixBridgedUser.createOrUpdateByLocalId(insertedId, data.sender, true, serverName);
-		}
 		const user = await Users.findOneById(insertedId);
 		if (!user) {
 			console.warn(`User with ID ${insertedId} not found after insertion`);
 			return;
 		}
-		await Room.addUserToRoom(room.rid, user);
+		await Room.addUserToRoom(room._id, user);
 	});
 }
