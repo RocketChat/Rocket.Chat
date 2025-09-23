@@ -2,8 +2,8 @@ import { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-s
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo } from 'react';
 
+import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
 import type { SessionInfo } from './useMediaSessionInstance';
-import type { ConnectionState, PeerInfo, State } from '../v2/MediaCallContext';
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,

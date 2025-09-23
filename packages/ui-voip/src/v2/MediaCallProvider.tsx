@@ -14,14 +14,14 @@ import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallContext, { PeerInfo } from './MediaCallContext';
+import MediaCallWidget from './MediaCallWidget';
+import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
-import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
-import MediaCallWidget from '../v2/MediaCallWidget';
-import TransferModal from '../v2/TransferModal';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const user = useUser();

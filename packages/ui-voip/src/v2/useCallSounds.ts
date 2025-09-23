@@ -1,7 +1,7 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { State } from '../v2/MediaCallContext';
+import type { State } from './MediaCallContext';
 
 export const useCallSounds = (state: State, subscribeCallEnded: (callback: () => void) => (() => void) | undefined) => {
 	const { voipSounds } = useCustomSound();

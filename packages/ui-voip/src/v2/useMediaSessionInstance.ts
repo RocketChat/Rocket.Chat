@@ -5,7 +5,7 @@ import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts'
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 
 import { useIceServers } from '../hooks/useIceServers';
-import type { ConnectionState, PeerInfo, State } from '../v2/MediaCallContext';
+import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
 
 interface BaseSession {
 	state: State;
