@@ -2,17 +2,17 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ActionSettingInputProps = {
-	_id: string;
-	actionText: TranslationKey;
+import type { SettingInputProps } from './types';
+
+type ActionSettingInputProps = SettingInputProps & {
 	value: keyof ServerMethods;
-	hint?: ReactNode;
-	disabled: boolean;
+	actionText: TranslationKey;
 	sectionChanged: boolean;
 };
+
 function ActionSettingInput({ _id, actionText, value, hint, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
 	const { t } = useTranslation();
 
