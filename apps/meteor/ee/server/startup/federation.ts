@@ -10,13 +10,27 @@ import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
 
+// TODO: should validate if the domain is resolving to us or not correctly
+// should use homeserver.getFinalSomethingSomethign and validate final Host header to have siteurl
+// this is a minimum sanity check to avoid full urls instead of the expected domain part
+function validateDomain(domain: string): boolean {
+	const valid = new URL(`https://${domain}`).hostname === domain;
+
+	if (!valid) {
+		logger.error(`The configured Federation domain "${domain}" is not valid`);
+	}
+
+	return valid;
+}
+
 export const startFederationService = async (): Promise<void> => {
 	let federationMatrixService: FederationMatrix | undefined;
 
 	const shouldStartService = (): boolean => {
 		const hasLicense = License.hasModule('federation');
 		const isEnabled = settings.get('Federation_Service_Enabled') === true;
-		const hasDomain = !!settings.get('Federation_Service_Domain');
+		const domain = settings.get<string>('Federation_Service_Domain').trim();
+		const hasDomain = validateDomain(domain);
 		return hasLicense && isEnabled && hasDomain;
 	};
 

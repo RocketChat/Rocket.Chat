@@ -11,7 +11,9 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_Alert',
 		});
 
-		const { hostname } = new URL(settings.get<string>('Site_Url') || 'https://example.com');
+		const siteUrl = settings.get<string>('Site_Url');
+
+		const hostname = siteUrl ? new URL(siteUrl).hostname : ''; // since this setting controls service start up, better to set empty string than an invalid URL
 
 		await this.add('Federation_Service_Domain', hostname, {
 			type: 'string',
