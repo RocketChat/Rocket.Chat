@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import BusinessHoursTable from './BusinessHoursTable';
 
 export default {
-	title: 'Enterprise/Omnichannel/BusinessHoursTable',
 	component: BusinessHoursTable,
 	parameters: {
 		actions: {
