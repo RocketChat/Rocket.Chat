@@ -30,7 +30,7 @@ function validateDomain(domain: string): boolean {
 		const valid = new URL(`https://${value}`).hostname === value;
 
 		if (!valid) {
-			throw;
+			throw new Error();
 		}
 	} catch {
 		logger.error(`The configured Federation domain "${value}" is not valid`);
