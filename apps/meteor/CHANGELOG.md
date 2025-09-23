@@ -1,5 +1,42 @@
 # @rocket.chat/meteor
 
+## 7.6.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37004](https://github.com/RocketChat/Rocket.Chat/pull/37004) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.6
+  - @rocket.chat/rest-typings@7.6.6
+  - @rocket.chat/license@1.0.18
+  - @rocket.chat/omnichannel-services@0.3.24
+  - @rocket.chat/pdf-worker@0.3.6
+  - @rocket.chat/presence@0.2.27
+  - @rocket.chat/api-client@0.2.27
+  - @rocket.chat/apps@0.5.6
+  - @rocket.chat/core-services@0.9.6
+  - @rocket.chat/cron@0.1.27
+  - @rocket.chat/freeswitch@1.2.14
+  - @rocket.chat/fuselage-ui-kit@18.0.6
+  - @rocket.chat/gazzodown@18.0.6
+  - @rocket.chat/model-typings@1.6.6
+  - @rocket.chat/ui-contexts@18.0.6
+  - @rocket.chat/models@1.5.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@14.0.6
+  - @rocket.chat/ui-client@18.0.6
+  - @rocket.chat/ui-video-conf@18.0.6
+  - @rocket.chat/ui-voip@8.0.6
+  - @rocket.chat/web-ui-registration@18.0.6
+  - @rocket.chat/instance-status@0.1.27
+  </details>
+
 ## 7.6.5
 
 ### Patch Changes
