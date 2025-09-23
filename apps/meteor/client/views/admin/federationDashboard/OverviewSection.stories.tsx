@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import OverviewSection from './OverviewSection';
 
 export default {
-	title: 'Admin/Federation Dashboard/OverviewSection',
 	component: OverviewSection,
 	parameters: {
 		layout: 'centered',

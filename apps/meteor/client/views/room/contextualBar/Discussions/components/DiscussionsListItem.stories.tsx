@@ -19,7 +19,6 @@ const noReplies = {
 };
 
 export default {
-	title: 'Room/Contextual Bar/Discussion/DiscussionsListItem',
 	component: DiscussionsListItem,
 };
 
