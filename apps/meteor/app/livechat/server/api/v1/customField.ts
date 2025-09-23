@@ -1,6 +1,16 @@
-import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLivechatCustomFieldsParams } from '@rocket.chat/rest-typings';
+import { LivechatCustomField } from '@rocket.chat/models';
+import {
+	isLivechatCustomFieldsProps,
+	isPOSTLivechatCustomFieldParams,
+	isPOSTLivechatCustomFieldsParams,
+	isPOSTLivechatRemoveCustomFields,
+	POSTLivechatRemoveCustomFieldSuccess,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { setCustomFields, setMultipleCustomFields } from '../../lib/custom-fields';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
@@ -80,3 +90,34 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatCustomFieldsEndpoints = API.v1.post(
+	'livechat/custom-fields.delete',
+	{
+		response: {
+			200: POSTLivechatRemoveCustomFieldSuccess,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'], // is this permission appropriate for the targeted action?
+		body: isPOSTLivechatRemoveCustomFields,
+	},
+	async function action() {
+		const { customFieldId } = this.bodyParams;
+
+		const result = await LivechatCustomField.removeById(customFieldId);
+		if (result.deletedCount === 0) {
+			return API.v1.failure('Custom field not found');
+		}
+
+		return API.v1.success();
+	},
+);
+
+type LivechatCustomFieldsEndpoints = ExtractRoutesFromAPI<typeof livechatCustomFieldsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatCustomFieldsEndpoints {}
+}

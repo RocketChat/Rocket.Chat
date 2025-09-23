@@ -7,7 +7,7 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }

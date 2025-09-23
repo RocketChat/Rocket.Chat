@@ -7,7 +7,7 @@ import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeade
 const IncomingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, onCall, peerInfo } = useMediaCallContext();
+	const { onEndCall, onAccept, peerInfo } = useMediaCallContext();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -28,7 +28,7 @@ const IncomingCall = () => {
 					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Reject')}
 					</Button>
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => onCall()}>
+					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => void onAccept()}>
 						{t('Accept')}
 					</Button>
 				</ButtonGroup>
