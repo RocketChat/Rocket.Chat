@@ -69,22 +69,25 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-v2-after-room-message-sent',
 );
+
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, room) => {
+	async (message: IMessage, { room, user }) => {
 		if (!message.federation?.eventId) {
 			return;
 		}
 
 		// removing messages from external users is not allowed
 		// TODO should we make it work for external users?
-		const isFromExternalUser = message.u?.username?.includes(':');
-		if (isFromExternalUser) {
+		if (user.federated) {
 			return;
 		}
 
+		if (!isUserNativeFederated(user)) {
+			return;
+		}
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.deleteMessage(room.federation.mrid, message);
+			await FederationMatrix.deleteMessage(room.federation.mrid, message, user.federation.mui);
 		}
 	},
 	callbacks.priority.MEDIUM,

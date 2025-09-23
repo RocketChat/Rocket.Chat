@@ -41,7 +41,7 @@ interface EventLikeCallbackSignatures {
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
 	'afterDeactivateUser': (user: IUser) => void;
-	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
+	'afterDeleteMessage': (message: IMessage, params: { room: IRoom; user: IUser }) => void;
 	'workspaceLicenseChanged': (license: string) => void;
 	'workspaceLicenseRemoved': () => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;

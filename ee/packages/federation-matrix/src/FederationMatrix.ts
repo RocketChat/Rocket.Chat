@@ -614,7 +614,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		};
 	}
 
-	async deleteMessage(matrixRoomId: string, message: IMessage): Promise<void> {
+	async deleteMessage(matrixRoomId: string, message: IMessage, uid: string): Promise<void> {
 		try {
 			if (!isMessageFromMatrixFederation(message) || isDeletedMessage(message)) {
 				return;
@@ -632,7 +632,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			// TODO fix branded EventID and remove type casting
 			// TODO message.u?.username is not the user who removed the message
-			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, message.u?.username);
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, uid);
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
