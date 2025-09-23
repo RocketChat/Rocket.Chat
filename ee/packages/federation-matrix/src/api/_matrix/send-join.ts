@@ -1,5 +1,4 @@
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
-import type { EventID } from '@rocket.chat/federation-sdk';
+import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 

@@ -1,7 +1,7 @@
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
+import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 

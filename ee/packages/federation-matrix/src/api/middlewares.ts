@@ -1,6 +1,5 @@
-import type { EventAuthorizationService } from '@rocket.chat/federation-sdk';
 import { errCodes } from '@rocket.chat/federation-sdk';
-import type { EventID } from '@rocket.chat/federation-sdk';
+import type { EventAuthorizationService, EventID } from '@rocket.chat/federation-sdk';
 import type { Context, Next } from 'hono';
 
 export const canAccessMedia = (federationAuth: EventAuthorizationService) => async (c: Context, next: Next) => {
