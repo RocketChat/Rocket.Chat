@@ -17,7 +17,8 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 		const federatedRoomId = options?.federatedRoomId;
 
 		if (!federatedRoomId) {
-			// if room if exists, we don't want to create it again
+			// if room exists, we don't want to create it again
+			// adds bridge record
 			await FederationMatrix.createRoom(room, owner, members);
 		} else {
 			// matrix room was already created and passed
@@ -51,7 +52,7 @@ callbacks.add(
 		}
 	},
 	callbacks.priority.HIGH,
-	'federation-v2-after-room-message-sent',
+	'native-federation-after-room-message-sent',
 );
 
 callbacks.add(
@@ -84,7 +85,7 @@ callbacks.add(
 		if (FederationActions.shouldPerformFederationAction(room)) {
 			await FederationMatrix.inviteUsersToRoom(
 				room,
-				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : (invitee.username as string))),
+				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : invitee.username)).filter((v) => v != null),
 				inviter,
 			);
 		}
