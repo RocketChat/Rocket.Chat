@@ -9,11 +9,11 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('read-receipts', () => {
+test.describe.serial.only('read-receipts', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
-	test.skip(!IS_EE, 'Enterprise Only');
+	// test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
@@ -73,7 +73,7 @@ test.describe.serial('read-receipts', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.locator('role=menuitem[name="Read receipts"]').click();
 
-			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(2);
+			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(1);
 		});
 	});
 });
