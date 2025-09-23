@@ -1,19 +1,16 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
-import { basename, dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { distDirectory, languageFromBasename, resourceBasename, resourcesDirectory } from './common.mts';
 import { normalizeI18nInterpolations } from './normalize.mts';
 
-export async function build() {
-	const rootDirectory = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-	const resourcesDirectory = join(rootDirectory, 'src', 'locales');
-	const distDirectory = join(rootDirectory, 'dist');
-
+async function build() {
 	// read all files in the src/locales directory
 	const resourceFiles = await readdir(resourcesDirectory);
 	const resources = await Promise.all(
 		resourceFiles.map(async (file) => ({
-			language: basename(file, '.i18n.json'),
+			language: languageFromBasename(file),
 			content: JSON.parse(await readFile(join(resourcesDirectory, file), 'utf8')),
 		})),
 	);
@@ -51,7 +48,7 @@ export async function build() {
 	// ./resources/*.i18n.json
 	await mkdir(join(distDirectory, 'resources'), { recursive: true });
 	for await (const resource of resources) {
-		await writeFile(join(distDirectory, 'resources', `${resource.language}.i18n.json`), JSON.stringify(resource.content, null, 2));
+		await writeFile(join(distDirectory, 'resources', resourceBasename(resource.language)), JSON.stringify(resource.content, null, 2));
 	}
 
 	// ./resources
@@ -109,7 +106,11 @@ export default languages;`,
 
 if (import.meta.url.startsWith('file:')) {
 	const modulePath = fileURLToPath(import.meta.url);
+
 	if (process.argv[1] === modulePath) {
-		build();
+		build().catch((error) => {
+			console.error(error);
+			process.exit(1);
+		});
 	}
 }
