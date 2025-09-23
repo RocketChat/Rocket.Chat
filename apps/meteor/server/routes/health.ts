@@ -49,7 +49,7 @@ const READINESS_THRESHOLDS = {
  * @param histogram - The event loop histogram to use.
  * @returns The status and p99 lag.
  */
-export function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) {
+function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) {
 	const lagInNs = histogram.percentile(99);
 	const lagInMs = lagInNs / 1_000_000;
 
