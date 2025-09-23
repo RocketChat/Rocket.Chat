@@ -1,4 +1,4 @@
-import type { ILivechatBusinessHour, IBusinessHourTimezone } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour, IBusinessHourTimezone, ISaveLivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
@@ -103,7 +103,7 @@ export class BusinessHourManager {
 		return businessHourType.getBusinessHour(id);
 	}
 
-	async saveBusinessHour(businessHourData: Partial<ILivechatBusinessHour>): Promise<void> {
+	async saveBusinessHour(businessHourData: ISaveLivechatBusinessHour): Promise<void> {
 		const type = this.getBusinessHourType((businessHourData.type as string) || LivechatBusinessHourTypes.DEFAULT) as IBusinessHourType;
 		const saved = await type.saveBusinessHour(businessHourData);
 		if (!settings.get('Livechat_enable_business_hours')) {
@@ -276,12 +276,15 @@ export class BusinessHourManager {
 
 				return businessHourType.saveBusinessHour({
 					...businessHour,
+					timezone: businessHour.timezone.name,
 					timezoneName: businessHour.timezone.name,
-					workHours: businessHour.workHours.map((hour) => ({ ...hour, start: hour.start.time, finish: hour.finish.time })) as Record<
-						string,
-						any
-					>[],
-				} as ILivechatBusinessHour & { timezoneName: string });
+					workHours: businessHour.workHours.map((hour) => ({
+						day: hour.day,
+						start: hour.start.time,
+						finish: hour.finish.time,
+						open: hour.open,
+					})),
+				});
 			}),
 		);
 		const failed = result.filter((r) => r.status === 'rejected');

@@ -1,4 +1,4 @@
-import type {
+import {
 	IOmnichannelCannedResponse,
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -32,6 +32,7 @@ import type {
 	ILivechatContactChannel,
 	IUser,
 	OmichannelRoutingConfig,
+	ISaveLivechatBusinessHour,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -3075,39 +3076,16 @@ export const isGETLivechatAgentsAgentIdDepartmentsParams = ajv.compile<GETLivech
 	GETLivechatAgentsAgentIdDepartmentsParamsSchema,
 );
 
-type POSTLivechatBusinessHoursSaveParams = {
-	_id?: string;
-	name: string;
-	active: boolean;
-	type: {
-		type: string;
-		enum: ['default', 'custom'];
-	};
-	daysOpen?: string[];
-	daysTime?: {
-		day: string;
-		start: { time: string };
-		finish: { time: string };
-		open: boolean;
-	}[];
-	workHours: {
-		day: string;
-		start: string;
-		finish: string;
-		open: boolean;
-	}[];
-	timezone: string;
-	timezoneName?: string;
-	departmentsToApplyBusinessHour?: string;
-};
-
 const POSTLivechatBusinessHoursSaveSchema = {
 	type: 'object',
 	properties: {
 		_id: { type: 'string', nullable: true },
 		name: { type: 'string' },
 		active: { type: 'boolean' },
-		type: { type: 'string' },
+		type: {
+			type: 'string',
+			enum: ['default', 'custom'],
+		},
 		daysOpen: {
 			type: 'array',
 			items: {
@@ -3155,14 +3133,14 @@ const POSTLivechatBusinessHoursSaveSchema = {
 			},
 		},
 		timezone: { type: 'string' },
-		timezoneName: { type: 'string' },
-		departmentsToApplyBusinessHour: { type: 'string' },
+		timezoneName: { type: 'string', nullable: true },
+		departmentsToApplyBusinessHour: { type: 'string', nullable: true },
 	},
 	required: ['name', 'active', 'type', 'workHours', 'timezone'],
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatBusinessHoursSaveParams = ajv.compile<POSTLivechatBusinessHoursSaveParams>(POSTLivechatBusinessHoursSaveSchema);
+export const isPOSTLivechatBusinessHoursSaveParams = ajv.compile<ISaveLivechatBusinessHour>(POSTLivechatBusinessHoursSaveSchema);
 
 const POSTLivechatBusinessHoursSaveSuccessResponseSchema = {
 	type: 'object',

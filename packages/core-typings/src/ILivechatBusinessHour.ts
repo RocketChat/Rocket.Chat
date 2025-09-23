@@ -40,3 +40,26 @@ export interface ILivechatBusinessHour {
 	_updatedAt?: Date;
 	departments?: ILivechatDepartment[];
 }
+
+export interface ISaveLivechatBusinessHour {
+	_id?: string;
+	name: string;
+	active: boolean;
+	type: LivechatBusinessHourTypes;
+	daysOpen?: string[];
+	daysTime?: {
+		day: string;
+		start: { time: string };
+		finish: { time: string };
+		open: boolean;
+	}[];
+	workHours: {
+		day: string;
+		start: string;
+		finish: string;
+		open: boolean;
+	}[];
+	timezone: string;
+	timezoneName?: string;
+	departmentsToApplyBusinessHour?: string;
+}

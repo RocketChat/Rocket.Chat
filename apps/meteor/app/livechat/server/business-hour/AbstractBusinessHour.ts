@@ -1,4 +1,10 @@
-import type { AtLeast, ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ILivechatAgentStatus,
+	ILivechatBusinessHour,
+	ILivechatDepartment,
+	ISaveLivechatBusinessHour,
+} from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
@@ -29,7 +35,7 @@ export interface IBusinessHourBehavior {
 export interface IBusinessHourType {
 	name: string;
 	getBusinessHour(id?: string): Promise<ILivechatBusinessHour | null>;
-	saveBusinessHour(businessHourData: Partial<ILivechatBusinessHour>): Promise<ILivechatBusinessHour>;
+	saveBusinessHour(businessHourData: ISaveLivechatBusinessHour): Promise<ILivechatBusinessHour>;
 	removeBusinessHourById(id: string): Promise<void>;
 }
 
