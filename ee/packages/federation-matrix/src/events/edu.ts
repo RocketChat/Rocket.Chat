@@ -44,7 +44,12 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 		try {
 			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
 			if (!matrixUser) {
-				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
+				logger.debug(`No federated user found for Matrix user_id: ${data.user_id}`);
+				return;
+			}
+
+			if (!matrixUser.federated) {
+				logger.debug(`User ${matrixUser.username} is not federated, skipping presence update from Matrix`);
 				return;
 			}
 
@@ -55,6 +60,12 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 			};
 
 			const status = statusMap[data.presence] || UserStatus.OFFLINE;
+
+			if (matrixUser.status === status) {
+				logger.debug(`User ${matrixUser.username} already has status ${status}, skipping update`);
+				return;
+			}
+
 			await Users.updateOne(
 				{ _id: matrixUser._id },
 				{

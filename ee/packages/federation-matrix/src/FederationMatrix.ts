@@ -135,7 +135,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					return;
 				}
 
-				if (!user.username || !user.status) {
+				if (!user.username || !user.status || user.username.includes(':')) {
 					return;
 				}
 				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1, federated: 1, federation: 1 } });
@@ -147,6 +147,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					return;
 				}
 
+				// TODO: Check if it should exclude himself from the list
 				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
 				const statusMap: Record<UserStatus, PresenceState> = {
 					[UserStatus.ONLINE]: 'online',
