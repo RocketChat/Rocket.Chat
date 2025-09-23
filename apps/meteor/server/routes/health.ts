@@ -1,23 +1,27 @@
-import type { IncomingMessage, ServerResponse } from 'http';
-import type { Process } from 'node:process';
-import { monitorEventLoopDelay } from 'perf_hooks';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { monitorEventLoopDelay } from 'node:perf_hooks';
 
 import { WebApp } from 'meteor/webapp';
 
 import { SystemLogger } from '../lib/logger/system';
+
+function setDefaultHeaders(res: ServerResponse) {
+	// Set headers to prevent any caching of the health check response.
+	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+	res.setHeader('Pragma', 'no-cache');
+	res.setHeader('Expires', '0');
+	res.setHeader('Content-Type', 'application/json');
+}
 
 /**
  * DEPRECATED Liveness Probe (`/health`)
  * Maintained for backward compatibility. Behaves like a simple liveness probe.
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
-WebApp.rawConnectHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
-	SystemLogger.info('Deprecated /health endpoint was called. Please update to /livez or /readyz.');
-	// Set headers to prevent any caching of the health check response.
-	res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-	res.setHeader('Pragma', 'no-cache');
-	res.setHeader('Expires', '0');
-	res.setHeader('Content-Type', 'application/json');
+WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
+	SystemLogger.warn('Deprecated /health endpoint was called. Please update to /livez or /readyz.');
+
+	setDefaultHeaders(res);
 
 	res.writeHead(200);
 	res.end(JSON.stringify({ status: 'ok' }));
@@ -32,9 +36,9 @@ const eventLoopHistogram = monitorEventLoopDelay();
 eventLoopHistogram.enable();
 
 const READINESS_THRESHOLDS = {
-	EVENT_LOOP_LAG_MS: Number(process.env.EVENT_LOOP_LAG_MS ?? '') || 70,
-	HEAP_USAGE_PERCENT: Number(process.env.HEAP_USAGE_PERCENT ?? '') || 0.85, // 85%
-};
+	EVENT_LOOP_LAG_MS: process.env.EVENT_LOOP_LAG_MS ? Number.parseFloat(process.env.EVENT_LOOP_LAG_MS) : 70,
+	HEAP_USAGE_PERCENT: process.env.HEAP_USAGE_PERCENT ? Number.parseFloat(process.env.HEAP_USAGE_PERCENT) : 0.85, // 85%
+} as const;
 
 /**
  * Checks event loop lag. Can optionally reset the histogram after reading.
@@ -49,12 +53,12 @@ function checkEventLoopLag(shouldReset: boolean) {
 		eventLoopHistogram.reset();
 	}
 
-	const lagValue = parseFloat(lagInMs.toFixed(2));
+	const lagValue = Number.parseFloat(lagInMs.toFixed(2));
 
 	if (lagInMs > READINESS_THRESHOLDS.EVENT_LOOP_LAG_MS) {
-		return { status: 'degraded', lag: lagValue, unit: 'ms (p99)' };
+		return { status: 'degraded', lagMs: lagValue };
 	}
-	return { status: 'ok', lag: lagValue, unit: 'ms (p99)' };
+	return { status: 'ok', lagMs: lagValue };
 }
 
 /**
@@ -62,27 +66,39 @@ function checkEventLoopLag(shouldReset: boolean) {
  * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const { heapUsed, heapTotal } = (process as Process).memoryUsage();
+	const { heapUsed, heapTotal } = process.memoryUsage();
 	const usageRatio = heapUsed / heapTotal;
-	const usageValue = parseFloat((usageRatio * 100).toFixed(2));
+	const usageValue = Number.parseFloat((usageRatio * 100).toFixed(2));
 
 	if (usageRatio > READINESS_THRESHOLDS.HEAP_USAGE_PERCENT) {
-		return { status: 'degraded', usage: usageValue, unit: '%' };
+		return { status: 'degraded', percentile: usageValue };
 	}
-	return { status: 'ok', usage: usageValue, unit: '%' };
+	return { status: 'ok', percentile: usageValue };
+}
+
+async function checkMongo() {
+	const { pingMongo } = await import('../startup/watchDb');
+
+	try {
+		await pingMongo();
+		return { status: 'ok' };
+	} catch (err) {
+		return { status: 'degraded', error: err instanceof Error ? err.message : String(err) };
+	}
 }
 
 /**
  * Performs the core health checks (memory, event loop) and returns the result.
  * @param shouldResetHistogram - Controls whether the event loop histogram is reset.
  */
-function performHealthChecks(shouldResetHistogram: boolean) {
+async function performHealthChecks(shouldResetHistogram: boolean) {
 	const checks = {
 		memory: checkMemoryUsage(),
 		eventLoop: checkEventLoopLag(shouldResetHistogram),
+		mongo: await checkMongo(),
 	};
 
-	const isHealthy = checks.memory.status === 'ok' && checks.eventLoop.status === 'ok';
+	const isHealthy = checks.memory.status === 'ok' && checks.eventLoop.status === 'ok' && checks.mongo.status === 'ok';
 	const statusCode = isHealthy ? 200 : 503;
 
 	const body = {
@@ -98,16 +114,18 @@ function performHealthChecks(shouldResetHistogram: boolean) {
  * Performs a non-destructive health check. A failure here indicates a pod is
  * unrecoverable and should be restarted.
  */
-WebApp.rawConnectHandlers.use('/livez', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = performHealthChecks(false); // Does NOT reset histogram
+WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerResponse) => {
+	const { statusCode, body, isHealthy } = await performHealthChecks(false); // Does NOT reset histogram
 
 	if (!isHealthy) {
 		SystemLogger.error({ msg: 'Liveness check failed', details: body });
 	}
 
+	setDefaultHeaders(res);
+
 	res.setHeader('Content-Type', 'application/json');
 	res.writeHead(statusCode);
-	res.end(JSON.stringify(body, null, 2));
+	res.end(JSON.stringify(body));
 });
 
 /**
@@ -115,14 +133,16 @@ WebApp.rawConnectHandlers.use('/livez', async (_req: IncomingMessage, res: Serve
  * Performs a destructive health check, resetting the histogram for the next interval.
  * A failure tells the orchestrator to stop sending traffic to this instance.
  */
-WebApp.rawConnectHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = performHealthChecks(true); // DOES reset histogram
+WebApp.rawHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
+	const { statusCode, body, isHealthy } = await performHealthChecks(true); // DOES reset histogram
 
 	if (!isHealthy) {
 		SystemLogger.warn({ msg: 'Readiness check failed', details: body });
 	}
 
+	setDefaultHeaders(res);
+
 	res.setHeader('Content-Type', 'application/json');
 	res.writeHead(statusCode);
-	res.end(JSON.stringify(body, null, 2));
+	res.end(JSON.stringify(body));
 });
