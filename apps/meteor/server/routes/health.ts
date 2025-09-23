@@ -36,8 +36,8 @@ const eventLoopHistogram = monitorEventLoopDelay();
 eventLoopHistogram.enable();
 
 const READINESS_THRESHOLDS = {
-	EVENT_LOOP_LAG_MS: process.env.EVENT_LOOP_LAG_MS ? Number.parseFloat(process.env.EVENT_LOOP_LAG_MS) : 70,
-	HEAP_USAGE_PERCENT: process.env.HEAP_USAGE_PERCENT ? Number.parseFloat(process.env.HEAP_USAGE_PERCENT) : 0.85, // 85%
+	EVENT_LOOP_LAG_MS: Number.parseFloat(process.env.EVENT_LOOP_LAG_MS ?? '') || 70,
+	HEAP_USAGE_PERCENT: Number.parseFloat(process.env.HEAP_USAGE_PERCENT ?? '') || 0.85, // 85%
 } as const;
 
 /**
@@ -123,7 +123,6 @@ WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerRespon
 
 	setDefaultHeaders(res);
 
-	res.setHeader('Content-Type', 'application/json');
 	res.writeHead(statusCode);
 	res.end(JSON.stringify(body));
 });
@@ -142,7 +141,6 @@ WebApp.rawHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerRespo
 
 	setDefaultHeaders(res);
 
-	res.setHeader('Content-Type', 'application/json');
 	res.writeHead(statusCode);
 	res.end(JSON.stringify(body));
 });
