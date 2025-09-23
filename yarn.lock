@@ -7520,7 +7520,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.1.1"
+    "@rocket.chat/federation-sdk": "npm:0.1.3"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -7543,9 +7543,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.1.1":
-  version: 0.1.1
-  resolution: "@rocket.chat/federation-sdk@npm:0.1.1"
+"@rocket.chat/federation-sdk@npm:0.1.3":
+  version: 0.1.3
+  resolution: "@rocket.chat/federation-sdk@npm:0.1.3"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.31.25"
     mongodb: "npm:^6.16.0"
@@ -7555,7 +7555,7 @@ __metadata:
     zod: "npm:^3.22.4"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/f25a1265b2c6cabba12b609062c10dcb7d351d3e3a2c0b214b2f1ccb68a461b2e6a9222ed21cec138821338cb7c19b32f443ccb1b4d6e09967b551b1dc04be92
+  checksum: 10/c97524ce45dbf76d167072536015cf225470b7b25e466277419d4e53b80f83639e1bdc7fa024b0b19a348dd98f0878d5d9e953a36075f0183e4ee5a008f3013a
   languageName: node
   linkType: hard
 
@@ -7568,7 +7568,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:*"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.1.1"
+    "@rocket.chat/federation-sdk": "npm:0.1.3"
     "@rocket.chat/http-router": "workspace:*"
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/license": "workspace:^"
@@ -37595,10 +37595,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.0, zod@npm:^3.22.4":
+"zod@npm:^3.22.0":
   version: 3.25.67
   resolution: "zod@npm:3.25.67"
   checksum: 10/0e35432dcca7f053e63f5dd491a87c78abe0d981817547252c3b6d05f0f58788695d1a69724759c6501dff3fd62929be24c9f314a3625179bee889150f7a61fa
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: 10/f0c963ec40cd96858451d1690404d603d36507c1fc9682f2dae59ab38b578687d542708a7fdbf645f77926f78c9ed558f57c3d3aa226c285f798df0c4da16995
   languageName: node
   linkType: hard
 
