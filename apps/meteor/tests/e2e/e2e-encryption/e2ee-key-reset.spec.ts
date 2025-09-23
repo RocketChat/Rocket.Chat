@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { AccountProfile } from '../page-objects';
+import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -17,6 +18,8 @@ preserveSettings(settingsList);
 
 test.describe('E2EE Key Reset', () => {
 	let anotherClientPage: Page;
+	let loginPage: LoginPage;
+	let anotherClientLoginPage: LoginPage;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -29,6 +32,8 @@ test.describe('E2EE Key Reset', () => {
 
 	test.beforeEach(async ({ browser, page }) => {
 		anotherClientPage = (await createAuxContext(browser, Users.userE2EE)).page;
+		loginPage = new LoginPage(page);
+		anotherClientLoginPage = new LoginPage(anotherClientPage);
 		await page.goto('/home');
 	});
 
@@ -44,7 +49,7 @@ test.describe('E2EE Key Reset', () => {
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-		await expect(page.locator('role=button[name="Login"]')).toBeVisible();
-		await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
+		await expect(loginPage.loginButton).toBeVisible();
+		await expect(anotherClientLoginPage.loginButton).toBeVisible();
 	});
 });

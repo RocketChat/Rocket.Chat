@@ -5,6 +5,7 @@ import { BASE_API_URL } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, restoreState } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -47,6 +48,7 @@ const sendEncryptedMessage = async (request: APIRequestContext, rid: string, enc
 
 test.describe('E2EE Legacy Format', () => {
 	let poHomeChannel: HomeChannel;
+	let encryptedRoomPage: EncryptedRoomPage;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -59,6 +61,7 @@ test.describe('E2EE Legacy Format', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		encryptedRoomPage = new EncryptedRoomPage(page);
 		await page.goto('/home');
 	});
 
@@ -84,6 +87,6 @@ test.describe('E2EE Legacy Format', () => {
 		await sendEncryptedMessage(request, rid, encryptedMessage);
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 	});
 });

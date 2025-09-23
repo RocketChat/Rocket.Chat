@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -17,6 +18,7 @@ const originalSettings = preserveSettings(settingsList);
 
 test.describe('E2EE File Encryption', () => {
 	let poHomeChannel: HomeChannel;
+	let encryptedRoomPage: EncryptedRoomPage;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -34,6 +36,7 @@ test.describe('E2EE File Encryption', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		encryptedRoomPage = new EncryptedRoomPage(page);
 		await page.goto('/home');
 	});
 
@@ -54,7 +57,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 		});
@@ -77,7 +80,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 1');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 		});
@@ -92,7 +95,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.fileNameInput.fill('any_file2.txt');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 		});
@@ -107,7 +110,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.fileNameInput.fill('any_file3.txt');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 		});
@@ -139,7 +142,7 @@ test.describe('E2EE File Encryption', () => {
 				await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
 				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
-				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			});
 
 			await test.step('send a text file in channel, file should not be encrypted', async () => {
@@ -148,7 +151,7 @@ test.describe('E2EE File Encryption', () => {
 				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 				await poHomeChannel.content.btnModalConfirm.click();
 
-				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
+				await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 			});
