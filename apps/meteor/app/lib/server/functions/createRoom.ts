@@ -132,7 +132,18 @@ export const createRoom = async <T extends RoomType>(
 		rid: string;
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
+
+	const extraData = {
+		...optionalExtraData,
+		...(optionalExtraData.federated && {
+			federated: true,
+			federation: {
+				version: 1,
+				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
+			},
+		}),
+	};
 
 	await prepareCreateRoomCallback.run({
 		type,
@@ -191,12 +202,6 @@ export const createRoom = async <T extends RoomType>(
 		fname: name,
 		_updatedAt: now,
 		...extraData,
-		...(extraData.federated && {
-			federated: true,
-			federation: {
-				version: 1,
-			},
-		}),
 		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),
 		t: type,
 		msgs: 0,

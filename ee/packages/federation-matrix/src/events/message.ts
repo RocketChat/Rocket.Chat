@@ -2,113 +2,16 @@ import type { FileMessageType, MessageType } from '@hs/core';
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import type { EventID } from '@hs/room';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
-import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { fileTypes } from '../FederationMatrix';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:message');
-
-async function getOrCreateFederatedUser(matrixUserId: string): Promise<IUser | null> {
-	const [userPart, domain] = matrixUserId.split(':');
-	if (!userPart || !domain) {
-		logger.error('Invalid Matrix sender ID format:', matrixUserId);
-		return null;
-	}
-	const username = userPart.substring(1);
-
-	const user = await Users.findOneByUsername(matrixUserId);
-	if (user) {
-		await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, false, domain);
-		return user;
-	}
-
-	logger.info('Creating new federated user:', { username: matrixUserId, externalId: matrixUserId });
-
-	const userData = {
-		username: matrixUserId,
-		name: username, // TODO: Fetch display name from Matrix profile
-		type: 'user',
-		status: UserStatus.ONLINE,
-		active: true,
-		roles: ['user'],
-		requirePasswordChange: false,
-		federated: true,
-		federation: {
-			version: 1,
-		},
-		createdAt: new Date(),
-		_updatedAt: new Date(),
-	};
-
-	const { insertedId } = await Users.insertOne(userData);
-
-	await MatrixBridgedUser.createOrUpdateByLocalId(
-		insertedId,
-		matrixUserId,
-		true, // isRemote = true for external Matrix users
-		domain,
-	);
-
-	const newUser = await Users.findOneById(insertedId);
-	if (!newUser) {
-		logger.error('Failed to create user:', matrixUserId);
-		return null;
-	}
-
-	logger.info('Successfully created federated user:', { userId: newUser._id, username });
-
-	return newUser;
-}
-
-async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): Promise<IRoom | null> {
-	const internalRoomId = await MatrixBridgedRoom.getLocalRoomId(matrixRoomId);
-	if (!internalRoomId) {
-		logger.error('Room not found in bridge mapping:', matrixRoomId);
-		// TODO: Handle room creation for unknown federated rooms
-		return null;
-	}
-
-	const room = await Rooms.findOneById(internalRoomId);
-	if (!room) {
-		logger.error('Room not found:', internalRoomId);
-		return null;
-	}
-
-	if (!room.federated) {
-		logger.error('Room is not marked as federated:', { roomId: room._id, matrixRoomId });
-		// TODO: Should we update the room to be federated?
-	}
-
-	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-
-	if (existingSubscription) {
-		return room;
-	}
-
-	logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
-
-	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
-		ts: new Date(),
-		open: false,
-		alert: false,
-		unread: 0,
-		userMentions: 0,
-		groupMentions: 0,
-	});
-
-	if (insertedId) {
-		logger.debug('Successfully created subscription:', insertedId);
-		// TODO: Import and use notifyOnSubscriptionChangedById if needed
-	}
-
-	return room;
-}
 
 async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
@@ -229,14 +132,15 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			const user = await getOrCreateFederatedUser(data.sender);
+			// at this point we know for sure the user already exists
+			const user = await Users.findOne({ 'federation.mui': data.sender });
 			if (!user) {
-				return;
+				throw new Error(`User not found for sender: ${data.sender}`);
 			}
 
-			const room = await getRoomAndEnsureSubscription(data.room_id, user);
+			const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
 			if (!room) {
-				return;
+				throw new Error(`No mapped room found for room_id: ${data.room_id}`);
 			}
 
 			const relation = content['m.relates_to'];

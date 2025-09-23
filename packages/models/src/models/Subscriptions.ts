@@ -2078,17 +2078,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				},
 			},
 			{
-				$lookup: {
-					from: 'rocketchat_matrix_bridged_rooms',
-					localField: 'rid',
-					foreignField: 'rid',
-					as: 'matrixRoom',
-				},
-			},
-			{
 				$project: {
 					_id: '$rid',
-					externalRoomId: { $arrayElemAt: ['$matrixRoom.mri', 0] },
+					externalRoomId: { $arrayElemAt: ['$room.federation.mrid', 0] },
 				},
 			},
 		]);
