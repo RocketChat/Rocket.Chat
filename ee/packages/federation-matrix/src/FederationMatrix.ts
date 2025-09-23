@@ -43,6 +43,8 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
+export { generateEd25519RandomSecretKey } from '@hs/crypto';
+
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
