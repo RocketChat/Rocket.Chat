@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CodeSettingInput from './CodeSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/CodeSettingInput',
 	component: CodeSettingInput,
 	parameters: {
 		actions: {
