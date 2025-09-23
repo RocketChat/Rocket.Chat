@@ -87,7 +87,11 @@ callbacks.add(
 callbacks.add(
 	'afterRoomNameChange',
 	async (roomConfig) => {
-		const { rid, name, oldName } = roomConfig;
+		const {
+			room: { _id: rid },
+			name,
+			oldName,
+		} = roomConfig;
 		await Rooms.updateMany({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } });
 		return roomConfig;
 	},

@@ -11,7 +11,6 @@ import {
 	FieldRow,
 	FieldError,
 	FieldHint,
-	FieldDescription,
 	Accordion,
 	AccordionItem,
 	ModalHeader,
@@ -31,6 +30,7 @@ import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateChannelModalProps = {
@@ -66,7 +66,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
+	const federationEnabled = useIsFederationEnabled();
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
@@ -315,7 +315,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
