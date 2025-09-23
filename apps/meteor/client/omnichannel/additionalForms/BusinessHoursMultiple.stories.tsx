@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
 export default {
-	title: 'Enterprise/Omnichannel/BusinessHoursMultiple',
 	component: BusinessHoursMultiple,
 	parameters: {
 		layout: 'fullscreen',

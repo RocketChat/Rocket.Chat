@@ -53,6 +53,7 @@ async function createUsersSubscriptions({
 		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
 
 		if (insertedId) {
+			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
 			await notifyOnRoomChanged(room, 'inserted');
 		}
 
