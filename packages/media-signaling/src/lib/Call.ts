@@ -630,6 +630,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	public sendDTMF(dtmf: string, duration?: number): void {
+		if (!dtmf || !/^[0-9A-D#*,]$/.exec(dtmf)) {
+			throw new Error('Invalid DTMF tone.');
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'dtmf', {
+			dtmf,
+			duration,
+		});
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -785,6 +796,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
+			this.config.logger?.error(e);
 			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
 			throw e;
 		}
@@ -1008,6 +1020,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const stateValue = this.webrtcProcessor.getInternalState(stateName);
 
 		if (this.serviceStates.get(stateName) !== stateValue) {
+			this.config.logger?.debug(stateName, stateValue);
 			this.serviceStates.set(stateName, stateValue);
 
 			switch (stateName) {
@@ -1021,6 +1034,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalError', critical, error);
 		const errorCode = typeof error === 'object' ? error.message : error;
 		this.sendError({ errorType: 'service', errorCode, ...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }) });
 
@@ -1064,9 +1078,7 @@ export class ClientMediaCall implements IClientMediaCall {
 					}
 					break;
 				case 'disconnected':
-					if (this.state === 'active') {
-						this.hangup('service-error');
-					}
+					// Disconnected state is temporary, so let's wait for it to change into something else before reacting.
 					break;
 			}
 		} catch (e) {
