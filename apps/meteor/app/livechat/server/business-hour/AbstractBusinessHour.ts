@@ -29,7 +29,7 @@ export interface IBusinessHourBehavior {
 export interface IBusinessHourType {
 	name: string;
 	getBusinessHour(id?: string): Promise<ILivechatBusinessHour | null>;
-	saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<ILivechatBusinessHour>;
+	saveBusinessHour(businessHourData: Partial<ILivechatBusinessHour>): Promise<ILivechatBusinessHour>;
 	removeBusinessHourById(id: string): Promise<void>;
 }
 

@@ -8,7 +8,7 @@ type CreateBusinessHoursParams = {
 };
 
 export const createBusinessHour = async (api: BaseTest['api'], { name, departments = [] }: CreateBusinessHoursParams = {}) => {
-	const departmentIds = departments.join(',');
+	const departmentIds = departments.map(({ departmentId }) => departmentId).join(',');
 
 	const response = await api.post('/livechat/business-hours.save', {
 		name,
