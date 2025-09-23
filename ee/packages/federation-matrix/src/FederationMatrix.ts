@@ -70,10 +70,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const settingsSigningAlg = await Settings.get<string>('Federation_Service_Matrix_Signing_Algorithm');
 		const settingsSigningVersion = await Settings.get<string>('Federation_Service_Matrix_Signing_Version');
 		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
-
-		const siteUrl = await Settings.get<string>('Site_Url');
-
-		const serverHostname = new URL(siteUrl).hostname;
+		const serverHostname = (await Settings.get<string>('Federation_Service_Domain')).trim();
 
 		instance.serverName = serverHostname;
 
@@ -168,6 +165,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		);
 
+		instance.logger.startup(`Federation Matrix Homeserver created for domain ${instance.serverName}`);
+
 		return instance;
 	}
 
@@ -203,6 +202,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	getAllRoutes() {
 		return this.httpRoutes;
+	}
+
+	getServerName(): string {
+		return this.serverName;
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {
