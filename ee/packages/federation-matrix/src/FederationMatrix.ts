@@ -926,7 +926,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername(user, { projection: { _id: 1, username: 1 } });
+		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
+			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
+		});
+
 		if (!localUser) {
 			return;
 		}
