@@ -2214,8 +2214,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments({ _id: rid, rolePrioritiesCreated: syncVersion });
 	}
 
-	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<number> {
+	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<string[]> {
 		// TODO implement
-		return 0;
+		return [];
 	}
 }

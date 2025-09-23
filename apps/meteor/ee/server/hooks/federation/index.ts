@@ -46,7 +46,11 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 callbacks.add(
 	'afterSaveMessage',
 	async (message, { room, user }) => {
-		if (!FederationActions.shouldPerformFederationAction(room) && !isUserNativeFederated(user)) {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
+		}
+
+		if (!isUserNativeFederated(user)) {
 			return;
 		}
 
@@ -80,7 +84,7 @@ callbacks.add(
 		}
 
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.deleteMessage(message);
+			await FederationMatrix.deleteMessage(room.federation.mrid, message);
 		}
 	},
 	callbacks.priority.MEDIUM,
