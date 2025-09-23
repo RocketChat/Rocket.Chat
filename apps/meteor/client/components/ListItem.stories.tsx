@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ListItem from './Sidebar/ListItem';
 
 export default {
-	title: 'Components/ListItem',
 	component: Tile,
 	parameters: {
 		docs: {

@@ -13,7 +13,6 @@ g.__meteor_runtime_config__ = {
 };
 
 export default {
-	title: 'Outbound Message/OutboundMessageUpsellModal',
 	component: OutboundMessageUpsellModal,
 	args: {
 		onClose: action('onClose'),
