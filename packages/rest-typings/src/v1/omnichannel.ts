@@ -1723,6 +1723,48 @@ const POSTLivechatAgentStatusPropsSchema = {
 
 export const isPOSTLivechatAgentStatusProps = ajv.compile<POSTLivechatAgentStatusProps>(POSTLivechatAgentStatusPropsSchema);
 
+type POSTLivechatAgentSaveInfoParams = {
+	agentId: string;
+	agentData: Record<string, unknown>;
+	agentDepartments: string[];
+};
+
+const POSTLivechatAgentSaveInfoParamsSchema = {
+	type: 'object',
+	properties: {
+		agentId: {
+			type: 'string',
+		},
+		agentData: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		agentDepartments: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['agentId', 'agentData', 'agentDepartments'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatAgentSaveInfoParams = ajv.compile<POSTLivechatAgentSaveInfoParams>(POSTLivechatAgentSaveInfoParamsSchema);
+
+const POSTLivechatAgentSaveInfoSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatAgentSaveInfoSuccessResponse = ajv.compile<void>(POSTLivechatAgentSaveInfoSuccessResponseSchema);
+
 type LivechatAnalyticsAgentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;

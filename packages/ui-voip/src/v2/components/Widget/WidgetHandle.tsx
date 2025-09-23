@@ -1,6 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { ComponentProps, forwardRef } from 'react';
+import { ComponentProps } from 'react';
+
+import { useDraggableWidget } from './WidgetDraggableContext';
 
 const dragHandle = css`
 	cursor: grab;
@@ -10,7 +12,8 @@ const dragHandle = css`
 	}
 `;
 
-const WidgetHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Box>>(function WidgetHandle(props, ref) {
+const WidgetHandle = (props: ComponentProps<typeof Box>) => {
+	const { handleRef } = useDraggableWidget();
 	return (
 		<Box
 			height={20}
@@ -19,12 +22,12 @@ const WidgetHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Box>>(fun
 			flexDirection='row'
 			justifyContent='center'
 			className={dragHandle}
-			ref={ref}
+			ref={handleRef}
 			{...props}
 		>
 			<Icon color='info' name='stacked-meatballs' size='x20' />
 		</Box>
 	);
-});
+};
 
 export default WidgetHandle;

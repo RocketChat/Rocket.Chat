@@ -58,7 +58,6 @@ const AppRoot = mockAppRoot()
 	.build();
 
 const meta = {
-	title: 'Components/OutboundMessage/OutboundMessageWizard/Steps/RecipientStep',
 	component: RecipientStep,
 	parameters: {
 		controls: { hideNoControlsWarning: true },

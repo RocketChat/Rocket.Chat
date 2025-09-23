@@ -6,28 +6,26 @@ exports[`RecipientStep renders Default without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-162rsse"
     >
-      <div>
+      <div
+        data-testid="recipient-form"
+      >
         <div
-          data-testid="recipient-form"
+          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
           >
-            <div
-              class="rcx-button-group rcx-button-group--align-start"
-              role="group"
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="submit"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-                type="submit"
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Next
-                </span>
-              </button>
-            </div>
+                Next
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -42,28 +40,26 @@ exports[`RecipientStep renders WithDefaultValues without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-162rsse"
     >
-      <div>
+      <div
+        data-testid="recipient-form"
+      >
         <div
-          data-testid="recipient-form"
+          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
           >
-            <div
-              class="rcx-button-group rcx-button-group--align-start"
-              role="group"
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="submit"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-                type="submit"
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Next
-                </span>
-              </button>
-            </div>
+                Next
+              </span>
+            </button>
           </div>
         </div>
       </div>

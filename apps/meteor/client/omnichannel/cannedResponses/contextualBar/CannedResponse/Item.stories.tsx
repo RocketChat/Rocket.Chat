@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import Item from './Item';
 
 export default {
-	title: 'Enterprise/Omnichannel/Item',
 	component: Item,
 	parameters: {
 		actions: {

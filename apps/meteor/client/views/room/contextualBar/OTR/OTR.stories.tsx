@@ -5,7 +5,6 @@ import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/OTR',
 	component: OTR,
 	parameters: {
 		layout: 'fullscreen',
