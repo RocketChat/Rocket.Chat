@@ -38,10 +38,6 @@ callbacks.add(
 			return;
 		}
 
-		if (!isUserNativeFederated(user)) {
-			return;
-		}
-
 		try {
 			// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
 			// If message is federated, it will save external_message_id like into the message object
@@ -221,7 +217,14 @@ callbacks.add(
 
 callbacks.add(
 	'afterCreateDirectRoom',
-	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): Promise<void> => {
+	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id']; mrid?: string }): Promise<void> => {
+		if (params.mrid) {
+			await Rooms.setAsFederated(room._id, {
+				mrid: params.mrid,
+				origin: params.mrid.split(':').pop()!,
+			});
+			return;
+		}
 		if (FederationActions.shouldPerformFederationAction(room)) {
 			await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
 		}

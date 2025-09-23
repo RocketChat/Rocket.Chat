@@ -64,7 +64,7 @@ interface EventLikeCallbackSignatures {
 		user: AtLeast<IUser, '_id' | 'federated' | 'roles'>;
 		inviter: AtLeast<IUser, '_id' | 'username'>;
 	}) => void;
-	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id']; mrid?: string }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
