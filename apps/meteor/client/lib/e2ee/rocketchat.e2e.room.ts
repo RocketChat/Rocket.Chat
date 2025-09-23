@@ -95,8 +95,6 @@ export class E2ERoom extends Emitter {
 
 	sessionKeyExported: JsonWebKey | undefined;
 
-	cache: WeakMap<IE2EEMessage, IE2EEMessage> = new WeakMap();
-
 	constructor(userId: string, room: IRoom) {
 		super();
 
