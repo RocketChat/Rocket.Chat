@@ -9,12 +9,16 @@ import { ping } from './ping';
 import { reaction } from './reaction';
 import { room } from './room';
 
-export function registerEvents(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
+export function registerEvents(
+	emitter: Emitter<HomeserverEventSignatures>,
+	serverName: string,
+	eduProcessTypes: { typing: boolean; presence: boolean },
+) {
 	ping(emitter);
 	message(emitter, serverName);
 	invite(emitter);
 	reaction(emitter);
 	member(emitter);
-	edus(emitter);
+	edus(emitter, eduProcessTypes);
 	room(emitter);
 }

@@ -56,6 +56,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
 
+	private processEDUTyping = false;
+
+	private processEDUPresence = false;
+
 	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
 		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
@@ -72,6 +76,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const serverHostname = new URL(siteUrl).hostname;
 
 		instance.serverName = serverHostname;
+
+		instance.processEDUTyping = await Settings.get<boolean>('Federation_Service_EDU_Process_Typing');
+		instance.processEDUPresence = await Settings.get<boolean>('Federation_Service_EDU_Process_Presence');
 
 		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
 
@@ -124,6 +131,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		instance.onEvent(
 			'presence.status',
 			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
+				if (!instance.processEDUPresence) {
+					return;
+				}
+
 				if (!user.username || !user.status) {
 					return;
 				}
@@ -183,7 +194,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async created(): Promise<void> {
 		try {
-			registerEvents(this.eventHandler, this.serverName);
+			registerEvents(this.eventHandler, this.serverName, { typing: this.processEDUTyping, presence: this.processEDUPresence });
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
 		}
@@ -925,6 +936,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
+		if (!this.processEDUTyping) {
+			return;
+		}
+
 		if (!rid || !user) {
 			return;
 		}

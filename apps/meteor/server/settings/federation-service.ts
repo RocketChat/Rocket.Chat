@@ -53,5 +53,23 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			i18nDescription: 'Federation_Service_Allow_List_Description',
 			public: false,
 		});
+
+		await this.add('Federation_Service_EDU_Process_Typing', true, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+			alert: 'Federation_Service_EDU_Process_Typing_Alert',
+		});
+
+		await this.add('Federation_Service_EDU_Process_Presence', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+			alert: 'Federation_Service_EDU_Process_Presence_Alert',
+		});
 	});
 };

@@ -7,8 +7,12 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
-export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
+export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProcessTypes: { typing: boolean; presence: boolean }) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
+		if (!eduProcessTypes.typing) {
+			return;
+		}
+
 		try {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
@@ -33,6 +37,10 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	});
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
+		if (!eduProcessTypes.presence) {
+			return;
+		}
+
 		try {
 			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
 			if (!matrixUser) {
