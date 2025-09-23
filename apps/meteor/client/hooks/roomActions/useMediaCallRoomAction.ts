@@ -4,7 +4,7 @@ import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-import { useRoom } from '../../views/room/contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useUserInfoQuery } from '../useUserInfoQuery';
 
@@ -25,6 +25,7 @@ const getPeerId = (uids: string[], ownUserId: string | null) => {
 
 export const useMediaCallRoomAction = () => {
 	const { uids = [] } = useRoom();
+	const subscription = useRoomSubscription();
 	const ownUserId = useUserId();
 
 	const getAvatarUrl = useUserAvatarPath();
@@ -49,8 +50,10 @@ export const useMediaCallRoomAction = () => {
 
 	const callAction = useMediaCallAction(peerInfo as PeerInfo | undefined);
 
+	const blocked = subscription?.blocked || subscription?.blocker;
+
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!peerId || !callAction) {
+		if (!peerId || !callAction || blocked) {
 			return undefined;
 		}
 
@@ -64,5 +67,5 @@ export const useMediaCallRoomAction = () => {
 			action: () => action(),
 			groups: ['direct'] as const,
 		};
-	}, [peerId, callAction]);
+	}, [peerId, callAction, blocked]);
 };
