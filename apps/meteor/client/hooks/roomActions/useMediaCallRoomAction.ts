@@ -1,7 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
-import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
@@ -34,7 +34,7 @@ export const useMediaCallRoomAction = () => {
 
 	const { data } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
 
-	const peerInfo = useMemo(() => {
+	const peerInfo = useMemo<PeerInfo | undefined>(() => {
 		if (!data?.user?._id) {
 			return undefined;
 		}
@@ -48,7 +48,7 @@ export const useMediaCallRoomAction = () => {
 		};
 	}, [data, getAvatarUrl]);
 
-	const callAction = useMediaCallAction(peerInfo as PeerInfo | undefined);
+	const callAction = useMediaCallAction(peerInfo);
 
 	const blocked = subscription?.blocked || subscription?.blocker;
 
