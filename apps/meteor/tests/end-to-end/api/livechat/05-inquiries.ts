@@ -391,7 +391,7 @@ describe('LIVECHAT - inquiries', () => {
 				.expect(400);
 
 			expect(body).to.have.property('success', false);
-			expect(body).to.have.property('error', 'room-closed');
+			expect(body).to.have.property('error', 'error-room-closed');
 		});
 		describe('no serving', () => {
 			let room: IOmnichannelRoom;
