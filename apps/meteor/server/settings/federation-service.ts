@@ -1,4 +1,4 @@
-import { settings, settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '../../app/settings/server';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
 	await settingsRegistry.addGroup('Federation', async function () {
@@ -11,11 +11,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_Alert',
 		});
 
-		const siteUrl = settings.get<string>('Site_Url');
-
-		const hostname = siteUrl ? new URL(siteUrl).hostname : ''; // since this setting controls service start up, better to set empty string than an invalid URL
-
-		await this.add('Federation_Service_Domain', hostname, {
+		await this.add('Federation_Service_Domain', '', {
 			type: 'string',
 			public: false,
 			enterprise: true,
