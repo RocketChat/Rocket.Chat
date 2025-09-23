@@ -88,8 +88,8 @@ export class MatrixMediaService {
 		mxcUri: string,
 		metadata: {
 			name: string;
-			size: number;
-			type: string;
+			size?: number;
+			type?: string;
 			messageId?: string;
 			roomId?: string;
 			userId?: string;

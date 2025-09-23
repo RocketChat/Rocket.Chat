@@ -1,15 +1,6 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 
-export interface IRouteContext {
-	params: any;
-	query: any;
-	body: any;
-	headers: Record<string, string>;
-	setStatus: (code: number) => void;
-	setHeader: (key: string, value: string) => void;
-}
-
 export interface IFederationMatrixService {
 	getAllRoutes(): {
 		matrix: Router<'/_matrix'>;
@@ -34,6 +25,6 @@ export interface IFederationMatrixService {
 		userId: string,
 		role: 'moderator' | 'owner' | 'leader' | 'user',
 	): Promise<void>;
-	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: Pick<IUser, '_id' | 'username'>): Promise<void>;
+	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 }

@@ -215,6 +215,7 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+		version?: number;
 	};
 
 	/* used when message type is "omnichannel_sla_change_history" */
@@ -282,7 +283,7 @@ export interface IFederatedMessage extends IMessage {
 
 export interface INativeFederatedMessage extends IMessage {
 	federation: {
-		version: `${number}`;
+		version: number;
 		eventId: string;
 	};
 }

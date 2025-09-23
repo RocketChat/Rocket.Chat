@@ -229,16 +229,14 @@ async function joinRoom({
 		let ourRoom: { _id: string };
 
 		if (isDM) {
-			const [senderUser, inviteeUser] = await Promise.all([
-				Users.findOneById(senderUserId, { projection: { _id: 1, username: 1 } }),
-				Promise.resolve(user),
-			]);
+			const senderUser = await Users.findOneById(senderUserId, { projection: { _id: 1, username: 1 } });
+			const inviteeUser = user;
 
 			if (!senderUser?.username) {
 				throw new Error('Sender user not found');
 			}
 			if (!inviteeUser?.username) {
-				throw new Error('inviteeUser user not found');
+				throw new Error('Invitee user not found');
 			}
 
 			// TODO: Rethink room name on DMs

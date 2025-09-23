@@ -188,9 +188,10 @@ export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
 									return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
 								}
 
-								if (filter.room_types) {
-									// TODO: implement room_types filtering
-								}
+								// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
+								// TODO: https://rocketchat.atlassian.net/browse/FDR-152 -> Implement logic to handle custom room types
+								// if (filter.room_types) {
+								// }
 
 								return true;
 							})

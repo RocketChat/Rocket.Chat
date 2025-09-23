@@ -85,7 +85,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			version: process.env.SERVER_VERSION || '1.0',
 			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
 			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey}`,
-			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
+			signingKeyPath: process.env.CONFIG_FOLDER || './rocketchat.signing.key',
 			database: {
 				uri: mongoUri,
 				name: dbName,
@@ -243,8 +243,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				if (typeof member === 'string') {
 					username = member;
+				} else if (typeof member.username === 'string') {
+					username = member.username;
 				} else {
-					username = member.username as string;
+					continue;
 				}
 
 				if (!username.includes(':') && !username.includes('@')) {
@@ -428,22 +430,26 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
-			// TODO: Handle multiple files
-			const file = message.files[0];
-			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
+			let lastEventId: { eventId: string } | null = null;
 
-			const msgtype = this.getMatrixMessageType(file.type);
-			const fileContent = {
-				body: file.name,
-				msgtype,
-				url: mxcUri,
-				info: {
-					mimetype: file.type,
-					size: file.size,
-				},
-			};
+			for await (const file of message.files) {
+				const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
 
-			return this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+				const msgtype = this.getMatrixMessageType(file.type);
+				const fileContent = {
+					body: file.name,
+					msgtype,
+					url: mxcUri,
+					info: {
+						mimetype: file.type,
+						size: file.size,
+					},
+				};
+
+				lastEventId = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+			}
+
+			return lastEventId;
 		} catch (error) {
 			this.logger.error('Failed to handle file message', {
 				messageId: message._id,
