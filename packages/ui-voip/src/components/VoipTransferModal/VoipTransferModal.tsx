@@ -13,7 +13,7 @@ import {
 	ModalIcon,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import { UserAutoComplete } from '@rocket.chat/ui-client';
+import UserAutoComplete from '@rocket.chat/ui-client/components/UserAutoComplete/index';
 import { useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useId, useState } from 'react';

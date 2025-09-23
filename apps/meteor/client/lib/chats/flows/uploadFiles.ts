@@ -1,6 +1,6 @@
 import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { imperativeModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';

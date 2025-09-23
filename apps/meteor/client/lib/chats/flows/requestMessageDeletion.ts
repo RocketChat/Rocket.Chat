@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 
 import { t } from '../../../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../../toast';

@@ -1,7 +1,8 @@
 import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';

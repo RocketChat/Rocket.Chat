@@ -43,7 +43,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["!.storybook", "components", "dist", "helpers", "hooks", "lib", "providers"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],

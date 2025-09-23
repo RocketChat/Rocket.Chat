@@ -2,6 +2,49 @@
 	"name": "@rocket.chat/ui-client",
 	"version": "22.0.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./helpers": {
+			"default": "./dist/helpers/index.js",
+			"types": "./dist/helpers/index.d.ts"
+		},
+		"./helpers/*": {
+			"default": "./dist/helpers/*.js",
+			"types": "./dist/helpers/*.d.ts"
+		},
+		"./lib/*": {
+			"default": "./dist/lib/*.js",
+			"types": "./dist/lib/*.d.ts"
+		},
+		"./components": {
+			"default": "./dist/components/index.js",
+			"types": "./dist/components/index.d.ts"
+		},
+		"./components/*": {
+			"default": "./dist/components/*.js",
+			"types": "./dist/components/*.d.ts"
+		},
+		"./providers": {
+			"default": "./dist/providers/index.js",
+			"types": "./dist/providers/index.d.ts"
+		},
+		"./providers/*": {
+			"default": "./dist/providers/*.js",
+			"types": "./dist/providers/*.d.ts"
+		},
+		"./hooks": {
+			"default": "./dist/hooks/index.js",
+			"types": "./dist/hooks/index.d.ts"
+		},
+		"./hooks/*": {
+			"default": "./dist/hooks/*.js",
+			"types": "./dist/hooks/*.d.ts"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

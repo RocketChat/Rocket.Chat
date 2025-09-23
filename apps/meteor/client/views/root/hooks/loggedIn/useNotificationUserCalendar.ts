@@ -1,6 +1,6 @@
 import type { ICalendarNotification, IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { imperativeModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import { useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
