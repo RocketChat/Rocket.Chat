@@ -47,5 +47,6 @@ export const defaultSounds: ICustomSound[] = [
 ];
 
 export const formatVolume = (volume: number) => {
-	return Number((volume / 100).toPrecision(2));
+	const clamped = Math.max(0, Math.min(volume, 100));
+	return Number((clamped / 100).toPrecision(2));
 };
