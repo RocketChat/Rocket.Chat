@@ -1,4 +1,3 @@
-import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms } from '@rocket.chat/models';
@@ -30,14 +29,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:returnAsInquiry',
 			});
-		}
-
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:returnAsInquiry' });
-		}
-
-		if (!room.open) {
-			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
 		return returnRoomAsInquiry(room, departmentId);

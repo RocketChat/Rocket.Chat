@@ -212,7 +212,7 @@ export async function saveRoomInfo(
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
 	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
 	if (!room.open) {
-		throw new Meteor.Error('error-room-closed');
+		throw new Meteor.Error('room-closed', 'Room closed');
 	}
 
 	if (room.onHold) {
@@ -220,7 +220,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 	}
 
 	if (!(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Meteor.Error('error-mac-limit-exceeded');
+		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
 	if (!room.servedBy) {
