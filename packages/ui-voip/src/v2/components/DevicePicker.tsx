@@ -45,30 +45,42 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 	const selectedAudioDevices = useSelectedDevices();
 
 	const availableInputDevice =
-		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => ({
-			id: device.id,
-			content: (
-				<Box is='span' title={device.label} fontSize={14}>
-					{device.label}
-				</Box>
-			),
-			addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioInput?.id} />,
-		})) || [];
+		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
+			if (!device.id || !device.label) {
+				return getDefaultDeviceItem(t('Default'), 'input');
+			}
+
+			return {
+				id: `${device.id}-input`,
+				content: (
+					<Box is='span' title={device.label} fontSize={14}>
+						{device.label}
+					</Box>
+				),
+				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioInput?.id} />,
+			};
+		}) || [];
 
 	const availableOutputDevice =
-		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => ({
-			id: device.id,
-			content: (
-				<Box is='span' title={device.label} fontSize={14}>
-					{device.label}
-				</Box>
-			),
-			addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
-			onClick(e?: MouseEvent<HTMLElement>) {
-				e?.preventDefault();
-				e?.stopPropagation();
-			},
-		})) || [];
+		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
+			if (!device.id || !device.label) {
+				return getDefaultDeviceItem(t('Default'), 'output');
+			}
+
+			return {
+				id: `${device.id}-output`,
+				content: (
+					<Box is='span' title={device.label} fontSize={14}>
+						{device.label}
+					</Box>
+				),
+				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
+				onClick(e?: MouseEvent<HTMLElement>) {
+					e?.preventDefault();
+					e?.stopPropagation();
+				},
+			};
+		}) || [];
 
 	const micSection = {
 		title: t('Microphone'),
