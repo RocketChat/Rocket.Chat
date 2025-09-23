@@ -2299,7 +2299,6 @@ const POSTLivechatTranscriptParamsSchema = {
 		},
 		subject: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: ['rid', 'token', 'email'],
