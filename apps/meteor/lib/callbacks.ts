@@ -80,10 +80,10 @@ interface EventLikeCallbackSignatures {
 	) => void;
 	'beforeCreateDirectRoom': (members: IUser[], room: IRoom) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
-	'afterSetReaction': (message: IMessage, parems: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
+	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,
-		parems: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage; room: IRoom },
+		params: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage; room: IRoom },
 	) => void;
 	'federation.onAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;

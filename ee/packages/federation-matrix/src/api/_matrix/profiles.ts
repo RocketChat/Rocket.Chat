@@ -421,11 +421,10 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 		.get(
 			'/v1/make_join/:roomId/:userId',
 			{
-				// TODO: fix types here, likely import from room package
-				params: ajv.compile({ type: 'object' }),
-				query: ajv.compile({ type: 'object' }),
+				params: isMakeJoinParamsProps,
+				query: isMakeJoinQueryProps,
 				response: {
-					200: ajv.compile({ type: 'object' }),
+					200: isMakeJoinResponseProps,
 				},
 				tags: ['Federation'],
 				license: ['federation'],
