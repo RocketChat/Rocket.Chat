@@ -18,7 +18,6 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
-// import { useVoipCallAction } from './actions/useVoipCallAction';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
@@ -77,7 +76,6 @@ export const useUserInfoActions = ({
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload);
 	const videoCall = useVideoCallAction(user);
-	// const voipCall = useVoipCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
