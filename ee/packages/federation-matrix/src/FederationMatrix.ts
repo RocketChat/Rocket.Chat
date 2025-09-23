@@ -193,10 +193,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return this.httpRoutes;
 	}
 
-	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string } | undefined> {
+	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room creation');
-			return;
+			throw new Error('Homeserver services not available');
 		}
 
 		if (room.t !== 'c' && room.t !== 'p') {
