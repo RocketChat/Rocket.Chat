@@ -70,7 +70,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const settingsSigningAlg = await Settings.get<string>('Federation_Service_Matrix_Signing_Algorithm');
 		const settingsSigningVersion = await Settings.get<string>('Federation_Service_Matrix_Signing_Version');
 		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
-		const serverHostname = await Settings.get<string>('Federation_Service_Domain');
+		const serverHostname = (await Settings.get<string>('Federation_Service_Domain')).trim();
 
 		instance.serverName = serverHostname;
 

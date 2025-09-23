@@ -11,16 +11,33 @@ import { registerFederationRoutes } from '../api/federation';
 const logger = new Logger('Federation');
 
 // TODO: should validate if the domain is resolving to us or not correctly
-// should use homeserver.getFinalSomethingSomethign and validate final Host header to have siteurl
+// should use homeserver.getFinalSomethingSomething and validate final Host header to have siteUrl
 // this is a minimum sanity check to avoid full urls instead of the expected domain part
 function validateDomain(domain: string): boolean {
-	const valid = new URL(`https://${domain}`).hostname === domain;
+	const value = domain.trim();
 
-	if (!valid) {
-		logger.error(`The configured Federation domain "${domain}" is not valid`);
+	if (!value) {
+		logger.error('The Federation domain is not set');
+		return false;
 	}
 
-	return valid;
+	if (value.toLowerCase() != value) {
+		logger.error(`The Federation domain "${value}" cannot have uppercase letters`);
+		return false;
+	}
+
+	try {
+		const valid = new URL(`https://${value}`).hostname === value;
+
+		if (!valid) {
+			throw;
+		}
+	} catch {
+		logger.error(`The configured Federation domain "${value}" is not valid`);
+		return false;
+	}
+
+	return true;
 }
 
 export const startFederationService = async (): Promise<void> => {
@@ -29,7 +46,7 @@ export const startFederationService = async (): Promise<void> => {
 	const shouldStartService = (): boolean => {
 		const hasLicense = License.hasModule('federation');
 		const isEnabled = settings.get('Federation_Service_Enabled') === true;
-		const domain = settings.get<string>('Federation_Service_Domain').trim();
+		const domain = settings.get<string>('Federation_Service_Domain');
 		const hasDomain = validateDomain(domain);
 		return hasLicense && isEnabled && hasDomain;
 	};
@@ -104,10 +121,10 @@ export const startFederationService = async (): Promise<void> => {
 		}
 	});
 
-	settings.watch('Federation_Service_Domain', async (domain) => {
+	settings.watch<string>('Federation_Service_Domain', async (domain) => {
 		logger.debug('Federation_Service_Domain setting changed:', domain);
 		if (shouldStartService()) {
-			if (domain !== federationMatrixService?.getServerName()) {
+			if (domain.toLowerCase() !== federationMatrixService?.getServerName().toLowerCase()) {
 				await stopService();
 			}
 			await startService();
