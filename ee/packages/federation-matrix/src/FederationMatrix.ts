@@ -251,8 +251,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					continue;
 				}
 
-				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
-
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser) {
 					// TODO review: DM
@@ -264,6 +262,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					continue;
 				}
 
+				// TODO: there is not need to check if the username includes ':' or '@', we should just use the username as is
+				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
 				this.logger.debug('Creating federated user locally', { externalUserId, username });
 
 				const remoteDomain = externalUserId.split(':')[1];
