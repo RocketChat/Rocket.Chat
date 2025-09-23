@@ -75,6 +75,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const contextValue = useMemo(() => {
 		const notificationSounds = {
 			playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
+			playNewRoomLoop: () => play(newRoomNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
 			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
 			playNewMessageCustom: (soundId: ICustomSound['_id']) =>
 				play(soundId, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
