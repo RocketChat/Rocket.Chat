@@ -10,13 +10,45 @@ import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');
 
+// TODO: should validate if the domain is resolving to us or not correctly
+// should use homeserver.getFinalSomethingSomething and validate final Host header to have siteUrl
+// this is a minimum sanity check to avoid full urls instead of the expected domain part
+function validateDomain(domain: string): boolean {
+	const value = domain.trim();
+
+	if (!value) {
+		logger.error('The Federation domain is not set');
+		return false;
+	}
+
+	if (value.toLowerCase() !== value) {
+		logger.error(`The Federation domain "${value}" cannot have uppercase letters`);
+		return false;
+	}
+
+	try {
+		const valid = new URL(`https://${value}`).hostname === value;
+
+		if (!valid) {
+			throw new Error();
+		}
+	} catch {
+		logger.error(`The configured Federation domain "${value}" is not valid`);
+		return false;
+	}
+
+	return true;
+}
+
 export const startFederationService = async (): Promise<void> => {
 	let federationMatrixService: FederationMatrix | undefined;
 
 	const shouldStartService = (): boolean => {
 		const hasLicense = License.hasModule('federation');
 		const isEnabled = settings.get('Federation_Service_Enabled') === true;
-		return hasLicense && isEnabled;
+		const domain = settings.get<string>('Federation_Service_Domain');
+		const hasDomain = validateDomain(domain);
+		return hasLicense && isEnabled && hasDomain;
 	};
 
 	const startService = async (): Promise<void> => {
@@ -83,6 +115,18 @@ export const startFederationService = async (): Promise<void> => {
 	settings.watch('Federation_Service_Enabled', async (enabled) => {
 		logger.debug('Federation_Service_Enabled setting changed:', enabled);
 		if (shouldStartService()) {
+			await startService();
+		} else {
+			await stopService();
+		}
+	});
+
+	settings.watch<string>('Federation_Service_Domain', async (domain) => {
+		logger.debug('Federation_Service_Domain setting changed:', domain);
+		if (shouldStartService()) {
+			if (domain.toLowerCase() !== federationMatrixService?.getServerName().toLowerCase()) {
+				await stopService();
+			}
 			await startService();
 		} else {
 			await stopService();

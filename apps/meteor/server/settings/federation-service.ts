@@ -11,6 +11,15 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_Alert',
 		});
 
+		await this.add('Federation_Service_Domain', '', {
+			type: 'string',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: '',
+			alert: 'Federation_Service_Domain_Alert',
+		});
+
 		await this.add('Federation_Service_Matrix_Signing_Algorithm', 'ed25519', {
 			type: 'select',
 			public: false,
