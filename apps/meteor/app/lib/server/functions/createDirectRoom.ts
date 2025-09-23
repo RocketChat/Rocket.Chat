@@ -46,6 +46,7 @@ export async function createDirectRoom(
 	options: {
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
+		federatedRoomId?: string;
 	},
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
@@ -179,7 +180,11 @@ export async function createDirectRoom(
 	if (isNewRoom) {
 		const insertedRoom = await Rooms.findOneById(rid);
 
-		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
+		await callbacks.run('afterCreateDirectRoom', insertedRoom, {
+			members: roomMembers,
+			creatorId: options?.creator,
+			mrid: options?.federatedRoomId,
+		});
 
 		void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);
 	}

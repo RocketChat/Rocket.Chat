@@ -5,12 +5,19 @@ import { ConfigService, createFederationContainer, getAllServices } from '@hs/fe
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import type { EventID } from '@hs/room';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
-import { isDeletedMessage, isMessageFromMatrixFederation, isQuoteAttachment, UserStatus } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import {
+	isDeletedMessage,
+	isMessageFromMatrixFederation,
+	isQuoteAttachment,
+	isRoomNativeFederated,
+	isUserNativeFederated,
+	UserStatus,
+} from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
@@ -26,7 +33,6 @@ import { isFederationDomainAllowedMiddleware } from './api/middlewares/isFederat
 import { isFederationEnabledMiddleware } from './api/middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
 import { registerEvents } from './events';
-import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
@@ -121,12 +127,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				if (!user.username || !user.status) {
 					return;
 				}
-				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1 } });
+				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1, federated: 1, federation: 1 } });
 				if (!localUser) {
 					return;
 				}
-				const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
-				if (!externalUserId) {
+
+				if (!isUserNativeFederated(localUser)) {
 					return;
 				}
 
@@ -141,7 +147,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				void instance.homeserverServices.edu.sendPresenceUpdateToRooms(
 					[
 						{
-							user_id: externalUserId,
+							user_id: localUser.federation.mui,
 							presence: statusMap[user.status] || 'offline',
 						},
 					],
@@ -187,13 +193,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return this.httpRoutes;
 	}
 
-	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void> {
+	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room creation');
-			return;
+			throw new Error('Homeserver services not available');
 		}
 
-		if (!(room.t === 'c' || room.t === 'p')) {
+		if (room.t !== 'c' && room.t !== 'p') {
 			throw new Error('Room is not a public or private room');
 		}
 
@@ -206,25 +212,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
-			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
-
-			await saveExternalUserIdForLocalUser(owner, matrixUserId);
+			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
 			for await (const member of members) {
 				if (member === owner.username) {
 					continue;
 				}
 
-				try {
-					// TODO: Check if it is external user - split domain etc
-					const localUserId = await Users.findOneByUsername(member);
-					if (localUserId) {
-						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, this.serverName);
-						// continue;
-					}
-				} catch (error) {
-					this.logger.error('Error creating or updating bridged user:', error);
-				}
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
@@ -232,8 +226,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
+
+			return matrixRoomResult;
 		} catch (error) {
-			console.log(error);
 			this.logger.error('Failed to create room:', error);
 			throw error;
 		}
@@ -256,21 +251,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					continue;
 				}
 
-				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
-
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser) {
-					const existingBridge = await MatrixBridgedUser.getExternalUserIdByLocalUserId(existingUser._id);
-					if (!existingBridge) {
-						const remoteDomain = externalUserId.split(':')[1] || this.serverName;
-						await MatrixBridgedUser.createOrUpdateByLocalId(existingUser._id, externalUserId, true, remoteDomain);
-					}
+					// TODO review: DM
+					// const existingBridge = await MatrixBridgedUser.getExternalUserIdByLocalUserId(existingUser._id); // TODO review: DM
+					// if (!existingBridge) {
+					// 	const remoteDomain = externalUserId.split(':')[1] || this.serverName;
+					// 	await MatrixBridgedUser.createOrUpdateByLocalId(existingUser._id, externalUserId, true, remoteDomain);
+					// }
 					continue;
 				}
 
+				// TODO: there is not need to check if the username includes ':' or '@', we should just use the username as is
+				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
 				this.logger.debug('Creating federated user locally', { externalUserId, username });
 
-				const remoteDomain = externalUserId.split(':')[1] || this.serverName;
+				const remoteDomain = externalUserId.split(':')[1];
+
 				const localName = username.split(':')[0]?.replace('@', '') || username;
 
 				const newUser = {
@@ -284,13 +281,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					federated: true,
 					federation: {
 						version: 1,
+						mui: externalUserId,
+						origin: remoteDomain,
 					},
 					createdAt: new Date(),
 					_updatedAt: new Date(),
 				};
 
 				const { insertedId } = await Users.insertOne(newUser);
-				await MatrixBridgedUser.createOrUpdateByLocalId(insertedId, externalUserId, true, remoteDomain);
 
 				this.logger.debug('Successfully created federated user locally', { userId: insertedId, externalUserId });
 			}
@@ -313,13 +311,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error('Creator not found in members list');
 			}
 
-			const matrixUserId = `@${creator.username}:${this.serverName}`;
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(creator._id);
-			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(creator._id, matrixUserId, true, this.serverName);
-			}
-
-			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+			const actualMatrixUserId = `@${creator.username}:${this.serverName}`;
 
 			let matrixRoomResult: { room_id: string; event_id?: string };
 			if (members.length === 2) {
@@ -348,13 +340,16 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				matrixRoomResult = await this.homeserverServices.room.createRoom(actualMatrixUserId, roomName, 'invite');
 			}
 
-			const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
-			if (!mapping) {
-				await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
-			}
+			// TODO is this needed?
+			// const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
+			// if (!mapping) {
+			// 	await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
+			// }
 
 			for await (const member of members) {
-				if (typeof member !== 'string' && member._id === creatorId) continue;
+				if (typeof member !== 'string' && member._id === creatorId) {
+					continue;
+				}
 
 				try {
 					let memberMatrixUserId: string;
@@ -367,15 +362,31 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
 						memberId = member._id;
 					} else {
-						memberMatrixUserId = `@${member.username}:${this.serverName}`;
-						memberId = member._id;
+						continue;
 					}
 
 					if (memberId) {
-						const existingMemberMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(memberId);
-
+						const existingMemberMatrixUserId = await Users.findOne({ 'federation.mui': memberId });
 						if (!existingMemberMatrixUserId) {
-							await MatrixBridgedUser.createOrUpdateByLocalId(memberId, memberMatrixUserId, true, this.serverName);
+							const newUser = {
+								username: memberId,
+								name: memberId,
+								type: 'user' as const,
+								status: UserStatus.OFFLINE,
+								active: true,
+								roles: ['user'],
+								requirePasswordChange: false,
+								federated: true,
+								federation: {
+									version: 1,
+									mui: memberId,
+									origin: memberMatrixUserId.split(':').pop(),
+								},
+								createdAt: new Date(),
+								_updatedAt: new Date(),
+							};
+
+							await Users.insertOne(newUser);
 						}
 					}
 
@@ -386,7 +397,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					this.logger.error('Error creating or updating bridged user for DM:', error);
 				}
 			}
-			await Rooms.setAsFederated(room._id);
+			await Rooms.setAsFederated(room._id, {
+				mrid: matrixRoomResult.room_id,
+				origin: this.serverName,
+			});
 			this.logger.debug('Direct message room creation completed successfully', room._id);
 		} catch (error) {
 			this.logger.error('Failed to create direct message room:', error);
@@ -531,31 +545,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void> {
+	async sendMessage(message: IMessage, room: IRoomNativeFederated, user: IUser): Promise<void> {
 		try {
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
-			if (!matrixRoomId) {
-				throw new Error(`No Matrix room mapping found for room ${room._id}`);
-			}
-
-			const matrixUserId = `@${user.username}:${this.serverName}`;
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
-			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, this.serverName);
-			}
-
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message send');
 				return;
 			}
 
-			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			let result;
 			if (message.files && message.files.length > 0) {
-				result = await this.handleFileMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
+				result = await this.handleFileMessage(message, room.federation.mrid, userMui, this.serverName);
 			} else {
-				result = await this.handleTextMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
+				result = await this.handleTextMessage(message, room.federation.mrid, userMui, this.serverName);
 			}
 
 			if (!result) {
@@ -611,30 +614,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		};
 	}
 
-	async deleteMessage(message: IMessage): Promise<void> {
+	async deleteMessage(matrixRoomId: string, message: IMessage, uid: string): Promise<void> {
 		try {
 			if (!isMessageFromMatrixFederation(message) || isDeletedMessage(message)) {
 				return;
-			}
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
-			if (!matrixRoomId) {
-				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
-			}
-			const matrixUserId = `@${message.u.username}:${this.serverName}`;
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(message.u._id);
-			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, this.serverName);
 			}
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message redaction');
 				return;
 			}
+
 			const matrixEventId = message.federation?.eventId;
 			if (!matrixEventId) {
 				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
-			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, matrixUserId);
+
+			// TODO fix branded EventID and remove type casting
+			// TODO message.u?.username is not the user who removed the message
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, uid);
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
@@ -643,13 +641,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async inviteUsersToRoom(room: IRoom, usersUserName: string[], inviter: IUser): Promise<void> {
+	async inviteUsersToRoom(room: IRoomNativeFederated, usersUserName: string[], inviter: IUser): Promise<void> {
 		try {
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
-			if (!matrixRoomId) {
-				throw new Error(`No Matrix room mapping found for room ${room._id}`);
-			}
-
 			const inviterUserId = `@${inviter.username}:${this.serverName}`;
 
 			await Promise.all(
@@ -664,11 +657,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 							return;
 						}
 
-						await this.homeserverServices.invite.inviteUserToRoom(username, matrixRoomId, inviterUserId);
+						await this.homeserverServices.invite.inviteUserToRoom(username, room.federation.mrid, inviterUserId);
 					}),
 			);
 		} catch (error) {
-			this.logger.error('Failed to invite an user to Matrix:', error);
+			this.logger.error({ msg: 'Failed to invite an user to Matrix:', err: error });
 			throw error;
 		}
 	}
@@ -680,8 +673,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`Message ${messageId} not found`);
 			}
 
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
-			if (!matrixRoomId) {
+			const room = await Rooms.findOneById(message.rid);
+			if (!room || !isRoomNativeFederated(room)) {
 				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
 			}
 
@@ -692,13 +685,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
-			if (!existingMatrixUserId) {
-				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
-				return;
-			}
+			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, existingMatrixUserId);
+			const eventId = await this.homeserverServices.message.sendReaction(room.federation.mrid, matrixEventId, reactionKey, userMui);
 
 			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
@@ -723,18 +712,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
-			if (!matrixRoomId) {
+			const room = await Rooms.findOneById(message.rid);
+			if (!room || !isRoomNativeFederated(room)) {
 				this.logger.error(`No Matrix room mapping found for room ${message.rid}`);
 				return;
 			}
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
-			if (!existingMatrixUserId) {
-				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
-				return;
-			}
+
+			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			const reactionData = oldMessage.reactions?.[reaction];
 			if (!reactionData?.federationReactionEventIds) {
@@ -747,10 +733,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}
 
 				const redactionEventId = await this.homeserverServices.message.unsetReaction(
-					matrixRoomId,
+					room.federation.mrid,
 					eventId as EventID,
 					reactionKey,
-					existingMatrixUserId,
+					userMui,
 				);
 				if (!redactionEventId) {
 					this.logger.warn('No reaction event found to remove in Matrix');
@@ -783,23 +769,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async leaveRoom(roomId: string, user: IUser): Promise<void> {
 		try {
 			const room = await Rooms.findOneById(roomId);
-			if (!room?.federated) {
+			if (!room || !isRoomNativeFederated(room)) {
 				this.logger.debug(`Room ${roomId} is not federated, skipping leave operation`);
 				return;
-			}
-
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
-			if (!matrixRoomId) {
-				this.logger.warn(`No Matrix room mapping found for federated room ${roomId}, skipping leave`);
-				return;
-			}
-
-			const matrixUserId = `@${user.username}:${this.serverName}`;
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
-
-			if (!existingMatrixUserId) {
-				// User might not have been bridged yet if they never sent a message
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, this.serverName);
 			}
 
 			if (!this.homeserverServices) {
@@ -807,97 +779,71 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+			const actualMatrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-			await this.homeserverServices.room.leaveRoom(matrixRoomId, actualMatrixUserId);
+			await this.homeserverServices.room.leaveRoom(room.federation.mrid, actualMatrixUserId);
 
-			this.logger.info(`User ${user.username} left Matrix room ${matrixRoomId} successfully`);
+			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
 		} catch (error) {
 			this.logger.error('Failed to leave room in Matrix:', error);
 			throw error;
 		}
 	}
 
-	async kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void> {
+	async kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping user kick');
+			return;
+		}
+
 		try {
-			const room = await Rooms.findOneById(roomId);
-			if (!room?.federated) {
-				this.logger.debug(`Room ${roomId} is not federated, skipping kick operation`);
-				return;
-			}
+			const actualKickedMatrixUserId = isUserNativeFederated(removedUser)
+				? removedUser.federation.mui
+				: `@${removedUser.username}:${this.serverName}`;
 
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
-			if (!matrixRoomId) {
-				this.logger.warn(`No Matrix room mapping found for federated room ${roomId}, skipping kick`);
-				return;
-			}
-
-			const kickedMatrixUserId = `@${removedUser.username}:${this.serverName}`;
-			const existingKickedMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(removedUser._id);
-			if (!existingKickedMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(removedUser._id, kickedMatrixUserId, true, this.serverName);
-			}
-			const actualKickedMatrixUserId = existingKickedMatrixUserId || kickedMatrixUserId;
-
-			const senderMatrixUserId = `@${userWhoRemoved.username}:${this.serverName}`;
-			const existingSenderMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userWhoRemoved._id);
-			if (!existingSenderMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(userWhoRemoved._id, senderMatrixUserId, true, this.serverName);
-			}
-			const actualSenderMatrixUserId = existingSenderMatrixUserId || senderMatrixUserId;
-
-			if (!this.homeserverServices) {
-				this.logger.warn('Homeserver services not available, skipping user kick');
-				return;
-			}
+			const actualSenderMatrixUserId = isUserNativeFederated(userWhoRemoved)
+				? userWhoRemoved.federation.mui
+				: `@${userWhoRemoved.username}:${this.serverName}`;
 
 			await this.homeserverServices.room.kickUser(
-				matrixRoomId,
+				room.federation.mrid,
 				actualKickedMatrixUserId,
 				actualSenderMatrixUserId,
 				`Kicked by ${userWhoRemoved.username}`,
 			);
 
-			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${matrixRoomId} by ${userWhoRemoved.username}`);
+			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${room.federation.mrid} by ${userWhoRemoved.username}`);
 		} catch (error) {
 			this.logger.error('Failed to kick user from Matrix room:', error);
 			throw error;
 		}
 	}
 
-	async updateMessage(messageId: string, newContent: string, sender: IUser): Promise<void> {
+	async updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void> {
 		try {
-			const message = await Messages.findOneById(messageId);
-			if (!message) {
-				throw new Error(`Message ${messageId} not found`);
-			}
-
-			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
-			if (!matrixRoomId) {
-				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
-			}
-
 			const matrixEventId = message.federation?.eventId;
 			if (!matrixEventId) {
-				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
 
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(sender._id);
-			if (!existingMatrixUserId) {
-				this.logger.error(`No Matrix user ID mapping found for user ${sender._id}`);
+			const user = await Users.findOneById(message.u._id, { projection: { _id: 1, username: 1, federation: 1, federated: 1 } });
+			if (!user) {
+				this.logger.error(`No user found for ID ${message.u._id}`);
 				return;
 			}
 
+			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+
 			const parsedMessage = await toExternalMessageFormat({
-				message: newContent,
-				externalRoomId: matrixRoomId,
+				message: message.msg,
+				externalRoomId: room.federation.mrid,
 				homeServerDomain: this.serverName,
 			});
 			const eventId = await this.homeserverServices.message.updateMessage(
-				matrixRoomId,
-				newContent,
+				room.federation.mrid,
+				message.msg,
 				parsedMessage,
-				existingMatrixUserId,
+				userMui,
 				matrixEventId,
 			);
 
@@ -908,47 +854,36 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async updateRoomName(rid: string, displayName: string, senderId: string): Promise<void> {
+	async updateRoomName(rid: string, displayName: string, user: IUser): Promise<void> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room name update');
 			return;
 		}
 
-		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
-		if (!matrixRoomId) {
+		const room = await Rooms.findOneById(rid);
+		if (!room || !isRoomNativeFederated(room)) {
 			throw new Error(`No Matrix room mapping found for room ${rid}`);
 		}
 
-		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
-		if (!userId) {
-			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
-		}
+		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-		await this.homeserverServices.room.updateRoomName(matrixRoomId, displayName, userId);
+		await this.homeserverServices.room.updateRoomName(room.federation.mrid, displayName, userMui);
 	}
 
-	async updateRoomTopic(rid: string, topic: string, senderId: string): Promise<void> {
+	async updateRoomTopic(room: IRoomNativeFederated, topic: string, user: IUser): Promise<void> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room topic update');
 
 			return;
 		}
 
-		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
-		if (!matrixRoomId) {
-			throw new Error(`No Matrix room mapping found for room ${rid}`);
-		}
+		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
-		if (!userId) {
-			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
-		}
-
-		await this.homeserverServices.room.setRoomTopic(matrixRoomId, userId, topic);
+		await this.homeserverServices.room.setRoomTopic(room.federation.mrid, userMui, topic);
 	}
 
 	async addUserRoleRoomScoped(
-		rid: string,
+		room: IRoomNativeFederated,
 		senderId: string,
 		userId: string,
 		role: 'moderator' | 'owner' | 'leader' | 'user',
@@ -962,20 +897,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('Leader role is not supported');
 		}
 
-		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
-		if (!matrixRoomId) {
-			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error(`No user found for ID ${userId}`);
 		}
+		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-		const matrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-		if (!matrixUserId) {
-			throw new Error(`No Matrix user ID mapping found for user ${userId}`);
+		const userSender = await Users.findOneById(senderId);
+		if (!userSender) {
+			throw new Error(`No user found for ID ${senderId}`);
 		}
-
-		const senderMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
-		if (!senderMatrixUserId) {
-			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
-		}
+		const senderMui = isUserNativeFederated(userSender) ? userSender.federation.mui : `@${userSender.username}:${this.serverName}`;
 
 		let powerLevel = 0;
 		if (role === 'owner') {
@@ -983,26 +915,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		} else if (role === 'moderator') {
 			powerLevel = 50;
 		}
-		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
+		await this.homeserverServices.room.setPowerLevelForUser(room.federation.mrid, senderMui, userMui, powerLevel);
 	}
 
 	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
 		if (!rid || !user) {
 			return;
 		}
-		const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
-		if (!externalRoomId) {
+		const room = await Rooms.findOneById(rid);
+		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername(user, { projection: { _id: 1 } });
+		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
+			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
+		});
+
 		if (!localUser) {
 			return;
 		}
-		const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
-		if (!externalUserId) {
-			return;
-		}
 
-		void this.homeserverServices.edu.sendTypingNotification(externalRoomId, externalUserId, isTyping);
+		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
+
+		void this.homeserverServices.edu.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
 }
