@@ -25,7 +25,6 @@ const mockWizardApi = {
 };
 
 const meta = {
-	title: 'Components/OutboundMessage/OutboundMessageWizard/Steps/MessageStep',
 	component: MessageStep,
 	parameters: {
 		controls: { hideNoControlsWarning: true },

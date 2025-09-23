@@ -12,7 +12,7 @@ import { MediaCalls } from '@rocket.chat/models';
 
 import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
-import { MediaCallDirector } from '../server/CallDirector';
+import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
@@ -91,9 +91,9 @@ export class GlobalSignalProcessor {
 				return;
 			}
 
-			await MediaCallDirector.renewCallId(call._id);
+			await mediaCallDirector.renewCallId(call._id);
 
-			const agents = await MediaCallDirector.cast.getAgentsFromCall(call);
+			const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
 			const { [role]: agent } = agents;
 
 			if (!(agent instanceof UserActorAgent)) {
@@ -136,11 +136,11 @@ export class GlobalSignalProcessor {
 			// If it's signed to the same session that is now registering
 			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
 			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
-				await MediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
+				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
 			}
 		} else {
-			await MediaCallDirector.renewCallId(call._id);
+			await mediaCallDirector.renewCallId(call._id);
 		}
 
 		if (isCaller) {
