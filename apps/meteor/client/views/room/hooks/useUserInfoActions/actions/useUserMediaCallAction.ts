@@ -15,7 +15,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 
 	const currentSubscription = useUserSubscription(rid);
 
-	const blocked = currentSubscription?.blocker || currentSubscription?.blocker;
+	const blocked = currentSubscription?.blocked || currentSubscription?.blocker;
 
 	if (state === 'unauthorized') {
 		return undefined;
