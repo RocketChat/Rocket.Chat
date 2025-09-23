@@ -2965,7 +2965,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hs/crypto@workspace:*, @hs/crypto@workspace:homeserver/packages/crypto":
+"@hs/crypto@workspace:*, @hs/crypto@workspace:^, @hs/crypto@workspace:homeserver/packages/crypto":
   version: 0.0.0-use.local
   resolution: "@hs/crypto@workspace:homeserver/packages/crypto"
   dependencies:
@@ -7732,6 +7732,7 @@ __metadata:
     "@babel/core": "npm:~7.26.0"
     "@babel/preset-env": "npm:~7.26.0"
     "@babel/preset-typescript": "npm:~7.26.0"
+    "@hs/crypto": "workspace:^"
     "@hs/federation-sdk": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"

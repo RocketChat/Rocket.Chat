@@ -1,3 +1,5 @@
+import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
+
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
@@ -38,8 +40,10 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			invalidValue: '0',
 		});
 
+		const randomKey = generateEd25519RandomSecretKey().toString('base64');
+
 		// https://spec.matrix.org/v1.16/appendices/#signing-details
-		await this.add('Federation_Service_Matrix_Signing_Key', '', {
+		await this.add('Federation_Service_Matrix_Signing_Key', randomKey, {
 			type: 'password',
 			public: false,
 			enterprise: true,
