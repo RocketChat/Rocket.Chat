@@ -21,11 +21,11 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.14.4",
-		"@hs/federation-sdk": "workspace:*",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:*",
 		"@rocket.chat/emitter": "^0.31.25",
 		"@rocket.chat/federation-matrix": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.4",
 		"@rocket.chat/http-router": "workspace:*",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
@@ -36,12 +36,14 @@
 		"polka": "^0.5.2",
 		"reflect-metadata": "^0.2.2",
 		"tsyringe": "^4.10.0",
+		"tweetnacl": "^1.0.3",
 		"zod": "^3.22.0"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
 		"@types/express": "^4.17.17",
 		"eslint": "~8.45.0",
+		"pino-pretty": "^7.6.1",
 		"typescript": "^5.3.0"
 	},
 	"keywords": [

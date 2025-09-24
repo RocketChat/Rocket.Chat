@@ -1,9 +1,5 @@
 import 'reflect-metadata';
 
-import type { FileMessageType, PresenceState } from '@hs/core';
-import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
-import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
-import type { EventID } from '@hs/room';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
@@ -15,6 +11,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { ConfigService, createFederationContainer, getAllServices } from '@rocket.chat/federation-sdk';
+import type {
+	EventID,
+	HomeserverEventSignatures,
+	HomeserverServices,
+	FederationContainerOptions,
+	FileMessageType,
+	PresenceState,
+} from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
@@ -43,7 +48,7 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
-export { generateEd25519RandomSecretKey } from '@hs/crypto';
+export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
