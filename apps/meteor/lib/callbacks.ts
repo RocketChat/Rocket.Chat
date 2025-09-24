@@ -21,6 +21,7 @@ import type {
 	ILivechatDepartment,
 	MessageMention,
 	IOmnichannelInquiryExtraData,
+	IRoomNativeFederated,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -78,7 +79,7 @@ interface EventLikeCallbackSignatures {
 			options?: ICreateRoomOptions;
 		},
 	) => void;
-	'beforeCreateDirectRoom': (members: IUser[], room: IRoom) => void;
+	'beforeCreateDirectRoom': (members: string[], room: Partial<IRoomNativeFederated | IRoom>) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
 	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
