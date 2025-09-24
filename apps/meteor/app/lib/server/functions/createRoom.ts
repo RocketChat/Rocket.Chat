@@ -134,9 +134,16 @@ export const createRoom = async <T extends RoomType>(
 > => {
 	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
 
+	const hasFederatedMembers = members.some((member) => {
+		if (typeof member === 'string') {
+			return member.includes(':') && member.includes('@');
+		}
+		return member.username?.includes(':') && member.username?.includes('@');
+	});
+
 	const extraData = {
 		...optionalExtraData,
-		...(optionalExtraData.federated && {
+		...((hasFederatedMembers || optionalExtraData.federated) && {
 			federated: true,
 			federation: {
 				version: 1,

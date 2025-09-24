@@ -42,7 +42,7 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 
 export async function createDirectRoom(
 	members: IUser[] | string[],
-	roomExtraData = {},
+	roomExtraData: Partial<IRoom> = {},
 	options: {
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
@@ -68,6 +68,8 @@ export async function createDirectRoom(
 			return member.username;
 		})
 		.filter(isTruthy);
+
+	await callbacks.run('beforeCreateDirectRoom', membersUsernames, roomExtraData);
 
 	const roomMembers: IUser[] = await Users.findUsersByUsernames(membersUsernames, {
 		projection: { _id: 1, name: 1, username: 1, settings: 1, customFields: 1 },
@@ -96,8 +98,6 @@ export async function createDirectRoom(
 		uids,
 		...roomExtraData,
 	};
-
-	await callbacks.run('beforeCreateDirectRoom', members, roomInfo);
 
 	if (isNewRoom) {
 		const tmpRoom: { _USERNAMES?: (string | undefined)[] } & typeof roomInfo = {

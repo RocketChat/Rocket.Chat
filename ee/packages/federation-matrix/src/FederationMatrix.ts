@@ -256,47 +256,24 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async ensureFederatedUsersExistLocally(members: (IUser | string)[]): Promise<void> {
+	async ensureFederatedUsersExistLocally(usernames: string[]): Promise<void> {
 		try {
-			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: members.length });
+			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: usernames.length });
 
-			for await (const member of members) {
-				let username: string;
-
-				if (typeof member === 'string') {
-					username = member;
-				} else if (typeof member.username === 'string') {
-					username = member.username;
-				} else {
-					continue;
-				}
-
-				if (!username.includes(':') && !username.includes('@')) {
+			const federatedUsers = usernames.filter((username) => username?.includes(':') && username?.includes('@'));
+			for await (const username of federatedUsers) {
+				if (!username) {
 					continue;
 				}
 
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser) {
-					// TODO review: DM
-					// const existingBridge = await MatrixBridgedUser.getExternalUserIdByLocalUserId(existingUser._id); // TODO review: DM
-					// if (!existingBridge) {
-					// 	const remoteDomain = externalUserId.split(':')[1] || this.serverName;
-					// 	await MatrixBridgedUser.createOrUpdateByLocalId(existingUser._id, externalUserId, true, remoteDomain);
-					// }
 					continue;
 				}
 
-				// TODO: there is not need to check if the username includes ':' or '@', we should just use the username as is
-				const externalUserId = username.includes(':') ? `@${username}` : `@${username}:${this.serverName}`;
-				this.logger.debug('Creating federated user locally', { externalUserId, username });
-
-				const remoteDomain = externalUserId.split(':')[1];
-
-				const localName = username.split(':')[0]?.replace('@', '') || username;
-
-				const newUser = {
+				await Users.create({
 					username,
-					name: localName,
+					name: username,
 					type: 'user' as const,
 					status: UserStatus.OFFLINE,
 					active: true,
@@ -305,16 +282,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					federated: true,
 					federation: {
 						version: 1,
-						mui: externalUserId,
-						origin: remoteDomain,
+						mui: username,
+						origin: username.split(':')[1],
 					},
 					createdAt: new Date(),
 					_updatedAt: new Date(),
-				};
-
-				const { insertedId } = await Users.insertOne(newUser);
-
-				this.logger.debug('Successfully created federated user locally', { userId: insertedId, externalUserId });
+				});
 			}
 		} catch (error) {
 			this.logger.error('Failed to ensure federated users exist locally:', error);
