@@ -59,7 +59,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 							inputMode='numeric'
 						/>
 					</FieldRow>
-					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+					{invalidAttempt && <FieldError>{t('Invalid_two_factor_code')}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>
