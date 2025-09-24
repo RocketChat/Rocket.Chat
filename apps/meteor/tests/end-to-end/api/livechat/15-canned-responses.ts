@@ -13,7 +13,7 @@ import { password } from '../../../data/user';
 import { createUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', () => {
+(IS_EE ? describe.only : describe.skip)('[EE] LIVECHAT - Canned responses', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -250,7 +250,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[DELETE] canned-responses', () => {
 		it('should fail if user dont have remove-canned-responses permission', async () => {
 			await updatePermission('remove-canned-responses', []);
-			return request.delete(api('canned-responses')).send({ _id: 'sfdads' }).set(credentials).expect(403);
+			return request.delete(api('canned-responses/sfdads')).set(credentials).expect(403);
 		});
 		it('should fail if _id is not on the request', async () => {
 			await updatePermission('remove-canned-responses', ['livechat-agent', 'livechat-monitor', 'livechat-manager', 'admin']);
@@ -259,7 +259,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should delete a canned response', async () => {
 			const response = await createCannedResponse();
 			const { body: cr } = await request.get(api('canned-responses')).set(credentials).query({ shortcut: response.shortcut }).expect(200);
-			const { body } = await request.delete(api('canned-responses')).send({ _id: cr.cannedResponses[0]._id }).set(credentials).expect(200);
+			const { body } = await request
+				.delete(api(`canned-responses/${cr.cannedResponses[0]._id}`))
+				.set(credentials)
+				.expect(200);
 			expect(body).to.have.property('success', true);
 		});
 	});
