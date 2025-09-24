@@ -18,6 +18,7 @@ import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';
 import { TestSchedulerBridge } from './schedulerBridge';
+import { TestsServerEndpointsBridge } from './serverEndpointsBridge';
 import { TestsServerSettingBridge } from './serverSettingBridge';
 import { TestsThreadBridge } from './threadBridge';
 import { TestsUiIntegrationBridge } from './uiIntegrationBridge';
@@ -106,6 +107,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly outboundCommsBridge: TestOutboundCommunicationBridge;
 
+	private readonly serverEndpointsBridge: TestsServerEndpointsBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -134,6 +137,7 @@ export class TestsAppBridges extends AppBridges {
 		this.emailBridge = new TestsEmailBridge();
 		this.contactBridge = new TestContactBridge();
 		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
+		this.serverEndpointsBridge = new TestsServerEndpointsBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -242,5 +246,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getOutboundMessageBridge(): OutboundMessageBridge {
 		return this.outboundCommsBridge;
+	}
+
+	public getServerEndpointsBridge(): TestsServerEndpointsBridge {
+		return this.serverEndpointsBridge;
 	}
 }
