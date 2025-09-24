@@ -174,6 +174,15 @@ describe('AppRealStorage', () => {
 
 			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: updatedItem }, { returnDocument: 'after' })).to.be.true;
 		});
+
+		it('should not unset permissionsGranted when no options are passed', async () => {
+			const updatedItem = { ...mockAppStorageItem, _id: 'test-id' };
+			mockDb.findOneAndUpdate.resolves(updatedItem);
+
+			await storage.updatePartialAndReturnDocument(updatedItem);
+
+			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: updatedItem }, { returnDocument: 'after' })).to.be.true;
+		});
 	});
 
 	describe('updateStatus', () => {
