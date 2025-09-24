@@ -32,7 +32,6 @@ WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) =
  * Defines tunable thresholds for readiness checks.
  */
 
-
 const eventLoopHistogramLiveness = monitorEventLoopDelay();
 eventLoopHistogramLiveness.enable();
 
