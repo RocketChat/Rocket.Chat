@@ -84,7 +84,7 @@ test.describe('OC - Manage Units', () => {
 			await expect(poOmnichannelUnits.confirmDeleteModal).toBeVisible();
 			await poOmnichannelUnits.btnConfirmDeleteModal.click();
 			await expect(poOmnichannelUnits.confirmDeleteModal).not.toBeVisible();
-			await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
+			await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
 		});
 	});
 
