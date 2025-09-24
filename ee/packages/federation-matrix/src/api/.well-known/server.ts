@@ -2,7 +2,7 @@ import { Router } from "@rocket.chat/http-router";
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 import { createHash } from 'node:crypto';
 
-import type { HomeserverServices } from '@hs/federation-sdk';
+import type { HomeserverServices } from '@rocket.chat/federation-sdk';
 
 const WellKnownServerResponseSchema = {
     type: 'object',

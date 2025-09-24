@@ -1,6 +1,6 @@
-import type { HomeserverServices } from '@hs/federation-sdk';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
+import type { HomeserverServices } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
 
