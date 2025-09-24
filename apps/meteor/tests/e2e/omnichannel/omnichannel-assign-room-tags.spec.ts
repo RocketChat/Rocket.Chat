@@ -56,14 +56,17 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
+	test.afterEach(async () => {
+		await poOmnichannel.page.close();
+	});
+
 	test.afterAll(async () => {
 		// Clean up conversations, departments, agents, and tags
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
 		await Promise.all(tags.map((tag) => tag.delete()));
-		await Promise.all([agents.map((agent) => agent.delete())]);
+		await Promise.all(agents.map((agent) => agent.delete()));
 		await departmentA.delete();
 		await departmentB.delete();
-		await poOmnichannel.page.close();
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {

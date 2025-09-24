@@ -55,6 +55,7 @@ export class OmnichannelRoomInfo {
 
 	get inputTags(): Locator {
 		return this.page.getByRole('textbox', { name: 'Select an option' });
+		// return this.dialogEditRoom.getByLabel('Tags');
 	}
 
 	optionTags(name: string): Locator {
@@ -66,7 +67,7 @@ export class OmnichannelRoomInfo {
 	}
 
 	getTagInfoByLabel(label: string): Locator {
-		return this.dialogRoomInfo.getByRole('list', { name: 'Tags' }).getByText(label);
+		return this.dialogRoomInfo.getByRole('list', { name: 'Tags' }).getByText(label, { exact: true });
 	}
 
 	getBadgeIndicator(name: string, title: string): Locator {
