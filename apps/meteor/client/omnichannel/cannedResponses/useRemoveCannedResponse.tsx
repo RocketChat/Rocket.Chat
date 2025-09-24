@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -11,12 +11,12 @@ export const useRemoveCannedResponse = () => {
 	const queryClient = useQueryClient();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const removeCannedResponse = useMethod('removeCannedResponse');
+	const removeCannedResponse = useEndpoint('DELETE', '/v1/canned-responses');
 
 	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
-				await removeCannedResponse(id);
+				await removeCannedResponse({ _id: id });
 				queryClient.invalidateQueries({
 					queryKey: ['getCannedResponses'],
 				});
