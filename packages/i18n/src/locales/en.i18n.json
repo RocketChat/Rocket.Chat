@@ -7027,5 +7027,6 @@
   "__usernames__and__count__more_joined": "{{usernames}} and {{count}} more joined",
   "__usernames__joined": "{{usernames}} joined",
   "__usersCount__joined": "{{count}} joined",
-  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited"
+  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited",
+  "You_cannot_add_external_users_to_non_federated_room": "You cannot add external users to a non-federated room"
 }
