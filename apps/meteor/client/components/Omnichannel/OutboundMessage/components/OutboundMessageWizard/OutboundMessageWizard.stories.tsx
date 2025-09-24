@@ -56,7 +56,6 @@ const AppRoot = mockAppRoot()
 	.build();
 
 const meta = {
-	title: 'Components/OutboundMessage/OutboundMessageWizard',
 	component: OutboundMessageWizard,
 	subcomponents: {
 		RecipientStep,

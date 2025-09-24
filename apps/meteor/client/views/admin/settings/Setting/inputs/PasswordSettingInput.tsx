@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -10,6 +10,7 @@ function PasswordSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -43,6 +44,7 @@ function PasswordSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

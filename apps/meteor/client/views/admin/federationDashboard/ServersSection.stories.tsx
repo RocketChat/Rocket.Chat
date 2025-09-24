@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ServersSection from './ServersSection';
 
 export default {
-	title: 'Admin/Federation Dashboard/ServersSection',
 	component: ServersSection,
 	parameters: {
 		layout: 'centered',
