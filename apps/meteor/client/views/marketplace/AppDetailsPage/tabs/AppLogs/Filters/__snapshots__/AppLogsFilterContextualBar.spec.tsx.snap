@@ -4,8 +4,9 @@ exports[`renders AppLogsItem without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-css-llf9s1"
     >
+       
       <span
         data-focus-scope-start="true"
         hidden=""

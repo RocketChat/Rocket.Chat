@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-css-llf9s1"
     >
       <span
         data-focus-scope-start="true"
@@ -202,7 +202,7 @@ exports[`renders InviteEdit without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-css-llf9s1"
     >
       <span
         data-focus-scope-start="true"
@@ -532,7 +532,7 @@ exports[`renders InviteError without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-css-llf9s1"
     >
       <span
         data-focus-scope-start="true"
@@ -713,7 +713,7 @@ exports[`renders InviteLoading without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-css-llf9s1"
     >
       <span
         data-focus-scope-start="true"
