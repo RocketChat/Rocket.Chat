@@ -47,7 +47,7 @@ const MessageComposerInputExpandable = forwardRef<HTMLTextAreaElement, ExpandCom
 				ref={ref}
 				onChange={onChange}
 				{...(!!expanded && { height: 500 })}
-				{...(!!expanded && { maxHeight: 500 })}
+				{...(!!expanded && { maxHeight: '50vh' })}
 			/>
 		</>
 	);
