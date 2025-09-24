@@ -3366,6 +3366,13 @@ export const isGETLivechatInquiriesListParams = ajv.compile<GETLivechatInquiries
 type POSTLivechatInquiriesTakeParams = {
 	inquiryId: string;
 	userId?: string;
+	options?: {
+		clientAction: boolean;
+		forwardingToDepartment?: {
+			oldDepartmentId: string;
+			transferData: unknown;
+		};
+	};
 };
 
 const POSTLivechatInquiriesTakeParamsSchema = {
@@ -3377,6 +3384,31 @@ const POSTLivechatInquiriesTakeParamsSchema = {
 		userId: {
 			type: 'string',
 			nullable: true,
+		},
+		options: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				clientAction: {
+					type: 'boolean',
+				},
+				forwardingToDepartment: {
+					type: 'object',
+					nullable: true,
+					properties: {
+						oldDepartmentId: {
+							type: 'string',
+						},
+						transferData: {
+							type: 'object',
+						},
+					},
+					required: ['oldDepartmentId', 'transferData'],
+					additionalProperties: false,
+				},
+			},
+			required: ['clientAction'],
+			additionalProperties: false,
 		},
 	},
 	additionalProperties: false,
