@@ -2,7 +2,7 @@ import { argv, stderr, stdout } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { formatWithOptions, parseArgs, styleText } from 'node:util';
 
-import { baseLanguage, getResourceLanguages, readResource, writeResource } from './common.mts';
+import { baseLanguage, getLanguagePlurals, getResourceLanguages, readResource, writeResource } from './common.mts';
 
 type TaskOptions = {
 	fix?: boolean;
@@ -14,8 +14,8 @@ const describeTask =
 	(
 		task: string,
 		fn: () => AsyncGenerator<{
-			lint: (collectError: (format?: any, ...param: any[]) => void) => Promise<void>;
-			fix: () => Promise<void>;
+			lint: (reportError: (format?: any, ...param: any[]) => void) => Promise<void>;
+			fix: (throwError: (format?: any, ...param: any[]) => void) => Promise<void>;
 		}>,
 	) =>
 	async (options: TaskOptions) => {
@@ -23,8 +23,17 @@ const describeTask =
 			if (!result) continue;
 
 			if (options.fix) {
-				await result.fix();
-				console.log(styleText('blue', '✔', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), 'fixes applied');
+				try {
+					await result.fix((format, ...param) => {
+						throw new Error(formatWithOptions({ colors: !!styleText('blue', `.`, { stream: stdout }) }, format, ...param));
+					});
+
+					console.log(styleText('blue', '✔', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), 'fixes applied');
+				} catch (error) {
+					console.error(styleText('red', '✘', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), error instanceof Error ? error.message : error);
+					console.error(styleText('gray', `  cannot apply fixes automatically, run without --fix to see all errors`, { stream: stdout }));
+					errorCount++;
+				}
 			} else {
 				const stderrSupportsColor = styleText('blue', `.`, { stream: stderr }) !== '.';
 
@@ -41,8 +50,7 @@ const describeTask =
 	};
 
 /**
- * Sort keys of the base language (en) alphabetically
- * and write back the sorted resource file if necessary
+ * Sort keys of the base language (en) alphabetically and write back the sorted resource file if necessary
  */
 const sortBaseKeys = describeTask('sort-base-keys', async function* () {
 	const baseResource = await readResource(baseLanguage);
@@ -53,7 +61,7 @@ const sortBaseKeys = describeTask('sort-base-keys', async function* () {
 	if (keys.join(',') === sortedKeys.join(',')) return;
 
 	yield {
-		lint: async (collectError) => {
+		lint: async (reportError) => {
 			for (let i = 0; i < keys.length; i++) {
 				const key = keys[i];
 				const beforeKey = keys.at(i - 1);
@@ -62,9 +70,9 @@ const sortBaseKeys = describeTask('sort-base-keys', async function* () {
 
 				if (beforeKey !== expectedBeforeKey) {
 					if (expectedBeforeKey) {
-						collectError('%o should be after %o', keys[i], expectedBeforeKey);
+						reportError('%o should be after %o', keys[i], expectedBeforeKey);
 					} else {
-						collectError('%o should be the first key', keys[i]);
+						reportError('%o should be the first key', keys[i]);
 					}
 				}
 			}
@@ -110,7 +118,7 @@ const sortKeys = describeTask('sort-keys', async function* () {
 		if (Object.keys(resource).join(',') === Object.keys(sortedResource).join(',')) continue;
 
 		yield {
-			lint: async (collectError) => {
+			lint: async (reportError) => {
 				const keys = Object.keys(resource);
 				const sortedKeys = Object.keys(sortedResource);
 
@@ -124,9 +132,9 @@ const sortKeys = describeTask('sort-keys', async function* () {
 
 					if (beforeKey !== expectedBeforeKey) {
 						if (expectedBeforeKey) {
-							collectError('%s: %o should be after %o', language, keys[i], expectedBeforeKey);
+							reportError('%s: %o should be after %o', language, keys[i], expectedBeforeKey);
 						} else {
-							collectError('%s: %o should be the first key', language, keys[i]);
+							reportError('%s: %o should be the first key', language, keys[i]);
 						}
 					}
 				}
@@ -156,10 +164,10 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 		if (resourceKeys.difference(baseKeys).size === 0) continue;
 
 		yield {
-			lint: async (collectError) => {
+			lint: async (reportError) => {
 				const extraKeys = resourceKeys.difference(baseKeys);
 				for (const key of extraKeys) {
-					collectError('%s: has extra key %o', language, key);
+					reportError('%s: has extra key %o', language, key);
 				}
 			},
 			fix: async () => {
@@ -176,15 +184,88 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 	}
 });
 
+/**
+ * Wipes invalid plural forms from all language files (only "zero", "one", "two", "few", "many", "other" are valid)
+ */
+const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* () {
+	const languages = await getResourceLanguages();
+
+	for await (const language of languages) {
+		const resource = await readResource(language);
+		const plurals = getLanguagePlurals(language).concat(['zero']); // 'zero' is special in i18next
+
+		for (const [key, translation] of Object.entries(resource)) {
+			if (typeof translation !== 'object' || !translation) continue;
+
+			const translationPlurals = Object.keys(translation);
+			for (const plural of translationPlurals) {
+				if (!plurals.includes(plural)) {
+					yield {
+						lint: async (reportError) => {
+							reportError('%s: key %o has invalid plural form %o', language, key, plural);
+						},
+						fix: async () => {
+							const fixedResource: Record<string, unknown> = { ...resource };
+							fixedResource[key] = Object.fromEntries(
+								Object.entries(translation).filter(([p]) => plurals.includes(p)),
+							);
+							await writeResource(language, fixedResource);
+						}
+					};
+				}
+			}
+		}
+	}
+});
+
+/**
+ * Finds missing plural forms in all language files
+ */
+const findMissingPlurals = describeTask('find-missing-plurals', async function* () {
+	const languages = await getResourceLanguages();
+
+	for await (const language of languages) {
+		if (language === baseLanguage) continue;
+
+		const resource = await readResource(language);
+		const baseResource = await readResource(baseLanguage);
+		const plurals = getLanguagePlurals(language);
+
+		for (const [key, translation] of Object.entries(baseResource)) {
+			if (typeof translation !== 'object' || !translation) continue;
+			if (!(key in resource)) continue;
+
+			const translationPlurals = Object.keys(translation);
+			const resourceTranslation = resource[key];
+			if (typeof resourceTranslation !== 'object' || !resourceTranslation) continue;
+
+			for (const plural of translationPlurals) {
+				if (!plurals.includes(plural)) continue;
+				if (plural in resourceTranslation) continue;
+				yield {
+					lint: async (reportError) => {
+						reportError('%s: key %o is missing plural form %o', language, key, plural);
+					},
+					fix: async (throwError) => {
+						throwError('%s: key %o is missing plural form %o', language, key, plural);
+					}
+				};
+			}
+		}
+	}
+});
+
 const tasksByName = {
 	'sort-base-keys': sortBaseKeys,
 	'sort-keys': sortKeys,
 	'wipe-extra-keys': wipeExtraKeys,
+	'wipe-invalid-plurals': wipeInvalidPlurals,
+	'find-missing-plurals': findMissingPlurals,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 	// We're lenient by default excluding 'sort-base-keys' from the default tasks
-	const tasks = new Set<keyof typeof tasksByName>(['sort-keys', 'wipe-extra-keys']);
+	const tasks = new Set<keyof typeof tasksByName>(['sort-keys', 'wipe-extra-keys', 'wipe-invalid-plurals', 'find-missing-plurals']);
 
 	if (task?.length) {
 		tasks.clear();

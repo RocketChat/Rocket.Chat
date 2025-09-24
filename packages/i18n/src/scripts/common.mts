@@ -2,12 +2,24 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import i18next from 'i18next';
+
 export const baseLanguage = 'en';
 
 export async function getResourceLanguages() {
 	const resourceFiles = await readdir(resourcesDirectory);
 	return resourceFiles.map((file) => languageFromBasename(file));
 }
+
+export const getLanguagePlurals = (language: string): string[] => {
+	// @ts-expect-error - faulty module resolution from ESM package
+	if (!i18next.isInitialized) {
+		i18next.init({ initImmediate: false });
+	}
+
+	// @ts-expect-error - faulty module resolution from ESM package
+	return i18next.services.pluralResolver.getSuffixes(language).map((suffix: string) => suffix.slice(1));
+};
 
 export async function readResource(language: string) {
 	return JSON.parse(await readFile(join(resourcesDirectory, resourceBasename(language)), 'utf8'));

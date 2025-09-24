@@ -42,28 +42,6 @@ const parseFile = async (path: PathLike) => {
 	return json;
 };
 
-const insertTranslation = (json: Record<string, string>, refKey: string, [key, value]: [key: string, value: string]) => {
-	const entries = Object.entries(json);
-
-	const refIndex = entries.findIndex(([entryKey]) => entryKey === refKey);
-
-	if (refIndex === -1) {
-		throw new Error(`Reference key ${refKey} not found`);
-	}
-
-	const movingEntries = entries.slice(refIndex + 1);
-
-	for (const [key] of movingEntries) {
-		delete json[key];
-	}
-
-	json[key] = value;
-
-	for (const [key, value] of movingEntries) {
-		json[key] = value;
-	}
-};
-
 const persistFile = async (path: PathLike, json: Record<string, string>) => {
 	const content = JSON.stringify(json, null, 2);
 
@@ -124,102 +102,11 @@ export const extractSingularKeys = (json: Record<string, string>, lng: string) =
 	return [singularKeys, pluralSuffixes] as const;
 };
 
-const checkMissingPlurals = async ({
-	json,
-	path,
-	lng,
-	fix = false,
-}: {
-	json: Record<string, string>;
-	path: PathLike;
-	lng: string;
-	fix?: boolean;
-}) => {
-	const [singularKeys, pluralSuffixes] = extractSingularKeys(json, lng);
-
-	const missingPluralKeys: { singularKey: string; existing: string[]; missing: string[] }[] = [];
-
-	for (const singularKey of singularKeys) {
-		if (singularKey in json) {
-			continue;
-		}
-
-		const pluralKeys = pluralSuffixes.map((suffix) => `${singularKey}${suffix}`);
-
-		const existing = pluralKeys.filter((key) => key in json);
-		const missing = pluralKeys.filter((key) => !(key in json));
-
-		if (missing.length > 0) {
-			missingPluralKeys.push({ singularKey, existing, missing });
-		}
-	}
-
-	if (missingPluralKeys.length > 0) {
-		const message = `Missing plural keys on file ${path}: ${inspect(missingPluralKeys, { colors: !!supportsColor.stdout })}`;
-
-		if (fix) {
-			console.warn(message);
-
-			for (const { existing, missing } of missingPluralKeys) {
-				for (const missingKey of missing) {
-					const refKey = existing.slice(-1)[0];
-					const value = json[refKey];
-					insertTranslation(json, refKey, [missingKey, value]);
-				}
-			}
-
-			await persistFile(path, json);
-
-			return;
-		}
-
-		throw new Error(message);
-	}
-};
-
-const checkExceedingKeys = async ({
-	json,
-	path,
-	lng,
-	sourceJson,
-	sourceLng,
-	fix = false,
-}: {
-	json: Record<string, string>;
-	path: PathLike;
-	lng: string;
-	sourceJson: Record<string, string>;
-	sourceLng: string;
-	fix?: boolean;
-}) => {
-	const [singularKeys] = extractSingularKeys(json, lng);
-	const [sourceSingularKeys] = extractSingularKeys(sourceJson, sourceLng);
-
-	const exceedingKeys = [...singularKeys].filter((key) => !sourceSingularKeys.has(key));
-
-	if (exceedingKeys.length > 0) {
-		const message = `Exceeding keys on file ${path}: ${inspect(exceedingKeys, { colors: !!supportsColor.stdout })}`;
-
-		if (fix) {
-			for (const key of exceedingKeys) {
-				delete json[key];
-			}
-
-			await persistFile(path, json);
-
-			return;
-		}
-
-		throw new Error(message);
-	}
-};
-
 const checkFiles = async (sourceDirPath: string, sourceLng: string, fix = false) => {
 	const sourcePath = join(sourceDirPath, `${sourceLng}.i18n.json`);
 	const sourceJson = await parseFile(sourcePath);
 
 	await checkPlaceholdersFormat({ json: sourceJson, path: sourcePath, fix });
-	await checkMissingPlurals({ json: sourceJson, path: sourcePath, lng: sourceLng, fix });
 
 	const i18nFiles = await fg([join(sourceDirPath, `**/*.i18n.json`), `!${sourcePath}`]);
 
@@ -235,10 +122,8 @@ const checkFiles = async (sourceDirPath: string, sourceLng: string, fix = false)
 		}),
 	);
 
-	for await (const { path, json, lng } of translations) {
+	for await (const { path, json } of translations) {
 		await checkPlaceholdersFormat({ json, path, fix });
-		await checkExceedingKeys({ json, path, lng, sourceJson, sourceLng, fix });
-		await checkMissingPlurals({ json, path, lng, fix });
 	}
 };
 
