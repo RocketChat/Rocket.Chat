@@ -1,5 +1,17 @@
 # @rocket.chat/uikit-playground
 
+## 0.6.28
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.4
+  - @rocket.chat/fuselage-ui-kit@21.0.4
+  - @rocket.chat/ui-avatar@17.0.4
+  - @rocket.chat/ui-contexts@21.0.4
+  </details>
+
 ## 0.6.27
 
 ### Patch Changes
