@@ -18,6 +18,7 @@ import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboa
 import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
+import { useMoveDiscussion } from './hooks/roomActions/useMoveDiscussion';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
@@ -46,6 +47,7 @@ export const roomActionHooks = [
 	useThreadRoomAction,
 	useAutotranslateRoomAction,
 	useCallsRoomAction,
+	useMoveDiscussion,
 	useCannedResponsesRoomAction,
 	useCleanHistoryRoomAction,
 	useContactProfileRoomAction,

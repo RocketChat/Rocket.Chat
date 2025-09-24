@@ -31,7 +31,8 @@ import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite'
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
@@ -528,6 +529,64 @@ API.v1.addRoute(
 			);
 
 			return API.v1.success({ discussion });
+		},
+	},
+);
+API.v1.addRoute(
+	'rooms.moveDiscussion',
+	{
+		authRequired: true /* , validateParams: isRoomsMoveDiscussionProps */,
+	},
+	{
+		async post() {
+			const { pmid, prid, drid } = this.bodyParams;
+
+			if (!pmid) {
+				return API.v1.failure('Body parameter "pmid" is required.');
+			}
+			if (!prid) {
+				return API.v1.failure('Body parameter "prid" is required.');
+			}
+			if (!drid) {
+				return API.v1.failure('Body parameter "drid" is required.');
+			}
+
+			const pmsg = await Messages.findOneById(pmid);
+			if (
+				!pmsg ||
+				!(await hasAtLeastOnePermissionAsync(this.userId, ['start-discussion', 'start-discussion-other-user'], prid)) ||
+				!(await canDeleteMessageAsync(this.userId, { u: pmsg.u, rid: pmsg.rid, ts: pmsg.ts }))
+			) {
+				return API.v1.failure('not-allowed', 'Not Allowed');
+			}
+
+			const parentMessage = await Messages.findOneAndUpdate(
+				{
+					_id: pmid,
+				},
+				{ $set: { rid: prid } },
+				{
+					returnDocument: 'after',
+				},
+			);
+
+			if (!parentMessage) {
+				return API.v1.failure('no-message-found', 'No message found');
+			}
+
+			const discussionRoom = await Rooms.findOneAndUpdate(
+				{
+					_id: drid,
+				},
+				{
+					$set: {
+						prid,
+					},
+				},
+				{ returnDocument: 'after' },
+			);
+
+			return API.v1.success({ discussion: discussionRoom });
 		},
 	},
 );
