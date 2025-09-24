@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
@@ -34,7 +34,7 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 };
 
 export async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, userAlreadyReacted?: boolean) {
-	// await Message.beforeReacted(message, room);
+	await Message.beforeReacted(message, room);
 
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
 		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
