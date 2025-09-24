@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
-import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
+import { isPOSTCannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
@@ -32,12 +32,12 @@ declare module '@rocket.chat/rest-typings' {
 				tags?: any;
 				departmentId?: ILivechatDepartment['_id'];
 			}) => void;
-			DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 		};
 		'/v1/canned-responses/:_id': {
 			GET: () => {
 				cannedResponse: IOmnichannelCannedResponse;
 			};
+			DELETE: () => void;
 		};
 	}
 }
@@ -58,8 +58,8 @@ API.v1.addRoute(
 	'canned-responses',
 	{
 		authRequired: true,
-		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
-		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
+		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'] },
+		validateParams: { POST: isPOSTCannedResponsesProps, GET: isCannedResponsesProps },
 		license: ['canned-responses'],
 	},
 	{
@@ -104,17 +104,15 @@ API.v1.addRoute(
 			);
 			return API.v1.success();
 		},
-		async delete() {
-			const { _id } = this.bodyParams;
-			await removeCannedResponse(this.userId, _id);
-			return API.v1.success();
-		},
 	},
 );
 
 API.v1.addRoute(
 	'canned-responses/:_id',
-	{ authRequired: true, permissionsRequired: ['view-canned-responses'], license: ['canned-responses'] },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: ['view-canned-responses'], DELETE: ['remove-canned-responses'] },
+		license: ['canned-responses'] },
 	{
 		async get() {
 			const { _id } = this.urlParams;
@@ -128,6 +126,11 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ cannedResponse });
+		},
+		async delete() {
+			const { _id } = this.urlParams;
+			await removeCannedResponse(this.userId, _id);
+			return API.v1.success();
 		},
 	},
 );

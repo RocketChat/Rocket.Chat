@@ -1,22 +1,23 @@
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-export const useRemoveCannedResponse = () => {
+export const useRemoveCannedResponse = (id: IOmnichannelCannedResponse['_id']) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const removeCannedResponse = useEndpoint('DELETE', '/v1/canned-responses');
+	const removeCannedResponse = useEndpoint('DELETE', '/v1/canned-responses/:_id', { _id: id });
 
-	const handleDelete = useEffectEvent((id: string) => {
+	const handleDelete = useEffectEvent(() => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
-				await removeCannedResponse({ _id: id });
+				await removeCannedResponse();
 				queryClient.invalidateQueries({
 					queryKey: ['getCannedResponses'],
 				});
