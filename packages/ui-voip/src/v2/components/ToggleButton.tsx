@@ -3,15 +3,17 @@ import type { Keys } from '@rocket.chat/icons';
 import { ComponentProps } from 'react';
 
 type ToggleButtonProps = {
-	label: string;
+	label: string; // label should not change due to a11y constraints
 	icons: [defaultIcon: Keys, pressedIcon: Keys];
+	titles: [defaultTitle: string, pressedTitle: string]; // Titles might change though
 	disabled?: boolean;
 	pressed?: boolean;
 	onToggle?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
-const ToggleButton = ({ disabled, label, pressed, icons, onToggle, ...props }: ToggleButtonProps) => {
+const ToggleButton = ({ disabled, label, pressed, icons, titles, onToggle, ...props }: ToggleButtonProps) => {
 	const iconName = icons[pressed ? 1 : 0];
+	const title = titles[pressed ? 1 : 0];
 	const iconColor = pressed ? 'font-danger' : undefined;
 
 	return (
@@ -21,7 +23,7 @@ const ToggleButton = ({ disabled, label, pressed, icons, onToggle, ...props }: T
 			medium
 			secondary
 			icon={<Icon size={16} color={iconColor} name={iconName} />}
-			title={label}
+			title={title}
 			pressed={pressed}
 			aria-label={label}
 			disabled={disabled}
