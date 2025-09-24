@@ -21,8 +21,12 @@ export const getLanguagePlurals = (language: string): string[] => {
 	return i18next.services.pluralResolver.getSuffixes(language).map((suffix: string) => suffix.slice(1));
 };
 
+export async function readContent(language: string) {
+	return readFile(join(resourcesDirectory, resourceBasename(language)), 'utf8');
+}
+
 export async function readResource(language: string) {
-	return JSON.parse(await readFile(join(resourcesDirectory, resourceBasename(language)), 'utf8'));
+	return JSON.parse(await readContent(language));
 }
 
 export async function writeResource(language: string, resource: unknown) {

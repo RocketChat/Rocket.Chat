@@ -2,7 +2,7 @@ import { argv, stderr, stdout } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { formatWithOptions, parseArgs, styleText } from 'node:util';
 
-import { baseLanguage, getLanguagePlurals, getResourceLanguages, readResource, writeResource } from './common.mts';
+import { baseLanguage, getLanguagePlurals, getResourceLanguages, readContent, readResource, writeResource } from './common.mts';
 
 type TaskOptions = {
 	fix?: boolean;
@@ -19,32 +19,41 @@ const describeTask =
 		}>,
 	) =>
 	async (options: TaskOptions) => {
+		const stdoutSupportsColor = styleText('blue', `.`, { stream: stdout }) !== '.';
+		const stderrSupportsColor = styleText('blue', `.`, { stream: stderr }) !== '.';
+
+		const throwError = (format?: any, ...param: any[]) => {
+			throw new Error(formatWithOptions({ colors: stdoutSupportsColor }, format, ...param));
+		};
+
+		const reportError = (format?: any, ...param: any[]) => {
+			console.error(
+				styleText('red', '✘', { stream: stderr }),
+				styleText('gray', `${task}:`, { stream: stderr }),
+				formatWithOptions({ colors: stderrSupportsColor }, format, ...param),
+			);
+			errorCount++;
+		};
+
 		for await (const result of fn()) {
 			if (!result) continue;
 
 			if (options.fix) {
 				try {
-					await result.fix((format, ...param) => {
-						throw new Error(formatWithOptions({ colors: !!styleText('blue', `.`, { stream: stdout }) }, format, ...param));
-					});
+					await result.fix(throwError);
 
 					console.log(styleText('blue', '✔', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), 'fixes applied');
 				} catch (error) {
-					console.error(styleText('red', '✘', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), error instanceof Error ? error.message : error);
+					console.error(
+						styleText('red', '✘', { stream: stdout }),
+						styleText('gray', `${task}:`, { stream: stdout }),
+						error instanceof Error ? error.message : error,
+					);
 					console.error(styleText('gray', `  cannot apply fixes automatically, run without --fix to see all errors`, { stream: stdout }));
 					errorCount++;
 				}
 			} else {
-				const stderrSupportsColor = styleText('blue', `.`, { stream: stderr }) !== '.';
-
-				await result.lint((_format, ...param) => {
-					console.error(
-						styleText('red', '✘', { stream: stderr }),
-						styleText('gray', `${task}:`, { stream: stderr }),
-						formatWithOptions({ colors: stderrSupportsColor }, _format, ...param),
-					);
-					errorCount++;
-				});
+				await result.lint(reportError);
 			}
 		}
 	};
@@ -206,11 +215,9 @@ const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* 
 						},
 						fix: async () => {
 							const fixedResource: Record<string, unknown> = { ...resource };
-							fixedResource[key] = Object.fromEntries(
-								Object.entries(translation).filter(([p]) => plurals.includes(p)),
-							);
+							fixedResource[key] = Object.fromEntries(Object.entries(translation).filter(([p]) => plurals.includes(p)));
 							await writeResource(language, fixedResource);
-						}
+						},
 					};
 				}
 			}
@@ -248,10 +255,104 @@ const findMissingPlurals = describeTask('find-missing-plurals', async function* 
 					},
 					fix: async (throwError) => {
 						throwError('%s: key %o is missing plural form %o', language, key, plural);
-					}
+					},
 				};
 			}
 		}
+	}
+});
+
+const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores', async function* () {
+	const languages = await getResourceLanguages();
+
+	function* listTranslations(resource: Record<string, unknown>) {
+		for (const [key, translation] of Object.entries(resource)) {
+			if (typeof translation === 'string') {
+				yield { key, translation } as const;
+				continue;
+			}
+
+			if (typeof translation === 'object' && translation) {
+				for (const [plural, pluralTranslation] of Object.entries(translation)) {
+					if (typeof pluralTranslation !== 'string') continue;
+					yield { key, plural, translation: pluralTranslation } as const;
+				}
+			}
+		}
+	}
+
+	const placeholderRegex = /__(.*?)__/g;
+	const identifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
+	for await (const language of languages) {
+		const resource = await readResource(language);
+
+		for (const { key, plural, translation } of listTranslations(resource)) {
+			const match = placeholderRegex.exec(translation);
+			if (!match) continue;
+
+			if (!identifierRegex.test(match[1])) {
+				yield {
+					lint: async (reportError) => {
+						if (plural) {
+							reportError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
+						} else {
+							reportError('%s: key %o has invalid placeholder %o', language, key, match[0]);
+						}
+					},
+					fix: async (throwError) => {
+						if (plural) {
+							throwError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
+						} else {
+							throwError('%s: key %o has invalid placeholder %o', language, key, match[0]);
+						}
+					},
+				};
+				continue;
+			}
+
+			yield {
+				lint: async (reportError) => {
+					if (plural) {
+						reportError('%s: key %o (plural %o) has placeholder %o, should be %o', language, key, plural, match[0], `{{${match[1]}}}`);
+					} else {
+						reportError('%s: key %o has placeholder %o, should be %o', language, key, match[0], `{{${match[1]}}}`);
+					}
+				},
+				fix: async () => {
+					const fixedResource = { ...resource };
+					if (plural) {
+						fixedResource[key] = {
+							...(fixedResource[key] as Record<string, string>),
+							[plural]: translation.replace(placeholderRegex, `{{${match[1]}}}`),
+						};
+					} else {
+						fixedResource[key] = translation.replace(placeholderRegex, `{{${match[1]}}}`);
+					}
+					await writeResource(language, fixedResource);
+				},
+			};
+		}
+	}
+});
+
+const trimEndOfFile = describeTask('trim-eof', async function* () {
+	const languages = await getResourceLanguages();
+
+	for await (const language of languages) {
+		const content = await readContent(language);
+		const trimmedContent = content.replace(/\s+$/g, '');
+
+		if (trimmedContent.length === content.length) continue;
+
+		yield {
+			lint: async (reportError) => {
+				reportError('%s: has trailing whitespace at end of file', language);
+			},
+			fix: async () => {
+				await writeResource(language, JSON.parse(trimmedContent));
+			},
+		};
 	}
 });
 
@@ -261,11 +362,20 @@ const tasksByName = {
 	'wipe-extra-keys': wipeExtraKeys,
 	'wipe-invalid-plurals': wipeInvalidPlurals,
 	'find-missing-plurals': findMissingPlurals,
+	'replace-2-underscores': replaceDoubleUnderscorePlaceholders,
+	'trim-eof': trimEndOfFile,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 	// We're lenient by default excluding 'sort-base-keys' from the default tasks
-	const tasks = new Set<keyof typeof tasksByName>(['sort-keys', 'wipe-extra-keys', 'wipe-invalid-plurals', 'find-missing-plurals']);
+	const tasks = new Set<keyof typeof tasksByName>([
+		'sort-keys',
+		'wipe-extra-keys',
+		'wipe-invalid-plurals',
+		'find-missing-plurals',
+		'replace-2-underscores',
+		'trim-eof',
+	]);
 
 	if (task?.length) {
 		tasks.clear();
