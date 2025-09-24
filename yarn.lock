@@ -7520,7 +7520,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.1.5"
+    "@rocket.chat/federation-sdk": "npm:0.1.6"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -7546,9 +7546,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.1.5":
-  version: 0.1.5
-  resolution: "@rocket.chat/federation-sdk@npm:0.1.5"
+"@rocket.chat/federation-sdk@npm:0.1.6":
+  version: 0.1.6
+  resolution: "@rocket.chat/federation-sdk@npm:0.1.6"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.31.25"
     mongodb: "npm:^6.16.0"
@@ -7558,7 +7558,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/da8b11e77ba855873e3465e7172f21923a18a458207eeff62afceddc7730f5a28a43b1133b043a9d8655f87b0b28f4304d53343eca90f45f3b1a65d9d95087c9
+  checksum: 10/0254e1dcdbf687773a8aa44b206d5c4b0b79fcc329896065120fba387bcb29cdaf77bbe2929cd4b0c7cb6d7d1569911929a56fe1f66df47712f2e2377f358805
   languageName: node
   linkType: hard
 
@@ -7571,7 +7571,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:*"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.1.5"
+    "@rocket.chat/federation-sdk": "npm:0.1.6"
     "@rocket.chat/http-router": "workspace:*"
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/license": "workspace:^"
