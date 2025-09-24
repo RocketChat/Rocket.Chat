@@ -63,12 +63,10 @@ export class OmnichannelRoomInfo {
 
 	async selectTag(name: string): Promise<void> {
 		await this.optionTags(name).click();
-		// return this.page.getByRole('option', { name, exact: true }).click();
 	}
 
 	getTagInfoByLabel(label: string): Locator {
 		return this.dialogRoomInfo.getByRole('list', { name: 'Tags' }).getByText(label);
-		// return this.dialogRoomInfo.getByText(label);
 	}
 
 	getBadgeIndicator(name: string, title: string): Locator {
