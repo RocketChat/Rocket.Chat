@@ -73,7 +73,7 @@ describe('MessageComposerInputExpandable expand functionality', () => {
 
 		// Should be expanded now
 		expect(textarea).toHaveStyle({ height: '500px' });
-		expect(textarea).toHaveStyle({ maxHeight: '500px' });
+		expect(textarea).toHaveStyle({ maxHeight: '50vh' });
 		expect(expandButton).toHaveAttribute('aria-label', 'Collapse');
 	});
 
@@ -100,7 +100,7 @@ describe('MessageComposerInputExpandable expand functionality', () => {
 
 		// Should be collapsed now
 		expect(textarea).not.toHaveStyle({ height: '500px' });
-		expect(textarea).not.toHaveStyle({ maxHeight: '500px' });
+		expect(textarea).not.toHaveStyle({ maxHeight: '50vh' });
 		expect(expandButton).toHaveAttribute('aria-label', 'Expand');
 	});
 
@@ -131,6 +131,6 @@ describe('MessageComposerInputExpandable expand functionality', () => {
 
 		// Should auto-collapse
 		expect(textarea).not.toHaveStyle({ height: '500px' });
-		expect(textarea).not.toHaveStyle({ maxHeight: '500px' });
+		expect(textarea).not.toHaveStyle({ maxHeight: '50vh' });
 	});
 });
