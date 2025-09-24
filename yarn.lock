@@ -8585,6 +8585,8 @@ __metadata:
     textarea-caret: "npm:^3.1.0"
     tinykeys: "npm:^1.4.0"
     ts-node: "npm:^10.9.2"
+    tsyringe: "npm:^4.10.0"
+    tweetnacl: "npm:^1.0.3"
     twilio: "npm:^5.4.2"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.9.2"
