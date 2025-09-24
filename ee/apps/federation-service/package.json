@@ -43,6 +43,7 @@
 		"@types/bun": "latest",
 		"@types/express": "^4.17.17",
 		"eslint": "~8.45.0",
+		"pino-pretty": "^7.6.1",
 		"typescript": "^5.3.0"
 	},
 	"keywords": [
