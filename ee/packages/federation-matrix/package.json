@@ -49,6 +49,8 @@
 		"mongodb": "6.10.0",
 		"pino": "8.21.0",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "^2.17.0"
+		"sanitize-html": "^2.17.0",
+		"tsyringe": "^4.10.0",
+		"tweetnacl": "^1.0.3"
 	}
 }
