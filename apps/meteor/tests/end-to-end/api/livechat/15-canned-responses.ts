@@ -13,7 +13,7 @@ import { password } from '../../../data/user';
 import { createUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe.only : describe.skip)('[EE] LIVECHAT - Canned responses', () => {
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
