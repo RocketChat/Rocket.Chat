@@ -462,7 +462,7 @@ export class AppManager {
 			storageItem.status = await rl.getStatus();
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return isSetup;
@@ -495,7 +495,7 @@ export class AppManager {
 		storageItem.status = await app.getStatus();
 		// This is async, but we don't care since it only updates in the database
 		// and it should not mutate any properties we care about
-		await this.appMetadataStorage.updateStatus(id, storageItem.status).catch();
+		await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 
 		return true;
 	}
@@ -1176,7 +1176,7 @@ export class AppManager {
 			storageItem.status = status;
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.updateStatus(storageItem.id, storageItem.status).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		await app.setStatus(status, silenceStatus);
