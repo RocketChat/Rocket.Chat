@@ -4,7 +4,7 @@ import type { IRoomNativeFederated, IRoom } from '@rocket.chat/core-typings';
 import { throwIfFederationNotEnabled } from '../../federation/utils';
 
 export class FederationActions {
-	public static shouldPerformFederationAction(room: Partial<IRoom | IRoomNativeFederated>): room is IRoomNativeFederated {
+	public static shouldPerformFederationAction(room: IRoom): room is IRoomNativeFederated {
 		if (!isRoomFederated(room)) {
 			return false;
 		}

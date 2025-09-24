@@ -1,7 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
-import type { ICreatedRoom, IRoom, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -42,7 +42,7 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 
 export async function createDirectRoom(
 	members: IUser[] | string[],
-	roomExtraData: Partial<IRoomNativeFederated | IRoom> = {},
+	roomExtraData: Partial<IRoom> = {},
 	options: {
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
