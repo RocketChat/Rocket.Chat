@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import FederationDashboardPage from './FederationDashboardPage';
 
 export default {
-	title: 'Admin/Federation Dashboard/FederationDashboardPage',
 	component: FederationDashboardPage,
 	parameters: {
 		layout: 'fullscreen',

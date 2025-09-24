@@ -16,7 +16,6 @@ import RetentionPolicyCallout from './RetentionPolicyCallout';
 import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
-	title: 'Info Panel/InfoPanel',
 	component: InfoPanel,
 	subcomponents: {
 		InfoPanelAction: InfoPanelAction as ComponentType<any>,

@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 
 declare module '@rocket.chat/ddp-client' {
@@ -62,6 +63,8 @@ export const removeRoomOwner = async (fromUserId: string, rid: string, userId: s
 			method: 'removeRoomOwner',
 		});
 	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, roomId: rid, role: 'user' });
 
 	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'owner');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.filter((r) => r !== 'owner') || []);

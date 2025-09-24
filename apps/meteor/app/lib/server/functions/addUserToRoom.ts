@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
@@ -17,9 +18,10 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib
  * This function adds user to the given room.
  * Caution - It does not validates if the user has permission to join room
  */
+
 export const addUserToRoom = async function (
 	rid: string,
-	user: Pick<IUser, '_id'> | string,
+	user: Pick<IUser, '_id' | 'username'> | string,
 	inviter?: Pick<IUser, '_id' | 'username'>,
 	{
 		skipSystemMessage,
@@ -55,10 +57,12 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await callbacks.run('federation.beforeAddUserToARoom', { user: userToBeAdded, inviter }, room);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
+
+	// TODO: are we calling this twice?
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
@@ -77,7 +81,7 @@ export const addUserToRoom = async function (
 
 		throw error;
 	}
-
+	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
