@@ -16,7 +16,6 @@ const room = {
 } as IRoom;
 
 export default {
-	title: 'Teams/Contextual Bar/TeamsInfo',
 	component: TeamsInfo,
 	parameters: {
 		layout: 'fullscreen',

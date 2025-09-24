@@ -6,7 +6,6 @@ import PermissionsTable from './PermissionsTable';
 import { PageContent } from '../../../../components/Page';
 
 export default {
-	title: 'views/admin/PermissionsTable',
 	component: PermissionsTable,
 	decorators: [
 		(fn) => (
