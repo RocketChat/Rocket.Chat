@@ -2324,6 +2324,7 @@ type POSTLivechatTranscriptParams = {
 	rid: string;
 	token: string;
 	email: string;
+	subject?: string;
 };
 
 const POSTLivechatTranscriptParamsSchema = {
@@ -2336,6 +2337,9 @@ const POSTLivechatTranscriptParamsSchema = {
 			type: 'string',
 		},
 		email: {
+			type: 'string',
+		},
+		subject: {
 			type: 'string',
 		},
 	},
@@ -3366,6 +3370,13 @@ export const isGETLivechatInquiriesListParams = ajv.compile<GETLivechatInquiries
 type POSTLivechatInquiriesTakeParams = {
 	inquiryId: string;
 	userId?: string;
+	options?: {
+		clientAction: boolean;
+		forwardingToDepartment?: {
+			oldDepartmentId: string;
+			transferData: unknown;
+		};
+	};
 };
 
 const POSTLivechatInquiriesTakeParamsSchema = {
@@ -3377,6 +3388,31 @@ const POSTLivechatInquiriesTakeParamsSchema = {
 		userId: {
 			type: 'string',
 			nullable: true,
+		},
+		options: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				clientAction: {
+					type: 'boolean',
+				},
+				forwardingToDepartment: {
+					type: 'object',
+					nullable: true,
+					properties: {
+						oldDepartmentId: {
+							type: 'string',
+						},
+						transferData: {
+							type: 'object',
+						},
+					},
+					required: ['oldDepartmentId', 'transferData'],
+					additionalProperties: false,
+				},
+			},
+			required: ['clientAction'],
+			additionalProperties: false,
 		},
 	},
 	additionalProperties: false,
@@ -4029,6 +4065,125 @@ const POSTLivechatRoomsCloseAllSuccessResponseSchema = {
 
 export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedRooms: number }>(
 	POSTLivechatRoomsCloseAllSuccessResponseSchema,
+);
+
+const POSTLivechatSaveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+		customFieldData: {
+			type: 'object',
+			properties: {
+				field: {
+					type: 'string',
+				},
+				label: {
+					type: 'string',
+				},
+				scope: {
+					type: 'string',
+					enum: ['visitor', 'room'],
+				},
+				visibility: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					nullable: true,
+				},
+				regexp: {
+					type: 'string',
+					nullable: true,
+				},
+				required: {
+					type: 'boolean',
+					nullable: true,
+				},
+				defaultValue: {
+					type: 'string',
+					nullable: true,
+				},
+				options: {
+					type: 'string',
+					nullable: true,
+				},
+				public: {
+					type: 'boolean',
+					nullable: true,
+				},
+				searchable: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatSaveCustomFieldsParams = ajv.compile<{
+	customFieldId: string;
+	customFieldData: Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
+}>(POSTLivechatSaveCustomFieldsSchema);
+
+const POSTLivechatSaveCustomFieldSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+		customField: {
+			type: 'object',
+			properties: {
+				label: {
+					type: 'string',
+				},
+				scope: {
+					type: 'string',
+					enum: ['visitor', 'room'],
+				},
+				visibility: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					nullable: true,
+				},
+				regexp: {
+					type: 'string',
+					nullable: true,
+				},
+				required: {
+					type: 'boolean',
+					nullable: true,
+				},
+				defaultValue: {
+					type: 'string',
+					nullable: true,
+				},
+				options: {
+					type: 'string',
+					nullable: true,
+				},
+				public: {
+					type: 'boolean',
+					nullable: true,
+				},
+				searchable: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<{ customField: ILivechatCustomField }>(
+	POSTLivechatSaveCustomFieldSuccessSchema,
 );
 
 type POSTLivechatRemoveCustomFields = {
