@@ -51,7 +51,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 					<FieldRow>
 						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')}></TextInput>
 					</FieldRow>
-					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+					{invalidAttempt && <FieldError>{t('Invalid_two_factor_code')}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

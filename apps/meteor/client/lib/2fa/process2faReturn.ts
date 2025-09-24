@@ -80,7 +80,7 @@ export async function process2faReturn({
 	try {
 		const code = await invokeTwoFactorModal(props);
 
-		onCode(code, props.method);
+		await onCode(code, props.method);
 	} catch (error) {
 		process2faReturn({
 			error: error as globalThis.Error | Meteor.Error | Meteor.TypedError | undefined,

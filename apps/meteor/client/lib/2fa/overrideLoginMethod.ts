@@ -13,7 +13,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	loginMethod(...loginArgs, async (error: LoginError | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback?.(error);
-			return;
+			return error;
 		}
 
 		const { process2faReturn } = await import('./process2faReturn');
@@ -24,32 +24,33 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 			emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
 			originalCallback: callback,
 			onCode: (code: string) => {
-				loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
-					if (!error) {
-						callback?.(undefined, result);
-						return;
-					}
-
-					if (isTotpInvalidError(error)) {
-						callback?.(error);
-						return;
-					}
-
-					Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
-						if (isTotpMaxAttemptsError(error)) {
-							dispatchToastMessage({
-								type: 'error',
-								message: t('totp-max-attempts'),
-							});
-							callback?.(undefined);
+				return new Promise<void>((resolve, reject) => {
+					loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
+						if (!error) {
+							callback?.(undefined, result);
+							resolve();
 							return;
 						}
 
-						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-						callback?.(undefined);
+						if (isTotpInvalidError(error)) {
+							reject(error);
+							return;
+						}
+
+						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+							if (isTotpMaxAttemptsError(error)) {
+								dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
+								resolve();
+								return;
+							}
+
+							dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+							reject();
+						});
 					});
 				});
-			},
+			}
+
 		});
 	});
 };
