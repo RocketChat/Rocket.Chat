@@ -27,7 +27,7 @@ const Keypad = ({ onKeyPress }: KeypadProps) => (
 		<Box display='flex' justifyContent='center' flexWrap='wrap' maxWidth={196}>
 			{DIGITS.map(([primaryDigit, alternativeDigit, longPressDigit]) => (
 				<Key
-					big={primaryDigit === '*'}
+					large={primaryDigit === '*'}
 					key={primaryDigit}
 					primaryKey={primaryDigit}
 					alternativeKey={alternativeDigit}
