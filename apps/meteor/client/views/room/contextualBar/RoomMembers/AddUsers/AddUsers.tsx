@@ -1,8 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,8 @@ import UserAutoCompleteMultipleFederated from '../../../../../components/UserAut
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
+const hasExternalUsers = (users: string[]): boolean => users.some((user) => user.startsWith('@'));
+
 type AddUsersProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
@@ -32,6 +35,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
+	const usersFieldId = useId();
 
 	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
@@ -40,7 +44,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		handleSubmit,
 		control,
 		getValues,
-		formState: { isDirty, isSubmitting },
+		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
 	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
@@ -83,8 +87,16 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							<Controller
 								name='users'
 								control={control}
-								render={({ field }) => <UserAutoCompleteMultiple {...field} placeholder={t('Choose_users')} />}
+								rules={{ validate: (users) => !hasExternalUsers(users) || t('You_cannot_add_external_users_to_non_federated_room') }}
+								render={({ field }) => (
+									<UserAutoCompleteMultiple {...field} placeholder={t('Choose_users')} aria-describedby={`${usersFieldId}-error`} />
+								)}
 							/>
+						)}
+						{errors.users && (
+							<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
+								{errors.users.message}
+							</FieldError>
 						)}
 					</Field>
 				</FieldGroup>
