@@ -26,7 +26,7 @@ exports[`Story Tests renders DatePickerDefault without crashing 1`] = `
               id=":r0:"
               size="1"
               type="date"
-              value="2025-07-24"
+              value="2025-07-25"
             />
             <span
               class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -169,7 +169,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                         id=":r3:"
                         size="1"
                         type="time"
-                        value="09:00"
+                        value="12:00"
                       />
                       <span
                         class="rcx-box rcx-box--full rcx-input-box__addon"
