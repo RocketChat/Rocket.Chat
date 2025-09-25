@@ -2,7 +2,6 @@ import type { Emitter } from '@rocket.chat/emitter';
 import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 
 import { edus } from './edu';
-import { invite } from './invite';
 import { member } from './member';
 import { message } from './message';
 import { ping } from './ping';
@@ -16,7 +15,6 @@ export function registerEvents(
 ) {
 	ping(emitter);
 	message(emitter, serverName);
-	invite(emitter);
 	reaction(emitter);
 	member(emitter);
 	edus(emitter, eduProcessTypes);
