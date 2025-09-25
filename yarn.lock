@@ -2355,7 +2355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datastructures-js/priority-queue@npm:^6.3.3, @datastructures-js/priority-queue@npm:^6.3.4":
+"@datastructures-js/priority-queue@npm:^6.3.3":
   version: 6.3.4
   resolution: "@datastructures-js/priority-queue@npm:6.3.4"
   dependencies:
@@ -8240,7 +8240,7 @@ __metadata:
     "@babel/runtime": "npm:~7.26.10"
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
-    "@datastructures-js/priority-queue": "npm:^6.3.4"
+    "@datastructures-js/priority-queue": "npm:^6.3.3"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.15.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -8249,6 +8249,7 @@ __metadata:
     "@nivo/heatmap": "npm:0.88.0"
     "@nivo/line": "npm:0.88.0"
     "@nivo/pie": "npm:0.88.0"
+    "@noble/ed25519": "npm:^3.0.0"
     "@node-oauth/oauth2-server": "npm:5.2.0"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
