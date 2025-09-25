@@ -42,7 +42,7 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.matrix.membership']) {
 	const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
 	if (!room) {
-		console.warn(`No bridged room found for room_id: ${data.room_id}`);
+		logger.warn(`No bridged room found for room_id: ${data.room_id}`);
 		return;
 	}
 
