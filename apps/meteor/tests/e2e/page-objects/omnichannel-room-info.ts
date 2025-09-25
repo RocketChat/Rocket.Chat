@@ -55,7 +55,6 @@ export class OmnichannelRoomInfo {
 
 	get inputTags(): Locator {
 		return this.page.getByRole('textbox', { name: 'Select an option' });
-		// return this.dialogEditRoom.getByLabel('Tags');
 	}
 
 	optionTags(name: string): Locator {

@@ -20,19 +20,26 @@ test.describe('OC - Tags Visibility', () => {
 	let conversations: Awaited<ReturnType<typeof createConversation>>[] = [];
 	let departmentA: Awaited<ReturnType<typeof createDepartment>>;
 	let departmentB: Awaited<ReturnType<typeof createDepartment>>;
-	let agents: Awaited<ReturnType<typeof createAgent>>[];
+	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let tags: Awaited<ReturnType<typeof createTag>>[] = [];
 
-	test.beforeAll(async ({ api }) => {
-		// Create departments
+	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
 		departmentB = await createDepartment(api, { name: 'Department B' });
-		// Create agent
-		agents = await Promise.all([createAgent(api, 'user1')]);
-		// Add agents to departments
-		await addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' });
-		await addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' });
-		// Create tags
+	});
+
+	test.beforeAll('Create agent', async ({ api }) => {
+		agent = await createAgent(api, 'user1');
+	});
+
+	test.beforeAll('Add agents to departments', async ({ api }) => {
+		await Promise.all([
+			await addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' }),
+			await addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' }),
+		]);
+	});
+
+	test.beforeAll('Create tags', async ({ api }) => {
 		tags = await Promise.all([
 			createTag(api, { name: 'TagA', description: 'tag A', departments: [departmentA.data._id] }),
 			createTag(api, { name: 'TagB', description: 'tag B', departments: [departmentB.data._id] }),
@@ -43,8 +50,9 @@ test.describe('OC - Tags Visibility', () => {
 				departments: [departmentA.data._id, departmentB.data._id],
 			}),
 		]);
+	});
 
-		// Create conversations
+	test.beforeAll('Create conversations', async ({ api }) => {
 		conversations = await Promise.all([
 			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
 			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
@@ -61,17 +69,23 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test.afterAll(async () => {
-		// Clean up conversations, departments, agents, and tags
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
 		await Promise.all(tags.map((tag) => tag.delete()));
-		await Promise.all(agents.map((agent) => agent.delete()));
+		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {
-		await test.step('Agent opens room and checks available tags', async () => {
+		await test.step('Agent opens room', async () => {
 			await poOmnichannel.sidenav.getSidebarItemByName(visitorA.name).click();
+		});
+
+		await test.step('should not be able to see tags field', async () => {
+			await expect(poOmnichannel.roomInfo.getInfoByLabel('Tags')).not.toBeVisible();
+		});
+
+		await test.step('check available tags', async () => {
 			await poOmnichannel.roomInfo.btnEditRoomInfo.click();
 			await poOmnichannel.roomInfo.inputTags.click();
 		});
@@ -99,10 +113,9 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('verify selected tags are displayed under room information', async () => {
-			await test.step('Should be able to see selected tags', async () => {
-				await expect(poOmnichannel.roomInfo.getTagInfoByLabel('TagA')).toBeVisible();
-				await expect(poOmnichannel.roomInfo.getTagInfoByLabel('GlobalTag')).toBeVisible();
-			});
+			await expect(poOmnichannel.roomInfo.getInfoByLabel('Tags')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('TagA')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('GlobalTag')).toBeVisible();
 		});
 	});
 
