@@ -15,7 +15,7 @@ const describeTask =
 		task: string,
 		fn: () => AsyncGenerator<{
 			lint: (reportError: (format?: any, ...param: any[]) => void) => Promise<void>;
-			fix: (throwError: (format?: any, ...param: any[]) => void) => Promise<void>;
+			fix?: (throwError: (format?: any, ...param: any[]) => void) => Promise<void>;
 		}>,
 	) =>
 	async (options: TaskOptions) => {
@@ -40,6 +40,11 @@ const describeTask =
 
 			if (options.fix) {
 				try {
+					if (!result.fix) {
+						await result.lint(throwError);
+						continue;
+					}
+
 					await result.fix(throwError);
 
 					console.log(styleText('blue', '✔', { stream: stdout }), styleText('gray', `${task}:`, { stream: stdout }), 'fixes applied');
@@ -253,33 +258,30 @@ const findMissingPlurals = describeTask('find-missing-plurals', async function* 
 					lint: async (reportError) => {
 						reportError('%s: key %o is missing plural form %o', language, key, plural);
 					},
-					fix: async (throwError) => {
-						throwError('%s: key %o is missing plural form %o', language, key, plural);
-					},
 				};
 			}
 		}
 	}
 });
 
-const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores', async function* () {
-	const languages = await getResourceLanguages();
+function* listTranslations(resource: Record<string, unknown>) {
+	for (const [key, translation] of Object.entries(resource)) {
+		if (typeof translation === 'string') {
+			yield { key, translation } as const;
+			continue;
+		}
 
-	function* listTranslations(resource: Record<string, unknown>) {
-		for (const [key, translation] of Object.entries(resource)) {
-			if (typeof translation === 'string') {
-				yield { key, translation } as const;
-				continue;
-			}
-
-			if (typeof translation === 'object' && translation) {
-				for (const [plural, pluralTranslation] of Object.entries(translation)) {
-					if (typeof pluralTranslation !== 'string') continue;
-					yield { key, plural, translation: pluralTranslation } as const;
-				}
+		if (typeof translation === 'object' && translation) {
+			for (const [plural, pluralTranslation] of Object.entries(translation)) {
+				if (typeof pluralTranslation !== 'string') continue;
+				yield { key, plural, translation: pluralTranslation } as const;
 			}
 		}
 	}
+}
+
+const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores', async function* () {
+	const languages = await getResourceLanguages();
 
 	const placeholderRegex = /__(.*?)__/g;
 	const identifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
@@ -298,13 +300,6 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 							reportError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
 						} else {
 							reportError('%s: key %o has invalid placeholder %o', language, key, match[0]);
-						}
-					},
-					fix: async (throwError) => {
-						if (plural) {
-							throwError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
-						} else {
-							throwError('%s: key %o has invalid placeholder %o', language, key, match[0]);
 						}
 					},
 				};
@@ -356,6 +351,71 @@ const trimEndOfFile = describeTask('trim-eof', async function* () {
 	}
 });
 
+/**
+ * Asserts that all translations have the same placeholders as the base language (en)
+ */
+const matchPlaceholders = describeTask('match-placeholders', async function* () {
+	const baseResource = await readResource(baseLanguage);
+	const baseTranslations = listTranslations(baseResource);
+	const basePlaceholdersByEncodedKey = new Map<string, Set<string>>();
+
+	const extractPlaceholders = (translation: string): Set<string> => {
+		const placeholders = new Set<string>();
+		const placeholderRegex = /{{(.*?)}}/g;
+		let match;
+		while ((match = placeholderRegex.exec(translation)) !== null) {
+			placeholders.add(match[1]);
+		}
+		return placeholders;
+	};
+
+	const encodedKey = (key: string, plural?: string) => (plural ? `${key}|${plural}` : key);
+
+	for (const { key: baseKey, plural: basePlural, translation: baseTranslation } of baseTranslations) {
+		basePlaceholdersByEncodedKey.set(encodedKey(baseKey, basePlural), extractPlaceholders(baseTranslation));
+	}
+
+	const languages = await getResourceLanguages();
+
+	for await (const language of languages) {
+		if (language === baseLanguage) continue;
+
+		const resource = await readResource(language);
+		const translations = listTranslations(resource);
+
+		for (const { key, plural, translation } of translations) {
+			const basePlaceholders = basePlaceholdersByEncodedKey.get(encodedKey(key, plural));
+			if (!basePlaceholders) continue;
+
+			const placeholders = extractPlaceholders(translation);
+
+			for (const basePlaceholder of basePlaceholders) {
+				if (placeholders.has(basePlaceholder)) continue;
+
+				yield {
+					lint: async (reportError) => {
+						if (plural) {
+							reportError('%s: key %o (plural %o) is missing placeholder %o', language, key, plural, basePlaceholder);
+							return;
+						}
+						reportError('%s: key %o is missing placeholder %o', language, key, basePlaceholder);
+					},
+				};
+			}
+
+			for (const placeholder of placeholders) {
+				if (basePlaceholders.has(placeholder)) continue;
+
+				yield {
+					lint: async (reportError) => {
+						reportError('%s: key %o%s has extra placeholder %o', language, key, plural ? ` (plural ${plural})` : '', placeholder);
+					},
+				};
+			}
+		}
+	}
+});
+
 const tasksByName = {
 	'sort-base-keys': sortBaseKeys,
 	'sort-keys': sortKeys,
@@ -364,10 +424,11 @@ const tasksByName = {
 	'find-missing-plurals': findMissingPlurals,
 	'replace-2-underscores': replaceDoubleUnderscorePlaceholders,
 	'trim-eof': trimEndOfFile,
+	'match-placeholders': matchPlaceholders,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
-	// We're lenient by default excluding 'sort-base-keys' from the default tasks
+	// We're lenient by default excluding some non-critical tasks
 	const tasks = new Set<keyof typeof tasksByName>([
 		'sort-keys',
 		'wipe-extra-keys',
