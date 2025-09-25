@@ -94,7 +94,6 @@ test.describe.serial('feature preview', () => {
 		test('should be able to toggle "Enhanced navigation" feature', async ({ page }) => {
 			await page.goto('/account/feature-preview');
 
-			await poAccountProfile.getAccordionItemByName('Navigation').click();
 			const newNavigationCheckbox = poAccountProfile.getCheckboxByLabelText('Enhanced navigation');
 			await expect(newNavigationCheckbox).toBeChecked();
 			await newNavigationCheckbox.click();
