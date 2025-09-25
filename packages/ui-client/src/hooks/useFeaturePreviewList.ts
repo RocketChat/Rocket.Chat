@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'contextualbarResizable' | 'newNavigation' | 'secondarySidebar' | 'expandableMessageComposer';
+export type FeaturesAvailable = 'newNavigation' | 'secondarySidebar' | 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -19,15 +19,6 @@ export type FeaturePreviewProps = {
 
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
-	{
-		name: 'contextualbarResizable',
-		i18n: 'Contextualbar_resizable',
-		description: 'Contextualbar_resizable_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/resizable-contextual-bar.png',
-		value: false,
-		enabled: true,
-	},
 	{
 		name: 'newNavigation',
 		i18n: 'New_navigation',
