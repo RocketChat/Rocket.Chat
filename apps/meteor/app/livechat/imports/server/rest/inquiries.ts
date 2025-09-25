@@ -16,8 +16,8 @@ import { API } from '../../../../api/server';
 import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
-import { takeInquiry } from '../../../server/lib/takeInquiry';
 import { returnRoomAsInquiry } from '../../../server/lib/rooms';
+import { takeInquiry } from '../../../server/lib/takeInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
