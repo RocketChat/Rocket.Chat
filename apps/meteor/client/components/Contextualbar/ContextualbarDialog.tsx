@@ -1,4 +1,3 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
@@ -40,16 +39,9 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 
 	return (
 		<FocusScope autoFocus restoreFocus>
-			<FeaturePreview feature='contextualbarResizable'>
-				<FeaturePreviewOn>
-					<ContextualbarResizable defaultWidth={contextualBar}>
-						<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
-					</ContextualbarResizable>
-				</FeaturePreviewOn>
-				<FeaturePreviewOff>
-					<Contextualbar ref={callbackRef} width={contextualBar} position={position} {...dialogProps} {...props} />
-				</FeaturePreviewOff>
-			</FeaturePreview>
+			<ContextualbarResizable defaultWidth={contextualBar}>
+				<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
+			</ContextualbarResizable>
 		</FocusScope>
 	);
 };
