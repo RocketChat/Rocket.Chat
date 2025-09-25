@@ -4566,7 +4566,7 @@
   "SAML_MetadataCertificate_Template": "Metadata Certificate Template",
   "SAML_Metadata_Certificate_Template_Description": "The following variables are available:  \n- *\\_\\_certificate\\_\\_*: The private certificate for assertion encryption.",
   "SAML_Metadata_Template": "Metadata Template",
-  "SAML_Metadata_Template_Description": "The following variables are available:  \n- *\\_\\_sloLocation\\_\\_*: The Rocket.Chat Single LogOut URL.  \n- *\\_\\_issuer\\_\\_*: The value of the *Custom Issuer* setting.  \n- *\\_\\_identifierFormat\\_\\_*: The value of the *Identifier Format* setting.  \n- *\\_\\_certificateTag\\_\\_*: If a private certificate is configured, this will include the {{Metadata Certificate Template}}, otherwise it will be ignored.  \n- *\\_\\_callbackUrl\\_\\_*: The Rocket.Chat callback URL.",
+  "SAML_Metadata_Template_Description": "The following variables are available:  \n- *\\_\\_sloLocation\\_\\_*: The Rocket.Chat Single LogOut URL.  \n- *\\_\\_issuer\\_\\_*: The value of the *Custom Issuer* setting.  \n- *\\_\\_identifierFormat\\_\\_*: The value of the *Identifier Format* setting.  \n- *\\_\\_certificateTag\\_\\_*: If a private certificate is configured, this will include the *Metadata Certificate Template*, otherwise it will be ignored.  \n- *\\_\\_callbackUrl\\_\\_*: The Rocket.Chat callback URL.",
   "SAML_NameIdPolicy_Template": "NameID Policy Template",
   "SAML_NameIdPolicy_Template_Description": "You can use any variable from the Authorize Request Template here.",
   "SAML_Role_Attribute_Name": "Role Attribute Name",
@@ -4584,7 +4584,7 @@
   "SLA_removed": "SLA removed",
   "SMS": "SMS",
   "SMS_Default_Omnichannel_Department": "Omnichannel Department (Default)",
-  "SMS_Default_Omnichannel_Department_Description": "If set, all new incoming chats initiated by this integration will be routed to this department.  \nThis setting can be overwritten by passing department query param in the request.  \ne.g. `https://{{SERVER_URL}}/api/v1/livechat/sms-incoming/twilio?department={{Department Id or Name}}`.  \nNote: if you're using Department Name, then it should be URL safe.",
+  "SMS_Default_Omnichannel_Department_Description": "If set, all new incoming chats initiated by this integration will be routed to this department.  \nThis setting can be overwritten by passing department query param in the request.  \ne.g. `https://\\{\\{SERVER_URL\\}\\}/api/v1/livechat/sms-incoming/twilio?department=\\{\\{Department Id or Name\\}\\}`.  \nNote: if you're using Department Name, then it should be URL safe.",
   "SMS_Description": "Enable and configure SMS gateways on your workspace.",
   "SMS_Enabled": "SMS Enabled",
   "SMS_Twilio_InvalidCredentials": "Twilio SMS credentials are invalid, cannot send messages",
@@ -6495,7 +6495,7 @@
   "meteor_status_failed": "Connection attempt failed",
   "meteor_status_offline": "You’re offline",
   "meteor_status_reconnect_in": {
-    "one": "Trying to reconnect in {{count}} second",
+    "one": "Trying to reconnect in one second",
     "other": "Trying to reconnect in {{count}} seconds"
   },
   "meteor_status_try_again_later": "Please try again later or ask your workspace admin for assistance",

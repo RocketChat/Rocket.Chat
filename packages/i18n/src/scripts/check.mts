@@ -351,25 +351,25 @@ const trimEndOfFile = describeTask('trim-eof', async function* () {
 	}
 });
 
+const extractPlaceholders = (translation: string): Set<string> => {
+	const placeholders = new Set<string>();
+	const placeholderRegex = /{{(.+?)(,.*?)?}}/g;
+	let match;
+	while ((match = placeholderRegex.exec(translation)) !== null) {
+		placeholders.add(match[1]);
+	}
+	return placeholders;
+};
+
+const encodedKey = (key: string, plural?: string) => (plural ? `${key}|${plural}` : key);
+
 /**
- * Asserts that all translations have the same placeholders as the base language (en)
+ * Finds translations that are missing placeholders present in the base language (en)
  */
-const matchPlaceholders = describeTask('match-placeholders', async function* () {
+const missingPlaceholders = describeTask('missing-placeholders', async function* () {
 	const baseResource = await readResource(baseLanguage);
 	const baseTranslations = listTranslations(baseResource);
 	const basePlaceholdersByEncodedKey = new Map<string, Set<string>>();
-
-	const extractPlaceholders = (translation: string): Set<string> => {
-		const placeholders = new Set<string>();
-		const placeholderRegex = /{{(.*?)}}/g;
-		let match;
-		while ((match = placeholderRegex.exec(translation)) !== null) {
-			placeholders.add(match[1]);
-		}
-		return placeholders;
-	};
-
-	const encodedKey = (key: string, plural?: string) => (plural ? `${key}|${plural}` : key);
 
 	for (const { key: baseKey, plural: basePlural, translation: baseTranslation } of baseTranslations) {
 		basePlaceholdersByEncodedKey.set(encodedKey(baseKey, basePlural), extractPlaceholders(baseTranslation));
@@ -402,6 +402,35 @@ const matchPlaceholders = describeTask('match-placeholders', async function* () 
 					},
 				};
 			}
+		}
+	}
+});
+
+/**
+ * Finds translations that have extra placeholders not present in the base language (en)
+ */
+const extraPlaceholders = describeTask('extra-placeholders', async function* () {
+	const baseResource = await readResource(baseLanguage);
+	const baseTranslations = listTranslations(baseResource);
+	const basePlaceholdersByEncodedKey = new Map<string, Set<string>>();
+
+	for (const { key: baseKey, plural: basePlural, translation: baseTranslation } of baseTranslations) {
+		basePlaceholdersByEncodedKey.set(encodedKey(baseKey, basePlural), extractPlaceholders(baseTranslation));
+	}
+
+	const languages = await getResourceLanguages();
+
+	for await (const language of languages) {
+		if (language === baseLanguage) continue;
+
+		const resource = await readResource(language);
+		const translations = listTranslations(resource);
+
+		for (const { key, plural, translation } of translations) {
+			const basePlaceholders = basePlaceholdersByEncodedKey.get(encodedKey(key, plural));
+			if (!basePlaceholders) continue;
+
+			const placeholders = extractPlaceholders(translation);
 
 			for (const placeholder of placeholders) {
 				if (basePlaceholders.has(placeholder)) continue;
@@ -424,7 +453,8 @@ const tasksByName = {
 	'find-missing-plurals': findMissingPlurals,
 	'replace-2-underscores': replaceDoubleUnderscorePlaceholders,
 	'trim-eof': trimEndOfFile,
-	'match-placeholders': matchPlaceholders,
+	'missing-placeholders': missingPlaceholders,
+	'extra-placeholders': extraPlaceholders,
 } as const;
 
 async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
@@ -436,6 +466,8 @@ async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 		'find-missing-plurals',
 		'replace-2-underscores',
 		'trim-eof',
+		'missing-placeholders',
+		'extra-placeholders',
 	]);
 
 	if (task?.length) {

@@ -699,9 +699,9 @@
   "Caller_Id": "ID de llamador",
   "Calling": "Llamando",
   "Calls_in_queue": {
-    "one": "{{calls}} llamada en cola",
-    "many": "{{calls}} llamadas en cola",
-    "other": "{{calls}} llamadas en cola"
+    "one": "{{count}} llamada en cola",
+    "many": "{{count}} llamadas en cola",
+    "other": "{{count}} llamadas en cola"
   },
   "Cancel": "Cancelar",
   "Cancel_message_input": "Cancelar",
@@ -3314,7 +3314,7 @@
   "SAML_MetadataCertificate_Template": "Plantilla de certificado de metadatos",
   "SAML_Metadata_Certificate_Template_Description": "Las siguientes variables están disponibles:  \n- *\\_\\_certificate\\_\\_*: Certificado privado para cifrado de aserción",
   "SAML_Metadata_Template": "Plantilla de metadatos",
-  "SAML_Metadata_Template_Description": "Las siguientes variables están disponibles:  \n- *\\_\\_sloLocation\\_\\_*: URL de cierre de sesión única de Rocket.Chat  \n- *\\_\\_issuer\\_\\_*: Valor del ajuste  *Custom Issuer*  \n- *\\_\\_identifierFormat\\_\\_*: Valor del ajuste  *Identifier Format*  \n- *\\_\\_certificateTag\\_\\_*: Si un certificado privado está configurado, esto incluirá el {{Metadata Certificate Template}}, de lo contrario se ignorará  \n- *\\_\\_callbackUrl\\_\\_*: URL de respaldo de Rocket.Chat",
+  "SAML_Metadata_Template_Description": "Las siguientes variables están disponibles:  \n- *\\_\\_sloLocation\\_\\_*: URL de cierre de sesión única de Rocket.Chat  \n- *\\_\\_issuer\\_\\_*: Valor del ajuste  *Custom Issuer*  \n- *\\_\\_identifierFormat\\_\\_*: Valor del ajuste  *Identifier Format*  \n- *\\_\\_certificateTag\\_\\_*: Si un certificado privado está configurado, esto incluirá el *Metadata Certificate Template*, de lo contrario se ignorará  \n- *\\_\\_callbackUrl\\_\\_*: URL de respaldo de Rocket.Chat",
   "SAML_NameIdPolicy_Template": "Plantilla de política de NameID",
   "SAML_NameIdPolicy_Template_Description": "Puedes usar cualquier variable de la plantilla de solicitud de autorización aquí.",
   "SAML_Role_Attribute_Name": "Nombre de atributo de rol",
@@ -3329,7 +3329,7 @@
   "SAML_Section_6_Advanced": "Avanzado",
   "SMS": "SMS",
   "SMS_Default_Omnichannel_Department": "Departamento de Omnichannel (por defecto)",
-  "SMS_Default_Omnichannel_Department_Description": "Si se establece esta opción, todos los nuevos chats entrantes iniciados por esta integración se enrutarán a este departamento.  \nEste ajuste se puede sobrescribir pasando el parámetro de consulta del departamento en la solicitud.  \nPor ejemplo, `https://{{SERVER_URL}}/api/v1/livechat/sms-incoming/twilio?department={{Department Id or Name}}`.  \nNota: Si estás usando el nombre del departamento, debería poder usarse en la URL.",
+  "SMS_Default_Omnichannel_Department_Description": "Si se establece esta opción, todos los nuevos chats entrantes iniciados por esta integración se enrutarán a este departamento.  \nEste ajuste se puede sobrescribir pasando el parámetro de consulta del departamento en la solicitud.  \nPor ejemplo, `https://\\{\\{SERVER_URL\\}\\}/api/v1/livechat/sms-incoming/twilio?department=\\{\\{Department Id or Name\\}\\}`.  \nNota: Si estás usando el nombre del departamento, debería poder usarse en la URL.",
   "SMS_Enabled": "SMS habilitados",
   "SMTP": "SMTP",
   "SMTP_Host": "Host SMTP",

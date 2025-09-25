@@ -4523,7 +4523,7 @@
   "SAML_MetadataCertificate_Template": "Mal for metadatasertifikat",
   "SAML_Metadata_Certificate_Template_Description": "Følgende variabler er tilgjengelige:  \n- *\\_\\_certificate\\_\\_*: Det private sertifikatet for påstandskryptering.",
   "SAML_Metadata_Template": "Mal for metadata",
-  "SAML_Metadata_Template_Description": "Følgende variabler er tilgjengelige:  \n- *\\_\\_sloLocation\\_\\_*: Rocket.Chats Single Logout URL.  \n- **\\_\\_utsteder\\_\\_**: Verdien for *Custom Issuer*-innstillingen.  \n- *\\_\\_identifierFormat\\_\\_*: Verdien for *Identifier Format*-innstillingen.  \n- *\\_\\_certificateTag\\_\\_*: Hvis et privat sertifikat er konfigurert, vil dette inkludere {{Metadata Certificate Template}}, ellers vil det bli ignorert.  \n- *\\_\\_callbackUrl\\_\\_*: Rocket.Chats tilbakeringings-URL.",
+  "SAML_Metadata_Template_Description": "Følgende variabler er tilgjengelige:  \n- *\\_\\_sloLocation\\_\\_*: Rocket.Chats Single Logout URL.  \n- **\\_\\_utsteder\\_\\_**: Verdien for *Custom Issuer*-innstillingen.  \n- *\\_\\_identifierFormat\\_\\_*: Verdien for *Identifier Format*-innstillingen.  \n- *\\_\\_certificateTag\\_\\_*: Hvis et privat sertifikat er konfigurert, vil dette inkludere *Metadata Certificate Template*, ellers vil det bli ignorert.  \n- *\\_\\_callbackUrl\\_\\_*: Rocket.Chats tilbakeringings-URL.",
   "SAML_NameIdPolicy_Template": "Mal for retningslinjer for NameID",
   "SAML_NameIdPolicy_Template_Description": "Du kan bruke en hvilken som helst variabel fra Authorize Request Template her.",
   "SAML_Role_Attribute_Name": "Rolle Attributt Navn",
@@ -4541,7 +4541,7 @@
   "SLA_removed": "SLA fjernet",
   "SMS": "SMS",
   "SMS_Default_Omnichannel_Department": "Omnichannel-avdeling (standard)",
-  "SMS_Default_Omnichannel_Department_Description": "Hvis angitt, vil alle nye innkommende chatter initiert av denne integrasjonen bli rutet til denne avdelingen.  \nDenne innstillingen kan overskrives ved å sende avdelingsspørringsparameter i forespørselen.  \nf.eks. `https://{{SERVER_URL}}/api/v1/livechat/sms-incoming/twilio?department={{Department Id or Name}}`.  \nMerk: Hvis du bruker Avdelingsnavn, bør det være URL-sikkert.",
+  "SMS_Default_Omnichannel_Department_Description": "Hvis angitt, vil alle nye innkommende chatter initiert av denne integrasjonen bli rutet til denne avdelingen.  \nDenne innstillingen kan overskrives ved å sende avdelingsspørringsparameter i forespørselen.  \nf.eks. `https://\\{\\{SERVER_URL\\}\\}/api/v1/livechat/sms-incoming/twilio?department=\\{\\{Department Id or Name\\}\\}`.  \nMerk: Hvis du bruker Avdelingsnavn, bør det være URL-sikkert.",
   "SMS_Description": "Aktiver og konfigurer SMS-gatewayer på arbeidsområdet ditt.",
   "SMS_Enabled": "SMS aktivert",
   "SMS_Twilio_InvalidCredentials": "Twilio SMS-autentiseringsinfo er ugyldig, kan ikke sende meldinger",
@@ -6426,7 +6426,7 @@
   "meteor_status_failed": "Tilkoblingsforsøk mislyktes",
   "meteor_status_offline": "Du er frakoblet",
   "meteor_status_reconnect_in": {
-    "one": "Prøver å koble til igjen om {{count}} sekund",
+    "one": "Prøver å koble til igjen om ett sekund",
     "other": "Prøver å koble til igjen om {{count}} sekunder"
   },
   "meteor_status_try_again_later": "Prøv igjen senere eller be arbeidsområdeadministratoren din om hjelp",
