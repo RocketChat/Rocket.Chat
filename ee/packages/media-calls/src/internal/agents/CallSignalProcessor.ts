@@ -285,6 +285,11 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
+		// When there are multiple ice servers, one of them failing is not critical
+		if (errorMessage === 'ice-candidate-error') {
+			return;
+		}
+
 		await mediaCallDirector.hangup(this.call, this.agent, 'service-error');
 	}
 
