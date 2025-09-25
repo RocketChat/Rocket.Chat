@@ -10,11 +10,11 @@ export const createMonitor = async (username: string): Promise<{ _id: string; us
 			.post('/v1/livechat/monitors.save')
 			.set(credentials)
 			.send({ username })
-			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+			.end((err: Error, res: DummyResponse<{ _id: string; username: string; roles: string[] }, 'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(res.body);
 			});
 	});
 };
