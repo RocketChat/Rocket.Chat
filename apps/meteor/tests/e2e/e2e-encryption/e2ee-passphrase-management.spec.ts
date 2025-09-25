@@ -185,9 +185,9 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -229,9 +229,9 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -271,9 +271,9 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
