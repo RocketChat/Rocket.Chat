@@ -1,4 +1,5 @@
-import { Box, Button, ButtonGroup, Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +23,7 @@ type TimestampPickerProps = {
 	composer?: ComposerAPI;
 };
 
-export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => {
+export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps) => {
 	const { t } = useTranslation();
 	const {
 		control,
@@ -52,30 +53,21 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 	};
 
 	return (
-		<Modal>
-			<ModalHeader>
-				<ModalTitle>{t('Add_date_and_time')}</ModalTitle>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent>
-				<Box display='flex' flexDirection='column' mbs='x16' pi='x16'>
-					<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
-					<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
-					<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
-					<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
-					<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
-				</Box>
-			</ModalContent>
-			<ModalFooter>
-				<Box w='full'>
-					<ButtonGroup align='end'>
-						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSubmit(onSubmit)} disabled={!isValid}>
-							{t('Add')}
-						</Button>
-					</ButtonGroup>
-				</Box>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			title={t('Add_date_and_time')}
+			onConfirm={handleSubmit(onSubmit)}
+			onCancel={onClose}
+			onClose={onClose}
+			confirmText={t('Add')}
+			confirmDisabled={!isValid}
+		>
+			<Box display='flex' flexDirection='column'>
+				<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
+				<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
+				<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
+				<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
+				<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
+			</Box>
+		</GenericModal>
 	);
 };

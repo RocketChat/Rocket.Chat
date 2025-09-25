@@ -50,6 +50,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
+      aria-labelledby=":r1:-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -63,11 +64,26 @@ exports[`Story Tests renders Default without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
-            <h2
-              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+            <div
+              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
             >
-              Add_date_and_time
-            </h2>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
+              >
+                
+              </i>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r1:-title"
+              >
+                Add_date_and_time
+              </h2>
+            </div>
             <button
               aria-label="Close"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
@@ -86,10 +102,10 @@ exports[`Story Tests renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-xwilyv"
+              class="rcx-box rcx-box--full rcx-css-1tbw8nv"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1bjg207"
@@ -99,7 +115,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r1:"
+                    for=":r2:"
                   >
                     Date
                   </label>
@@ -111,7 +127,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     >
                       <input
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
-                        id=":r1:"
+                        id=":r2:"
                         size="1"
                         type="date"
                         value="2025-01-01"
@@ -138,7 +154,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r2:"
+                    for=":r3:"
                   >
                     Time
                   </label>
@@ -150,7 +166,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     >
                       <input
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
-                        id=":r2:"
+                        id=":r3:"
                         size="1"
                         type="time"
                         value="09:00"
@@ -186,7 +202,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:ra:"
+                      aria-labelledby="react-aria-:rb:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
@@ -242,7 +258,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:ra:"
+                        id="react-aria-:rb:"
                       >
                         timestamps.fullDateTime (timestamps.fullDateTimeDescription)
                       </span>
@@ -273,7 +289,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:ri:"
+                      aria-labelledby="react-aria-:rj:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
@@ -424,7 +440,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:ri:"
+                        id="react-aria-:rj:"
                       >
                         Local_Time
                       </span>
@@ -467,34 +483,30 @@ exports[`Story Tests renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1qcz93u"
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
           >
-            <div
-              class="rcx-button-group rcx-button-group--align-end"
-              role="group"
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              type="button"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-                type="button"
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Cancel
-                </span>
-              </button>
-              <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-                disabled=""
-                type="button"
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              disabled=""
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Add
-                </span>
-              </button>
-            </div>
+                Add
+              </span>
+            </button>
           </div>
         </div>
       </div>

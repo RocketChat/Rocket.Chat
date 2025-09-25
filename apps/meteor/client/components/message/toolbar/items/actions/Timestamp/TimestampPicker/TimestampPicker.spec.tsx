@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import * as stories from './TimestampPicker.stories';
-import { TimestampPicker } from './index';
+import { TimestampPickerModal } from './TimestampPickerModal';
 import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
 import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/formats';
 
@@ -63,7 +63,7 @@ describe('TimestampPicker', () => {
 	});
 
 	it('should complete timestamp creation workflow', async () => {
-		render(<TimestampPicker onClose={mockOnClose} composer={mockComposer as any} />, {
+		render(<TimestampPickerModal onClose={mockOnClose} composer={mockComposer as any} />, {
 			wrapper: wrapper.build(),
 		});
 
@@ -108,7 +108,7 @@ describe('TimestampPicker', () => {
 
 	// Cancel Operation Test
 	it('should call onClose when cancel is clicked', async () => {
-		render(<TimestampPicker onClose={mockOnClose} />, { wrapper: wrapper.build() });
+		render(<TimestampPickerModal onClose={mockOnClose} />, { wrapper: wrapper.build() });
 
 		const cancelButton = screen.getByRole('button', { name: /cancel/i });
 		await userEvent.click(cancelButton);

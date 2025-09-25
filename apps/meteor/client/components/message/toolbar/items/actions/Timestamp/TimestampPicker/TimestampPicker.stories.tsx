@@ -6,11 +6,11 @@ import DatePicker from './DatePicker';
 import FormatSelector from './FormatSelector';
 import Preview from './Preview';
 import TimePicker from './TimePicker';
+import { TimestampPickerModal } from './TimestampPickerModal';
 import TimezoneSelector from './TimezoneSelector';
-import { TimestampPicker } from './index';
 
 export default {
-	component: TimestampPicker,
+	component: TimestampPickerModal,
 	subcomponents: {
 		DatePicker,
 		TimePicker,
@@ -22,9 +22,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies Meta<typeof TimestampPicker>;
+} satisfies Meta<typeof TimestampPickerModal>;
 
-export const Default = () => <TimestampPicker onClose={action('onClose')} composer={{ insertText: action('insertText') } as any} />;
+export const Default = () => <TimestampPickerModal onClose={action('onClose')} composer={{ insertText: action('insertText') } as any} />;
 
 export const DatePickerDefault: StoryFn<typeof DatePicker> = () => (
 	<DatePicker value={new Date('2025-07-25')} onChange={action('date-change')} />

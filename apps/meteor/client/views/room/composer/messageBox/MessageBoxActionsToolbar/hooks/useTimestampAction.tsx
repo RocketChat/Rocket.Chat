@@ -3,7 +3,7 @@ import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { TimestampPicker } from '../../../../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker';
+import { TimestampPickerModal } from '../../../../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker/TimestampPickerModal';
 import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 
 export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMenuItemProps | undefined => {
@@ -18,7 +18,7 @@ export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMe
 			return;
 		}
 
-		setModal(<TimestampPicker onClose={() => setModal(null)} composer={composer} />);
+		setModal(<TimestampPickerModal onClose={() => setModal(null)} composer={composer} />);
 	};
 
 	return {
