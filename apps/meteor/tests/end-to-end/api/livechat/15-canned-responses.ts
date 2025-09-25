@@ -254,7 +254,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should fail if _id is not on the request', async () => {
 			await updatePermission('remove-canned-responses', ['livechat-agent', 'livechat-monitor', 'livechat-manager', 'admin']);
-			return request.delete(api('canned-responses')).set(credentials).expect(400);
+			return request.delete(api('canned-responses')).set(credentials).expect(404);
 		});
 		it('should delete a canned response', async () => {
 			const response = await createCannedResponse();
