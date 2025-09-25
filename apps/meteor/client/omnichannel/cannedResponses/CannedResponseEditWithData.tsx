@@ -33,7 +33,7 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {
-		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} />;
+		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} onDelete={handleDelete} />;
 	}
 
 	return <CannedResponseEdit cannedResponseData={data?.cannedResponse} onDelete={handleDelete} />;
