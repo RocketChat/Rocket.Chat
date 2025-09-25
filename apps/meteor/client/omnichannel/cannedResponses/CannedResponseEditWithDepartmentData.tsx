@@ -13,7 +13,6 @@ const CannedResponseEditWithDepartmentData = ({ cannedResponseData }: { cannedRe
 	const departmentId = useMemo(() => cannedResponseData?.departmentId, [cannedResponseData]) as string;
 
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });
-
 	const {
 		data: departmentData,
 		isPending,
