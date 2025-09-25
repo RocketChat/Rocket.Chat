@@ -51,13 +51,13 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
 		await this.findOption(name).click();
-		await this.contextualBar.click({ position: { x: 0, y: 0 } });
+		await this.inputDepartments.click();
 	}
 
 	async selectMonitor(option: string) {
 		await this.inputMonitors.click();
 		await this.findOption(option).click();
-		await this.contextualBar.click({ position: { x: 0, y: 0 } });
+		await this.inputMonitors.click();
 	}
 
 	async selectVisibility(option: string) {
