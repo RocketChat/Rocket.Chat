@@ -5,7 +5,9 @@ import { API } from '../../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
+	isPOSTLivechatMonitorRemoveRequest,
 	isPOSTLivechatMonitorSaveRequest,
+	POSTLivechatMonitorsRemoveSuccessResponse,
 	POSTLivechatMonitorsSaveSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -60,39 +62,73 @@ API.v1.addRoute(
 	},
 );
 
-const livechatMonitorsEndpoints = API.v1.post(
-	'livechat/monitors.save',
-	{
-		response: {
-			200: POSTLivechatMonitorsSaveSuccessResponse,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
+const livechatMonitorsEndpoints = API.v1
+	.post(
+		'livechat/monitors.save',
+		{
+			response: {
+				200: POSTLivechatMonitorsSaveSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-livechat-monitors'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatMonitorSaveRequest,
 		},
-		authRequired: true,
-		permissionsRequired: ['manage-livechat-monitors'],
-		license: ['livechat-enterprise'],
-		body: isPOSTLivechatMonitorSaveRequest,
-	},
-	async function action() {
-		const { username } = this.bodyParams;
+		async function action() {
+			const { username } = this.bodyParams;
 
-		try {
-			const result = await LivechatEnterprise.addMonitor(username);
-			if (!result) {
+			try {
+				const result = await LivechatEnterprise.addMonitor(username);
+				if (!result) {
+					return API.v1.failure('error-adding-monitor');
+				}
+
+				return API.v1.success(result);
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
 				return API.v1.failure('error-adding-monitor');
 			}
+		},
+	)
+	.post(
+		'livechat/monitors.remove',
+		{
+			response: {
+				200: POSTLivechatMonitorsRemoveSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-livechat-monitors'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatMonitorRemoveRequest,
+		},
+		async function action() {
+			const { username } = this.bodyParams;
 
-			return API.v1.success(result);
-		} catch (error: unknown) {
-			if (error instanceof Meteor.Error) {
-				return API.v1.failure(error.reason);
+			try {
+				const result = await LivechatEnterprise.removeMonitor(username);
+				if (!result) {
+					return API.v1.failure('error-removing-monitor');
+				}
+
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
+				return API.v1.failure('error-removing-monitor');
 			}
-
-			return API.v1.failure('error-adding-monitor');
-		}
-	},
-);
+		},
+	);
 
 type LivechatMonitorsEndpoints = ExtractRoutesFromAPI<typeof livechatMonitorsEndpoints>;
 

@@ -545,6 +545,33 @@ const POSTLivechatMonitorsSaveSuccessSchema = {
 
 export const POSTLivechatMonitorsSaveSuccessResponse = ajv.compile<POSTLivechatMonitorsSaveSuccess>(POSTLivechatMonitorsSaveSuccessSchema);
 
+type POSTLivechatMonitorRemoveRequest = {
+	username: string;
+};
+
+const POSTLivechatMonitorRemoveRequestSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatMonitorRemoveRequest = ajv.compile<POSTLivechatMonitorRemoveRequest>(POSTLivechatMonitorRemoveRequestSchema);
+
+const POSTLivechatMonitorsRemoveSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatMonitorsRemoveSuccessResponse = ajv.compile<void>(POSTLivechatMonitorsRemoveSuccessSchema);
+
 type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
