@@ -170,7 +170,7 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='assertive' data-qa-id='manage-monitors-table'>
+					<GenericTable aria-busy={isLoading} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (

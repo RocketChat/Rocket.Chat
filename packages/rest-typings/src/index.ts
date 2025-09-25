@@ -16,7 +16,6 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
-import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
@@ -60,7 +59,6 @@ export interface Endpoints
 		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
-		DnsEndpoints,
 		DirectoryEndpoint,
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
@@ -249,7 +247,6 @@ export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
 export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
-export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';

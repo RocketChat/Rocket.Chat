@@ -7,7 +7,7 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
@@ -24,7 +24,6 @@ export interface ICreateRoomParams {
 	readOnly?: boolean;
 	extraData?: Partial<ICreateRoomExtraData>;
 	options?: ICreateRoomOptions;
-	sidepanel?: IRoom['sidepanel'];
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;

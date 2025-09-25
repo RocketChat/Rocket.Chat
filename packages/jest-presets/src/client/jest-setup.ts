@@ -65,5 +65,5 @@ globalThis.IntersectionObserver = class IntersectionObserver {
 	}
 };
 
-globalThis.TextEncoder = TextEncoder;
+globalThis.TextEncoder = TextEncoder as any;
 globalThis.TextDecoder = TextDecoder as any;

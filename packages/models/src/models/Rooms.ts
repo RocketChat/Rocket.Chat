@@ -301,7 +301,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: ['c', 'p'],
 			},
-			name: nameRegex,
+			$and: [{ $or: [{ name: nameRegex }, { fname: nameRegex }] }, { federated: { $ne: true } }, { archived: { $ne: true } }],
 			$or: [
 				{
 					teamId: {
@@ -318,7 +318,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			],
 			prid: { $exists: false },
-			$and: [{ federated: { $ne: true } }, { archived: { $ne: true } }],
 		};
 
 		return this.find(query, options);
@@ -674,10 +673,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { name } });
-	}
-
-	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { sidepanel } });
 	}
 
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {

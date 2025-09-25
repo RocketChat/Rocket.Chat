@@ -34,7 +34,6 @@ const statusTranslations = {
 };
 
 export default {
-	title: 'Components/AppInstances',
 	component: AppInstances,
 } satisfies Meta<typeof AppInstances>;
 

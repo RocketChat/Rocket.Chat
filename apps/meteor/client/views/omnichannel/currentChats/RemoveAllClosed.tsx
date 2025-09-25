@@ -16,7 +16,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, hasCustomFiel
 	const menuOptions = {
 		clearFilters: {
 			label: (
-				<Box data-qa='current-chats-options-clearFilters'>
+				<Box>
 					<Icon name='refresh' size='x16' marginInlineEnd={4} />
 					{t('Clear_filters')}
 				</Box>
@@ -26,7 +26,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, hasCustomFiel
 		...(canRemove && {
 			removeClosed: {
 				label: (
-					<Box color='status-font-on-danger' data-qa='current-chats-options-removeAllClosed'>
+					<Box color='status-font-on-danger'>
 						<Icon name='trash' size='x16' marginInlineEnd={4} />
 						{t('Delete_all_closed_chats')}
 					</Box>
@@ -38,7 +38,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, hasCustomFiel
 			hasCustomFields && {
 				customFields: {
 					label: (
-						<Box data-qa='current-chats-options-customFields'>
+						<Box>
 							<Icon name='magnifier' size='x16' marginInlineEnd={4} />
 							{t('Custom_Fields')}
 						</Box>
@@ -47,9 +47,7 @@ const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, hasCustomFiel
 				},
 			}),
 	};
-	return (
-		<Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' data-qa='current-chats-options' {...props} />
-	);
+	return <Menu alignSelf='flex-end' small={false} options={menuOptions} placement='bottom-start' {...props} />;
 };
 
 export default RemoveAllClosed;

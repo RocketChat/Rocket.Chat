@@ -27,7 +27,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			cancelText={t('Do_It_Later')}
 			confirmText={t('I_Saved_My_Password')}
 			variant='warning'
-			title={t('Save_your_encryption_password')}
+			title={t('Save_your_new_E2EE_password')}
 			annotation={t('You_can_do_from_account_preferences')}
 		>
 			<p>

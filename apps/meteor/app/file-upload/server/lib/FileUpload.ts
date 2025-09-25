@@ -589,6 +589,27 @@ export const FileUpload = {
 		res.end();
 	},
 
+	respondWithRedirectUrlInfo(
+		redirectUrl: string | false,
+		file: IUpload,
+		_req: http.IncomingMessage,
+		res: http.ServerResponse,
+		expiresInSeconds?: number | null,
+	) {
+		res.setHeader('Content-Type', 'application/json');
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+		res.writeHead(200);
+		res.end(
+			JSON.stringify({
+				redirectUrl,
+				name: file.name,
+				type: file.type,
+				size: file.size,
+				...(expiresInSeconds && { expires: new Date(Date.now() + expiresInSeconds * 1000).toISOString() }),
+			}),
+		);
+	},
+
 	proxyFile(
 		fileName: string,
 		fileUrl: string,

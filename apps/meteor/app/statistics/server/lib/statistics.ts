@@ -39,7 +39,6 @@ import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
@@ -353,14 +352,6 @@ export const statistics = {
 			statistics.totalDiscussionsMessages +
 			statistics.totalDirectMessages +
 			statistics.totalLivechatMessages;
-
-		// Federation statistics
-		statsPms.push(
-			federationGetStatistics().then((federationOverviewData) => {
-				statistics.federatedServers = federationOverviewData.numberOfServers;
-				statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
-			}),
-		);
 
 		statistics.lastLogin = (await Users.getLastLogin())?.toString() || '';
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();

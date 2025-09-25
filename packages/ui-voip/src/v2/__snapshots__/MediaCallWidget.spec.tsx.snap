@@ -3,8 +3,13 @@
 exports[`renders Calling without crashing 1`] = `
 <body>
   <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
     <article
-      class="rcx-css-acl0j"
+      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1ltrbpz"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -21,6 +26,7 @@ exports[`renders Calling without crashing 1`] = `
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-15wnn68"
+          id="rcx-media-call-widget-title"
         >
           Calling...
         </h3>
@@ -49,6 +55,7 @@ exports[`renders Calling without crashing 1`] = `
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
+          id="rcx-media-call-widget-caller-info"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
@@ -67,7 +74,7 @@ exports[`renders Calling without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1tbw8nv"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1k5oh73"
+              class="rcx-box rcx-box--full rcx-css-ca8vtn"
             >
               John Doe
             </div>
@@ -106,6 +113,10 @@ exports[`renders Calling without crashing 1`] = `
         </div>
       </footer>
     </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
   </div>
 </body>
 `;
@@ -113,8 +124,13 @@ exports[`renders Calling without crashing 1`] = `
 exports[`renders IncomingCall without crashing 1`] = `
 <body>
   <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
     <article
-      class="rcx-css-acl0j"
+      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1ltrbpz"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -131,6 +147,7 @@ exports[`renders IncomingCall without crashing 1`] = `
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-15wnn68"
+          id="rcx-media-call-widget-title"
         >
           Incoming Call...
         </h3>
@@ -159,6 +176,7 @@ exports[`renders IncomingCall without crashing 1`] = `
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
+          id="rcx-media-call-widget-caller-info"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
@@ -177,7 +195,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1tbw8nv"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1k5oh73"
+              class="rcx-box rcx-box--full rcx-css-ca8vtn"
             >
               John Doe
             </div>
@@ -233,6 +251,10 @@ exports[`renders IncomingCall without crashing 1`] = `
         </div>
       </footer>
     </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
   </div>
 </body>
 `;
@@ -267,8 +289,13 @@ exports[`renders MediaCallWidgetManualTesting without crashing 1`] = `
 exports[`renders NewCall without crashing 1`] = `
 <body>
   <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
     <article
-      class="rcx-css-acl0j"
+      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1ltrbpz"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -285,17 +312,18 @@ exports[`renders NewCall without crashing 1`] = `
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-15wnn68"
+          id="rcx-media-call-widget-title"
         >
-          New Call
+          New_call
         </h3>
         <div
           class="rcx-box rcx-box--full rcx-css-ws1yyr"
         >
           <button
-            aria-label="close"
+            aria-label="Close"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
-            label="close"
-            title="close"
+            label="Close"
+            title="Close"
             type="button"
           >
             <i
@@ -324,6 +352,7 @@ exports[`renders NewCall without crashing 1`] = `
                 role="group"
               >
                 <input
+                  aria-invalid="false"
                   aria-labelledby=":r0:"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
                   value=""
@@ -348,6 +377,42 @@ exports[`renders NewCall without crashing 1`] = `
             Enter username or number
           </span>
         </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-cnkcl9"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-omrq7i"
+            id="rcx-media-call-widget-caller-info"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              >
+                <img
+                  alt=""
+                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+                />
+              </figure>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-ca8vtn"
+              >
+                John Doe
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              >
+                1234567890
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       <footer
         class="rcx-box rcx-box--full rcx-css-184ke9m"
@@ -356,20 +421,6 @@ exports[`renders NewCall without crashing 1`] = `
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
-          <button
-            aria-label="dialpad"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-irxdij"
-            label="dialpad"
-            title="dialpad"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-dialpad rcx-icon rcx-css-xb06ut"
-            >
-              
-            </i>
-          </button>
           <button
             aria-label="customize"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
@@ -387,7 +438,6 @@ exports[`renders NewCall without crashing 1`] = `
           </button>
           <button
             class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
-            name="phone"
             type="button"
           >
             <span
@@ -405,6 +455,10 @@ exports[`renders NewCall without crashing 1`] = `
         </div>
       </footer>
     </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
   </div>
 </body>
 `;
@@ -412,8 +466,13 @@ exports[`renders NewCall without crashing 1`] = `
 exports[`renders OngoingCall without crashing 1`] = `
 <body>
   <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
     <article
-      class="rcx-css-acl0j"
+      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-1ltrbpz"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -430,6 +489,7 @@ exports[`renders OngoingCall without crashing 1`] = `
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-15wnn68"
+          id="rcx-media-call-widget-title"
         >
           <time
             datetime="PT0H0M0S"
@@ -464,6 +524,7 @@ exports[`renders OngoingCall without crashing 1`] = `
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
+          id="rcx-media-call-widget-caller-info"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
@@ -482,7 +543,7 @@ exports[`renders OngoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1tbw8nv"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1k5oh73"
+              class="rcx-box rcx-box--full rcx-css-ca8vtn"
             >
               John Doe
             </div>
@@ -502,10 +563,10 @@ exports[`renders OngoingCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-label="dialpad"
+            aria-label="Dialpad"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="dialpad"
-            title="dialpad"
+            label="Dialpad"
+            title="Open_dialpad"
             type="button"
           >
             <i
@@ -516,10 +577,10 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="mute"
+            aria-label="Mute"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="mute"
-            title="mute"
+            label="Mute"
+            title="Mute"
             type="button"
           >
             <i
@@ -530,10 +591,10 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="hold"
+            aria-label="Hold"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="hold"
-            title="hold"
+            label="Hold"
+            title="Hold"
             type="button"
           >
             <i
@@ -544,10 +605,10 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="forward"
+            aria-label="Forward"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="forward"
-            title="forward"
+            label="Forward"
+            title="Forward"
             type="button"
           >
             <i
@@ -558,22 +619,26 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="phone"
+            aria-label="Voice_call__user__hangup"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="phone"
-            title="phone"
+            label="Voice_call__user__hangup"
+            title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-xb06ut"
+              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
-              
+              
             </i>
           </button>
         </div>
       </footer>
     </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
   </div>
 </body>
 `;
