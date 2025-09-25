@@ -427,22 +427,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			let lastEventId: { eventId: string } | null = null;
 
-			for await (const file of message.files) {
-				const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain, matrixRoomId);
+			// TODO handle multiple files, we currently save thumbs on files[], we need to flag them as thumb so we can ignore them here
+			const [file] = message.files;
 
-				const msgtype = this.getMatrixMessageType(file.type);
-				const fileContent = {
-					body: file.name,
-					msgtype,
-					url: mxcUri,
-					info: {
-						mimetype: file.type,
-						size: file.size,
-					},
-				};
+			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain, matrixRoomId);
 
-				lastEventId = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
-			}
+			const msgtype = this.getMatrixMessageType(file.type);
+			const fileContent = {
+				body: file.name,
+				msgtype,
+				url: mxcUri,
+				info: {
+					mimetype: file.type,
+					size: file.size,
+				},
+			};
+
+			lastEventId = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
 
 			return lastEventId;
 		} catch (error) {
