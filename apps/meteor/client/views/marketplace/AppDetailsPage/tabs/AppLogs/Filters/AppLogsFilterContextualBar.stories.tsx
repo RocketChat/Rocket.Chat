@@ -33,7 +33,7 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar height='100vh'>{fn()}</Contextualbar>
+					<Contextualbar height='100vh'> {fn()}</Contextualbar>
 				</FormProvider>
 			);
 		},
