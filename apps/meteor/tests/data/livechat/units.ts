@@ -4,17 +4,18 @@ import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { methodCall, credentials, request, api } from '../api-data';
 import type { DummyResponse } from './utils';
 
-export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
+export const createMonitor = async (username: string): Promise<{ _id: string; username: string; role: string[] }> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post('/v1/livechat/monitors.save')
+			.post(api('livechat/monitors.save'))
 			.set(credentials)
 			.send({ username })
-			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+			.end((err: Error, res: DummyResponse<{ _id: string; username: string; role: string[] }, 'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+
+				resolve(res.body);
 			});
 	});
 };
