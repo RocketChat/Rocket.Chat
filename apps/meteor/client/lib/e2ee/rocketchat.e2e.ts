@@ -7,7 +7,6 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 
@@ -443,7 +442,7 @@ class E2E extends Emitter {
 		this.publicKey = public_key;
 
 		try {
-			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			this.privateKey = await importRSAKey(JSON.parse(private_key), ['decrypt']);
 
 			Accounts.storageLocation.setItem('private_key', private_key);
 		} catch (error) {
