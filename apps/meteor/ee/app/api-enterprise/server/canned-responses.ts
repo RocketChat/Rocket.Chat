@@ -112,7 +112,8 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: { GET: ['view-canned-responses'], DELETE: ['remove-canned-responses'] },
-		license: ['canned-responses'] },
+		license: ['canned-responses'] ,
+	},
 	{
 		async get() {
 			const { _id } = this.urlParams;

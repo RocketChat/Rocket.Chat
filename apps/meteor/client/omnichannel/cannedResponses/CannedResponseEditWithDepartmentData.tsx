@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponseEdit from './CannedResponseEdit';
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { FormSkeleton } from '../../components/Skeleton';
 import { omnichannelQueryKeys } from '../../lib/queryKeys';
 
@@ -13,6 +14,8 @@ const CannedResponseEditWithDepartmentData = ({ cannedResponseData }: { cannedRe
 	const departmentId = useMemo(() => cannedResponseData?.departmentId, [cannedResponseData]) as string;
 
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });
+	const handleDelete = useRemoveCannedResponse(cannedResponseData._id);
+
 	const {
 		data: departmentData,
 		isPending,
@@ -39,7 +42,7 @@ const CannedResponseEditWithDepartmentData = ({ cannedResponseData }: { cannedRe
 		);
 	}
 
-	return <CannedResponseEdit cannedResponseData={cannedResponseData} departmentData={departmentData.department} />;
+	return <CannedResponseEdit cannedResponseData={cannedResponseData} departmentData={departmentData.department} onDelete={handleDelete} />;
 };
 
 export default CannedResponseEditWithDepartmentData;

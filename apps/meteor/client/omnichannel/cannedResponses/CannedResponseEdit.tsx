@@ -20,7 +20,7 @@ export type CannedResponseEditFormData = {
 type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
 	departmentData?: Serialized<ILivechatDepartment>;
-	onDelete: () => void;
+	onDelete?: () => void;
 };
 
 const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedResponse> | undefined) => ({
