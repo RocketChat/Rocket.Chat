@@ -1517,8 +1517,6 @@
   "FEDERATION_Domain": "Domini",
   "FEDERATION_Domain_Alert": "No canvieu això després d’habilitar la funció, encara no podem manejar els canvis de domini.",
   "FEDERATION_Domain_Description": "Afegiu el domini al qual ha d'estar vinculat aquest servidor, per exemple: @rocket.chat",
-  "FEDERATION_Enabled": "IIntenteu integrar el suport de la federació.",
-  "FEDERATION_Enabled_Alert": "La federació de suport està en progrés. El seu ús en un entorn de producció no es recomana de moment.",
   "FEDERATION_Public_Key": "Clau pública",
   "FEDERATION_Public_Key_Description": "Aquesta és la clau que necessita per compartir amb els seus companys.",
   "FEDERATION_Status": "Estat",

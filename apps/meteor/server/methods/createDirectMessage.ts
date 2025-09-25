@@ -40,7 +40,9 @@ export async function createDirectMessage(
 	}
 
 	const users = await Promise.all(usernames.filter((username) => username !== me.username));
+	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
+	const federated = false;
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
@@ -69,7 +71,6 @@ export async function createDirectMessage(
 		});
 	}
 
-	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
@@ -82,7 +83,18 @@ export async function createDirectMessage(
 		_id: rid,
 		inserted,
 		...room
-	} = await createRoom<'d'>('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
+	} = await createRoom<'d'>(
+		'd',
+		undefined,
+		undefined,
+		roomUsers as IUser[],
+		false,
+		undefined,
+		{
+			federated,
+		},
+		options,
+	);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type
