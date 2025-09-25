@@ -1,9 +1,4 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
-
-import { findMonitors, findMonitorByUsername } from './lib/monitors';
-import { API } from '../../../../../app/api/server';
-import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import {
 	isPOSTLivechatMonitorSaveRequest,
 	POSTLivechatMonitorsSaveSuccessResponse,
@@ -11,6 +6,11 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+
+import { findMonitors, findMonitorByUsername } from './lib/monitors';
+import { API } from '../../../../../app/api/server';
+import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 API.v1.addRoute(
