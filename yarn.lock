@@ -7559,7 +7559,7 @@ __metadata:
     jest: "npm:~30.0.0"
     marked: "npm:^16.1.2"
     mongodb: "npm:6.10.0"
-    pino: "npm:8.21.0"
+    pino: "npm:^9.11.0"
     pino-pretty: "npm:^7.6.1"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:^2.17.0"
@@ -7607,14 +7607,14 @@ __metadata:
     "@types/express": "npm:^4.17.17"
     eslint: "npm:~8.45.0"
     hono: "npm:^3.11.0"
-    pino: "npm:^8.16.0"
+    pino: "npm:^9.11.0"
     pino-pretty: "npm:^7.6.1"
     polka: "npm:^0.5.2"
     reflect-metadata: "npm:^0.2.2"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
     typescript: "npm:^5.3.0"
-    zod: "npm:^3.24.1"
+    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
@@ -29488,7 +29488,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:8.21.0, pino@npm:^8.16.0, pino@npm:^8.21.0":
+"pino@npm:^8.21.0":
   version: 8.21.0
   resolution: "pino@npm:8.21.0"
   dependencies:

@@ -32,12 +32,12 @@
 		"@rocket.chat/models": "workspace:*",
 		"@rocket.chat/network-broker": "workspace:^",
 		"hono": "^3.11.0",
-		"pino": "^8.16.0",
+		"pino": "^9.11.0",
 		"polka": "^0.5.2",
 		"reflect-metadata": "^0.2.2",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3",
-		"zod": "^3.24.1"
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
