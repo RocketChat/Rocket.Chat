@@ -37,7 +37,7 @@ export const removeCannedResponse = async (uid: string, _id: string): Promise<vo
 
 Meteor.methods<ServerMethods>({
 	async removeCannedResponse(_id) {
-		methodDeprecationLogger.method('removeCannedResponse', '8.0.0', 'DELETE /v1/canned-responses');
+		methodDeprecationLogger.method('removeCannedResponse', '8.0.0', 'DELETE /v1/canned-responses/:_id');
 		const uid = Meteor.userId();
 
 		if (!uid) {
