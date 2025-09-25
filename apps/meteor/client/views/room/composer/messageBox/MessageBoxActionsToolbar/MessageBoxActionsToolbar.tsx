@@ -154,7 +154,7 @@ const MessageBoxActionsToolbar = ({
 				sections={[
 					{ title: t('Create_new'), items: createNewFiltered },
 					{ title: t('Share'), items: shareFiltered },
-					{ title: t('Insert'), items: insertFiltered },
+					...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
 					...messageBoxActions,
 				]}
 				title={t('More_actions')}
