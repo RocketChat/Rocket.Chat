@@ -2,6 +2,8 @@ import { eventIdSchema, roomIdSchema, userIdSchema, type HomeserverServices, typ
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { canAccessResourceMiddleware, isAuthenticatedMiddleware } from '../middlewares';
+
 const UsernameSchema = {
 	type: 'string',
 	pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
@@ -350,9 +352,11 @@ const EventAuthResponseSchema = {
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
 export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
-	const { profile } = services;
+	const { profile, federationAuth } = services;
 
 	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
+		.use(canAccessResourceMiddleware(federationAuth))
 		.get(
 			'/v1/query/profile',
 			{

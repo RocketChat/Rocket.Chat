@@ -6,7 +6,7 @@ import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
-import { canAccessMedia } from '../middlewares';
+import { isAuthenticatedMiddleware, canAccessResourceMiddleware } from '../middlewares';
 
 const MediaDownloadParamsSchema = {
 	type: 'object',
@@ -75,79 +75,76 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 
 export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
 	const { config, federationAuth } = homeserverServices;
-	const router = new Router('/federation');
-
-	router.get(
-		'/v1/media/download/:mediaId',
-		{
-			params: isMediaDownloadParamsProps,
-			response: {
-				200: isBufferResponseProps,
-				401: isErrorResponseProps,
-				403: isErrorResponseProps,
-				404: isErrorResponseProps,
-				429: isErrorResponseProps,
-				500: isErrorResponseProps,
+	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
+		.use(canAccessResourceMiddleware(federationAuth))
+		.get(
+			'/v1/media/download/:mediaId',
+			{
+				params: isMediaDownloadParamsProps,
+				response: {
+					200: isBufferResponseProps,
+					401: isErrorResponseProps,
+					403: isErrorResponseProps,
+					404: isErrorResponseProps,
+					429: isErrorResponseProps,
+					500: isErrorResponseProps,
+				},
+				tags: ['Federation', 'Media'],
 			},
-			tags: ['Federation', 'Media'],
-		},
-		canAccessMedia(federationAuth),
-		async (c) => {
-			try {
-				const { mediaId } = c.req.param();
-				const { serverName } = config;
+			async (c) => {
+				try {
+					const { mediaId } = c.req.param();
+					const { serverName } = config;
 
-				// TODO: Add file streaming support
-				const result = await getMediaFile(mediaId, serverName);
-				if (!result) {
+					// TODO: Add file streaming support
+					const result = await getMediaFile(mediaId, serverName);
+					if (!result) {
+						return {
+							statusCode: 404,
+							body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
+						};
+					}
+
+					const { file, buffer } = result;
+
+					const mimeType = file.type || 'application/octet-stream';
+					const fileName = file.name || mediaId;
+
+					const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
+
 					return {
-						statusCode: 404,
-						body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
+						statusCode: 200,
+						headers: {
+							...SECURITY_HEADERS,
+							'content-type': multipartResponse.contentType,
+							'content-length': String(multipartResponse.body.length),
+						},
+						body: multipartResponse.body,
+					};
+				} catch (error) {
+					return {
+						statusCode: 500,
+						body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
 					};
 				}
-
-				const { file, buffer } = result;
-
-				const mimeType = file.type || 'application/octet-stream';
-				const fileName = file.name || mediaId;
-
-				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
-
-				return {
-					statusCode: 200,
-					headers: {
-						...SECURITY_HEADERS,
-						'content-type': multipartResponse.contentType,
-						'content-length': String(multipartResponse.body.length),
-					},
-					body: multipartResponse.body,
-				};
-			} catch (error) {
-				return {
-					statusCode: 500,
-					body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
-				};
-			}
-		},
-	);
-
-	router.get(
-		'/v1/media/thumbnail/:mediaId',
-		{
-			params: isMediaDownloadParamsProps,
-			response: {
-				404: isErrorResponseProps,
 			},
-			tags: ['Federation', 'Media'],
-		},
-		async () => ({
-			statusCode: 404,
-			body: {
-				errcode: 'M_UNRECOGNIZED',
-				error: 'This endpoint is not implemented on the homeserver side',
+		)
+		.get(
+			'/v1/media/thumbnail/:mediaId',
+			{
+				params: isMediaDownloadParamsProps,
+				response: {
+					404: isErrorResponseProps,
+				},
+				tags: ['Federation', 'Media'],
 			},
-		}),
-	);
-
-	return router;
+			async () => ({
+				statusCode: 404,
+				body: {
+					errcode: 'M_UNRECOGNIZED',
+					error: 'This endpoint is not implemented on the homeserver side',
+				},
+			}),
+		);
 };

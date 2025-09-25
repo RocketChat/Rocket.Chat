@@ -2,6 +2,8 @@ import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { isAuthenticatedMiddleware, canAccessResourceMiddleware } from '../middlewares';
+
 const UsernameSchema = {
 	type: 'string',
 	pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
@@ -222,29 +224,32 @@ const SendJoinResponseSchema = {
 const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 
 export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
-	const { sendJoin } = services;
+	const { sendJoin, federationAuth } = services;
 
-	return new Router('/federation').put(
-		'/v2/send_join/:roomId/:stateKey',
-		{
-			params: isSendJoinParamsProps,
-			body: isSendJoinEventProps,
-			response: {
-				200: isSendJoinResponseProps,
+	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
+		.use(canAccessResourceMiddleware(federationAuth))
+		.put(
+			'/v2/send_join/:roomId/:stateKey',
+			{
+				params: isSendJoinParamsProps,
+				body: isSendJoinEventProps,
+				response: {
+					200: isSendJoinResponseProps,
+				},
+				tags: ['Federation'],
+				license: ['federation'],
 			},
-			tags: ['Federation'],
-			license: ['federation'],
-		},
-		async (c) => {
-			const { roomId, stateKey } = c.req.param();
-			const body = await c.req.json();
+			async (c) => {
+				const { roomId, stateKey } = c.req.param();
+				const body = await c.req.json();
 
-			const response = await sendJoin.sendJoin(roomId, stateKey as EventID, body);
+				const response = await sendJoin.sendJoin(roomId, stateKey as EventID, body);
 
-			return {
-				body: response,
-				statusCode: 200,
-			};
-		},
-	);
+				return {
+					body: response,
+					statusCode: 200,
+				};
+			},
+		);
 };
