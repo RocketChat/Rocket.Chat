@@ -184,14 +184,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		matrix
 			.use(isFederationEnabledMiddleware)
 			.use(isLicenseEnabledMiddleware)
+			.use(getKeyServerRoutes(this.homeserverServices))
+			.use(getFederationVersionsRoutes(this.homeserverServices))
 			.use(isFederationDomainAllowedMiddleware)
 			.use(getMatrixInviteRoutes(this.homeserverServices))
 			.use(getMatrixProfilesRoutes(this.homeserverServices))
 			.use(getMatrixRoomsRoutes(this.homeserverServices))
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
-			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes(this.homeserverServices))
 			.use(getMatrixMediaRoutes(this.homeserverServices));
 
 		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
