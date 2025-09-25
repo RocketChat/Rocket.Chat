@@ -21,6 +21,7 @@ import { useCallSounds } from './useCallSounds';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
+import { isValidTone, useTonePlayer } from './useTonePlayer';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
@@ -40,7 +41,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
-	const { audioInput } = useSelectedDevices() || {};
+	const { audioInput, audioOutput } = useSelectedDevices() || {};
 
 	const requestDevice = useDevicePermissionPrompt2();
 
@@ -178,8 +179,14 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
 	};
 
+	const [playTone, toneRefCallback] = useTonePlayer(audioOutput?.id);
+
 	const onTone = (tone: string) => {
 		session.sendTone(tone);
+		if (isValidTone(tone)) {
+			console.log('playing tone', tone);
+			playTone(tone as any);
+		}
 	};
 
 	const onEndCall = () => {
@@ -246,6 +253,12 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		<MediaCallContext.Provider value={contextValue}>
 			{createPortal(
 				<audio ref={remoteStreamRefCallback}>
+					<track kind='captions' />
+				</audio>,
+				document.body,
+			)}
+			{createPortal(
+				<audio ref={toneRefCallback}>
 					<track kind='captions' />
 				</audio>,
 				document.body,
