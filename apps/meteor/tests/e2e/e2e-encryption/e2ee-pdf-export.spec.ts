@@ -5,7 +5,9 @@ import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
 import { ExportMessagesTab } from '../page-objects/fragments/export-messages-tab';
 import { LoginPage } from '../page-objects/login';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
+import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -18,6 +20,7 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE PDF Export', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -26,6 +29,10 @@ test.describe('E2EE PDF Export', () => {
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
 		// Note: Using admin user, so no need for userE2EE cleanup
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test.beforeEach(async ({ api, page }) => {
@@ -48,6 +55,8 @@ test.describe('E2EE PDF Export', () => {
 		const channelName = faker.string.uuid();
 
 		await sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -64,6 +73,8 @@ test.describe('E2EE PDF Export', () => {
 		const channelName = faker.string.uuid();
 
 		await sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 

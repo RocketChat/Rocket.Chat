@@ -6,7 +6,9 @@ import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
+import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -14,11 +16,17 @@ const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 preserveSettings(settingsList);
 
 test.describe('E2EE Encryption and Decryption - Basic Features', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
+
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test.beforeEach(async ({ api, page }) => {
@@ -44,6 +52,8 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await setupE2EEPassword(page);
 
 		await sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -85,6 +95,8 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		// Create an encrypted channel
 		await sidenav.createEncryptedChannel(channelName);
+		const roomId = await resolvePrivateRoomId(page, channelName);
+		createdChannels.push({ name: channelName, id: roomId });
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();

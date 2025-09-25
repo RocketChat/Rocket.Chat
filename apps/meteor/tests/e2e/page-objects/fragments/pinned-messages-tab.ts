@@ -5,14 +5,11 @@ import { RoomToolbar } from './room-toolbar';
 import { expect } from '../../utils/test';
 
 export class PinnedMessagesTab {
-	private readonly page: Page;
-
 	private readonly root: Locator;
 
 	private readonly roomToolbar: RoomToolbar;
 
 	constructor(page: Page) {
-		this.page = page;
 		this.root = page.getByRole('dialog', { name: 'Pinned Messages' });
 		this.roomToolbar = new RoomToolbar(page);
 	}

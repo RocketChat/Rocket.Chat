@@ -3,7 +3,9 @@ import { faker } from '@faker-js/faker';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
+import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable'];
@@ -11,7 +13,7 @@ const settingsList = ['E2E_Enable'];
 preserveSettings(settingsList);
 
 test.describe('E2EE Thread Messages', () => {
-	const createdChannels: string[] = [];
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
 	let encryptedRoomPage: EncryptedRoomPage;
 	test.use({ storageState: Users.userE2EE.state });
@@ -27,7 +29,7 @@ test.describe('E2EE Thread Messages', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('expect create a private encrypted channel and send an encrypted thread message', async ({ page }) => {
@@ -35,7 +37,8 @@ test.describe('E2EE Thread Messages', () => {
 
 		await test.step('create encrypted channel', async () => {
 			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			createdChannels.push(channelName);
+			const roomId = await resolvePrivateRoomId(page, channelName);
+			createdChannels.push({ name: channelName, id: roomId });
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 		});

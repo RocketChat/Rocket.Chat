@@ -3,7 +3,9 @@ import { faker } from '@faker-js/faker';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
+import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -11,7 +13,7 @@ const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 preserveSettings(settingsList);
 
 test.describe('E2EE Channel Sidebar Integration', () => {
-	const createdChannels: string[] = [];
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
 	let enableEncryptionModal: EnableRoomEncryptionModal;
 
@@ -29,7 +31,7 @@ test.describe('E2EE Channel Sidebar Integration', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('expect create a private channel, send unencrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
@@ -48,7 +50,8 @@ test.describe('E2EE Channel Sidebar Integration', () => {
 			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 			await poHomeChannel.sidenav.btnCreate.click();
 			await poHomeChannel.content.waitForChannel();
-			createdChannels.push(channelName);
+			const roomId = await resolvePrivateRoomId(page, channelName);
+			createdChannels.push({ name: channelName, id: roomId });
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();

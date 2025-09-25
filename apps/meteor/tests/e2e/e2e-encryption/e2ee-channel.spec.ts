@@ -4,7 +4,9 @@ import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
+import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -12,7 +14,7 @@ const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 preserveSettings(settingsList);
 
 test.describe('E2EE Channel Basic Functionality', () => {
-	const createdChannels: string[] = [];
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
 	let encryptedRoomPage: EncryptedRoomPage;
 	let enableEncryptionModal: EnableRoomEncryptionModal;
@@ -34,7 +36,7 @@ test.describe('E2EE Channel Basic Functionality', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all(createdChannels.map((channelName) => api.post('/groups.delete', { roomName: channelName })));
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -42,7 +44,10 @@ test.describe('E2EE Channel Basic Functionality', () => {
 
 		await test.step('create encrypted channel', async () => {
 			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			createdChannels.push(channelName);
+			await poHomeChannel.content.waitForChannel();
+			const roomId = await resolvePrivateRoomId(page, channelName);
+
+			createdChannels.push({ name: channelName, id: roomId });
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 		});
@@ -89,8 +94,11 @@ test.describe('E2EE Channel Basic Functionality', () => {
 			await poHomeChannel.sidenav.openNewByLabel('Channel');
 			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 			await poHomeChannel.sidenav.btnCreate.click();
+
 			await poHomeChannel.content.waitForChannel();
-			createdChannels.push(channelName);
+			const roomId = await resolvePrivateRoomId(page, channelName);
+
+			createdChannels.push({ name: channelName, id: roomId ?? undefined });
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();
