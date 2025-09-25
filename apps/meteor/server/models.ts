@@ -45,6 +45,7 @@ import {
 	MatrixBridgedUserRaw,
 	MediaCallsRaw,
 	MediaCallChannelsRaw,
+	MediaCallChannelLogsRaw,
 	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
@@ -139,6 +140,7 @@ registerModel('IMatrixBridgedRoomModel', new MatrixBridgedRoomRaw(db));
 registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
 registerModel('IMediaCallsModel', new MediaCallsRaw(db));
 registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
+registerModel('IMediaCallChannelLogsModel', new MediaCallChannelLogsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
