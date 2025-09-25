@@ -19,6 +19,7 @@ import type { PersistenceBridge } from './PersistenceBridge';
 import type { RoleBridge } from './RoleBridge';
 import type { RoomBridge } from './RoomBridge';
 import type { SchedulerBridge } from './SchedulerBridge';
+import type { ServerEndpointsBridge } from './ServerEndpointsBridge';
 import type { ServerSettingBridge } from './ServerSettingBridge';
 import type { ThreadBridge } from './ThreadBridge';
 import type { UiInteractionBridge } from './UiInteractionBridge';
@@ -106,4 +107,9 @@ export abstract class AppBridges {
 	public abstract getRoleBridge(): RoleBridge;
 
 	public abstract getOutboundMessageBridge(): OutboundMessageBridge;
+
+	/**
+	 * Bridge to call internal REST API endpoints without HTTP
+	 */
+	public abstract getServerEndpointsBridge(): ServerEndpointsBridge;
 }

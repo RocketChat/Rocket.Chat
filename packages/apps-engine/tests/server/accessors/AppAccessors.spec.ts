@@ -129,6 +129,7 @@ export class AppAccessorsTestFixture {
 		Expect(appAccessors.environmentWriter).toEqual(this.mockAccessors.getEnvironmentWrite('testing'));
 		Expect(appAccessors.reader).toEqual(this.mockAccessors.getReader('testing'));
 		Expect(appAccessors.http).toEqual(this.mockAccessors.getHttp('testing'));
+		Expect(appAccessors.serverEndpoints).toEqual(this.mockAccessors.getServerEndpoints('testing'));
 		Expect(appAccessors.providedApiEndpoints).toEqual(this.mockApiManager.listApis('testing'));
 
 		this.mockApiManager.addApi('testing', TestData.getApi('app-accessor-api'));

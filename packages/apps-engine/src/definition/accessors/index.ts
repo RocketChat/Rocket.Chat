@@ -43,6 +43,7 @@ export * from './IServerSettingUpdater';
 export * from './ISettingRead';
 export * from './ISettingsExtend';
 export * from './ISettingUpdater';
+export * from './IServerEndpoints';
 export * from './ISlashCommandsExtend';
 export * from './ISlashCommandsModify';
 export * from './IUIController';

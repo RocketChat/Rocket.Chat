@@ -19,6 +19,7 @@ import { PersistenceBridge } from './PersistenceBridge';
 import { RoleBridge } from './RoleBridge';
 import { RoomBridge } from './RoomBridge';
 import { SchedulerBridge } from './SchedulerBridge';
+import { ServerEndpointsBridge, type IServerEndpointCallInfo, type IServerEndpointResponse } from './ServerEndpointsBridge';
 import { ServerSettingBridge } from './ServerSettingBridge';
 import { UiInteractionBridge } from './UiInteractionBridge';
 import { UploadBridge } from './UploadBridge';
@@ -53,4 +54,7 @@ export {
 	ModerationBridge,
 	RoleBridge,
 	OutboundMessageBridge,
+	ServerEndpointsBridge,
+	IServerEndpointCallInfo,
+	IServerEndpointResponse,
 };
