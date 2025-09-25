@@ -38,7 +38,7 @@ export class MatrixMediaService {
 		};
 	}
 
-	static async prepareLocalFileForMatrix(fileId: string, serverName: string): Promise<string> {
+	static async prepareLocalFileForMatrix(fileId: string, serverName: string, matrixRoomId: string): Promise<string> {
 		try {
 			const file = await Uploads.findOneById(fileId);
 			if (!file) {
@@ -53,6 +53,7 @@ export class MatrixMediaService {
 			const mxcUri = this.generateMXCUri(fileId, serverName);
 
 			await Uploads.setFederationInfo(fileId, {
+				mrid: matrixRoomId,
 				mxcUri,
 				serverName,
 				mediaId: fileId,
@@ -86,6 +87,7 @@ export class MatrixMediaService {
 
 	static async downloadAndStoreRemoteFile(
 		mxcUri: string,
+		matrixRoomId: string,
 		metadata: {
 			name: string;
 			size?: number;
@@ -131,6 +133,7 @@ export class MatrixMediaService {
 
 			await Uploads.setFederationInfo(uploadedFile._id, {
 				mxcUri,
+				mrid: matrixRoomId,
 				serverName: parts.serverName,
 				mediaId: parts.mediaId,
 			});

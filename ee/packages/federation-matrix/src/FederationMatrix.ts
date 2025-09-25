@@ -428,7 +428,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			let lastEventId: { eventId: string } | null = null;
 
 			for await (const file of message.files) {
-				const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
+				const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain, matrixRoomId);
 
 				const msgtype = this.getMatrixMessageType(file.type);
 				const fileContent = {

@@ -29,6 +29,7 @@ async function handleMediaMessage(
 	messageBody: string,
 	user: IUser,
 	room: IRoom,
+	matrixRoomId: string,
 	eventId: EventID,
 	tmid?: string,
 ): Promise<{
@@ -42,7 +43,7 @@ async function handleMediaMessage(
 	const mimeType = fileInfo?.mimetype;
 	const fileName = messageBody;
 
-	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(url, {
+	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(url, matrixRoomId, {
 		name: messageBody,
 		size: fileInfo?.size,
 		type: mimeType,
@@ -226,7 +227,17 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 
 			const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
 			if (isMediaMessage && content.url) {
-				const result = await handleMediaMessage(content.url, content.info, msgtype, messageBody, user, room, data.event_id, thread?.tmid);
+				const result = await handleMediaMessage(
+					content.url,
+					content.info,
+					msgtype,
+					messageBody,
+					user,
+					room,
+					data.room_id,
+					data.event_id,
+					thread?.tmid,
+				);
 				await Message.saveMessageFromFederation(result);
 			} else {
 				const formatted = toInternalMessageFormat({
