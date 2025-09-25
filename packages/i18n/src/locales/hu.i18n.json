@@ -4367,7 +4367,6 @@
   "VoIP_Server_Name": "Kiszolgáló neve",
   "VoIP_Server_Websocket_Path": "WebSocket URL-je",
   "VoIP_Server_Websocket_Port": "WebSocket portja",
-  "VoIP_TeamCollab_Enabled": "Engedélyezve",
   "VoIP_Toggle": "VoIP engedélyezése vagy letiltása",
   "Voice_Call": "Hanghívás",
   "Voip_Server_Configuration": "Asterisk WebSocket-kiszolgáló",

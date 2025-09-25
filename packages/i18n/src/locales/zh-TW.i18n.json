@@ -3803,7 +3803,6 @@
   "VoIP_Server_Name": "伺服器名稱",
   "VoIP_Server_Websocket_Path": "Websocket 路徑",
   "VoIP_Server_Websocket_Port": "Websocket 連接埠",
-  "VoIP_TeamCollab_Enabled": "已啟用",
   "Voice_Call": "語音通話",
   "Voip_Server_Configuration": "伺服器設定",
   "Voip_call_declined": "客服專員掛斷的通話",

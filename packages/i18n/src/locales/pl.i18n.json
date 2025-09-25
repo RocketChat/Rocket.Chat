@@ -4367,7 +4367,6 @@
   "VoIP_Server_Name": "Nazwa serwera",
   "VoIP_Server_Websocket_Path": "Ścieżka WebSocket",
   "VoIP_Server_Websocket_Port": "Port WebSocket",
-  "VoIP_TeamCollab_Enabled": "Włączone",
   "VoIP_Toggle": "Włączanie/wyłączanie VoIP",
   "Voice_Call": "Połączenie głosowe",
   "Voip_Server_Configuration": "Konfiguracja serwera",

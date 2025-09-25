@@ -7,7 +7,6 @@ import type { SeatCapProps } from './useSeatsCap';
 import AssignExtensionButton from './voip/AssignExtensionButton';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
-import { useVoipExtensionPermission } from './voip/hooks/useVoipExtensionPermission';
 
 type UsersPageHeaderContentProps = {
 	isSeatsCapExceeded: boolean;
@@ -19,7 +18,7 @@ const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeade
 	const router = useRouter();
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const canManageVoipExtension = usePermission('manage-voip-extensions');
 
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 	const openExternalLink = useExternalLink();

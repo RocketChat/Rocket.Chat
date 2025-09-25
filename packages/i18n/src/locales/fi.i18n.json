@@ -4642,7 +4642,6 @@
   "VoIP_Server_Name": "Palvelimen nimi",
   "VoIP_Server_Websocket_Path": "Websocket URL-osoite",
   "VoIP_Server_Websocket_Port": "Websocket-portti",
-  "VoIP_TeamCollab_Enabled": "Käytössä",
   "VoIP_Toggle": "VoIP:n ottaminen käyttöön/pois käytöstä",
   "Voice_Call": "Äänipuhelu",
   "Voip_Server_Configuration": "Asterisk WebSocket-palvelin",

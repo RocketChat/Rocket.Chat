@@ -3927,7 +3927,6 @@
   "VoIP_Management_Server_Password": "Contrasenya",
   "VoIP_Management_Server_Username": "Nom d'usuari",
   "VoIP_Retry_Count": "Comptador de reintents",
-  "VoIP_TeamCollab_Enabled": "Actiu",
   "WAU_value": "WAU {{value}}",
   "Wait_activation_warning": "Abans de poder iniciar sessió, els comptes han de ser activats manualment per un administrador.",
   "Waiting_queue": "Cua d’espera",

@@ -4185,7 +4185,6 @@
   "VoIP_Server_Name": "Имя сервера",
   "VoIP_Server_Websocket_Path": "Путь WebSocket",
   "VoIP_Server_Websocket_Port": "Порт WebSocket",
-  "VoIP_TeamCollab_Enabled": "Включено",
   "Voice_Call": "Голосовой вызов",
   "Voip_Server_Configuration": "Конфигурация сервера",
   "Voip_call_declined": "Вызов завершен оператором",

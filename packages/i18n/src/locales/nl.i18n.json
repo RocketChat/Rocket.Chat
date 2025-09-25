@@ -4017,7 +4017,6 @@
   "VoIP_Server_Name": "Naam server",
   "VoIP_Server_Websocket_Path": "Websocket-pad",
   "VoIP_Server_Websocket_Port": "Websocket-poort",
-  "VoIP_TeamCollab_Enabled": "Ingeschakeld",
   "Voice_Call": "Telefoonoproep",
   "Voip_Server_Configuration": "Serverconfiguratie",
   "Voip_call_declined": "Oproep opgehangen door agent",

@@ -4024,7 +4024,6 @@
   "VoIP_Server_Name": "اسم الخادم",
   "VoIP_Server_Websocket_Path": "مسار Websocket",
   "VoIP_Server_Websocket_Port": "منفذ Websocket",
-  "VoIP_TeamCollab_Enabled": "تم التمكين",
   "Voice_Call": "مكالمة صوتية",
   "Voip_Server_Configuration": "تكوين الخادم",
   "Voip_call_declined": "تم إنهاء المكالمة من قِبل الوكيل",

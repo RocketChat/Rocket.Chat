@@ -5,34 +5,34 @@ import '@testing-library/jest-dom';
 
 import UsersPageHeaderContent from './UsersPageHeaderContent';
 
-it('should not show "Assign Extension" button if voip setting is enabled but user dont have required permission', async () => {
+it('should not show "Assign Extension" button if user dont have required permission', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
+		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
 	expect(screen.queryByRole('button', { name: 'Assign_extension' })).not.toBeInTheDocument();
 });
 
-it('should not show "Assign Extension" button if user has required permission but voip setting is disabled', async () => {
+it('should not show "Assign Extension" button if user has required permission', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
+		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
 	expect(screen.queryByRole('button', { name: 'Assign_extension' })).not.toBeInTheDocument();
 });
 
-it('should show "Assign Extension" button if user has required permission and voip setting is enabled', async () => {
+it('should show "Assign Extension" button if user has required permission', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
+		wrapper: mockAppRoot().withJohnDoe().withPermission('manage-voip-extensions').build(),
 	});
 
 	expect(screen.getByRole('button', { name: 'Assign_extension' })).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Assign_extension' })).toBeEnabled();
 });
 
-it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled setting is disabled', async () => {
+it('should not render "Associate Extension" button if user dont have required permission', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
+		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
 	expect(screen.queryByRole('button', { name: 'Assign_extension' })).not.toBeInTheDocument();

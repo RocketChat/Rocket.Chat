@@ -21,10 +21,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!settings.get('VoIP_TeamCollab_Enabled')) {
-				throw new Error('error-voip-disabled');
-			}
-
 			const { username, type = 'all' } = this.queryParams;
 
 			const extensions = await wrapExceptions(() => VoipFreeSwitch.getExtensionList()).catch(() => {
@@ -72,10 +68,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!settings.get('VoIP_TeamCollab_Enabled')) {
-				throw new Error('error-voip-disabled');
-			}
-
 			const { extension, username } = this.bodyParams;
 
 			if (!username) {
@@ -112,10 +104,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!settings.get('VoIP_TeamCollab_Enabled')) {
-				throw new Error('error-voip-disabled');
-			}
-
 			const { extension, group } = this.queryParams;
 
 			if (!extension) {
@@ -147,10 +135,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!settings.get('VoIP_TeamCollab_Enabled')) {
-				throw new Error('error-voip-disabled');
-			}
-
 			const { userId } = this.queryParams;
 
 			if (!userId) {

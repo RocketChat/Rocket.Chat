@@ -4960,7 +4960,6 @@
   "VoIP_Server_Name": "सर्वर का नाम",
   "VoIP_Server_Websocket_Path": "वेबसोकेट यूआरएल",
   "VoIP_Server_Websocket_Port": "वेबसॉकेट पोर्ट",
-  "VoIP_TeamCollab_Enabled": "सक्रिय",
   "VoIP_Toggle": "वीओआईपी सक्षम/अक्षम करें",
   "Voice_Call": "आवाज कॉल",
   "Voip_Server_Configuration": "तारांकन वेबसॉकेट सर्वर",

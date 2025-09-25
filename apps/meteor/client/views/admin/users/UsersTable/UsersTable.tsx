@@ -3,7 +3,7 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
@@ -22,7 +22,6 @@ import {
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
-import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;
@@ -57,7 +56,7 @@ const UsersTable = ({
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
 	const { sortBy, sortDirection, setSort } = sortData;
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const canManageVoipExtension = usePermission('manage-voip-extensions');
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;

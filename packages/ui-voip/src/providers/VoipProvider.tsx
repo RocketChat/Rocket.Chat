@@ -5,7 +5,6 @@ import {
 	usePermission,
 	useSetInputMediaDevice,
 	useSetOutputMediaDevice,
-	useSetting,
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -21,9 +20,7 @@ import { useVoipClient } from '../hooks/useVoipClient';
 
 const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
-	const isVoipSettingEnabled = useSetting('VoIP_TeamCollab_Enabled', false);
-	const canViewVoipRegistrationInfo = usePermission('view-user-voip-extension');
-	const isVoipEnabled = isVoipSettingEnabled && canViewVoipRegistrationInfo;
+	const isVoipPermitted = usePermission('view-user-voip-extension');
 
 	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voip-registered', true);
 
@@ -31,7 +28,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	const { t } = useTranslation();
 	const { voipSounds } = useCustomSound();
 	const { voipClient, error } = useVoipClient({
-		enabled: isVoipEnabled,
+		enabled: isVoipPermitted,
 		autoRegister: isLocalRegistered,
 	});
 	const setOutputMediaDevice = useSetOutputMediaDevice();
@@ -160,7 +157,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	});
 
 	const contextValue = useMemo<VoipContextValue>(() => {
-		if (!isVoipEnabled) {
+		if (!isVoipPermitted) {
 			return {
 				isEnabled: false,
 				voipClient: null,
@@ -187,7 +184,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			changeAudioInputDevice,
 			changeAudioOutputDevice,
 		};
-	}, [voipClient, isVoipEnabled, error, changeAudioInputDevice, changeAudioOutputDevice]);
+	}, [voipClient, isVoipPermitted, error, changeAudioInputDevice, changeAudioOutputDevice]);
 
 	return (
 		<VoipContext.Provider value={contextValue}>

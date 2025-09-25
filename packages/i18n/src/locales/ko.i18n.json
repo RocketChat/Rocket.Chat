@@ -3394,7 +3394,6 @@
   "VoIP_Management_Server_Password": "비밀번호",
   "VoIP_Management_Server_Username": "사용자명",
   "VoIP_Retry_Count": "다시 시도 횟수",
-  "VoIP_TeamCollab_Enabled": "활성화 됨",
   "WAU_value": "WAU {{value}}",
   "Wait_activation_warning": "관리자가 계정을 수동으로 활성화시켜야 사용할 수 있습니다.",
   "Waiting_queue": "지연 대기열",

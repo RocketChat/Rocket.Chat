@@ -12,7 +12,7 @@ const createFakeAdminUser = (freeSwitchExtension?: string) =>
 		freeSwitchExtension,
 	});
 
-it('should not render voip extension column when voice call is disabled', async () => {
+it('should always render voip extension column', async () => {
 	const user = createFakeAdminUser('1000');
 
 	render(
@@ -27,7 +27,7 @@ it('should not render voip extension column when voice call is disabled', async 
 			roleData={undefined}
 		/>,
 		{
-			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', false).build(),
+			wrapper: mockAppRoot().withUser(user).build(),
 		},
 	);
 
@@ -54,7 +54,7 @@ it('should not render voip extension column or actions if user doesnt have the r
 			roleData={undefined}
 		/>,
 		{
-			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
+			wrapper: mockAppRoot().withUser(user).build(),
 		},
 	);
 
@@ -81,7 +81,7 @@ it('should render "Unassign_extension" button when user has a associated extensi
 			roleData={undefined}
 		/>,
 		{
-			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
+			wrapper: mockAppRoot().withUser(user).withPermission('manage-voip-extensions').build(),
 		},
 	);
 
@@ -108,7 +108,7 @@ it('should render "Assign_extension" button when user has no associated extensio
 			roleData={undefined}
 		/>,
 		{
-			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
+			wrapper: mockAppRoot().withUser(user).withPermission('manage-voip-extensions').build(),
 		},
 	);
 

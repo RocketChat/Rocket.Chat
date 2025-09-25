@@ -4473,7 +4473,6 @@
   "VoIP_Server_Name": "Servername",
   "VoIP_Server_Websocket_Path": "Websocket-Pfad",
   "VoIP_Server_Websocket_Port": "Websocket-Port",
-  "VoIP_TeamCollab_Enabled": "Aktiviert",
   "VoIP_Toggle": "VoIP aktivieren/deaktivieren",
   "Voice_Call": "Sprachanruf",
   "Voip_Server_Configuration": "Serverkonfiguration",

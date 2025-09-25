@@ -3989,7 +3989,6 @@
   "VoIP_Server_Name": "サーバー名",
   "VoIP_Server_Websocket_Path": "WebSocketパス",
   "VoIP_Server_Websocket_Port": "WebSocketポート",
-  "VoIP_TeamCollab_Enabled": "有効",
   "Voice_Call": "音声通話",
   "Voip_Server_Configuration": "サーバー構成",
   "Voip_call_declined": "エージェントが通話を切断しました",

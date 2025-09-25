@@ -4029,7 +4029,6 @@
   "VoIP_Server_Name": "Nom du serveur",
   "VoIP_Server_Websocket_Path": "Chemin Websocket",
   "VoIP_Server_Websocket_Port": "Port Websocket",
-  "VoIP_TeamCollab_Enabled": "Activé",
   "Voice_Call": "Appel vocal",
   "Voip_Server_Configuration": "Configuration du serveur",
   "Voip_call_declined": "Appel raccroché par l'agent",

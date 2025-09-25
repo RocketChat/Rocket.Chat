@@ -45,18 +45,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			async () => this.stopEvents(),
 		);
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
-			if (setting._id === 'VoIP_TeamCollab_Enabled') {
-				if (setting.value !== true) {
-					void this.serviceStarter.stop();
-					return;
-				}
-
-				if (setting.value === true) {
-					void this.serviceStarter.start();
-					return;
-				}
-			}
-
 			if (setting._id === 'VoIP_TeamCollab_FreeSwitch_Host') {
 				// Re-connect if the host changes
 				if (this.eventClient && this.eventClient.host !== setting.value) {
@@ -154,10 +142,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	}
 
 	private getConnectionSettings(): FreeSwitchOptions {
-		if (!settings.get('VoIP_TeamCollab_Enabled')) {
-			throw new Error('VoIP is disabled.');
-		}
-
 		const host = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
 		if (!host) {
 			throw new Error('VoIP is not properly configured.');
