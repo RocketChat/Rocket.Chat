@@ -17,6 +17,8 @@ export const useRestrictedRoles = (): void => {
 			return;
 		}
 
+		AuthorizationUtils.addRolePermissionDisabledList('admin', ['access-permissions']);
+
 		if (isEnterprise) {
 			AuthorizationUtils.addRolePermissionWhiteList('guest', [
 				'view-d-room',
