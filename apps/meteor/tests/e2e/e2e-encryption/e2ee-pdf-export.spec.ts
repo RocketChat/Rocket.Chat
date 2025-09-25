@@ -2,12 +2,11 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { HomeSidenav } from '../page-objects/fragments';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { ExportMessagesTab } from '../page-objects/fragments/export-messages-tab';
 import { LoginPage } from '../page-objects/login';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -21,6 +20,7 @@ preserveSettings(settingsList);
 
 test.describe('E2EE PDF Export', () => {
 	const createdChannels: { name: string; id?: string | null }[] = [];
+	let createE2EEChannel: CreateE2EEChannel;
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -37,6 +37,7 @@ test.describe('E2EE PDF Export', () => {
 
 	test.beforeEach(async ({ api, page }) => {
 		const loginPage = new LoginPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 
 		await api.post('/method.call/e2e.resetOwnE2EKey', {
 			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
@@ -48,15 +49,12 @@ test.describe('E2EE PDF Export', () => {
 	});
 
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
-		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
-		await sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -66,15 +64,12 @@ test.describe('E2EE PDF Export', () => {
 	});
 
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
-		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
 		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
-		await sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 

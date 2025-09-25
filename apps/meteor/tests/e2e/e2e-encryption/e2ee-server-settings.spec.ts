@@ -4,9 +4,9 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -22,6 +22,7 @@ test.describe('E2EE Server Settings', () => {
 	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
 	let encryptedRoomPage: EncryptedRoomPage;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -39,6 +40,7 @@ test.describe('E2EE Server Settings', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
 	});
 
@@ -46,9 +48,7 @@ test.describe('E2EE Server Settings', () => {
 		test.skip(!IS_EE, 'Premium Only');
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -90,9 +90,7 @@ test.describe('E2EE Server Settings', () => {
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+			await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 

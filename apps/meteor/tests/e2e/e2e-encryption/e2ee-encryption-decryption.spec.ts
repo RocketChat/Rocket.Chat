@@ -4,11 +4,11 @@ import { setupE2EEPassword } from './setupE2EEPassword';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -17,6 +17,7 @@ preserveSettings(settingsList);
 
 test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	const createdChannels: { name: string; id?: string | null }[] = [];
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.admin.state });
 
@@ -31,6 +32,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 	test.beforeEach(async ({ api, page }) => {
 		const loginPage = new LoginPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 
 		await api.post('/method.call/e2e.resetOwnE2EKey', {
 			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
@@ -51,9 +53,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await setupE2EEPassword(page);
 
-		await sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -94,9 +94,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await setupE2EEPassword(page);
 
 		// Create an encrypted channel
-		await sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();

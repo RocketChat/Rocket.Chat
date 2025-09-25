@@ -12,11 +12,11 @@ import {
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
 	ResetE2EEPasswordModal,
+	CreateE2EEChannel,
 } from '../page-objects/fragments/e2ee';
 import { LoginPage } from '../page-objects/login';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -185,9 +185,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		const createE2EEChannel = new CreateE2EEChannel(page);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -229,9 +228,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		const createE2EEChannel = new CreateE2EEChannel(page);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -271,9 +269,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		const createE2EEChannel = new CreateE2EEChannel(page);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -303,7 +300,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await poHomeChannel.sidenav.openSearch();
 		await poHomeChannel.sidenav.inputSearch.fill(channelName);
-		await page.locator(`role=search >> role=listbox >> role=link >> text="${channelName}"`).click();
+		await poHomeChannel.sidenav.getSearchItemByName(channelName).click();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 		await poHomeChannel.btnSavedMyPassword.click();

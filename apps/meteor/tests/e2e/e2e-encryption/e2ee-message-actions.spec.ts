@@ -4,10 +4,9 @@ import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { PinnedMessagesTab, StarredMessagesTab } from '../page-objects/fragments';
-import { E2EEMessageActions } from '../page-objects/fragments/e2ee';
+import { E2EEMessageActions, CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable'];
@@ -21,6 +20,7 @@ test.describe('E2EE Message Actions', () => {
 	let starredMessagesTab: StarredMessagesTab;
 	let e2eeMessageActions: E2EEMessageActions;
 	let encryptedRoomPage: EncryptedRoomPage;
+	let createE2EEChannel: CreateE2EEChannel;
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
@@ -33,6 +33,7 @@ test.describe('E2EE Message Actions', () => {
 		starredMessagesTab = new StarredMessagesTab(page);
 		e2eeMessageActions = new E2EEMessageActions(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await poHomeChannel.goto();
 	});
 
@@ -44,9 +45,7 @@ test.describe('E2EE Message Actions', () => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel', async () => {
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+			await createE2EEChannel.createAndStore(channelName, createdChannels);
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 		});
@@ -72,9 +71,7 @@ test.describe('E2EE Message Actions', () => {
 		const channelName = faker.string.uuid();
 
 		await test.step('create encrypted channel and send message', async () => {
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-			const roomId = await resolvePrivateRoomId(page, channelName);
-			createdChannels.push({ name: channelName, id: roomId });
+			await createE2EEChannel.createAndStore(channelName, createdChannels);
 			await expect(page).toHaveURL(`/group/${channelName}`);
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 			await poHomeChannel.content.sendMessage('This message should be pinned and starred.');

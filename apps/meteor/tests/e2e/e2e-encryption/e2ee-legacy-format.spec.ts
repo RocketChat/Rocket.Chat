@@ -6,9 +6,9 @@ import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, restoreState } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
 import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
-import { resolvePrivateRoomId } from '../utils/resolve-room-id';
 import { test, expect } from '../utils/test';
 
 const settingsList = [
@@ -52,6 +52,7 @@ test.describe('E2EE Legacy Format', () => {
 	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
 	let encryptedRoomPage: EncryptedRoomPage;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -69,6 +70,7 @@ test.describe('E2EE Legacy Format', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
 	});
 
@@ -78,9 +80,9 @@ test.describe('E2EE Legacy Format', () => {
 		await injectInitialData();
 		await restoreState(page, Users.userE2EE, { except: ['private_key', 'public_key', 'e2e.randomPassword'] });
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-		const roomId = await resolvePrivateRoomId(page, channelName);
-		createdChannels.push({ name: channelName, id: roomId });
+		await poHomeChannel.sidenav.waitForHome();
+
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
