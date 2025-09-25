@@ -12,11 +12,7 @@ export const createMonitor = async (api: BaseTest['api'], id: string) => {
 		throw new Error(`Failed to create monitor [http status: ${response.status()}]`);
 	}
 
-	const {
-		_id,
-		username,
-		roles,
-	} = await response.json();
+	const { _id, username, roles } = await response.json();
 
 	return {
 		response,
