@@ -21,6 +21,7 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, grantedRoles
 	const [loading, setLoading] = useState(false);
 
 	const isRestrictedForRole = AuthorizationUtils.isPermissionRestrictedForRole(permissionId, _id);
+	const isDisabledForRole = AuthorizationUtils.isPermissionDisabledForRole(permissionId, _id);
 
 	const handleChange = useEffectEvent(async () => {
 		setLoading(true);
@@ -29,7 +30,7 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, grantedRoles
 		setLoading(false);
 	});
 
-	const isDisabled = !!loading || !!isRestrictedForRole;
+	const isDisabled = !!loading || !!isRestrictedForRole || !!isDisabledForRole;
 
 	return (
 		<GenericTableCell withTruncatedText>
