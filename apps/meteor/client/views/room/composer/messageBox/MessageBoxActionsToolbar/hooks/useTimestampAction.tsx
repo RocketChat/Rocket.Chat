@@ -23,7 +23,7 @@ export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMe
 	return {
 		id: 'timestamp',
 		icon: 'clock',
-		content: t('Add_Date_And_Time'),
+		content: t('Add_date_and_time'),
 		onClick: handleClick,
 		disabled: false,
 	};

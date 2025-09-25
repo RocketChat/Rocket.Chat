@@ -14,7 +14,7 @@ const TimestampButton = () => {
 
 	return (
 		<>
-			<MessageToolbarItem id='timestamp' icon='clock' title={t('Add_Date_And_Time')} qa='message-action-timestamp' onClick={handleClick} />
+			<MessageToolbarItem id='timestamp' icon='clock' title={t('Add_date_and_time')} qa='message-action-timestamp' onClick={handleClick} />
 			{isPickerOpen && <TimestampPicker onClose={() => setIsPickerOpen(false)} />}
 		</>
 	);

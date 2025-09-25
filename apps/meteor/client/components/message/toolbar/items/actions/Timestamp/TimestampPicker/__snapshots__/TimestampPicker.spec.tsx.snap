@@ -562,7 +562,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
             >
-              Add_Date_And_Time
+              Add_date_and_time
             </h2>
             <button
               aria-label="Close"

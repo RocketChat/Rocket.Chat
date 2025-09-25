@@ -54,7 +54,7 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 	return (
 		<Modal>
 			<ModalHeader>
-				<ModalTitle>{t('Add_Date_And_Time')}</ModalTitle>
+				<ModalTitle>{t('Add_date_and_time')}</ModalTitle>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
