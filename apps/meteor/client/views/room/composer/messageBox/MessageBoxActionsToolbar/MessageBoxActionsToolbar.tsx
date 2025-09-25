@@ -61,7 +61,6 @@ const MessageBoxActionsToolbar = ({
 	const webdavActions = useWebdavActions();
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
-	// Added for Timestamp feature
 	const timestampAction = useTimestampAction(chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
@@ -73,7 +72,6 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, fileUploadAction) && { fileUploadAction }),
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
-		// Added for Timestamp feature
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
 		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
@@ -85,7 +83,6 @@ const MessageBoxActionsToolbar = ({
 
 	createNew.push(allActions.createDiscussionAction);
 
-	// Push timestamp action to 'insert' group
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);
 	}
@@ -135,7 +132,6 @@ const MessageBoxActionsToolbar = ({
 
 	const createNewFiltered = createNew.filter(isTruthy);
 	const shareFiltered = share.filter(isTruthy);
-	// Added for Timestamp feature: Filter the 'insert' group
 	const insertFiltered = insert.filter(isTruthy);
 
 	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
