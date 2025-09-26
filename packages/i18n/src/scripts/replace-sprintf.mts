@@ -72,10 +72,18 @@ const replaceSprintfParams = async (translationKey: string): Promise<void> => {
 
 	// Process all translation files
 	for await (const language of languages) {
-		const translations = await readResource(language);
+		const resource = await readResource(language);
 
-		if (translations[translationKey]) {
-			let updatedValue = translations[translationKey];
+		if (resource[translationKey]) {
+			const translation = resource[translationKey];
+
+			if (typeof translation !== 'string') {
+				console.warn(`Skipping "${translationKey}" in ${language} translations: not a string`);
+				continue;
+			}
+
+			let updatedValue = translation;
+
 			let paramIndex = 0;
 
 			// Replace each %s token with a named parameter
@@ -84,9 +92,9 @@ const replaceSprintfParams = async (translationKey: string): Promise<void> => {
 				paramIndex++;
 			}
 
-			translations[translationKey] = updatedValue;
+			resource[translationKey] = updatedValue;
 
-			await writeResource(language, translations);
+			await writeResource(language, resource);
 			console.log(`Updated "${translationKey}" in ${language} translations to: "${updatedValue}"`);
 		}
 	}

@@ -25,8 +25,12 @@ export async function readContent(language: string) {
 	return readFile(join(resourcesDirectory, resourceBasename(language)), 'utf8');
 }
 
-export async function readResource(language: string) {
-	return JSON.parse(await readContent(language));
+export async function readResource(language: string): Promise<Record<string, unknown>> {
+	const result = JSON.parse(await readContent(language));
+	if (typeof result !== 'object' || result === null || Array.isArray(result)) {
+		throw new Error(`Invalid resource format for language "${language}"`);
+	}
+	return result;
 }
 
 export async function writeResource(language: string, resource: unknown) {
