@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Base64 } from '@rocket.chat/base64';
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, AtLeast, EncryptedMessageContent } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -703,13 +704,9 @@ export class E2ERoom extends Emitter {
 		return this.encryptText(data);
 	}
 
-	async decryptContent<T extends IUploadWithUser | IE2EEMessage>(data: T) {
-		if (!data.content) {
-			return data;
-		}
-
-		const decrypted = await this.decrypt(data.content);
-		Object.assign(data, decrypted);
+	async decryptContent<T extends EncryptedMessageContent>(data: T) {
+		const content = await this.decrypt(data.content.ciphertext);
+		Object.assign(data, content);
 
 		return data;
 	}
@@ -720,7 +717,8 @@ export class E2ERoom extends Emitter {
 			return message;
 		}
 
-		message = await this.decryptContent(message);
+		message = isEncryptedMessageContent(message) ? await this.decryptContent(message) : message;
+
 		return {
 			...message,
 			e2e: 'done' as const,

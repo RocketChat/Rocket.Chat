@@ -3,7 +3,7 @@ import URL from 'url';
 
 import { Base64 } from '@rocket.chat/base64';
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
@@ -641,7 +641,7 @@ class E2E extends Emitter {
 	}
 
 	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {
-		if (!file.rid) {
+		if (!file.rid || !isEncryptedMessageContent(file)) {
 			return file;
 		}
 

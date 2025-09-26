@@ -216,6 +216,7 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+		version?: number;
 	};
 
 	/* used when message type is "omnichannel_sla_change_history" */
@@ -234,6 +235,20 @@ export interface IMessage extends IRocketChatRecord {
 
 	content?: EncryptedContent;
 }
+
+export type EncryptedMessageContent = {
+	content: {
+		algorithm: 'rc.v1.aes-sha2';
+		ciphertext: string;
+	};
+};
+
+export const isEncryptedMessageContent = (content: unknown): content is EncryptedMessageContent =>
+	typeof content === 'object' &&
+	content !== null &&
+	'content' in content &&
+	typeof (content as any).content === 'object' &&
+	(content as any).content?.algorithm === 'rc.v1.aes-sha2';
 
 export interface ISystemMessage extends IMessage {
 	t: MessageTypesValues;
@@ -266,7 +281,7 @@ export interface IFederatedMessage extends IMessage {
 
 export interface INativeFederatedMessage extends IMessage {
 	federation: {
-		version: `${number}`;
+		version: number;
 		eventId: string;
 	};
 }

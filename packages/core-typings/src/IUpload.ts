@@ -57,6 +57,12 @@ export interface IUpload {
 	hashes?: {
 		sha256: string;
 	};
+	federation?: {
+		mxcUri: string;
+		mrid: string;
+		serverName: string;
+		mediaId: string;
+	};
 }
 
 export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };
