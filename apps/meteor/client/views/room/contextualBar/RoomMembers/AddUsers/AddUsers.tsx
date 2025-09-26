@@ -94,7 +94,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 							/>
 						)}
 						{errors.users && (
-							<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
+							<FieldError role='alert' id={`${usersFieldId}-error`}>
 								{errors.users.message}
 							</FieldError>
 						)}
