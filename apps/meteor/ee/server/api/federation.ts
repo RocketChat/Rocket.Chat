@@ -9,36 +9,43 @@ import { isRunningMs } from '../../../server/lib/isRunningMs';
 
 const logger = new Logger('FederationRoutes');
 
-export async function registerFederationRoutes(federationService: IFederationMatrixService): Promise<void> {
-	API.v1.get(
-		'/federation/matrixIds.verify',
-		{
-			authRequired: true,
-			query: ajv.compile<{
-				matrixIds: string[];
+let federationService: IFederationMatrixService | undefined;
+API.v1.get(
+	'/federation/matrixIds.verify',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			matrixIds: string[];
+		}>({
+			type: 'object',
+			properties: {
+				matrixIds: { type: 'array', items: { type: 'string' } },
+			},
+		}),
+		response: {
+			200: ajv.compile<{
+				results: { [key: string]: string };
 			}>({
 				type: 'object',
 				properties: {
-					matrixIds: { type: 'array', items: { type: 'string' } },
+					results: { type: 'object', additionalProperties: { type: 'string' } },
 				},
 			}),
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						results: { type: 'array', items: { type: 'string' } },
-					},
-				}),
-			},
 		},
-		async function () {
-			const { matrixIds } = this.queryParams;
-			return API.v1.success({
-				results: await federationService.verifyMatrixIds(matrixIds),
-			});
-		},
-	);
+	},
+	async function () {
+		const { matrixIds } = this.queryParams;
+		if (!federationService) {
+			throw new Error('Federation service not registered');
+		}
+		return API.v1.success({
+			results: await federationService.verifyMatrixIds(matrixIds),
+		});
+	},
+);
 
+export async function registerFederationRoutes(f: IFederationMatrixService): Promise<void> {
+	federationService = f;
 	if (isRunningMs()) {
 		return;
 	}
