@@ -251,7 +251,7 @@ export type EncryptedMessageContent = {
 	content: EncryptedContent;
 };
 
-export function isEncryptedMessageContent(value: unknown) {
+export function isEncryptedMessageContent(value: unknown): value is EncryptedMessageContent {
 	return (
 		typeof value === 'object' &&
 		value !== null &&
