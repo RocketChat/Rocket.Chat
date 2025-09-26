@@ -290,43 +290,45 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 		const resource = await readResource(language);
 
 		for (const { key, plural, translation } of listTranslations(resource)) {
-			const match = placeholderRegex.exec(translation);
-			if (!match) continue;
+			const matches = Array.from(translation.matchAll(placeholderRegex));
+			if (!matches.length) continue;
 
-			if (!identifierRegex.test(match[1])) {
+			for (const match of matches) {
+				if (!identifierRegex.test(match[1])) {
+					yield {
+						lint: async (reportError) => {
+							if (plural) {
+								reportError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
+							} else {
+								reportError('%s: key %o has invalid placeholder %o', language, key, match[0]);
+							}
+						},
+					};
+					continue;
+				}
+
 				yield {
 					lint: async (reportError) => {
 						if (plural) {
-							reportError('%s: key %o (plural %o) has invalid placeholder %o', language, key, plural, match[0]);
+							reportError('%s: key %o (plural %o) has placeholder %o, should be %o', language, key, plural, match[0], `{{${match[1]}}}`);
 						} else {
-							reportError('%s: key %o has invalid placeholder %o', language, key, match[0]);
+							reportError('%s: key %o has placeholder %o, should be %o', language, key, match[0], `{{${match[1]}}}`);
 						}
 					},
+					fix: async () => {
+						const fixedResource = { ...resource };
+						if (plural) {
+							fixedResource[key] = {
+								...(fixedResource[key] as Record<string, string>),
+								[plural]: translation.replace(placeholderRegex, `{{${match[1]}}}`),
+							};
+						} else {
+							fixedResource[key] = translation.replace(placeholderRegex, `{{${match[1]}}}`);
+						}
+						await writeResource(language, fixedResource);
+					},
 				};
-				continue;
 			}
-
-			yield {
-				lint: async (reportError) => {
-					if (plural) {
-						reportError('%s: key %o (plural %o) has placeholder %o, should be %o', language, key, plural, match[0], `{{${match[1]}}}`);
-					} else {
-						reportError('%s: key %o has placeholder %o, should be %o', language, key, match[0], `{{${match[1]}}}`);
-					}
-				},
-				fix: async () => {
-					const fixedResource = { ...resource };
-					if (plural) {
-						fixedResource[key] = {
-							...(fixedResource[key] as Record<string, string>),
-							[plural]: translation.replace(placeholderRegex, `{{${match[1]}}}`),
-						};
-					} else {
-						fixedResource[key] = translation.replace(placeholderRegex, `{{${match[1]}}}`);
-					}
-					await writeResource(language, fixedResource);
-				},
-			};
 		}
 	}
 });
