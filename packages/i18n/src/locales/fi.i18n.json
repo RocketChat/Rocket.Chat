@@ -1764,6 +1764,7 @@
   "Features": "Ominaisuudet",
   "Federated": "Liittoutunut",
   "Federation": "Liittoutuminen",
+  "Federation_Description": "Liittoutumisen ansiosta rajoittamaton määrä työtiloja voi olla yhteydessä keskenään.",
   "Federation_Enable": "Ota liittoutuminen käyttöön",
   "Federation_Matrix": "Liittoutuminen V2",
   "Federation_Matrix_Federated": "Liittoutunut",
