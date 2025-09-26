@@ -1,5 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { argv, exit } from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { distDirectory, languageFromBasename, resourceBasename, resourcesDirectory } from './common.mts';
@@ -107,10 +108,10 @@ export default languages;`,
 if (import.meta.url.startsWith('file:')) {
 	const modulePath = fileURLToPath(import.meta.url);
 
-	if (process.argv[1] === modulePath) {
+	if (argv[1] === modulePath) {
 		build().catch((error) => {
 			console.error(error);
-			process.exit(1);
+			exit(1);
 		});
 	}
 }

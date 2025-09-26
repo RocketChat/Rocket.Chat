@@ -1,4 +1,4 @@
-import { argv, stderr, stdout } from 'node:process';
+import { argv, exit, stderr, stdout } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { formatWithOptions, parseArgs, styleText } from 'node:util';
 
@@ -539,7 +539,7 @@ if (import.meta.url.startsWith('file:')) {
 
 		check(values).catch((error) => {
 			console.error(error);
-			process.exit(1);
+			exit(1);
 		});
 	}
 }
