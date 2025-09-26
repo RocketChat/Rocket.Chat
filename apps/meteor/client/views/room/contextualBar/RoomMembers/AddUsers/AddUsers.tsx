@@ -36,6 +36,9 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useRoom();
 	const usersFieldId = useId();
+	const roomIsFederated = isRoomFederated(room);
+	// we are dropping the non native federation for now
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
 
 	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
@@ -50,7 +53,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
 			await saveAction({ rid, users });
-			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 			onClickBack();
 			reload();
 		} catch (error) {
@@ -59,10 +62,6 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	});
 
 	const addClickHandler = useAddMatrixUsers();
-
-	const roomIsFederated = isRoomFederated(room);
-	// we are dropping the non native federation for now
-	const isFederationBlocked = room && !isRoomNativeFederated(room);
 
 	return (
 		<ContextualbarDialog>
