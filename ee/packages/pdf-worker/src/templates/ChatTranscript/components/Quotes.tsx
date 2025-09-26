@@ -1,8 +1,9 @@
 import { View, StyleSheet } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
+import type { ReactNode } from 'react';
 
-import type { Quote as QuoteType } from '..';
+import type { PDFQuote } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { MessageHeader } from './MessageHeader';
 
@@ -23,7 +24,13 @@ const styles = StyleSheet.create({
 	},
 });
 
-const Quote = ({ quote, children, index }: { quote: QuoteType; children: JSX.Element | null; index: number }) => (
+type QuoteProps = {
+	quote: PDFQuote;
+	children: ReactNode;
+	index: number;
+};
+
+const Quote = ({ quote, children, index }: QuoteProps) => (
 	<View
 		style={{
 			...styles.wrapper,
@@ -39,7 +46,11 @@ const Quote = ({ quote, children, index }: { quote: QuoteType; children: JSX.Ele
 	</View>
 );
 
-export const Quotes = ({ quotes }: { quotes: QuoteType[] }) =>
+type QuotesProps = {
+	quotes: PDFQuote[];
+};
+
+export const Quotes = ({ quotes }: QuotesProps) =>
 	quotes.reduceRight<JSX.Element | null>(
 		(lastQuote, quote, index) => (
 			<Quote quote={quote} index={index}>

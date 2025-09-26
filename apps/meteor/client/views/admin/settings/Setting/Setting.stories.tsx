@@ -6,7 +6,6 @@ import Setting from './Setting';
 import SettingSkeleton from './SettingSkeleton';
 
 export default {
-	title: 'Admin/Settings/Setting',
 	component: Setting,
 	parameters: {
 		layout: 'centered',

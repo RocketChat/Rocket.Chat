@@ -32,7 +32,7 @@ import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
 import type { IMarketplaceInfo } from './marketplace';
 import { defaultPermissions } from './permissions/AppPermissions';
-import type { DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import { EmptyRuntime } from './runtime/EmptyRuntime';
 import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
@@ -58,6 +58,7 @@ export interface IAppManagerDeps {
 
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
+	keepSlashcommands?: boolean;
 }
 
 export class AppManager {
@@ -276,16 +277,7 @@ export class AppManager {
 				console.warn(`Error while compiling the App "${item.info.name} (${item.id})":`);
 				console.error(e);
 
-				const prl = new ProxiedApp(this, item, {
-					// Maybe we should have an "EmptyRuntime" class for this?
-					getStatus() {
-						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
-					},
-
-					on(): void {
-						return undefined;
-					},
-				} as unknown as DenoRuntimeSubprocessController);
+				const prl = new ProxiedApp(this, item, new EmptyRuntime(item.id));
 
 				this.apps.set(item.id, prl);
 			}
@@ -363,7 +355,7 @@ export class AppManager {
 
 			this.listenerManager.releaseEssentialEvents(app);
 
-			app.getDenoRuntime().stopApp();
+			app.getRuntimeController().stopApp();
 		}
 
 		// Remove all the apps from the system now that we have unloaded everything
@@ -491,7 +483,7 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true });
+		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 
 		await app.setStatus(status, silent);
 
@@ -604,7 +596,7 @@ export class AppManager {
 
 		undoSteps.push(() =>
 			this.getRuntime()
-				.stopRuntime(app.getDenoRuntime())
+				.stopRuntime(app.getRuntimeController())
 				.catch(() => {}),
 		);
 
@@ -702,7 +694,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(app.getDenoRuntime())
+			.stopRuntime(app.getRuntimeController())
 			.catch(() => {});
 
 		this.apps.delete(app.getID());
@@ -760,7 +752,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(this.apps.get(old.id).getDenoRuntime())
+			.stopRuntime(this.apps.get(old.id).getRuntimeController())
 			.catch(() => {});
 
 		const app = await this.getCompiler().toSandBox(this, descriptor, result);
@@ -814,7 +806,7 @@ export class AppManager {
 
 				// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 				await this.getRuntime()
-					.stopRuntime(this.apps.get(stored.id).getDenoRuntime())
+					.stopRuntime(this.apps.get(stored.id).getRuntimeController())
 					.catch(() => {});
 
 				return this.getCompiler().toSandBox(this, stored, parseResult);
@@ -825,6 +817,7 @@ export class AppManager {
 			}
 		})();
 
+		// We don't keep slashcommands here as the update could potentially not provide the same list
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 		this.apps.set(app.getID(), app);
@@ -1049,6 +1042,8 @@ export class AppManager {
 			await app.call(AppMethod.INITIALIZE);
 			await app.setStatus(AppStatus.INITIALIZED, silenceStatus);
 
+			await this.commandManager.registerCommands(app.getID());
+
 			result = true;
 		} catch (e) {
 			let status = AppStatus.ERROR_DISABLED;
@@ -1085,9 +1080,13 @@ export class AppManager {
 		if (!opts.keepScheduledJobs) {
 			await this.schedulerManager.cleanUp(app.getID());
 		}
+
+		if (!opts.keepSlashcommands) {
+			await this.commandManager.unregisterCommands(app.getID());
+		}
+
 		this.listenerManager.unregisterListeners(app);
 		this.listenerManager.lockEssentialEvents(app);
-		await this.commandManager.unregisterCommands(app.getID());
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
@@ -1161,7 +1160,6 @@ export class AppManager {
 		}
 
 		if (enable) {
-			await this.commandManager.registerCommands(app.getID());
 			this.externalComponentManager.registerExternalComponents(app.getID());
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
@@ -1169,7 +1167,7 @@ export class AppManager {
 			this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app);
+			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 		}
 
 		if (saveToDb) {

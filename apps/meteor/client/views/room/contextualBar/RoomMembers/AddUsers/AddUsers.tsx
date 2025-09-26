@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
@@ -56,6 +56,10 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const addClickHandler = useAddMatrixUsers();
 
+	const roomIsFederated = isRoomFederated(room);
+	// we are dropping the non native federation for now
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
@@ -67,12 +71,14 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 				<FieldGroup>
 					<Field>
 						<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
-						{isRoomFederated(room) ? (
-							<Controller
-								name='users'
-								control={control}
-								render={({ field }) => <UserAutoCompleteMultipleFederated {...field} placeholder={t('Choose_users')} />}
-							/>
+						{roomIsFederated ? (
+							!isFederationBlocked && (
+								<Controller
+									name='users'
+									control={control}
+									render={({ field }) => <UserAutoCompleteMultipleFederated {...field} placeholder={t('Choose_users')} />}
+								/>
+							)
 						) : (
 							<Controller
 								name='users'
@@ -85,19 +91,21 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{isRoomFederated(room) ? (
-						<Button
-							primary
-							disabled={addClickHandler.isPending}
-							onClick={() =>
-								addClickHandler.mutate({
-									users: getValues('users'),
-									handleSave,
-								})
-							}
-						>
-							{t('Add_users')}
-						</Button>
+					{roomIsFederated ? (
+						!isFederationBlocked && (
+							<Button
+								primary
+								disabled={addClickHandler.isPending || !isDirty}
+								onClick={() =>
+									addClickHandler.mutate({
+										users: getValues('users'),
+										handleSave,
+									})
+								}
+							>
+								{t('Add_users')}
+							</Button>
+						)
 					) : (
 						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 							{t('Add_users')}
