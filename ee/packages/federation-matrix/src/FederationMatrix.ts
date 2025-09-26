@@ -34,6 +34,7 @@ import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
+import { clientRoutes } from './api/client/RegisterAvailable';
 import { isFederationDomainAllowedMiddleware } from './api/middlewares/isFederationDomainAllowed';
 import { isFederationEnabledMiddleware } from './api/middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
@@ -184,6 +185,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		matrix
 			.use(isFederationEnabledMiddleware)
 			.use(isLicenseEnabledMiddleware)
+			.use(clientRoutes)
 			.use(getKeyServerRoutes(this.homeserverServices))
 			.use(getFederationVersionsRoutes(this.homeserverServices))
 			.use(isFederationDomainAllowedMiddleware)
