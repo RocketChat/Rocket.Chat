@@ -34,8 +34,8 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeAll('Add agents to departments', async ({ api }) => {
 		await Promise.all([
-			await addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' }),
-			await addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' }),
+			addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' }),
+			addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' }),
 		]);
 	});
 
@@ -64,10 +64,6 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
-	test.afterEach(async () => {
-		await poOmnichannel.page.close();
-	});
-
 	test.afterAll(async () => {
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
 		await Promise.all(tags.map((tag) => tag.delete()));
@@ -82,11 +78,12 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('should not be able to see tags field', async () => {
-			await expect(poOmnichannel.roomInfo.getInfoByLabel('Tags')).not.toBeVisible();
+			await expect(poOmnichannel.roomInfo.getLabel('Tags')).not.toBeVisible();
 		});
 
 		await test.step('check available tags', async () => {
 			await poOmnichannel.roomInfo.btnEditRoomInfo.click();
+			await expect(poOmnichannel.roomInfo.dialogEditRoom).toBeVisible();
 			await poOmnichannel.roomInfo.inputTags.click();
 		});
 
@@ -113,7 +110,7 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('verify selected tags are displayed under room information', async () => {
-			await expect(poOmnichannel.roomInfo.getInfoByLabel('Tags')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.getLabel('Tags')).toBeVisible();
 			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('TagA')).toBeVisible();
 			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('GlobalTag')).toBeVisible();
 		});
@@ -123,6 +120,7 @@ test.describe('OC - Tags Visibility', () => {
 		await test.step('Open room info', async () => {
 			await poOmnichannel.sidenav.getSidebarItemByName(visitorB.name).click();
 			await poOmnichannel.roomInfo.btnEditRoomInfo.click();
+			await expect(poOmnichannel.roomInfo.dialogEditRoom).toBeVisible();
 			await poOmnichannel.roomInfo.inputTags.click();
 		});
 
