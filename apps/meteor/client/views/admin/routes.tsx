@@ -202,11 +202,6 @@ registerAdminRoute('/reports', {
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });
 
-registerAdminRoute('/federation', {
-	name: 'federation-dashboard',
-	component: lazy(() => import('./federationDashboard/FederationDashboardRoute')),
-});
-
 registerAdminRoute('/permissions/:context?/:_id?', {
 	name: 'admin-permissions',
 	component: lazy(() => import('./permissions/PermissionsRouter')),
