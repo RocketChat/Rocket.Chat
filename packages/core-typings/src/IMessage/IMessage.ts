@@ -4,7 +4,6 @@ import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
-import type { EncryptedContent } from '../IEncryptedContent';
 import type { ILivechatPriority } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
@@ -136,6 +135,18 @@ export type MessageMention = {
 
 export interface IMessageCustomFields {}
 
+export type EncryptedContent =
+	| {
+			algorithm: 'rc.v1.aes-sha2';
+			ciphertext: string;
+	  }
+	| {
+			algorithm: 'rc.v2.aes-sha2';
+			ciphertext: string;
+			iv: string; // Initialization Vector
+			kid: string; // ID of the key used to encrypt the message
+	  };
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
@@ -237,19 +248,28 @@ export interface IMessage extends IRocketChatRecord {
 }
 
 export type EncryptedMessageContent = {
-	content: {
-		algorithm: 'rc.v1.aes-sha2';
-		ciphertext: string;
-	};
+	content: EncryptedContent;
 };
 
-export const isEncryptedMessageContent = (content: unknown): content is EncryptedMessageContent =>
-	typeof content === 'object' &&
-	content !== null &&
-	'content' in content &&
-	typeof (content as any).content === 'object' &&
-	(content as any).content?.algorithm === 'rc.v1.aes-sha2';
-
+export function isEncryptedMessageContent(value: unknown) {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'content' in value &&
+		typeof value.content === 'object' &&
+		value.content !== null &&
+		'algorithm' in value.content &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' || value.content.algorithm === 'rc.v2.aes-sha2') &&
+		'ciphertext' in value.content &&
+		typeof value.content.ciphertext === 'string' &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' ||
+			(value.content.algorithm === 'rc.v2.aes-sha2' &&
+				'iv' in value.content &&
+				typeof value.content.iv === 'string' &&
+				'kid' in value.content &&
+				typeof value.content.kid === 'string'))
+	);
+}
 export interface ISystemMessage extends IMessage {
 	t: MessageTypesValues;
 }
