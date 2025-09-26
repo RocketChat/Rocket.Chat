@@ -136,15 +136,23 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 
 			const relation = content['m.relates_to'];
 
-			const isThreadMessage = relation && relation.rel_type === 'm.thread';
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			const hasRelation = relation && 'rel_type' in relation;
+
+			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
+
 			const threadRootEventId = isThreadMessage && relation.event_id;
 
-			const quoteMessageEventId = relation && 'm.in_reply_to' in relation && relation['m.in_reply_to']?.event_id;
+			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
+			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
+
+			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
 
 			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
 
-			const isEditedMessage = relation?.rel_type === 'm.replace';
-			if (isEditedMessage && relation?.event_id && data.content['m.new_content']) {
+			const isEditedMessage = hasRelation && relation.rel_type === 'm.replace';
+			if (isEditedMessage && relation.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
 				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
@@ -255,7 +263,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				});
 			}
 		} catch (error) {
-			logger.error('Error processing Matrix message:', error);
+			logger.error(error, 'Error processing Matrix message:');
 		}
 	});
 
