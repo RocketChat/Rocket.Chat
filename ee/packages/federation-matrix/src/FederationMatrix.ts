@@ -944,4 +944,45 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		void this.homeserverServices.edu.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
+
+	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {
+		const results = Object.fromEntries(
+			await Promise.all(
+				matrixIds.map(async (matrixId) => {
+					const [userId, homeserverUrl] = matrixId.split(':');
+
+					if (homeserverUrl === this.serverName) {
+						const user = await Users.findOneByUsername(userId.slice(1));
+						return [matrixId, user ? 'VERIFIED' : 'UNVERIFIED'];
+					}
+
+					if (!homeserverUrl) {
+						return [matrixId, 'UNABLE_TO_VERIFY'];
+					}
+					try {
+						const result = await this.homeserverServices.request.get<
+							| {
+									avatar_url: string;
+									displayname: string;
+							  }
+							| {
+									errcode: string;
+									error: string;
+							  }
+						>(homeserverUrl, `/_matrix/federation/v1/query/profile`, { user_id: matrixId });
+
+						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {
+							return [matrixId, 'UNVERIFIED'];
+						}
+
+						return [matrixId, 'VERIFIED'];
+					} catch (e) {
+						return [matrixId, 'UNABLE_TO_VERIFY'];
+					}
+				}),
+			),
+		);
+
+		return results;
+	}
 }
