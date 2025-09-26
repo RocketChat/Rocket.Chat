@@ -445,6 +445,36 @@ const extraPlaceholders = describeTask('extra-placeholders', async function* () 
 	}
 });
 
+const findPositionalParams = describeTask('find-sprintf-params', async function* () {
+	const sprintfRegex = /%s/g;
+
+	const resource = await readResource(baseLanguage);
+
+	for (const { key, plural, translation } of listTranslations(resource)) {
+		const match = sprintfRegex.exec(translation);
+		if (!match) continue;
+
+		yield {
+			lint: async (reportError) => {
+				if (plural) {
+					reportError(
+						'key %o (plural %o) has positional parameter %o, should be named parameter like %o',
+						key,
+						plural,
+						match[0],
+						'{{param}}',
+					);
+				} else {
+					reportError('key %o has positional parameter %o, should be named parameter like %o', key, match[0], '{{param}}');
+				}
+			},
+		};
+	}
+});
+
+/**
+ * Map of all available tasks
+ */
 const tasksByName = {
 	'sort-base-keys': sortBaseKeys,
 	'sort-keys': sortKeys,
@@ -453,6 +483,7 @@ const tasksByName = {
 	'find-missing-plurals': findMissingPlurals,
 	'replace-2-underscores': replaceDoubleUnderscorePlaceholders,
 	'trim-eof': trimEndOfFile,
+	'find-sprintf-params': findPositionalParams,
 	'missing-placeholders': missingPlaceholders,
 	'extra-placeholders': extraPlaceholders,
 } as const;
