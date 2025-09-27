@@ -759,6 +759,7 @@ API.v1.addRoute(
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				_hidden: { $ne: true },
 			};
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {

@@ -15,7 +15,7 @@ const backdropStyle = css`
 `;
 
 const VideoConfPopupBackdrop = ({ children }: { children: ReactNode }): ReactElement => (
-	<Box m={40} className={backdropStyle}>
+	<Box m={40} zIndex={99} className={backdropStyle}>
 		{children}
 	</Box>
 );
