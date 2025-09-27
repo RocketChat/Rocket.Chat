@@ -10,7 +10,7 @@ import {
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
-import { takeInquiry } from '../../../server/methods/takeInquiry';
+import { takeInquiry } from '../../../server/lib/takeInquiry';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',

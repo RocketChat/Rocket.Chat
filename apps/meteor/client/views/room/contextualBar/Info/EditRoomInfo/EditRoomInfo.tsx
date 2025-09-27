@@ -131,7 +131,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canSetReactWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
-		canToggleEncryption,
 		canViewName,
 		canViewTopic,
 		canViewAnnouncement,
@@ -141,7 +140,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewEncrypted,
 	} = useEditRoomPermissions(room);
 
 	const changeArchiving = archived !== !!room.archived;
@@ -223,7 +221,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const archivedField = useId();
 	const joinCodeRequiredField = useId();
 	const hideSysMesField = useId();
-	const encryptedField = useId();
 	const retentionEnabledField = useId();
 	const retentionOverrideGlobalField = useId();
 	const retentionMaxAgeField = useId();
@@ -231,7 +228,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionFilesOnlyField = useId();
 	const retentionIgnoreThreads = useId();
 
-	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
@@ -365,29 +362,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
 										</Box>
-										{canViewEncrypted && (
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-													<Controller
-														control={control}
-														name='encrypted'
-														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch
-																id={encryptedField}
-																aria-describedby={`${encryptedField}-hint`}
-																{...field}
-																disabled={!canToggleEncryption || isFederated}
-																checked={value}
-															/>
-														)}
-													/>
-												</FieldRow>
-												<FieldRow>
-													<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
-												</FieldRow>
-											</Field>
-										)}
 										{canViewReadOnly && (
 											<Field>
 												<FieldRow>
