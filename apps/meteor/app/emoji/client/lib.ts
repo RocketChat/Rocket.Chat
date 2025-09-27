@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import { queueMicrotask } from '../../../client/lib/utils/queueMicrotask';
 import type { EmojiPackages } from '../lib/rocketchat';

@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 import mem from 'mem';
 
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';

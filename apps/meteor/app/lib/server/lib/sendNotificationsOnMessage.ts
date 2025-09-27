@@ -8,7 +8,7 @@ import {
 	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 

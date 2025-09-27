@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import { convertExternalRoomIdToInternalRoomIdFormat } from './RoomReceiver';
 import { FederationMessageReactionEventDto } from '../../../../application/room/input/MessageReceiverDto';

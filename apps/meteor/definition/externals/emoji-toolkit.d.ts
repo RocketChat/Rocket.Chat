@@ -1,5 +1,5 @@
-declare module 'emojione' {
-	export as namespace emojione;
+declare module 'emoji-toolkit' {
+	export as namespace emojiToolkit;
 
 	export let sprites: boolean;
 	export let imagePathSVG: string;
