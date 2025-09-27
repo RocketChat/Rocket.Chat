@@ -19,7 +19,7 @@ export const handleMessagesSent = async (message: IMessage, { room }: { room?: I
 	return message;
 };
 
-export const handleMessagesDeleted = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
+export const handleMessagesDeleted = async (message: IMessage, { room }: { room: IRoom }): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;

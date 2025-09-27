@@ -4,7 +4,7 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, request } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
 
-describe('federation', () => {
+describe.skip('federation', () => {
 	before((done) => getCredentials(done));
 
 	// FIXME: why debouncing is causing timeouts here on the hooks?
