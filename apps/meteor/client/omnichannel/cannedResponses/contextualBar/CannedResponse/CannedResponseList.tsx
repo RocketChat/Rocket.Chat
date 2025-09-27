@@ -18,6 +18,7 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
+import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
 type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;
@@ -58,6 +59,7 @@ const CannedResponseList = ({
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { context: cannedId } = useRoomToolbox();
+	const canCreateCannedResponse = useCanCreateCannedResponse();
 
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -68,7 +70,7 @@ const CannedResponseList = ({
 	if (cannedItem) {
 		return (
 			<WrapCannedResponse
-				allowUse={!isRoomOverMacLimit}
+				canUseCannedResponses={!isRoomOverMacLimit}
 				cannedItem={cannedItem}
 				onClickBack={onClickItem}
 				onClickUse={onClickUse}
@@ -96,7 +98,7 @@ const CannedResponseList = ({
 								ref={inputRef}
 							/>
 							<Box w='x144'>
-								<Select onChange={(value) => setType(String(value))} value={type} options={options} />
+								<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
 					</Box>
@@ -126,11 +128,13 @@ const CannedResponseList = ({
 					</Box>
 				)}
 			</ContextualbarContent>
-			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button onClick={onClickCreate}>{t('Create')}</Button>
-				</ButtonGroup>
-			</ContextualbarFooter>
+			{canCreateCannedResponse && (
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						<Button onClick={onClickCreate}>{t('Create')}</Button>
+					</ButtonGroup>
+				</ContextualbarFooter>
+			)}
 		</ContextualbarDialog>
 	);
 };
