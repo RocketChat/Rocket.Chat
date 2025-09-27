@@ -35,7 +35,9 @@
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/icons": "^0.43.0",
+		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",

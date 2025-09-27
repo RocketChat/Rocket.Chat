@@ -8,7 +8,6 @@ import { AppLogsFilter } from './AppLogsFilter';
 import { useAppLogsFilterForm } from '../useAppLogsFilterForm';
 
 export default {
-	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/AppLogsFilter',
 	component: AppLogsFilter,
 	args: {},
 	decorators: [
