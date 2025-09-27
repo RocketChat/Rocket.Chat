@@ -17,6 +17,7 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
+import type { IRuntimeController } from '../IRuntimeController';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -81,11 +82,9 @@ export function getDenoWrapperPath(): string {
 	}
 }
 
-export type DenoRuntimeOptions = {
-	timeout: number;
-};
+type AbortFunction = (reason?: any) => void;
 
-export class DenoRuntimeSubprocessController extends EventEmitter {
+export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
 	private deno: child_process.ChildProcess | undefined;
 
 	private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
@@ -322,13 +321,17 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 		const request = jsonrpc.request(id, message.method, message.params);
 
-		const promise = this.waitForResponse(request, options).finally(() => {
+		const { promise, abort } = this.waitForResponse(request, options);
+
+		try {
+			this.messenger.send(request);
+		} catch (e) {
+			abort(e);
+		}
+
+		return promise.finally(() => {
 			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
 		});
-
-		this.messenger.send(request);
-
-		return promise;
 	}
 
 	private waitUntilReady(): Promise<void> {
@@ -353,27 +356,41 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		});
 	}
 
-	private waitForResponse(req: jsonrpc.RequestObject, options = this.options): Promise<unknown> {
-		return new Promise((resolve, reject) => {
-			const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error']) => {
-				clearTimeout(timeoutId);
+	private waitForResponse(req: jsonrpc.RequestObject, options = this.options): { abort: AbortFunction; promise: Promise<unknown> } {
+		const controller = new AbortController();
+		const { abort, signal } = controller;
 
-				if (error) {
-					reject(error);
-				}
+		return {
+			abort: abort.bind(controller),
+			promise: new Promise((resolve, reject) => {
+				const eventName = `result:${req.id}`;
 
-				resolve(result);
-			};
+				const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error'] | Error) => {
+					this.off(eventName, responseCallback);
+					clearTimeout(timeoutId);
 
-			const eventName = `result:${req.id}`;
+					if (error) {
+						reject(error);
+					}
 
-			const timeoutId = setTimeout(() => {
-				this.off(eventName, responseCallback);
-				reject(new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out`));
-			}, options.timeout);
+					resolve(result);
+				};
 
-			this.once(eventName, responseCallback);
-		});
+				const timeoutId = setTimeout(
+					() =>
+						responseCallback(
+							undefined,
+							new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out after ${options.timeout}ms`),
+						),
+					options.timeout,
+				);
+
+				signal.onabort = () =>
+					responseCallback(undefined, signal.reason instanceof Error ? signal.reason : new Error(String(signal.reason)));
+
+				this.once(eventName, responseCallback);
+			}),
+		};
 	}
 
 	private onReady(): void {

@@ -1,6 +1,6 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import type { Method, PathPattern, OperationParams, UrlParams, OperationResult } from '@rocket.chat/rest-typings';
-import type { EndpointFunction } from '@rocket.chat/ui-contexts';
+import type { EndpointFunction, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import type { ContextType, ReactNode } from 'react';
@@ -59,8 +59,12 @@ const getStream = () => () => () => undefined; // to be implemented
 const callEndpoint = () => {
 	throw new Error('not implemented');
 }; // to be implemented
+const writeStream = () => undefined; // to be implemented
 
-const contextValue = {
+const contextValue: ServerContextValue = {
+	connected: true,
+	status: 'connected',
+	retryCount: 0,
 	info: undefined,
 	absoluteUrl,
 	// callMethod,
@@ -69,6 +73,7 @@ const contextValue = {
 	getStream,
 	reconnect: () => undefined,
 	disconnect: () => undefined,
+	writeStream,
 };
 
 type ServerProviderMockProps = {

@@ -1,13 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { LoginPage } from '../login';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
 	private readonly page: Page;
 
+	private readonly login: LoginPage;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.login = new LoginPage(page);
 	}
 
 	get advancedSettingsAccordion(): Locator {
@@ -101,12 +105,20 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
 	}
 
+	get accountLogoutOption(): Locator {
+		return this.userProfileMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
 	get searchList(): Locator {
 		return this.page.getByRole('search').getByRole('listbox');
 	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarListItemByName(name: string): Locator {
+		return this.sidebarChannelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
 	}
 
 	getSearchItemByName(name: string): Locator {
@@ -161,7 +173,8 @@ export class HomeSidenav {
 
 	async logout(): Promise<void> {
 		await this.btnUserProfileMenu.click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.accountLogoutOption.click();
+		await this.login.waitForIt();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
@@ -229,5 +242,13 @@ export class HomeSidenav {
 		await this.btnCreate.click();
 
 		await toastMessages.dismissToast('success');
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.page.waitForSelector('main');
+	}
+
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
 	}
 }

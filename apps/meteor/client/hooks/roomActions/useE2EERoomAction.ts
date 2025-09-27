@@ -5,9 +5,9 @@ import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from 
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { E2EEState } from '../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../app/e2e/client/E2ERoomState';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
+import { E2EEState } from '../../lib/e2ee/E2EEState';
+import { E2ERoomState } from '../../lib/e2ee/E2ERoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
@@ -115,7 +115,7 @@ export const useE2EERoomAction = () => {
 		return {
 			id: 'e2e',
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
-			title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
+			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
 			order: 13,
 			action,

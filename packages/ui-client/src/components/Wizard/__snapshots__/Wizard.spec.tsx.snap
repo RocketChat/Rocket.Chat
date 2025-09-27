@@ -7,7 +7,7 @@ exports[`renders BasicWizard without crashing 1`] = `
       class="rcx-box rcx-box--full"
     >
       <div
-        class="steps-wizard"
+        class="rcx-box rcx-box--full"
       >
         <div
           class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
@@ -43,44 +43,42 @@ exports[`renders BasicWizard without crashing 1`] = `
             </div>
           </div>
         </div>
-        <div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4q8ri8"
+        >
           <div
-            class="rcx-box rcx-box--full rcx-css-4q8ri8"
+            class="rcx-states"
           >
-            <div
-              class="rcx-states"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
-              >
-                
-              </i>
-              <h3
-                class="rcx-states__title"
-              >
-                First step
-              </h3>
-            </div>
+              
+            </i>
+            <h3
+              class="rcx-states__title"
+            >
+              First step
+            </h3>
           </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+        >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
           >
-            <div
-              class="rcx-button-group rcx-button-group--align-start"
-              role="group"
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="button"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-                type="button"
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Next
-                </span>
-              </button>
-            </div>
+                Next
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -96,7 +94,7 @@ exports[`renders OrderedTabsWizard without crashing 1`] = `
       class="rcx-box rcx-box--full"
     >
       <div
-        class="steps-wizard"
+        class="rcx-box rcx-box--full"
       >
         <div
           class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
@@ -132,44 +130,42 @@ exports[`renders OrderedTabsWizard without crashing 1`] = `
             </div>
           </div>
         </div>
-        <div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4q8ri8"
+        >
           <div
-            class="rcx-box rcx-box--full rcx-css-4q8ri8"
+            class="rcx-states"
           >
-            <div
-              class="rcx-states"
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
             >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
-              >
-                
-              </i>
-              <h3
-                class="rcx-states__title"
-              >
-                First step
-              </h3>
-            </div>
+              
+            </i>
+            <h3
+              class="rcx-states__title"
+            >
+              First step
+            </h3>
           </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+        >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
           >
-            <div
-              class="rcx-button-group rcx-button-group--align-start"
-              role="group"
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="button"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-                type="button"
+              <span
+                class="rcx-button--content"
               >
-                <span
-                  class="rcx-button--content"
-                >
-                  Next
-                </span>
-              </button>
-            </div>
+                Next
+              </span>
+            </button>
           </div>
         </div>
       </div>

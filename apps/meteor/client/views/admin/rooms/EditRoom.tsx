@@ -135,6 +135,8 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const favoriteField = useId();
 	const featuredField = useId();
 
+	const roomIsFederated = isRoomFederated(room);
+
 	return (
 		<>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
@@ -144,7 +146,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 							name='roomAvatar'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={value} room={room} onChangeAvatar={onChange} />
+								<RoomAvatarEditor disabled={roomIsFederated} roomAvatar={value} room={room} onChangeAvatar={onChange} />
 							)}
 						/>
 					</Box>
@@ -194,7 +196,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 										name='roomDescription'
 										control={control}
 										render={({ field }) => (
-											<TextAreaInput id={roomDescription} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+											<TextAreaInput id={roomDescription} {...field} rows={4} disabled={isDeleting || roomIsFederated} />
 										)}
 									/>
 								</FieldRow>
@@ -208,7 +210,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 										name='roomAnnouncement'
 										control={control}
 										render={({ field }) => (
-											<TextAreaInput id={roomAnnouncement} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+											<TextAreaInput id={roomAnnouncement} {...field} rows={4} disabled={isDeleting || roomIsFederated} />
 										)}
 									/>
 								</FieldRow>
@@ -237,7 +239,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 											<ToggleSwitch
 												{...field}
 												id={roomTypeField}
-												disabled={isDeleting || isRoomFederated(room)}
+												disabled={isDeleting || roomIsFederated}
 												checked={roomType === 'p'}
 												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
 												aria-describedby={`${roomTypeField}-hint`}
@@ -259,7 +261,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 											<ToggleSwitch
 												id={readOnlyField}
 												{...field}
-												disabled={isDeleting || isRoomFederated(room)}
+												disabled={isDeleting || roomIsFederated}
 												checked={value}
 												aria-describedby={`${readOnlyField}-hint`}
 											/>
@@ -280,7 +282,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 											<ToggleSwitch
 												id={reactWhenReadOnly}
 												{...field}
-												checked={value || isRoomFederated(room)}
+												checked={value || roomIsFederated}
 												aria-describedby={`${reactWhenReadOnly}-hint`}
 											/>
 										)}
@@ -297,7 +299,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 										name='archived'
 										control={control}
 										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 										)}
 									/>
 								</FieldRow>
@@ -312,7 +314,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 							name='isDefault'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 							)}
 						/>
 					</FieldRow>
@@ -336,7 +338,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 							name='featured'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 							)}
 						/>
 					</FieldRow>
@@ -353,7 +355,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 				</ButtonGroup>
 				<Box mbs={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

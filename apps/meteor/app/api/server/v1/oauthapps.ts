@@ -2,7 +2,6 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
-	isOauthAppsGetParams,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -88,6 +87,45 @@ const UpdateOAuthAppParamsSchema = {
 };
 
 const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
+
+type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
+
+const oauthAppsGetParamsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				clientId: {
+					type: 'string',
+				},
+			},
+			required: ['clientId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				appId: {
+					type: 'string',
+				},
+			},
+			required: ['appId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isOauthAppsGetParams = ajv.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
 
 const oauthAppsEndpoints = API.v1
 	.get(
@@ -218,13 +256,31 @@ const oauthAppsEndpoints = API.v1
 
 			return API.v1.success(result);
 		},
-	);
+	)
+	.get(
+		'oauth-apps.get',
+		{
+			authRequired: true,
+			query: isOauthAppsGetParams,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ oauthApp: IOAuthApps }>({
+					type: 'object',
+					properties: {
+						oauthApp: { anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['oauthApp', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
 
-API.v1.addRoute(
-	'oauth-apps.get',
-	{ authRequired: true, validateParams: isOauthAppsGetParams },
-	{
-		async get() {
+		async function action() {
 			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
 
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
@@ -244,8 +300,7 @@ API.v1.addRoute(
 				oauthApp,
 			});
 		},
-	},
-);
+	);
 
 export type OauthAppsEndpoints = ExtractRoutesFromAPI<typeof oauthAppsEndpoints>;
 

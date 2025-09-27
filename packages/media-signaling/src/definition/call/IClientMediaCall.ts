@@ -1,0 +1,93 @@
+import type { Emitter } from '@rocket.chat/emitter';
+
+import type { CallEvents } from './CallEvents';
+
+export type CallActorType = 'user' | 'sip';
+
+export type CallContact = {
+	type?: CallActorType;
+	id?: string;
+	contractId?: string;
+
+	displayName?: string;
+	username?: string;
+	sipExtension?: string;
+};
+
+export type CallRole = 'caller' | 'callee';
+
+export type CallService = 'webrtc';
+
+export type CallState =
+	| 'none' // trying to call with no idea if it'll reach anyone
+	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
+	| 'accepted' // call has been accepted and the webrtc offer is being exchanged
+	| 'active' // webrtc connection has been established
+	| 'renegotiating' // a webrtc connection had been established before, but a new one is being negotiated
+	| 'hangup'; // call is over
+
+export type CallHangupReason =
+	| 'normal' // User explicitly hanged up
+	| 'remote' // The client was told the call is over
+	| 'rejected' // The callee rejected the call
+	| 'unavailable' // The actor is not available
+	| 'transfer' // one of the users requested the other be transferred to someone else
+	| 'timeout' // The call state hasn't progressed for too long
+	| 'signaling-error' // Hanging up because of an error during the signal processing
+	| 'service-error' // Hanging up because of an error setting up the service connection
+	| 'media-error' // Hanging up because of an error setting up the media connection
+	| 'error' // Hanging up because of an unidentified error
+	| 'unknown'; // One of the call's signed users reported they don't know this call
+
+export type CallAnswer =
+	| 'accept' // actor accepts the call
+	| 'reject' // actor rejects the call
+	| 'ack' // agent confirms the actor is reachable
+	| 'unavailable'; // agent reports the actor is unavailable
+
+export type CallNotification =
+	| 'accepted' // notify that the call has been accepted by both actors
+	| 'active' // notify that call activity was confirmed
+	| 'hangup'; // notify that the call is over;
+
+export type CallRejectedReason =
+	| 'invalid-call-id' // the call id can't be used for a new call
+	| 'invalid-contract-id' // this specific contract can't request this call
+	| 'existing-call-id' // the call already exists with a different callee or contract
+	| 'already-requested' // the request is valid, but a call matching its params is already underway
+	| 'unsupported' // no matching supported services between actors
+	| 'unavailable' // the callee is unavailable
+	| 'busy' // the actor who requested the call is supposedly busy
+	| 'invalid-call-params' // something is wrong with the params (eg. no valid route between caller and callee)
+	| 'forbidden'; // one of the actors on the call doesn't have permission for it
+
+export interface IClientMediaCall {
+	callId: string;
+	role: CallRole;
+	service: CallService | null;
+
+	state: CallState;
+	ignored: boolean;
+	signed: boolean;
+	hidden: boolean;
+	muted: boolean;
+	/* if the call was put on hold */
+	held: boolean;
+	/* busy = state >= 'accepted' && state < 'hangup' */
+	busy: boolean;
+
+	contact: CallContact;
+
+	emitter: Emitter<CallEvents>;
+
+	getRemoteMediaStream(): MediaStream;
+
+	accept(): void;
+	reject(): void;
+	hangup(): void;
+	setMuted(muted: boolean): void;
+	setHeld(onHold: boolean): void;
+	transfer(callee: { type: CallActorType; id: string }): void;
+
+	sendDTMF(dtmf: string, duration?: number): void;
+}

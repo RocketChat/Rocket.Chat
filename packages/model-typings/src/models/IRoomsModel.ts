@@ -124,13 +124,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult>;
+	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult>;
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult>;
 
 	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult>;
-
-	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult>;
 
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult>;
 
@@ -315,4 +313,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
+	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
 }

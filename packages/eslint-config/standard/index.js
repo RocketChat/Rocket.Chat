@@ -122,6 +122,7 @@ module.exports = {
 					node: {
 						extensions: ['.js', '.ts', '.tsx'],
 					},
+					typescript: {},
 				},
 			},
 		},

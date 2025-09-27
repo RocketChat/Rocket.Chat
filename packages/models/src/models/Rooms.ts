@@ -97,6 +97,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			{ key: { t: 1, ts: 1 } },
 			{
+				key: { federated: 1 },
+				sparse: true,
+			},
+			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
 				},
@@ -301,7 +305,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: ['c', 'p'],
 			},
-			name: nameRegex,
+			$and: [{ $or: [{ name: nameRegex }, { fname: nameRegex }] }, { federated: { $ne: true } }, { archived: { $ne: true } }],
 			$or: [
 				{
 					teamId: {
@@ -318,7 +322,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			],
 			prid: { $exists: false },
-			$and: [{ federated: { $ne: true } }, { archived: { $ne: true } }],
 		};
 
 		return this.find(query, options);
@@ -664,8 +667,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { 'federated': true, 'federation.mrid': mrid, 'federation.origin': origin } });
 	}
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult> {
@@ -674,10 +677,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { name } });
-	}
-
-	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { sidepanel } });
 	}
 
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {
@@ -2213,5 +2212,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number) {
 		return this.countDocuments({ _id: rid, rolePrioritiesCreated: syncVersion });
+	}
+
+	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<string[]> {
+		// TODO implement
+		return [];
 	}
 }

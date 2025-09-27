@@ -5,7 +5,6 @@ import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 
 export default {
-	title: 'Room/Contextual Bar/UserInfo',
 	component: UserInfo,
 	parameters: {
 		layout: 'fullscreen',
