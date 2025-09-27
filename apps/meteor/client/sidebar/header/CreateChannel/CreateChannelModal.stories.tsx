@@ -4,7 +4,6 @@ import CreateChanelModal from './CreateChannelModal';
 import CreateChannelModalV2 from '../../../NavBarV2/NavBarPagesGroup/actions/CreateChannelModal';
 
 export default {
-	title: 'views/sidebar/CreateChanelModal',
 	component: CreateChanelModal,
 } satisfies Meta<typeof CreateChanelModal>;
 
