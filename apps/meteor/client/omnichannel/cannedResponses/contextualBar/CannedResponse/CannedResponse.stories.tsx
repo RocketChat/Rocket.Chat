@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CannedResponse from './CannedResponse';
 
 export default {
-	title: 'Omnichannel/CannedResponse',
 	component: CannedResponse,
 	parameters: {
 		actions: {
