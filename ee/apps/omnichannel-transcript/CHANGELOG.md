@@ -1,5 +1,21 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.38-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, 752e6d41463a1d24e6478e9a815d096c61bcccd9, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, 3dfb557f723a395bc1e00f2647675968c46656bc, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.0
+  - @rocket.chat/i18n@1.11.0-rc.0
+  - @rocket.chat/model-typings@1.8.0-rc.0
+  - @rocket.chat/core-services@0.10.1-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.35-rc.0
+  - @rocket.chat/network-broker@0.2.17-rc.0
+  - @rocket.chat/pdf-worker@0.3.17-rc.0
+  </details>
+
 ## 0.4.37
 
 ### Patch Changes
