@@ -704,9 +704,17 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Decrypt messages
-	async decryptMessage(message: IMessage): Promise<IMessage> {
-		if (message.e2e === 'done') {
+	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IE2EEMessage | IMessage> {
+		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
+		}
+
+		if (message.msg) {
+			const data = await this.decrypt(message.msg);
+
+			if (data?.text) {
+				message.msg = data.text;
+			}
 		}
 
 		message = isEncryptedMessageContent(message) ? await this.decryptContent(message) : message;
@@ -742,8 +750,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decrypt(
-		message: Required<IMessage>['content'],
-	): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
+		message: string | Required<IMessage>['content'],
+	): Promise<
+		| { _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined }
+		| { _id?: undefined; text?: undefined; userId?: undefined; ts?: undefined; msg: string }
+	> {
 		const span = log.span('decrypt').set('rid', this.roomId);
 		const payload = this.parse(message);
 		span.set('payload', payload);
