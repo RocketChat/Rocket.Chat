@@ -156,12 +156,20 @@ const MakeJoinQuerySchema = {
 	type: 'object',
 	properties: {
 		ver: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			minItems: 0,
-			description: 'Supported room versions',
+			anyOf: [
+				{
+					type: 'string',
+					description: 'Supported room version',
+				},
+				{
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					minItems: 0,
+					description: 'Supported room versions',
+				},
+			],
 		},
 	},
 };
