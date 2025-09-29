@@ -277,8 +277,8 @@ const BackfillQuerySchema = {
 			description: 'Maximum number of events to retrieve',
 		},
 		v: {
-			type: 'string',
-			description: 'Event ID to backfill from',
+			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			description: 'Event ID(s) to backfill from',
 		},
 	},
 	required: ['limit', 'v'],
@@ -287,7 +287,7 @@ const BackfillQuerySchema = {
 
 const isBackfillQueryProps = ajv.compile<{
 	limit: number;
-	v: string;
+	v: string | string[];
 }>(BackfillQuerySchema);
 
 const BackfillResponseSchema = {
@@ -473,8 +473,8 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Number(c.req.query('limit') || 100);
-					const eventId = c.req.query('v');
-					if (!eventId) {
+					const eventIdParam = c.req.query('v');
+					if (!eventIdParam) {
 						return {
 							body: {
 								errcode: 'M_BAD_REQUEST',
@@ -484,8 +484,10 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						};
 					}
 
+					const eventIds = Array.isArray(eventIdParam) ? eventIdParam : [eventIdParam];
+
 					try {
-						const result = await event.getBackfillEvents(roomId, eventId as EventID, limit);
+						const result = await event.getBackfillEvents(roomId, eventIds as EventID[], limit);
 
 						return {
 							body: result,
