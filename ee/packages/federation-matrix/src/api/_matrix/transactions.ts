@@ -473,8 +473,8 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Number(c.req.query('limit') || 100);
-					const eventIdParam = c.req.query('v');
-					if (!eventIdParam) {
+					const eventIds = c.req.queries('v');
+					if (!eventIds?.length) {
 						return {
 							body: {
 								errcode: 'M_BAD_REQUEST',
@@ -483,8 +483,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 							statusCode: 400,
 						};
 					}
-
-					const eventIds = Array.isArray(eventIdParam) ? eventIdParam : [eventIdParam];
 
 					try {
 						const result = await event.getBackfillEvents(roomId, eventIds as EventID[], limit);
