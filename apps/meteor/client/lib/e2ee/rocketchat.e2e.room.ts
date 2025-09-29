@@ -27,6 +27,7 @@ import {
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
 	decryptAes,
+	joinVectorAndEncryptedData,
 } from './helper';
 import { createLogger } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -673,7 +674,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Helper function for encryption of messages
-	encrypt(message: IMessage) {
+	async encrypt(message: IMessage) {
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {
 			return;
 		}
@@ -693,7 +694,13 @@ export class E2ERoom extends Emitter {
 			}),
 		);
 
-		return this.encryptText(data);
+		const payload = await this.encryptText(data);
+
+		const iv = Base64.decode(payload.iv);
+		const ciphertext = Base64.decode(payload.ciphertext);
+
+		const joined = joinVectorAndEncryptedData(iv, ciphertext.buffer);
+		return `${payload.kid}${Base64.encode(joined)}`;
 	}
 
 	async decryptContent<T extends EncryptedMessageContent>(data: T) {
@@ -740,8 +747,10 @@ export class E2ERoom extends Emitter {
 		}
 		// v1: kid + base64(vector + ciphertext)
 		const message = typeof payload === 'string' ? payload : payload.ciphertext;
-		const [kid, decoded] = [message.slice(0, 12), Base64.decode(message.slice(12))];
-		const { iv, ciphertext } = splitVectorAndEncryptedData(decoded, 16);
+		const kidLength = message.includes('-') ? 36 : 12;
+		const ivLength = kidLength === 36 ? 12 : 16;
+		const [kid, decoded] = [message.slice(0, kidLength), Base64.decode(message.slice(kidLength))];
+		const { iv, ciphertext } = splitVectorAndEncryptedData(decoded, ivLength);
 		return {
 			kid,
 			iv,
