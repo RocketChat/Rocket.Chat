@@ -1,9 +1,15 @@
+import type { IMediaSignalLogger } from '../../../definition';
+
 export class Stream {
 	protected mediaStream: MediaStream;
 
 	protected enabled: boolean;
 
-	constructor(mediaStream: MediaStream) {
+	constructor(
+		mediaStream: MediaStream,
+		protected readonly peer: RTCPeerConnection,
+		protected readonly logger?: IMediaSignalLogger,
+	) {
 		this.mediaStream = mediaStream;
 		this.enabled = true;
 	}
@@ -26,6 +32,7 @@ export class Stream {
 	}
 
 	protected toggleAudioTracks(): void {
+		this.logger?.debug('Stream.toggleAudioTracks', this.enabled);
 		this.mediaStream.getAudioTracks().forEach((track) => {
 			if (!track) {
 				return;
@@ -36,6 +43,7 @@ export class Stream {
 	}
 
 	protected removeAudioTracks(): void {
+		this.logger?.debug('Stream.removeAudioTracks');
 		this.mediaStream.getAudioTracks().forEach((track) => {
 			if (!track) {
 				return;
@@ -45,17 +53,20 @@ export class Stream {
 		});
 	}
 
-	protected setAudioTrack(newTrack: MediaStreamTrack): void {
-		if (newTrack?.kind !== 'audio') {
-			return;
+	protected setAudioTrack(newTrack: MediaStreamTrack): boolean {
+		if (newTrack.kind !== 'audio') {
+			return false;
 		}
 
-		if (this.mediaStream.getTrackById(newTrack.id)) {
-			return;
+		this.logger?.debug('Stream.setAudioTrack', newTrack.id);
+		const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
+		if (matchingTrack) {
+			this.logger?.debug('Stream.setAudioTrack.return', 'track found by id');
+			return false;
 		}
 
 		this.removeAudioTracks();
 		this.mediaStream.addTrack(newTrack);
-		newTrack.enabled = this.enabled;
+		return true;
 	}
 }

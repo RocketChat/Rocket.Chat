@@ -110,9 +110,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public endSession(): void {
 		this.disableStateReport();
+
+		// best‑effort: stop capturing audio
+		void this.setInputTrack(null).catch(() => undefined);
+
 		for (const call of this.knownCalls.values()) {
+			this.ignoredCalls.add(call.callId);
 			call.ignore();
 		}
+
+		this.knownCalls.clear();
 	}
 
 	public getCallData(callId: string): IClientMediaCall | null {
@@ -179,6 +186,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 
+		this.config.logger?.debug('MediaSignalingSession.setDeviceId');
 		await this.setInputTrack(null);
 		await this.startInputTrack();
 	}
@@ -237,6 +245,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			const localCall = this.knownCalls.get(signal.requestedCallId);
 			if (localCall) {
 				this.knownCalls.set(signal.callId, localCall);
+				this.knownCalls.delete(signal.requestedCallId);
 				return localCall;
 			}
 		}
@@ -306,7 +315,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.setInputTrack');
+		this.config.logger?.debug('MediaSignalingSession.setInputTrack', Boolean(newInputTrack));
 		const { inputTrack: oldInputTrack } = this;
 		if (newInputTrack === oldInputTrack) {
 			return;
@@ -315,11 +324,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.inputTrack = newInputTrack;
 
 		for await (const call of this.knownCalls.values()) {
-			await call.setInputTrack(newInputTrack);
+			await call.setInputTrack(newInputTrack).catch((error) => {
+				if (newInputTrack) {
+					throw error;
+				}
+			});
 		}
 
 		if (oldInputTrack) {
-			oldInputTrack.stop();
+			this.config.logger?.debug('MediaSignalingSession.setInputTrack.stopOldTrack');
+			try {
+				oldInputTrack.stop();
+			} catch {
+				//
+			}
 		}
 	}
 
@@ -332,6 +350,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async updateInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.updatingInputTrack', this.callsToGetUserMedia);
 		this.updatingInputTrack = true;
 
 		try {
@@ -342,14 +361,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 			await this.maybeStartInputTrack();
 		} finally {
-			this.updatingInputTrack = this.callsToGetUserMedia > 0;
+			this.updatingInputTrack = false;
+			this.config.logger?.debug('MediaSignalingSession.updatingInputTrack.finally', this.callsToGetUserMedia);
 		}
 	}
 
 	private async maybeStartInputTrack(): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.maybeStartInputTrack');
 		for (const call of this.knownCalls.values()) {
-			if (!call.mayNeedInputTrack()) {
+			if (!call.needsInputTrack()) {
 				continue;
 			}
 
@@ -366,7 +386,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async startInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.startInputTrack');
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack', this.callsToGetUserMedia);
 
 		this.currentDeviceId = this.deviceId;
 
@@ -377,6 +397,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		} finally {
 			this.callsToGetUserMedia--;
 		}
+
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		// If there's multiple simultaneous attempts to get the track, only process the output of the last one
 		if (this.callsToGetUserMedia > 0) {

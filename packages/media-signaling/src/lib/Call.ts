@@ -155,6 +155,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private creationTimestamp: Date;
 
+	private pendingAnswerRequest: ServerMediaSignalRemoteSDP | null;
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -180,6 +182,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.creationTimestamp = new Date();
+		this.pendingAnswerRequest = null;
 
 		this.currentNegotiationId = null;
 		this.earlySignals = new Set();
@@ -314,7 +317,11 @@ export class ClientMediaCall implements IClientMediaCall {
 			return false;
 		}
 
-		return ['active', 'renegotiating'].includes(this._state);
+		if (this.role === 'caller') {
+			return this.hasRemoteData;
+		}
+
+		return this.busy;
 	}
 
 	public hasInputTrack(): boolean {
@@ -365,11 +372,18 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
-		this.config.logger?.debug('ClientMediaCall.setInputTrack');
+		this.config.logger?.debug('ClientMediaCall.setInputTrack', Boolean(newInputTrack));
+		if (newInputTrack && (this.isOver() || this.hidden)) {
+			return;
+		}
 
 		this.inputTrack = newInputTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
+		}
+
+		if (newInputTrack && this.pendingAnswerRequest) {
+			await this.processAnswerRequest(this.pendingAnswerRequest);
 		}
 	}
 
@@ -616,6 +630,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	public sendDTMF(dtmf: string, duration?: number): void {
+		if (!dtmf || !/^[0-9A-D#*,]$/.exec(dtmf)) {
+			throw new Error('Invalid DTMF tone.');
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'dtmf', {
+			dtmf,
+			duration,
+		});
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -743,6 +768,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
+		this.pendingAnswerRequest = null;
 		if (this.hidden || this.shouldIgnoreWebRTC()) {
 			return;
 		}
@@ -760,10 +786,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 		this.currentNegotiationId = negotiationId;
 
+		if (!this.hasInputTrack()) {
+			this.pendingAnswerRequest = signal;
+			this.config.logger?.debug('Delaying WebRTC Answer due to missing audio input track.');
+			return;
+		}
+
 		let answer: { sdp: RTCSessionDescriptionInit } | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
+			this.config.logger?.error(e);
 			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
 			throw e;
 		}
