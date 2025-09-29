@@ -159,7 +159,7 @@ const MakeJoinQuerySchema = {
 			anyOf: [
 				{
 					type: 'string',
-					description: 'Supported room versions',
+					description: 'Supported room version',
 				},
 				{
 					type: 'array',
