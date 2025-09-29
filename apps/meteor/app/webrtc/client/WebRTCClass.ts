@@ -1055,8 +1055,9 @@ const WebRTC = new (class {
 		}
 		if (this.instancesByRoomId[rid] == null) {
 			const uid = visitorId ?? getUserId();
+			if (!uid) return undefined;
 			const autoAccept = !!visitorId;
-			this.instancesByRoomId[rid] = new WebRTCClass(uid!, rid, autoAccept);
+			this.instancesByRoomId[rid] = new WebRTCClass(uid, rid, autoAccept);
 		}
 		return this.instancesByRoomId[rid];
 	}
