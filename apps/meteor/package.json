@@ -128,7 +128,7 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.17",
 		"@types/oauth2-server": "^3.0.18",
