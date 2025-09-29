@@ -153,20 +153,15 @@ const MakeJoinParamsSchema = {
 const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
 
 const MakeJoinQuerySchema = {
-	anyOf: [
-		{
-			type: 'object',
-			properties: {
-				ver: {
+	type: 'object',
+	properties: {
+		ver: {
+			anyOf: [
+				{
 					type: 'string',
 					description: 'Supported room versions',
 				},
-			},
-		},
-		{
-			type: 'object',
-			properties: {
-				ver: {
+				{
 					type: 'array',
 					items: {
 						type: 'string',
@@ -174,9 +169,9 @@ const MakeJoinQuerySchema = {
 					minItems: 0,
 					description: 'Supported room versions',
 				},
-			},
+			],
 		},
-	],
+	},
 };
 
 // @ts-ignore
