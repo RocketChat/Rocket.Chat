@@ -7059,5 +7059,6 @@
   "You_cannot_add_external_users_to_non_federated_room": "You cannot add external users to a non-federated room",
   "VERIFIED": "User is verified",
   "UNVERIFIED": "User is unverified",
-  "UNABLE_TO_VERIFY": "Unable to verify user"
+  "UNABLE_TO_VERIFY": "Unable to verify user",
+  "Users_invited": "The users have been invited"
 }
