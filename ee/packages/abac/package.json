@@ -1,0 +1,40 @@
+{
+  "name": "@rocket.chat/abac",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Rocket.Chat Enterprise - Attribute Based Access Control (ABAC) support utilities",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
+    "test": "jest",
+    "testunit": "jest",
+    "typecheck": "tsc --noEmit --skipLibCheck"
+  },
+  "volta": {
+    "extends": "../../../package.json"
+  },
+  "dependencies": {
+    "@rocket.chat/core-services": "workspace:^",
+    "@rocket.chat/core-typings": "workspace:^"
+  },
+  "devDependencies": {
+    "@rocket.chat/eslint-config": "workspace:^",
+    "@rocket.chat/tsconfig": "workspace:*",
+    "@types/jest": "~30.0.0",
+    "@types/node": "~22.16.1",
+    "eslint": "~8.45.0",
+    "jest": "~30.0.5",
+    "typescript": "~5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "SEE LICENSE IN ../../../../LICENSE"
+}
