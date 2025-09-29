@@ -34,7 +34,7 @@ const workspaceCommPayloadSchema = z.object({
 				startAt: z.string().datetime(),
 				createdBy: z.enum(['cloud', 'system']),
 				createdAt: z.string().datetime(),
-				dictionary: z.record(z.record(z.string())).optional(),
+				dictionary: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 				view: z.unknown(),
 				surface: z.enum(['banner', 'modal']),
 			}),
@@ -73,7 +73,7 @@ const fetchCloudAnnouncementsSync = async ({
 	const assertWorkspaceCommPayload = workspaceCommPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceCommPayload.success) {
-		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceCommPayload.error.errors });
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceCommPayload.error.issues });
 	}
 
 	return payload;
