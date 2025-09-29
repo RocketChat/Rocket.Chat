@@ -8471,7 +8471,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/emojione": "npm:^2.2.9"
     "@types/node": "npm:~22.16.5"
-    "@types/sanitize-html": "npm:^2"
+    "@types/sanitize-html": "npm:~2.16.0"
     "@vector-im/matrix-bot-sdk": "npm:^0.7.1-element.6"
     babel-jest: "npm:~30.2.0"
     emojione: "npm:^4.5.0"
@@ -8482,7 +8482,7 @@ __metadata:
     pino: "npm:^9.11.0"
     pino-pretty: "npm:^7.6.1"
     reflect-metadata: "npm:^0.2.2"
-    sanitize-html: "npm:^2.17.0"
+    sanitize-html: "npm:~2.17.0"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
     typescript: "npm:~5.8.3"
@@ -9336,7 +9336,7 @@ __metadata:
     "@types/qs": "npm:^6.14.0"
     "@types/react": "npm:~18.3.24"
     "@types/react-dom": "npm:~18.3.7"
-    "@types/sanitize-html": "npm:^2.13.0"
+    "@types/sanitize-html": "npm:~2.16.0"
     "@types/semver": "npm:^7.5.8"
     "@types/sharp": "npm:^0.32.0"
     "@types/sinon": "npm:^10.0.20"
@@ -9521,7 +9521,7 @@ __metadata:
     react-stately: "npm:~3.17.0"
     react-virtuoso: "npm:^4.12.0"
     reflect-metadata: "npm:^0.2.2"
-    sanitize-html: "npm:^2.14.0"
+    sanitize-html: "npm:~2.16.0"
     semver: "npm:^7.6.3"
     sharp: "npm:^0.33.5"
     sinon: "npm:^19.0.5"
@@ -14207,21 +14207,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sanitize-html@npm:^2":
+"@types/sanitize-html@npm:~2.16.0":
   version: 2.16.0
   resolution: "@types/sanitize-html@npm:2.16.0"
   dependencies:
     htmlparser2: "npm:^8.0.0"
   checksum: 10/988cbdecce06b858fc5c92ed5573eb984852234be4ea4001ad703a9f0a00a491d788cfb0e3002b2cc01180e2598e7c8f9e5836fbe795601740aa91df3345d564
-  languageName: node
-  linkType: hard
-
-"@types/sanitize-html@npm:^2.13.0":
-  version: 2.13.0
-  resolution: "@types/sanitize-html@npm:2.13.0"
-  dependencies:
-    htmlparser2: "npm:^8.0.0"
-  checksum: 10/a32c67bdf86048efa8ee5cdc1a68351758bae888956010eea58e694c1f9fc580632d1ce0478d31984559e0b03282d130ffe3e87479838c8da92cf1ac06626edc
   languageName: node
   linkType: hard
 
@@ -34551,7 +34542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.11.0, sanitize-html@npm:^2.14.0":
+"sanitize-html@npm:^2.11.0":
   version: 2.14.0
   resolution: "sanitize-html@npm:2.14.0"
   dependencies:
@@ -34565,7 +34556,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.17.0":
+"sanitize-html@npm:~2.16.0":
+  version: 2.16.0
+  resolution: "sanitize-html@npm:2.16.0"
+  dependencies:
+    deepmerge: "npm:^4.2.2"
+    escape-string-regexp: "npm:^4.0.0"
+    htmlparser2: "npm:^8.0.0"
+    is-plain-object: "npm:^5.0.0"
+    parse-srcset: "npm:^1.0.2"
+    postcss: "npm:^8.3.11"
+  checksum: 10/eac99df964e3600717dec90867b4098ca66a75e8b0b2bb7ab1661090b35ebefd7776829d023905fbb55e58b2dd05a27dd3b99dde76d8bd75a973a26b4d77cd7a
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:~2.17.0":
   version: 2.17.0
   resolution: "sanitize-html@npm:2.17.0"
   dependencies:
