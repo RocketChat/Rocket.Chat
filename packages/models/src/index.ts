@@ -92,6 +92,7 @@ import type {
 	IMediaCallChannelsModel,
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
+	IAbacAttributesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -118,6 +119,7 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
+	AbacAttributesRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -226,6 +228,7 @@ export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
+export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -260,6 +263,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 }
 
 if (!dbWatchersDisabled) {
