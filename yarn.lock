@@ -8524,7 +8524,7 @@ __metadata:
     "@rocket.chat/models": "workspace:*"
     "@rocket.chat/network-broker": "workspace:^"
     "@types/bun": "npm:latest"
-    "@types/express": "npm:^4.17.17"
+    "@types/express": "npm:^4.17.23"
     eslint: "npm:~8.45.0"
     hono: "npm:^3.11.0"
     pino: "npm:^9.11.0"
@@ -13414,7 +13414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.17, @types/express@npm:^4.17.23":
+"@types/express@npm:*, @types/express@npm:^4.17.23":
   version: 4.17.23
   resolution: "@types/express@npm:4.17.23"
   dependencies:
