@@ -1,5 +1,21 @@
 # Change Log
 
+## 23.0.0-rc.0
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- <details><summary>Updated dependencies [f139c0d42790f0df076f32b4184f6b846bcdbc26, d76a5578ed0e14fae2a041c0e09d565b28630d76, 3484c1fa14beafa62460f00de5a89cbfa4fa0db5, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 72d9474b2f9149d8690d3483237bd2273d6799ac, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/apps-engine@1.56.0-rc.0
+  - @rocket.chat/gazzodown@23.0.0-rc.0
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.0
+  - @rocket.chat/ui-avatar@19.0.0-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  </details>
+
 ## 22.0.0
 
 ### Patch Changes
