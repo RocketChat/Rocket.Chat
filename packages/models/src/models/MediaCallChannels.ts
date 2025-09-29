@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor, MediaCallChannelError } from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, FindOptions, Document } from 'mongodb';
 
@@ -68,5 +68,16 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 	public async setActiveById(_id: string): Promise<UpdateResult> {
 		return this.updateOne({ _id, activeAt: { $exists: false } }, { $set: { state: 'active', activeAt: new Date() } });
+	}
+
+	public async addErrorById(id: string, error: MediaCallChannelError): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: id },
+			{
+				$addToSet: {
+					errors: error,
+				},
+			},
+		);
 	}
 }

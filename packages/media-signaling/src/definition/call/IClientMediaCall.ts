@@ -36,6 +36,7 @@ export type CallHangupReason =
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
+	| 'input-error' // Something wrong with the audio input track on the client
 	| 'error' // Hanging up because of an unidentified error
 	| 'unknown'; // One of the call's signed users reported they don't know this call
 
