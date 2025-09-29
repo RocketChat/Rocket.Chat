@@ -761,6 +761,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (!offer) {
 			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
+			return;
 		}
 
 		await this.deliverSdp({ ...offer, negotiationId });
@@ -815,7 +816,7 @@ export class ClientMediaCall implements IClientMediaCall {
 				errorCode: 'failed-to-create-answer',
 				negotiationId,
 				critical: true,
-				errorDetails: JSON.stringify(e),
+				errorDetails: serializeError(e),
 			});
 			throw e;
 		}
