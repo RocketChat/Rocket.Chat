@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { Users } from '../stores';
 
 /**
- * @private do not consume this store directly
+ * @private do not consume this store directly -- consume it via UserContext
  */
 export const userIdStore = create<IUser['_id'] | undefined>(() => undefined);
 
