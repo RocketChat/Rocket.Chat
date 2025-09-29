@@ -11,7 +11,9 @@ export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMe
 	const { t } = useTranslation();
 	const timestampFeatureEnabled = useFeaturePreview('enable-timestamp-message-parser');
 
-	if (!timestampFeatureEnabled) return undefined;
+	if (!timestampFeatureEnabled) {
+		return;
+	}
 
 	const handleClick = () => {
 		if (!composer) {
@@ -24,7 +26,7 @@ export const useTimestampAction = (composer: ComposerAPI | undefined): GenericMe
 	return {
 		id: 'timestamp',
 		icon: 'clock',
-		content: t('Add_date_and_time'),
+		content: t('Timestamp'),
 		onClick: handleClick,
 	};
 };

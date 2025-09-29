@@ -7050,7 +7050,7 @@
   "__roomName__was_added_to_favorites": "{{roomName}} was added to favorites",
   "__roomName__was_removed_from_favorites": "{{roomName}} was removed from favorites",
   "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}",
-  "Add_date_and_time": "Add date and time",
+  "Insert_timestamp": "Insert timestamp",
   "Insert": "Insert",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is no longer {{role}} by {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} was set {{role}} by {{user_by}}",

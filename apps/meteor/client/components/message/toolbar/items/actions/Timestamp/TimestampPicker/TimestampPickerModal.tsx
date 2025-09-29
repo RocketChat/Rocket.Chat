@@ -54,7 +54,9 @@ export const TimestampPickerModal = ({ onClose, composer }: TimestampPickerProps
 
 	return (
 		<GenericModal
-			title={t('Add_date_and_time')}
+			variant='warning'
+			icon={null}
+			title={t('Insert_timestamp')}
 			onConfirm={handleSubmit(onSubmit)}
 			onCancel={onClose}
 			onClose={onClose}

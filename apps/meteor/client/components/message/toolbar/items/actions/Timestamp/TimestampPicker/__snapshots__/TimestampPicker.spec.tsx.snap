@@ -65,23 +65,13 @@ exports[`Story Tests renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
                 id=":r1:-title"
               >
-                Add_date_and_time
+                Insert_timestamp
               </h2>
             </div>
             <button
@@ -497,7 +487,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
               disabled=""
               type="button"
             >
