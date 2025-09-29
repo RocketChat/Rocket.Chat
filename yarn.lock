@@ -8107,6 +8107,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/abac@workspace:^, @rocket.chat/abac@workspace:ee/packages/abac":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/abac@workspace:ee/packages/abac"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    "@types/node": "npm:~22.16.1"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~30.0.5"
+    typescript: "npm:~5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/account-service@workspace:ee/apps/account-service":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-service@workspace:ee/apps/account-service"
@@ -9208,6 +9224,7 @@ __metadata:
     "@playwright/test": "npm:^1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^3.4.5"
+    "@rocket.chat/abac": "workspace:^"
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
