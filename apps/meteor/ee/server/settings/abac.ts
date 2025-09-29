@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	void settingsRegistry.addGroup('ABAC', async function () {
+	void settingsRegistry.addGroup('General', async function () {
 		await this.with(
 			{
 				enterprise: true,
@@ -12,6 +12,7 @@ export function addSettings(): void {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
+					section: 'ABAC',
 				});
 			},
 		);
