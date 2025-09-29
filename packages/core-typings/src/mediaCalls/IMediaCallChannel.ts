@@ -5,7 +5,6 @@ export type MediaCallChannelError = {
 	ts: Date;
 	errorType: string;
 	errorCode?: string;
-	errorDetails?: string;
 	negotiationId?: string;
 };
 

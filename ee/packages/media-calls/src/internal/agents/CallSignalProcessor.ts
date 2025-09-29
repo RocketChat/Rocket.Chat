@@ -146,6 +146,7 @@ export class UserActorSignalProcessor {
 			errorType,
 			errorCode,
 			critical,
+			errorDetails,
 			callId: this.callId,
 			role: this.role,
 			state: this.call.state,
@@ -156,7 +157,6 @@ export class UserActorSignalProcessor {
 			errorType,
 			ts: new Date(),
 			...(errorCode && { errorCode }),
-			...(errorDetails && { errorDetails }),
 			...(negotiationId && { negotiationId }),
 		}).catch(() => null);
 
