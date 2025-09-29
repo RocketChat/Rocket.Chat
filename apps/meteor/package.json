@@ -222,7 +222,7 @@
 		"@babel/runtime": "~7.28.4",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
-		"@datastructures-js/priority-queue": "^6.3.3",
+		"@datastructures-js/priority-queue": "^6.3.4",
 		"@google-cloud/storage": "^7.15.0",
 		"@kaciras/deasync": "^1.1.0",
 		"@nivo/bar": "0.88.0",

@@ -2911,7 +2911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datastructures-js/priority-queue@npm:^6.3.3":
+"@datastructures-js/priority-queue@npm:^6.3.3, @datastructures-js/priority-queue@npm:^6.3.4":
   version: 6.3.4
   resolution: "@datastructures-js/priority-queue@npm:6.3.4"
   dependencies:
@@ -9171,7 +9171,7 @@ __metadata:
     "@babel/runtime": "npm:~7.28.4"
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
-    "@datastructures-js/priority-queue": "npm:^6.3.3"
+    "@datastructures-js/priority-queue": "npm:^6.3.4"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.15.0"
     "@kaciras/deasync": "npm:^1.1.0"
