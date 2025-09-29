@@ -9427,7 +9427,7 @@ __metadata:
     filenamify: "npm:^4.3.0"
     filesize: "npm:9.0.11"
     generate-password: "npm:^1.7.1"
-    google-libphonenumber: "npm:^3.2.42"
+    google-libphonenumber: "npm:^3.2.43"
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
@@ -23755,10 +23755,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-libphonenumber@npm:^3.2.42":
-  version: 3.2.42
-  resolution: "google-libphonenumber@npm:3.2.42"
-  checksum: 10/ab89024a26b798f4485c1cc1c06206b6f14ea95bd90418a9e131e1c6a7405d1b47e4c049d8aeae38c8347f2febd3fe826c351ef768bd0b033877b32a2acd39d9
+"google-libphonenumber@npm:^3.2.43":
+  version: 3.2.43
+  resolution: "google-libphonenumber@npm:3.2.43"
+  checksum: 10/644ae5d4a8961b03430ecc502bcab6d94f501cbbea5eb8e82257cf4fc8c6507bfb3713c718af53cae76daf2421ed87919455a22e92e8d631ecd59d213e0f20e6
   languageName: node
   linkType: hard
 
