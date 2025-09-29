@@ -179,12 +179,11 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
 	};
 
-	const [playTone, toneRefCallback] = useTonePlayer(audioOutput?.id);
+	const playTone = useTonePlayer(audioOutput?.id);
 
 	const onTone = (tone: string) => {
 		session.sendTone(tone);
 		if (isValidTone(tone)) {
-			console.log('playing tone', tone);
 			playTone(tone as any);
 		}
 	};
@@ -253,12 +252,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		<MediaCallContext.Provider value={contextValue}>
 			{createPortal(
 				<audio ref={remoteStreamRefCallback}>
-					<track kind='captions' />
-				</audio>,
-				document.body,
-			)}
-			{createPortal(
-				<audio ref={toneRefCallback}>
 					<track kind='captions' />
 				</audio>,
 				document.body,

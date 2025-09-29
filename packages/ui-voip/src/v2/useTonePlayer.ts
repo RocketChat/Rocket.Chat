@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 class TonePlayer {
 	private audioContext: AudioContext;
 
-	// private audioElement: HTMLAudioElement;
+	private audioElement: HTMLAudioElement;
 
 	private gainNode: GainNode;
 
@@ -11,31 +11,33 @@ class TonePlayer {
 
 	private destination: MediaStreamAudioDestinationNode;
 
-	// private elementSource: MediaElementAudioSourceNode;
-
-	constructor(/* sinkId?: string */) {
+	constructor() {
 		this.audioContext = new AudioContext();
-		// this.audioElement = new Audio();
-		// if (sinkId) {
-		// 	console.log(sinkId);
-		// 	this.audioElement.setSinkId(sinkId);
-		// }
+		this.audioElement = new Audio();
 
+		// Route audio through an audio element
+		// In order to be able to set the sink id
 		this.destination = this.audioContext.createMediaStreamDestination();
-		// this.audioContext.destination.connect(this.destination);
-		// this.audioElement.srcObject = this.destination.stream;
+		this.audioElement.srcObject = this.destination.stream;
 
+		// Audio volume control
 		this.gainNode = this.audioContext.createGain();
+		this.gainNode.gain.value = 0.5;
+
+		// This filter makes the sound more natural
 		this.filter = this.audioContext.createBiquadFilter();
 		this.filter.type = 'lowpass';
 		this.filter.frequency.value = 8000;
-		this.gainNode.gain.value = 0.5;
+
 		this.gainNode.connect(this.filter);
 		this.filter.connect(this.destination);
 	}
 
-	public getStream() {
-		return this.destination.stream;
+	public setSinkId(sinkId: string) {
+		if (this.audioElement.setSinkId) {
+			return this.audioElement.setSinkId(sinkId);
+		}
+		console.warn('setSinkId not supported on this browser');
 	}
 
 	public static setupOscillator(audioCtx: AudioContext, filter: AudioNode) {
@@ -55,6 +57,13 @@ class TonePlayer {
 		lowFrequencyOscillator.start();
 		highFrequencyOscillator.start();
 
+		// Ensure audio element is playing
+		if (this.audioElement.paused) {
+			this.audioElement.play().catch((error) => {
+				console.warn('Failed to play audio element:', error);
+			});
+		}
+
 		setTimeout(() => {
 			lowFrequencyOscillator.stop();
 			highFrequencyOscillator.stop();
@@ -63,18 +72,10 @@ class TonePlayer {
 		}, durationMs ?? 400);
 	}
 
-	// public playAudioElement() {
-	// 	console.log('playing audio element');
-	// 	if (!this.audioElement.paused) {
-	// 		return;
-	// 	}
-	// 	this.audioElement.play();
-	// }
-
 	public destroy() {
 		this.audioContext.close();
-		// this.audioElement.pause();
-		// this.audioElement.srcObject = null;
+		this.audioElement.pause();
+		this.audioElement.srcObject = null;
 	}
 }
 
@@ -103,40 +104,23 @@ export const useTonePlayer = (sinkId?: string) => {
 	useEffect(() => {
 		tonePlayer.current = new TonePlayer();
 		return () => tonePlayer.current?.destroy();
+	}, []);
+
+	useEffect(() => {
+		if (tonePlayer.current && sinkId) {
+			tonePlayer.current.setSinkId(sinkId);
+		}
 	}, [sinkId]);
 
-	// useEffect(() => {
-	// 	if (tonePlayer.current instanceof TonePlayer && sinkId) {
-	// 		void tonePlayer.current.setSinkId(sinkId);
-	// 	}
-	// }, [sinkId]);
 	const playTone = useCallback(
 		(digit: keyof typeof DIGIT_TONE_MAP) => {
 			if (!tonePlayer.current) {
 				return;
 			}
-			// tonePlayer.current.playAudioElement();
 			tonePlayer.current.play(DIGIT_TONE_MAP[digit][0], DIGIT_TONE_MAP[digit][1], 250);
 		},
 		[tonePlayer],
 	);
 
-	const stream = tonePlayer.current?.getStream();
-
-	const toneRefCallback = useCallback(
-		(node: HTMLAudioElement) => {
-			if (!node || !stream) {
-				return;
-			}
-
-			if (sinkId) {
-				node.setSinkId(sinkId);
-			}
-			node.srcObject = stream;
-			node.play();
-		},
-		[stream, sinkId],
-	);
-
-	return [playTone, toneRefCallback] as const;
+	return playTone;
 };
