@@ -11,10 +11,11 @@ import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
-import { generateRSAKey, exportJWKKey, importRSAKey, generatePassphrase } from './helper';
+import { generatePassphrase } from './helper';
 import { createLogger } from './logger';
 import { getMasterKey, type Pbkdf2Options } from './pbkdf2';
 import { E2ERoom } from './rocketchat.e2e.room';
+import * as Rsa from './rsa';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -51,7 +52,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null | undefined;
 
-	public privateKey: CryptoKey | undefined;
+	public privateKey: Rsa.PrivateKey | undefined;
 
 	public publicKey: string | undefined;
 
@@ -444,7 +445,7 @@ class E2E extends Emitter {
 		this.publicKey = public_key;
 
 		try {
-			this.privateKey = await importRSAKey(JSON.parse(private_key), ['decrypt']);
+			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
 
 			Accounts.storageLocation.setItem('private_key', private_key);
 		} catch (error) {
@@ -457,17 +458,17 @@ class E2E extends Emitter {
 		const span = log.span('createAndLoadKeys');
 		// Could not obtain public-private keypair from server.
 		this.setState('LOADING_KEYS');
-		let key;
+		let keyPair;
 		try {
-			key = await generateRSAKey();
-			this.privateKey = key.privateKey;
+			keyPair = await Rsa.generateKeyPair();
+			this.privateKey = keyPair.privateKey;
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error generating key');
 		}
 
 		try {
-			const publicKey = await exportJWKKey(key.publicKey);
+			const publicKey = await Rsa.exportKey(keyPair.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
@@ -477,7 +478,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const privateKey = await exportJWKKey(key.privateKey);
+			const privateKey = await Rsa.exportKey(keyPair.privateKey);
 
 			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {

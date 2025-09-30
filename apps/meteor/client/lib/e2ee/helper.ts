@@ -25,50 +25,12 @@ export function toArrayBuffer(thing: any) {
 	return ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 
-export async function encryptRSA(key: CryptoKey, data: BufferSource) {
-	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
-}
-
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'AES-CTR', counter, length: 64 }, key, data);
 }
 
-export async function decryptRSA(key: CryptoKey, data: BufferSource) {
-	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
-}
-
 export function generateAESCTRKey(): Promise<CryptoKey> {
 	return crypto.subtle.generateKey({ name: 'AES-CTR', length: 256 }, true, ['encrypt', 'decrypt']);
-}
-
-export function generateRSAKey(): Promise<CryptoKeyPair> {
-	return crypto.subtle.generateKey(
-		{
-			name: 'RSA-OAEP',
-			modulusLength: 2048,
-			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-			hash: { name: 'SHA-256' },
-		},
-		true,
-		['encrypt', 'decrypt'],
-	);
-}
-
-export function exportJWKKey(key: CryptoKey): Promise<JsonWebKey> {
-	return crypto.subtle.exportKey('jwk', key);
-}
-
-export function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
-	return crypto.subtle.importKey(
-		'jwk',
-		keyData,
-		{
-			name: 'RSA-OAEP',
-			hash: { name: 'SHA-256' },
-		},
-		true,
-		keyUsages,
-	);
 }
 
 export function readFileAsArrayBuffer(file: File) {
