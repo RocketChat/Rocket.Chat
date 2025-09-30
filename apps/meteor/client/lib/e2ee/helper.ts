@@ -37,8 +37,8 @@ export function splitVectorAndEncryptedData(
 	cipherText: Uint8Array<ArrayBuffer>,
 	ivLength: 12 | 16,
 ): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
-	const iv = cipherText.subarray(0, ivLength);
-	const ciphertext = cipherText.subarray(ivLength);
+	const iv = cipherText.slice(0, ivLength);
+	const ciphertext = cipherText.slice(ivLength);
 	return { iv, ciphertext };
 }
 
@@ -74,7 +74,7 @@ async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSourc
 }
 
 export function decryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	if (key.algorithm.name === 'AES-GCM') {
+	if (iv.byteLength === 12) {
 		return decryptAesGcm(iv, key, data);
 	}
 	return decryptAesCbc(iv, key, data);

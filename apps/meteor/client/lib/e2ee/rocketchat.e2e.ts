@@ -169,7 +169,9 @@ class E2E extends Emitter {
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
-			await Promise.all(subscriptions.map((sub) => this.onSubscriptionChanged(sub)));
+			for (const sub of subscriptions) {
+				void this.onSubscriptionChanged(sub);
+			}
 		});
 	}
 
@@ -690,10 +692,12 @@ class E2E extends Emitter {
 
 		const data = await e2eRoom.decrypt(pinnedMessage.content);
 
-		message.attachments[0].text = data.msg ?? data.text;
+		span.set('data', data);
 
-		span.set('decryptedPinnedMessage', message).info('pinned message decrypted');
+		// TODO(@cardoso): review backward compatibility
+		message.attachments[0].text = data.msg;
 
+		span.info('pinned message decrypted');
 		return message;
 	}
 

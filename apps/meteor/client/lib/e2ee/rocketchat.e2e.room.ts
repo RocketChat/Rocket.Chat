@@ -1,6 +1,14 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Base64 } from '@rocket.chat/base64';
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, AtLeast, EncryptedMessageContent } from '@rocket.chat/core-typings';
+import type {
+	IE2EEMessage,
+	IMessage,
+	IRoom,
+	ISubscription,
+	IUser,
+	AtLeast,
+	EncryptedMessageContent,
+	EncryptedContent,
+} from '@rocket.chat/core-typings';
 import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
@@ -8,15 +16,13 @@ import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
 import { decodePrefixedBase64, encodePrefixedBase64 } from './codec';
+import { decodeEncryptedContent } from './content';
 import {
 	toString,
 	toArrayBuffer,
-	// joinVectorAndEncryptedData,
-	splitVectorAndEncryptedData,
 	encryptRSA,
 	encryptAes,
 	decryptRSA,
-	// decryptAesGcm,
 	generateAesGcmKey,
 	exportJWKKey,
 	importAesKey,
@@ -27,7 +33,6 @@ import {
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
 	decryptAes,
-	joinVectorAndEncryptedData,
 } from './helper';
 import { createLogger } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -415,6 +420,7 @@ export class E2ERoom extends Emitter {
 			const key = await importAesKey(JSON.parse(this.sessionKeyExportedString!));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
+			span.info('Group key imported');
 		} catch (error) {
 			span.set('error', error).error('Error importing group key');
 			return false;
@@ -673,40 +679,9 @@ export class E2ERoom extends Emitter {
 		} as IE2EEMessage;
 	}
 
-	// Helper function for encryption of messages
-	async encrypt(message: IMessage) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return;
-		}
-
-		if (!this.groupSessionKey) {
-			throw new Error(t('E2E_Invalid_Key'));
-		}
-
-		const ts = new Date();
-
-		const data = new TextEncoder().encode(
-			EJSON.stringify({
-				_id: message._id,
-				text: message.msg,
-				userId: this.userId,
-				ts,
-			}),
-		);
-
-		const payload = await this.encryptText(data);
-
-		const iv = Base64.decode(payload.iv);
-		const ciphertext = Base64.decode(payload.ciphertext);
-
-		const joined = joinVectorAndEncryptedData(iv, ciphertext.buffer);
-		return `${payload.kid}${Base64.encode(joined)}`;
-	}
-
 	async decryptContent<T extends EncryptedMessageContent>(data: T) {
 		const content = await this.decrypt(data.content);
 		Object.assign(data, content);
-
 		return data;
 	}
 
@@ -716,11 +691,11 @@ export class E2ERoom extends Emitter {
 			return message;
 		}
 
-		if (message.msg) {
+		// TODO(@cardoso): review backward compatibility
+		if (message.msg && !isEncryptedMessageContent(message)) {
 			const data = await this.decrypt(message.msg);
-
-			if (data?.text) {
-				message.msg = data.text;
+			if (data.msg) {
+				message.msg = data.msg;
 			}
 		}
 
@@ -732,40 +707,9 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	// Parses the message to extract the keyID and cipherText
-	parse(payload: string | Required<IMessage>['content']): {
-		kid: string;
-		iv: Uint8Array<ArrayBuffer>;
-		ciphertext: Uint8Array<ArrayBuffer>;
-	} {
-		// v2: {"kid":"...", "iv": "...", "ciphertext":"..."}
-		if (typeof payload !== 'string' && payload.algorithm === 'rc.v2.aes-sha2') {
-			const iv = Base64.decode(payload.iv);
-			const ciphertext = Base64.decode(payload.ciphertext);
-
-			return { kid: payload.kid, iv, ciphertext };
-		}
-		// v1: kid + base64(vector + ciphertext)
-		const message = typeof payload === 'string' ? payload : payload.ciphertext;
-		const kidLength = message.includes('-') ? 36 : 12;
-		const ivLength = kidLength === 36 ? 12 : 16;
-		const [kid, decoded] = [message.slice(0, kidLength), Base64.decode(message.slice(kidLength))];
-		const { iv, ciphertext } = splitVectorAndEncryptedData(decoded, ivLength);
-		return {
-			kid,
-			iv,
-			ciphertext,
-		};
-	}
-
-	async decrypt(
-		message: string | Required<IMessage>['content'],
-	): Promise<
-		| { _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined }
-		| { _id?: undefined; text?: undefined; userId?: undefined; ts?: undefined; msg: string }
-	> {
+	async decrypt(message: string | EncryptedContent): Promise<Pick<Partial<IMessage>, 'attachments' | 'files' | 'file' | 'msg'>> {
 		const span = log.span('decrypt').set('rid', this.roomId);
-		const payload = this.parse(message);
+		const payload = decodeEncryptedContent(message);
 		span.set('payload', payload);
 		const { kid, iv, ciphertext } = payload;
 
@@ -781,9 +725,23 @@ export class E2ERoom extends Emitter {
 		span.set('usages', key.usages.toString());
 		try {
 			const result = await decryptAes(iv, key, ciphertext);
-			const ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
-			span.info('decrypted');
-			return ret;
+			const ret: unknown = EJSON.parse(new TextDecoder('UTF-8').decode(result));
+			if (typeof ret !== 'object' || ret === null) {
+				span.error('Decrypted message is not an object');
+				return { msg: t('E2E_indecipherable') };
+			}
+
+			if ('text' in ret && typeof ret.text === 'string' && !('msg' in ret)) {
+				const { text, ...rest } = ret;
+				return { msg: text, ...rest };
+			}
+
+			if ('msg' in ret && typeof ret.msg === 'string') {
+				const { msg, ...rest } = ret;
+				return { msg, ...rest };
+			}
+
+			return { ...ret };
 		} catch (error) {
 			span.set('error', error).error('Error decrypting message');
 			return { msg: t('E2E_Key_Error') };
