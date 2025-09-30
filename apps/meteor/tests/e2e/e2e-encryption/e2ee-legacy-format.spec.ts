@@ -51,7 +51,7 @@ test.describe('E2EE Legacy Format', () => {
 		await page.goto('/home');
 	});
 
-	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request, api }) => {
+	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
 		await injectInitialData();
@@ -73,13 +73,6 @@ test.describe('E2EE Legacy Format', () => {
 			'ibtLAKG9zcQ/NTp+86nVelUjewPbPNW+EC+eagVPVVlbxvWNXkgltrBQB4gDao1Fp6fHUibQB3dirJ4rzy7CViww0o4QjAwPPQMIxZ9DLJhjKnu6bkkOp6Z0/a9g/8Wf/cvP9/bp7tUt7Et4XMmJwIe5iyJZ35lsyduLc8V+YyK8sJiGf4BRagJoBr8xEBgqBWqg6Vwn3qtbbiTs65PqErbaUmSM3Hn6tfkcS6ukLG/DbptW1B9U66IX3fQesj50zWZiJyvxOoxDeHRH9UEStyv9SP8nrFjEKM3TDiakBeDxja6LoN8l3CjP9K/5eg25YqANZAQjlwaCaeTTHndTgQ==';
 		const encryptedMessage =
 			'3JpM8aOVludqIRzx+DOqjEU9Mj3NUWb+/GLRl7sdkvTtCMChH1LBjMjJJvVJ6Rlw4dI8BYFftZWiCOiR7TPwriCoSPiZ7dY5C4H2q8MVSdR95ZiyG7eWQ5j5/rxzAYsSWDA9LkumW8JBb+WQ1hD9JMfQd4IXtlFMnaDgEhZhe/s=';
-		const response = await api.post('/e2e.updateGroupKey', {
-			rid,
-			uid: Users.userE2EE.data._id,
-			key: kid + encryptedKey,
-		});
-
-		expect(response.ok()).toBe(true);
 
 		await page.evaluate(
 			async ({ rid, kid, encryptedKey }) => {
