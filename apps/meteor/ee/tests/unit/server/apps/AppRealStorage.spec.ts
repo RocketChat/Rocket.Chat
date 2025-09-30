@@ -148,25 +148,33 @@ describe('AppRealStorage', () => {
 		it('should throw error when _id is missing', async () => {
 			const itemWithoutId = { ...mockAppStorageItem };
 
-			await expect(storage.updatePartialAndReturnDocument(itemWithoutId as any)).to.be.rejectedWith('Property _id is required to update an app storage item');
+			await expect(storage.updatePartialAndReturnDocument(itemWithoutId as any)).to.be.rejectedWith(
+				'Property _id is required to update an app storage item',
+			);
 		});
 
 		it('should throw error when _id is null', async () => {
 			const itemWithNullId = { ...mockAppStorageItem, _id: null };
 
-			await expect(storage.updatePartialAndReturnDocument(itemWithNullId as any)).to.be.rejectedWith('Property _id is required to update an app storage item');
+			await expect(storage.updatePartialAndReturnDocument(itemWithNullId as any)).to.be.rejectedWith(
+				'Property _id is required to update an app storage item',
+			);
 		});
 
 		it('should throw error when _id is undefined', async () => {
 			const itemWithUndefinedId = { ...mockAppStorageItem, _id: undefined };
 
-			await expect(storage.updatePartialAndReturnDocument(itemWithUndefinedId as any)).to.be.rejectedWith('Property _id is required to update an app storage item');
+			await expect(storage.updatePartialAndReturnDocument(itemWithUndefinedId as any)).to.be.rejectedWith(
+				'Property _id is required to update an app storage item',
+			);
 		});
 
 		it('should throw error when _id is empty string', async () => {
 			const itemWithEmptyId = { ...mockAppStorageItem, _id: '' };
 
-			await expect(storage.updatePartialAndReturnDocument(itemWithEmptyId as any)).to.be.rejectedWith('Property _id is required to update an app storage item');
+			await expect(storage.updatePartialAndReturnDocument(itemWithEmptyId as any)).to.be.rejectedWith(
+				'Property _id is required to update an app storage item',
+			);
 		});
 
 		it('should unset permissionsGranted when unsetPermissionsGranted is true', async () => {
