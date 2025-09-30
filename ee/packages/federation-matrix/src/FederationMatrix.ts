@@ -1,6 +1,4 @@
-import 'reflect-metadata';
-
-import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, ServiceClass } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -10,34 +8,12 @@ import {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
-import { ConfigService, createFederationContainer, getAllServices } from '@rocket.chat/federation-sdk';
-import type {
-	EventID,
-	HomeserverEventSignatures,
-	HomeserverServices,
-	FederationContainerOptions,
-	FileMessageType,
-	PresenceState,
-} from '@rocket.chat/federation-sdk';
-import { Router } from '@rocket.chat/http-router';
+import { getAllServices } from '@rocket.chat/federation-sdk';
+import type { EventID, HomeserverServices, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
-import { getWellKnownRoutes } from './api/.well-known/server';
-import { getMatrixInviteRoutes } from './api/_matrix/invite';
-import { getKeyServerRoutes } from './api/_matrix/key/server';
-import { getMatrixMediaRoutes } from './api/_matrix/media';
-import { getMatrixProfilesRoutes } from './api/_matrix/profiles';
-import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
-import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
-import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
-import { getFederationVersionsRoutes } from './api/_matrix/versions';
-import { isFederationDomainAllowedMiddleware } from './api/middlewares/isFederationDomainAllowed';
-import { isFederationEnabledMiddleware } from './api/middlewares/isFederationEnabled';
-import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
-import { registerEvents } from './events';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
@@ -48,94 +24,40 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
-export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
-
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
-	private eventHandler: Emitter<HomeserverEventSignatures>;
+	private serverName: string;
+
+	private processEDUTyping: boolean;
+
+	private processEDUPresence: boolean;
 
 	private homeserverServices: HomeserverServices;
 
-	private serverName: string;
-
 	private readonly logger = new Logger(this.name);
 
-	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
+	async created(): Promise<void> {
+		// although this is async function, it is not awaited, so we need to register the listeners before everything else
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction === 'removed') {
+				return;
+			}
 
-	private processEDUTyping = false;
-
-	private processEDUPresence = false;
-
-	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
-		super();
-		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
-	}
-
-	static async create(instanceId: string, emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
-		const instance = new FederationMatrix(emitter);
-		const settingsSigningAlg = await Settings.get<string>('Federation_Service_Matrix_Signing_Algorithm');
-		const settingsSigningVersion = await Settings.get<string>('Federation_Service_Matrix_Signing_Version');
-		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
-		const serverHostname = (await Settings.get<string>('Federation_Service_Domain')).trim();
-
-		instance.serverName = serverHostname;
-
-		instance.processEDUTyping = await Settings.get<boolean>('Federation_Service_EDU_Process_Typing');
-		instance.processEDUPresence = await Settings.get<boolean>('Federation_Service_EDU_Process_Presence');
-
-		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
-
-		const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
-
-		const config = new ConfigService({
-			instanceId,
-			serverName: serverHostname,
-			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
-			matrixDomain: serverHostname,
-			version: process.env.SERVER_VERSION || '1.0',
-			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey}`,
-			signingKeyPath: process.env.CONFIG_FOLDER || './rocketchat.signing.key',
-			database: {
-				uri: mongoUri,
-				name: dbName,
-				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
-			},
-			media: {
-				maxFileSize: Number.parseInt(process.env.MEDIA_MAX_FILE_SIZE || '100', 10) * 1024 * 1024,
-				allowedMimeTypes: process.env.MEDIA_ALLOWED_MIME_TYPES?.split(',') || [
-					'image/jpeg',
-					'image/png',
-					'image/gif',
-					'image/webp',
-					'text/plain',
-					'application/pdf',
-					'video/mp4',
-					'audio/mpeg',
-					'audio/ogg',
-				],
-				enableThumbnails: process.env.MEDIA_ENABLE_THUMBNAILS === 'true' || true,
-				rateLimits: {
-					uploadPerMinute: Number.parseInt(process.env.MEDIA_UPLOAD_RATE_LIMIT || '10', 10),
-					downloadPerMinute: Number.parseInt(process.env.MEDIA_DOWNLOAD_RATE_LIMIT || '60', 10),
-				},
-			},
+			const { _id, value } = setting;
+			if (_id === 'Federation_Service_Domain' && typeof value === 'string') {
+				this.serverName = value;
+			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
+				this.processEDUTyping = value;
+			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
+				this.processEDUPresence = value;
+			}
 		});
 
-		const containerOptions: FederationContainerOptions = {
-			emitter: instance.eventHandler,
-		};
-
-		await createFederationContainer(containerOptions, config);
-		instance.homeserverServices = getAllServices();
-		MatrixMediaService.setHomeserverServices(instance.homeserverServices);
-		instance.buildMatrixHTTPRoutes();
-
-		instance.onEvent(
+		this.onEvent(
 			'presence.status',
 			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
-				if (!instance.processEDUPresence) {
+				if (!this.processEDUPresence) {
 					return;
 				}
 
@@ -160,7 +82,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
-				void instance.homeserverServices.edu.sendPresenceUpdateToRooms(
+				void this.homeserverServices.edu.sendPresenceUpdateToRooms(
 					[
 						{
 							user_id: localUser.federation.mui,
@@ -172,47 +94,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		);
 
-		instance.logger.startup(`Federation Matrix Homeserver created for domain ${instance.serverName}`);
+		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
+		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
+		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 
-		return instance;
-	}
-
-	private buildMatrixHTTPRoutes() {
-		const matrix = new Router('/_matrix');
-		const wellKnown = new Router('/.well-known');
-
-		matrix
-			.use(isFederationEnabledMiddleware)
-			.use(isLicenseEnabledMiddleware)
-			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes(this.homeserverServices))
-			.use(isFederationDomainAllowedMiddleware)
-			.use(getMatrixInviteRoutes(this.homeserverServices))
-			.use(getMatrixProfilesRoutes(this.homeserverServices))
-			.use(getMatrixRoomsRoutes(this.homeserverServices))
-			.use(getMatrixSendJoinRoutes(this.homeserverServices))
-			.use(getMatrixTransactionsRoutes(this.homeserverServices))
-			.use(getMatrixMediaRoutes(this.homeserverServices));
-
-		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
-
-		this.httpRoutes = { matrix, wellKnown };
-	}
-
-	async created(): Promise<void> {
 		try {
-			registerEvents(this.eventHandler, this.serverName, { typing: this.processEDUTyping, presence: this.processEDUPresence });
-		} catch (error) {
-			this.logger.warn('Homeserver module not available, running in limited mode');
+			this.homeserverServices = getAllServices();
+
+			MatrixMediaService.setHomeserverServices(this.homeserverServices);
+		} catch (err) {
+			this.logger.warn({ msg: 'Homeserver module not available, running in limited mode', err });
 		}
-	}
-
-	getAllRoutes() {
-		return this.httpRoutes;
-	}
-
-	getServerName(): string {
-		return this.serverName;
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {

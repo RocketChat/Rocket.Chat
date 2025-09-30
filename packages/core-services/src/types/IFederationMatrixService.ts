@@ -1,11 +1,6 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
-import type { Router } from '@rocket.chat/http-router';
 
 export interface IFederationMatrixService {
-	getAllRoutes(): {
-		matrix: Router<'/_matrix'>;
-		wellKnown: Router<'/.well-known'>;
-	};
 	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
 	ensureFederatedUsersExistLocally(members: string[]): Promise<void>;
 	createDirectMessageRoom(room: IRoomFederated, members: IUser[], creatorId: IUser['_id']): Promise<void>;

@@ -2818,15 +2818,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hono/node-server@npm:^1.14.4":
-  version: 1.14.4
-  resolution: "@hono/node-server@npm:1.14.4"
-  peerDependencies:
-    hono: ^4
-  checksum: 10/3cbe4133507ae6da949f5f34b74a0d84aaef597710b14675c773f4349a65b1bcdafc2503df26c409104626d23a18ca0c2783fe790d509478b117a85f1984f518
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.11.10":
   version: 0.11.10
   resolution: "@humanwhocodes/config-array@npm:0.11.10"
@@ -7353,7 +7344,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/core-typings@workspace:*, @rocket.chat/core-typings@workspace:^, @rocket.chat/core-typings@workspace:packages/core-typings, @rocket.chat/core-typings@workspace:~":
+"@rocket.chat/core-typings@workspace:^, @rocket.chat/core-typings@workspace:packages/core-typings, @rocket.chat/core-typings@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
@@ -7587,36 +7578,6 @@ __metadata:
   checksum: 10/05109707f0f17f8b9b3e93298dbf9083dc2c9250a8d4b8efc2bb4305d1a086717e07553485df27c5c7d8222f2f706bf0d91c97ac3b5df219883d4f43e6813dd4
   languageName: node
   linkType: hard
-
-"@rocket.chat/federation-service@workspace:^, @rocket.chat/federation-service@workspace:ee/apps/federation-service":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/federation-service@workspace:ee/apps/federation-service"
-  dependencies:
-    "@hono/node-server": "npm:^1.14.4"
-    "@rocket.chat/core-services": "workspace:^"
-    "@rocket.chat/core-typings": "workspace:*"
-    "@rocket.chat/emitter": "npm:^0.31.25"
-    "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.1.13"
-    "@rocket.chat/http-router": "workspace:*"
-    "@rocket.chat/instance-status": "workspace:^"
-    "@rocket.chat/license": "workspace:^"
-    "@rocket.chat/models": "workspace:*"
-    "@rocket.chat/network-broker": "workspace:^"
-    "@types/bun": "npm:latest"
-    "@types/express": "npm:^4.17.17"
-    eslint: "npm:~8.45.0"
-    hono: "npm:^3.11.0"
-    pino: "npm:^9.11.0"
-    pino-pretty: "npm:^7.6.1"
-    polka: "npm:^0.5.2"
-    reflect-metadata: "npm:^0.2.2"
-    tsyringe: "npm:^4.10.0"
-    tweetnacl: "npm:^1.0.3"
-    typescript: "npm:^5.3.0"
-    zod: "npm:^3.22.4"
-  languageName: unknown
-  linkType: soft
 
 "@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
   version: 0.0.0-use.local
@@ -7869,7 +7830,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/http-router@workspace:*, @rocket.chat/http-router@workspace:^, @rocket.chat/http-router@workspace:packages/http-router":
+"@rocket.chat/http-router@workspace:^, @rocket.chat/http-router@workspace:packages/http-router":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/http-router@workspace:packages/http-router"
   dependencies:
@@ -8274,7 +8235,6 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-service": "workspace:^"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.66.4"
     "@rocket.chat/fuselage-forms": "npm:^0.1.0"
@@ -8680,7 +8640,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/models@workspace:*, @rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models":
+"@rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/models@workspace:packages/models"
   dependencies:
@@ -11290,15 +11250,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bun@npm:latest":
-  version: 1.2.16
-  resolution: "@types/bun@npm:1.2.16"
-  dependencies:
-    bun-types: "npm:1.2.16"
-  checksum: 10/aaa67912ed6fe57a77682cb023996d7d6fb33487a0efd52fa770cc2be4a1a84924d67a45b8788d7741d85c6d92b1a33c11665daba9c8955e5abe7cdda1f1980e
-  languageName: node
-  linkType: hard
-
 "@types/busboy@npm:^1.5.4":
   version: 1.5.4
   resolution: "@types/busboy@npm:1.5.4"
@@ -11847,7 +11798,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.17, @types/express@npm:^4.17.23":
+"@types/express@npm:*, @types/express@npm:^4.17.23":
   version: 4.17.23
   resolution: "@types/express@npm:4.17.23"
   dependencies:
@@ -15852,15 +15803,6 @@ __metadata:
   version: 0.0.1
   resolution: "bulk-replace@npm:0.0.1"
   checksum: 10/8ec7043c194a5361f6fb9ac38d45102c0d71a641fd8db92a5f5aa3e5d7de1d378e113ab90227003c0ed41f3d9d48700dd847c1592e333cd7a565bed1898a0756
-  languageName: node
-  linkType: hard
-
-"bun-types@npm:1.2.16":
-  version: 1.2.16
-  resolution: "bun-types@npm:1.2.16"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/c64962b32fc0d43f67cca4dda7632bfe9f3ca784a9d0217236fb249d84a1185e6f164165ad3d177c1b6dc64b14890594da1997fc1a9adc855d5057f9ad3fb2a0
   languageName: node
   linkType: hard
 
@@ -22286,13 +22228,6 @@ __metadata:
   dependencies:
     parse-passwd: "npm:^1.0.0"
   checksum: 10/18dd4db87052c6a2179d1813adea0c4bfcfa4f9996f0e226fefb29eb3d548e564350fa28ec46b0bf1fbc0a1d2d6922ceceb80093115ea45ff8842a4990139250
-  languageName: node
-  linkType: hard
-
-"hono@npm:^3.11.0":
-  version: 3.12.12
-  resolution: "hono@npm:3.12.12"
-  checksum: 10/1020c90065e0824b4dc24e3326da081a634ce4b95b04c6d3b695d7dfb3bcc9cc66ace506fff5fdd2ec560891809eb974cede2e634ba79405726e8f690f2c3efc
   languageName: node
   linkType: hard
 
@@ -35845,16 +35780,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.3.0, typescript@npm:~5.9.2":
-  version: 5.9.2
-  resolution: "typescript@npm:5.9.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10/cc2fe6c822819de5d453fa25aa9f32096bf70dde215d481faa1ad84a283dfb264e33988ed8f6d36bc803dd0b16dbe943efa311a798ef76d5b3892a05dfbfd628
-  languageName: node
-  linkType: hard
-
 "typescript@npm:~5.8.3":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
@@ -35865,13 +35790,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.3.0#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+"typescript@npm:~5.9.2":
   version: 5.9.2
-  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
+  resolution: "typescript@npm:5.9.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/bd810ab13e8e557225a8b5122370385440b933e4e077d5c7641a8afd207fdc8be9c346e3c678adba934b64e0e70b0acf5eef9493ea05170a48ce22bef845fdc7
+  checksum: 10/cc2fe6c822819de5d453fa25aa9f32096bf70dde215d481faa1ad84a283dfb264e33988ed8f6d36bc803dd0b16dbe943efa311a798ef76d5b3892a05dfbfd628
   languageName: node
   linkType: hard
 
@@ -35882,6 +35807,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/b9b1e73dabac5dc730c041325dbd9c99467c1b0d239f1b74ec3b90d831384af3e2ba973946232df670519147eb51a2c20f6f96163cea2b359f03de1e2091cc4f
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+  version: 5.9.2
+  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/bd810ab13e8e557225a8b5122370385440b933e4e077d5c7641a8afd207fdc8be9c346e3c678adba934b64e0e70b0acf5eef9493ea05170a48ce22bef845fdc7
   languageName: node
   linkType: hard
 
