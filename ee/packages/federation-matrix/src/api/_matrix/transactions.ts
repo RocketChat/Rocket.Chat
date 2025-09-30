@@ -2,7 +2,8 @@ import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { isAuthenticatedMiddleware, canAccessResourceMiddleware } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
@@ -320,7 +321,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 	return (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware(federationAuth))
-			.use(canAccessResourceMiddleware(federationAuth))
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -367,7 +367,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 			)
 
 			// GET /_matrix/federation/v1/state_ids/{roomId}
-
+			.use(canAccessResourceMiddleware(federationAuth, 'room'))
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -427,6 +427,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 			)
 			// GET /_matrix/federation/v1/event/{eventId}
+			.use(canAccessResourceMiddleware(federationAuth, 'event'))
 			.get(
 				'/v1/event/:eventId',
 				{

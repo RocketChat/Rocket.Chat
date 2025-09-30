@@ -2,7 +2,8 @@ import { eventIdSchema, roomIdSchema, userIdSchema, type HomeserverServices, typ
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { canAccessResourceMiddleware, isAuthenticatedMiddleware } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const UsernameSchema = {
 	type: 'string',
@@ -356,7 +357,6 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 
 	return new Router('/federation')
 		.use(isAuthenticatedMiddleware(federationAuth))
-		.use(canAccessResourceMiddleware(federationAuth))
 		.get(
 			'/v1/query/profile',
 			{
@@ -418,17 +418,17 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
-			async (c) => {
-				const { userId } = c.req.param();
-
-				const response = await profile.getDevices(userId);
-
+			async (_c) => {
 				return {
-					body: response,
-					statusCode: 200,
+					body: {
+						errcode: 'M_UNRECOGNIZED',
+						error: 'This endpoint is not implemented on the homeserver side',
+					},
+					statusCode: 501,
 				};
 			},
 		)
+		.use(canAccessResourceMiddleware(federationAuth, 'room'))
 		.get(
 			'/v1/make_join/:roomId/:userId',
 			{

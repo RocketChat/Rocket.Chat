@@ -6,7 +6,7 @@ import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
-import { isAuthenticatedMiddleware, canAccessResourceMiddleware } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 
 const MediaDownloadParamsSchema = {
 	type: 'object',
@@ -76,8 +76,7 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
 	const { config, federationAuth } = homeserverServices;
 	return new Router('/federation')
-		.use(isAuthenticatedMiddleware(federationAuth))
-		.use(canAccessResourceMiddleware(federationAuth))
+		.use(canAccessResourceMiddleware(federationAuth, 'media'))
 		.get(
 			'/v1/media/download/:mediaId',
 			{

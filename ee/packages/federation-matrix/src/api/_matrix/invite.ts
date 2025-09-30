@@ -14,7 +14,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
-import { isAuthenticatedMiddleware, canAccessResourceMiddleware } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -323,39 +323,36 @@ export const acceptInvite = async (
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	const { invite, state, room, federationAuth } = services;
 
-	return new Router('/federation')
-		.use(isAuthenticatedMiddleware(federationAuth))
-		.use(canAccessResourceMiddleware(federationAuth))
-		.put(
-			'/v2/invite/:roomId/:eventId',
-			{
-				body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
-				params: isProcessInviteParamsProps,
-				response: {
-					200: isProcessInviteResponseProps,
-				},
-				tags: ['Federation'],
-				license: ['federation'],
+	return new Router('/federation').use(canAccessResourceMiddleware(federationAuth, 'room')).put(
+		'/v2/invite/:roomId/:eventId',
+		{
+			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
+			params: isProcessInviteParamsProps,
+			response: {
+				200: isProcessInviteResponseProps,
 			},
-			async (c) => {
-				const { roomId, eventId } = c.req.param();
-				const { event, room_version: roomVersion } = await c.req.json();
+			tags: ['Federation'],
+			license: ['federation'],
+		},
+		async (c) => {
+			const { roomId, eventId } = c.req.param();
+			const { event, room_version: roomVersion } = await c.req.json();
 
-				const userToCheck = event.state_key as string;
+			const userToCheck = event.state_key as string;
 
-				if (!userToCheck) {
-					throw new Error('join event has missing state key, unable to determine user to join');
-				}
+			if (!userToCheck) {
+				throw new Error('join event has missing state key, unable to determine user to join');
+			}
 
-				const [username /* domain */] = userToCheck.split(':');
+			const [username /* domain */] = userToCheck.split(':');
 
-				// TODO: check domain
+			// TODO: check domain
 
-				const ourUser = await Users.findOneByUsername(username.slice(1));
+			const ourUser = await Users.findOneByUsername(username.slice(1));
 
-				if (!ourUser) {
-					throw new Error('user not found not processing invite');
-				}
+			if (!ourUser) {
+				throw new Error('user not found not processing invite');
+			}
 
 			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
 
@@ -371,12 +368,12 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				inviteEvent.event.content.is_direct ? 2000 : 0,
 			);
 
-				return {
-					body: {
-						event: inviteEvent.event,
-					},
-					statusCode: 200,
-				};
-			},
-		);
+			return {
+				body: {
+					event: inviteEvent.event,
+				},
+				statusCode: 200,
+			};
+		},
+	);
 };
