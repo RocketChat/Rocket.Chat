@@ -33,7 +33,7 @@ describe('AbacService (unit)', () => {
 
 			await service.toggleAbacConfigurationForRoom('room1');
 
-			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room1', 'p');
+			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room1', 'p', { projection: { abac: 1 } });
 			expect(mockUpdateAbacConfigurationById).toHaveBeenCalledWith('room1', true);
 		});
 
@@ -46,7 +46,7 @@ describe('AbacService (unit)', () => {
 
 			await service.toggleAbacConfigurationForRoom('room2');
 
-			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room2', 'p');
+			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room2', 'p', { projection: { abac: 1 } });
 			expect(mockUpdateAbacConfigurationById).toHaveBeenCalledWith('room2', true);
 		});
 
@@ -59,7 +59,7 @@ describe('AbacService (unit)', () => {
 
 			await service.toggleAbacConfigurationForRoom('room3');
 
-			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room3', 'p');
+			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('room3', 'p', { projection: { abac: 1 } });
 			expect(mockUpdateAbacConfigurationById).toHaveBeenCalledWith('room3', false);
 		});
 
@@ -68,7 +68,7 @@ describe('AbacService (unit)', () => {
 
 			await expect(service.toggleAbacConfigurationForRoom('missing')).rejects.toThrow('error-invalid-room');
 
-			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('missing', 'p');
+			expect(mockFindOneByIdAndType).toHaveBeenCalledWith('missing', 'p', { projection: { abac: 1 } });
 			expect(mockUpdateAbacConfigurationById).not.toHaveBeenCalled();
 		});
 
