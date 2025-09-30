@@ -314,4 +314,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
+	updateAbacConfigurationById(rid: IRoom['_id'], abac: boolean): Promise<UpdateResult>;
 }
