@@ -268,7 +268,7 @@ export interface IUserNativeFederated extends IUser {
 	username: `@${string}:${string}`;
 	federation: {
 		version: number;
-		mui: string;
+		mui: `@${string}:${string}`;
 		origin: string;
 	};
 }
