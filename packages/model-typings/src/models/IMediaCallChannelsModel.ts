@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, MediaCallSignedActor, MediaCallChannelError } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { Document, FindOptions, UpdateResult } from 'mongodb';
 
 import type { IBaseModel, InsertionModel } from './IBaseModel';
@@ -11,5 +11,4 @@ export interface IMediaCallChannelsModel extends IBaseModel<IMediaCallChannel> {
 	): Promise<T | null>;
 	setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult>;
 	setActiveById(_id: string): Promise<UpdateResult>;
-	addErrorById(id: string, error: MediaCallChannelError): Promise<UpdateResult>;
 }
