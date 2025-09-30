@@ -147,7 +147,7 @@ describe('AppRealStorage', () => {
 	describe('updatePartialAndReturnDocument', () => {
 		it('should unset permissionsGranted when unsetPermissionsGranted is true', async () => {
 			const updatedItem = { ...mockAppStorageItem, _id: 'test-id' };
-			const expectedItem = { ...updatedItem };
+			const expectedItem = { ...mockAppStorageItem };
 			delete expectedItem.permissionsGranted;
 			mockDb.findOneAndUpdate.resolves(expectedItem);
 
@@ -172,7 +172,7 @@ describe('AppRealStorage', () => {
 
 			await storage.updatePartialAndReturnDocument(updatedItem, { unsetPermissionsGranted: false });
 
-			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: updatedItem }, { returnDocument: 'after' })).to.be.true;
+			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: mockAppStorageItem }, { returnDocument: 'after' })).to.be.true;
 		});
 
 		it('should not unset permissionsGranted when no options are passed', async () => {
@@ -181,7 +181,7 @@ describe('AppRealStorage', () => {
 
 			await storage.updatePartialAndReturnDocument(updatedItem);
 
-			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: updatedItem }, { returnDocument: 'after' })).to.be.true;
+			expect(mockDb.findOneAndUpdate.calledWith({ _id: 'test-id' }, { $set: mockAppStorageItem }, { returnDocument: 'after' })).to.be.true;
 		});
 	});
 
