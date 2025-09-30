@@ -4,11 +4,19 @@ import type { Meta, StoryFn } from '@storybook/react';
 import UsersTable from './UsersTable';
 
 export default {
-	title: 'views/admin/UsersTable',
 	component: UsersTable,
 } satisfies Meta<typeof UsersTable>;
 
-const Template: StoryFn<typeof UsersTable> = (args) => <UsersTable {...args} />;
+const mockedPagination = {
+	current: 0,
+	setCurrent: () => undefined,
+	itemsPerPage: 25 as const,
+	setItemsPerPage: () => undefined,
+	itemsPerPageLabel: () => 'Items per page:',
+	showingResultsLabel: () => 'Showing results 1 - 5 of 5',
+};
+
+const Template: StoryFn<typeof UsersTable> = (args) => <UsersTable {...args} paginationData={mockedPagination} />;
 
 export const Default = Template.bind({});
 Default.args = {

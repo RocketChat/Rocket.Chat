@@ -152,13 +152,18 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			return;
 		}
 
-		getMediaCallServer().requestCall({
+		await getMediaCallServer().requestCall({
 			caller: actor as MediaCallSignedContact,
 			callee: call.transferredTo,
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
 		});
+	}
+
+	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration });
+		// internal calls have nothing to do with DTMFs
 	}
 
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {

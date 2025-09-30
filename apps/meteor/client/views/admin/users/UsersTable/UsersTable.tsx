@@ -60,6 +60,7 @@ const UsersTable = ({
 	const isLaptop = !breakpoints.includes('xxl');
 
 	const canManageVoipExtension = useVoipExtensionPermission();
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
@@ -204,10 +205,12 @@ const UsersTable = ({
 					</GenericTable>
 					<Pagination
 						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
 						count={total}
-						onSetItemsPerPage={paginationData?.setItemsPerPage}
-						onSetCurrent={paginationData?.setCurrent}
-						{...paginationData}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
 					/>
 				</>
 			)}
