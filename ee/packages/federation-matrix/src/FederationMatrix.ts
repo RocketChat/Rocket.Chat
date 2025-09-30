@@ -45,7 +45,7 @@ export async function createOrUpdateFederatedUser(options: {
 
 	return Users.updateOne(
 		{
-			'federation.mui': username,
+			username,
 		},
 		{
 			username,
@@ -252,23 +252,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			let matrixRoomResult: { room_id: string; event_id?: string };
 			if (members.length === 2) {
-				const otherMember = members.find((member) => {
-					if (typeof member === 'string') {
-						return true; // Remote user
-					}
-					return member._id !== creatorId;
-				});
+				const otherMember = members.find((member) => member._id !== creatorId);
 				if (!otherMember) {
 					throw new Error('Other member not found for 1-on-1 DM');
 				}
-				let otherMemberMatrixId: string;
-
-				if (otherMember.username?.includes(':')) {
-					otherMemberMatrixId = otherMember.username.startsWith('@') ? otherMember.username : `@${otherMember.username}`;
-				} else {
-					otherMemberMatrixId = `@${otherMember.username}:${this.serverName}`;
+				if (!isUserNativeFederated(otherMember)) {
+					throw new Error('Other member is not federated');
 				}
-				const roomId = await this.homeserverServices.room.createDirectMessageRoom(actualMatrixUserId, otherMemberMatrixId);
+				const roomId = await this.homeserverServices.room.createDirectMessageRoom(actualMatrixUserId, otherMember.username);
 				matrixRoomResult = { room_id: roomId };
 			} else {
 				// For group DMs (more than 2 members), create a private room
@@ -276,35 +267,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				matrixRoomResult = await this.homeserverServices.room.createRoom(actualMatrixUserId, roomName, 'invite');
 			}
 
-			// TODO is this needed?
-			// const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
-			// if (!mapping) {
-			// 	await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
-			// }
-
 			for await (const member of members) {
-				if (typeof member !== 'string' && member._id === creatorId) {
+				if (member._id === creatorId) {
+					continue;
+				}
+
+				if (!isUserNativeFederated(member)) {
 					continue;
 				}
 
 				try {
-					if (!member.username?.includes(':')) {
-						continue;
-					}
-
-					const memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
-
-					const existingMemberMatrixUserId = await Users.findOne({ 'federation.mui': memberMatrixUserId });
-					if (!existingMemberMatrixUserId) {
-						await createOrUpdateFederatedUser({
-							username: member._id as `@${string}:${string}`,
-							origin: memberMatrixUserId.split(':').pop() || '',
-						});
-					}
-
-					if (members.length > 2) {
-						await this.homeserverServices.invite.inviteUserToRoom(memberMatrixUserId, matrixRoomResult.room_id, actualMatrixUserId);
-					}
+					await this.homeserverServices.invite.inviteUserToRoom(member.username, matrixRoomResult.room_id, actualMatrixUserId);
 				} catch (error) {
 					this.logger.error('Error creating or updating bridged user for DM:', error);
 				}
