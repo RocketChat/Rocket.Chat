@@ -72,21 +72,23 @@ export async function createOrUpdateFederatedUser(options: {
 			username,
 		},
 		{
-			username,
-			name,
-			type: 'user' as const,
-			status,
-			active: true,
-			roles: ['user'],
-			requirePasswordChange: false,
-			federated: true,
-			federation: {
-				version: 1,
-				mui: username,
-				origin,
+			$set: {
+				username,
+				name,
+				type: 'user' as const,
+				status,
+				active: true,
+				roles: ['user'],
+				requirePasswordChange: false,
+				federated: true,
+				federation: {
+					version: 1,
+					mui: username,
+					origin,
+				},
+				createdAt: new Date(),
+				_updatedAt: new Date(),
 			},
-			createdAt: new Date(),
-			_updatedAt: new Date(),
 		},
 		{
 			upsert: true,
@@ -306,37 +308,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: usernames.length });
 
-			const federatedUsers = usernames.filter((username) => username?.includes(':') && username?.includes('@'));
+			const federatedUsers = usernames.filter(validateFederatedUsername);
 			for await (const username of federatedUsers) {
-				if (!username) {
-					continue;
-				}
-
 				const existingUser = await Users.findOneByUsername(username);
-				if (existingUser) {
+				if (existingUser && isUserNativeFederated(existingUser)) {
 					continue;
 				}
 
-				await Users.create({
+				await createOrUpdateFederatedUser({
 					username,
 					name: username,
-					type: 'user' as const,
-					status: UserStatus.OFFLINE,
-					active: true,
-					roles: ['user'],
-					requirePasswordChange: false,
-					federated: true,
-					federation: {
-						version: 1,
-						mui: username,
-						origin: username.split(':')[1],
-					},
-					createdAt: new Date(),
-					_updatedAt: new Date(),
+					origin: username.split(':')[1],
 				});
 			}
 		} catch (error) {
-			this.logger.error('Failed to ensure federated users exist locally:', error);
+			this.logger.error({ msg: 'Failed to ensure federated users exist locally', error });
+			throw error;
 		}
 	}
 
