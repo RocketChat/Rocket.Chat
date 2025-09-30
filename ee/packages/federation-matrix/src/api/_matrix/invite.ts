@@ -1,6 +1,5 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -12,6 +11,8 @@ import type {
 import { Router } from '@rocket.chat/http-router';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+
+import { createOrUpdateFederatedUser } from '../../FederationMatrix';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -186,19 +187,12 @@ async function joinRoom({
 	// TODO implement on model
 	const senderUser = await Users.findOneByUsername(inviteEvent.sender, { projection: { _id: 1 } });
 
-	let senderUserId = senderUser?._id;
-
-	// create locally
-	if (!senderUser) {
-		const { createOrUpdateFederatedUser } = await import('../../FederationMatrix');
-		const createdUser = await createOrUpdateFederatedUser({
+	const senderUserId =
+		senderUser?._id ||
+		(await createOrUpdateFederatedUser({
 			username: inviteEvent.sender,
-			status: UserStatus.ONLINE,
 			origin: matrixRoom.origin,
-		});
-
-		senderUserId = createdUser.insertedId;
-	}
+		}));
 
 	if (!senderUserId) {
 		throw new Error('Sender user ID not found');

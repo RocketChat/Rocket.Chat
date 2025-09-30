@@ -25,9 +25,44 @@ export const fileTypes: Record<string, FileMessageType> = {
 };
 
 /** helper to validate the username format */
-export function validateFederatedUsername(username: string): username is `@${string}:${string}` {
-	return /^@[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/.test(username);
+export function validateFederatedUsername(mxid: string): mxid is `@${string}:${string}` {
+	if (!mxid.startsWith('@')) return false;
+
+	const parts = mxid.substring(1).split(':');
+	if (parts.length < 2) return false;
+
+	const localpart = parts[0];
+	const domainAndPort = parts.slice(1).join(':');
+
+	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
+	if (!localpartRegex.test(localpart)) return false;
+
+	const [domain, port] = domainAndPort.split(':');
+
+	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
+	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
+
+	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
+		return false;
+	}
+
+	if (port !== undefined) {
+		const portNum = Number(port);
+		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
+			return false;
+		}
+	}
+
+	return true;
 }
+export const extractDomainFromMatrixUserId = (mxid: string): string => {
+	const separatorIndex = mxid.indexOf(':', 1);
+	if (separatorIndex === -1) {
+		throw new Error(`Invalid federated username: ${mxid}`);
+	}
+	return mxid.substring(separatorIndex + 1);
+};
 
 /**
  * Helper function to create a federated user
@@ -38,12 +73,11 @@ export function validateFederatedUsername(username: string): username is `@${str
 export async function createOrUpdateFederatedUser(options: {
 	username: `@${string}:${string}`;
 	name?: string;
-	status?: UserStatus;
 	origin: string;
-}): Promise<{ insertedId: any }> {
-	const { username, name = username, status = UserStatus.OFFLINE, origin } = options;
+}): Promise<string> {
+	const { username, name = username } = options;
 
-	return Users.updateOne(
+	const result = await Users.updateOne(
 		{
 			username,
 		},
@@ -52,7 +86,7 @@ export async function createOrUpdateFederatedUser(options: {
 				username,
 				name,
 				type: 'user' as const,
-				status,
+				status: UserStatus.OFFLINE,
 				active: true,
 				roles: ['user'],
 				requirePasswordChange: false,
@@ -62,14 +96,25 @@ export async function createOrUpdateFederatedUser(options: {
 					mui: username,
 					origin,
 				},
-				createdAt: new Date(),
 				_updatedAt: new Date(),
+			},
+			$setOnInsert: {
+				createdAt: new Date(),
 			},
 		},
 		{
 			upsert: true,
 		},
-	).then((result) => ({ insertedId: result.upsertedId }));
+	);
+
+	const userId = result.upsertedId || (await Users.findOneByUsername(username, { projection: { _id: 1 } }))?._id;
+	if (!userId) {
+		throw new Error(`Failed to create or update federated user: ${username}`);
+	}
+	if (typeof userId !== 'string') {
+		return userId.toString();
+	}
+	return userId;
 }
 
 export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
@@ -212,7 +257,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				await createOrUpdateFederatedUser({
 					username,
 					name: username,
-					origin: username.split(':')[1],
+					origin: extractDomainFromMatrixUserId(username),
 				});
 			}
 		} catch (error) {
