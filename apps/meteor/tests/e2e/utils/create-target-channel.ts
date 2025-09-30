@@ -100,3 +100,19 @@ export async function createChannelWithTeam(api: BaseTest['api']): Promise<Recor
 
 	return { channelName, teamName };
 }
+
+export async function createArchivedChannel(api: BaseTest['api']): Promise<string> {
+	const { channel } = await createTargetChannelAndReturnFullRoom(api);
+
+	try {
+		await api.post('/channels.archive', { roomId: channel._id });
+	} catch (error) {
+		throw new Error(`Error archiving the channel: ${error}`);
+	}
+
+	if (!channel.name) {
+		throw new Error('Invalid channel was created');
+	}
+
+	return channel.name;
+}
