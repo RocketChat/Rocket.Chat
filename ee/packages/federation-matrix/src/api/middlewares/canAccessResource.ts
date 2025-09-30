@@ -44,9 +44,13 @@ const canAccessResource = (federationAuth: EventAuthorizationService, entityType
 				return c.json({ errcode: 'M_UNAUTHORIZED', error: 'Missing Authorization header' }, 401);
 			}
 
+			const mediaId = c.req.param('mediaId');
+			const eventId = c.req.param('eventId');
+			const roomId = c.req.param('roomId');
+
 			const resourceAccess = await federationAuth.canAccessResource(
 				entityType,
-				extractEntityId(c.req.param(), entityType),
+				extractEntityId({ mediaId, eventId, roomId }, entityType),
 				authenticatedServer,
 			);
 			if (!resourceAccess) {

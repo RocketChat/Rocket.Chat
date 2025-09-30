@@ -76,7 +76,6 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
 	const { config, federationAuth } = homeserverServices;
 	return new Router('/federation')
-		.use(canAccessResourceMiddleware(federationAuth, 'media'))
 		.get(
 			'/v1/media/download/:mediaId',
 			{
@@ -91,6 +90,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				},
 				tags: ['Federation', 'Media'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'media'),
 			async (c) => {
 				try {
 					const { mediaId } = c.req.param();
@@ -138,7 +138,8 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				},
 				tags: ['Federation', 'Media'],
 			},
-			async () => ({
+			canAccessResourceMiddleware(federationAuth, 'media'),
+			async (_c) => ({
 				statusCode: 404,
 				body: {
 					errcode: 'M_UNRECOGNIZED',

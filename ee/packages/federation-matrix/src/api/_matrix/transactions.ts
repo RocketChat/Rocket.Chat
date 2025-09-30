@@ -367,7 +367,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 			)
 
 			// GET /_matrix/federation/v1/state_ids/{roomId}
-			.use(canAccessResourceMiddleware(federationAuth, 'room'))
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -376,6 +375,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateIdsResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -406,6 +406,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -427,7 +428,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 			)
 			// GET /_matrix/federation/v1/event/{eventId}
-			.use(canAccessResourceMiddleware(federationAuth, 'event'))
 			.get(
 				'/v1/event/:eventId',
 				{
@@ -438,6 +438,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
+				canAccessResourceMiddleware(federationAuth, 'event'),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {

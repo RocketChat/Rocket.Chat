@@ -226,7 +226,7 @@ const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 	const { sendJoin, federationAuth } = services;
 
-	return new Router('/federation').use(canAccessResourceMiddleware(federationAuth, 'room')).put(
+	return new Router('/federation').put(
 		'/v2/send_join/:roomId/:stateKey',
 		{
 			params: isSendJoinParamsProps,
@@ -237,6 +237,7 @@ export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
+		canAccessResourceMiddleware(federationAuth, 'room'),
 		async (c) => {
 			const { roomId, stateKey } = c.req.param();
 			const body = await c.req.json();

@@ -428,7 +428,6 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				};
 			},
 		)
-		.use(canAccessResourceMiddleware(federationAuth, 'room'))
 		.get(
 			'/v1/make_join/:roomId/:userId',
 			{
@@ -440,6 +439,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, userId } = c.req.param();
 				const url = new URL(c.req.url);
@@ -471,6 +471,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId } = c.req.param();
 				const body = await c.req.json();
@@ -493,6 +494,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, eventId } = c.req.param();
 

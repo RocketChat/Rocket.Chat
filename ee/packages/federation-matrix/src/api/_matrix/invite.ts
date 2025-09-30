@@ -323,7 +323,7 @@ export const acceptInvite = async (
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	const { invite, state, room, federationAuth } = services;
 
-	return new Router('/federation').use(canAccessResourceMiddleware(federationAuth, 'room')).put(
+	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
 			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
@@ -334,6 +334,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
+		canAccessResourceMiddleware(federationAuth, 'room'),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion } = await c.req.json();
