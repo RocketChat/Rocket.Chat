@@ -12,7 +12,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
+		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
@@ -28,7 +28,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
+		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
@@ -44,12 +44,12 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
+		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
 
-		const localSenderId = await Users.findOne({ 'federation.mui': senderId }, { projection: { _id: 1 } });
+		const localSenderId = await Users.findOneByUsername(senderId, { projection: { _id: 1 } });
 		if (!localSenderId) {
 			throw new Error('mapped user not found');
 		}

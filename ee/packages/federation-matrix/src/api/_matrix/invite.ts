@@ -184,7 +184,7 @@ async function joinRoom({
 
 	// need both the sender and the participating user to exist in the room
 	// TODO implement on model
-	const senderUser = await Users.findOne({ 'federation.mui': inviteEvent.sender }, { projection: { _id: 1 } });
+	const senderUser = await Users.findOneByUsername(inviteEvent.sender, { projection: { _id: 1 } });
 
 	let senderUserId = senderUser?._id;
 

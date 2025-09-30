@@ -36,7 +36,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 		}
 
 		try {
-			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
+			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
 				logger.debug(`No federated user found for Matrix user_id: ${data.user_id}`);
 				return;
