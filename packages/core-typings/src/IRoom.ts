@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from './ABACAttributeDefinition';
 import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
@@ -34,6 +35,7 @@ export interface IRoom extends IRocketChatRecord {
 	};
 	encrypted?: boolean;
 	abac?: boolean;
+	abacAttributes: IAbacAttributeDefinition[];
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
