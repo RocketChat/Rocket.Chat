@@ -48,6 +48,52 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
+/** helper to validate the username format */
+export function validateFederatedUsername(username: string): username is `@${string}:${string}` {
+	return /^@[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/.test(username);
+}
+
+/**
+ * Helper function to create a federated user
+ *
+ * Because of historical reasons, we can have users only with federated flag but no federation object
+ * So we need to upsert the user with the federation object
+ */
+export async function createOrUpdateFederatedUser(options: {
+	username: `@${string}:${string}`;
+	name?: string;
+	status?: UserStatus;
+	origin: string;
+}): Promise<{ insertedId: any }> {
+	const { username, name = username, status = UserStatus.OFFLINE, origin } = options;
+
+	return Users.updateOne(
+		{
+			'federation.mui': username,
+		},
+		{
+			username,
+			name,
+			type: 'user' as const,
+			status,
+			active: true,
+			roles: ['user'],
+			requirePasswordChange: false,
+			federated: true,
+			federation: {
+				version: 1,
+				mui: username,
+				origin,
+			},
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+		},
+		{
+			upsert: true,
+		},
+	).then((result) => ({ insertedId: result.upsertedId }));
+}
+
 export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
@@ -294,7 +340,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async createDirectMessageRoom(room: IRoom, members: (IUser | string)[], creatorId: IUser['_id']): Promise<void> {
+	async createDirectMessageRoom(room: IRoom, members: IUser[], creatorId: IUser['_id']): Promise<void> {
 		try {
 			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
 
@@ -322,9 +368,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					throw new Error('Other member not found for 1-on-1 DM');
 				}
 				let otherMemberMatrixId: string;
-				if (typeof otherMember === 'string') {
-					otherMemberMatrixId = otherMember.startsWith('@') ? otherMember : `@${otherMember}`;
-				} else if (otherMember.username?.includes(':')) {
+
+				if (otherMember.username?.includes(':')) {
 					otherMemberMatrixId = otherMember.username.startsWith('@') ? otherMember.username : `@${otherMember.username}`;
 				} else {
 					otherMemberMatrixId = `@${otherMember.username}:${this.serverName}`;
@@ -349,42 +394,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}
 
 				try {
-					let memberMatrixUserId: string;
-					let memberId: string | undefined;
-
-					if (typeof member === 'string') {
-						memberMatrixUserId = member.startsWith('@') ? member : `@${member}`;
-						memberId = undefined;
-					} else if (member.username?.includes(':')) {
-						memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
-						memberId = member._id;
-					} else {
+					if (!member.username?.includes(':')) {
 						continue;
 					}
 
-					if (memberId) {
-						const existingMemberMatrixUserId = await Users.findOne({ 'federation.mui': memberId });
-						if (!existingMemberMatrixUserId) {
-							const newUser = {
-								username: memberId,
-								name: memberId,
-								type: 'user' as const,
-								status: UserStatus.OFFLINE,
-								active: true,
-								roles: ['user'],
-								requirePasswordChange: false,
-								federated: true,
-								federation: {
-									version: 1,
-									mui: memberId,
-									origin: memberMatrixUserId.split(':').pop(),
-								},
-								createdAt: new Date(),
-								_updatedAt: new Date(),
-							};
+					const memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
 
-							await Users.insertOne(newUser);
-						}
+					const existingMemberMatrixUserId = await Users.findOne({ 'federation.mui': memberMatrixUserId });
+					if (!existingMemberMatrixUserId) {
+						await createOrUpdateFederatedUser({
+							username: member._id as `@${string}:${string}`,
+							origin: memberMatrixUserId.split(':').pop() || '',
+						});
 					}
 
 					if (members.length > 2) {

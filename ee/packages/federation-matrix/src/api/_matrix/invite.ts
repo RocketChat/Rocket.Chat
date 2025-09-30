@@ -1,5 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
-import type { IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -189,23 +190,11 @@ async function joinRoom({
 
 	// create locally
 	if (!senderUser) {
-		const createdUser = await Users.insertOne({
-			// let the _id auto generate we deal with usernames
+		const { createOrUpdateFederatedUser } = await import('../../FederationMatrix');
+		const createdUser = await createOrUpdateFederatedUser({
 			username: inviteEvent.sender,
-			type: 'user',
-			status: 'online' as UserStatus,
-			active: true,
-			roles: ['user'],
-			name: inviteEvent.sender,
-			requirePasswordChange: false,
-			federated: true,
-			federation: {
-				version: 1,
-				mui: inviteEvent.sender,
-				origin: matrixRoom.origin,
-			},
-			createdAt: new Date(),
-			_updatedAt: new Date(),
+			status: UserStatus.ONLINE,
+			origin: matrixRoom.origin,
 		});
 
 		senderUserId = createdUser.insertedId;
