@@ -82,7 +82,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				$set: {
 					'state': 'accepted',
 					'callee.contractId': calleeContractId,
-					'acceptedAt': new Date(),
 					expiresAt,
 				},
 			},
@@ -98,7 +97,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{
 				$set: {
 					state: 'active',
-					activatedAt: new Date(),
 					expiresAt,
 				},
 			},
