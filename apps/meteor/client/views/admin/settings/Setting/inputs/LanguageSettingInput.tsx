@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -11,6 +11,7 @@ function LanguageSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -47,6 +48,7 @@ function LanguageSettingInput({
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }
