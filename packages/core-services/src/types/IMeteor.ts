@@ -27,4 +27,5 @@ export interface IMeteor extends IServiceClass {
 	}>;
 	notifyGuestStatusChanged(token: string, status: string): Promise<void>;
 	getURL(path: string, params?: Record<string, any>, cloudDeepLinkUrl?: string): Promise<string>;
+	getMessageURLToReplyTo(roomType: string, roomId: string, roomName: string, messageIdToReplyTo: string): Promise<string>;
 }
