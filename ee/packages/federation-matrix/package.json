@@ -26,8 +26,8 @@
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
-	"main": "./dist/FederationMatrix.js",
-	"typings": "./dist/FederationMatrix.d.ts",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],

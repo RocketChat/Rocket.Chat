@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, ISettingSelectOption, SettingValue } from '@rocket.chat/core-typings';
 import type {
 	FindCursor,
 	UpdateFilter,
@@ -13,7 +13,7 @@ import type {
 import type { IBaseModel } from './IBaseModel';
 
 export interface ISettingsModel extends IBaseModel<ISetting> {
-	getValueById(_id: string): Promise<ISetting['value'] | undefined>;
+	getValueById<T extends SettingValue = SettingValue>(_id: string): Promise<T | undefined>;
 
 	findNotHidden(params?: { updatedAfter?: Date }): FindCursor<ISetting>;
 
