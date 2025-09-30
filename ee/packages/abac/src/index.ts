@@ -1,6 +1,7 @@
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import { Rooms } from '@rocket.chat/models';
+import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import { Rooms, AbacAttributes } from '@rocket.chat/models';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -13,13 +14,43 @@ export class AbacService extends ServiceClass implements IAbacService {
 	 * @throws Error('error-invalid-room') if the room does not exist or is not a private room
 	 */
 	async toggleAbacConfigurationForRoom(rid: string): Promise<void> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p');
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abac: 1 } });
 
 		if (!room) {
 			throw new Error('error-invalid-room');
 		}
 
 		await Rooms.updateAbacConfigurationById(rid, !room.abac);
+	}
+
+	/**
+	 * Adds a new ABAC attribute definition entry for a given private room.
+	 *
+	 * @param rid Room ID
+	 * @param attribute Attribute definition payload
+	 *
+	 * @throws Error('error-invalid-room') if the room does not exist or is not private
+	 * @throws Error('error-invalid-attribute-key') if key fails validation
+	 * @throws Error('error-invalid-attribute-values') if values list is empty after normalization
+	 */
+	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
+		const keyPattern = /^[A-Za-z0-9_-]+$/;
+		if (!keyPattern.test(attribute.key)) {
+			throw new Error('error-invalid-attribute-key');
+		}
+
+		if (!attribute.values.length) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		try {
+			await AbacAttributes.insertOne(attribute);
+		} catch (e) {
+			if (e instanceof Error && e.message.includes('E11000')) {
+				throw new Error('error-duplicate-attribute-key');
+			}
+			throw e;
+		}
 	}
 }
 
