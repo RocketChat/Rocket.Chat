@@ -2,9 +2,9 @@ import { IconButton } from '@rocket.chat/fuselage';
 import { ComponentProps, forwardRef } from 'react';
 
 type HeaderToolbarActionProps = ComponentProps<typeof IconButton> & {
-	index: number;
+	index?: number;
 	id: string;
-	action: (id: string) => void;
+	action?: (id: string) => void;
 	tooltip?: string;
 };
 
@@ -12,10 +12,18 @@ const HeaderToolbarAction = forwardRef<HTMLButtonElement, HeaderToolbarActionPro
 	{ id, icon, action, index, title, tooltip, ...props },
 	ref,
 ) {
+	const handleClick = () => {
+		if (!action || !id) {
+			return;
+		}
+
+		action(id);
+	};
+
 	return (
 		<IconButton
 			ref={ref}
-			onClick={() => action(id)}
+			onClick={handleClick}
 			data-toolbox={index}
 			key={id}
 			icon={icon}
