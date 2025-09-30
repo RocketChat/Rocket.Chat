@@ -1,6 +1,6 @@
 import { Abac } from '@rocket.chat/core-services';
 
-import { POSTAbacToggleRoomStatusSuccessSchema } from './schemas';
+import { GenericSuccessSchema, POSTAbacAttributeDefinitionSchema } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 
@@ -11,7 +11,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: POSTAbacToggleRoomStatusSuccessSchema },
+			response: { 200: GenericSuccessSchema },
 			license: ['abac'],
 		},
 		async function action() {
@@ -49,8 +49,17 @@ const abacEndpoints = API.v1
 	// create attribute
 	.post(
 		'abac/attributes',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
-		async function action() {},
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			validateParams: POSTAbacAttributeDefinitionSchema,
+			response: { 200: GenericSuccessSchema },
+		},
+		async function action() {
+			await Abac.addAbacAttribute(this.bodyParams);
+			return API.v1.success();
+		},
 	)
 	// edit attribute and values (do not allow to modify attribute value if in use)
 	.put(
