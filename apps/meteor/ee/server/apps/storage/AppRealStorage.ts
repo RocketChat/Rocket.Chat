@@ -57,7 +57,10 @@ export class AppRealStorage extends AppMetadataStorage {
 		return { success: true };
 	}
 
-	public async updatePartialAndReturnDocument(item: IAppStorageItem, { unsetPermissionsGranted = false } = {}): Promise<IAppStorageItem> {
+	public async updatePartialAndReturnDocument(
+		{ _id, ...item }: IAppStorageItem,
+		{ unsetPermissionsGranted = false } = {},
+	): Promise<IAppStorageItem> {
 		const updateQuery: UpdateFilter<IAppStorageItem> = {
 			$set: item,
 		};
@@ -67,7 +70,7 @@ export class AppRealStorage extends AppMetadataStorage {
 			updateQuery.$unset = { permissionsGranted: 1 };
 		}
 
-		return this.db.findOneAndUpdate({ _id: item._id }, updateQuery, { returnDocument: 'after' });
+		return this.db.findOneAndUpdate({ _id }, updateQuery, { returnDocument: 'after' });
 	}
 
 	public async updateStatus(_id: string, status: AppStatus): Promise<boolean> {
