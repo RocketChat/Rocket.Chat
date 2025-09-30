@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
-import { isPOSTCannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
+import { isPOSTCannedResponsesProps, isCannedResponsesProps, isDELETECannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
@@ -32,6 +32,7 @@ declare module '@rocket.chat/rest-typings' {
 				tags?: any;
 				departmentId?: ILivechatDepartment['_id'];
 			}) => void;
+			DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 		};
 		'/v1/canned-responses/:_id': {
 			GET: () => {
@@ -58,8 +59,8 @@ API.v1.addRoute(
 	'canned-responses',
 	{
 		authRequired: true,
-		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'] },
-		validateParams: { POST: isPOSTCannedResponsesProps, GET: isCannedResponsesProps },
+		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
+		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
 		license: ['canned-responses'],
 	},
 	{
@@ -102,6 +103,11 @@ API.v1.addRoute(
 				},
 				_id,
 			);
+			return API.v1.success();
+		},
+		async delete() {
+			const { _id } = this.bodyParams;
+			await removeCannedResponse(this.userId, _id);
 			return API.v1.success();
 		},
 	},
