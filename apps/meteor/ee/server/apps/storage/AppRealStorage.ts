@@ -61,6 +61,10 @@ export class AppRealStorage extends AppMetadataStorage {
 		{ _id, ...item }: IAppStorageItem,
 		{ unsetPermissionsGranted = false } = {},
 	): Promise<IAppStorageItem> {
+		if (!_id) {
+			throw new Error('Property _id is required to update an app storage item');
+		}
+
 		const updateQuery: UpdateFilter<IAppStorageItem> = {
 			$set: item,
 		};

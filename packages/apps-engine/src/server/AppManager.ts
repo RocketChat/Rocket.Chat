@@ -1072,7 +1072,7 @@ export class AppManager {
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
 			storageItem.status = await app.getStatus();
-			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return result;
