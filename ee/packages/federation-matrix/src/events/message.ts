@@ -124,7 +124,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			}
 
 			// at this point we know for sure the user already exists
-			const user = await Users.findOne({ 'federation.mui': data.sender });
+			const user = await Users.findOneByUsername(data.sender);
 			if (!user) {
 				throw new Error(`User not found for sender: ${data.sender}`);
 			}

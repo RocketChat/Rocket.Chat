@@ -15,7 +15,7 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 	}
 
 	// state_key is the user affected by the membership change
-	const affectedUser = await Users.findOne({ 'federation.mui': data.state_key });
+	const affectedUser = await Users.findOneByUsername(data.state_key);
 	if (!affectedUser) {
 		logger.error(`No Rocket.Chat user found for bridged user: ${data.state_key}`);
 		return;
@@ -28,7 +28,7 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 		logger.info(`User ${affectedUser.username} left room ${room._id} via Matrix federation`);
 	} else {
 		// Kick - find who kicked
-		const kickerUser = await Users.findOne({ 'federation.mui': data.sender });
+		const kickerUser = await Users.findOneByUsername(data.sender);
 
 		await Room.removeUserFromRoom(room._id, affectedUser, {
 			byUser: kickerUser || { _id: 'matrix.federation', username: 'Matrix User' },
