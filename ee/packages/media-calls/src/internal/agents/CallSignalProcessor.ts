@@ -147,18 +147,11 @@ export class UserActorSignalProcessor {
 			errorCode,
 			critical,
 			errorDetails,
+			negotiationId,
 			callId: this.callId,
 			role: this.role,
 			state: this.call.state,
 		});
-
-		// Store the error on this session's channel
-		void MediaCallChannels.addErrorById(this.channel._id, {
-			errorType,
-			ts: new Date(),
-			...(errorCode && { errorCode }),
-			...(negotiationId && { negotiationId }),
-		}).catch(() => null);
 
 		let hangupReason: CallHangupReason = 'error';
 		if (errorType === 'service') {

@@ -1,13 +1,6 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { MediaCallActorType } from './IMediaCall';
 
-export type MediaCallChannelError = {
-	ts: Date;
-	errorType: string;
-	errorCode?: string;
-	negotiationId?: string;
-};
-
 export interface IMediaCallChannel extends IRocketChatRecord {
 	callId: string;
 
@@ -27,6 +20,4 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 	activeAt?: Date;
 	// The moment when the user left the call or hanged up
 	leftAt?: Date;
-
-	errors?: MediaCallChannelError[];
 }
