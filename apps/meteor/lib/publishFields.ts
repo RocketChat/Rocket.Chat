@@ -113,6 +113,7 @@ export const roomFields = {
 
 	// Federation fields
 	federated: 1,
+	federation: 1,
 
 	// fields used by DMs
 	usernames: 1,

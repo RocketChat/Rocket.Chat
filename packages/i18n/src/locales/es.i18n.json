@@ -1554,8 +1554,6 @@
   "FEDERATION_Domain": "Dominio",
   "FEDERATION_Domain_Alert": "No cambies esta opción después de habilitar la función; aún no podemos gestionar los cambios de dominio.",
   "FEDERATION_Domain_Description": "Añade el dominio al que debe estar vinculado este servidor; por ejemplo, @rocket.chat.",
-  "FEDERATION_Enabled": "Intenta integrar la compatibilidad con la federación.",
-  "FEDERATION_Enabled_Alert": "La función Compatibilidad de federación se está desarrollando. De momento, no se recomienda su uso en sistemas de producción.",
   "FEDERATION_Public_Key": "Clave pública",
   "FEDERATION_Public_Key_Description": "Esta es la clave que tienes que compartir con los puntos de conexión.",
   "FEDERATION_Status": "Estado",

@@ -199,6 +199,9 @@ export class LDAPManager {
 			...(homeServer && {
 				username: `${username}:${homeServer}`,
 				federated: true,
+				federation: {
+					version: 1,
+				},
 			}),
 		};
 

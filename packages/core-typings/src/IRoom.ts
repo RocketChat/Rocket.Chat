@@ -102,14 +102,20 @@ export interface IRoomWithJoinCode extends IRoom {
 	joinCode: string;
 }
 
+declare const __brand: unique symbol;
+type Brand<B> = { [__brand]: B };
+export type Branded<T, B> = T & Brand<B>;
+
 export interface IRoomFederated extends IRoom {
+	_id: Branded<string, 'IRoomFederated'>;
 	federated: true;
 }
 
-export interface IRoomNativeFederated extends IRoom {
-	federated: true;
+export interface IRoomNativeFederated extends IRoomFederated {
 	federation: {
-		version: `${number}`;
+		version: number;
+		// Matrix's room ID. Example: !XqJXqZxXqJXq:matrix.org
+		mrid: string;
 	};
 }
 

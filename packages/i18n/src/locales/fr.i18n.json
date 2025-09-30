@@ -1530,8 +1530,6 @@
   "FEDERATION_Domain": "Domaine",
   "FEDERATION_Domain_Alert": "Ne changez pas ce paramètre après avoir activé la fonctionnalité, nous ne prenons pas encore en charge les changements de domaine.",
   "FEDERATION_Domain_Description": "Ajoutez le domaine auquel ce serveur doit être lié, par exemple : @rocket.chat.",
-  "FEDERATION_Enabled": "Tentative d'intégration de la prise en charge de la fédération.",
-  "FEDERATION_Enabled_Alert": "La prise en charge de la fédération est en cours d'intégration. L'utilisation sur un système de production n'est pas recommandée pour le moment.",
   "FEDERATION_Public_Key": "Clé publique",
   "FEDERATION_Public_Key_Description": "Il s'agit de la clé que vous devez partager avec vos pairs.",
   "FEDERATION_Status": "Statut",

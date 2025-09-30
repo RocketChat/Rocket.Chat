@@ -15,7 +15,7 @@ const DirectoryPage = (): ReactElement => {
 	const { t } = useTranslation();
 
 	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView', 'users');
-	const federationEnabled = useSetting('FEDERATION_Enabled');
+	const federationEnabled = false; // TODO old federation removed
 	const tab = useRouteParameter('tab') as TabName | undefined;
 	const router = useRouter();
 

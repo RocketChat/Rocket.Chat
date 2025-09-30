@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -19,7 +19,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib
  * Caution - It does not validates if the user has permission to join room
  */
 
-export const addUserToRoom = async function (
+export const addUserToRoom = async (
 	rid: string,
 	user: Pick<IUser, '_id' | 'username'> | string,
 	inviter?: Pick<IUser, '_id' | 'username'>,
@@ -32,7 +32,7 @@ export const addUserToRoom = async function (
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
 	} = {},
-): Promise<boolean | undefined> {
+): Promise<boolean | undefined> => {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
 
@@ -57,7 +57,7 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter }, room);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: (inviter && (await Users.findOneById(inviter._id))) || undefined }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

@@ -1,0 +1,31 @@
+import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
+import type { Router } from '@rocket.chat/http-router';
+
+export interface IFederationMatrixService {
+	getAllRoutes(): {
+		matrix: Router<'/_matrix'>;
+		wellKnown: Router<'/.well-known'>;
+	};
+	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
+	ensureFederatedUsersExistLocally(members: string[]): Promise<void>;
+	createDirectMessageRoom(room: IRoomFederated, members: IUser[], creatorId: IUser['_id']): Promise<void>;
+	sendMessage(message: IMessage, room: IRoomFederated, user: IUser): Promise<void>;
+	deleteMessage(matrixRoomId: string, message: IMessage, uid: string): Promise<void>;
+	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
+	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
+	getEventById(eventId: string): Promise<any | null>;
+	leaveRoom(rid: IRoomFederated['_id'], user: IUser): Promise<void>;
+	kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
+	updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void>;
+	updateRoomName(rid: string, displayName: string, user: IUser): Promise<void>;
+	updateRoomTopic(room: IRoomNativeFederated, topic: string, user: IUser): Promise<void>;
+	addUserRoleRoomScoped(
+		room: IRoomNativeFederated,
+		senderId: string,
+		userId: string,
+		role: 'moderator' | 'owner' | 'leader' | 'user',
+	): Promise<void>;
+	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
+	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
+	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
+}

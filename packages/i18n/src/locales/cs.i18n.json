@@ -1282,8 +1282,6 @@
   "FEDERATION_Domain": "Doména",
   "FEDERATION_Domain_Alert": "Neměňte po povolení této funkce, zatím nelze zpracovávat změny domény.",
   "FEDERATION_Domain_Description": "Přidejte doménu, na kterou by měl být tento server propojen - například: @rocket.chat.",
-  "FEDERATION_Enabled": "Pokus o integraci podpory Federace.",
-  "FEDERATION_Enabled_Alert": "Na podpoře Federace se stále pracuje. Použití v produkčním prostředí se v současné době nedoporučuje.",
   "FEDERATION_Public_Key": "Veřejný klíč",
   "FEDERATION_Public_Key_Description": "Toto je klíč, který musíte sdílet se svými partnery.",
   "FEDERATION_Status": "Stav",

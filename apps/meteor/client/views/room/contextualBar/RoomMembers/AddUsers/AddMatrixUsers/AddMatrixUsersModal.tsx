@@ -27,7 +27,7 @@ type FormValues = {
 	usersToInvite: string[];
 };
 
-const verificationStatusAsIcon = (verificationStatus: string) => {
+const verificationStatusAsIcon = (verificationStatus: string): ComponentProps<typeof Icon>['name'] => {
 	if (verificationStatus === 'VERIFIED') {
 		return 'circle-check';
 	}
@@ -35,10 +35,7 @@ const verificationStatusAsIcon = (verificationStatus: string) => {
 	if (verificationStatus === 'UNVERIFIED') {
 		return 'circle-cross';
 	}
-
-	if (verificationStatus === 'UNABLE_TO_VERIFY') {
-		return 'circle-exclamation';
-	}
+	return 'circle-exclamation';
 };
 
 const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: AddMatrixUsersModalProps): ReactElement => {
@@ -71,20 +68,20 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box>
-					<Box is='ul'>
-						{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
-							<li key={_matrixId}>
-								{_matrixId}: <Icon name={verificationStatusAsIcon(_verificationStatus) as ComponentProps<typeof Icon>['name']} size='x20' />
-							</li>
-						))}
-						{rocketChatUsers.map((_user) => (
-							<li key={`rocket-chat-${_user}`}>{_user}</li>
-						))}
-					</Box>
+				<Box is='ul'>
+					{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
+						<Box is='li' display='flex' key={_matrixId}>
+							{_matrixId} <Icon mis={4} name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
+						</Box>
+					))}
+					{rocketChatUsers.map((_user) => (
+						<Box is='li' key={`rocket-chat-${_user}`}>
+							{_user}
+						</Box>
+					))}
 				</Box>
 			</ModalContent>
-			<ModalFooter justifyContent='center'>
+			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSubmit(onSubmit)} disabled={!(usersToInvite.length > 0)}>

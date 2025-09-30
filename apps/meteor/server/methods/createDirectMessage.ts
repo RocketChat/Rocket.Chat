@@ -6,7 +6,6 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { addUser } from '../../app/federation/server/functions/addUser';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
@@ -40,33 +39,10 @@ export async function createDirectMessage(
 		});
 	}
 
-	const users = await Promise.all(
-		usernames
-			.filter((username) => username !== me.username)
-			.map(async (username) => {
-				let to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
-
-				// If the username does have an `@`, but does not exist locally, we create it first
-				if (!to && username.includes('@')) {
-					try {
-						to = await addUser(username);
-					} catch {
-						// no-op
-					}
-					if (!to) {
-						return username;
-					}
-				}
-
-				if (!to) {
-					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'createDirectMessage',
-					});
-				}
-				return to;
-			}),
-	);
+	const users = await Promise.all(usernames.filter((username) => username !== me.username));
+	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
+	const federated = false;
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
@@ -95,7 +71,6 @@ export async function createDirectMessage(
 		});
 	}
 
-	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
@@ -108,7 +83,18 @@ export async function createDirectMessage(
 		_id: rid,
 		inserted,
 		...room
-	} = await createRoom<'d'>('d', undefined, undefined, roomUsers as IUser[], false, undefined, {}, options);
+	} = await createRoom<'d'>(
+		'd',
+		undefined,
+		undefined,
+		roomUsers as IUser[],
+		false,
+		undefined,
+		{
+			federated,
+		},
+		options,
+	);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

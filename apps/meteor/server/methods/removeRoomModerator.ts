@@ -58,7 +58,7 @@ export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['
 		});
 	}
 
-	await beforeChangeRoomRole.run({ fromUserId, userId, roomId: rid, role: 'user' });
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'user' });
 
 	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'moderator');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.filter((r) => r !== 'moderator') || []);

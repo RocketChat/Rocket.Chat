@@ -3467,6 +3467,48 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 
 export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
 
+type POSTLivechatInquiriesReturnAsInquiry = {
+	roomId: string;
+	departmentId?: string;
+};
+
+const POSTLivechatInquiriesReturnAsInquirySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatInquiriesReturnAsInquiry = ajv.compile<POSTLivechatInquiriesReturnAsInquiry>(
+	POSTLivechatInquiriesReturnAsInquirySchema,
+);
+
+const POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		result: {
+			type: 'boolean',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatInquiriesReturnAsInquirySuccessResponse = ajv.compile<{ result: boolean }>(
+	POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema,
+);
+
 type GETDashboardTotalizers = {
 	start: string;
 	end: string;

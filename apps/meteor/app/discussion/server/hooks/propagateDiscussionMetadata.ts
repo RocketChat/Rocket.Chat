@@ -48,7 +48,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message, { _id, prid }) => {
+	async (message, { room: { _id, prid } }) => {
 		if (prid) {
 			const room = await Rooms.findOneById(_id, {
 				projection: {

@@ -22,9 +22,10 @@ jobs:
     runs-on: ubuntu-24.04
 
     name: Test Storybook
-    
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
@@ -54,4 +55,3 @@ jobs:
           flags: unit
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-  

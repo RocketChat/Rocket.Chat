@@ -1357,8 +1357,6 @@
   "FEDERATION_Domain": "域名",
   "FEDERATION_Domain_Alert": "开启此功能后不要更改这里, 当前还不能处理域变更。",
   "FEDERATION_Domain_Description": "添加此服务器应该关联的域, 如: @rocket.chat。",
-  "FEDERATION_Enabled": "尝试集成联盟支持。",
-  "FEDERATION_Enabled_Alert": "联盟支持正在完善中。当前不推荐在生产系统中使用。",
   "FEDERATION_Public_Key": "公钥",
   "FEDERATION_Public_Key_Description": "需要分享此凭据给你的对等端",
   "FEDERATION_Status": "状态",

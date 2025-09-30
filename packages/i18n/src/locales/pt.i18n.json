@@ -1078,8 +1078,6 @@
   "FEDERATION_Domain": "Domínio",
   "FEDERATION_Domain_Alert": "Não altere isto depois de activar o recurso, ainda não podemos lidar com as alterações de domínio.",
   "FEDERATION_Domain_Description": "Adicione o domínio a este servidor deve estar ligado por exemplo: @rocket.chat.",
-  "FEDERATION_Enabled": "Tentativa para a  integração do suporte de federação. A alteração deste valor requer a reinicialização do Rocket.Chat.",
-  "FEDERATION_Enabled_Alert": "O suporte de federação é um trabalho em curso. Não recomendamos o uso num sistema de produção.",
   "FEDERATION_Public_Key": "Chave Pública",
   "FEDERATION_Public_Key_Description": "Esta é a chave que pode partilhar com outros.",
   "FEDERATION_Status": "Estado",

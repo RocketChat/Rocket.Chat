@@ -1505,8 +1505,6 @@
   "FEDERATION_Domain": "網域",
   "FEDERATION_Domain_Alert": "在啟動功能後不要變更這個，我們無法管理網域變更。",
   "FEDERATION_Domain_Description": "新增網域然後這個伺服器應該連結到 - example: @rocket.chat。",
-  "FEDERATION_Enabled": "試著整合聯盟支援",
-  "FEDERATION_Enabled_Alert": "聯盟支援正在執行中。不建議在這個時候使用系統。",
   "FEDERATION_Public_Key": "公鑰",
   "FEDERATION_Public_Key_Description": "這個金鑰需要分享給您的另一個端點",
   "FEDERATION_Status": "狀態",

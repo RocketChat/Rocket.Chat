@@ -604,6 +604,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ 'federation.eventId': federationEventId });
 	}
 
+	async findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null> {
+		return this.findOne(
+			{
+				'_id': { $ne: messageId },
+				tmid,
+				'federation.eventId': { $exists: true },
+			},
+			{
+				sort: { ts: -1 },
+			},
+		);
+	}
+
 	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
 		await this.updateOne(
 			{ _id },

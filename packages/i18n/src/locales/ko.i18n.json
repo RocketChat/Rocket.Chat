@@ -1340,8 +1340,6 @@
   "FEDERATION_Domain": "도메인",
   "FEDERATION_Domain_Alert": "기능을 활성화 한 후에는 변경하지 마십시오. 아직 도메인 변경을 처리 할 수 없습니다.",
   "FEDERATION_Domain_Description": "이 서버가 연결될 도메인을 추가하십시오 (예 : @ rocket.chat).",
-  "FEDERATION_Enabled": "Federation Support 통합을 시도하십시오.",
-  "FEDERATION_Enabled_Alert": "Federation Support가 처리된 작업입니다. 현재 프로덕션 시스템의 사용은 권장하지 않습니다.",
   "FEDERATION_Public_Key": "공개 키",
   "FEDERATION_Public_Key_Description": "이것은 Peer간 공유해야하는 키입니다.",
   "FEDERATION_Status": "상태",
