@@ -90,7 +90,15 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public get hidden(): boolean {
-		return this.ignored || this.contractState === 'ignored';
+		/**
+		 * A call is hidden if:
+		 * 1. It was flagged as ignored by the Session
+		 * 2. It is happening in a different session
+		 * 3. The call was started in some other session and we have not received its data yet
+		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
+		 */
+
+		return this.ignored || this.contractState === 'ignored' || !this.initialized;
 	}
 
 	public get muted(): boolean {
@@ -267,6 +275,11 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 		}
 
+		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
+		if (this.isOver()) {
+			return;
+		}
+
 		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
 		if (this.ignored) {
 			return this.rejectAsUnavailable();
@@ -426,6 +439,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.hasRemoteData) {
+			// if the call is over, we no longer need to wait for its data
+			if (signal.type === 'notification' && signal.notification === 'hangup') {
+				this.changeState('hangup');
+				return;
+			}
+
 			this.config.logger?.debug('Remote data missing, adding signal to queue');
 			this.earlySignals.add(signal);
 			return;
