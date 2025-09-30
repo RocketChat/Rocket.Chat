@@ -1,14 +1,19 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { forwardRef } from 'react';
+import { ComponentProps, forwardRef } from 'react';
 
-// TODO: remove any and type correctly
-const HeaderToolbarAction = forwardRef<HTMLButtonElement, any>(function HeaderToolbarAction(
-	{ id, icon, action, index, title, 'data-tooltip': tooltip, ...props },
+type HeaderToolbarActionProps = ComponentProps<typeof IconButton> & {
+	index: number;
+	id: string;
+	action: (id: string) => void;
+	tooltip?: string;
+};
+
+const HeaderToolbarAction = forwardRef<HTMLButtonElement, HeaderToolbarActionProps>(function HeaderToolbarAction(
+	{ id, icon, action, index, title, tooltip, ...props },
 	ref,
 ) {
 	return (
 		<IconButton
-			data-qa-id={`ToolBoxAction-${icon}`}
 			ref={ref}
 			onClick={() => action(id)}
 			data-toolbox={index}
@@ -17,7 +22,7 @@ const HeaderToolbarAction = forwardRef<HTMLButtonElement, any>(function HeaderTo
 			small
 			position='relative'
 			overflow='visible'
-			{...(tooltip ? { 'data-tooltip': tooltip, 'title': '' } : { title })}
+			title={tooltip ?? title}
 			{...props}
 		/>
 	);

@@ -26,7 +26,6 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
 			return (
 				<HeaderToolbarAction
-					key={id}
 					className={className}
 					index={index}
 					id={id}
