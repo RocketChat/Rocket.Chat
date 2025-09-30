@@ -15,24 +15,20 @@ import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
+import * as Aes from './aes';
 import { decodePrefixedBase64, encodePrefixedBase64 } from './codec';
 import { decodeEncryptedContent } from './content';
 import {
 	toString,
 	toArrayBuffer,
 	encryptRSA,
-	encryptAes,
 	decryptRSA,
-	generateAesGcmKey,
-	exportJWKKey,
-	importAesKey,
 	importRSAKey,
 	readFileAsArrayBuffer,
 	encryptAESCTR,
 	generateAESCTRKey,
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
-	decryptAes,
 } from './helper';
 import { createLogger } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -94,9 +90,9 @@ export class E2ERoom extends Emitter {
 
 	roomKeyId: string | undefined;
 
-	groupSessionKey: CryptoKey | null = null;
+	groupSessionKey: Aes.Key | null = null;
 
-	oldKeys: { E2EKey: CryptoKey | null; ts: Date; e2eKeyId: string }[] | undefined;
+	oldKeys: { E2EKey: Aes.Key | null; ts: Date; e2eKeyId: string }[] | undefined;
 
 	sessionKeyExportedString: string | undefined;
 
@@ -366,7 +362,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key: string) {
-		return importAesKey(JSON.parse(await this.exportSessionKey(key)));
+		return Aes.importKey(JSON.parse(await this.exportSessionKey(key)));
 	}
 
 	async exportSessionKey(key: string) {
@@ -417,7 +413,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await importAesKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString!));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 			span.info('Group key imported');
@@ -430,9 +426,8 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createNewGroupKey() {
-		this.groupSessionKey = await generateAesGcmKey();
-
-		const sessionKeyExported = await exportJWKKey(this.groupSessionKey!);
+		this.groupSessionKey = await Aes.generateKey();
+		const sessionKeyExported = await Aes.exportKey(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 		this.keyID = crypto.randomUUID();
 	}
@@ -628,23 +623,15 @@ export class E2ERoom extends Emitter {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const isAesCbc = this.groupSessionKey.algorithm.name === 'AES-CBC';
-			if (isAesCbc) {
-				span.warn('Using deprecated AES-CBC algorithm for encryption. Please upgrade to AES-GCM.');
-			}
-			// AES-GCM uses a 12 byte vector, while AES-CBC uses a 16 byte vector
-			// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#parameters
-			// https://www.rfc-editor.org/rfc/rfc5116.html#section-3.1
-			// https://tools.ietf.org/html/rfc3602#section-2
-			const vector = crypto.getRandomValues(new Uint8Array(isAesCbc ? 16 : 12));
-			const result = await encryptAes(vector, this.groupSessionKey, data);
-			const ciphertext = {
+
+			const { iv, ciphertext } = await Aes.encrypt(data, this.groupSessionKey);
+			const encryptedData = {
 				kid: this.keyID,
-				iv: Base64.encode(vector),
-				ciphertext: Base64.encode(new Uint8Array(result)),
+				iv: Base64.encode(iv),
+				ciphertext: Base64.encode(ciphertext),
 			};
 			span.set('ciphertext', ciphertext).info('message encrypted');
-			return ciphertext;
+			return encryptedData;
 		} catch (error) {
 			span.set('error', error).error('Error encrypting message');
 			throw error;
@@ -724,8 +711,8 @@ export class E2ERoom extends Emitter {
 		span.set('type', key.type);
 		span.set('usages', key.usages.toString());
 		try {
-			const result = await decryptAes(iv, key, ciphertext);
-			const ret: unknown = EJSON.parse(new TextDecoder('UTF-8').decode(result));
+			const result = await Aes.decrypt({ iv, ciphertext }, key);
+			const ret: unknown = EJSON.parse(result);
 			if (typeof ret !== 'object' || ret === null) {
 				span.error('Decrypted message is not an object');
 				return { msg: t('E2E_indecipherable') };
@@ -748,7 +735,7 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	private retrieveDecryptionKey(kid: string): CryptoKey | null {
+	private retrieveDecryptionKey(kid: string): Aes.Key | null {
 		const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === kid);
 		return oldRoomKey?.E2EKey ?? this.groupSessionKey;
 	}

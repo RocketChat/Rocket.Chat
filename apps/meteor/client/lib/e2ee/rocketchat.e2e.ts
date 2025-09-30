@@ -11,7 +11,7 @@ import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
-import { splitVectorAndEncryptedData, generateRSAKey, exportJWKKey, importRSAKey, generatePassphrase } from './helper';
+import { generateRSAKey, exportJWKKey, importRSAKey, generatePassphrase } from './helper';
 import { createLogger } from './logger';
 import { getMasterKey, type Pbkdf2Options } from './pbkdf2';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -606,7 +606,7 @@ class E2E extends Emitter {
 		if ('$binary' in json && typeof json.$binary === 'string') {
 			// v1: { $binary: base64(iv[16] + ciphertext) }
 			const binary = Base64.decode(json.$binary);
-			const { iv, ciphertext } = splitVectorAndEncryptedData(binary, 16);
+			const [iv, ciphertext] = [binary.slice(0, 16), binary.slice(16)];
 			return { iv, ciphertext, iterations: 1000, salt: userId };
 		}
 

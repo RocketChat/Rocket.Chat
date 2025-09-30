@@ -25,66 +25,8 @@ export function toArrayBuffer(thing: any) {
 	return ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 
-export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encryptedData: ArrayBuffer) {
-	const cipherText = new Uint8Array(encryptedData);
-	const output = new Uint8Array(vector.length + cipherText.length);
-	output.set(vector, 0);
-	output.set(cipherText, vector.length);
-	return output;
-}
-
-export function splitVectorAndEncryptedData(
-	cipherText: Uint8Array<ArrayBuffer>,
-	ivLength: 12 | 16,
-): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
-	const iv = cipherText.slice(0, ivLength);
-	const ciphertext = cipherText.slice(ivLength);
-	return { iv, ciphertext };
-}
-
 export async function encryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
-}
-
-/**
- * Encrypts data using AES-CBC.
- * @param iv The initialization vector.
- * @param key The encryption key.
- * @param data The data to encrypt.
- * @returns The encrypted data.
- * @deprecated Use {@link encryptAesGcm} instead.
- */
-export async function encryptAesCbc(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data);
-	return encrypted;
-}
-
-export async function decryptAesCbc(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data);
-}
-
-async function encryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
-	return encrypted;
-}
-
-async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
-	return decrypted;
-}
-
-export function decryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	if (iv.byteLength === 12) {
-		return decryptAesGcm(iv, key, data);
-	}
-	return decryptAesCbc(iv, key, data);
-}
-
-export function encryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
-	if (key.algorithm.name === 'AES-GCM') {
-		return encryptAesGcm(iv, key, data);
-	}
-	return encryptAesCbc(iv, key, data);
 }
 
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
@@ -93,18 +35,6 @@ export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data:
 
 export async function decryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
-}
-
-/**
- * Generates an AES-CBC key.
- * @deprecated Use {@link generateAesGcmKey} instead.
- */
-export async function generateAesCbcKey() {
-	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
-}
-
-export function generateAesGcmKey(): Promise<CryptoKey> {
-	return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
 export function generateAESCTRKey(): Promise<CryptoKey> {
@@ -139,26 +69,6 @@ export function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUs
 		true,
 		keyUsages,
 	);
-}
-
-/**
- * Imports an AES-CBC key from JWK format.
- * @deprecated Use {@link importAesGcmKey} instead.
- */
-export function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
-	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
-}
-
-/**
- * Imports an AES-GCM key from JWK format.
- */
-export function importAesKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
-	const isCBC = keyData.alg === 'A128CBC' || keyData.alg === 'A192CBC' || keyData.alg === 'A256CBC';
-	if (isCBC) {
-		console.warn('Importing an AES-CBC key. Consider migrating to AES-GCM for better security.');
-		return importAesCbcKey(keyData, keyUsages);
-	}
-	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-GCM' }, true, keyUsages);
 }
 
 export function readFileAsArrayBuffer(file: File) {
