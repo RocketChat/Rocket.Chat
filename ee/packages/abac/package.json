@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@rocket.chat/core-services": "workspace:^",
-    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/models": "workspace:^"
   },
   "devDependencies": {
     "@rocket.chat/eslint-config": "workspace:^",

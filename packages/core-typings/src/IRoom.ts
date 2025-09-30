@@ -33,6 +33,7 @@ export interface IRoom extends IRocketChatRecord {
 		style?: string;
 	};
 	encrypted?: boolean;
+	abac?: boolean;
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
