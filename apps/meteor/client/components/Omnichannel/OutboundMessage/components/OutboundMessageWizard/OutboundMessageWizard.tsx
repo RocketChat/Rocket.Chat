@@ -3,6 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
+import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import GenericError from '../../../../GenericError';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
@@ -27,6 +29,7 @@ type OutboundMessageWizardProps = {
 
 const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastBarDispatch();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
@@ -62,6 +65,14 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			{ id: 'review', title: t('Review') },
 		],
 	});
+
+	useEffect(
+		() => () => {
+			// Clear cached providers and metadata on unmount to avoid stale data
+			void queryClient.removeQueries({ queryKey: omnichannelQueryKeys.outboundProviders() });
+		},
+		[queryClient],
+	);
 
 	useEffect(() => {
 		if (!isLoadingProviders && !isLoadingModule && (!hasOutboundModule || !hasProviders)) {
