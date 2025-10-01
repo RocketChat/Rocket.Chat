@@ -1,0 +1,13 @@
+{
+	"mode": "testops",
+	"debug": true,
+	"testops": {
+		"project": "${QASE_TESTOPS_PROJECT}",
+		"api": {
+			"token": "${QASE_TESTOPS_API_TOKEN}"
+		},
+		"run": {
+			"complete": true
+		}
+	}
+}

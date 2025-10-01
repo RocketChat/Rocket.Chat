@@ -236,6 +236,9 @@ jobs:
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcovonly'
           GITHUB_SUMMARY_PATH: test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          QASE_MODE: testops
+          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_ROOT_SUITE: 'Rocket.Chat API Automation'
           CI: true
         run: |
           for i in $(seq 1 2); do
