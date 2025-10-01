@@ -8,23 +8,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
 	/**
-	 * Toggles the ABAC flag for a private room.
-	 * Only rooms of type 'p' (private channels or teams) are currently eligible.
-	 * For now, this doenst remove the attributes associated with the room
-	 *
-	 * @param rid Room ID
-	 */
-	async toggleAbacConfigurationForRoom(rid: string): Promise<void> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abac: 1 } });
-
-		if (!room) {
-			throw new Error('error-invalid-room');
-		}
-
-		await Rooms.updateAbacConfigurationById(rid, !room.abac);
-	}
-
-	/**
 	 * Adds a new ABAC attribute definition entry for a given private room.
 	 *
 	 * @param rid Room ID
