@@ -80,7 +80,7 @@ export async function setupFederationMatrix(instanceId: string): Promise<void> {
 				'audio/mpeg',
 				'audio/ogg',
 			],
-			enableThumbnails: process.env.MEDIA_ENABLE_THUMBNAILS === 'true' || true,
+			enableThumbnails: process.env.MEDIA_ENABLE_THUMBNAILS !== 'true',
 			rateLimits: {
 				uploadPerMinute: Number.parseInt(process.env.MEDIA_UPLOAD_RATE_LIMIT || '10', 10),
 				downloadPerMinute: Number.parseInt(process.env.MEDIA_DOWNLOAD_RATE_LIMIT || '60', 10),
