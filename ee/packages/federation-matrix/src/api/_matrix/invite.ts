@@ -1,5 +1,5 @@
 import { Room } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -12,7 +12,7 @@ import { Router } from '@rocket.chat/http-router';
 import { Users, Rooms } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { createOrUpdateFederatedUser } from '../../FederationMatrix';
+import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -279,14 +279,51 @@ export async function joinRoom({
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
-
-	// TODO is this needed?
-	// if (isDM) {
-	// 	await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, inviteEvent.roomId, matrixRoom.origin);
-	// }
 }
 
 export const startJoiningRoom = runWithBackoff(joinRoom);
+
+// This is a special case where inside rocket chat we invite users inside rockechat, so if the sender or the invitee are external iw should throw an error
+export const acceptInvite = async (
+	inviteEvent: PersistentEventBase<RoomVersion, 'm.room.member'>,
+	username: string,
+	services: HomeserverServices,
+) => {
+	if (!inviteEvent.stateKey) {
+		throw new Error('join event has missing state key, unable to determine user to join');
+	}
+
+	const internalMappedRoom = await Rooms.findOne({ 'federation.mrid': inviteEvent.roomId });
+	if (!internalMappedRoom) {
+		throw new Error('room not found not processing invite');
+	}
+
+	const inviter = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(
+		getUsernameServername(inviteEvent.sender, services.config.serverName)[0],
+		{
+			projection: { _id: 1, username: 1 },
+		},
+	);
+
+	if (!inviter) {
+		throw new Error('Sender user ID not found');
+	}
+	if (isUserNativeFederated(inviter)) {
+		throw new Error('Sender user is native federated');
+	}
+
+	const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(username, { projection: { _id: 1 } });
+
+	// we cannot accept invites from users that are external
+	if (!user) {
+		throw new Error('User not found');
+	}
+	if (isUserNativeFederated(user)) {
+		throw new Error('User is native federated');
+	}
+
+	await services.room.joinUser(inviteEvent.roomId, inviteEvent.stateKey);
+};
 
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	const { invite, state, room } = services;

@@ -14,6 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
+import { acceptInvite } from './api/_matrix/invite';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
@@ -65,6 +66,24 @@ export const extractDomainFromMatrixUserId = (mxid: string): string => {
 };
 
 /**
+ * Extract the username and the servername from a matrix user id
+ * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
+ * otherwise, return the full mxid and the servername
+ */
+export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
+	const senderServerName = extractDomainFromMatrixUserId(mxid);
+	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
+	if (serverName === senderServerName) {
+		const separatorIndex = mxid.indexOf(':', 1);
+		if (separatorIndex === -1) {
+			throw new Error(`Invalid federated username: ${mxid}`);
+		}
+		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
+	}
+
+	return [mxid, senderServerName, false];
+};
+/**
  * Helper function to create a federated user
  *
  * Because of historical reasons, we can have users only with federated flag but no federation object
@@ -75,7 +94,7 @@ export async function createOrUpdateFederatedUser(options: {
 	name?: string;
 	origin: string;
 }): Promise<string> {
-	const { username, name = username } = options;
+	const { username, name = username, origin } = options;
 
 	const result = await Users.updateOne(
 		{
@@ -84,7 +103,7 @@ export async function createOrUpdateFederatedUser(options: {
 		{
 			$set: {
 				username,
-				name,
+				name: name || username,
 				type: 'user' as const,
 				status: UserStatus.OFFLINE,
 				active: true,
@@ -563,24 +582,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async inviteUsersToRoom(room: IRoomNativeFederated, usersUserName: string[], inviter: IUser): Promise<void> {
+	async inviteUsersToRoom(room: IRoomNativeFederated, matrixUsersUsername: string[], inviter: IUser): Promise<void> {
 		try {
 			const inviterUserId = `@${inviter.username}:${this.serverName}`;
 
 			await Promise.all(
-				usersUserName
-					.filter((username) => {
-						const isExternalUser = username.includes(':');
-						return isExternalUser;
-					})
-					.map(async (username) => {
-						const alreadyMember = await Subscriptions.findOneByRoomIdAndUsername(room._id, username, { projection: { _id: 1 } });
-						if (alreadyMember) {
-							return;
-						}
+				matrixUsersUsername.map(async (username) => {
+					if (validateFederatedUsername(username)) {
+						return this.homeserverServices.invite.inviteUserToRoom(username, room.federation.mrid, inviterUserId);
+					}
+					const result = await this.homeserverServices.invite.inviteUserToRoom(
+						`@${username}:${this.serverName}`,
+						room.federation.mrid,
+						inviterUserId,
+					);
 
-						await this.homeserverServices.invite.inviteUserToRoom(username, room.federation.mrid, inviterUserId);
-					}),
+					return acceptInvite(result.event, username, this.homeserverServices);
+				}),
 			);
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to invite an user to Matrix:', err: error });
