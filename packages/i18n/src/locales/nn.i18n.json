@@ -2039,6 +2039,7 @@
   "Features": "Egenskaper",
   "Federated": "Forent",
   "Federation": "Føderasjon",
+  "Federation_Description": "Forening lar et ubegrenset antall arbeidsområder kommunisere med hverandre.",
   "Federation_Enable": "Aktiver Federation",
   "Federation_Example_matrix_server": "Eksempel: matrix.org",
   "Federation_Federated_room_search": "Søk forente rom",
