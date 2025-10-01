@@ -10,7 +10,7 @@ export interface IFederationMatrixService {
 	ensureFederatedUsersExistLocally(members: string[]): Promise<void>;
 	createDirectMessageRoom(room: IRoomFederated, members: IUser[], creatorId: IUser['_id']): Promise<void>;
 	sendMessage(message: IMessage, room: IRoomFederated, user: IUser): Promise<void>;
-	deleteMessage(matrixRoomId: string, message: IMessage, uid: string): Promise<void>;
+	deleteMessage(matrixRoomId: string, message: IMessage): Promise<void>;
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
 	getEventById(eventId: string): Promise<any | null>;
