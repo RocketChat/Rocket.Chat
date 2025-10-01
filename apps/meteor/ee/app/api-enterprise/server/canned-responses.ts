@@ -109,7 +109,7 @@ API.v1.addRoute(
 		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
 		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
 		license: ['canned-responses'],
-		deprecations: { version: '8.0.0', alternatives: [ '/v1/canned-responses/:_id' ] },
+		deprecations: { DELETE: { version: '8.0.0', alternatives: ['/v1/canned-responses/:_id'] } },
 	},
 	{
 		async get() {
