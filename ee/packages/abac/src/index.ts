@@ -2,7 +2,7 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes } from '@rocket.chat/models';
-import { Filter } from 'mongodb';
+import type { Filter, UpdateFilter } from 'mongodb';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -10,9 +10,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	/**
 	 * Toggles the ABAC flag for a private room.
 	 * Only rooms of type 'p' (private channels or teams) are currently eligible.
+	 * For now, this doenst remove the attributes associated with the room
 	 *
 	 * @param rid Room ID
-	 * @throws Error('error-invalid-room') if the room does not exist or is not a private room
 	 */
 	async toggleAbacConfigurationForRoom(rid: string): Promise<void> {
 		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abac: 1 } });
@@ -30,9 +30,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	 * @param rid Room ID
 	 * @param attribute Attribute definition payload
 	 *
-	 * @throws Error('error-invalid-room') if the room does not exist or is not private
-	 * @throws Error('error-invalid-attribute-key') if key fails validation
-	 * @throws Error('error-invalid-attribute-values') if values list is empty after normalization
 	 */
 	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
 		const keyPattern = /^[A-Za-z0-9_-]+$/;
@@ -90,6 +87,86 @@ export class AbacService extends ServiceClass implements IAbacService {
 			count: attributes.length,
 			total: await totalCount,
 		};
+	}
+
+	/**
+	 * Updates an ABAC attribute definition by its _id.
+	 *
+	 * Validation & behavior:
+	 *  - Attribute must exist
+	 *  - key (if provided) must match /^[A-Za-z0-9_-]+$/
+	 *  - values (if provided) must be a non-empty array
+	 *  - Duplicate key conflict surfaces as error-duplicate-attribute-key
+	 *  - If the key changes OR any existing value is removed, verify none of the removed identity (old key + removed values)
+	 *    is currently in use by any room.
+	 *
+	 *
+	 */
+	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void> {
+		if (!update.key && !update.values) {
+			return;
+		}
+
+		const existing = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
+		if (!existing) {
+			throw new Error('error-attribute-not-found');
+		}
+
+		const keyPattern = /^[A-Za-z0-9_-]+$/;
+		if (update.key && !keyPattern.test(update.key)) {
+			throw new Error('error-invalid-attribute-key');
+		}
+		if (update.values && !update.values.length) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		const newKey = update.key ?? existing.key;
+		const newValues = update.values ?? existing.values;
+
+		const removedValues = existing.values.filter((v) => !newValues.includes(v));
+		const keyChanged = newKey !== existing.key;
+
+		// If key changed, all old values are considered removed under the old key context
+		const valuesToCheck = keyChanged ? existing.values : removedValues;
+
+		if (keyChanged || valuesToCheck.length) {
+			const inUse = await Rooms.findOne(
+				{
+					abacAttributes: {
+						$elemMatch: {
+							key: existing.key,
+							values: { $in: valuesToCheck.length ? valuesToCheck : existing.values },
+						},
+					},
+				},
+				{ projection: { _id: 1 } },
+			);
+
+			if (inUse) {
+				throw new Error('error-attribute-in-use');
+			}
+		}
+
+		const modifier: UpdateFilter<IAbacAttribute> = {};
+		if (update.key) {
+			modifier.key = update.key;
+		}
+		if (update.values) {
+			modifier.values = update.values;
+		}
+
+		if (!Object.keys(modifier).length) {
+			return;
+		}
+
+		try {
+			await AbacAttributes.updateOne({ _id }, { $set: modifier });
+		} catch (e) {
+			if (e instanceof Error && e.message.includes('E11000')) {
+				throw new Error('error-duplicate-attribute-key');
+			}
+			throw e;
+		}
 	}
 }
 
