@@ -134,10 +134,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	/**
 	 * Deletes an ABAC attribute definition by its _id.
-	 * It first checks whether any room is currently using the attribute (any of its values).
-	 * If in use, throws error-attribute-in-use, otherwise removes the definition.
-	 *
-	 * @param _id Attribute document id
 	 */
 	async deleteAbacAttributeById(_id: string): Promise<void> {
 		const existing = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
