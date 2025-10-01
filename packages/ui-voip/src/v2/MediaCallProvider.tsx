@@ -184,7 +184,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const onTone = (tone: string) => {
 		session.sendTone(tone);
 		if (isValidTone(tone)) {
-			playTone(tone as any);
+			playTone(tone);
 		}
 	};
 
