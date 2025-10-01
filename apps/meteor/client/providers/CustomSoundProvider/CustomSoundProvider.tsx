@@ -79,7 +79,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
 			playNewMessageCustom: (soundId: ICustomSound['_id']) =>
 				play(soundId, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessageLoop: () => play(newMessageNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
 			stopNewRoom: () => stop(newRoomNotification),
 			stopNewMessage: () => stop(newMessageNotification),
 		};
