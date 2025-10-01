@@ -23,7 +23,8 @@
   "dependencies": {
     "@rocket.chat/core-services": "workspace:^",
     "@rocket.chat/core-typings": "workspace:^",
-    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/models": "workspace:^",
+    "mongodb": "6.10.0"
   },
   "devDependencies": {
     "@rocket.chat/eslint-config": "workspace:^",
