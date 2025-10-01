@@ -22,7 +22,8 @@ export interface IUserRead {
 
 	/**
 	 * Gets the identifiers of the rooms the user is a member of.
+	 * Returns undefined when the app lacks read permission.
 	 * @param uid user's id
 	 */
-	getUserRoomIds(uid: string): Promise<Array<string>>;
+	getUserRoomIds(uid: string): Promise<string[] | undefined>;
 }
