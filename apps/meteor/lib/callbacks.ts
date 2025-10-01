@@ -11,7 +11,6 @@ import type {
 	VideoConference,
 	OEmbedMeta,
 	OEmbedUrlContent,
-	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
 	ILivechatTagRecord,
