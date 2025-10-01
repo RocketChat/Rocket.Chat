@@ -8104,6 +8104,7 @@ __metadata:
     "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
+    mongodb: "npm:6.10.0"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
