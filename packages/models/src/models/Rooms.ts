@@ -117,6 +117,24 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		];
 	}
 
+	async isAbacAttributeInUse(key: string, values: string[]): Promise<boolean> {
+		if (!values.length) {
+			return false;
+		}
+		const room = await this.findOne(
+			{
+				abacAttributes: {
+					$elemMatch: {
+						key,
+						values: { $in: values },
+					},
+				},
+			},
+			{ projection: { _id: 1 } },
+		);
+		return !!room;
+	}
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			'_id': rid,
