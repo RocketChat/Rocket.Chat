@@ -1,9 +1,10 @@
 import { License } from '@rocket.chat/core-services';
 import { Emitter } from '@rocket.chat/emitter';
+import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { ConfigService, createFederationContainer } from '@rocket.chat/federation-sdk';
+import { Settings } from '@rocket.chat/models';
 
 import { registerEvents } from './events';
-import { Settings } from '@rocket.chat/models';
-import { ConfigService, createFederationContainer, HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 
 function validateDomain(domain: string): boolean {
 	const value = domain.trim();
@@ -53,7 +54,7 @@ export async function setupFederationMatrix(instanceId: string): Promise<void> {
 	const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
 
 	const config = new ConfigService({
-		instanceId: instanceId,
+		instanceId,
 		serverName,
 		keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
 		matrixDomain: serverName,

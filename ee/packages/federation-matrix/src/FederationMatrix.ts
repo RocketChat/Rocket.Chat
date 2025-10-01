@@ -10,7 +10,6 @@ import {
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { getAllServices } from '@rocket.chat/federation-sdk';
 import type { EventID, HomeserverServices, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
-
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -29,7 +28,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	protected name = 'federation-matrix';
 
 	private serverName: string;
+
 	private processEDUTyping: boolean;
+
 	private processEDUPresence: boolean;
 
 	private homeserverServices: HomeserverServices;
@@ -50,8 +51,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				this.processEDUTyping = value;
 			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
 				this.processEDUTyping = value;
-			} else {
-				return;
 			}
 		});
 
