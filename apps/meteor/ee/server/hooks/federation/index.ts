@@ -1,5 +1,5 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import { isEditedMessage, isUserNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -57,22 +57,13 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, { room, user }) => {
+	async (message: IMessage, { room }) => {
 		if (!message.federation?.eventId) {
 			return;
 		}
 
-		// removing messages from external users is not allowed
-		// TODO should we make it work for external users?
-		if (user.federated) {
-			return;
-		}
-
-		if (!isUserNativeFederated(user)) {
-			return;
-		}
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.deleteMessage(room.federation.mrid, message, user.federation.mui);
+			await FederationMatrix.deleteMessage(room.federation.mrid, message);
 		}
 	},
 	callbacks.priority.MEDIUM,
