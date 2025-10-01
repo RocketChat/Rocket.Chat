@@ -6,6 +6,7 @@ const mockAbacInsertOne = jest.fn();
 const mockAbacFindPaginated = jest.fn();
 const mockAbacFindOne = jest.fn();
 const mockAbacUpdateOne = jest.fn();
+const mockAbacDeleteOne = jest.fn();
 const mockRoomsFindOne = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
@@ -19,6 +20,7 @@ jest.mock('@rocket.chat/models', () => ({
 		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
 		findOne: (...args: any[]) => mockAbacFindOne(...args),
 		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
+		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 	},
 }));
 
@@ -259,6 +261,27 @@ describe('AbacService (unit)', () => {
 			mockRoomsFindOne.mockResolvedValueOnce(null);
 			mockAbacUpdateOne.mockRejectedValueOnce(new Error('write-failed'));
 			await expect(service.updateAbacAttributeById('id10', { key: 'Another' })).rejects.toThrow('write-failed');
+		});
+		describe('deleteAbacAttributeById', () => {
+			it('throws error-attribute-not-found when attribute does not exist', async () => {
+				mockAbacFindOne.mockResolvedValueOnce(null);
+				await expect(service.deleteAbacAttributeById('missing')).rejects.toThrow('error-attribute-not-found');
+			});
+
+			it('throws error-attribute-in-use when attribute is referenced by a room', async () => {
+				mockAbacFindOne.mockResolvedValueOnce({ _id: 'id11', key: 'KeyInUse', values: ['a', 'b'] });
+				mockRoomsFindOne.mockResolvedValueOnce({ _id: 'roomUsingAttr' });
+				await expect(service.deleteAbacAttributeById('id11')).rejects.toThrow('error-attribute-in-use');
+				expect(mockAbacDeleteOne).not.toHaveBeenCalled();
+			});
+
+			it('deletes attribute when not in use', async () => {
+				mockAbacFindOne.mockResolvedValueOnce({ _id: 'id12', key: 'FreeKey', values: ['x'] });
+				mockRoomsFindOne.mockResolvedValueOnce(null);
+				mockAbacDeleteOne.mockResolvedValueOnce({ deletedCount: 1 });
+				await service.deleteAbacAttributeById('id12');
+				expect(mockAbacDeleteOne).toHaveBeenCalledWith({ _id: 'id12' });
+			});
 		});
 	});
 });
