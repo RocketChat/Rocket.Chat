@@ -9,4 +9,5 @@ export interface IAbacService {
 		count?: number;
 	}): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void>;
+	deleteAbacAttributeById(_id: string): Promise<void>;
 }
