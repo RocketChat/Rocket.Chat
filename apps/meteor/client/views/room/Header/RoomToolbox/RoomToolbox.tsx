@@ -33,7 +33,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
-					action={action}
+					onClick={action}
 					disabled={disabled}
 					tooltip={tooltip}
 				/>

@@ -41,7 +41,7 @@ const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
-					action={action ?? (() => toolbox.openTab(id))}
+					onClick={action ?? (() => toolbox.openTab(id))}
 					disabled={disabled}
 					tooltip={tooltip}
 				/>
