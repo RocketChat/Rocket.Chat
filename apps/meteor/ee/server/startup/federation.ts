@@ -1,8 +1,7 @@
 import { api, FederationMatrix as FederationMatrixService } from '@rocket.chat/core-services';
-import { FederationMatrix } from '@rocket.chat/federation-matrix';
-import { Logger } from '@rocket.chat/logger';
+import { FederationMatrix, setupFederationMatrix } from '@rocket.chat/federation-matrix';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { setupFederationMatrix } from '@rocket.chat/federation-matrix';
+import { Logger } from '@rocket.chat/logger';
 
 import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
 import { registerFederationRoutes } from '../api/federation';
