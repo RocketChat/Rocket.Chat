@@ -9,6 +9,7 @@ import {
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
+import { settings } from '../../../../app/settings/server';
 
 const abacEndpoints = API.v1
 	// add attributes for a room (bulk)
@@ -49,6 +50,10 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { key, values, offset, count } = this.queryParams;
 
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
 			const attributes = await Abac.listAbacAttributes({
 				key,
 				values,
@@ -70,6 +75,10 @@ const abacEndpoints = API.v1
 			response: { 200: GenericSuccessSchema },
 		},
 		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
 			await Abac.addAbacAttribute(this.bodyParams);
 			return API.v1.success();
 		},
@@ -86,6 +95,10 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
 			await Abac.updateAbacAttributeById(_id, this.bodyParams);
 			return API.v1.success();
 		},
@@ -95,6 +108,10 @@ const abacEndpoints = API.v1
 		'abac/attributes/:key',
 		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
 		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
 			throw new Error('not-implemented');
 		},
 	)
@@ -103,6 +120,9 @@ const abacEndpoints = API.v1
 		'abac/attributes/:key/is-in-use',
 		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
 		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
 			throw new Error('not-implemented');
 		},
 	);
