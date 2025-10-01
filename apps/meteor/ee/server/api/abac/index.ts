@@ -2,9 +2,10 @@ import { Abac } from '@rocket.chat/core-services';
 
 import {
 	GenericSuccessSchema,
-	POSTAbacAttributeDefinitionSchema,
+	PUTAbacAttributeUpdateBodySchema,
 	GETAbacAttributesQuerySchema,
 	GETAbacAttributesResponseSchema,
+	POSTAbacAttributeDefinitionSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -73,12 +74,20 @@ const abacEndpoints = API.v1
 			return API.v1.success();
 		},
 	)
-	// edit attribute and values (do not allow to modify attribute value if in use)
+	// update attribute definition (key and/or values)
 	.put(
-		'abac/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: PUTAbacAttributeUpdateBodySchema,
+			response: { 200: GenericSuccessSchema },
+		},
 		async function action() {
-			throw new Error('not-implemented');
+			const { _id } = this.urlParams;
+			await Abac.updateAbacAttributeById(_id, this.bodyParams);
+			return API.v1.success();
 		},
 	)
 	// delete attribute (only if not in use)
