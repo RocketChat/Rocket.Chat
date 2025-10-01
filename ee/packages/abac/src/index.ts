@@ -74,16 +74,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	/**
 	 * Updates an ABAC attribute definition by its _id.
-	 *
-	 * Validation & behavior:
-	 *  - Attribute must exist
-	 *  - key (if provided) must match /^[A-Za-z0-9_-]+$/
-	 *  - values (if provided) must be a non-empty array
-	 *  - Duplicate key conflict surfaces as error-duplicate-attribute-key
-	 *  - If the key changes OR any existing value is removed, verify none of the removed identity (old key + removed values)
-	 *    is currently in use by any room.
-	 *
-	 *
 	 */
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void> {
 		if (!update.key && !update.values) {
@@ -150,6 +140,38 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 			throw e;
 		}
+	}
+
+	/**
+	 * Deletes an ABAC attribute definition by its _id.
+	 * It first checks whether any room is currently using the attribute (any of its values).
+	 * If in use, throws error-attribute-in-use, otherwise removes the definition.
+	 *
+	 * @param _id Attribute document id
+	 */
+	async deleteAbacAttributeById(_id: string): Promise<void> {
+		const existing = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
+		if (!existing) {
+			throw new Error('error-attribute-not-found');
+		}
+
+		const inUse = await Rooms.findOne(
+			{
+				abacAttributes: {
+					$elemMatch: {
+						key: existing.key,
+						values: { $in: existing.values },
+					},
+				},
+			},
+			{ projection: { _id: 1 } },
+		);
+
+		if (inUse) {
+			throw new Error('error-attribute-in-use');
+		}
+
+		await AbacAttributes.deleteOne({ _id });
 	}
 }
 
