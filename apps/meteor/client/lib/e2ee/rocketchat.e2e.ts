@@ -238,12 +238,11 @@ class E2E extends Emitter {
 		});
 	}
 
-	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom> {
+	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | undefined> {
 		const room = await this.waitForRoom(rid);
 
-		const userId = this.getUserId();
-		if (!this.instancesByRoomId[rid] && userId) {
-			this.instancesByRoomId[rid] = new E2ERoom(userId, room);
+		if (!this.instancesByRoomId[rid] && this.userId) {
+			this.instancesByRoomId[rid] = new E2ERoom(this.userId, room);
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance

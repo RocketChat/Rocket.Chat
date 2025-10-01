@@ -79,7 +79,7 @@ test.describe('E2EE Legacy Format', () => {
 				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
 				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
 				const room = await e2e.getInstanceByRoomId(rid);
-				await room.importGroupKey(kid + encryptedKey);
+				await room?.importGroupKey(kid + encryptedKey);
 			},
 			{ rid, kid, encryptedKey },
 		);
