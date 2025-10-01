@@ -50,7 +50,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
 				this.processEDUTyping = value;
 			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
-				this.processEDUTyping = value;
+				this.processEDUPresence = value;
 			}
 		});
 
