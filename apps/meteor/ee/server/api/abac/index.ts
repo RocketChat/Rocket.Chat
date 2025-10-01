@@ -10,22 +10,6 @@ import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 
 const abacEndpoints = API.v1
-	// enable/disable for room
-	.post(
-		'abac/rooms/:rid',
-		{
-			authRequired: true,
-			permissionsRequired: ['abac-management'],
-			response: { 200: GenericSuccessSchema },
-			license: ['abac'],
-		},
-		async function action() {
-			const { rid } = this.urlParams;
-			await Abac.toggleAbacConfigurationForRoom(rid);
-
-			return API.v1.success();
-		},
-	)
 	// add attributes for a room (bulk)
 	.post(
 		'abac/room/:rid/attributes',

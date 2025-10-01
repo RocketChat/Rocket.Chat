@@ -1,7 +1,6 @@
-import type { IAbacAttributeDefinition, IRoom, IAbacAttribute } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IAbacAttribute } from '@rocket.chat/core-typings';
 
 export interface IAbacService {
-	toggleAbacConfigurationForRoom(rid: IRoom['_id']): Promise<void>;
 	addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void>;
 	listAbacAttributes(filters?: {
 		key?: string;
