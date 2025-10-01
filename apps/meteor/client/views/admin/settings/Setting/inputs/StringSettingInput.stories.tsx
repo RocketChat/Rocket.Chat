@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import StringSettingInput from './StringSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/StringSettingInput',
 	component: StringSettingInput,
 	parameters: {
 		actions: {

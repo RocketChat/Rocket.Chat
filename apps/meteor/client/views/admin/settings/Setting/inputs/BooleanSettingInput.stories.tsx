@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import BooleanSettingInput from './BooleanSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/BooleanSettingInput',
 	component: BooleanSettingInput,
 	parameters: {
 		actions: {

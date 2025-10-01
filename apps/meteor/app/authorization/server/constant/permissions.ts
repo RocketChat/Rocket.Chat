@@ -107,6 +107,10 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{
+		_id: 'delete-livechat-contact',
+		roles: ['livechat-manager', 'admin'],
+	},
+	{
 		_id: 'view-livechat-contact-history',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
@@ -223,6 +227,10 @@ export const permissions = [
 	{ _id: 'view-user-voip-extension', roles: ['admin', 'user'] },
 	// Allow viewing details of an extension
 	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
+
+	// New Media calls permissions
+	{ _id: 'allow-internal-voice-calls', roles: ['admin', 'user'] },
+	{ _id: 'allow-external-voice-calls', roles: ['admin', 'user'] },
 
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'manage-apps', roles: ['admin'] },

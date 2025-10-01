@@ -37,7 +37,7 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 		};
 
 		const options = priorities.map(({ _id: priorityId, name, i18n, dirty, sortItem }) => {
-			const label = dirty && name ? name : i18n;
+			const label = dirty && name ? name : t(i18n);
 
 			return {
 				id: priorityId,
@@ -49,5 +49,5 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 		});
 
 		return priorities.length ? [unprioritizedOption, ...options] : [];
-	}, [t, priorities, updateRoomPriority, removeRoomPriority, queryClient, rid]);
+	}, [t, priorities, updateRoomPriority, removeRoomPriority, queryClient, rid, dispatchToastMessage]);
 };

@@ -96,6 +96,7 @@ export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 export { useUserPresence } from './hooks/useUserPresence';
 export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
+export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/useMediaDevicePermission';
 export { useWriteStream } from './hooks/useWriteStream';
 
 export { UploadResult } from './ServerContext';

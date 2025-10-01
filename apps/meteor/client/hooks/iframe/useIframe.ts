@@ -1,3 +1,4 @@
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -12,6 +13,8 @@ export const useIframe = () => {
 	const iframeLogin = useLoginWithIframe();
 	const tokenLogin = useLoginWithToken();
 
+	const enabled = Boolean(iframeEnabled && accountIframeUrl && apiUrl && apiMethod);
+
 	const loginWithToken = useCallback(
 		(tokenData: string | { loginToken: string } | { token: string }, callback?: (error: Error | null | undefined) => void) => {
 			if (typeof tokenData === 'string') {
@@ -20,7 +23,7 @@ export const useIframe = () => {
 				};
 			}
 			if ('loginToken' in tokenData) {
-				tokenLogin(tokenData.loginToken);
+				tokenLogin(tokenData.loginToken, callback);
 			}
 			if ('token' in tokenData) {
 				iframeLogin(tokenData.token, callback);
@@ -29,23 +32,25 @@ export const useIframe = () => {
 		[iframeLogin, tokenLogin],
 	);
 
-	const tryLogin = useCallback(
-		async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
-			let url = accountIframeUrl;
-			let separator = '?';
-			if (url.indexOf('?') > -1) {
-				separator = '&';
-			}
+	const tryLogin = useEffectEvent(async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
+		if (!enabled) {
+			return;
+		}
 
-			if (navigator.userAgent.indexOf('Electron') > -1) {
-				url += `${separator}client=electron`;
-			}
+		let url = accountIframeUrl;
+		let separator = '?';
+		if (url.indexOf('?') > -1) {
+			separator = '&';
+		}
 
+		if (navigator.userAgent.indexOf('Electron') > -1) {
+			url += `${separator}client=electron`;
+		}
+
+		try {
 			const result = await fetch(apiUrl, {
 				method: apiMethod,
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: undefined,
 				credentials: 'include',
 			});
 
@@ -55,20 +60,23 @@ export const useIframe = () => {
 				return;
 			}
 
-			loginWithToken(await result.json(), async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+			const body = await result.json();
+			loginWithToken(body, async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
 				if (error) {
 					setIframeLoginUrl(url);
 				} else {
 					setIframeLoginUrl(undefined);
 				}
-				callback?.(error, await result.json());
+				callback?.(error, body);
 			});
-		},
-		[apiMethod, apiUrl, accountIframeUrl, loginWithToken],
-	);
+		} catch (error) {
+			setIframeLoginUrl(url);
+			callback?.(error instanceof Error ? error : undefined, null);
+		}
+	});
 
 	return {
-		enabled: Boolean(iframeEnabled && accountIframeUrl && apiUrl && apiMethod),
+		enabled,
 		tryLogin,
 		loginWithToken,
 		iframeLoginUrl,
