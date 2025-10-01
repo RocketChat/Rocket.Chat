@@ -16,7 +16,7 @@
 		"jest": "~30.2.0",
 		"mongodb": "6.10.0",
 		"prettier": "~3.3.3",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

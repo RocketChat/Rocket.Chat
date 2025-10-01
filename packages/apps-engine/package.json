@@ -90,7 +90,7 @@
 		"tap-bark": "^1.0.0",
 		"ts-node": "^6.2.0",
 		"typedoc": "~0.28.13",
-		"typescript": "~5.9.2",
+		"typescript": "~5.9.3",
 		"uglify-es": "^3.3.10"
 	},
 	"dependencies": {

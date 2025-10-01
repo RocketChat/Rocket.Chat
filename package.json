@@ -24,7 +24,7 @@
 		"@types/node": "~22.16.5",
 		"ts-node": "^10.9.2",
 		"turbo": "~2.5.8",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"workspaces": [
 		"apps/*",

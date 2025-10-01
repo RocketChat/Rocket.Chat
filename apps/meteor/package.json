@@ -215,7 +215,7 @@
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.5",
-		"typescript": "~5.9.2",
+		"typescript": "~5.9.3",
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
@@ -252,6 +252,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.10",
 		"@rocket.chat/federation-service": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",
 		"@rocket.chat/fuselage": "~0.66.4",
