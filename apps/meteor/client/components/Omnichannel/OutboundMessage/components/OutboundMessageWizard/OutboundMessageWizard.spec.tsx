@@ -86,7 +86,7 @@ describe('OutboundMessageWizard', () => {
 			expect(await screen.findByRole('status')).toHaveAttribute('aria-busy', 'true');
 		});
 
-		it('should render unauthrized when user has no permission', async () => {
+		it('should render unauthorized when user has no permission', async () => {
 			render(<OutboundMessageWizard />, { wrapper: appRoot().build() });
 
 			expect(await screen.findByText('You_are_not_authorized_to_access_this_feature')).toBeInTheDocument();
