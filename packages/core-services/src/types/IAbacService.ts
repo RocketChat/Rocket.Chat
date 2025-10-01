@@ -10,4 +10,6 @@ export interface IAbacService {
 	}): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void>;
 	deleteAbacAttributeById(_id: string): Promise<void>;
+	// Usage represents if the attribute values are in use or not. If no values are in use, the attribute is not in use.
+	getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }>;
 }
