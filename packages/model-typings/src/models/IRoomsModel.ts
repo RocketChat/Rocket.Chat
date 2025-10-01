@@ -29,6 +29,7 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
+	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
