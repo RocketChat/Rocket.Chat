@@ -64,6 +64,14 @@ const abacEndpoints = API.v1
 			return API.v1.success(attributes);
 		},
 	)
+	// get an attribute by id
+	.get(
+		'abac/attributes/:_id',
+		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		async function action() {
+			throw new Error('not-implemented');
+		},
+	)
 	// create attribute
 	.post(
 		'abac/attributes',
