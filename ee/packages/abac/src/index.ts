@@ -1,7 +1,8 @@
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes } from '@rocket.chat/models';
+import { Filter } from 'mongodb';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -51,6 +52,44 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 			throw e;
 		}
+	}
+
+	/**
+	 * Lists ABAC attribute definitions with optional filtering and pagination.
+	 *
+	 * @param filters optional filtering and pagination parameters
+	 */
+	async listAbacAttributes(filters?: { key?: string; values?: string[]; offset?: number; count?: number }): Promise<{
+		attributes: IAbacAttribute[];
+		offset: number;
+		count: number;
+		total: number;
+	}> {
+		const query: Filter<IAbacAttribute> = {};
+		if (filters?.key) {
+			query.key = filters.key;
+		}
+		if (filters?.values?.length) {
+			query.values = { $in: filters.values };
+		}
+
+		const offset = filters?.offset ?? 0;
+		const limit = filters?.count ?? 25;
+
+		const { cursor, totalCount } = AbacAttributes.findPaginated(query, {
+			projection: { key: 1, values: 1 },
+			skip: offset,
+			limit,
+		});
+
+		const attributes = await cursor.toArray();
+
+		return {
+			attributes,
+			offset,
+			count: attributes.length,
+			total: await totalCount,
+		};
 	}
 }
 
