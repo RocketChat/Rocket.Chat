@@ -148,6 +148,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		await AbacAttributes.deleteOne({ _id });
 	}
+
+	async getAbacAttributeById(_id: string): Promise<{ attribute: IAbacAttribute; usage: Record<string, boolean> }> {
+		const attribute = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
+		if (!attribute) {
+			throw new Error('error-attribute-not-found');
+		}
+
+		const usageEntries = await Promise.all(
+			(attribute.values || []).map(async (value) => {
+				const used = await Rooms.isAbacAttributeInUse(attribute.key, [value]);
+				return [value, used] as const;
+			}),
+		);
+
+		const usage: Record<string, boolean> = Object.fromEntries(usageEntries);
+
+		return {
+			...attribute,
+			usage,
+		};
+	}
 }
 
 export default AbacService;
