@@ -22,6 +22,24 @@ const GenericSuccess = {
 
 export const GenericSuccessSchema = ajv.compile<void>(GenericSuccess);
 
+// Update ABAC attribute (request body)
+const UpdateAbacAttributeBody = {
+	type: 'object',
+	properties: {
+		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+		values: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			maxItems: 10,
+			uniqueItems: true,
+		},
+	},
+	additionalProperties: false,
+	anyOf: [{ required: ['key'] }, { required: ['values'] }],
+};
+
+export const PUTAbacAttributeUpdateBodySchema = ajv.compile<IAbacAttributeDefinition>(UpdateAbacAttributeBody);
 // Create an abac attribute using the IAbacAttributeDefintion type, create the ajv schemas
 
 const AbacAttributeDefinition = {
