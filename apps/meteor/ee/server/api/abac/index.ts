@@ -105,14 +105,20 @@ const abacEndpoints = API.v1
 	)
 	// delete attribute (only if not in use)
 	.delete(
-		'abac/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: { 200: GenericSuccessSchema },
+			license: ['abac'],
+		},
 		async function action() {
+			const { _id } = this.urlParams;
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
-
-			throw new Error('not-implemented');
+			await Abac.deleteAbacAttributeById(_id);
+			return API.v1.success();
 		},
 	)
 	// check if attribute is in use
