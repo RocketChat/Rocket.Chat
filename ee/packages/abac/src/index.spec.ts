@@ -2,11 +2,15 @@ import { AbacService } from './index';
 
 const mockFindOneByIdAndType = jest.fn();
 const mockUpdateAbacConfigurationById = jest.fn();
+const mockAbacInsertOne = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
 		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
 		updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
+	},
+	AbacAttributes: {
+		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
 	},
 }));
 
@@ -78,6 +82,39 @@ describe('AbacService (unit)', () => {
 
 			await expect(service.toggleAbacConfigurationForRoom('roomX')).rejects.toThrow('database-failure');
 			expect(mockUpdateAbacConfigurationById).not.toHaveBeenCalled();
+		});
+
+		describe('addAbacAttribute', () => {
+			it('inserts attribute when valid', async () => {
+				const attribute = { key: 'Valid_Key-1', values: ['v1', 'v2'] };
+				await service.addAbacAttribute(attribute);
+				expect(mockAbacInsertOne).toHaveBeenCalledTimes(1);
+				expect(mockAbacInsertOne).toHaveBeenCalledWith(attribute);
+			});
+
+			it('throws error-invalid-attribute-key for invalid key', async () => {
+				const attribute = { key: 'Invalid Key!', values: ['v1'] };
+				await expect(service.addAbacAttribute(attribute as any)).rejects.toThrow('error-invalid-attribute-key');
+				expect(mockAbacInsertOne).not.toHaveBeenCalled();
+			});
+
+			it('throws error-invalid-attribute-values for empty values array', async () => {
+				const attribute = { key: 'ValidKey', values: [] as string[] };
+				await expect(service.addAbacAttribute(attribute)).rejects.toThrow('error-invalid-attribute-values');
+				expect(mockAbacInsertOne).not.toHaveBeenCalled();
+			});
+
+			it('throws error-duplicate-attribute-key when duplicate index error occurs', async () => {
+				const attribute = { key: 'DupKey', values: ['a'] };
+				mockAbacInsertOne.mockRejectedValueOnce(new Error('E11000 duplicate key error collection: abac_attributes'));
+				await expect(service.addAbacAttribute(attribute)).rejects.toThrow('error-duplicate-attribute-key');
+			});
+
+			it('propagates unexpected insert errors', async () => {
+				const attribute = { key: 'OtherKey', values: ['x'] };
+				mockAbacInsertOne.mockRejectedValueOnce(new Error('network-failure'));
+				await expect(service.addAbacAttribute(attribute)).rejects.toThrow('network-failure');
+			});
 		});
 	});
 });
