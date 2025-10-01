@@ -7,13 +7,13 @@ const mockAbacFindPaginated = jest.fn();
 const mockAbacFindOne = jest.fn();
 const mockAbacUpdateOne = jest.fn();
 const mockAbacDeleteOne = jest.fn();
-const mockRoomsFindOne = jest.fn();
+const mockRoomsIsAbacAttributeInUse = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
 		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
 		updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
-		findOne: (...args: any[]) => mockRoomsFindOne(...args),
+		isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
@@ -172,7 +172,7 @@ describe('AbacService (unit)', () => {
 			await service.updateAbacAttributeById('id1', {} as any);
 			expect(mockAbacFindOne).not.toHaveBeenCalled();
 			expect(mockAbacUpdateOne).not.toHaveBeenCalled();
-			expect(mockRoomsFindOne).not.toHaveBeenCalled();
+			expect(mockRoomsIsAbacAttributeInUse).not.toHaveBeenCalled();
 		});
 
 		it('throws error-attribute-not-found when attribute does not exist', async () => {
@@ -195,22 +195,16 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-attribute-in-use when key changes and old definition is in use', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id4', key: 'Old', values: ['v1', 'v2'] });
-			mockRoomsFindOne.mockResolvedValueOnce({ _id: 'roomUsing' });
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(true);
 			await expect(service.updateAbacAttributeById('id4', { key: 'New' })).rejects.toThrow('error-attribute-in-use');
-			expect(mockRoomsFindOne).toHaveBeenCalledWith(
-				{
-					abacAttributes: {
-						$elemMatch: { key: 'Old', values: { $in: ['v1', 'v2'] } },
-					},
-				},
-				{ projection: { _id: 1 } },
-			);
+			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenCalledWith('Old', ['v1', 'v2']);
+
 			expect(mockAbacUpdateOne).not.toHaveBeenCalled();
 		});
 
 		it('updates key when changed and not in use', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id5', key: 'Old', values: ['a'] });
-			mockRoomsFindOne.mockResolvedValueOnce(null);
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockResolvedValueOnce({ modifiedCount: 1 });
 			await service.updateAbacAttributeById('id5', { key: 'NewKey' });
 			expect(mockAbacUpdateOne).toHaveBeenCalledWith({ _id: 'id5' }, { $set: { key: 'NewKey' } });
@@ -219,22 +213,16 @@ describe('AbacService (unit)', () => {
 		it('throws error-attribute-in-use when removing a value that is in use', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id6', key: 'Attr', values: ['a', 'b', 'c'] });
 			// removedValues => ['b']
-			mockRoomsFindOne.mockResolvedValueOnce({ _id: 'roomUsesRemoved' });
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(true);
 			await expect(service.updateAbacAttributeById('id6', { values: ['a', 'c'] })).rejects.toThrow('error-attribute-in-use');
-			expect(mockRoomsFindOne).toHaveBeenCalledWith(
-				{
-					abacAttributes: {
-						$elemMatch: { key: 'Attr', values: { $in: ['b'] } },
-					},
-				},
-				{ projection: { _id: 1 } },
-			);
+			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenCalledWith('Attr', ['b']);
+
 			expect(mockAbacUpdateOne).not.toHaveBeenCalled();
 		});
 
 		it('updates values when removing some that are not in use', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id7', key: 'Attr', values: ['a', 'b', 'c'] });
-			mockRoomsFindOne.mockResolvedValueOnce(null); // removal safe
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false); // removal safe
 			mockAbacUpdateOne.mockResolvedValueOnce({ modifiedCount: 1 });
 			await service.updateAbacAttributeById('id7', { values: ['a', 'c'] });
 			expect(mockAbacUpdateOne).toHaveBeenCalledWith({ _id: 'id7' }, { $set: { values: ['a', 'c'] } });
@@ -245,20 +233,20 @@ describe('AbacService (unit)', () => {
 			// newValues = ['a','b'] => removedValues = []
 			mockAbacUpdateOne.mockResolvedValueOnce({ modifiedCount: 1 });
 			await service.updateAbacAttributeById('id8', { values: ['a', 'b'] });
-			expect(mockRoomsFindOne).not.toHaveBeenCalled();
+			expect(mockRoomsIsAbacAttributeInUse).not.toHaveBeenCalled();
 			expect(mockAbacUpdateOne).toHaveBeenCalledWith({ _id: 'id8' }, { $set: { values: ['a', 'b'] } });
 		});
 
 		it('throws error-duplicate-attribute-key on duplicate key error', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id9', key: 'Old', values: ['v'] });
-			mockRoomsFindOne.mockResolvedValueOnce(null);
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockRejectedValueOnce(new Error('E11000 duplicate key error collection'));
 			await expect(service.updateAbacAttributeById('id9', { key: 'NewKey' })).rejects.toThrow('error-duplicate-attribute-key');
 		});
 
 		it('propagates unexpected update errors', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id10', key: 'Old', values: ['v'] });
-			mockRoomsFindOne.mockResolvedValueOnce(null);
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockRejectedValueOnce(new Error('write-failed'));
 			await expect(service.updateAbacAttributeById('id10', { key: 'Another' })).rejects.toThrow('write-failed');
 		});
@@ -270,14 +258,14 @@ describe('AbacService (unit)', () => {
 
 			it('throws error-attribute-in-use when attribute is referenced by a room', async () => {
 				mockAbacFindOne.mockResolvedValueOnce({ _id: 'id11', key: 'KeyInUse', values: ['a', 'b'] });
-				mockRoomsFindOne.mockResolvedValueOnce({ _id: 'roomUsingAttr' });
+				mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(true);
 				await expect(service.deleteAbacAttributeById('id11')).rejects.toThrow('error-attribute-in-use');
 				expect(mockAbacDeleteOne).not.toHaveBeenCalled();
 			});
 
 			it('deletes attribute when not in use', async () => {
 				mockAbacFindOne.mockResolvedValueOnce({ _id: 'id12', key: 'FreeKey', values: ['x'] });
-				mockRoomsFindOne.mockResolvedValueOnce(null);
+				mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 				mockAbacDeleteOne.mockResolvedValueOnce({ deletedCount: 1 });
 				await service.deleteAbacAttributeById('id12');
 				expect(mockAbacDeleteOne).toHaveBeenCalledWith({ _id: 'id12' });

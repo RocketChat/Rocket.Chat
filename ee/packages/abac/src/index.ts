@@ -103,18 +103,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const valuesToCheck = keyChanged ? existing.values : removedValues;
 
 		if (keyChanged || valuesToCheck.length) {
-			const inUse = await Rooms.findOne(
-				{
-					abacAttributes: {
-						$elemMatch: {
-							key: existing.key,
-							values: { $in: valuesToCheck.length ? valuesToCheck : existing.values },
-						},
-					},
-				},
-				{ projection: { _id: 1 } },
-			);
-
+			// Delegate usage detection to model helper to avoid duplicating query logic
+			const inUse = await Rooms.isAbacAttributeInUse(existing.key, valuesToCheck.length ? valuesToCheck : existing.values);
 			if (inUse) {
 				throw new Error('error-attribute-in-use');
 			}
@@ -155,18 +145,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-attribute-not-found');
 		}
 
-		const inUse = await Rooms.findOne(
-			{
-				abacAttributes: {
-					$elemMatch: {
-						key: existing.key,
-						values: { $in: existing.values },
-					},
-				},
-			},
-			{ projection: { _id: 1 } },
-		);
-
+		const inUse = await Rooms.isAbacAttributeInUse(existing.key, existing.values);
 		if (inUse) {
 			throw new Error('error-attribute-in-use');
 		}
