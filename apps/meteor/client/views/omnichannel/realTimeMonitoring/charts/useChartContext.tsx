@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { Chart, ChartType } from 'chart.js';
 import type { TFunction } from 'i18next';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 type UseChartContextProps<TChart> = {
 	key: string;
@@ -30,6 +30,8 @@ export const useChartContext = <TChartType extends ChartType>({ key, canvas, ini
 		retry: false,
 		enabled: !!canvas,
 	});
+
+	useEffect(() => () => contextRef.current?.destroy(), []);
 
 	return context;
 };
