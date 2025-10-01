@@ -63,7 +63,7 @@ const getLicenseMock = jest.fn().mockImplementation(() => ({
 const appRoot = (omnichannelEnabled = true) =>
 	mockAppRoot()
 		.withJohnDoe()
-		.withSetting('Livechat_enabled', true)
+		.withSetting('Livechat_enabled', omnichannelEnabled)
 		.withEndpoint('GET', '/v1/omnichannel/outbound/providers', () => getProvidersMock())
 		.withEndpoint('GET', '/v1/licenses.info', () => getLicenseMock())
 		.wrap((children) => (
