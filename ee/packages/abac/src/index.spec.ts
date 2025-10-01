@@ -3,6 +3,7 @@ import { AbacService } from './index';
 const mockFindOneByIdAndType = jest.fn();
 const mockUpdateAbacConfigurationById = jest.fn();
 const mockAbacInsertOne = jest.fn();
+const mockAbacFindPaginated = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -11,6 +12,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
+		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
 	},
 }));
 
@@ -114,6 +116,106 @@ describe('AbacService (unit)', () => {
 				const attribute = { key: 'OtherKey', values: ['x'] };
 				mockAbacInsertOne.mockRejectedValueOnce(new Error('network-failure'));
 				await expect(service.addAbacAttribute(attribute)).rejects.toThrow('network-failure');
+			});
+
+			describe('listAbacAttributes', () => {
+				it('returns paginated attributes with defaults (no filters)', async () => {
+					const docs = [
+						{ _id: '1', key: 'k1', values: ['a', 'b'] },
+						{ _id: '2', key: 'k2', values: ['c'] },
+					];
+					mockAbacFindPaginated.mockReturnValueOnce({
+						cursor: { toArray: async () => docs },
+						totalCount: Promise.resolve(docs.length),
+					});
+
+					const result = await service.listAbacAttributes();
+					expect(mockAbacFindPaginated).toHaveBeenCalledWith({}, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
+					expect(result).toEqual({
+						attributes: docs,
+						offset: 0,
+						count: docs.length,
+						total: docs.length,
+					});
+				});
+
+				it('filters by key only', async () => {
+					const docs = [{ _id: '3', key: 'FilterKey', values: ['x'] }];
+					mockAbacFindPaginated.mockReturnValueOnce({
+						cursor: { toArray: async () => docs },
+						totalCount: Promise.resolve(docs.length),
+					});
+
+					const result = await service.listAbacAttributes({ key: 'FilterKey' });
+					expect(mockAbacFindPaginated).toHaveBeenCalledWith(
+						{ key: 'FilterKey' },
+						{ projection: { key: 1, values: 1 }, skip: 0, limit: 25 },
+					);
+					expect(result).toEqual({
+						attributes: docs,
+						offset: 0,
+						count: docs.length,
+						total: docs.length,
+					});
+				});
+
+				it('filters by values only with custom pagination', async () => {
+					const docs = [
+						{ _id: '4', key: 'alpha', values: ['m', 'n'] },
+						{ _id: '5', key: 'beta', values: ['n', 'o'] },
+					];
+					mockAbacFindPaginated.mockReturnValueOnce({
+						cursor: { toArray: async () => docs },
+						totalCount: Promise.resolve(10),
+					});
+
+					const result = await service.listAbacAttributes({ values: ['n', 'z'], offset: 5, count: 2 });
+					expect(mockAbacFindPaginated).toHaveBeenCalledWith(
+						{ values: { $in: ['n', 'z'] } },
+						{ projection: { key: 1, values: 1 }, skip: 5, limit: 2 },
+					);
+					expect(result).toEqual({
+						attributes: docs,
+						offset: 5,
+						count: docs.length,
+						total: 10,
+					});
+				});
+
+				it('filters by key and values', async () => {
+					const docs = [{ _id: '6', key: 'gamma', values: ['p', 'q'] }];
+					mockAbacFindPaginated.mockReturnValueOnce({
+						cursor: { toArray: async () => docs },
+						totalCount: Promise.resolve(docs.length),
+					});
+
+					const result = await service.listAbacAttributes({ key: 'gamma', values: ['q'] });
+					expect(mockAbacFindPaginated).toHaveBeenCalledWith(
+						{ key: 'gamma', values: { $in: ['q'] } },
+						{ projection: { key: 1, values: 1 }, skip: 0, limit: 25 },
+					);
+					expect(result).toEqual({
+						attributes: docs,
+						offset: 0,
+						count: docs.length,
+						total: docs.length,
+					});
+				});
+
+				it('returns empty when no documents match', async () => {
+					mockAbacFindPaginated.mockReturnValueOnce({
+						cursor: { toArray: async () => [] },
+						totalCount: Promise.resolve(0),
+					});
+
+					const result = await service.listAbacAttributes({ key: 'nope', values: ['none'] });
+					expect(result).toEqual({
+						attributes: [],
+						offset: 0,
+						count: 0,
+						total: 0,
+					});
+				});
 			});
 		});
 	});
