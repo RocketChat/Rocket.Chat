@@ -1833,6 +1833,7 @@
   "Features": "विशेषताएँ",
   "Federated": "संघीय",
   "Federation": "फेडरेशन",
+  "Federation_Description": "फ़ेडरेशन असीमित संख्या में कार्यस्थानों को एक-दूसरे के साथ संचार करने की अनुमति देता है।",
   "Federation_Enable": "फ़ेडरेशन सक्षम करें",
   "Federation_Example_matrix_server": "उदाहरण: मैट्रिक्स.ऑर्ग",
   "Federation_Federated_room_search": "फ़ेडरेटेड कमरे की खोज",
