@@ -71,8 +71,10 @@ export class AppOutboundCommunicationProviderManager {
 		for await (const [, providerInfo] of appProviders) {
 			if (providerInfo.provider.type === 'phone') {
 				await this.registerPhoneProvider(appId, providerInfo.provider);
+				providerInfo.setRegistered(true);
 			} else if (providerInfo.provider.type === 'email') {
 				await this.registerEmailProvider(appId, providerInfo.provider);
+				providerInfo.setRegistered(true);
 			}
 		}
 	}
@@ -92,12 +94,12 @@ export class AppOutboundCommunicationProviderManager {
 		}
 	}
 
-	private registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): Promise<void> {
-		return this.bridge.doRegisterPhoneProvider(provider, appId);
+	private async registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): Promise<void> {
+		await this.bridge.doRegisterPhoneProvider(provider, appId);
 	}
 
-	private registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): Promise<void> {
-		return this.bridge.doRegisterEmailProvider(provider, appId);
+	private async registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): Promise<void> {
+		await this.bridge.doRegisterEmailProvider(provider, appId);
 	}
 
 	private async unregisterProvider(appId: string, info: OutboundMessageProvider, opts?: { keepReferences: boolean }): Promise<void> {
@@ -105,7 +107,7 @@ export class AppOutboundCommunicationProviderManager {
 
 		await this.bridge.doUnRegisterProvider(info.provider, appId);
 
-		info.isRegistered = false;
+		info.setRegistered(false);
 
 		if (!opts?.keepReferences) {
 			this.outboundMessageProviders.get(appId)?.delete(key);
