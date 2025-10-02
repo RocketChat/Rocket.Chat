@@ -35,6 +35,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { VisuallyHidden } from 'react-aria';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -142,6 +143,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend'>{t('Profile_details')}</Box>
+				</VisuallyHidden>
 				<Field>
 					<Controller
 						control={control}
@@ -240,7 +244,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+							rules={{
+								maxLength: {
+									value: USER_STATUS_TEXT_MAX_LENGTH,
+									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+								},
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}
