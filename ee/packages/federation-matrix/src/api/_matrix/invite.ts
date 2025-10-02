@@ -169,7 +169,7 @@ async function joinRoom({
 	}
 
 	// backoff needed for this call, can fail
-	await room.joinUser(inviteEvent.roomId, inviteEvent.stateKey);
+	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
 	const matrixRoom = await state.getFullRoomState2(inviteEvent.roomId);
@@ -312,7 +312,7 @@ export const acceptInvite = async (
 		throw new Error('User is native federated');
 	}
 
-	await services.room.joinUser(inviteEvent.roomId, inviteEvent.stateKey);
+	await services.room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 };
 
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
