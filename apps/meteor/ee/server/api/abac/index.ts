@@ -22,19 +22,16 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			body: POSTRoomAbacAttributesBodySchema,
 			response: { 200: GenericSuccessSchema },
-			license: ['abac'],
 		},
 		async function action() {
 			const { rid } = this.urlParams;
-			if (!settings.get('ABAC_Enabled')) {
+			const { attributes } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled') && Object.keys(attributes).length) {
 				throw new Error('error-abac-not-enabled');
 			}
 
-			const { attributes } = this.bodyParams;
-			const attributeRecord = Object.fromEntries(
-				(attributes || []).map(({ key, values }: { key: string; values: string[] }) => [key, values]),
-			);
-			await Abac.setRoomAbacAttributes(rid, attributeRecord);
+			await Abac.setRoomAbacAttributes(rid, attributes);
 			return API.v1.success();
 		},
 	)
@@ -43,7 +40,9 @@ const abacEndpoints = API.v1
 		'abac/room/:rid/attributes/:key',
 		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
 		async function action() {
-			throw new Error('not-implemented');
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
 		},
 	)
 	// delete a room attribute
