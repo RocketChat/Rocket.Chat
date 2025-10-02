@@ -9,7 +9,7 @@ import type {
 	RoomVersion,
 } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { Users, Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
@@ -139,34 +139,19 @@ const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 // 5 seconds
 // 25 seconds
 // 625 seconds = 10 minutes 25 seconds // max
-function runWithBackoff<T extends (...args: any[]) => Promise<void>>(fn: T, delaySec = 5): T & { stop: () => void } {
-	let timeoutId: NodeJS.Timeout | null = null;
-	let currentDelay = delaySec;
-
-	const execute = async (...args: Parameters<T>) => {
-		try {
-			await fn(...args);
-			currentDelay = delaySec; // Reset delay on success
-		} catch (e) {
-			const delay = currentDelay === 625 ? 625 : currentDelay ** 2;
-			console.log(`error occurred, retrying in ${delay}ms`, e);
-			currentDelay = delay;
-			timeoutId = setTimeout(() => execute(...args), delay);
-		}
-	};
-
-	return Object.assign(
-		(...args: Parameters<T>) => {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-			execute(...args);
-		},
-		{ stop: () => clearTimeout(timeoutId ?? 0) },
-	) as T & { stop: () => void };
+async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
+	try {
+		await fn();
+	} catch (e) {
+		const delay = delaySec === 625 ? 625 : delaySec ** 2;
+		console.log(`error occurred, retrying in ${delay}ms`, e);
+		setTimeout(() => {
+			runWithBackoff(fn, delay * 1000);
+		}, delay);
+	}
 }
 
-export async function joinRoom({
+async function joinRoom({
 	inviteEvent,
 	user, // ours trying to join the room
 	room,
@@ -205,7 +190,7 @@ export async function joinRoom({
 	const senderUserId =
 		senderUser?._id ||
 		(await createOrUpdateFederatedUser({
-			username: inviteEvent.sender as `@${string}:${string}`,
+			username: inviteEvent.sender,
 			origin: matrixRoom.origin,
 		}));
 
@@ -281,7 +266,9 @@ export async function joinRoom({
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
 }
 
-export const startJoiningRoom = runWithBackoff(joinRoom);
+async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {
+	void runWithBackoff(() => joinRoom(...opts));
+}
 
 // This is a special case where inside rocket chat we invite users inside rockechat, so if the sender or the invitee are external iw should throw an error
 export const acceptInvite = async (
