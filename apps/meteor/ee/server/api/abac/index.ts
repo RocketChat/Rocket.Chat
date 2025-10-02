@@ -5,7 +5,9 @@ import {
 	PUTAbacAttributeUpdateBodySchema,
 	GETAbacAttributesQuerySchema,
 	GETAbacAttributesResponseSchema,
+	GETAbacAttributeByIdResponseSchema,
 	POSTAbacAttributeDefinitionSchema,
+	GETAbacAttributeIsInUseResponseSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -54,22 +56,14 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			const attributes = await Abac.listAbacAttributes({
-				key,
-				values,
-				offset,
-				count,
-			});
-
-			return API.v1.success(attributes);
-		},
-	)
-	// get an attribute by id
-	.get(
-		'abac/attributes/:_id',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
-		async function action() {
-			throw new Error('not-implemented');
+			return API.v1.success(
+				await Abac.listAbacAttributes({
+					key,
+					values,
+					offset,
+					count,
+				}),
+			);
 		},
 	)
 	// create attribute
@@ -111,6 +105,24 @@ const abacEndpoints = API.v1
 			return API.v1.success();
 		},
 	)
+	// get single attribute with usage
+	.get(
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: { 200: GETAbacAttributeByIdResponseSchema },
+			license: ['abac'],
+		},
+		async function action() {
+			const { _id } = this.urlParams;
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+			const result = await Abac.getAbacAttributeById(_id);
+			return API.v1.success(result);
+		},
+	)
 	// delete attribute (only if not in use)
 	.delete(
 		'abac/attributes/:_id',
@@ -132,12 +144,19 @@ const abacEndpoints = API.v1
 	// check if attribute is in use
 	.get(
 		'abac/attributes/:key/is-in-use',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: { 200: GETAbacAttributeIsInUseResponseSchema },
+			license: ['abac'],
+		},
 		async function action() {
+			const { key } = this.urlParams;
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
-			throw new Error('not-implemented');
+			const inUse = await Abac.isAbacAttributeInUseByKey(key);
+			return API.v1.success({ inUse });
 		},
 	);
 
