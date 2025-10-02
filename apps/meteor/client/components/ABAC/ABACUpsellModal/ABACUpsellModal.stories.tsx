@@ -37,5 +37,6 @@ export default meta;
 export const Default = {
 	args: {
 		onClose: action('onClose'),
+		onConfirm: action('onConfirm'),
 	},
 };
