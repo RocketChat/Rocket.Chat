@@ -319,4 +319,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
 	updateAbacConfigurationById(rid: IRoom['_id'], abac: boolean): Promise<UpdateResult>;
 	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<UpdateResult>;
+	updateSingleAbacAttributeValuesById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
+	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
 }
