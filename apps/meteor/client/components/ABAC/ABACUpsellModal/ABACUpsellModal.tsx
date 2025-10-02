@@ -10,7 +10,7 @@ const ABACUpsellModal = () => {
 	const { t } = useTranslation();
 
 	// @ts-expect-error - abac license module is yet to be implemented
-	const hasABAC = useHasLicenseModule('abac') as boolean;
+	const hasABAC = useHasLicenseModule('abac') === true;
 
 	const setModal = useSetModal();
 	const { handleManageSubscription } = useUpsellActions(hasABAC);
