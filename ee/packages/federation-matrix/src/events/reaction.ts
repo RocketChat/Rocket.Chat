@@ -56,12 +56,12 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 
 			const reactionEvent = await FederationMatrix.getEventById(redactedEventId);
-			if (!reactionEvent || reactionEvent.type !== 'm.reaction') {
+			if (!reactionEvent || reactionEvent.event.type !== 'm.reaction') {
 				logger.debug(`Event ${redactedEventId} is not a reaction event`);
 				return;
 			}
 
-			const reactionContent = reactionEvent.content?.['m.relates_to'];
+			const reactionContent = reactionEvent.event.content?.['m.relates_to'];
 			if (!reactionContent) {
 				logger.debug('No relates_to content in reaction event');
 				return;
