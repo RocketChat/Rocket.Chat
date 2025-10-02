@@ -154,3 +154,21 @@ const GetAbacAttributeIsInUseResponse = {
 };
 
 export const GETAbacAttributeIsInUseResponseSchema = ajv.compile<{ inUse: boolean }>(GetAbacAttributeIsInUseResponse);
+
+// Bulk set/merge room ABAC attributes body schema
+const PostRoomAbacAttributesBody = {
+	type: 'object',
+	properties: {
+		attributes: {
+			type: 'array',
+			items: AbacAttributeDefinition,
+			minItems: 1,
+			maxItems: 50,
+			uniqueItems: true,
+		},
+	},
+	required: ['attributes'],
+	additionalProperties: false,
+};
+
+export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: IAbacAttributeDefinition[] }>(PostRoomAbacAttributesBody);
