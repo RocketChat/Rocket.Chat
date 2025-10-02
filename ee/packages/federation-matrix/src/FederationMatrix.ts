@@ -591,6 +591,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					if (validateFederatedUsername(username)) {
 						return this.homeserverServices.invite.inviteUserToRoom(username, room.federation.mrid, inviterUserId);
 					}
+
+					// if inviter is an external user it means we receive the invite from the endpoint
+					// since we accept from there we can skip accepting here
+					if (isUserNativeFederated(inviter)) {
+						this.logger.debug('Inviter is native federated, skip accept invite');
+						return;
+					}
+
 					const result = await this.homeserverServices.invite.inviteUserToRoom(
 						`@${username}:${this.serverName}`,
 						room.federation.mrid,
