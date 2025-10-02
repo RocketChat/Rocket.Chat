@@ -238,8 +238,20 @@ class E2E extends Emitter {
 		});
 	}
 
-	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | undefined> {
+	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
+		if (!this.userId) {
+			return null;
+		}
+
 		const room = await this.waitForRoom(rid);
+
+		if (room.t !== 'd' && room.t !== 'p') {
+			return null;
+		}
+
+		if (!room.encrypted) {
+			return null;
+		}
 
 		if (!this.instancesByRoomId[rid] && this.userId) {
 			this.instancesByRoomId[rid] = new E2ERoom(this.userId, room);
@@ -247,7 +259,7 @@ class E2E extends Emitter {
 
 		// When the key was already set and is changed via an update, we update the room instance
 		if (
-			this.instancesByRoomId[rid]?.keyID !== undefined &&
+			this.instancesByRoomId[rid].keyID !== undefined &&
 			room.e2eKeyId !== undefined &&
 			this.instancesByRoomId[rid].keyID !== room.e2eKeyId
 		) {
@@ -255,7 +267,7 @@ class E2E extends Emitter {
 			this.instancesByRoomId[rid].onRoomKeyReset(room.e2eKeyId);
 		}
 
-		return this.instancesByRoomId[rid];
+		return this.instancesByRoomId[rid] ?? null;
 	}
 
 	removeInstanceByRoomId(rid: IRoom['_id']): void {
