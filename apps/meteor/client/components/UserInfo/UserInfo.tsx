@@ -23,6 +23,7 @@ import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoAvatar from './UserInfoAvatar';
+import UserCardABACAttributes from '../UserCard/UserCardABACAttributes';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -70,6 +71,8 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	// @ts-expect-error - abacAttributes is not yet implemented in IUser type
+	abacAttributes = null,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -131,6 +134,13 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
 							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{abacAttributes && abacAttributes.length > 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('ABAC_Attributes')}</InfoPanelLabel>
+							<UserCardABACAttributes abacAttributes={abacAttributes}></UserCardABACAttributes>
 						</InfoPanelField>
 					)}
 
