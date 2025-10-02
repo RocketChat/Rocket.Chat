@@ -22,7 +22,7 @@ export const usePermalinkAction = (
 	return {
 		id,
 		icon: 'permalink',
-		label: 'Copy_link',
+		label: isABACEnabled ? 'Not_available_for_ABAC_enabled_rooms' : 'Copy_link',
 		context,
 		type,
 		async action() {

@@ -20,11 +20,21 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 	// @ts-expect-error to be implemented
 	const isABACEnabled = !!room.abacAttributes;
 
+	const getTitle = useMemo(() => {
+		if (encrypted) {
+			return t('Action_not_available_encrypted_content', { action: t('Forward_message') });
+		}
+		if (isABACEnabled) {
+			return t('Not_available_for_ABAC_enabled_rooms');
+		}
+		return t('Forward_message');
+	}, [encrypted, isABACEnabled, t]);
+
 	return (
 		<MessageToolbarItem
 			id='forward-message'
 			icon='arrow-forward'
-			title={encrypted ? t('Action_not_available_encrypted_content', { action: t('Forward_message') }) : t('Forward_message')}
+			title={getTitle}
 			qa='Forward_message'
 			disabled={encrypted || isABACEnabled}
 			onClick={async () => {
