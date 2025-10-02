@@ -16,6 +16,8 @@ export const useReplyInDMAction = (
 	const user = useUser();
 	const router = useRouter();
 	const encrypted = isE2EEMessage(message);
+	// @ts-expect-error - abacAttributes is not yet implemented in IRoom type
+	const isABACEnabled = !!room.abacAttributes;
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { t } = useTranslation();
@@ -71,7 +73,7 @@ export const useReplyInDMAction = (
 		},
 		order: 0,
 		group: 'menu',
-		disabled: encrypted,
+		disabled: encrypted || isABACEnabled,
 		...(encrypted && { tooltip: t('Action_not_available_encrypted_content', { action: t('Reply_in_direct_message') }) }),
 	};
 };
