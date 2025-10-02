@@ -1957,6 +1957,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	setAbacAttributesById(_id: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				abacAttributes: attributes,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			t: 'd',
