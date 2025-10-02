@@ -1,5 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -168,7 +169,7 @@ async function joinRoom({
 	}
 
 	// backoff needed for this call, can fail
-	await room.joinUser(inviteEvent.roomId, inviteEvent.stateKey);
+	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
 	const matrixRoom = await state.getFullRoomState2(inviteEvent.roomId);
@@ -311,7 +312,7 @@ export const acceptInvite = async (
 		throw new Error('User is native federated');
 	}
 
-	await services.room.joinUser(inviteEvent.roomId, inviteEvent.stateKey);
+	await services.room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 };
 
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
@@ -348,7 +349,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomId, eventId, roomVersion);
+			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
 
 			setTimeout(
 				() => {
