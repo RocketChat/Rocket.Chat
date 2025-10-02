@@ -294,9 +294,44 @@ describe('AbacService (unit)', () => {
 			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(3, 'Attr', ['c']);
 
 			expect(result).toEqual({
-				attribute: { _id: 'id13', key: 'Attr', values: ['a', 'b', 'c'] },
+				_id: 'id13',
+				key: 'Attr',
+				values: ['a', 'b', 'c'],
 				usage: { a: true, b: false, c: true },
 			});
+		});
+	});
+
+	describe('isAbacAttributeInUseByKey', () => {
+		it('returns false when attribute does not exist', async () => {
+			mockAbacFindOne.mockResolvedValueOnce(null);
+			const result = await service.isAbacAttributeInUseByKey('missing');
+			expect(result).toBe(false);
+			expect(mockRoomsIsAbacAttributeInUse).not.toHaveBeenCalled();
+		});
+
+		it('returns false when attribute exists but has no values', async () => {
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id14', key: 'Empty', values: [] });
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
+			const result = await service.isAbacAttributeInUseByKey('Empty');
+			expect(result).toBe(false);
+			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenCalledWith('Empty', []);
+		});
+
+		it('returns true when any value is in use', async () => {
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id15', key: 'Attr2', values: ['x', 'y'] });
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(true);
+			const result = await service.isAbacAttributeInUseByKey('Attr2');
+			expect(result).toBe(true);
+			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenCalledWith('Attr2', ['x', 'y']);
+		});
+
+		it('returns false when no values are in use', async () => {
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id16', key: 'Attr3', values: ['m', 'n'] });
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
+			const result = await service.isAbacAttributeInUseByKey('Attr3');
+			expect(result).toBe(false);
+			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenCalledWith('Attr3', ['m', 'n']);
 		});
 	});
 });
