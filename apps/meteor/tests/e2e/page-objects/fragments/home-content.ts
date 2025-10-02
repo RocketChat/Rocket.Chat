@@ -308,16 +308,8 @@ export class HomeContent {
 		return this.userCard.locator('a');
 	}
 
-	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
-	}
-
 	get btnContactEdit(): Locator {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
-	}
-
-	get inputModalClosingComment(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
 	}
 
 	get btnSendTranscript(): Locator {
@@ -330,10 +322,6 @@ export class HomeContent {
 
 	get btnSendTranscriptAsPDF(): Locator {
 		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
-	}
-
-	get btnCannedResponses(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
 	}
 
 	get btnNewCannedResponse(): Locator {
@@ -459,10 +447,6 @@ export class HomeContent {
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
 		return this.page.locator('button.rcx-button--primary >> text="Resume"');
-	}
-
-	get btnOnHold(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
 	get primaryRoomActionsToolbar(): Locator {

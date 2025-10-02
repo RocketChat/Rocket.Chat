@@ -56,7 +56,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolbarDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{showKebabMenu && <GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />}
+			{showKebabMenu && <GenericMenu title={t('Options')} sections={hiddenActions} placement='bottom-end' />}
 		</>
 	);
 };
