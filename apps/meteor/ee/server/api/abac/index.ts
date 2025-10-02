@@ -8,18 +8,34 @@ import {
 	GETAbacAttributeByIdResponseSchema,
 	POSTAbacAttributeDefinitionSchema,
 	GETAbacAttributeIsInUseResponseSchema,
+	POSTRoomAbacAttributesBodySchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { settings } from '../../../../app/settings/server';
 
 const abacEndpoints = API.v1
-	// add attributes for a room (bulk)
 	.post(
 		'abac/room/:rid/attributes',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			body: POSTRoomAbacAttributesBodySchema,
+			response: { 200: GenericSuccessSchema },
+			license: ['abac'],
+		},
 		async function action() {
-			throw new Error('not-implemented');
+			const { rid } = this.urlParams;
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			const { attributes } = this.bodyParams;
+			const attributeRecord = Object.fromEntries(
+				(attributes || []).map(({ key, values }: { key: string; values: string[] }) => [key, values]),
+			);
+			await Abac.setRoomAbacAttributes(rid, attributeRecord);
+			return API.v1.success();
 		},
 	)
 	// edit a room attribute
@@ -33,7 +49,7 @@ const abacEndpoints = API.v1
 	// delete a room attribute
 	.delete(
 		'abac/room/:rid/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		{ authRequired: true, permissionsRequired: ['abac-management'], response: {} },
 		async function action() {
 			throw new Error('not-implemented');
 		},
