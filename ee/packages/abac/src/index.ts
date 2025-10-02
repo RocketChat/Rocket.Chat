@@ -149,7 +149,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await AbacAttributes.deleteOne({ _id });
 	}
 
-	async getAbacAttributeById(_id: string): Promise<{ attribute: IAbacAttribute; usage: Record<string, boolean> }> {
+	async getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }> {
 		const attribute = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
 		if (!attribute) {
 			throw new Error('error-attribute-not-found');
@@ -168,6 +168,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 			...attribute,
 			usage,
 		};
+	}
+
+	async isAbacAttributeInUseByKey(key: string): Promise<boolean> {
+		// Fetch the attribute definition by key to obtain its values
+		const attribute = await AbacAttributes.findOne({ key }, { projection: { values: 1 } });
+		if (!attribute) {
+			// If it doesn't exist, it cannot be in use
+			return false;
+		}
+		// If any of its values is in use in any room, the attribute is considered in use
+		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
 	}
 }
 
