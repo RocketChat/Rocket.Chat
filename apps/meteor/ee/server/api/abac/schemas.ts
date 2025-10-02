@@ -1,16 +1,13 @@
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-import type { AbacEndpoints } from '.';
+// Removed AbacEndpoints import to avoid circular type reference (endpoints import these schemas)
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends AbacEndpoints {}
-}
+// Omitted module augmentation to prevent circular reference with endpoint definitions
 
 const GenericSuccess = {
 	type: 'object',
@@ -120,3 +117,40 @@ export const GETAbacAttributesResponseSchema = ajv.compile<{
 	count: number;
 	total: number;
 }>(GetAbacAttributesResponse);
+
+const GetAbacAttributeByIdResponse = {
+	type: 'object',
+	properties: {
+		key: { type: 'string', minLength: 1 },
+		values: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			maxItems: 10,
+			uniqueItems: true,
+		},
+		usage: {
+			type: 'object',
+			additionalProperties: { type: 'boolean' },
+		},
+	},
+	required: ['attribute', 'usage'],
+	additionalProperties: false,
+};
+
+export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
+	key: string;
+	values: string[];
+	usage: Record<string, boolean>;
+}>(GetAbacAttributeByIdResponse);
+
+const GetAbacAttributeIsInUseResponse = {
+	type: 'object',
+	properties: {
+		inUse: { type: 'boolean' },
+	},
+	required: ['inUse'],
+	additionalProperties: false,
+};
+
+export const GETAbacAttributeIsInUseResponseSchema = ajv.compile<{ inUse: boolean }>(GetAbacAttributeIsInUseResponse);
