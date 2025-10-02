@@ -181,6 +181,10 @@ export const useMediaSessionInstance = (userId?: string) => {
 	}, [writeStream, userId]);
 
 	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+
 		const unsubNotification = notifyUserStream(`${userId}/media-signal`, (signal: ServerMediaSignal) =>
 			mediaSession.processSignal(signal, userId),
 		);
