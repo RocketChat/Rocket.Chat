@@ -32,8 +32,11 @@ WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) =
  * Defines tunable thresholds for readiness checks.
  */
 
-const eventLoopHistogram = monitorEventLoopDelay();
-eventLoopHistogram.enable();
+const eventLoopHistogramLiveness = monitorEventLoopDelay();
+eventLoopHistogramLiveness.enable();
+
+const eventLoopHistogramReadiness = monitorEventLoopDelay();
+eventLoopHistogramReadiness.enable();
 
 const READINESS_THRESHOLDS = {
 	EVENT_LOOP_LAG_MS: Number.parseFloat(process.env.EVENT_LOOP_LAG_MS ?? '') || 70,
@@ -41,17 +44,15 @@ const READINESS_THRESHOLDS = {
 } as const;
 
 /**
- * Checks event loop lag. Can optionally reset the histogram after reading.
- * @param shouldReset - If true, resets the histogram for the next measurement interval.
+ * Checks event loop lag using the provided histogram. Can optionally reset the histogram after reading.
+ * @param histogram - The event loop histogram to use.
  * @returns The status and p99 lag.
  */
-function checkEventLoopLag(shouldReset: boolean) {
-	const lagInNs = eventLoopHistogram.percentile(99);
+function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) {
+	const lagInNs = histogram.percentile(99);
 	const lagInMs = lagInNs / 1_000_000;
 
-	if (shouldReset) {
-		eventLoopHistogram.reset();
-	}
+	histogram.reset();
 
 	const lagValue = Number.parseFloat(lagInMs.toFixed(2));
 
@@ -91,10 +92,10 @@ async function checkMongo() {
  * Performs the core health checks (memory, event loop) and returns the result.
  * @param shouldResetHistogram - Controls whether the event loop histogram is reset.
  */
-async function performHealthChecks(shouldResetHistogram: boolean) {
+async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoopDelay>) {
 	const checks = {
 		memory: checkMemoryUsage(),
-		eventLoop: checkEventLoopLag(shouldResetHistogram),
+		eventLoop: checkEventLoopLag(histogram),
 		mongo: await checkMongo(),
 	};
 
@@ -115,7 +116,7 @@ async function performHealthChecks(shouldResetHistogram: boolean) {
  * unrecoverable and should be restarted.
  */
 WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = await performHealthChecks(false); // Does NOT reset histogram
+	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramLiveness);
 
 	if (!isHealthy) {
 		SystemLogger.error({ msg: 'Liveness check failed', details: body });
@@ -133,7 +134,7 @@ WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerRespon
  * A failure tells the orchestrator to stop sending traffic to this instance.
  */
 WebApp.rawHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = await performHealthChecks(true); // DOES reset histogram
+	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramReadiness);
 
 	if (!isHealthy) {
 		SystemLogger.warn({ msg: 'Readiness check failed', details: body });

@@ -53,6 +53,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
 	const {
+		_id: roomId,
 		ts,
 		tags,
 		closedAt,
@@ -121,15 +122,17 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Tags')}</InfoPanelLabel>
+							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
 							<InfoPanelText>
-								{tags.map((tag) => (
-									<Box key={tag} mie={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
-										</Tag>
-									</Box>
-								))}
+								<ul aria-labelledby={`${roomId}-tags`}>
+									{tags.map((tag) => (
+										<Box is='li' key={tag} mie={4} display='inline'>
+											<Tag style={{ display: 'inline' }} disabled>
+												{tag}
+											</Tag>
+										</Box>
+									))}
+								</ul>
 							</InfoPanelText>
 						</InfoPanelField>
 					)}

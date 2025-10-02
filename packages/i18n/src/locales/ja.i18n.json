@@ -1513,8 +1513,6 @@
   "FEDERATION_Domain": "ドメイン",
   "FEDERATION_Domain_Alert": "この機能を有効にした後はこれを変更しないでください。ドメイン変更はまだ処理できません。",
   "FEDERATION_Domain_Description": "このサーバーのリンク先のドメインを追加してください。例：@rocket.chat",
-  "FEDERATION_Enabled": "フェデレーションサポートを統合しようとしました。",
-  "FEDERATION_Enabled_Alert": "フェデレーションサポートは進行中の作業です。現時点では本番システムでの使用はお勧めできません。",
   "FEDERATION_Public_Key": "パブリックキー",
   "FEDERATION_Public_Key_Description": "これはピアと共有する必要があるキーです。",
   "FEDERATION_Status": "ステータス",

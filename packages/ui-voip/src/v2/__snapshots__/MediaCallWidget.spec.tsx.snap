@@ -352,6 +352,7 @@ exports[`renders NewCall without crashing 1`] = `
                 role="group"
               >
                 <input
+                  aria-invalid="false"
                   aria-labelledby=":r0:"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
                   value=""
