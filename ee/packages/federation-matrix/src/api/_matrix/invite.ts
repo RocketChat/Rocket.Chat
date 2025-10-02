@@ -1,5 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -348,7 +349,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomId, eventId, roomVersion);
+			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
 
 			setTimeout(
 				() => {
