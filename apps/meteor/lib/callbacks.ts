@@ -11,7 +11,6 @@ import type {
 	VideoConference,
 	OEmbedMeta,
 	OEmbedUrlContent,
-	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
 	ILivechatTagRecord,
@@ -85,7 +84,6 @@ interface EventLikeCallbackSignatures {
 		message: IMessage,
 		params: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage; room: IRoom },
 	) => void;
-	'federation.onAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;

@@ -70,21 +70,6 @@ callbacks.add(
 	'native-federation-after-delete-message',
 );
 
-callbacks.add(
-	'federation.onAddUsersToRoom',
-	async ({ invitees, inviter }, room) => {
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.inviteUsersToRoom(
-				room,
-				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : invitee.username)).filter((v) => v != null),
-				inviter,
-			);
-		}
-	},
-	callbacks.priority.MEDIUM,
-	'native-federation-on-add-users-to-room ',
-);
-
 beforeAddUserToRoom.add(
 	async ({ user, inviter }, room) => {
 		if (!user.username || !inviter) {
