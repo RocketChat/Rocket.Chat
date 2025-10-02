@@ -36,8 +36,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	/**
 	 * Lists ABAC attribute definitions with optional filtering and pagination.
-	 *
-	 * @param filters optional filtering and pagination parameters
 	 */
 	async listAbacAttributes(filters?: { key?: string; values?: string[]; offset?: number; count?: number }): Promise<{
 		attributes: IAbacAttribute[];
@@ -99,11 +97,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const removedValues = existing.values.filter((v) => !newValues.includes(v));
 		const keyChanged = newKey !== existing.key;
 
-		// If key changed, all old values are considered removed under the old key context
 		const valuesToCheck = keyChanged ? existing.values : removedValues;
 
 		if (keyChanged || valuesToCheck.length) {
-			// Delegate usage detection to model helper to avoid duplicating query logic
 			const inUse = await Rooms.isAbacAttributeInUse(existing.key, valuesToCheck.length ? valuesToCheck : existing.values);
 			if (inUse) {
 				throw new Error('error-attribute-in-use');
@@ -171,14 +167,122 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async isAbacAttributeInUseByKey(key: string): Promise<boolean> {
-		// Fetch the attribute definition by key to obtain its values
 		const attribute = await AbacAttributes.findOne({ key }, { projection: { values: 1 } });
 		if (!attribute) {
-			// If it doesn't exist, it cannot be in use
 			return false;
 		}
-		// If any of its values is in use in any room, the attribute is considered in use
 		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
+	}
+
+	/**
+	 * Sets ABAC attributes for a private room.
+	 * This method now delegates to smaller private helpers for readability and testability.
+	 */
+	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void> {
+		const room = await this.getPrivateRoomOrThrow(rid);
+
+		const normalized = this.validateAndNormalizeAttributes(attributes);
+
+		await this.ensureAttributeDefinitionsExist(normalized);
+
+		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+		const removed = this.computeAttributesRemoval(previous, normalized);
+
+		if (removed) {
+			await this.onRoomAttributesChanged(rid, normalized);
+		}
+
+		await Rooms.setAbacAttributesById(rid, normalized);
+	}
+
+	/**
+	 * Fetches a private room by id or throws if not found.
+	 */
+	private async getPrivateRoomOrThrow(rid: string): Promise<{ abacAttributes?: IAbacAttributeDefinition[] }> {
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+		return room;
+	}
+
+	/**
+	 * Validates provided raw attributes object and normalizes it into a list
+	 * of attribute definitions while deduplicating values.
+	 */
+	private validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
+		const keyPattern = /^[A-Za-z0-9_-]+$/;
+		const normalized: IAbacAttributeDefinition[] = [];
+
+		for (const [key, values] of Object.entries(attributes)) {
+			if (!keyPattern.test(key)) {
+				throw new Error('error-invalid-attribute-key');
+			}
+			if (!values?.length) {
+				throw new Error('error-invalid-attribute-values');
+			}
+			const uniqueValues = Array.from(new Set(values));
+			normalized.push({ key, values: uniqueValues });
+		}
+
+		return normalized;
+	}
+
+	/**
+	 * Ensures all attribute definitions exist in the global registry and that every
+	 * provided value is allowed for its corresponding key.
+	 */
+	private async ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
+		if (!normalized.length) {
+			return;
+		}
+
+		const keys = normalized.map((a) => a.key);
+		const attributeDefinitionsCursor = AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } });
+		const attributeDefinitions = await attributeDefinitionsCursor.toArray();
+
+		const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
+		if (definitionValuesMap.size !== keys.length) {
+			throw new Error('error-attribute-definition-not-found');
+		}
+
+		for (const a of normalized) {
+			const allowed = definitionValuesMap.get(a.key);
+			if (!allowed) {
+				throw new Error('error-attribute-definition-not-found');
+			}
+			for (const v of a.values) {
+				if (!allowed.has(v)) {
+					throw new Error('error-invalid-attribute-values');
+				}
+			}
+		}
+	}
+
+	/**
+	 * Compares previous vs new attributes and returns true if any attribute key
+	 * or individual attribute value has been removed.
+	 */
+	private computeAttributesRemoval(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
+		const newMap = new Map<string, Set<string>>(next.map((a) => [a.key, new Set(a.values)]));
+
+		for (const prev of previous) {
+			const current = newMap.get(prev.key);
+			if (!current) {
+				return true;
+			}
+			for (const val of prev.values) {
+				if (!current.has(val)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
+		throw new Error('not implemented');
 	}
 }
 

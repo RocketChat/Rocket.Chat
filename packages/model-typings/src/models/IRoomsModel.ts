@@ -318,4 +318,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
 	updateAbacConfigurationById(rid: IRoom['_id'], abac: boolean): Promise<UpdateResult>;
+	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<UpdateResult>;
 }
