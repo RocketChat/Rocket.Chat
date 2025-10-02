@@ -99,9 +99,8 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 			content: t(option.label),
 			onClick: option.action,
 			type: option.type,
+			...(option.tooltip && { tooltip: option.tooltip }),
 			...(typeof option.disabled === 'boolean' && { disabled: option.disabled }),
-			...(typeof option.disabled === 'boolean' &&
-				option.disabled && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
 		.reduce((acc, option) => {
 			const group = option.type ? option.type : '';
