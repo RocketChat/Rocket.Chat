@@ -1,4 +1,5 @@
-import { type IMessage, isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -8,13 +9,16 @@ import MessageToolbarItem from '../../MessageToolbarItem';
 
 type ForwardMessageActionProps = {
 	message: IMessage;
+	room: IRoom;
 };
 
-const ForwardMessageAction = ({ message }: ForwardMessageActionProps) => {
+const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 
 	const encrypted = isE2EEMessage(message);
+	// @ts-expect-error to be implemented
+	const isABACEnabled = !!room.abacAttributes;
 
 	return (
 		<MessageToolbarItem
@@ -22,7 +26,7 @@ const ForwardMessageAction = ({ message }: ForwardMessageActionProps) => {
 			icon='arrow-forward'
 			title={encrypted ? t('Action_not_available_encrypted_content', { action: t('Forward_message') }) : t('Forward_message')}
 			qa='Forward_message'
-			disabled={encrypted}
+			disabled={encrypted || isABACEnabled}
 			onClick={async () => {
 				const permalink = await getPermaLink(message._id);
 				setModal(
