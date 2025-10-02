@@ -199,6 +199,11 @@ export const metrics = {
 		name: 'rocketchat_apps_failed',
 		help: 'total apps that failed to load',
 	}),
+	appsFailedReason: new client.Gauge({
+		name: 'rocketchat_apps_failed_reason',
+		labelNames: ['name', 'error'],
+		help: 'name and reason for the apps that failed to load',
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({
