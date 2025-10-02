@@ -117,6 +117,7 @@ describe('usePermalinkAction', () => {
 			order: 0,
 			group: 'menu',
 			disabled: true,
+			tooltip: 'Action_not_available_encrypted_content',
 		});
 	});
 
@@ -144,6 +145,7 @@ describe('usePermalinkAction', () => {
 			order: 0,
 			group: 'menu',
 			disabled: true,
+			tooltip: 'Not_available_for_ABAC_enabled_rooms',
 		});
 	});
 
@@ -174,6 +176,7 @@ describe('usePermalinkAction', () => {
 			order: 0,
 			group: 'menu',
 			disabled: true,
+			tooltip: 'Action_not_available_encrypted_content',
 		});
 	});
 });

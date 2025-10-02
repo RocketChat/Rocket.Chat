@@ -79,7 +79,7 @@ describe('ForwardMessageAction', () => {
 			{ wrapper: appRoot },
 		);
 
-		const button = screen.getByRole('button', { name: 'Forward message' });
+		const button = screen.getByRole('button', { name: 'Not_available_for_ABAC_enabled_rooms' });
 		expect(button).toBeDisabled();
 	});
 
