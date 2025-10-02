@@ -19,5 +19,5 @@ export function registerEvents(
 	reaction(emitter);
 	member(emitter, services);
 	edus(emitter, eduProcessTypes);
-	room(emitter);
+	room(emitter, services);
 }
