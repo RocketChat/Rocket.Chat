@@ -183,22 +183,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const normalized: IAbacAttributeDefinition[] = [];
 
 		if (Object.keys(attributes).length > 10) {
-			throw new Error('error-maximum-attributes-exceeded');
+			throw new Error('error-invalid-attribute-values');
 		}
 
 		for (const [key, values] of Object.entries(attributes)) {
 			if (!keyPattern.test(key)) {
 				throw new Error('error-invalid-attribute-key');
 			}
-			if (!values?.length) {
+			if (values.length > 10) {
 				throw new Error('error-invalid-attribute-values');
 			}
-			if (values.length > 10) {
-				throw new Error('error-maximum-attribute-values-exceeded');
-			}
-
-			const uniqueValues = Array.from(new Set(values));
-			normalized.push({ key, values: uniqueValues });
+			normalized.push({ key, values });
 		}
 
 		return normalized;
@@ -247,6 +242,51 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		return false;
+	}
+
+	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
+		const keyPattern = /^[A-Za-z0-9_-]+$/;
+		if (!keyPattern.test(key)) {
+			throw new Error('error-invalid-attribute-key');
+		}
+		if (values.length > 10) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+
+		const existingIndex = previous.findIndex((a) => a.key === key);
+		const isNewKey = existingIndex === -1;
+		if (isNewKey && previous.length >= 10) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+
+		if (isNewKey) {
+			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
+			return;
+		}
+
+		const prevValues = previous[existingIndex].values;
+
+		if (prevValues.length === values.length && prevValues.every((v, i) => v === values[i])) {
+			return;
+		}
+
+		const valuesSet = new Set(values);
+		const removed = prevValues.some((v) => !valuesSet.has(v));
+
+		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
+
+		if (removed) {
+			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
+			await this.onRoomAttributesChanged(rid, next);
+		}
 	}
 
 	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
