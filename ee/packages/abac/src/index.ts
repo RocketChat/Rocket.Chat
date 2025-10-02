@@ -7,13 +7,6 @@ import type { Filter, UpdateFilter } from 'mongodb';
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
-	/**
-	 * Adds a new ABAC attribute definition entry for a given private room.
-	 *
-	 * @param rid Room ID
-	 * @param attribute Attribute definition payload
-	 *
-	 */
 	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
 		const keyPattern = /^[A-Za-z0-9_-]+$/;
 		if (!keyPattern.test(attribute.key)) {
@@ -34,9 +27,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	/**
-	 * Lists ABAC attribute definitions with optional filtering and pagination.
-	 */
 	async listAbacAttributes(filters?: { key?: string; values?: string[]; offset?: number; count?: number }): Promise<{
 		attributes: IAbacAttribute[];
 		offset: number;
@@ -70,9 +60,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
-	/**
-	 * Updates an ABAC attribute definition by its _id.
-	 */
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void> {
 		if (!update.key && !update.values) {
 			return;
@@ -128,9 +115,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	/**
-	 * Deletes an ABAC attribute definition by its _id.
-	 */
 	async deleteAbacAttributeById(_id: string): Promise<void> {
 		const existing = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
 		if (!existing) {
@@ -174,12 +158,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
 	}
 
-	/**
-	 * Sets ABAC attributes for a private room.
-	 * This method now delegates to smaller private helpers for readability and testability.
-	 */
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void> {
-		const room = await this.getPrivateRoomOrThrow(rid);
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
 
 		const normalized = this.validateAndNormalizeAttributes(attributes);
 
@@ -195,24 +178,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await Rooms.setAbacAttributesById(rid, normalized);
 	}
 
-	/**
-	 * Fetches a private room by id or throws if not found.
-	 */
-	private async getPrivateRoomOrThrow(rid: string): Promise<{ abacAttributes?: IAbacAttributeDefinition[] }> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-		return room;
-	}
-
-	/**
-	 * Validates provided raw attributes object and normalizes it into a list
-	 * of attribute definitions while deduplicating values.
-	 */
 	private validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
 		const keyPattern = /^[A-Za-z0-9_-]+$/;
 		const normalized: IAbacAttributeDefinition[] = [];
+
+		if (Object.keys(attributes).length > 10) {
+			throw new Error('error-maximum-attributes-exceeded');
+		}
 
 		for (const [key, values] of Object.entries(attributes)) {
 			if (!keyPattern.test(key)) {
@@ -221,6 +193,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			if (!values?.length) {
 				throw new Error('error-invalid-attribute-values');
 			}
+			if (values.length > 10) {
+				throw new Error('error-maximum-attribute-values-exceeded');
+			}
+
 			const uniqueValues = Array.from(new Set(values));
 			normalized.push({ key, values: uniqueValues });
 		}
@@ -228,10 +204,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return normalized;
 	}
 
-	/**
-	 * Ensures all attribute definitions exist in the global registry and that every
-	 * provided value is allowed for its corresponding key.
-	 */
 	private async ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
 		if (!normalized.length) {
 			return;
@@ -259,10 +231,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	/**
-	 * Compares previous vs new attributes and returns true if any attribute key
-	 * or individual attribute value has been removed.
-	 */
 	private computeAttributesRemoval(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
 		const newMap = new Map<string, Set<string>>(next.map((a) => [a.key, new Set(a.values)]));
 
