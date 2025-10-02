@@ -39,6 +39,16 @@ export const useReplyInDMAction = (
 	);
 	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));
 
+	const tooltip = useMemo(() => {
+		if (encrypted) {
+			return t('Action_not_available_encrypted_content', { action: t('Reply_in_direct_message') });
+		}
+		if (isABACEnabled) {
+			return t('Not_available_for_ABAC_enabled_rooms');
+		}
+		return null;
+	}, [encrypted, isABACEnabled, t]);
+
 	const canReplyInDM = useMemo(() => {
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
@@ -58,7 +68,7 @@ export const useReplyInDMAction = (
 	return {
 		id: 'reply-directly',
 		icon: 'reply-directly',
-		label: isABACEnabled ? 'Not_available_for_ABAC_enabled_rooms' : 'Reply_in_direct_message',
+		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'communication',
 		action() {
@@ -74,6 +84,6 @@ export const useReplyInDMAction = (
 		order: 0,
 		group: 'menu',
 		disabled: encrypted || isABACEnabled,
-		...(encrypted && { tooltip: t('Action_not_available_encrypted_content', { action: t('Reply_in_direct_message') }) }),
+		...(tooltip && { tooltip }),
 	};
 };
