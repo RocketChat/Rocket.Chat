@@ -143,11 +143,11 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	try {
 		await fn();
 	} catch (e) {
-		const delay = delaySec === 625 ? 625 : delaySec ** 2;
-		console.log(`error occurred, retrying in ${delay}ms`, e);
+		const delay = Math.max(625, delaySec ** 2);
+		console.error(`error occurred, retrying in ${delay}ms`, e);
 		setTimeout(() => {
-			runWithBackoff(fn, delay * 1000);
-		}, delay);
+			runWithBackoff(fn, delay);
+		}, delay * 1000);
 	}
 }
 
