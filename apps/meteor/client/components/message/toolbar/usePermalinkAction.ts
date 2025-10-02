@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -9,11 +9,14 @@ import { getPermaLink } from '../../../lib/getPermaLink';
 export const usePermalinkAction = (
 	message: IMessage,
 	{ id, context, type, order }: { context: MessageActionContext[]; order: number } & Pick<MessageActionConfig, 'id' | 'type'>,
+	{ room }: { room: IRoom },
 ): MessageActionConfig | null => {
 	const { t } = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	// @ts-expect-error - to be implemented
+	const isABACEnabled = !!room.abacAttributes;
 	const encrypted = isE2EEMessage(message);
 
 	return {
@@ -33,7 +36,7 @@ export const usePermalinkAction = (
 		},
 		order,
 		group: 'menu',
-		disabled: encrypted,
+		disabled: encrypted || isABACEnabled,
 		...(encrypted && { tooltip: t('Action_not_available_encrypted_content', { action: t('Copy_link') }) }),
 	};
 };

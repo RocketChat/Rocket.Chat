@@ -1,0 +1,179 @@
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { renderHook } from '@testing-library/react';
+
+import { usePermalinkAction } from './usePermalinkAction';
+import { createFakeUser } from '../../../../tests/mocks/data';
+
+// Mock the getPermaLink function
+jest.mock('../../../lib/getPermaLink', () => ({
+	getPermaLink: jest.fn(() => Promise.resolve('https://example.com/permalink')),
+}));
+
+const user = createFakeUser({
+	_id: 'current-user-id',
+	username: 'currentuser',
+	active: true,
+	roles: ['admin'],
+	type: 'user',
+});
+
+const appRoot = mockAppRoot()
+	.withUser(user)
+	.withTranslations('en', 'core', {
+		Copy_link: 'Copy link',
+		Copied: 'Copied',
+	})
+	.build();
+
+const createMockMessage = (overrides: any = {}): IMessage => ({
+	_id: 'message-id',
+	rid: 'room-id',
+	msg: 'Test message',
+	ts: new Date(),
+	u: { _id: 'user-id', username: 'testuser' },
+	_updatedAt: new Date(),
+	channels: [],
+	file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100 },
+	mentions: [],
+	reactions: {},
+	starred: [],
+	t: 'msg',
+	_raw: {
+		_id: 'message-id',
+		rid: 'room-id',
+		msg: 'Test message',
+		ts: new Date(),
+		u: { _id: 'user-id', username: 'testuser' },
+		_updatedAt: new Date(),
+		channels: [],
+		file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100 },
+		mentions: [],
+		reactions: {},
+		starred: [],
+		t: 'msg',
+	},
+	...overrides,
+});
+
+const createMockRoom = (overrides: any = {}): IRoom => ({
+	_id: 'room-id',
+	t: 'c' as const,
+	name: 'test-room',
+	msgs: 0,
+	u: { _id: 'user-id', username: 'testuser' },
+	usersCount: 1,
+	_updatedAt: new Date(),
+	...overrides,
+});
+
+describe('usePermalinkAction', () => {
+	it('should be enabled for normal messages', () => {
+		const message = createMockMessage();
+		const room = createMockRoom();
+		const config = {
+			id: 'permalink',
+			context: ['message', 'message-mobile'] as any,
+			type: 'communication' as any,
+			order: 0,
+		};
+
+		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
+
+		expect(result.current).toEqual({
+			id: 'permalink',
+			icon: 'permalink',
+			label: 'Copy_link',
+			context: ['message', 'message-mobile'],
+			type: 'communication',
+			action: expect.any(Function),
+			order: 0,
+			group: 'menu',
+			disabled: false,
+		});
+	});
+	it('should be disabled for encrypted messages', () => {
+		const message = createMockMessage({
+			t: 'e2e',
+			e2e: 'encrypted',
+		});
+		const room = createMockRoom();
+		const config = {
+			id: 'permalink',
+			context: ['message', 'message-mobile'] as any,
+			type: 'communication' as any,
+			order: 0,
+		};
+
+		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
+
+		expect(result.current).toEqual({
+			id: 'permalink',
+			icon: 'permalink',
+			label: 'Copy_link',
+			context: ['message', 'message-mobile'],
+			type: 'communication',
+			action: expect.any(Function),
+			order: 0,
+			group: 'menu',
+			disabled: true,
+		});
+	});
+
+	it('should be disabled for ABAC rooms', () => {
+		const message = createMockMessage();
+		const room = createMockRoom({
+			abacAttributes: { someAttribute: 'value' },
+		} as any);
+		const config = {
+			id: 'permalink',
+			context: ['message', 'message-mobile'] as any,
+			type: 'communication' as any,
+			order: 0,
+		};
+
+		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
+
+		expect(result.current).toEqual({
+			id: 'permalink',
+			icon: 'permalink',
+			label: 'Copy_link',
+			context: ['message', 'message-mobile'],
+			type: 'communication',
+			action: expect.any(Function),
+			order: 0,
+			group: 'menu',
+			disabled: true,
+		});
+	});
+
+	it('should be disabled for both encrypted messages and ABAC rooms', () => {
+		const message = createMockMessage({
+			t: 'e2e',
+			e2e: 'encrypted',
+		});
+		const room = createMockRoom({
+			abacAttributes: { someAttribute: 'value' },
+		} as any);
+		const config = {
+			id: 'permalink',
+			context: ['message', 'message-mobile'] as any,
+			type: 'communication' as any,
+			order: 0,
+		};
+
+		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
+
+		expect(result.current).toEqual({
+			id: 'permalink',
+			icon: 'permalink',
+			label: 'Copy_link',
+			context: ['message', 'message-mobile'],
+			type: 'communication',
+			action: expect.any(Function),
+			order: 0,
+			group: 'menu',
+			disabled: true,
+		});
+	});
+});
