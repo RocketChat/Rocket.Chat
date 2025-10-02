@@ -700,18 +700,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async getEventById(eventId: EventID): Promise<any | null> {
-		if (!this.homeserverServices) {
-			this.logger.warn('Homeserver services not available');
-			return null;
-		}
-
-		try {
-			return await this.homeserverServices.event.getEventById(eventId);
-		} catch (error) {
-			this.logger.error('Failed to get event by ID:', error);
-			throw error;
-		}
+	async getEventById(eventId: EventID) {
+		return this.homeserverServices.event.getEventById(eventId);
 	}
 
 	async leaveRoom(roomId: string, user: IUser): Promise<void> {

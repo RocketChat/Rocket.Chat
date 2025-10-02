@@ -1,4 +1,5 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
+import type { EventStore, Pdu } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
 	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
@@ -8,7 +9,7 @@ export interface IFederationMatrixService {
 	deleteMessage(matrixRoomId: string, message: IMessage): Promise<void>;
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
-	getEventById(eventId: string): Promise<any | null>;
+	getEventById(eventId: string): Promise<EventStore<Pdu> | null>;
 	leaveRoom(rid: IRoomFederated['_id'], user: IUser): Promise<void>;
 	kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 	updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void>;
