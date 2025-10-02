@@ -312,7 +312,9 @@ export const acceptInvite = async (
 		throw new Error('Sender user is native federated');
 	}
 
-	const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(username, { projection: { _id: 1 } });
+	const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(username, {
+		projection: { username: 1, federation: 1, federated: 1 },
+	});
 
 	// we cannot accept invites from users that are external
 	if (!user) {
