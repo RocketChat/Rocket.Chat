@@ -10,7 +10,7 @@ type AppsStatistics = {
 	engineVersion: string;
 	totalInstalled: number | false;
 	totalActive: number | false;
-	totalFailed: number | false;
+	appsFailed: String[] | [];
 	totalPrivateApps: number | false;
 	totalPrivateAppsEnabled: number | false;
 };
@@ -21,7 +21,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled: false,
 			totalActive: false,
-			totalFailed: false,
+			appsFailed: [],
 			totalPrivateApps: false,
 			totalPrivateAppsEnabled: false,
 		};
@@ -32,7 +32,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 
 		let totalInstalled = 0;
 		let totalActive = 0;
-		let totalFailed = 0;
+		let appsFailed = [];
 		let totalPrivateApps = 0;
 		let totalPrivateAppsEnabled = 0;
 
@@ -54,7 +54,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 				if (AppStatusUtils.isEnabled(status)) {
 					totalActive++;
 				} else if (status !== AppStatus.MANUALLY_DISABLED) {
-					totalFailed++;
+					appsFailed.push({name: app.getInfo().name, error: app.getStatus()});
 				}
 			}),
 		);
@@ -63,7 +63,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled,
 			totalActive,
-			totalFailed,
+			appsFailed,
 			totalPrivateApps,
 			totalPrivateAppsEnabled,
 		};
@@ -73,7 +73,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled: false,
 			totalActive: false,
-			totalFailed: false,
+			appsFailed: [],
 			totalPrivateApps: false,
 			totalPrivateAppsEnabled: false,
 		};
