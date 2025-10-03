@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`UserCardABACAttributes should render with multiple attributes 1`] = `
+<body>
+  <div>
+    <span
+      class="rcx-box rcx-box--full rcx-css-1vab7ss"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            Classified
+          </span>
+        </span>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            Top Secret
+          </span>
+        </span>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            Confidential
+          </span>
+        </span>
+      </div>
+    </span>
+  </div>
+</body>
+`;

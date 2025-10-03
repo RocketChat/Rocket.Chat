@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Palette, Tag } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -71,7 +71,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
-	// @ts-expect-error - abacAttributes is not yet implemented in IUser type
+	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
 	abacAttributes = null,
 	...props
 }: UserInfoProps): ReactElement => {
@@ -137,13 +137,6 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{abacAttributes && abacAttributes.length > 0 && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('ABAC_Attributes')}</InfoPanelLabel>
-							<UserCardABACAttributes abacAttributes={abacAttributes}></UserCardABACAttributes>
-						</InfoPanelField>
-					)}
-
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
@@ -182,6 +175,22 @@ const UserInfo = ({
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{abacAttributes && abacAttributes.length > 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel>
+								{t('ABAC_Attributes')}
+								<Icon
+									name='info'
+									color={Palette.statusColor['status-font-on-info']}
+									mi={4}
+									size='x16'
+									title={t('ABAC_Attributes_description')}
+								/>
+							</InfoPanelLabel>
+							<UserCardABACAttributes abacAttributes={abacAttributes}></UserCardABACAttributes>
 						</InfoPanelField>
 					)}
 

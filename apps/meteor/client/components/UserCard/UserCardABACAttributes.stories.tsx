@@ -34,36 +34,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		abacAttributes: ['Classified', 'Top Secret', 'Confidential'],
-	},
-};
-
-export const SingleAttribute: Story = {
-	args: {
-		abacAttributes: ['Top Secret'],
-	},
-};
-
-export const MultipleAttributes: Story = {
-	args: {
 		abacAttributes: ['Top Secret', 'Classified', 'Confidential', 'Restricted', 'Internal'],
-	},
-};
-
-export const LongAttributeNames: Story = {
-	args: {
-		abacAttributes: [
-			'Top Secret - Compartmented',
-			'Classified - Special Access',
-			'Confidential - Restricted Data',
-			'Internal - Sensitive',
-			'Public - Unclassified',
-		],
-	},
-};
-
-export const SpecialCharacters: Story = {
-	args: {
-		abacAttributes: ['Classified@DOD.mil', 'Top-Secret_2024', 'Confidential.Project', 'Restricted-Access'],
 	},
 };
