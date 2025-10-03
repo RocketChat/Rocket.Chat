@@ -1,4 +1,5 @@
 import { Abac } from '@rocket.chat/core-services';
+import { Settings } from '@rocket.chat/models';
 
 import {
 	GenericSuccessSchema,
@@ -28,7 +29,12 @@ const abacEndpoints = API.v1
 			const { rid } = this.urlParams;
 			const { attributes } = this.bodyParams;
 
-			if (!settings.get('ABAC_Enabled') && Object.keys(attributes).length) {
+			// This endpoint could be called without a license
+			// If we use settings.get, it will return false because it's the "invalid value"
+			// So we get the real value from the setting
+			// But we only need to check the setting if the user is trying to set attributes
+			// If it's trying to remove attributes by setting an empty object, then we allow it
+			if (Object.keys(attributes).length && !(await Settings.getValueById('ABAC_Enabled'))) {
 				throw new Error('error-abac-not-enabled');
 			}
 
