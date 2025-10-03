@@ -9,6 +9,7 @@ import {
 	POSTAbacAttributeDefinitionSchema,
 	GETAbacAttributeIsInUseResponseSchema,
 	POSTRoomAbacAttributesBodySchema,
+	PUTRoomAbacAttributeValuesBodySchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -38,11 +39,22 @@ const abacEndpoints = API.v1
 	// edit a room attribute
 	.put(
 		'abac/room/:rid/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: { 200: GenericSuccessSchema }, license: ['abac'] },
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			body: PUTRoomAbacAttributeValuesBodySchema,
+			response: { 200: GenericSuccessSchema },
+			license: ['abac'],
+		},
 		async function action() {
+			const { rid, key } = this.urlParams;
+			const { values } = this.bodyParams;
+
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
+
+			await Abac.replaceRoomAbacAttributeByKey(rid, key, values);
 			return API.v1.success();
 		},
 	)
