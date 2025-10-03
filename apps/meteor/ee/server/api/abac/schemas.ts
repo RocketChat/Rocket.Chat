@@ -1,13 +1,16 @@
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import { unique } from 'underscore';
 
 // Removed AbacEndpoints import to avoid circular type reference (endpoints import these schemas)
+
+const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
+const MAX_ATTRIBUTE_VALUES = 10;
+const MAX_ROOM_ATTRIBUTE_VALUES = 10;
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
-
-// Omitted module augmentation to prevent circular reference with endpoint definitions
 
 const GenericSuccess = {
 	type: 'object',
@@ -19,29 +22,16 @@ const GenericSuccess = {
 
 export const GenericSuccessSchema = ajv.compile<void>(GenericSuccess);
 
-const GenericError = {
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-		},
-		message: {
-			type: 'string',
-		},
-	},
-};
-export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
-
 // Update ABAC attribute (request body)
 const UpdateAbacAttributeBody = {
 	type: 'object',
 	properties: {
-		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -50,16 +40,17 @@ const UpdateAbacAttributeBody = {
 };
 
 export const PUTAbacAttributeUpdateBodySchema = ajv.compile<IAbacAttributeDefinition>(UpdateAbacAttributeBody);
+// Create an abac attribute using the IAbacAttributeDefintion type, create the ajv schemas
 
 const AbacAttributeDefinition = {
 	type: 'object',
 	properties: {
-		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -72,12 +63,12 @@ export const POSTAbacAttributeDefinitionSchema = ajv.compile<IAbacAttributeDefin
 const GetAbacAttributesQuery = {
 	type: 'object',
 	properties: {
-		key: { type: 'string', minLength: 1 },
+		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 		offset: { type: 'integer', minimum: 0, default: 0 },
@@ -94,12 +85,12 @@ const AbacAttributeRecord = {
 	type: 'object',
 	properties: {
 		_id: { type: 'string', minLength: 1 },
-		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -107,11 +98,9 @@ const AbacAttributeRecord = {
 	additionalProperties: false,
 };
 
-// Response schema for listing attributes with pagination metadata
 const GetAbacAttributesResponse = {
 	type: 'object',
 	properties: {
-		success: { type: 'boolean', enum: [true] },
 		attributes: {
 			type: 'array',
 			items: AbacAttributeRecord,
@@ -134,14 +123,12 @@ export const GETAbacAttributesResponseSchema = ajv.compile<{
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {
-		success: { type: 'boolean', enum: [true] },
-		_id: { type: 'string', minLength: 1 },
-		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
+		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 		usage: {
@@ -149,12 +136,11 @@ const GetAbacAttributeByIdResponse = {
 			additionalProperties: { type: 'boolean' },
 		},
 	},
-	required: ['key', 'values'],
+	required: ['attribute', 'usage'],
 	additionalProperties: false,
 };
 
 export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
-	_id: string;
 	key: string;
 	values: string[];
 	usage: Record<string, boolean>;
@@ -163,7 +149,6 @@ export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
 const GetAbacAttributeIsInUseResponse = {
 	type: 'object',
 	properties: {
-		success: { type: 'boolean', enum: [true] },
 		inUse: { type: 'boolean' },
 	},
 	required: ['inUse'],
@@ -177,10 +162,12 @@ const PostRoomAbacAttributesBody = {
 	properties: {
 		attributes: {
 			type: 'object',
-			propertyNames: { type: 'string', pattern: '^[A-Za-z0-9_-]+$' },
+			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
 			additionalProperties: {
 				type: 'array',
 				items: { type: 'string', minLength: 1 },
+				maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+				uniqueItems: true,
 			},
 		},
 	},
@@ -197,7 +184,8 @@ const PutRoomAbacAttributeValuesBody = {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
-			maxItems: 10,
+			maxItems: MAX_ROOM_ATTRIBUTE_VALUES,
+			uniqueItems: true,
 		},
 	},
 	required: ['values'],
