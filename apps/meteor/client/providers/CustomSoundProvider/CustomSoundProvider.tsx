@@ -4,7 +4,7 @@ import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/u
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
-import { defaultSounds, formatVolume, getCustomSoundURL } from './lib/helpers';
+import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
 
