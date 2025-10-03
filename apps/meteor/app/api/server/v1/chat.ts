@@ -279,7 +279,7 @@ const ChatUpdateSchema = {
 					additionalProperties: false,
 				},
 			},
-			required: ['content'],
+			required: ['roomId', 'msgId', 'content'],
 			additionalProperties: false,
 		},
 	],
