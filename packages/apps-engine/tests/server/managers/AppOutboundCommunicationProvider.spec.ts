@@ -4,7 +4,7 @@ import type { IOutboundMessageProviders } from '../../../src/definition/outbound
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { OutboundMessageProvider } from '../../../src/server/managers/AppOutboundCommunicationProvider';
 
-export class AppSlashCommandRegistrationTestFixture {
+export class AppOutboundCommunicationProviderTestFixture {
 	private mockApp: ProxiedApp;
 
 	@SetupFixture
