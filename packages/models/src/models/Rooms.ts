@@ -1957,16 +1957,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setAbacAttributesById(_id: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				abacAttributes: attributes,
-			},
-		};
-
-		return this.updateOne(query, update);
+	setAbacAttributesById(_id: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null> {
+		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
 	}
 
 	updateSingleAbacAttributeValuesById(_id: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult> {
@@ -1981,14 +1973,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	updateAbacAttributeValuesArrayFilteredById(_id: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				'abacAttributes.$[attr].values': values,
-			},
-		};
-		return this.updateOne(query, update, { arrayFilters: [{ 'attr.key': key }] });
+	insertAbacAttributeIfNotExistsById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
+		return this.findOneAndUpdate(
+			{ _id, 'abacAttributes.key': { $ne: key } },
+			{ $push: { abacAttributes: { key, values } } },
+			{ returnDocument: 'after', projection: { abacAttributes: 1 } },
+		) as unknown as Promise<IRoom | null>;
+	}
+
+	updateAbacAttributeValuesArrayFilteredById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
+		return this.findOneAndUpdate(
+			{ _id },
+			{ $set: { 'abacAttributes.$[attr].values': values } },
+			{ arrayFilters: [{ 'attr.key': key }], returnDocument: 'after' },
+		);
 	}
 
 	removeAbacAttributeByRoomIdAndKey(_id: IRoom['_id'], key: string): Promise<UpdateResult> {
