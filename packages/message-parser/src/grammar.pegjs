@@ -297,7 +297,7 @@ MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
 MarkdownLinkURLBody
   = (
     !(Extra+ (Whitespace / EndOfLine) / Whitespace / ")")
-    (AnyText / [*\[\/\]\^_`{}~] / MarkdownLinkBalancedParens)
+    (MarkdownLinkBalancedParens / "(" / AnyText / [*\[\/\]\^_`{}~])
   )+
 
 MarkdownLinkBalancedParens = "(" MarkdownLinkURLBody* ")"
