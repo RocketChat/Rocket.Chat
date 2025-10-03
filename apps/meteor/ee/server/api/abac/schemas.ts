@@ -173,3 +173,20 @@ const PostRoomAbacAttributesBody = {
 };
 
 export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
+
+const PutRoomAbacAttributeValuesBody = {
+	type: 'object',
+	properties: {
+		values: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			maxItems: 10,
+			uniqueItems: true,
+		},
+	},
+	required: ['values'],
+	additionalProperties: false,
+};
+
+export const PUTRoomAbacAttributeValuesBodySchema = ajv.compile<{ values: string[] }>(PutRoomAbacAttributeValuesBody);
