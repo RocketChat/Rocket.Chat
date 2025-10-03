@@ -74,8 +74,6 @@ import type {
 	IVideoConferenceModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
-	IMatrixBridgedRoomModel,
-	IMatrixBridgedUserModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -217,8 +215,6 @@ export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel')
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
 export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
-export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
-export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
