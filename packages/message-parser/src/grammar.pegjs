@@ -275,7 +275,7 @@ InlineItemPattern = Whitespace
  *
  */
 References
-  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
+  = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }
@@ -284,9 +284,27 @@ LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
 LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
+MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / MarkdownLinkPhone
+
+MarkdownLinkPhone = p:Phone { return 'tel:' + p.number; }
+
+MarkdownLinkURL
+  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
+  / $(URLAuthorityHost MarkdownLinkURLBody*)
+
+MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
+
+MarkdownLinkURLBody
+  = (
+    !(Extra+ (Whitespace / EndOfLine) / Whitespace / ")")
+    (AnyText / [*\[\/\]\^_`{}~] / MarkdownLinkBalancedParens)
+  )+
+
+MarkdownLinkBalancedParens = "(" MarkdownLinkURLBody* ")"
+
 FilePath = $(URLScheme URLBody+)
 
-Image = "![" title:Line? "](" href:LinkRef ")" { return title ? image(href, title) : image(href); }
+Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
   = $(URLScheme URLAuthority URLBody*)
