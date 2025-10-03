@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, getAllServices, roomIdSchema, userIdSchema } from '@rocket.chat/federation-sdk';
-import type { EventID, HomeserverServices, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, UserID, HomeserverServices, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -26,7 +26,7 @@ export const fileTypes: Record<string, FileMessageType> = {
 };
 
 /** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is `@${string}:${string}` {
+export function validateFederatedUsername(mxid: string): mxid is UserID {
 	if (!mxid.startsWith('@')) return false;
 
 	const parts = mxid.substring(1).split(':');
@@ -89,11 +89,7 @@ export const getUsernameServername = (mxid: string, serverName: string): [mxid: 
  * Because of historical reasons, we can have users only with federated flag but no federation object
  * So we need to upsert the user with the federation object
  */
-export async function createOrUpdateFederatedUser(options: {
-	username: `@${string}:${string}`;
-	name?: string;
-	origin: string;
-}): Promise<string> {
+export async function createOrUpdateFederatedUser(options: { username: UserID; name?: string; origin: string }): Promise<string> {
 	const { username, name = username, origin } = options;
 
 	const result = await Users.updateOne(

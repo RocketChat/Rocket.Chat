@@ -66,7 +66,7 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 	}
 
 	const insertedId = await createOrUpdateFederatedUser({
-		username: data.state_key as `@${string}:${string}`,
+		username: data.event.state_key,
 		origin: serverName,
 		name: data.content.displayname || (data.state_key as `@${string}:${string}`),
 	});
