@@ -174,7 +174,7 @@ export abstract class BaseRaw<
 	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
 		this.setUpdatedAt(update);
 
-		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set))) {
+		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in query)) {
 			update.$setOnInsert = {
 				...(update.$setOnInsert || {}),
 				_id: new ObjectId().toHexString(),
@@ -251,7 +251,7 @@ export abstract class BaseRaw<
 	updateOne(filter: Filter<T>, update: UpdateFilter<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
-			if (options.upsert && !('_id' in update || (update.$set && '_id' in update.$set))) {
+			if (options.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in filter)) {
 				update.$setOnInsert = {
 					...(update.$setOnInsert || {}),
 					_id: new ObjectId().toHexString(),
