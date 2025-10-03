@@ -6,7 +6,7 @@ const removeMonitor = async (api: BaseTest['api'], id: string) =>
 	});
 
 export const createMonitor = async (api: BaseTest['api'], username: string) => {
-	const response = await api.post('/v1/livechat/monitors.save', { username });
+	const response = await api.post('/livechat/monitors.save', { username });
 
 	if (response.status() !== 200) {
 		throw new Error(`Failed to create monitor [http status: ${response.status()}]`);
