@@ -5,7 +5,7 @@ import { Rooms } from '@rocket.chat/models';
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
-import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
@@ -69,6 +69,12 @@ callbacks.add(
 	callbacks.priority.MEDIUM,
 	'native-federation-after-delete-message',
 );
+
+beforeAddUsersToRoom.add(async ({ usernames }, room) => {
+	if (FederationActions.shouldPerformFederationAction(room)) {
+		await FederationMatrix.ensureFederatedUsersExistLocally(usernames);
+	}
+});
 
 beforeAddUserToRoom.add(
 	async ({ user, inviter }, room) => {
