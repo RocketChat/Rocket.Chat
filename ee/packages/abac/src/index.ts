@@ -171,11 +171,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const removed = this.computeAttributesRemoval(previous, normalized);
 
-		if (removed) {
-			await this.onRoomAttributesChanged(rid, normalized);
-		}
+		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 
-		await Rooms.setAbacAttributesById(rid, normalized);
+		if (removed) {
+			await this.onRoomAttributesChanged(rid, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
+		}
 	}
 
 	private validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
@@ -306,6 +306,39 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
 
 		await this.onRoomAttributesChanged(rid, next);
+	}
+
+	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
+		const keyPattern = /^[A-Za-z0-9_-]+$/;
+		if (!keyPattern.test(key)) {
+			throw new Error('error-invalid-attribute-key');
+		}
+		if (values.length > 10) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		const exists = room?.abacAttributes?.some((a) => a.key === key);
+
+		if (exists) {
+			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
+
+			await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
+			return;
+		}
+
+		if (room?.abacAttributes?.length === 10) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
+		await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
 	}
 
 	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
