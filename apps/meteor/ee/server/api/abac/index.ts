@@ -38,19 +38,23 @@ const abacEndpoints = API.v1
 	// edit a room attribute
 	.put(
 		'abac/room/:rid/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {}, license: ['abac'] },
+		{ authRequired: true, permissionsRequired: ['abac-management'], response: { 200: GenericSuccessSchema }, license: ['abac'] },
 		async function action() {
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
+			return API.v1.success();
 		},
 	)
 	// delete a room attribute
 	.delete(
 		'abac/room/:rid/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: {} },
+		{ authRequired: true, permissionsRequired: ['abac-management'], response: { 200: GenericSuccessSchema } },
 		async function action() {
-			throw new Error('not-implemented');
+			const { rid, key } = this.urlParams;
+
+			await Abac.removeRoomAbacAttribute(rid, key);
+			return API.v1.success();
 		},
 	)
 	// attribute endpoints

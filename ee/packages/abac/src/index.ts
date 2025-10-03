@@ -289,6 +289,25 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
+	async removeRoomAbacAttribute(rid: string, key: string): Promise<void> {
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+		const exists = previous.some((a) => a.key === key);
+		if (!exists) {
+			return;
+		}
+
+		const next = previous.filter((a) => a.key !== key);
+
+		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
+
+		await this.onRoomAttributesChanged(rid, next);
+	}
+
 	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
 		throw new Error('not implemented');
 	}
