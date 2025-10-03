@@ -32,6 +32,7 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { JSONSchemaType } from 'ajv';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
@@ -209,13 +210,22 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
-type ChatUpdate = {
+interface IChatUpdateBase {
 	roomId: IRoom['_id'];
 	msgId: string;
+}
+
+interface IChatUpdateText extends IChatUpdateBase {
 	text: string;
 	previewUrls?: string[];
 	customFields: IMessage['customFields'];
-};
+}
+
+interface IChatUpdateEncrypted extends IChatUpdateBase {
+	content: Required<IMessage>['content'];
+}
+
+type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
 
 const ChatUpdateSchema = {
 	type: 'object',
@@ -246,8 +256,35 @@ const ChatUpdateSchema = {
 			required: ['roomId', 'msgId', 'text'],
 			additionalProperties: false,
 		},
+		{
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				content: {
+					type: 'object',
+					properties: {
+						algorithm: {
+							type: 'string',
+							enum: ['rc.v1.aes-sha2'],
+						},
+						ciphertext: {
+							type: 'string',
+						},
+					},
+					required: ['algorithm', 'ciphertext'],
+					additionalProperties: false,
+				},
+			},
+			required: ['content'],
+			additionalProperties: false,
+		},
 	],
-};
+	required: [],
+} as const satisfies JSONSchemaType<ChatUpdate>;
 
 export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
 
@@ -347,18 +384,38 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId);
+			const { bodyParams } = this;
+
+			const msg = await Messages.findOneById(bodyParams.msgId);
 
 			// Ensure the message exists
 			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
 			}
 
-			if (this.bodyParams.roomId !== msg.rid) {
+			if (bodyParams.roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			const msgFromBody = this.bodyParams.text;
+			if ('content' in bodyParams) {
+				// Permission checks are already done in the updateMessage method, so no need to duplicate them
+				await applyAirGappedRestrictionsValidation(() =>
+					executeUpdateMessage(this.userId, {
+						_id: msg._id,
+						msg: '',
+						rid: msg.rid,
+						content: bodyParams.content,
+					}),
+				);
+
+				const updatedMessage = await Messages.findOneById(msg._id);
+				const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+				return API.v1.success({
+					message,
+				});
+			}
+			const msgFromBody = bodyParams.text;
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
 			await applyAirGappedRestrictionsValidation(() =>
@@ -368,9 +425,9 @@ const chatEndpoints = API.v1
 						_id: msg._id,
 						msg: msgFromBody,
 						rid: msg.rid,
-						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
+						...(bodyParams.customFields && { customFields: bodyParams.customFields }),
 					},
-					this.bodyParams.previewUrls,
+					bodyParams.previewUrls,
 				),
 			);
 

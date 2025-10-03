@@ -176,13 +176,22 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
-		await sdk.rest.post('/v1/chat.update', {
-			previewUrls,
-			msgId: message._id,
-			roomId: message.rid,
-			customFields: message.customFields,
-			text: message.msg,
-		});
+		await sdk.rest.post(
+			'/v1/chat.update',
+			!message.content
+				? {
+						previewUrls,
+						msgId: message._id,
+						roomId: message.rid,
+						customFields: message.customFields,
+						text: message.msg,
+					}
+				: {
+						msgId: message._id,
+						roomId: message.rid,
+						content: message.content,
+					},
+		);
 	};
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
