@@ -19,6 +19,19 @@ const GenericSuccess = {
 
 export const GenericSuccessSchema = ajv.compile<void>(GenericSuccess);
 
+const GenericError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+};
+export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
+
 // Update ABAC attribute (request body)
 const UpdateAbacAttributeBody = {
 	type: 'object',
@@ -37,12 +50,11 @@ const UpdateAbacAttributeBody = {
 };
 
 export const PUTAbacAttributeUpdateBodySchema = ajv.compile<IAbacAttributeDefinition>(UpdateAbacAttributeBody);
-// Create an abac attribute using the IAbacAttributeDefintion type, create the ajv schemas
 
 const AbacAttributeDefinition = {
 	type: 'object',
 	properties: {
-		key: { type: 'string', minLength: 1 },
+		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
@@ -82,7 +94,7 @@ const AbacAttributeRecord = {
 	type: 'object',
 	properties: {
 		_id: { type: 'string', minLength: 1 },
-		key: { type: 'string', minLength: 1 },
+		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
@@ -99,6 +111,7 @@ const AbacAttributeRecord = {
 const GetAbacAttributesResponse = {
 	type: 'object',
 	properties: {
+		success: { type: 'boolean', enum: [true] },
 		attributes: {
 			type: 'array',
 			items: AbacAttributeRecord,
@@ -121,7 +134,9 @@ export const GETAbacAttributesResponseSchema = ajv.compile<{
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {
-		key: { type: 'string', minLength: 1 },
+		success: { type: 'boolean', enum: [true] },
+		_id: { type: 'string', minLength: 1 },
+		key: { type: 'string', minLength: 1, pattern: '^[A-Za-z0-9_-]+$' },
 		values: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
@@ -134,11 +149,12 @@ const GetAbacAttributeByIdResponse = {
 			additionalProperties: { type: 'boolean' },
 		},
 	},
-	required: ['attribute', 'usage'],
+	required: ['key', 'values'],
 	additionalProperties: false,
 };
 
 export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
+	_id: string;
 	key: string;
 	values: string[];
 	usage: Record<string, boolean>;
@@ -147,6 +163,7 @@ export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
 const GetAbacAttributeIsInUseResponse = {
 	type: 'object',
 	properties: {
+		success: { type: 'boolean', enum: [true] },
 		inUse: { type: 'boolean' },
 	},
 	required: ['inUse'],
@@ -164,7 +181,6 @@ const PostRoomAbacAttributesBody = {
 			additionalProperties: {
 				type: 'array',
 				items: { type: 'string', minLength: 1 },
-				uniqueItems: true,
 			},
 		},
 	},
@@ -182,7 +198,6 @@ const PutRoomAbacAttributeValuesBody = {
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
 			maxItems: 10,
-			uniqueItems: true,
 		},
 	},
 	required: ['values'],
