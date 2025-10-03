@@ -12,6 +12,7 @@ const mockSetAbacAttributesById = jest.fn();
 const mockAbacFind = jest.fn();
 const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
+const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -21,6 +22,7 @@ jest.mock('@rocket.chat/models', () => ({
 		setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
 		updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
 		updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
+		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
@@ -495,6 +497,38 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			await expect(service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'])).rejects.toThrow('error-invalid-attribute-values');
+		});
+	});
+
+	describe('removeRoomAbacAttribute', () => {
+		beforeEach(() => {
+			mockFindOneByIdAndType.mockReset();
+			mockRemoveAbacAttributeByRoomIdAndKey.mockReset();
+			(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
+		});
+
+		it('throws error-room-not-found when room does not exist', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce(null);
+			await expect((service as any).removeRoomAbacAttribute('missing', 'dept')).rejects.toThrow('error-room-not-found');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
+		});
+
+		it('returns early (no update, no hook) when attribute key not present', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'other', values: ['x'] }] });
+			await (service as any).removeRoomAbacAttribute('r1', 'dept');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
+
+		it('removes attribute and calls hook when key exists', async () => {
+			const existing = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'other', values: ['x'] },
+			];
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
+			await (service as any).removeRoomAbacAttribute('r1', 'dept');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).toHaveBeenCalledWith('r1', 'dept');
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'other', values: ['x'] }]);
 		});
 	});
 });
