@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AdminABACSettingToggle should render the setting toggle when setting exists 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field rcx-css-1gfu76s"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1u2ihfm"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row rcx-css-ctk2ij"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="ABAC_Enabled"
+              title="ABAC_Enabled"
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-127j9mz"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
+                data-qa-reset-setting-id="ABAC_Enabled"
+                title="Reset"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
+                >
+                  ❰
+                </i>
+              </button>
+              <label
+                class="rcx-box rcx-box--full rcx-toggle-switch"
+              >
+                <input
+                  checked=""
+                  class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                  id="ABAC_Enabled"
+                  type="checkbox"
+                />
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                />
+              </label>
+            </div>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

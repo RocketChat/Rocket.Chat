@@ -1,0 +1,48 @@
+import { Box, Palette } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import { Trans, useTranslation } from 'react-i18next';
+
+type AdminABACWarningModalProps = {
+	onConfirm: () => void;
+	onCancel: () => void;
+};
+
+const AdminABACWarningModal = ({ onConfirm, onCancel }: AdminABACWarningModalProps) => {
+	const { t } = useTranslation();
+	const router = useRouter();
+	const handleNavigate = () => {
+		router.navigate({
+			name: 'admin-ABAC',
+			params: {
+				tab: 'rooms',
+			},
+		});
+	};
+
+	return (
+		<GenericModal
+			title={t('ABAC_Warning_Modal_Title')}
+			icon={null}
+			// TODO: Check if this is the best way to do this
+			confirmText={<Box color={Palette.text['font-danger'].toString()}>{t('ABAC_Warning_Modal_Confirm_Text')}</Box>}
+			cancelText={t('Cancel')}
+			onConfirm={onConfirm}
+			onCancel={onCancel}
+			onClose={onCancel}
+			onDismiss={onCancel}
+		>
+			<Trans i18nKey='ABAC_Warning_Modal_Content'>
+				You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access
+				control, it must be removed from ABAC management in
+				<Box is='a' onClick={handleNavigate}>
+					{' '}
+					ABAC {'>'} Rooms'
+				</Box>
+				.
+			</Trans>
+		</GenericModal>
+	);
+};
+
+export default AdminABACWarningModal;

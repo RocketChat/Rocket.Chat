@@ -13,6 +13,7 @@ export function addSettings(): void {
 					public: true,
 					invalidValue: false,
 					section: 'ABAC',
+					i18nDescription: 'ABAC_Enabled_Description',
 				});
 			},
 		);
