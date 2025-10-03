@@ -15,4 +15,5 @@ export interface IAbacService {
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string): Promise<void>;
+	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 }
