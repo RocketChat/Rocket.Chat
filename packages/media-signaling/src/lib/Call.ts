@@ -16,6 +16,7 @@ import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
+import { serializeError } from './utils/serializeError';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -275,6 +276,12 @@ export class ClientMediaCall implements IClientMediaCall {
 			try {
 				this.prepareWebRtcProcessor();
 			} catch (e) {
+				this.sendError({
+					errorType: 'service',
+					errorCode: 'service-initialization-failed',
+					critical: true,
+					errorDetails: serializeError(e),
+				});
 				await this.rejectAsUnavailable();
 				throw e;
 			}
@@ -725,7 +732,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const { negotiationId } = signal;
 
 		if (this.shouldIgnoreWebRTC()) {
-			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId, critical: true });
 			return;
 		}
 
@@ -742,12 +749,19 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			offer = await this.webrtcProcessor.createOffer({ iceRestart });
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer', negotiationId });
+			this.sendError({
+				errorType: 'service',
+				errorCode: 'failed-to-create-offer',
+				negotiationId,
+				critical: true,
+				errorDetails: serializeError(e),
+			});
 			throw e;
 		}
 
 		if (!offer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
+			return;
 		}
 
 		await this.deliverSdp({ ...offer, negotiationId });
@@ -797,12 +811,18 @@ export class ClientMediaCall implements IClientMediaCall {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
 			this.config.logger?.error(e);
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
+			this.sendError({
+				errorType: 'service',
+				errorCode: 'failed-to-create-answer',
+				negotiationId,
+				critical: true,
+				errorDetails: serializeError(e),
+			});
 			throw e;
 		}
 
 		if (!answer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
 			return;
 		}
 
@@ -930,7 +950,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.acceptedLocally) {
-			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted' });
+			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted', critical: true });
 			this.config.logger?.error('Trying to activate a call that was not yet accepted locally.');
 			return;
 		}
@@ -1033,14 +1053,25 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
+	private onWebRTCInternalError({
+		critical,
+		error,
+		errorDetails,
+	}: {
+		critical: boolean;
+		error: string | Error;
+		errorDetails?: string;
+	}): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalError', critical, error);
 		const errorCode = typeof error === 'object' ? error.message : error;
-		this.sendError({ errorType: 'service', errorCode, ...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }) });
 
-		if (critical) {
-			this.hangup('service-error');
-		}
+		this.sendError({
+			errorType: 'service',
+			errorCode,
+			...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
+			...(errorDetails && { errorDetails }),
+			critical,
+		});
 	}
 
 	private onWebRTCNegotiationNeeded(): void {
@@ -1069,11 +1100,25 @@ export class ClientMediaCall implements IClientMediaCall {
 					break;
 				case 'failed':
 					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-failed',
+							critical: true,
+							negotiationId: this.currentNegotiationId || undefined,
+						});
+
 						this.hangup('service-error');
 					}
 					break;
 				case 'closed':
 					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-closed',
+							critical: true,
+							negotiationId: this.currentNegotiationId || undefined,
+						});
+
 						this.hangup('service-error');
 					}
 					break;
@@ -1143,7 +1188,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			this.prepareWebRtcProcessor();
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented' });
+			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented', critical: true, errorDetails: serializeError(e) });
 			throw e;
 		}
 	}
