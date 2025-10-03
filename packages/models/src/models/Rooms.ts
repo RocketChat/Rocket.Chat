@@ -1991,6 +1991,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update, { arrayFilters: [{ 'attr.key': key }] });
 	}
 
+	removeAbacAttributeByRoomIdAndKey(_id: IRoom['_id'], key: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				abacAttributes: { key },
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			t: 'd',
