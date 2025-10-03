@@ -1717,6 +1717,7 @@
   "Features": "Funktionen",
   "Federated": "Verbunden",
   "Federation": "Verbund",
+  "Federation_Description": "Verbund ermöglicht es einer begrenzten Anzahl von Arbeitsbereichen, miteinander zu kommunizieren.",
   "Federation_Enable": "Verbund aktivieren",
   "Federation_Matrix": "Verbund V2",
   "Federation_Matrix_Federated": "Verbunden",

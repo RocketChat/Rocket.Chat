@@ -1,6 +1,7 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -17,6 +18,7 @@ export const useReplyInDMAction = (
 	const encrypted = isE2EEMessage(message);
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();
+	const { t } = useTranslation();
 
 	const roomPredicate = useCallback(
 		(record: IRoom): boolean => {
@@ -70,5 +72,6 @@ export const useReplyInDMAction = (
 		order: 0,
 		group: 'menu',
 		disabled: encrypted,
+		...(encrypted && { tooltip: t('Action_not_available_encrypted_content', { action: t('Reply_in_direct_message') }) }),
 	};
 };

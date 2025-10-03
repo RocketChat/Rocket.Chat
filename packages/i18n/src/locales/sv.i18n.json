@@ -2081,6 +2081,7 @@
   "Features": "Funktioner",
   "Federated": "Federerat",
   "Federation": "Federation",
+  "Federation_Description": "Med federation kan ett obegränsat antal arbetsytor kommunicera med varandra.",
   "Federation_Enable": "Aktivera federation",
   "Federation_Example_matrix_server": "Exempel: matrix.org",
   "Federation_Federated_room_search": "Federerad rumssökning",

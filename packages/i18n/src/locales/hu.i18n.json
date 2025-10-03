@@ -1686,6 +1686,7 @@
   "Features": "Funkciók",
   "Federated": "Föderált",
   "Federation": "Föderáció",
+  "Federation_Description": "A föderáció lehetővé teszi, hogy korlátlan számú munkaterület kommunikáljon egymással.",
   "Federation_Enable": "Föderáció engedélyezése",
   "Federation_Matrix": "Föderáció V2",
   "Federation_Matrix_Federated": "Föderált",

@@ -1700,6 +1700,7 @@
   "Features": "Ficzery",
   "Federated": "Sfederowany",
   "Federation": "Federacja",
+  "Federation_Description": "Federacja umożliwia komunikowanie się ze sobą nieograniczonej liczby obszarów roboczych.",
   "Federation_Enable": "Włącz Federację",
   "Federation_Matrix": "Federacja V2",
   "Federation_Matrix_Federated": "Sfederowany",

@@ -31,6 +31,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",
