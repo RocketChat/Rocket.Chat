@@ -112,7 +112,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			{
 				key: { 'attributes.key': 1, 'attributes.values': 1 },
-				partialFilterExpression: { attributes: { $exists: true } },
+				partialFilterExpression: { attributes: { $exists: true, $ne: [] } },
 			},
 		];
 	}
