@@ -1,5 +1,6 @@
 import { Abac } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
+import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import {
 	GenericSuccessSchema,
@@ -11,6 +12,7 @@ import {
 	GETAbacAttributeIsInUseResponseSchema,
 	POSTRoomAbacAttributesBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
+	GenericErrorSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -23,7 +25,7 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			body: POSTRoomAbacAttributesBodySchema,
-			response: { 200: GenericSuccessSchema },
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 		},
 		async function action() {
 			const { rid } = this.urlParams;
@@ -49,7 +51,7 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			body: PUTRoomAbacAttributeValuesBodySchema,
-			response: { 200: GenericSuccessSchema },
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 			license: ['abac'],
 		},
 		async function action() {
@@ -67,7 +69,11 @@ const abacEndpoints = API.v1
 	// delete a room attribute
 	.delete(
 		'abac/room/:rid/attributes/:key',
-		{ authRequired: true, permissionsRequired: ['abac-management'], response: { 200: GenericSuccessSchema } },
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+		},
 		async function action() {
 			const { rid, key } = this.urlParams;
 
@@ -83,7 +89,7 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			query: GETAbacAttributesQuerySchema,
-			response: { 200: GETAbacAttributesResponseSchema },
+			response: { 200: GETAbacAttributesResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 			license: ['abac'],
 		},
 		async function action() {
@@ -111,7 +117,7 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			license: ['abac'],
 			body: POSTAbacAttributeDefinitionSchema,
-			response: { 200: GenericSuccessSchema },
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 		},
 		async function action() {
 			if (!settings.get('ABAC_Enabled')) {
@@ -130,7 +136,7 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			license: ['abac'],
 			body: PUTAbacAttributeUpdateBodySchema,
-			response: { 200: GenericSuccessSchema },
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 		},
 		async function action() {
 			const { _id } = this.urlParams;
@@ -148,7 +154,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GETAbacAttributeByIdResponseSchema },
+			response: { 200: GETAbacAttributeByIdResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 			license: ['abac'],
 		},
 		async function action() {
@@ -166,7 +172,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GenericSuccessSchema },
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 			license: ['abac'],
 		},
 		async function action() {
@@ -184,7 +190,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GETAbacAttributeIsInUseResponseSchema },
+			response: { 200: GETAbacAttributeIsInUseResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
 			license: ['abac'],
 		},
 		async function action() {
