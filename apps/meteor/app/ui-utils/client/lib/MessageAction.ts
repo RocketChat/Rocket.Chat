@@ -23,6 +23,7 @@ export type MessageActionConfig = {
 	icon: IconName;
 	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
+	tooltip?: string;
 	order: number;
 	group: MessageActionGroup;
 	context?: MessageActionContext[];
