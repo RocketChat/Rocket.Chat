@@ -69,6 +69,10 @@ export class AppOutboundCommunicationProviderManager {
 		}
 
 		for await (const [, providerInfo] of appProviders) {
+			if (providerInfo.isRegistered) {
+				continue;
+			}
+
 			if (providerInfo.provider.type === 'phone') {
 				await this.registerPhoneProvider(appId, providerInfo.provider);
 				providerInfo.setRegistered(true);
