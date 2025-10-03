@@ -1,5 +1,5 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
-import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 
 import type { StreamerCallbackArgs } from '../../types/streams';
 
@@ -41,7 +41,7 @@ export interface APILegacy {
 
 	// getRoomId(name: string): Promise<Serialized<OperationResult<'GET', '/v1/chat.find'>>>;
 
-	editMessage(args: OperationParams<'POST', '/v1/chat.update'>): Promise<Serialized<OperationResult<'POST', '/v1/chat.update'>>>;
+	editMessage(args: unknown): Promise<unknown>;
 
 	setReaction(emoji: string, messageId: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.react'>>>;
 

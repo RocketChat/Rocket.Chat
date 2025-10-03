@@ -3,7 +3,7 @@
 import { RestClient } from '@rocket.chat/api-client';
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
@@ -144,8 +144,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return this.rest.get('/v1/groups.info', args);
 	}
 
-	editMessage(args: OperationParams<'POST', '/v1/chat.update'>): Promise<Serialized<OperationResult<'POST', '/v1/chat.update'>>> {
-		return this.rest.post('/v1/chat.update', args);
+	editMessage(args: unknown): Promise<Serialized<unknown>> {
+		return this.rest.post('/v1/chat.update' as any, args);
 	}
 
 	setReaction(emoji: string, messageId: string): Promise<Serialized<OperationResult<'POST', '/v1/chat.react'>>> {

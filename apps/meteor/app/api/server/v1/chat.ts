@@ -1,12 +1,11 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
-	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
@@ -210,6 +209,48 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type ChatUpdate = {
+	roomId: IRoom['_id'];
+	msgId: string;
+	text: string;
+	previewUrls?: string[];
+	customFields: IMessage['customFields'];
+};
+
+const ChatUpdateSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				text: {
+					type: 'string',
+				},
+				previewUrls: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+			required: ['roomId', 'msgId', 'text'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -281,6 +322,64 @@ const chatEndpoints = API.v1
 			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.update',
+		{
+			authRequired: true,
+			body: isChatUpdateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.msgId);
+
+			// Ensure the message exists
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			}
+
+			if (this.bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			const msgFromBody = this.bodyParams.text;
+
+			// Permission checks are already done in the updateMessage method, so no need to duplicate them
+			await applyAirGappedRestrictionsValidation(() =>
+				executeUpdateMessage(
+					this.userId,
+					{
+						_id: msg._id,
+						msg: msgFromBody,
+						rid: msg.rid,
+						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
+					},
+					this.bodyParams.previewUrls,
+				),
+			);
+
+			const updatedMessage = await Messages.findOneById(msg._id);
+			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+			return API.v1.success({
+				message,
+			});
 		},
 	);
 
@@ -417,48 +516,6 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.update',
-	{ authRequired: true, validateParams: isChatUpdateProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId);
-
-			// Ensure the message exists
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			const msgFromBody = this.bodyParams.text;
-
-			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() =>
-				executeUpdateMessage(
-					this.userId,
-					{
-						_id: msg._id,
-						msg: msgFromBody,
-						rid: msg.rid,
-						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
-					},
-					this.bodyParams.previewUrls,
-				),
-			);
-
-			const updatedMessage = await Messages.findOneById(msg._id);
-			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
-
-			return API.v1.success({
-				message,
-			});
 		},
 	},
 );

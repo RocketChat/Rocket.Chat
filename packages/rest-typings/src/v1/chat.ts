@@ -430,44 +430,6 @@ const ChatSearchSchema = {
 
 export const isChatSearchProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
-type ChatUpdate = {
-	roomId: IRoom['_id'];
-	msgId: string;
-	text: string;
-	previewUrls?: string[];
-	customFields: IMessage['customFields'];
-};
-
-const ChatUpdateSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		msgId: {
-			type: 'string',
-		},
-		text: {
-			type: 'string',
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		customFields: {
-			type: 'object',
-			nullable: true,
-		},
-	},
-	required: ['roomId', 'msgId', 'text'],
-	additionalProperties: false,
-};
-
-export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
-
 type ChatGetMessageReadReceipts = {
 	messageId: IMessage['_id'];
 };
@@ -955,11 +917,6 @@ export type ChatEndpoints = {
 	'/v1/chat.search': {
 		GET: (params: ChatSearch) => {
 			messages: IMessage[];
-		};
-	};
-	'/v1/chat.update': {
-		POST: (params: ChatUpdate) => {
-			message: IMessage;
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {

@@ -7,8 +7,8 @@ export const useRedirectToSetupWizard = (): void => {
 	const router = useRouter();
 	const isAdmin = useRole('admin');
 
-	const isWizardInProgress = userId && isAdmin && setupWizardState === 'in_progress';
-	const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
+	const isWizardInProgress = userId && isAdmin && setupWizardState === 'in_p';
+	const mustRedirect = (!userId && setupWizardState === 'pen') || isWizardInProgress;
 	useEffect(() => {
 		if (mustRedirect) {
 			router.navigate('/setup-wizard');
