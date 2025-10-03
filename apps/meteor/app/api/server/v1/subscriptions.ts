@@ -161,11 +161,11 @@ const subscriptionsEndpoints = API.v1.get(
 										type: 'array',
 										items: { type: 'string' },
 									},
-									department: { type: 'object' },
+									department: {},
 									desktopPrefOrigin: { type: 'string', enum: ['subscription', 'user'] },
 									mobilePrefOrigin: { type: 'string', enum: ['subscription', 'user'] },
 									emailPrefOrigin: { type: 'string', enum: ['subscription', 'user'] },
-									customFields: { type: 'object' },
+									customFields: {},
 									oldRoomKeys: {
 										type: 'array',
 										items: {
