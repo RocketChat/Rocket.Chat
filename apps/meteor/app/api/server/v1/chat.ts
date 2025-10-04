@@ -227,10 +227,10 @@ interface IChatUpdateEncrypted extends IChatUpdateBase {
 
 type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
 
-const ChatUpdateSchema = {
-	type: 'object',
+const ChatUpdateSchema: JSONSchemaType<ChatUpdate> = {
 	oneOf: [
 		{
+			type: 'object',
 			properties: {
 				roomId: {
 					type: 'string',
@@ -257,6 +257,7 @@ const ChatUpdateSchema = {
 			additionalProperties: false,
 		},
 		{
+			type: 'object',
 			properties: {
 				roomId: {
 					type: 'string',
@@ -283,10 +284,9 @@ const ChatUpdateSchema = {
 			additionalProperties: false,
 		},
 	],
-	required: [],
-} as const satisfies JSONSchemaType<ChatUpdate>;
+};
 
-export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
+export const isChatUpdateProps = ajv.compile(ChatUpdateSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -402,7 +402,6 @@ const chatEndpoints = API.v1
 				await applyAirGappedRestrictionsValidation(() =>
 					executeUpdateMessage(this.userId, {
 						_id: msg._id,
-						msg: '',
 						rid: msg.rid,
 						content: bodyParams.content,
 					}),
