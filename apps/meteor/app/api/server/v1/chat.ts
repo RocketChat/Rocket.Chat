@@ -397,7 +397,8 @@ const chatEndpoints = API.v1
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			const updateData: Parameters<typeof executeUpdateMessage>[1] =
+			const updateData: Parameters<typeof executeUpdateMessage> = [
+				this.userId,
 				'content' in bodyParams
 					? {
 							_id: msg._id,
@@ -409,12 +410,12 @@ const chatEndpoints = API.v1
 							rid: msg.rid,
 							msg: bodyParams.text,
 							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
-						};
-
-			const previewUrls = 'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined;
+						},
+				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
+			];
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(this.userId, updateData, previewUrls));
+			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(...updateData));
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
