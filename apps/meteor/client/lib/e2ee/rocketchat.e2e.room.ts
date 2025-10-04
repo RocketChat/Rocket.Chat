@@ -257,10 +257,10 @@ export class E2ERoom extends Emitter {
 					...key,
 					E2EKey: k,
 				});
-			} catch (e) {
-				span.set('error', e);
+			} catch (error) {
 				span.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+					error,
 				);
 				keys.push({ ...key, E2EKey: null });
 			}
@@ -364,8 +364,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportSessionKey(key: string) {
-		const span = log.span('exportSessionKey').set('key', key);
-		// The length of a base64 encoded block of 256 bytes is always 344 characters
+		const span = log.span('exportSessionKey');
 		const [prefix, decodedKey] = decodePrefixedBase64(key);
 
 		span.set('prefix', prefix);
@@ -628,10 +627,10 @@ export class E2ERoom extends Emitter {
 				iv: Base64.encode(iv),
 				ciphertext: Base64.encode(ciphertext),
 			};
-			span.set('ciphertext', ciphertext).info('message encrypted');
+			span.info('message encrypted');
 			return encryptedData;
 		} catch (error) {
-			span.set('error', error).error('Error encrypting message');
+			span.error('Error encrypting message', error);
 			throw error;
 		}
 	}

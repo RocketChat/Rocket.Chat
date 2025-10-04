@@ -687,7 +687,7 @@ class E2E extends Emitter {
 	}
 
 	async decryptPinnedMessage(message: IE2EEPinnedMessage) {
-		const span = log.span('decryptPinnedMessage').set('message', message);
+		const span = log.span('decryptPinnedMessage');
 		const [pinnedMessage] = message.attachments;
 
 		if (!pinnedMessage) {
@@ -703,8 +703,6 @@ class E2E extends Emitter {
 		}
 
 		const data = await e2eRoom.decrypt(pinnedMessage.content);
-
-		span.set('data', data);
 
 		// TODO(@cardoso): review backward compatibility
 		message.attachments[0].text = data.msg;

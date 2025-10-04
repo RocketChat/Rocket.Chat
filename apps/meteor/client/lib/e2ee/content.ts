@@ -63,6 +63,6 @@ export const decodeEncryptedContent = (payload: string | EncryptedContent): Deco
 		case 'rc.v2.aes-sha2':
 			return decodeV2EncryptedContent(payload);
 		default:
-			throw new Error(`Unsupported encryption algorithm: ${payload}`);
+			throw new Error('Unsupported algorithm');
 	}
 };

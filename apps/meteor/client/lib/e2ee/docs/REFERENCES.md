@@ -1,4 +1,0 @@
-- [RFC7696](https://datatracker.ietf.org/doc/html/rfc7696/)
-- [RFC8152](https://datatracker.ietf.org/doc/html/rfc8152/)
-- [RFC8452](https://datatracker.ietf.org/doc/html/rfc8452/)
-- [RFC9709](https://datatracker.ietf.org/doc/html/rfc9709/)
