@@ -397,38 +397,24 @@ const chatEndpoints = API.v1
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if ('content' in bodyParams) {
-				// Permission checks are already done in the updateMessage method, so no need to duplicate them
-				await applyAirGappedRestrictionsValidation(() =>
-					executeUpdateMessage(this.userId, {
-						_id: msg._id,
-						rid: msg.rid,
-						content: bodyParams.content,
-					}),
-				);
+			const updateData: Parameters<typeof executeUpdateMessage>[1] =
+				'content' in bodyParams
+					? {
+							_id: msg._id,
+							rid: msg.rid,
+							content: bodyParams.content,
+						}
+					: {
+							_id: msg._id,
+							rid: msg.rid,
+							msg: bodyParams.text,
+							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+						};
 
-				const updatedMessage = await Messages.findOneById(msg._id);
-				const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
-
-				return API.v1.success({
-					message,
-				});
-			}
-			const msgFromBody = bodyParams.text;
+			const previewUrls = 'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined;
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() =>
-				executeUpdateMessage(
-					this.userId,
-					{
-						_id: msg._id,
-						msg: msgFromBody,
-						rid: msg.rid,
-						...(bodyParams.customFields && { customFields: bodyParams.customFields }),
-					},
-					bodyParams.previewUrls,
-				),
-			);
+			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(this.userId, updateData, previewUrls));
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
