@@ -1,6 +1,6 @@
 import type { cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
-import type { CSSProperties, ReactNode } from 'react';
+import type { ComponentProps, CSSProperties, ReactNode } from 'react';
 
 import { UserCardInfo } from '../../../components/UserCard';
 
@@ -8,7 +8,7 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-type InfoProps = {
+type InfoProps = Omit<ComponentProps<typeof UserCardInfo>, 'className' | 'style' | 'children'> & {
 	className?: string | cssFn;
 	style?: CSSProperties;
 	children?: ReactNode;

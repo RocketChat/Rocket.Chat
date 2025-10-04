@@ -1,14 +1,12 @@
 import { SidepanelList } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ForwardedRef, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Components } from 'react-virtuoso';
 
-import { useSidebarListNavigation } from '../../../sidebar/RoomList/useSidebarListNavigation';
+import { useSidebarListNavigation } from '../sidebar/RoomList/useSidebarListNavigation';
 
-type SidepanelListWrapperProps = HTMLAttributes<HTMLDivElement>;
-
-const SidepanelListWrapper = forwardRef(function SidepanelListWrapper(props: SidepanelListWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
+const SidepanelListWrapper: Components['List'] = forwardRef(function SidepanelListWrapper(props, ref) {
 	const { t } = useTranslation();
 	const { sidebarListRef } = useSidebarListNavigation();
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);
