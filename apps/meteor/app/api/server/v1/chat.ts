@@ -223,6 +223,7 @@ interface IChatUpdateText extends IChatUpdateBase {
 
 interface IChatUpdateEncrypted extends IChatUpdateBase {
 	content: Required<IMessage>['content'];
+	e2eMentions?: IMessage['e2eMentions'];
 }
 
 type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
@@ -278,6 +279,24 @@ const ChatUpdateSchema: JSONSchemaType<ChatUpdate> = {
 					},
 					required: ['algorithm', 'ciphertext'],
 					additionalProperties: false,
+				},
+				e2eMentions: {
+					type: 'object',
+					properties: {
+						e2eUserMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+						e2eChannelMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+					},
+					required: [],
+					additionalProperties: false,
+					nullable: true,
 				},
 			},
 			required: ['roomId', 'msgId', 'content'],
@@ -404,6 +423,7 @@ const chatEndpoints = API.v1
 							_id: msg._id,
 							rid: msg.rid,
 							content: bodyParams.content,
+							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
 						}
 					: {
 							_id: msg._id,

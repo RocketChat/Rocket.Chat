@@ -190,6 +190,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 						msgId: message._id,
 						roomId: message.rid,
 						content: message.content,
+						e2eMentions: message.e2eMentions,
 					},
 		);
 	};
