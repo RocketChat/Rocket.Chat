@@ -24,10 +24,22 @@ const split = <T extends ISlice>(data: T, index: number): [T, T] => [data.slice(
  * @param payload The encrypted content string.
  * @returns An object containing the key ID (kid), initialization vector (iv), and ciphertext.
  */
-const decodeV1EncryptedContent = (payload: Extract<EncryptedContent, { algorithm: 'rc.v1.aes-sha2' }>): DecodedContent => {
+const decodeV1EncryptedContent = (
+	payload: Omit<Extract<EncryptedContent, { algorithm: 'rc.v1.aes-sha2' }>, 'algorithm'>,
+): DecodedContent => {
+	if (payload.ciphertext.length < 12) {
+		throw new Error('Invalid v1 ciphertext: too short for kid extraction');
+	}
+
 	const [kid, base64] = split(payload.ciphertext, 12);
 	const decoded = Base64.decode(base64);
+
+	if (decoded.length < 16) {
+		throw new Error('Invalid v1 ciphertext: too short for iv extraction');
+	}
+
 	const [iv, ciphertext] = split(decoded, 16);
+
 	return {
 		kid,
 		iv,
@@ -46,6 +58,14 @@ const decodeV2EncryptedContent = (payload: Extract<EncryptedContent, { algorithm
 	return { kid: payload.kid, iv, ciphertext };
 };
 
+export const normalizePayload = (payload: string | EncryptedContent): EncryptedContent => {
+	if (typeof payload === 'string') {
+		return { algorithm: 'rc.v1.aes-sha2', ciphertext: payload } as const;
+	}
+
+	return payload;
+};
+
 /**
  * Parses encrypted content from either a string or an object and decodes it into its components.
  * @param payload The encrypted content, either as a string or an object.
@@ -53,16 +73,16 @@ const decodeV2EncryptedContent = (payload: Extract<EncryptedContent, { algorithm
  * @throws Will throw an error if the encryption algorithm is unsupported.
  */
 export const decodeEncryptedContent = (payload: string | EncryptedContent): DecodedContent => {
-	if (typeof payload === 'string') {
-		payload = { algorithm: 'rc.v1.aes-sha2', ciphertext: payload } as const;
-	}
+	payload = normalizePayload(payload);
 
-	switch (payload.algorithm) {
+	const { algorithm } = payload;
+
+	switch (algorithm) {
 		case 'rc.v1.aes-sha2':
 			return decodeV1EncryptedContent(payload);
 		case 'rc.v2.aes-sha2':
 			return decodeV2EncryptedContent(payload);
 		default:
-			throw new Error('Unsupported algorithm');
+			throw new Error(`Unsupported encryption algorithm: ${algorithm}`);
 	}
 };
