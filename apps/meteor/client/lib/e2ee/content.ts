@@ -53,6 +53,10 @@ const decodeV1EncryptedContent = (
  * @returns An object containing the key ID (kid), initialization vector (iv), and ciphertext.
  */
 const decodeV2EncryptedContent = (payload: Extract<EncryptedContent, { algorithm: 'rc.v2.aes-sha2' }>): DecodedContent => {
+	if (!payload.kid || !payload.iv || !payload.ciphertext) {
+		throw new Error('Invalid v2 payload: kid, iv, and ciphertext must be non-empty');
+	}
+
 	const iv = Base64.decode(payload.iv);
 	const ciphertext = Base64.decode(payload.ciphertext);
 	return { kid: payload.kid, iv, ciphertext };
