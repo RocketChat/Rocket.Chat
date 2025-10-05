@@ -5,7 +5,7 @@ import * as path from 'path';
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
-import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -54,7 +54,7 @@ export const test = baseTest.extend<BaseTest>({
 
 		await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
 			if (coverageJSON) {
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${uuid()}.json`), coverageJSON);
+				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
 			}
 		});
 

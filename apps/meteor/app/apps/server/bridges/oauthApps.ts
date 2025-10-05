@@ -4,7 +4,7 @@ import { OAuthAppsBridge } from '@rocket.chat/apps-engine/server/bridges/OAuthAp
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class AppOAuthAppsBridge extends OAuthAppsBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -25,7 +25,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		return (
 			await OAuthApps.insertOne({
 				...oAuthApp,
-				_id: uuidv4(),
+				_id: randomUUID(),
 				appId,
 				clientId: clientId ?? Random.id(),
 				clientSecret: clientSecret ?? Random.secret(),
