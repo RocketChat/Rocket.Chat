@@ -1,5 +1,4 @@
 import { Abac } from '@rocket.chat/core-services';
-import { Settings } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import {
