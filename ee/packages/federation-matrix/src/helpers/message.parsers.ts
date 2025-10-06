@@ -1,5 +1,6 @@
 import type { EventID, HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
 
 type MatrixMessageContent = HomeserverEventSignatures['homeserver.matrix.message']['content'] & { format?: string };
 
@@ -21,8 +22,7 @@ const REGEX = {
 const escapeHtml = (text: string): string =>
 	text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c] || c);
 
-const stripHtml = (html: string, keep: string[] = []): string =>
-	keep.includes('a') ? html.replace(/<(?!\/?a\b)[^>]+>/gi, '') : html.replace(/<[^>]+>/g, '');
+const stripHtml = (html: string, keep: string[] = []): string => sanitizeHtml(html, { allowedTags: keep.includes('a') ? ['a'] : [] });
 
 const createMentionHtml = (id: string): string => `<a href="${MATRIX_TO_URL}${id}">${id}</a>`;
 
