@@ -86,6 +86,7 @@ export class UserActorSignalProcessor {
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
 		// 3. the call has not been accepted yet and the signal came from a valid session from the callee
+		// 4. It's a hangup request with reason = 'another-client' and the request came from any valid client of either user
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
