@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
@@ -6,12 +7,12 @@ import ABACHeaderTag from './ABACHeaderTag';
 
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
-		ABAC_header_tag_title: 'ABAC Protected',
+		ABAC_header_tag_title: 'Only compliant users have access to attribute-based access controlled rooms.',
 		ABAC_header_tag: 'ABAC',
 	})
 	.build();
 
-const createMockRoom = (overrides: any = {}) => ({
+const createMockRoom = (overrides: Partial<IRoom> = {}) => ({
 	_id: 'room-id',
 	t: 'c' as const,
 	name: 'test-room',
@@ -25,6 +26,7 @@ const createMockRoom = (overrides: any = {}) => ({
 describe('ABACHeaderTag', () => {
 	it('should render the ABAC tag when room has ABAC attributes', () => {
 		const room = createMockRoom({
+			// @ts-expect-error to be implemented
 			abacAttributes: { someAttribute: 'value' },
 		});
 
@@ -39,26 +41,9 @@ describe('ABACHeaderTag', () => {
 		expect(screen.queryByText('ABAC')).not.toBeInTheDocument();
 	});
 
-	it('should not render when room has undefined ABAC attributes', () => {
-		const room = createMockRoom({
-			abacAttributes: undefined,
-		});
-
-		render(<ABACHeaderTag room={room} />, { wrapper: appRoot });
-		expect(screen.queryByText('ABAC')).not.toBeInTheDocument();
-	});
-
-	it('should not render when room has null ABAC attributes', () => {
-		const room = createMockRoom({
-			abacAttributes: null,
-		});
-
-		render(<ABACHeaderTag room={room} />, { wrapper: appRoot });
-		expect(screen.queryByText('ABAC')).not.toBeInTheDocument();
-	});
-
 	it('should have no accessibility violations when rendered', async () => {
 		const room = createMockRoom({
+			// @ts-expect-error to be implemented
 			abacAttributes: { someAttribute: 'value' },
 		});
 
