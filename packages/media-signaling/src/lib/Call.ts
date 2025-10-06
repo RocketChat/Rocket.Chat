@@ -523,6 +523,12 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
+		// If the hangup was requested by the user but the call is not happening here, send an 'another-client' hangup request to the server and wait for the server to hangup the call
+		if (reason === 'normal' && this.contractState === 'ignored') {
+			this.config.transporter.hangup(this.callId, 'another-client');
+			return;
+		}
+
 		if (this.hidden) {
 			return;
 		}

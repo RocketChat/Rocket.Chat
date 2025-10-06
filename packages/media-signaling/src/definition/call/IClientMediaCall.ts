@@ -26,6 +26,7 @@ export type CallState =
 	| 'renegotiating' // a webrtc connection had been established before, but a new one is being negotiated
 	| 'hangup'; // call is over
 
+// Changes to this list must be reflected on the enum for clientMediaSignalHangupSchema too
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
 	| 'remote' // The client was told the call is over
@@ -38,7 +39,8 @@ export type CallHangupReason =
 	| 'media-error' // Hanging up because of an error setting up the media connection
 	| 'input-error' // Something wrong with the audio input track on the client
 	| 'error' // Hanging up because of an unidentified error
-	| 'unknown'; // One of the call's signed users reported they don't know this call
+	| 'unknown' // One of the call's signed users reported they don't know this call
+	| 'another-client'; // One of the call's users requested a hangup from a different client session than the one where the call is happening
 
 export type CallAnswer =
 	| 'accept' // actor accepts the call
