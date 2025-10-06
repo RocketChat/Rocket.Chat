@@ -308,6 +308,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(rid, next);
 	}
 
+	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
+		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+
+		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+		if (previous.some((a) => a.key === key)) {
+			throw new Error('error-duplicate-attribute-key');
+		}
+
+		if (previous.length >= 10) {
+			throw new Error('error-invalid-attribute-values');
+		}
+
+		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
+		await this.onRoomAttributesChanged(rid, updated?.abacAttributes || [...previous, { key, values }]);
+	}
+
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		const keyPattern = /^[A-Za-z0-9_-]+$/;
 		if (!keyPattern.test(key)) {
