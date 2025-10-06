@@ -438,7 +438,7 @@ interface IChatUpdate {
 interface IChatUpdateText extends IChatUpdate {
 	text: string;
 	previewUrls?: string[];
-	customFields: IMessage['customFields'];
+	customFields?: IMessage['customFields'];
 }
 
 interface IChatUpdateEncrypted extends IChatUpdate {
