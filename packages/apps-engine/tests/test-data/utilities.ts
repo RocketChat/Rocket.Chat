@@ -94,7 +94,9 @@ export class TestInfastructureSetup {
 				return {} as AppExternalComponentManager;
 			},
 			getOneById(appId: string): ProxiedApp {
-				return appId === 'failMePlease' ? undefined : TestData.getMockApp({ id: appId, name: 'testing' }, this);
+				return appId === 'failMePlease'
+					? undefined
+					: TestData.getMockApp({ info: { id: appId, name: 'testing' } } as IAppStorageItem, this);
 			},
 			getLogStorage(): AppLogStorage {
 				return new TestsAppLogStorage();
@@ -537,10 +539,12 @@ export class TestData {
 		return mock;
 	}
 
-	public static getMockApp({ id, name }: { id: string; name: string }, manager: AppManager): ProxiedApp {
+	public static getMockApp(storageItem: Partial<IAppStorageItem>, manager: AppManager): ProxiedApp {
+		const { id, name } = storageItem.info || { id: 'test-app', name: 'Test App' };
+
 		return new ProxiedApp(
 			manager,
-			{ id, status: AppStatus.AUTO_ENABLED, info: { id, name } } as IAppStorageItem,
+			{ id, status: AppStatus.AUTO_ENABLED, info: { id, name }, ...storageItem } as IAppStorageItem,
 			TestData.getMockRuntimeController(id),
 		);
 	}
