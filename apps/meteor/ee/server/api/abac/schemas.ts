@@ -166,6 +166,8 @@ const PostRoomAbacAttributesBody = {
 		attributes: {
 			type: 'object',
 			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
+			minProperties: 1,
+			maxProperties: MAX_ATTRIBUTE_VALUES,
 			additionalProperties: {
 				type: 'array',
 				items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
