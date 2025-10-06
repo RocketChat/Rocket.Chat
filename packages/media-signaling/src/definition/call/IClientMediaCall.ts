@@ -78,6 +78,7 @@ export interface IClientMediaCall {
 	busy: boolean;
 
 	contact: CallContact;
+	transferredBy: CallContact | null;
 
 	emitter: Emitter<CallEvents>;
 

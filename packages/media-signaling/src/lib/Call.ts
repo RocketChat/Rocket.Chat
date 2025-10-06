@@ -79,6 +79,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._contact || {};
 	}
 
+	private _transferredBy: CallContact | null;
+
+	public get transferredBy(): CallContact | null {
+		return this._transferredBy;
+	}
+
 	private _service: CallService | null;
 
 	public get service(): CallService | null {
@@ -201,6 +207,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.oldClientState = 'none';
 		this._ignored = false;
 		this._contact = null;
+		this._transferredBy = null;
 		this._service = null;
 	}
 
@@ -264,6 +271,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 
+		this._transferredBy = signal.transferredBy || null;
 		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
