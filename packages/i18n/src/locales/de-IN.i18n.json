@@ -1257,8 +1257,6 @@
   "FEDERATION_Domain": "Domain",
   "FEDERATION_Domain_Alert": "Nach dem Aktivieren dieser Funktion darf dieser Wert nicht geändert werden. Änderungen an der Domain können wir noch nicht verarbeiten.",
   "FEDERATION_Domain_Description": "Füge die Domäne hinzu, mit der dieser Server verlinkt werden soll - zum Beispiel: @ rocket.chat.",
-  "FEDERATION_Enabled": "Versuche, den Federation-Support zu integrieren. Um diesen Wert zu ändern, muss Rocket.Chat neu gestartet werden. ",
-  "FEDERATION_Enabled_Alert": "Federation-Support ist in Arbeit. Die Verwendung auf einem Produktionssystem wird derzeit nicht empfohlen.",
   "FEDERATION_Public_Key": "Öffentlicher Schüssel",
   "FEDERATION_Public_Key_Description": "Dies ist der Schlüssel, der mit den Peers geteilt werden muss.",
   "FEDERATION_Status": "Status",

@@ -42,10 +42,11 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 
 export async function createDirectRoom(
 	members: IUser[] | string[],
-	roomExtraData = {},
+	roomExtraData: Partial<IRoom> = {},
 	options: {
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
+		federatedRoomId?: string;
 	},
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
@@ -59,16 +60,16 @@ export async function createDirectRoom(
 		);
 	}
 
-	await callbacks.run('beforeCreateDirectRoom', members);
-
 	const membersUsernames: string[] = members
 		.map((member) => {
 			if (typeof member === 'string') {
-				return member.replace('@', '');
+				return member;
 			}
 			return member.username;
 		})
 		.filter(isTruthy);
+
+	await callbacks.run('beforeCreateDirectRoom', membersUsernames, roomExtraData);
 
 	const roomMembers: IUser[] = await Users.findUsersByUsernames(membersUsernames, {
 		projection: { _id: 1, name: 1, username: 1, settings: 1, customFields: 1 },
@@ -179,7 +180,11 @@ export async function createDirectRoom(
 	if (isNewRoom) {
 		const insertedRoom = await Rooms.findOneById(rid);
 
-		await callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
+		await callbacks.run('afterCreateDirectRoom', insertedRoom, {
+			members: roomMembers,
+			creatorId: options?.creator,
+			mrid: options?.federatedRoomId,
+		});
 
 		void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);
 	}

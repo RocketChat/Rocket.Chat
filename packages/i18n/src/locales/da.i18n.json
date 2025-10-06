@@ -1359,8 +1359,6 @@
   "FEDERATION_Domain": "Domæne",
   "FEDERATION_Domain_Alert": "Ændre ikke dette efter aktivering af funktionen. Vi kan ikke håndtere domæneændringer endnu.",
   "FEDERATION_Domain_Description": "Tilføj det domæne som denne server skal linkes til - for eksempel: @ rocket.chat.",
-  "FEDERATION_Enabled": "Forsøg på at integrere support for Federation.",
-  "FEDERATION_Enabled_Alert": "Support for Federation er ved at blive implementeret. Anvendelse på et produktionssystem anbefales ikke pt.",
   "FEDERATION_Public_Key": "Offentlig nøgle",
   "FEDERATION_Public_Key_Description": "Dette er den nøgle du skal dele med dine gruppe.",
   "FEDERATION_Status": "Status",
