@@ -904,10 +904,15 @@ export class AppManager {
 				}
 
 				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
+				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
 
-				return this.appMetadataStorage.updateMarketplaceInfo(appStorageItem._id, appStorageItem.marketplaceInfo);
+				return this.appMetadataStorage.updatePartialAndReturnDocument({
+					_id: appStorageItem._id,
+					marketplaceInfo: appStorageItem.marketplaceInfo,
+					signature: appStorageItem.signature,
+				});
 			}),
-		).catch();
+		).catch(() => {});
 
 		const queue = [] as Array<Promise<void>>;
 
@@ -928,7 +933,7 @@ export class AppManager {
 							return;
 						}
 
-						await this.purgeAppConfig(app);
+						await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 						return app.setStatus(AppStatus.INVALID_LICENSE_DISABLED);
 					})
