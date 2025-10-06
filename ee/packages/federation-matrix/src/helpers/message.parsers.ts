@@ -13,9 +13,9 @@ type MatrixEvent = {
 const MATRIX_TO_URL = 'https://matrix.to/#/';
 const MATRIX_QUOTE_TAGS = ['mx-reply', 'blockquote'];
 const REGEX = {
-	anchor: /<a\s+(?:[^>]*?\s+)?href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi,
-	externalUsers: /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm,
-	internalUsers: /(?:^|(?<=\s))@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm,
+	anchor: /<a\s+(?:[^>]*?\s+)?href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi, // <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>
+	externalUsers: /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm, // @username:server.com
+	internalUsers: /(?:^|(?<=\s))@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm, // @username
 	general: /(@all)|(@here)/gm,
 };
 
@@ -32,31 +32,44 @@ const extractMentions = (html: string, homeServerDomain: string, senderExternalI
 	extractAnchors(html)
 		.filter(({ href, text }) => href?.includes(MATRIX_TO_URL) && text)
 		.map(({ href, text }) => {
-			if (href.includes('@')) {
-				const [, username] = href.split('@');
-				const [, serverDomain] = username.split(':');
-				const localUsername = `@${username.split(':')[0]}`;
-				return {
-					mention: serverDomain === homeServerDomain ? localUsername : `@${username}`,
-					realName: senderExternalId === text ? localUsername : text,
-				};
+			const userMatch = href.match(/@([^:]+):(.+)/);
+			if (!userMatch) {
+				return { mention: '@all', realName: text };
 			}
-			return { mention: '@all', realName: text };
+
+			const [, usernameWithoutDomain, serverDomain] = userMatch;
+			const localUsername = `@${usernameWithoutDomain}`;
+			const fullUsername = `@${usernameWithoutDomain}:${serverDomain}`;
+			const mention = serverDomain === homeServerDomain ? localUsername : fullUsername;
+			const realName = senderExternalId === text ? localUsername : text;
+			return { mention, realName };
 		});
 
 const replaceMentions = (message: string, mentions: Array<{ mention: string; realName: string }>): string => {
 	if (!mentions.length) return message;
 
-	let result = message;
+	let parsedMessage = '';
+	let remaining = message;
+
 	for (const { mention, realName } of mentions) {
 		const regex = new RegExp(`(?<!\\w)${realName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!\\w)`);
-		if (result.includes(realName)) {
-			result = result.replace(regex, mention);
+		const position = remaining.search(regex);
+
+		if (position !== -1) {
+			parsedMessage += remaining.slice(0, position) + mention;
+			remaining = remaining.slice(position + realName.length);
 		} else if (realName.startsWith('!')) {
-			result = result.replace(/(?<!\w)@all(?!\w)/, mention);
+			const allRegex = /(?<!\w)@all(?!\w)/;
+			const allPosition = remaining.search(allRegex);
+			if (allPosition !== -1) {
+				parsedMessage += remaining.slice(0, allPosition) + mention;
+				remaining = remaining.slice(allPosition + 4); // length of '@all'
+			}
 		}
 	}
-	return result.trim();
+
+	parsedMessage += remaining;
+	return parsedMessage.trim();
 };
 
 const replaceWithMentionPills = async (message: string, regex: RegExp, createPill: (match: string) => string): Promise<string> => {
