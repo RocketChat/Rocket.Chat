@@ -5,35 +5,23 @@ import { createMiddleware } from 'hono/factory';
 
 import { isAuthenticatedMiddleware } from './isAuthenticated';
 
-function extractEntityId(params: { eventId?: string; mediaId?: string; roomId?: string }, entityType: 'event' | 'media' | 'room'): string {
+function extractEntityId(
+	params: { eventId?: string; mediaId?: string; roomId?: string },
+	entityType: 'event' | 'media' | 'room',
+): string | null {
 	if (entityType === 'room') {
-		const { roomId } = params;
-		if (!roomId) {
-			throw new Error('Room ID is required');
-		}
-
-		return roomId;
+		return params.roomId ?? null;
 	}
 
 	if (entityType === 'media') {
-		const { mediaId } = params;
-		if (!mediaId) {
-			throw new Error('Media ID is required');
-		}
-
-		return mediaId;
+		return params.mediaId ?? null;
 	}
 
 	if (entityType === 'event') {
-		const { eventId } = params;
-		if (!eventId) {
-			throw new Error('Event ID is required');
-		}
-
-		return eventId;
+		return params.eventId ?? null;
 	}
 
-	throw new Error('Invalid entity type');
+	return null;
 }
 
 const canAccessResource = (federationAuth: EventAuthorizationService, entityType: 'event' | 'media' | 'room') =>
@@ -48,11 +36,12 @@ const canAccessResource = (federationAuth: EventAuthorizationService, entityType
 			const eventId = c.req.param('eventId');
 			const roomId = c.req.param('roomId');
 
-			const resourceAccess = await federationAuth.canAccessResource(
-				entityType,
-				extractEntityId({ mediaId, eventId, roomId }, entityType),
-				authenticatedServer,
-			);
+			const resourceId = extractEntityId({ mediaId, eventId, roomId }, entityType);
+			if (!resourceId) {
+				return c.json({ errcode: 'M_INVALID_PARAM', error: `Missing required ${entityType} identifier` }, 400);
+			}
+
+			const resourceAccess = await federationAuth.canAccessResource(entityType, resourceId, authenticatedServer);
 			if (!resourceAccess) {
 				return c.json(
 					{
