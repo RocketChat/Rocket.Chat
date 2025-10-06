@@ -76,23 +76,25 @@ const CustomField = <T extends FieldValues>({
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
-					<FieldLabel htmlFor={fieldId} required={required}>
+					<FieldLabel is='span' id={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
 					</FieldLabel>
 					<FieldRow>
 						<Component
 							{...props}
 							{...field}
-							id={fieldId}
-							aria-describedby={`${fieldId}-error`}
+							aria-labelledby={fieldId}
+							aria-describedby={errorMessage && `${fieldId}-error`}
 							error={errorMessage}
 							options={selectOptions as SelectOption[]}
 							flexGrow={1}
 						/>
 					</FieldRow>
-					<FieldError aria-live='assertive' id={`${fieldId}-error`}>
-						{errorMessage}
-					</FieldError>
+					{errorMessage ? (
+						<FieldError aria-live='assertive' id={`${fieldId}-error`}>
+							{errorMessage}
+						</FieldError>
+					) : null}
 				</Field>
 			)}
 		/>
