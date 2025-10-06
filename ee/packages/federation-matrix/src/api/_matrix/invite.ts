@@ -351,17 +351,19 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 
 			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
 
-			setTimeout(
-				() => {
+			// we first return 200 and then we join the room
+			// this helps the other side giving extra time to store the invite event
+
+			c.env.res.on('finish', () => {
+				setTimeout(() => {
 					void startJoiningRoom({
 						inviteEvent,
 						user: ourUser,
 						room,
 						state,
 					});
-				},
-				inviteEvent.event.content.is_direct ? 2000 : 0,
-			);
+				}, 2000);
+			});
 
 			return {
 				body: {
