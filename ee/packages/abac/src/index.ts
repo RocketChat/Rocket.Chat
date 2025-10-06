@@ -227,6 +227,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private computeAttributesRemoval(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
+		if (!next.length) {
+			return previous.length > 0;
+		}
+
 		const newMap = new Map<string, Set<string>>(next.map((a) => [a.key, new Set(a.values)]));
 
 		for (const prev of previous) {
