@@ -168,9 +168,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
-		const self = this.getMyCallActor(call);
-		const contact = this.getOtherCallActor(call);
-
 		const transferredBy = getNewCallTransferredBy(call);
 
 		return {
@@ -179,8 +176,8 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			service: call.service,
 			kind: call.kind,
 			role: this.role,
-			self,
-			contact,
+			self: this.getMyCallActor(call),
+			contact: this.getOtherCallActor(call),
 			...(call.parentCallId && { replacingCallId: call.parentCallId }),
 			...(transferredBy && { transferredBy }),
 			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),
