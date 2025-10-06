@@ -102,9 +102,8 @@ const CustomField = <T extends FieldValues>({
 // eslint-disable-next-line react/no-multi-comp
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => (
 	<>
-		{metadata.map(({ name: fieldName, ...props }) => {
-			props.label = props.label ?? fieldName;
-			return <CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} {...props} />;
-		})}
+		{metadata.map(({ name: fieldName, label, ...props }) => (
+			<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label ?? fieldName} {...props} />
+		))}
 	</>
 );
