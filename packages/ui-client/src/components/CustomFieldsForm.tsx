@@ -64,6 +64,10 @@ const CustomField = <T extends FieldValues>({
 	const error = get(errors, name);
 	const errorMessage = useMemo(() => getErrorMessage(error), [error, getErrorMessage]);
 
+	if (!Component) {
+		return null;
+	}
+
 	return (
 		<Controller<T, any>
 			name={name}
