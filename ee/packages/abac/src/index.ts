@@ -363,7 +363,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
-		throw new Error('not implemented');
+		// Intentionally left blank for adding code later. For now, its no-op
 	}
 }
 
