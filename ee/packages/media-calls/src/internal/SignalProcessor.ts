@@ -86,8 +86,11 @@ export class GlobalSignalProcessor {
 			const role = isCaller ? 'caller' : 'callee';
 			const callActor = call[role];
 
+			// Hangup requests from different clients won't be coming from the signed client
+			const skipContractCheck = signal.type === 'hangup' && signal.reason === 'another-client';
+
 			// Ignore signals from different sessions if the actor is already signed
-			if (callActor.contractId && callActor.contractId !== signal.contractId) {
+			if (!skipContractCheck && callActor.contractId && callActor.contractId !== signal.contractId) {
 				return;
 			}
 
