@@ -25,7 +25,12 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			body: POSTRoomAbacAttributesBodySchema,
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
@@ -47,7 +52,12 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 		},
 		async function action() {
 			const { rid } = this.urlParams;
@@ -67,7 +77,12 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			license: ['abac'],
 			body: POSTSingleRoomAbacAttributeBodySchema,
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 		},
 		async function action() {
 			const { rid, key } = this.urlParams;
@@ -88,7 +103,12 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			body: PUTRoomAbacAttributeValuesBodySchema,
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
@@ -109,7 +129,12 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 		},
 		async function action() {
 			const { rid, key } = this.urlParams;
@@ -126,7 +151,12 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
 			query: GETAbacAttributesQuerySchema,
-			response: { 200: GETAbacAttributesResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GETAbacAttributesResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
@@ -154,7 +184,12 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			license: ['abac'],
 			body: POSTAbacAttributeDefinitionSchema,
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 		},
 		async function action() {
 			if (!settings.get('ABAC_Enabled')) {
@@ -173,7 +208,12 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			license: ['abac'],
 			body: PUTAbacAttributeUpdateBodySchema,
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 		},
 		async function action() {
 			const { _id } = this.urlParams;
@@ -191,7 +231,12 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GETAbacAttributeByIdResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GETAbacAttributeByIdResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
@@ -209,7 +254,12 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
@@ -227,7 +277,12 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
-			response: { 200: GETAbacAttributeIsInUseResponseSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			response: {
+				200: GETAbacAttributeIsInUseResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
 			license: ['abac'],
 		},
 		async function action() {
