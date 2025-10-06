@@ -82,7 +82,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 										return field;
 									}
 
-									const { value, title, ...rest } = field;
+									const { value = '', title = '', ...rest } = field;
 
 									return {
 										...rest,
