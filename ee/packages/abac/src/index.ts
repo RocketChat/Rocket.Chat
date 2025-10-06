@@ -245,14 +245,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
-		const keyPattern = /^[A-Za-z0-9_-]+$/;
-		if (!keyPattern.test(key)) {
-			throw new Error('error-invalid-attribute-key');
-		}
-		if (values.length > 10) {
-			throw new Error('error-invalid-attribute-values');
-		}
-
 		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
 		if (!room) {
 			throw new Error('error-room-not-found');
@@ -330,14 +322,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
-		const keyPattern = /^[A-Za-z0-9_-]+$/;
-		if (!keyPattern.test(key)) {
-			throw new Error('error-invalid-attribute-key');
-		}
-		if (values.length > 10) {
-			throw new Error('error-invalid-attribute-values');
-		}
-
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
