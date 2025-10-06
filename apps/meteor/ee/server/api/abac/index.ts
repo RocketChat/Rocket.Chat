@@ -11,6 +11,7 @@ import {
 	POSTAbacAttributeDefinitionSchema,
 	GETAbacAttributeIsInUseResponseSchema,
 	POSTRoomAbacAttributesBodySchema,
+	POSTSingleRoomAbacAttributeBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
 	GenericErrorSchema,
 } from './schemas';
@@ -41,6 +42,28 @@ const abacEndpoints = API.v1
 			}
 
 			await Abac.setRoomAbacAttributes(rid, attributes);
+			return API.v1.success();
+		},
+	)
+	// add an abac attribute by key
+	.post(
+		'abac/room/:rid/attributes/:key',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: POSTSingleRoomAbacAttributeBodySchema,
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+		},
+		async function action() {
+			const { rid, key } = this.urlParams;
+			const { values } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await Abac.addRoomAbacAttributeByKey(rid, key, values);
 			return API.v1.success();
 		},
 	)
