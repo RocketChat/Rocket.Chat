@@ -1,11 +1,12 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
+	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
@@ -32,7 +33,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { JSONSchemaType } from 'ajv';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
@@ -209,103 +209,6 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
-
-interface IChatUpdateBase {
-	roomId: IRoom['_id'];
-	msgId: string;
-}
-
-interface IChatUpdateText extends IChatUpdateBase {
-	text: string;
-	previewUrls?: string[];
-	customFields: IMessage['customFields'];
-}
-
-interface IChatUpdateEncrypted extends IChatUpdateBase {
-	content: Required<IMessage>['content'];
-	e2eMentions?: IMessage['e2eMentions'];
-}
-
-type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
-
-const ChatUpdateSchema: JSONSchemaType<ChatUpdate> = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-				},
-				msgId: {
-					type: 'string',
-				},
-				text: {
-					type: 'string',
-				},
-				previewUrls: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
-			required: ['roomId', 'msgId', 'text'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-				},
-				msgId: {
-					type: 'string',
-				},
-				content: {
-					type: 'object',
-					properties: {
-						algorithm: {
-							type: 'string',
-							enum: ['rc.v1.aes-sha2'],
-						},
-						ciphertext: {
-							type: 'string',
-						},
-					},
-					required: ['algorithm', 'ciphertext'],
-					additionalProperties: false,
-				},
-				e2eMentions: {
-					type: 'object',
-					properties: {
-						e2eUserMentions: {
-							type: 'array',
-							items: { type: 'string' },
-							nullable: true,
-						},
-						e2eChannelMentions: {
-							type: 'array',
-							items: { type: 'string' },
-							nullable: true,
-						},
-					},
-					required: [],
-					additionalProperties: false,
-					nullable: true,
-				},
-			},
-			required: ['roomId', 'msgId', 'content'],
-			additionalProperties: false,
-		},
-	],
-};
-
-export const isChatUpdateProps = ajv.compile(ChatUpdateSchema);
 
 const chatEndpoints = API.v1
 	.post(
