@@ -5,6 +5,7 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
+import { getNewCallTransferredBy } from '../../server/getNewCallTransferredBy';
 import { getMediaCallServer } from '../../server/injection';
 
 export class UserActorAgent extends BaseMediaCallAgent {
@@ -167,15 +168,21 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
+		const self = this.getMyCallActor(call);
+		const contact = this.getOtherCallActor(call);
+
+		const transferredBy = getNewCallTransferredBy(call);
+
 		return {
 			callId: call._id,
 			type: 'new',
 			service: call.service,
 			kind: call.kind,
 			role: this.role,
-			self: this.getMyCallActor(call),
-			contact: this.getOtherCallActor(call),
+			self,
+			contact,
 			...(call.parentCallId && { replacingCallId: call.parentCallId }),
+			...(transferredBy && { transferredBy }),
 			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),
 		};
 	}
