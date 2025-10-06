@@ -7,7 +7,7 @@ import UserCardABACAttributes from './UserCardABACAttributes';
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
 		ABAC_attributes: 'ABAC Attributes',
-		Attribute_based_access_control: 'Attribute-Based Access Control',
+		ABAC_Attributes_description: 'Attribute-Based Access Control',
 	})
 	.build();
 
