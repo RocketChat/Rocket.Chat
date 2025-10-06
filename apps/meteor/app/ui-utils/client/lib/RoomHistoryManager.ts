@@ -84,7 +84,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = randomUUID();
+			const requestId = crypto.randomUUID();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();
