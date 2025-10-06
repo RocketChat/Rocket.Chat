@@ -39,10 +39,10 @@ const UpdateAbacAttributeBody = {
 };
 
 export const PUTAbacAttributeUpdateBodySchema = ajv.compile<IAbacAttributeDefinition>(UpdateAbacAttributeBody);
-// Create an abac attribute using the IAbacAttributeDefintion type, create the ajv schemas
 
 const AbacAttributeDefinition = {
 	type: 'object',
+
 	properties: {
 		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: {
