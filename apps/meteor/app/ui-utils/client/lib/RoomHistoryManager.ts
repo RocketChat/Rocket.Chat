@@ -4,7 +4,6 @@ import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
-import { randomUUID } from 'crypto';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
