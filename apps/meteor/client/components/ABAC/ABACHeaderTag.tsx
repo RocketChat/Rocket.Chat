@@ -11,7 +11,6 @@ type ABACHeaderTagProps = {
 const ABACHeaderTag = ({ room }: ABACHeaderTagProps) => {
 	const { t } = useTranslation();
 
-	// @ts-expect-error to be implemented
 	if (!room.abacAttributes) {
 		return null;
 	}
