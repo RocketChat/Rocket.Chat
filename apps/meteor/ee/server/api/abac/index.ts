@@ -27,21 +27,36 @@ const abacEndpoints = API.v1
 			permissionsRequired: ['abac-management'],
 			body: POSTRoomAbacAttributesBodySchema,
 			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+			license: ['abac'],
 		},
 		async function action() {
 			const { rid } = this.urlParams;
 			const { attributes } = this.bodyParams;
 
-			// This endpoint could be called without a license
-			// If we use settings.get, it will return false because it's the "invalid value"
-			// So we get the real value from the setting
-			// But we only need to check the setting if the user is trying to set attributes
-			// If it's trying to remove attributes by setting an empty object, then we allow it
-			if (Object.keys(attributes).length && !(await Settings.getValueById('ABAC_Enabled'))) {
+			if (settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
 
+			// This is a replace-all operation
+			// IF you need fine grained, use the other endpoints for removing, editing & adding single attributes
 			await Abac.setRoomAbacAttributes(rid, attributes);
+			return API.v1.success();
+		},
+	)
+	.delete(
+		'abac/room/:rid/attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: { 200: GenericSuccessSchema, 401: validateUnauthorizedErrorResponse, 400: GenericErrorSchema },
+		},
+		async function action() {
+			const { rid } = this.urlParams;
+
+			// We don't need to check if ABAC is enabled to clear attributes
+			// Since we're always allowing this operation
+			// license check is also not required
+			await Abac.setRoomAbacAttributes(rid, {});
 			return API.v1.success();
 		},
 	)
