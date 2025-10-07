@@ -1,8 +1,3 @@
-import { findTags, findTagById } from './lib/tags';
-import { API } from '../../../../../app/api/server';
-import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-
 import {
 	isPOSTLivechatTagsRemoveParams,
 	POSTLivechatTagsRemoveSuccessResponse,
@@ -10,6 +5,11 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+
+import { findTags, findTagById } from './lib/tags';
+import { API } from '../../../../../app/api/server';
+import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
