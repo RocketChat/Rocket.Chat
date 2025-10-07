@@ -1,7 +1,20 @@
 {
 	"name": "@rocket.chat/media-signaling",
-	"version": "0.0.1",
-	"private": true,
+	"description": "Rocket.Chat signaling client for media calls",
+	"version": "0.1.0",
+	"license": "MIT",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat/#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/media-signaling"
+	},
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
