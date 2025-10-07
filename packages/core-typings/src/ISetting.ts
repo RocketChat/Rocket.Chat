@@ -167,7 +167,7 @@ export const isSettingAction = (setting: ISettingBase): setting is ISettingActio
 
 export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
 
-export const isSettingRange = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'range';
+export const isSettingRange = (setting: ISettingBase): setting is ISettingRange => setting.type === 'range';
 
 export interface ISettingStatistics {
 	account2fa?: boolean;
