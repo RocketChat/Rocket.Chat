@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import UserCardABACAttributes from './UserCardABACAttributes';
+import UserInfoABACAttributes from './UserInfoABACAttributes';
 
 const meta = {
-	component: UserCardABACAttributes,
+	component: UserInfoABACAttributes,
 	parameters: {
 		layout: 'centered',
 	},
@@ -27,7 +27,7 @@ const meta = {
 			);
 		},
 	],
-} satisfies Meta<typeof UserCardABACAttributes>;
+} satisfies Meta<typeof UserInfoABACAttributes>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

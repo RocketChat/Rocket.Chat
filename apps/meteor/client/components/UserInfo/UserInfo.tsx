@@ -22,8 +22,8 @@ import {
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
+import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
-import UserCardABACAttributes from '../UserCard/UserCardABACAttributes';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -190,7 +190,7 @@ const UserInfo = ({
 									title={t('ABAC_Attributes_description')}
 								/>
 							</InfoPanelLabel>
-							<UserCardABACAttributes abacAttributes={abacAttributes}></UserCardABACAttributes>
+							<UserInfoABACAttributes abacAttributes={abacAttributes}></UserInfoABACAttributes>
 						</InfoPanelField>
 					)}
 

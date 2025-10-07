@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`UserCardABACAttributes should render with multiple attributes 1`] = `
+exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
 <body>
   <div>
     <span
-      class="rcx-box rcx-box--full rcx-css-1vab7ss"
+      class="rcx-box rcx-box--full rcx-css-18c2fq0"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1i2tyln"

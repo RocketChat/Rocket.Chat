@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import UserCardABACAttributes from './UserCardABACAttributes';
+import UserInfoABACAttributes from './UserInfoABACAttributes';
 
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -11,10 +11,10 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-describe('UserCardABACAttributes', () => {
+describe('UserInfoABACAttributes', () => {
 	it('should render with multiple attributes', () => {
 		const attributes = ['Classified', 'Top Secret', 'Confidential'];
-		const { baseElement } = render(<UserCardABACAttributes abacAttributes={attributes} />, { wrapper: appRoot });
+		const { baseElement } = render(<UserInfoABACAttributes abacAttributes={attributes} />, { wrapper: appRoot });
 
 		expect(baseElement).toMatchSnapshot();
 		expect(screen.getByText('Classified')).toBeInTheDocument();
@@ -24,7 +24,7 @@ describe('UserCardABACAttributes', () => {
 
 	it('should have no accessibility violations with multiple attributes', async () => {
 		const attributes = ['Classified', 'Top Secret', 'Confidential'];
-		const { container } = render(<UserCardABACAttributes abacAttributes={attributes} />, { wrapper: appRoot });
+		const { container } = render(<UserInfoABACAttributes abacAttributes={attributes} />, { wrapper: appRoot });
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();

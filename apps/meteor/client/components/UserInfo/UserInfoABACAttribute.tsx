@@ -1,12 +1,12 @@
 import { Tag } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 
-type UserCardABACAttributeProps = {
+type UserInfoABACAttributeProps = {
 	attribute: string;
 };
 
-const UserCardABACAttribute = ({ attribute }: UserCardABACAttributeProps): ReactElement => {
+const UserInfoABACAttribute = ({ attribute }: UserInfoABACAttributeProps): ReactElement => {
 	return <Tag variant='secondary-warning' children={attribute} />;
 };
 
-export default UserCardABACAttribute;
+export default UserInfoABACAttribute;
