@@ -105,9 +105,9 @@ export const Default = () => (
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction id='magnifier' title='magnifier' icon='magnifier' />
-			<HeaderToolbarAction id='key' title='key' icon='key' />
-			<HeaderToolbarAction id='menu' title='menu' icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -130,9 +130,9 @@ export const WithBurger = () => (
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction id='magnifier' title='magnifier' icon='magnifier' />
-			<HeaderToolbarAction id='key' title='key' icon='key' />
-			<HeaderToolbarAction id='menu' title='menu' icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -150,16 +150,16 @@ export const WithActionBadge = () => (
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction id='call' title='call' icon='phone'>
+			<HeaderToolbarAction title='call' icon='phone'>
 				<HeaderToolbarActionBadge variant='primary'>1</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction id='disable' title='disable' icon='phone'>
+			<HeaderToolbarAction title='disable' icon='phone'>
 				<HeaderToolbarActionBadge variant='danger'>2</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction id='decline' title='decline' icon='phone'>
+			<HeaderToolbarAction title='decline' icon='phone'>
 				<HeaderToolbarActionBadge variant='warning'>99</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction id='menu' title='menu' icon='kebab' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -181,9 +181,9 @@ export const WithTopic = () => (
 				</HeaderContentRow>
 			</HeaderContent>
 			<HeaderToolbar>
-				<HeaderToolbarAction id='magnifier' title='magnifier' icon='magnifier' />
-				<HeaderToolbarAction id='key' title='key' icon='key' />
-				<HeaderToolbarAction id='menu' title='menu' icon='kebab' />
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
 			</HeaderToolbar>
 		</Header>
 	</>
@@ -205,9 +205,9 @@ export const WithAnnouncement = () => (
 				</HeaderContentRow>
 			</HeaderContent>
 			<HeaderToolbar>
-				<HeaderToolbarAction id='magnifier' title='magnifier' icon='magnifier' />
-				<HeaderToolbarAction id='key' title='key' icon='key' />
-				<HeaderToolbarAction id='menu' title='menu' icon='kebab' />
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
 			</HeaderToolbar>
 		</Header>
 		<AnnouncementBanner onClick={action('clicked')}>{room.announcement}</AnnouncementBanner>

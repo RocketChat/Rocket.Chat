@@ -28,7 +28,6 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					id={id}
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
