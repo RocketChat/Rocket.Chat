@@ -151,7 +151,7 @@ export type EventSignatures = {
 		scope?: string;
 	}): void;
 	'user.updateCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
-	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'user.activity'(data: { user: string; isTyping: boolean; roomId: string }): void;
 	'user.video-conference'(data: {
 		userId: IUser['_id'];
 		action: string;
