@@ -8,6 +8,7 @@
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.19",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
@@ -43,5 +44,8 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~"
+	},
+	"peerDependencies": {
+		"@rocket.chat/federation-sdk": "*"
 	}
 }
