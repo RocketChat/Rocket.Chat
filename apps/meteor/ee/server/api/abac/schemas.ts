@@ -1,8 +1,6 @@
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-// Removed AbacEndpoints import to avoid circular type reference (endpoints import these schemas)
-
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ATTRIBUTE_VALUES = 10;
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
