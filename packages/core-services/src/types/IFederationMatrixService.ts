@@ -1,4 +1,5 @@
 import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
+import type { EventID, PduForType } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
 	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
@@ -23,4 +24,5 @@ export interface IFederationMatrixService {
 	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
+	emitJoin(membershipEvent: PduForType<'m.room.member'>, eventId: EventID): Promise<void>;
 }

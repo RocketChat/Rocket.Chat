@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
 import type {
@@ -172,7 +172,7 @@ async function joinRoom({
 	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
-	const matrixRoom = await state.getFullRoomState2(inviteEvent.roomId);
+	const matrixRoom = await state.getLatestRoomState2(inviteEvent.roomId);
 	if (!matrixRoom) {
 		throw new Error('room not found not processing invite');
 	}
@@ -265,6 +265,10 @@ async function joinRoom({
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
+
+	for await (const event of matrixRoom.getMemberJoinEvents()) {
+		await FederationMatrix.emitJoin(event.event, event.eventId);
+	}
 }
 
 async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {
