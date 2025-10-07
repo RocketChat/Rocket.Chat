@@ -8,7 +8,6 @@ export const useRemoveTag = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	// const removeTag = useMethod('livechat:removeTag');
 	const removeTag = useEndpoint('POST', '/v1/livechat/tags.remove');
 	const queryClient = useQueryClient();
 	const router = useRouter();
