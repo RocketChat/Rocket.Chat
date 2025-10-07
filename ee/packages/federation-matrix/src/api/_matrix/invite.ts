@@ -182,7 +182,7 @@ async function joinRoom({
 	const isDM = inviteEvent.getContent<PduMembershipEventContent>().is_direct;
 
 	if (!isDM && !matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
-		throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
+		throw new Error('room is neither direct message - rocketchat is unable to join for now');
 	}
 
 	// need both the sender and the participating user to exist in the room
