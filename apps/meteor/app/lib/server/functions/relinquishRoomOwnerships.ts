@@ -1,3 +1,4 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Team } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
@@ -6,10 +7,7 @@ import { eraseTeam } from '../../../api/server/lib/eraseTeam';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
-const bulkRoomCleanUp = async (rids: string[], userId?: string) => {
-	// no bulk deletion for files
-	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
-
+const bulkTeamCleanup = async (rids: IRoom['_id'][], userId: string) => {
 	const rooms = await Rooms.findByIds(rids).toArray();
 
 	const teamsToRemove = rooms.filter((room) => room.teamMain);
@@ -36,6 +34,13 @@ const bulkRoomCleanUp = async (rids: string[], userId?: string) => {
 		teamPromises.push(promise);
 	});
 
+	await Promise.all(teamPromises);
+};
+
+const bulkRoomCleanUp = async (rids: string[], userId?: string) => {
+	// no bulk deletion for files
+	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
+
 	await Promise.all([
 		Subscriptions.removeByRoomIds(rids, {
 			async onTrash(doc) {
@@ -44,7 +49,7 @@ const bulkRoomCleanUp = async (rids: string[], userId?: string) => {
 		}),
 		Messages.removeByRoomIds(rids),
 		ReadReceipts.removeByRoomIds(rids),
-		...teamPromises,
+		...[userId && bulkTeamCleanup(rids, userId)],
 	]);
 
 	await Rooms.removeByIds(rids);
@@ -54,7 +59,7 @@ export const relinquishRoomOwnerships = async function (
 	userId: string,
 	subscribedRooms: SubscribedRoomsForUserWithDetails[],
 	removeDirectMessages = true,
-	deletedBy?: string,
+	deletedBy?: IUser['_id'],
 ): Promise<SubscribedRoomsForUserWithDetails[]> {
 	// change owners
 	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
