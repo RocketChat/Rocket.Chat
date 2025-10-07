@@ -37,7 +37,7 @@ const abacEndpoints = API.v1
 			const { rid } = this.urlParams;
 			const { attributes } = this.bodyParams;
 
-			if (settings.get('ABAC_Enabled')) {
+			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
 
