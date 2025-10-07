@@ -1,4 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+import { Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IMessage,
@@ -212,11 +213,15 @@ export async function saveRoomInfo(
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
 	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
 	if (!room.open) {
-		throw new Meteor.Error('room-closed');
+		throw new Meteor.Error('room-closed', 'Room closed');
 	}
 
 	if (room.onHold) {
 		throw new Meteor.Error('error-room-onHold');
+	}
+
+	if (!(await Omnichannel.isWithinMACLimit(room))) {
+		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
 	if (!room.servedBy) {
