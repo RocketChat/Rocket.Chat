@@ -986,13 +986,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		console.log('join emitting');
-
 		this.homeserverServices.emitter.emit('homeserver.matrix.membership', {
 			event_id: membershipEvent.eventId,
 			event: membershipEvent.event,
 			room_id: membershipEvent.roomId,
-			state_key: membershipEvent.stateKey as UserID,
+			state_key: membershipEvent.stateKey,
 			content: { membership: 'join' },
 			sender: membershipEvent.sender,
 			origin_server_ts: Date.now(),
