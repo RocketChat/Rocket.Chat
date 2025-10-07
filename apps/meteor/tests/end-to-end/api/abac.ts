@@ -408,7 +408,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	});
 
 	describe('Extended Validations & Edge Cases', () => {
-		let firstAttributeId: string;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		let secondAttributeId: string;
 		const firstKey = `${initialKey}_first`;
 		const secondKey = `${initialKey}_second`;
@@ -452,7 +452,6 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect((res) => {
 					const found = res.body.attributes.find((a: any) => a.key === firstKey);
 					expect(found).to.exist;
-					firstAttributeId = found._id;
 				});
 		});
 
