@@ -4,7 +4,9 @@ import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 
 export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove: IRoom['_id'][]) => {
-	const rooms: string[] = roomsToRemove.length ? await Team.getMatchingTeamRooms(team._id, roomsToRemove) : [];
+	const rooms: string[] = roomsToRemove.length
+		? (await Team.getMatchingTeamRooms(team._id, roomsToRemove)).filter((t) => t !== team.roomId)
+		: [];
 
 	// If we got a list of rooms to delete along with the team, remove them first
 	if (rooms.length) {
