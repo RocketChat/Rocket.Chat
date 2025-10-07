@@ -14,7 +14,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
-import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -334,7 +334,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
-		canAccessResourceMiddleware(federationAuth, 'room'),
+		isAuthenticatedMiddleware(federationAuth),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion } = await c.req.json();
