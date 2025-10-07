@@ -1,8 +1,10 @@
+import type { MessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { usePermalinkAction } from './usePermalinkAction';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { createFakeUser } from '../../../../tests/mocks/data';
 
 // Mock the getPermaLink function
@@ -26,7 +28,7 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-const createMockMessage = (overrides: any = {}): IMessage => ({
+const createMockMessage = (overrides: Partial<IMessage> = {}): IMessage => ({
 	_id: 'message-id',
 	rid: 'room-id',
 	msg: 'Test message',
@@ -34,29 +36,14 @@ const createMockMessage = (overrides: any = {}): IMessage => ({
 	u: { _id: 'user-id', username: 'testuser' },
 	_updatedAt: new Date(),
 	channels: [],
-	file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100 },
+	file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100, format: 'text/plain' },
 	mentions: [],
 	reactions: {},
 	starred: [],
-	t: 'msg',
-	_raw: {
-		_id: 'message-id',
-		rid: 'room-id',
-		msg: 'Test message',
-		ts: new Date(),
-		u: { _id: 'user-id', username: 'testuser' },
-		_updatedAt: new Date(),
-		channels: [],
-		file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100 },
-		mentions: [],
-		reactions: {},
-		starred: [],
-		t: 'msg',
-	},
 	...overrides,
 });
 
-const createMockRoom = (overrides: any = {}): IRoom => ({
+const createMockRoom = (overrides: Partial<IRoom> = {}): IRoom => ({
 	_id: 'room-id',
 	t: 'c' as const,
 	name: 'test-room',
@@ -73,10 +60,10 @@ describe('usePermalinkAction', () => {
 		const room = createMockRoom();
 		const config = {
 			id: 'permalink',
-			context: ['message', 'message-mobile'] as any,
-			type: 'communication' as any,
+			context: ['message', 'message-mobile'],
+			type: 'communication',
 			order: 0,
-		};
+		} as { context: MessageActionContext[]; order: number } & Pick<MessageActionConfig, 'id' | 'type'>;
 
 		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
 
@@ -95,15 +82,15 @@ describe('usePermalinkAction', () => {
 	it('should be disabled for encrypted messages', () => {
 		const message = createMockMessage({
 			t: 'e2e',
-			e2e: 'encrypted',
+			e2e: 'done',
 		});
 		const room = createMockRoom();
 		const config = {
 			id: 'permalink',
-			context: ['message', 'message-mobile'] as any,
-			type: 'communication' as any,
+			context: ['message', 'message-mobile'],
+			type: 'communication',
 			order: 0,
-		};
+		} as { context: MessageActionContext[]; order: number } & Pick<MessageActionConfig, 'id' | 'type'>;
 
 		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
 
@@ -124,14 +111,15 @@ describe('usePermalinkAction', () => {
 	it('should be disabled for ABAC rooms', () => {
 		const message = createMockMessage();
 		const room = createMockRoom({
+			// @ts-expect-error to be implemented
 			abacAttributes: { someAttribute: 'value' },
-		} as any);
+		});
 		const config = {
 			id: 'permalink',
-			context: ['message', 'message-mobile'] as any,
-			type: 'communication' as any,
+			context: ['message', 'message-mobile'],
+			type: 'communication',
 			order: 0,
-		};
+		} as { context: MessageActionContext[]; order: number } & Pick<MessageActionConfig, 'id' | 'type'>;
 
 		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
 
@@ -152,17 +140,18 @@ describe('usePermalinkAction', () => {
 	it('should be disabled for both encrypted messages and ABAC rooms', () => {
 		const message = createMockMessage({
 			t: 'e2e',
-			e2e: 'encrypted',
+			e2e: 'done',
 		});
 		const room = createMockRoom({
+			// @ts-expect-error to be implemented
 			abacAttributes: { someAttribute: 'value' },
-		} as any);
+		});
 		const config = {
 			id: 'permalink',
-			context: ['message', 'message-mobile'] as any,
-			type: 'communication' as any,
+			context: ['message', 'message-mobile'],
+			type: 'communication',
 			order: 0,
-		};
+		} as { context: MessageActionContext[]; order: number } & Pick<MessageActionConfig, 'id' | 'type'>;
 
 		const { result } = renderHook(() => usePermalinkAction(message, config, { room }), { wrapper: appRoot });
 
