@@ -6217,6 +6217,7 @@
   "error-invalid-user": "Invalid user",
   "error-invalid-username": "Invalid username",
   "error-invalid-value": "Invalid value",
+  "error-removing-tag": "Error removing tag",
   "error-invalid-webhook-response": "The webhook URL responded with a status other than 200",
   "error-license-user-limit-reached": "The maximum number of users has been reached.",
   "error-loading-extension-list": "Failed to load extension list",
