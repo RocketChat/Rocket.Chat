@@ -8,7 +8,7 @@
 		"@babel/preset-env": "~7.26.0",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.1.19",
+		"@rocket.chat/federation-sdk": "0.1.21",
 		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.14.0",
 		"@types/sanitize-html": "^2",

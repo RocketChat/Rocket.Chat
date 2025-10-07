@@ -14,7 +14,11 @@ export interface IFederationMatrixService {
 	kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 	updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void>;
 	updateRoomName(rid: string, displayName: string, user: IUser): Promise<void>;
-	updateRoomTopic(room: IRoomNativeFederated, topic: string, user: IUser): Promise<void>;
+	updateRoomTopic(
+		room: IRoomNativeFederated,
+		topic: string,
+		user: Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>,
+	): Promise<void>;
 	addUserRoleRoomScoped(
 		room: IRoomNativeFederated,
 		senderId: string,

@@ -847,14 +847,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		await this.homeserverServices.room.updateRoomName(roomIdSchema.parse(room.federation.mrid), displayName, userIdSchema.parse(userMui));
 	}
 
-	async updateRoomTopic(room: IRoomNativeFederated, topic: string, user: IUser): Promise<void> {
+	async updateRoomTopic(
+		room: IRoomNativeFederated,
+		topic: string,
+		user: Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>,
+	): Promise<void> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room topic update');
 
 			return;
 		}
 
-		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		const userMui = isUserNativeFederated(user) ? user.username : `@${user.username}:${this.serverName}`;
 
 		await this.homeserverServices.room.setRoomTopic(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(userMui), topic);
 	}
