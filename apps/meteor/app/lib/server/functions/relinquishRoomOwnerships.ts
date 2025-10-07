@@ -12,29 +12,22 @@ const bulkTeamCleanup = async (rids: IRoom['_id'][], userId: string) => {
 
 	const teamsToRemove = rooms.filter((room) => room.teamMain);
 	const teamIds = teamsToRemove.map((room) => room.teamId).filter((teamId) => teamId !== undefined);
-	const teamPromises: Promise<void>[] = [];
+	const uniqueTeamIds = [...new Set(teamIds)];
 
-	teamIds.forEach((teamId) => {
-		const promise = new Promise<void>(async (resolve) => {
-			const team = await Team.findOneById(teamId);
-
-			if (!team) {
-				throw new Error('error-team-not-found');
-			}
-
+	await Promise.all(
+		uniqueTeamIds.map(async (teamId) => {
 			if (!userId) {
 				throw new Error('error-user-not-found');
 			}
 
+			const team = await Team.findOneById(teamId);
+			if (!team) {
+				throw new Error('error-team-not-found');
+			}
+
 			await eraseTeam(userId, team, []);
-
-			resolve();
-		});
-
-		teamPromises.push(promise);
-	});
-
-	await Promise.all(teamPromises);
+		}),
+	);
 };
 
 const bulkRoomCleanUp = async (rids: string[], userId?: string) => {
