@@ -5861,6 +5861,7 @@
   "You_and_users_Reacted_with": "You and {{users}} reacted with {{emoji}}",
   "You_are_converting_team_to_channel": "You are converting this Team to a Channel.",
   "You_are_logged_in_as": "You are logged in as",
+  "You_are_not_allowed_to_see_this_message": "You are not allowed to see this message",
   "You_are_not_authorized_to_view_this_page": "You are not authorized to view this page.",
   "You_are_not_authorized_to_access_this_feature": "You are not authorized to access this feature.",
   "You_can_change_a_different_avatar_too": "You can override the avatar used to post from this integration.",
