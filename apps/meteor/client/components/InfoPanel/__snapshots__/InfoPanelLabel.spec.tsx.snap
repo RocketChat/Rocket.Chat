@@ -6,9 +6,7 @@ exports[`InfoPanelLabel should match snapshot for default label 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-f0ql1y"
     >
-      <span>
-        Default label content
-      </span>
+      Default label content
     </div>
   </div>
 </body>
@@ -20,9 +18,7 @@ exports[`InfoPanelLabel should match snapshot for label with title 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-css-f0ql1y"
     >
-      <span>
-        Label with info icon
-      </span>
+      Label with info icon
       <i
         aria-hidden="true"
         class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-1mno5tl"
