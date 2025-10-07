@@ -26,11 +26,10 @@ const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
 
 	return (
 		<>
-			{actions.map(({ id, icon, title, action, disabled, tooltip }, index) => (
+			{actions.map(({ id, icon, title, action, disabled, tooltip }) => (
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					index={index}
 					id={id}
 					icon={icon}
 					title={t(title)}

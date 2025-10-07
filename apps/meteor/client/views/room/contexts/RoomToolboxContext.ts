@@ -6,7 +6,6 @@ import type { ReactNode, ComponentProps, ComponentType } from 'react';
 
 export type RenderToolboxItemParams = RoomToolboxActionConfig & {
 	className?: ComponentProps<typeof Box>['className'];
-	index: number;
 	toolbox: RoomToolboxContextValue;
 };
 

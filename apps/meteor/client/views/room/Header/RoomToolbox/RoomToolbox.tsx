@@ -23,12 +23,11 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const showKebabMenu = hiddenActions.length > 0;
 
 	const renderDefaultToolboxItem = useEffectEvent(
-		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
+		({ id, className, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
 			return (
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					index={index}
 					id={id}
 					icon={icon}
 					title={t(title)}
@@ -41,12 +40,11 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 		},
 	);
 
-	const mapToToolboxItem = (action: RoomToolboxActionConfig, index: number) => {
+	const mapToToolboxItem = (action: RoomToolboxActionConfig) => {
 		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
 			...action,
 			action: action.action ?? (() => toolbox.openTab(action.id)),
 			className,
-			index,
 			toolbox,
 		});
 	};

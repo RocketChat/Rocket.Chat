@@ -45,11 +45,10 @@ export const useThreadRoomAction = () => {
 			icon: 'thread',
 			tabComponent: Threads,
 			order: 2,
-			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, disabled, action, tooltip }) => (
+			renderToolboxItem: ({ id, className, icon, title, toolbox: { tab }, disabled, action, tooltip }) => (
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					index={index}
 					id={id}
 					icon={icon}
 					title={t(title)}
