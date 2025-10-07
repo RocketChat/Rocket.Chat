@@ -8,11 +8,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
 	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
-		const keyPattern = /^[A-Za-z0-9_-]+$/;
-		if (!keyPattern.test(attribute.key)) {
-			throw new Error('error-invalid-attribute-key');
-		}
-
 		if (!attribute.values.length) {
 			throw new Error('error-invalid-attribute-values');
 		}
