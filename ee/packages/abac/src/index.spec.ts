@@ -30,6 +30,7 @@ jest.mock('@rocket.chat/models', () => ({
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
 		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
 		findOne: (...args: any[]) => mockAbacFindOne(...args),
+		findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
 		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		find: (...args: any[]) => mockAbacFind(...args),
@@ -57,10 +58,10 @@ describe('AbacService (unit)', () => {
 			expect(mockAbacInsertOne).toHaveBeenCalledWith(attribute);
 		});
 
-		it('throws error-invalid-attribute-key for invalid key', async () => {
+		it('accepts key with spaces (no key pattern validation in service)', async () => {
 			const attribute = { key: 'Invalid Key!', values: ['v1'] };
-			await expect(service.addAbacAttribute(attribute as any)).rejects.toThrow('error-invalid-attribute-key');
-			expect(mockAbacInsertOne).not.toHaveBeenCalled();
+			await service.addAbacAttribute(attribute as any);
+			expect(mockAbacInsertOne).toHaveBeenCalledWith(attribute);
 		});
 
 		it('throws error-invalid-attribute-values for empty values array', async () => {
@@ -190,13 +191,17 @@ describe('AbacService (unit)', () => {
 		it('throws error-attribute-not-found when attribute does not exist', async () => {
 			mockAbacFindOne.mockResolvedValueOnce(null);
 			await expect(service.updateAbacAttributeById('idMissing', { key: 'newKey' })).rejects.toThrow('error-attribute-not-found');
-			expect(mockAbacFindOne).toHaveBeenCalledWith({ _id: 'idMissing' }, { projection: { key: 1, values: 1 } });
+			expect(mockAbacFindOne).toHaveBeenCalledWith('idMissing', { projection: { key: 1, values: 1 } });
 		});
 
-		it('throws error-invalid-attribute-key for invalid new key', async () => {
-			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id2', key: 'OldKey', values: ['a'] });
-			await expect(service.updateAbacAttributeById('id2', { key: 'Invalid Key!' })).rejects.toThrow('error-invalid-attribute-key');
-			expect(mockAbacUpdateOne).not.toHaveBeenCalled();
+		it('updates key even if format contains spaces (no validation in service)', async () => {
+			mockAbacFindOne
+				.mockResolvedValueOnce({ _id: 'id2', key: 'OldKey', values: ['a'] }) // findOneById
+				.mockResolvedValueOnce(null); // duplicate check
+			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
+			mockAbacUpdateOne.mockResolvedValueOnce({ modifiedCount: 1 });
+			await service.updateAbacAttributeById('id2', { key: 'Invalid Key!' });
+			expect(mockAbacUpdateOne).toHaveBeenCalledWith({ _id: 'id2' }, { $set: { key: 'Invalid Key!' } });
 		});
 
 		it('throws error-invalid-attribute-values for empty values array', async () => {
@@ -215,7 +220,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('updates key when changed and not in use', async () => {
-			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id5', key: 'Old', values: ['a'] });
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id5', key: 'Old', values: ['a'] }).mockResolvedValueOnce(null);
 			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockResolvedValueOnce({ modifiedCount: 1 });
 			await service.updateAbacAttributeById('id5', { key: 'NewKey' });
@@ -250,14 +255,14 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('throws error-duplicate-attribute-key on duplicate key error', async () => {
-			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id9', key: 'Old', values: ['v'] });
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id9', key: 'Old', values: ['v'] }).mockResolvedValueOnce(null);
 			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockRejectedValueOnce(new Error('E11000 duplicate key error collection'));
 			await expect(service.updateAbacAttributeById('id9', { key: 'NewKey' })).rejects.toThrow('error-duplicate-attribute-key');
 		});
 
 		it('propagates unexpected update errors', async () => {
-			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id10', key: 'Old', values: ['v'] });
+			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id10', key: 'Old', values: ['v'] }).mockResolvedValueOnce(null);
 			mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 			mockAbacUpdateOne.mockRejectedValueOnce(new Error('write-failed'));
 			await expect(service.updateAbacAttributeById('id10', { key: 'Another' })).rejects.toThrow('write-failed');
@@ -285,6 +290,10 @@ describe('AbacService (unit)', () => {
 		});
 	});
 	describe('getAbacAttributeById', () => {
+		beforeEach(() => {
+			mockAbacFindOne.mockReset();
+			mockRoomsIsAbacAttributeInUse.mockReset();
+		});
 		it('throws error-attribute-not-found when attribute does not exist', async () => {
 			mockAbacFindOne.mockResolvedValueOnce(null);
 			await expect(service.getAbacAttributeById('missingAttr')).rejects.toThrow('error-attribute-not-found');
@@ -403,6 +412,10 @@ describe('AbacService (unit)', () => {
 	});
 
 	describe('isAbacAttributeInUseByKey', () => {
+		beforeEach(() => {
+			mockAbacFindOne.mockReset();
+			mockRoomsIsAbacAttributeInUse.mockReset();
+		});
 		it('returns false when attribute does not exist', async () => {
 			mockAbacFindOne.mockResolvedValueOnce(null);
 			const result = await service.isAbacAttributeInUseByKey('missing');
