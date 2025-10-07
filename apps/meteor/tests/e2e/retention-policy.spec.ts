@@ -137,7 +137,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.sidenav.openChat(targetTeam);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
-				await poHomeChannel.roomToolbar.openRoomInfo();
+				await poHomeChannel.roomToolbar.openTeamInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await expect(poHomeChannel.tabs.room.checkboxPruneMessages).toBeChecked();

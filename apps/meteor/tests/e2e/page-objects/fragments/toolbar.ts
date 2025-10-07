@@ -19,6 +19,10 @@ export class RoomToolbar extends Toolbar {
 		return this.root.getByRole('button', { name: 'Room Information' });
 	}
 
+	private get btnTeamInfo() {
+		return this.root.getByRole('button', { name: 'Team info' });
+	}
+
 	get btnMembers() {
 		return this.root.getByRole('button', { name: 'Members' });
 	}
@@ -77,6 +81,10 @@ export class RoomToolbar extends Toolbar {
 
 	async openRoomInfo() {
 		await this.btnRoomInfo.click();
+	}
+
+	async openTeamInfo() {
+		await this.btnTeamInfo.click();
 	}
 
 	async openMembersTab() {

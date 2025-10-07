@@ -156,7 +156,7 @@ test.describe.serial('teams-management', () => {
 
 	test('should set targetTeam as readonly', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
-		await poHomeTeam.roomToolbar.openRoomInfo();
+		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnEdit.click();
 		await poHomeTeam.tabs.room.advancedSettingsAccordion.click();
 		await poHomeTeam.tabs.room.checkboxReadOnly.click();
@@ -444,7 +444,7 @@ test.describe.serial('teams-management', () => {
 
 	test('should delete targetTeamNonPrivate', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
-		await poHomeTeam.roomToolbar.openRoomInfo();
+		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnMore.click();
 		await poHomeTeam.tabs.room.getMoreOption('Delete').click();
 		await expect(poHomeTeam.tabs.room.confirmDeleteTeamModal).toBeVisible();
@@ -460,7 +460,7 @@ test.describe.serial('teams-management', () => {
 		await user1Page.goto(`/group/${targetTeam}`);
 		await user1Channel.content.waitForChannel();
 
-		await user1Channel.roomToolbar.openRoomInfo();
+		await user1Channel.roomToolbar.openTeamInfo();
 		await user1Channel.tabs.room.btnLeave.click();
 		await expect(user1Channel.tabs.room.confirmLeaveModal).toBeVisible();
 
@@ -476,7 +476,7 @@ test.describe.serial('teams-management', () => {
 
 	test('should convert team into a channel', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
-		await poHomeTeam.roomToolbar.openRoomInfo();
+		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnMore.click();
 		await poHomeTeam.tabs.room.getMoreOption('Convert to Channel').click();
 		await expect(poHomeTeam.tabs.room.confirmConvertModal).toBeVisible();
