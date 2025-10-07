@@ -9,7 +9,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, getAllServices, roomIdSchema, userIdSchema } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, HomeserverServices, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type {
+	EventID,
+	UserID,
+	HomeserverServices,
+	FileMessageType,
+	PresenceState,
+	PersistentEventBase,
+	RoomVersion,
+} from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -970,5 +978,24 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 
 		return results;
+	}
+
+	async emitJoin(membershipEvent: PersistentEventBase<RoomVersion, 'm.room.member'>) {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping user role room scoped');
+			return;
+		}
+
+		console.log('join emitting');
+
+		this.homeserverServices.emitter.emit('homeserver.matrix.membership', {
+			event_id: membershipEvent.eventId,
+			event: membershipEvent.event,
+			room_id: membershipEvent.roomId,
+			state_key: membershipEvent.stateKey as UserID,
+			content: { membership: 'join' },
+			sender: membershipEvent.sender,
+			origin_server_ts: Date.now(),
+		});
 	}
 }
