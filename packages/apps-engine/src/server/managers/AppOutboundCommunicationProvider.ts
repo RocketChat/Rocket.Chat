@@ -45,4 +45,8 @@ export class OutboundMessageProvider {
 			throw new AppOutboundProcessError(e.message, method);
 		}
 	}
+
+	public setRegistered(registered: boolean): void {
+		this.isRegistered = registered;
+	}
 }
