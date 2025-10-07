@@ -47,6 +47,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const attributes = await cursor.toArray();
 
+		console.log(attributes, {
+			attributes,
+			offset,
+			count: attributes.length,
+		});
 		return {
 			attributes,
 			offset,
