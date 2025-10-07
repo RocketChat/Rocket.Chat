@@ -55,14 +55,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Resume"]');
 	}
 
-	get modalOnHold(): Locator {
-		return this.page.locator('[data-qa-id="on-hold-modal"]');
-	}
-
-	get btnOnHoldConfirm(): Locator {
-		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
-	}
-
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}

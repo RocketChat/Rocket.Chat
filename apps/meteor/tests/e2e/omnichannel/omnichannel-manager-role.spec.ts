@@ -136,8 +136,6 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
-			await expect(poOmnichannel.content.modalOnHold).toBeVisible();
-			await poOmnichannel.content.btnOnHoldConfirm.click();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
 				`Chat On Hold: The chat was manually placed On Hold by ${MANAGER}`,
 			);

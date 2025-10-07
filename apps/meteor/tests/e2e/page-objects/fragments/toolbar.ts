@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import type { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import { OmnichannelOnHoldModal } from './omnichannel-on-hold-modal';
 
 export abstract class Toolbar {
 	constructor(protected root: Locator) {}
@@ -125,9 +126,11 @@ export class OmnichannelRoomToolbar extends RoomToolbar {
 export class OmnichannelQuickActionsRoomToolbar extends Toolbar {
 	private closeChatModal: OmnichannelCloseChatModal;
 
+	private onHoldModal: OmnichannelOnHoldModal;
+
 	constructor(page: Page) {
 		super(page.getByRole('toolbar', { name: 'Omnichannel Quick Actions' }));
-		this.closeChatModal = new OmnichannelCloseChatModal(page);
+		this.onHoldModal = new OmnichannelOnHoldModal(page);
 	}
 
 	get btnOnHold(): Locator {
@@ -144,6 +147,7 @@ export class OmnichannelQuickActionsRoomToolbar extends Toolbar {
 
 	async placeChatOnHold() {
 		await this.btnOnHold.click();
+		await this.onHoldModal.confirm();
 	}
 
 	async forwardChat() {
