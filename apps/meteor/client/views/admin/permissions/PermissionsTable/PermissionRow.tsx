@@ -36,11 +36,12 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 	const { t } = useTranslation();
 	const { _id: permissionId, roles } = permission;
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId });
+	const permissionName = getName(t, permission);
 
 	return (
 		<GenericTableRow key={permissionId} role='link' action tabIndex={0}>
 			<GenericTableCell maxWidth='x300' withTruncatedText title={t(`${permissionId}_description` as TranslationKey)}>
-				{getName(t, permission)}
+				{permissionName}
 			</GenericTableCell>
 			{roleList.map(({ _id: roleId, name, description }) => (
 				<RoleCell
@@ -51,6 +52,7 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 					grantedRoles={roles}
 					onChange={changeRole}
 					permissionId={permissionId}
+					permissionName={permissionName}
 				/>
 			))}
 		</GenericTableRow>
