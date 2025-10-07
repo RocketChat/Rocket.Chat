@@ -30,12 +30,17 @@ export function room(emitter: Emitter<HomeserverEventSignatures>, services: Home
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
-		if (!localUserId) {
+		const localUser = await Users.findOneByUsername(userId, { projection: { _id: 1, federation: 1, federated: 1 } });
+		if (!localUser) {
 			throw new Error('mapped user not found');
 		}
 
-		await Room.saveRoomTopic(localRoomId._id, topic, { _id: localUserId._id, username: userId });
+		await Room.saveRoomTopic(localRoomId._id, topic, {
+			_id: localUser._id,
+			username: userId,
+			federation: localUser.federation,
+			federated: localUser.federated,
+		});
 	});
 
 	emitter.on('homeserver.matrix.room.role', async (data) => {

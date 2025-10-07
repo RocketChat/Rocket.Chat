@@ -203,7 +203,10 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
-	'afterRoomTopicChange': (params: undefined, { room, topic, user }: { room: IRoom; topic: string; user: IUser }) => void;
+	'afterRoomTopicChange': (
+		params: undefined,
+		{ room, topic, user }: { room: IRoom; topic: string; user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'> },
+	) => void;
 };
 
 export type Hook =
