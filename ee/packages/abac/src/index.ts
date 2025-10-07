@@ -65,11 +65,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-attribute-not-found');
 		}
 
-		const duplicated = update.key && (await AbacAttributes.findOne({ key: update.key, _id: { $ne: _id } }, { projection: { _id: 1 } }));
-		if (duplicated) {
-			throw new Error('error-duplicate-attribute-key');
-		}
-
 		if (update.values && !update.values.length) {
 			throw new Error('error-invalid-attribute-values');
 		}
