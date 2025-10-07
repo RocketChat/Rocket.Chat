@@ -180,20 +180,13 @@ const UserInfo = ({
 
 					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>
+							<InfoPanelLabel title={t('ABAC_Attributes_description')}>
 								{t('ABAC_Attributes')}
-								<Icon
-									name='info'
-									color={Palette.statusColor['status-font-on-info']}
-									mi={4}
-									size='x16'
-									title={t('ABAC_Attributes_description')}
-								/>
+								<Icon name='info' color={Palette.statusColor['status-font-on-info']} mi={4} size='x16' />
 							</InfoPanelLabel>
-							<UserInfoABACAttributes abacAttributes={abacAttributes}></UserInfoABACAttributes>
+							<UserInfoABACAttributes abacAttributes={abacAttributes} />
 						</InfoPanelField>
 					)}
-
 					{userCustomFields?.map(
 						(customField) =>
 							customField?.value && (
