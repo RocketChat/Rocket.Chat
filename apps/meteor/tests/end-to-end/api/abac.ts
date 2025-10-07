@@ -119,6 +119,8 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('POST should fail creating duplicate key', async () => {
+			const response = await request.get(`${v1}/abac/attributes`).set(credentials).expect(200);
+			console.log(response.attributes);
 			await request
 				.post(`${v1}/abac/attributes`)
 				.set(credentials)
