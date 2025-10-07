@@ -2904,6 +2904,7 @@
   "Language_Version": "English Version",
   "Language_setting_warning": "<strong>Server language setting does not affect user's client</strong><br/>Each user has their own preference for language, that will be kept if this setting is changed.",
   "Larger_amounts_of_active_connections": "For larger amounts of active connections you can consider our <1>multiple instance solutions</1>.",
+  "Last_role_in_permission_warning": "This is the last role with this permission. Removing it will soft-lock this page from the UI, requiring database access to revert it. Do you want to proceed?",
   "Last_5_minutes": "Last 5 minutes",
   "Last_15_minutes": "Last 15 minutes",
   "Last_30_minutes": "Last 30 minutes",

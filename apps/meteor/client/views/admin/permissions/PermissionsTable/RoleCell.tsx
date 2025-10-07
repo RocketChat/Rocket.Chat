@@ -1,10 +1,13 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { AuthorizationUtils } from '../../../../../app/authorization/lib';
+import { AuthorizationUtils, confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
 import { GenericTableCell } from '../../../../components/GenericTable';
 
 type RoleCellProps = {
@@ -17,20 +20,39 @@ type RoleCellProps = {
 };
 
 const RoleCell = ({ _id, name, description, onChange, permissionId, grantedRoles = [] }: RoleCellProps): ReactElement => {
+	const { t } = useTranslation();
+	const setModal = useSetModal();
 	const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));
 	const [loading, setLoading] = useState(false);
 
 	const isRestrictedForRole = AuthorizationUtils.isPermissionRestrictedForRole(permissionId, _id);
-	const isDisabledForRole = AuthorizationUtils.isPermissionDisabledForRole(permissionId, _id);
+	const shouldDisplayConfirmation = confirmationRequiredPermissions.includes(permissionId) && grantedRoles.length === 1 && granted;
 
-	const handleChange = useEffectEvent(async () => {
+	const handleChange = useEffectEvent(() => {
+		if (shouldDisplayConfirmation) {
+			const handleSubmit = () => {
+				handleConfirmChange();
+				setModal(null);
+			};
+
+			return setModal(
+				<GenericModal onConfirm={handleSubmit} onCancel={() => setModal(null)} confirmText={t('Remove')} variant='danger'>
+					{t('Last_role_in_permission_warning')}
+				</GenericModal>,
+			);
+		}
+
+		return handleConfirmChange();
+	});
+
+	const handleConfirmChange = useEffectEvent(async () => {
 		setLoading(true);
 		const result = await onChange(_id, granted);
 		setGranted(result);
 		setLoading(false);
 	});
 
-	const isDisabled = !!loading || !!isRestrictedForRole || !!isDisabledForRole;
+	const isDisabled = !!loading || !!isRestrictedForRole;
 
 	return (
 		<GenericTableCell withTruncatedText>
