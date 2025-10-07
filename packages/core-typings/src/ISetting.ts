@@ -24,13 +24,7 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export interface ISettingSlider extends Omit<ISettingBase, 'type'> {
-	type: 'slider';
-	minValue: number;
-	maxValue: number;
-}
-
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingSlider;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingRange;
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
@@ -54,7 +48,7 @@ export interface ISettingBase extends IRocketChatRecord {
 		| 'group'
 		| 'date'
 		| 'lookup'
-		| 'slider'
+		| 'range'
 		| 'timespan';
 	public: boolean;
 	env: boolean;
@@ -131,6 +125,7 @@ export interface ISettingAction extends ISettingBase {
 	value: string;
 	actionText?: string;
 }
+
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: { url?: string; defaultUrl?: string };
@@ -141,6 +136,12 @@ export interface ISettingAsset extends ISettingBase {
 export interface ISettingDate extends ISettingBase {
 	type: 'date';
 	value: Date;
+}
+
+export interface ISettingRange extends ISettingBase {
+	type: 'range';
+	minValue: number;
+	maxValue: number;
 }
 
 // Checks if setting has at least the required properties
@@ -165,6 +166,8 @@ export const isSettingCode = (setting: ISettingBase): setting is ISettingCode =>
 export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
 
 export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
+
+export const isSettingRange = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'range';
 
 export interface ISettingStatistics {
 	account2fa?: boolean;

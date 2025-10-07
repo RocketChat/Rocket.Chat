@@ -15,11 +15,11 @@ import LanguageSettingInput from './inputs/LanguageSettingInput';
 import LookupSettingInput from './inputs/LookupSettingInput';
 import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
 import PasswordSettingInput from './inputs/PasswordSettingInput';
+import RangeSettingInput from './inputs/RangeSettingInput';
 import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
 import RoomPickSettingInput from './inputs/RoomPickSettingInput';
 import SelectSettingInput from './inputs/SelectSettingInput';
 import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
-import SliderSettingInput from './inputs/SliderSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 import TimespanSettingInput from './inputs/TimespanSettingInput';
 
@@ -42,7 +42,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	timezone: SelectTimezoneSettingInput,
 	lookup: LookupSettingInput,
 	timespan: TimespanSettingInput,
-	slider: SliderSettingInput,
+	range: RangeSettingInput,
 	date: GenericSettingInput, // @todo: implement
 	group: GenericSettingInput, // @todo: implement
 };

@@ -90,7 +90,7 @@ Meteor.methods<ServerMethods>({
 						break;
 					case 'timespan':
 					case 'int':
-					case 'slider':
+					case 'range':
 						check(value, Number);
 						if (!Number.isInteger(value)) {
 							throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {

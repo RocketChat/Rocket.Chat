@@ -4,13 +4,13 @@ import type { ReactElement } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type SliderSettingInputProps = SettingInputProps<number> & {
+type RangeSettingInputProps = SettingInputProps<number> & {
 	hint?: string;
 	minValue?: number;
 	maxValue?: number;
 };
 
-function SliderSettingInput({
+function RangeSettingInput({
 	_id,
 	label,
 	hint,
@@ -23,7 +23,7 @@ function SliderSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: SliderSettingInputProps): ReactElement {
+}: RangeSettingInputProps): ReactElement {
 	return (
 		<Field>
 			<FieldRow>
@@ -51,4 +51,4 @@ function SliderSettingInput({
 	);
 }
 
-export default SliderSettingInput;
+export default RangeSettingInput;

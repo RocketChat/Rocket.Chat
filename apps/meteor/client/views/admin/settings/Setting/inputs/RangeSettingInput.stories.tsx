@@ -1,20 +1,20 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import SliderSettingInput from './SliderSettingInput';
+import RangeSettingInput from './RangeSettingInput';
 
 export default {
-	component: SliderSettingInput,
+	component: RangeSettingInput,
 	parameters: {
 		actions: {
 			argTypesRegex: '^on.*',
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} satisfies Meta<typeof SliderSettingInput>;
+} satisfies Meta<typeof RangeSettingInput>;
 
-const Template: StoryFn<typeof SliderSettingInput> = (args) => (
-	<SliderSettingInput {...args} _id='setting_id' label='Label' minValue={0} maxValue={100} />
+const Template: StoryFn<typeof RangeSettingInput> = (args) => (
+	<RangeSettingInput {...args} _id='setting_id' label='Label' minValue={0} maxValue={100} />
 );
 
 export const Default = Template.bind({});
