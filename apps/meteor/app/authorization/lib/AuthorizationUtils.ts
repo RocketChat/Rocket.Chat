@@ -1,60 +1,41 @@
 const restrictedRolePermissions = new Map<string, Set<string>>();
-const disabledRolePermissions = new Map<string, Set<string>>();
 
 export const AuthorizationUtils = class {
-	private static addRolePermissionRule(roleId: string, list: string[], permissionMap: Map<string, Set<string>>): void {
-		if (!roleId || !list) {
+	static addRolePermissionWhiteList(roleId: string, list: string[]): void {
+		if (!roleId) {
 			throw new Error('invalid-param');
 		}
 
-		if (!permissionMap.has(roleId)) {
-			permissionMap.set(roleId, new Set());
+		if (!list) {
+			throw new Error('invalid-param');
 		}
 
-		const rules = permissionMap.get(roleId);
+		if (!restrictedRolePermissions.has(roleId)) {
+			restrictedRolePermissions.set(roleId, new Set());
+		}
+
+		const rules = restrictedRolePermissions.get(roleId);
 
 		for (const permissionId of list) {
 			rules?.add(permissionId);
 		}
 	}
 
-	static addRolePermissionWhiteList(roleId: string, list: string[]): void {
-		this.addRolePermissionRule(roleId, list, restrictedRolePermissions);
-	}
-
-	static addRolePermissionDisabledList(roleId: string, list: string[]): void {
-		this.addRolePermissionRule(roleId, list, disabledRolePermissions);
-	}
-
-	private static checkPermissionForRole(
-		permissionId: string,
-		roleId: string,
-		permissionMap: Map<string, Set<string>>,
-		modifier: 'allow' | 'deny' = 'deny',
-	): boolean {
+	static isPermissionRestrictedForRole(permissionId: string, roleId: string): boolean {
 		if (!roleId || !permissionId) {
 			throw new Error('invalid-param');
 		}
 
-		if (!permissionMap.has(roleId)) {
+		if (!restrictedRolePermissions.has(roleId)) {
 			return false;
 		}
 
-		const rules = permissionMap.get(roleId);
+		const rules = restrictedRolePermissions.get(roleId);
 		if (!rules?.size) {
 			return false;
 		}
 
-		const hasPermission = rules.has(permissionId);
-		return modifier === 'deny' ? !hasPermission : hasPermission;
-	}
-
-	static isPermissionRestrictedForRole(permissionId: string, roleId: string): boolean {
-		return this.checkPermissionForRole(permissionId, roleId, restrictedRolePermissions);
-	}
-
-	static isPermissionDisabledForRole(permissionId: string, roleId: string): boolean {
-		return this.checkPermissionForRole(permissionId, roleId, disabledRolePermissions, 'allow');
+		return !rules.has(permissionId);
 	}
 
 	static isPermissionRestrictedForRoleList(permissionId: string, roleList: string[]): boolean {
