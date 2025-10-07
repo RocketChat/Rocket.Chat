@@ -4109,6 +4109,53 @@ export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedR
 	POSTLivechatRoomsCloseAllSuccessResponseSchema,
 );
 
+type POSTLivechatRemoveRoomParams = {
+	roomId: string;
+};
+
+const POSTLivechatRemoveRoomParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveRoomParams = ajv.compile<POSTLivechatRemoveRoomParams>(POSTLivechatRemoveRoomParamsSchema);
+
+const POSTLivechatRemoveRoomSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatRemoveRoomSuccess = ajv.compile<void>(POSTLivechatRemoveRoomSuccessSchema);
+
+type POSTLivechatRemoveCustomFields = {
+	customFieldId: string;
+};
+
+const POSTLivechatRemoveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+	},
+	required: ['customFieldId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
+
 const POSTLivechatSaveCustomFieldsSchema = {
 	type: 'object',
 	properties: {
@@ -4227,23 +4274,6 @@ const POSTLivechatSaveCustomFieldSuccessSchema = {
 export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<{ customField: ILivechatCustomField }>(
 	POSTLivechatSaveCustomFieldSuccessSchema,
 );
-
-type POSTLivechatRemoveCustomFields = {
-	customFieldId: string;
-};
-
-const POSTLivechatRemoveCustomFieldsSchema = {
-	type: 'object',
-	properties: {
-		customFieldId: {
-			type: 'string',
-		},
-	},
-	required: ['customFieldId'],
-	additionalProperties: false,
-};
-
-export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
 
 const POSTLivechatRemoveCustomFieldSuccessSchema = {
 	type: 'object',
