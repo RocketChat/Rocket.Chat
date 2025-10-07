@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 declare module '@rocket.chat/ddp-client' {
@@ -36,6 +37,7 @@ export const removeCannedResponse = async (uid: string, _id: string): Promise<vo
 
 Meteor.methods<ServerMethods>({
 	async removeCannedResponse(_id) {
+		methodDeprecationLogger.method('removeCannedResponse', '8.0.0', 'DELETE /v1/canned-responses/:_id');
 		const uid = Meteor.userId();
 
 		if (!uid) {
