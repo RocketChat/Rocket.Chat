@@ -5,4 +5,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removes stdout logging funcionality, related components and settings
+Removes stdout logging functionality, related components and settings
