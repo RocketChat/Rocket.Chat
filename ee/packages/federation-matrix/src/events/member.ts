@@ -8,15 +8,16 @@ import { createOrUpdateFederatedUser, getUsernameServername } from '../Federatio
 
 const logger = new Logger('federation-matrix:member');
 
-async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver.matrix.membership']) {
+async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver.matrix.membership'], services: HomeserverServices) {
 	const room = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 	if (!room) {
 		logger.warn(`No bridged room found for Matrix room_id: ${data.room_id}`);
 		return;
 	}
 
+	const [affectedUsername] = getUsernameServername(data.state_key, services.config.serverName);
 	// state_key is the user affected by the membership change
-	const affectedUser = await Users.findOneByUsername(data.state_key);
+	const affectedUser = await Users.findOneByUsername(affectedUsername);
 	if (!affectedUser) {
 		logger.error(`No Rocket.Chat user found for bridged user: ${data.state_key}`);
 		return;
@@ -29,7 +30,9 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 		logger.info(`User ${affectedUser.username} left room ${room._id} via Matrix federation`);
 	} else {
 		// Kick - find who kicked
-		const kickerUser = await Users.findOneByUsername(data.sender);
+
+		const [kickerUsername] = getUsernameServername(data.sender, services.config.serverName);
+		const kickerUser = await Users.findOneByUsername(kickerUsername);
 
 		await Room.removeUserFromRoom(room._id, affectedUser, {
 			byUser: kickerUser || { _id: 'matrix.federation', username: 'Matrix User' },
@@ -84,7 +87,7 @@ export function member(emitter: Emitter<HomeserverEventSignatures>, services: Ho
 	emitter.on('homeserver.matrix.membership', async (data) => {
 		try {
 			if (data.content.membership === 'leave') {
-				return membershipLeaveAction(data);
+				return membershipLeaveAction(data, services);
 			}
 
 			if (data.content.membership === 'join') {
