@@ -7,7 +7,7 @@ export class OmnichannelCloseChatModal extends Modal {
 	private readonly toastMessages: ToastMessages;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Save your new E2EE password' }));
+		super(page.getByRole('dialog', { name: 'Wrap up conversation' }));
 		this.toastMessages = new ToastMessages(page);
 	}
 
