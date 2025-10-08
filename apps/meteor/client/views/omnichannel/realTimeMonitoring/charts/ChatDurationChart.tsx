@@ -58,8 +58,7 @@ const ChatDurationChart = ({ departmentId, dateRange, ...props }: ChatDurationCh
 	});
 
 	const context = useChartContext({
-		key: 'chat-duration-chart-context',
-		canvas: canvas.current,
+		canvas,
 		init,
 		t,
 	});

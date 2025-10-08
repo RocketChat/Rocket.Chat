@@ -1,37 +1,44 @@
-import { useQuery } from '@tanstack/react-query';
 import type { Chart, ChartType } from 'chart.js';
 import type { TFunction } from 'i18next';
-import { useRef, useEffect } from 'react';
+import type { MutableRefObject } from 'react';
+import { useEffect, useState } from 'react';
 
 type UseChartContextProps<TChart> = {
-	key: string;
-	canvas: HTMLCanvasElement | null;
+	canvas: MutableRefObject<HTMLCanvasElement | null>;
 	init: (canvas: HTMLCanvasElement, context: TChart | undefined, t: TFunction) => Promise<TChart>;
 	t: TFunction;
 };
 
-export const useChartContext = <TChartType extends ChartType>({ key, canvas, init, t }: UseChartContextProps<Chart<TChartType>>) => {
-	const contextRef = useRef<Chart<TChartType>>();
+export const useChartContext = <TChartType extends ChartType>({ canvas, init, t }: UseChartContextProps<Chart<TChartType>>) => {
+	const [context, setContext] = useState<Chart<TChartType>>();
 
-	const { data: context } = useQuery({
-		queryKey: [key, t],
-		queryFn: async () => {
-			if (!canvas) {
+	useEffect(() => {
+		let chart: Chart<TChartType> | undefined;
+		let unmounted = false;
+
+		const initializeChart = async () => {
+			if (!canvas.current) {
 				return;
 			}
 
-			contextRef.current = await init(canvas, contextRef.current, t);
+			chart = await init(canvas.current, undefined, t);
 
-			return contextRef.current;
-		},
-		staleTime: Infinity,
-		gcTime: 0,
-		refetchOnWindowFocus: false,
-		retry: false,
-		enabled: !!canvas,
-	});
+			if (unmounted) {
+				chart?.destroy();
+				return;
+			}
 
-	useEffect(() => () => contextRef.current?.destroy(), []);
+			setContext(chart);
+		};
+
+		void initializeChart();
+
+		return () => {
+			unmounted = true;
+			chart?.destroy();
+			setContext(undefined);
+		};
+	}, [canvas, init, t]);
 
 	return context;
 };

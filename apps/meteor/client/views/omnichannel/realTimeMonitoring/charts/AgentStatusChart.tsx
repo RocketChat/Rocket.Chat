@@ -49,8 +49,7 @@ const AgentStatusChart = ({ departmentId, ...props }: AgentStatusChartsProps) =>
 	});
 
 	const context = useChartContext({
-		key: 'agent-status-chart-context',
-		canvas: canvas.current,
+		canvas,
 		init,
 		t,
 	});

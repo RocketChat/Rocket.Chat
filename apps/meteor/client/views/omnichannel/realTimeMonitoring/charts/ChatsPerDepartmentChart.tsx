@@ -40,8 +40,7 @@ const ChatsPerDepartmentChart = ({ departmentId, dateRange, ...props }: ChatsPer
 	});
 
 	const context = useChartContext({
-		key: 'chats-per-department-chart-context',
-		canvas: canvas.current,
+		canvas,
 		init,
 		t,
 	});

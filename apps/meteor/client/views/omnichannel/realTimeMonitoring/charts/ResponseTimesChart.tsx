@@ -71,8 +71,7 @@ const ResponseTimesChart = ({ departmentId, dateRange, ...props }: ResponseTimes
 	});
 
 	const context = useChartContext({
-		key: 'response-times-chart-context',
-		canvas: canvas.current,
+		canvas,
 		init,
 		t,
 	});
