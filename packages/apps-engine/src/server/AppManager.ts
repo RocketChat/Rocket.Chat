@@ -857,6 +857,8 @@ export class AppManager {
 			throw new Error('Can not change the status of an App which does not currently exist.');
 		}
 
+		const storageItem = await rl.getStorageItem();
+
 		if (AppStatusUtils.isEnabled(status)) {
 			// Then enable it
 			if (AppStatusUtils.isEnabled(await rl.getStatus())) {
@@ -864,12 +866,18 @@ export class AppManager {
 			}
 
 			await this.enable(rl.getID());
+
+			storageItem.status = AppStatus.MANUALLY_ENABLED;
+			await this.appMetadataStorage.updateStatus(storageItem._id, AppStatus.MANUALLY_ENABLED);
 		} else {
 			if (!AppStatusUtils.isEnabled(await rl.getStatus())) {
 				throw new Error('Can not disable an App which is not enabled.');
 			}
 
 			await this.disable(rl.getID(), AppStatus.MANUALLY_DISABLED);
+
+			storageItem.status = AppStatus.MANUALLY_DISABLED;
+			await this.appMetadataStorage.updateStatus(storageItem._id, AppStatus.MANUALLY_DISABLED);
 		}
 
 		return rl;
