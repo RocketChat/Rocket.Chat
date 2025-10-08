@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.0.1",
+	"version": "0.0.2-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/cli": "~7.26.0",
@@ -8,6 +8,7 @@
 		"@babel/preset-env": "~7.26.0",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.21",
 		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.14.0",
 		"@types/sanitize-html": "^2",
@@ -26,8 +27,8 @@
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
-	"main": "./dist/FederationMatrix.js",
-	"typings": "./dist/FederationMatrix.d.ts",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
@@ -38,7 +39,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "^0.31.25",
-		"@rocket.chat/federation-sdk": "0.1.10",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
@@ -53,5 +53,8 @@
 		"sanitize-html": "^2.17.0",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/federation-sdk": "*"
 	}
 }

@@ -1,5 +1,43 @@
 # @rocket.chat/core-services
 
+## 0.10.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.2
+  - @rocket.chat/rest-typings@7.11.0-rc.2
+  - @rocket.chat/http-router@7.9.5-rc.2
+  - @rocket.chat/models@1.7.0-rc.2
+  </details>
+
+## 0.10.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.1
+  - @rocket.chat/rest-typings@7.11.0-rc.1
+  - @rocket.chat/http-router@7.9.5-rc.1
+  - @rocket.chat/models@1.7.0-rc.1
+  </details>
+
+## 0.10.1-rc.0
+
+### Patch Changes
+
+- ([#36852](https://github.com/RocketChat/Rocket.Chat/pull/36852)) Fixes `teams.addMembers` API to assign team member roles properly.
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, d76a5578ed0e14fae2a041c0e09d565b28630d76, 8d2ad40c46334aaf35816e52a3b28dc2ac23ce2d, ba793542644d2b725924c4cef253e7d84bc2ff71, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, c5ee569cc3120bb616001fd78687dbf623a6a504, 00611aceec7f158064863f2e829c5a6698687512, c15a47ee1d55118342d0f0ece7af77f6f41132b7, 276c270f34293729182e9ebab61e1ff2c35398fc, b0a4602a4461200b9872b2b073ec56fa55ecb466, 80fbb2eb421253e6066207949eaf2b41871e4428, 90a1759df57814306cbc859409fe041b33db7a39, b74ab6f18ff1343f4835975f663211b005ccc5a1]:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.0
+  - @rocket.chat/rest-typings@7.11.0-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  - @rocket.chat/http-router@7.9.5-rc.0
+  </details>
+
 ## 0.10.0
 
 ### Minor Changes

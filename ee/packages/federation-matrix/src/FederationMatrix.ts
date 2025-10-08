@@ -1,6 +1,4 @@
-import 'reflect-metadata';
-
-import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, ServiceClass } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -10,34 +8,13 @@ import {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
-import { ConfigService, createFederationContainer, getAllServices } from '@rocket.chat/federation-sdk';
-import type {
-	EventID,
-	HomeserverEventSignatures,
-	HomeserverServices,
-	FederationContainerOptions,
-	FileMessageType,
-	PresenceState,
-} from '@rocket.chat/federation-sdk';
-import { Router } from '@rocket.chat/http-router';
+import { eventIdSchema, getAllServices, roomIdSchema, userIdSchema } from '@rocket.chat/federation-sdk';
+import type { EventID, UserID, HomeserverServices, FileMessageType, PresenceState, PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
-import { getWellKnownRoutes } from './api/.well-known/server';
-import { getMatrixInviteRoutes } from './api/_matrix/invite';
-import { getKeyServerRoutes } from './api/_matrix/key/server';
-import { getMatrixMediaRoutes } from './api/_matrix/media';
-import { getMatrixProfilesRoutes } from './api/_matrix/profiles';
-import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
-import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
-import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
-import { getFederationVersionsRoutes } from './api/_matrix/versions';
-import { isFederationDomainAllowedMiddleware } from './api/middlewares/isFederationDomainAllowed';
-import { isFederationEnabledMiddleware } from './api/middlewares/isFederationEnabled';
-import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
-import { registerEvents } from './events';
+import { acceptInvite } from './api/_matrix/invite';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
@@ -48,94 +25,149 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
+/** helper to validate the username format */
+export function validateFederatedUsername(mxid: string): mxid is UserID {
+	if (!mxid.startsWith('@')) return false;
+
+	const parts = mxid.substring(1).split(':');
+	if (parts.length < 2) return false;
+
+	const localpart = parts[0];
+	const domainAndPort = parts.slice(1).join(':');
+
+	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
+	if (!localpartRegex.test(localpart)) return false;
+
+	const [domain, port] = domainAndPort.split(':');
+
+	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
+	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
+
+	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
+		return false;
+	}
+
+	if (port !== undefined) {
+		const portNum = Number(port);
+		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
+			return false;
+		}
+	}
+
+	return true;
+}
+export const extractDomainFromMatrixUserId = (mxid: string): string => {
+	const separatorIndex = mxid.indexOf(':', 1);
+	if (separatorIndex === -1) {
+		throw new Error(`Invalid federated username: ${mxid}`);
+	}
+	return mxid.substring(separatorIndex + 1);
+};
+
+/**
+ * Extract the username and the servername from a matrix user id
+ * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
+ * otherwise, return the full mxid and the servername
+ */
+export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
+	const senderServerName = extractDomainFromMatrixUserId(mxid);
+	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
+	if (serverName === senderServerName) {
+		const separatorIndex = mxid.indexOf(':', 1);
+		if (separatorIndex === -1) {
+			throw new Error(`Invalid federated username: ${mxid}`);
+		}
+		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
+	}
+
+	return [mxid, senderServerName, false];
+};
+/**
+ * Helper function to create a federated user
+ *
+ * Because of historical reasons, we can have users only with federated flag but no federation object
+ * So we need to upsert the user with the federation object
+ */
+export async function createOrUpdateFederatedUser(options: { username: UserID; name?: string; origin: string }): Promise<string> {
+	const { username, name = username, origin } = options;
+
+	const result = await Users.updateOne(
+		{
+			username,
+		},
+		{
+			$set: {
+				username,
+				name: name || username,
+				type: 'user' as const,
+				status: UserStatus.OFFLINE,
+				active: true,
+				roles: ['user'],
+				requirePasswordChange: false,
+				federated: true,
+				federation: {
+					version: 1,
+					mui: username,
+					origin,
+				},
+				_updatedAt: new Date(),
+			},
+			$setOnInsert: {
+				createdAt: new Date(),
+			},
+		},
+		{
+			upsert: true,
+		},
+	);
+
+	const userId = result.upsertedId || (await Users.findOneByUsername(username, { projection: { _id: 1 } }))?._id;
+	if (!userId) {
+		throw new Error(`Failed to create or update federated user: ${username}`);
+	}
+	if (typeof userId !== 'string') {
+		return userId.toString();
+	}
+	return userId;
+}
+
 export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
-	private eventHandler: Emitter<HomeserverEventSignatures>;
+	private serverName: string;
+
+	private processEDUTyping: boolean;
+
+	private processEDUPresence: boolean;
 
 	private homeserverServices: HomeserverServices;
 
-	private serverName: string;
-
 	private readonly logger = new Logger(this.name);
 
-	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
+	async created(): Promise<void> {
+		// although this is async function, it is not awaited, so we need to register the listeners before everything else
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction === 'removed') {
+				return;
+			}
 
-	private processEDUTyping = false;
-
-	private processEDUPresence = false;
-
-	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
-		super();
-		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
-	}
-
-	static async create(instanceId: string, emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
-		const instance = new FederationMatrix(emitter);
-		const settingsSigningAlg = await Settings.get<string>('Federation_Service_Matrix_Signing_Algorithm');
-		const settingsSigningVersion = await Settings.get<string>('Federation_Service_Matrix_Signing_Version');
-		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
-		const serverHostname = (await Settings.get<string>('Federation_Service_Domain')).trim();
-
-		instance.serverName = serverHostname;
-
-		instance.processEDUTyping = await Settings.get<boolean>('Federation_Service_EDU_Process_Typing');
-		instance.processEDUPresence = await Settings.get<boolean>('Federation_Service_EDU_Process_Presence');
-
-		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
-
-		const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
-
-		const config = new ConfigService({
-			instanceId,
-			serverName: serverHostname,
-			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
-			matrixDomain: serverHostname,
-			version: process.env.SERVER_VERSION || '1.0',
-			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-			signingKey: `${settingsSigningAlg} ${settingsSigningVersion} ${settingsSigningKey}`,
-			signingKeyPath: process.env.CONFIG_FOLDER || './rocketchat.signing.key',
-			database: {
-				uri: mongoUri,
-				name: dbName,
-				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
-			},
-			media: {
-				maxFileSize: Number.parseInt(process.env.MEDIA_MAX_FILE_SIZE || '100', 10) * 1024 * 1024,
-				allowedMimeTypes: process.env.MEDIA_ALLOWED_MIME_TYPES?.split(',') || [
-					'image/jpeg',
-					'image/png',
-					'image/gif',
-					'image/webp',
-					'text/plain',
-					'application/pdf',
-					'video/mp4',
-					'audio/mpeg',
-					'audio/ogg',
-				],
-				enableThumbnails: process.env.MEDIA_ENABLE_THUMBNAILS === 'true' || true,
-				rateLimits: {
-					uploadPerMinute: Number.parseInt(process.env.MEDIA_UPLOAD_RATE_LIMIT || '10', 10),
-					downloadPerMinute: Number.parseInt(process.env.MEDIA_DOWNLOAD_RATE_LIMIT || '60', 10),
-				},
-			},
+			const { _id, value } = setting;
+			if (_id === 'Federation_Service_Domain' && typeof value === 'string') {
+				this.serverName = value;
+			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
+				this.processEDUTyping = value;
+			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
+				this.processEDUPresence = value;
+			}
 		});
 
-		const containerOptions: FederationContainerOptions = {
-			emitter: instance.eventHandler,
-		};
-
-		await createFederationContainer(containerOptions, config);
-		instance.homeserverServices = getAllServices();
-		MatrixMediaService.setHomeserverServices(instance.homeserverServices);
-		instance.buildMatrixHTTPRoutes();
-
-		instance.onEvent(
+		this.onEvent(
 			'presence.status',
 			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
-				if (!instance.processEDUPresence) {
+				if (!this.processEDUPresence) {
 					return;
 				}
 
@@ -160,7 +192,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
-				void instance.homeserverServices.edu.sendPresenceUpdateToRooms(
+				void this.homeserverServices.edu.sendPresenceUpdateToRooms(
 					[
 						{
 							user_id: localUser.federation.mui,
@@ -172,47 +204,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		);
 
-		instance.logger.startup(`Federation Matrix Homeserver created for domain ${instance.serverName}`);
+		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
+		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
+		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 
-		return instance;
-	}
-
-	private buildMatrixHTTPRoutes() {
-		const matrix = new Router('/_matrix');
-		const wellKnown = new Router('/.well-known');
-
-		matrix
-			.use(isFederationEnabledMiddleware)
-			.use(isLicenseEnabledMiddleware)
-			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes(this.homeserverServices))
-			.use(isFederationDomainAllowedMiddleware)
-			.use(getMatrixInviteRoutes(this.homeserverServices))
-			.use(getMatrixProfilesRoutes(this.homeserverServices))
-			.use(getMatrixRoomsRoutes(this.homeserverServices))
-			.use(getMatrixSendJoinRoutes(this.homeserverServices))
-			.use(getMatrixTransactionsRoutes(this.homeserverServices))
-			.use(getMatrixMediaRoutes(this.homeserverServices));
-
-		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
-
-		this.httpRoutes = { matrix, wellKnown };
-	}
-
-	async created(): Promise<void> {
 		try {
-			registerEvents(this.eventHandler, this.serverName, { typing: this.processEDUTyping, presence: this.processEDUPresence });
-		} catch (error) {
-			this.logger.warn('Homeserver module not available, running in limited mode');
+			this.homeserverServices = getAllServices();
+
+			MatrixMediaService.setHomeserverServices(this.homeserverServices);
+		} catch (err) {
+			this.logger.warn({ msg: 'Homeserver module not available, running in limited mode', err });
 		}
-	}
-
-	getAllRoutes() {
-		return this.httpRoutes;
-	}
-
-	getServerName(): string {
-		return this.serverName;
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {
@@ -226,7 +228,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
-			const matrixUserId = `@${owner.username}:${this.serverName}`;
+			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
 			const roomName = room.name || room.fname || 'Untitled Room';
 
 			// canonical alias computed from name
@@ -244,7 +246,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
-				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId);
+				await this.homeserverServices.invite.inviteUserToRoom(userIdSchema.parse(member), matrixRoomResult.room_id, matrixUserId);
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
@@ -260,41 +262,26 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: usernames.length });
 
-			const federatedUsers = usernames.filter((username) => username?.includes(':') && username?.includes('@'));
+			const federatedUsers = usernames.filter(validateFederatedUsername);
 			for await (const username of federatedUsers) {
-				if (!username) {
-					continue;
-				}
-
 				const existingUser = await Users.findOneByUsername(username);
-				if (existingUser) {
+				if (existingUser && isUserNativeFederated(existingUser)) {
 					continue;
 				}
 
-				await Users.create({
+				await createOrUpdateFederatedUser({
 					username,
 					name: username,
-					type: 'user' as const,
-					status: UserStatus.OFFLINE,
-					active: true,
-					roles: ['user'],
-					requirePasswordChange: false,
-					federated: true,
-					federation: {
-						version: 1,
-						mui: username,
-						origin: username.split(':')[1],
-					},
-					createdAt: new Date(),
-					_updatedAt: new Date(),
+					origin: extractDomainFromMatrixUserId(username),
 				});
 			}
 		} catch (error) {
-			this.logger.error('Failed to ensure federated users exist locally:', error);
+			this.logger.error({ msg: 'Failed to ensure federated users exist locally', error });
+			throw error;
 		}
 	}
 
-	async createDirectMessageRoom(room: IRoom, members: (IUser | string)[], creatorId: IUser['_id']): Promise<void> {
+	async createDirectMessageRoom(room: IRoom, members: IUser[], creatorId: IUser['_id']): Promise<void> {
 		try {
 			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
 
@@ -312,84 +299,39 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			let matrixRoomResult: { room_id: string; event_id?: string };
 			if (members.length === 2) {
-				const otherMember = members.find((member) => {
-					if (typeof member === 'string') {
-						return true; // Remote user
-					}
-					return member._id !== creatorId;
-				});
+				const otherMember = members.find((member) => member._id !== creatorId);
 				if (!otherMember) {
 					throw new Error('Other member not found for 1-on-1 DM');
 				}
-				let otherMemberMatrixId: string;
-				if (typeof otherMember === 'string') {
-					otherMemberMatrixId = otherMember.startsWith('@') ? otherMember : `@${otherMember}`;
-				} else if (otherMember.username?.includes(':')) {
-					otherMemberMatrixId = otherMember.username.startsWith('@') ? otherMember.username : `@${otherMember.username}`;
-				} else {
-					otherMemberMatrixId = `@${otherMember.username}:${this.serverName}`;
+				if (!isUserNativeFederated(otherMember)) {
+					throw new Error('Other member is not federated');
 				}
-				const roomId = await this.homeserverServices.room.createDirectMessageRoom(actualMatrixUserId, otherMemberMatrixId);
+				const roomId = await this.homeserverServices.room.createDirectMessageRoom(
+					userIdSchema.parse(actualMatrixUserId),
+					userIdSchema.parse(otherMember.username),
+				);
 				matrixRoomResult = { room_id: roomId };
 			} else {
 				// For group DMs (more than 2 members), create a private room
 				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
-				matrixRoomResult = await this.homeserverServices.room.createRoom(actualMatrixUserId, roomName, 'invite');
+				matrixRoomResult = await this.homeserverServices.room.createRoom(userIdSchema.parse(actualMatrixUserId), roomName, 'invite');
 			}
 
-			// TODO is this needed?
-			// const mapping = await MatrixBridgedRoom.getLocalRoomId(matrixRoomResult.room_id);
-			// if (!mapping) {
-			// 	await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
-			// }
-
 			for await (const member of members) {
-				if (typeof member !== 'string' && member._id === creatorId) {
+				if (member._id === creatorId) {
+					continue;
+				}
+
+				if (!isUserNativeFederated(member)) {
 					continue;
 				}
 
 				try {
-					let memberMatrixUserId: string;
-					let memberId: string | undefined;
-
-					if (typeof member === 'string') {
-						memberMatrixUserId = member.startsWith('@') ? member : `@${member}`;
-						memberId = undefined;
-					} else if (member.username?.includes(':')) {
-						memberMatrixUserId = member.username.startsWith('@') ? member.username : `@${member.username}`;
-						memberId = member._id;
-					} else {
-						continue;
-					}
-
-					if (memberId) {
-						const existingMemberMatrixUserId = await Users.findOne({ 'federation.mui': memberId });
-						if (!existingMemberMatrixUserId) {
-							const newUser = {
-								username: memberId,
-								name: memberId,
-								type: 'user' as const,
-								status: UserStatus.OFFLINE,
-								active: true,
-								roles: ['user'],
-								requirePasswordChange: false,
-								federated: true,
-								federation: {
-									version: 1,
-									mui: memberId,
-									origin: memberMatrixUserId.split(':').pop(),
-								},
-								createdAt: new Date(),
-								_updatedAt: new Date(),
-							};
-
-							await Users.insertOne(newUser);
-						}
-					}
-
-					if (members.length > 2) {
-						await this.homeserverServices.invite.inviteUserToRoom(memberMatrixUserId, matrixRoomResult.room_id, actualMatrixUserId);
-					}
+					await this.homeserverServices.invite.inviteUserToRoom(
+						userIdSchema.parse(member.username),
+						roomIdSchema.parse(matrixRoomResult.room_id),
+						userIdSchema.parse(actualMatrixUserId),
+					);
 				} catch (error) {
 					this.logger.error('Error creating or updating bridged user for DM:', error);
 				}
@@ -443,7 +385,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				},
 			};
 
-			lastEventId = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+			lastEventId = await this.homeserverServices.message.sendFileMessage(
+				roomIdSchema.parse(matrixRoomId),
+				fileContent,
+				userIdSchema.parse(matrixUserId),
+			);
 
 			return lastEventId;
 		} catch (error) {
@@ -475,7 +421,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 		}
 
-		return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+		return this.homeserverServices.message.sendMessage(
+			roomIdSchema.parse(matrixRoomId),
+			message.msg,
+			parsedMessage,
+			userIdSchema.parse(matrixUserId),
+		);
 	}
 
 	private async handleThreadedMessage(
@@ -497,7 +448,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 				return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 			}
-			return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+			return this.homeserverServices.message.sendMessage(
+				roomIdSchema.parse(matrixRoomId),
+				message.msg,
+				parsedMessage,
+				userIdSchema.parse(matrixUserId),
+			);
 		}
 
 		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id);
@@ -509,22 +465,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error('Failed to retrieve quote message');
 			}
 			return this.homeserverServices.message.sendReplyToInsideThreadMessage(
-				matrixRoomId,
+				roomIdSchema.parse(matrixRoomId),
 				quoteMessage.rawMessage,
 				quoteMessage.formattedMessage,
-				matrixUserId,
-				threadRootEventId,
-				quoteMessage.eventToReplyTo,
+				userIdSchema.parse(matrixUserId),
+				eventIdSchema.parse(threadRootEventId),
+				eventIdSchema.parse(quoteMessage.eventToReplyTo),
 			);
 		}
 
 		return this.homeserverServices.message.sendThreadMessage(
-			matrixRoomId,
+			roomIdSchema.parse(matrixRoomId),
 			message.msg,
 			parsedMessage,
-			matrixUserId,
-			threadRootEventId,
-			latestThreadEventId,
+			userIdSchema.parse(matrixUserId),
+			eventIdSchema.parse(threadRootEventId),
+			eventIdSchema.parse(latestThreadEventId),
 		);
 	}
 
@@ -539,11 +495,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('Failed to retrieve quote message');
 		}
 		return this.homeserverServices.message.sendReplyToMessage(
-			matrixRoomId,
+			roomIdSchema.parse(matrixRoomId),
 			quoteMessage.rawMessage,
 			quoteMessage.formattedMessage,
-			quoteMessage.eventToReplyTo,
-			matrixUserId,
+			eventIdSchema.parse(quoteMessage.eventToReplyTo),
+			userIdSchema.parse(matrixUserId),
 		);
 	}
 
@@ -616,7 +572,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		};
 	}
 
-	async deleteMessage(matrixRoomId: string, message: IMessage, uid: string): Promise<void> {
+	async deleteMessage(matrixRoomId: string, message: IMessage): Promise<void> {
 		try {
 			if (!isMessageFromMatrixFederation(message) || isDeletedMessage(message)) {
 				return;
@@ -634,7 +590,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			// TODO fix branded EventID and remove type casting
 			// TODO message.u?.username is not the user who removed the message
-			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId as EventID, uid);
+			const eventId = await this.homeserverServices.message.redactMessage(
+				roomIdSchema.parse(matrixRoomId),
+				eventIdSchema.parse(matrixEventId),
+			);
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
@@ -643,24 +602,35 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async inviteUsersToRoom(room: IRoomNativeFederated, usersUserName: string[], inviter: IUser): Promise<void> {
+	async inviteUsersToRoom(room: IRoomNativeFederated, matrixUsersUsername: string[], inviter: IUser): Promise<void> {
 		try {
 			const inviterUserId = `@${inviter.username}:${this.serverName}`;
 
 			await Promise.all(
-				usersUserName
-					.filter((username) => {
-						const isExternalUser = username.includes(':');
-						return isExternalUser;
-					})
-					.map(async (username) => {
-						const alreadyMember = await Subscriptions.findOneByRoomIdAndUsername(room._id, username, { projection: { _id: 1 } });
-						if (alreadyMember) {
-							return;
-						}
+				matrixUsersUsername.map(async (username) => {
+					if (validateFederatedUsername(username)) {
+						return this.homeserverServices.invite.inviteUserToRoom(
+							userIdSchema.parse(username),
+							roomIdSchema.parse(room.federation.mrid),
+							userIdSchema.parse(inviterUserId),
+						);
+					}
 
-						await this.homeserverServices.invite.inviteUserToRoom(username, room.federation.mrid, inviterUserId);
-					}),
+					// if inviter is an external user it means we receive the invite from the endpoint
+					// since we accept from there we can skip accepting here
+					if (isUserNativeFederated(inviter)) {
+						this.logger.debug('Inviter is native federated, skip accept invite');
+						return;
+					}
+
+					const result = await this.homeserverServices.invite.inviteUserToRoom(
+						userIdSchema.parse(`@${username}:${this.serverName}`),
+						roomIdSchema.parse(room.federation.mrid),
+						userIdSchema.parse(inviterUserId),
+					);
+
+					return acceptInvite(result.event, username, this.homeserverServices);
+				}),
 			);
 		} catch (error) {
 			this.logger.error({ msg: 'Failed to invite an user to Matrix:', err: error });
@@ -689,7 +659,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-			const eventId = await this.homeserverServices.message.sendReaction(room.federation.mrid, matrixEventId, reactionKey, userMui);
+			const eventId = await this.homeserverServices.message.sendReaction(
+				roomIdSchema.parse(room.federation.mrid),
+				eventIdSchema.parse(matrixEventId),
+				reactionKey,
+				userIdSchema.parse(userMui),
+			);
 
 			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
@@ -735,10 +710,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}
 
 				const redactionEventId = await this.homeserverServices.message.unsetReaction(
-					room.federation.mrid,
-					eventId as EventID,
+					roomIdSchema.parse(room.federation.mrid),
+					eventIdSchema.parse(eventId),
 					reactionKey,
-					userMui,
+					userIdSchema.parse(userMui),
 				);
 				if (!redactionEventId) {
 					this.logger.warn('No reaction event found to remove in Matrix');
@@ -781,9 +756,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
+			const subscription = await Subscriptions.findOne({ 'rid': room._id, 'u._id': user._id });
+			if (!subscription) {
+				this.logger.debug(`User ${user.username} is not subscribed to room ${room._id}, skipping leave operation`);
+				return;
+			}
+
 			const actualMatrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-			await this.homeserverServices.room.leaveRoom(room.federation.mrid, actualMatrixUserId);
+			await this.homeserverServices.room.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
 
 			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
 		} catch (error) {
@@ -808,9 +789,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				: `@${userWhoRemoved.username}:${this.serverName}`;
 
 			await this.homeserverServices.room.kickUser(
-				room.federation.mrid,
-				actualKickedMatrixUserId,
-				actualSenderMatrixUserId,
+				roomIdSchema.parse(room.federation.mrid),
+				userIdSchema.parse(actualKickedMatrixUserId),
+				userIdSchema.parse(actualSenderMatrixUserId),
 				`Kicked by ${userWhoRemoved.username}`,
 			);
 
@@ -842,11 +823,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				homeServerDomain: this.serverName,
 			});
 			const eventId = await this.homeserverServices.message.updateMessage(
-				room.federation.mrid,
+				roomIdSchema.parse(room.federation.mrid),
 				message.msg,
 				parsedMessage,
-				userMui,
-				matrixEventId,
+				userIdSchema.parse(userMui),
+				eventIdSchema.parse(matrixEventId),
 			);
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
@@ -869,19 +850,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
-		await this.homeserverServices.room.updateRoomName(room.federation.mrid, displayName, userMui);
+		await this.homeserverServices.room.updateRoomName(roomIdSchema.parse(room.federation.mrid), displayName, userIdSchema.parse(userMui));
 	}
 
-	async updateRoomTopic(room: IRoomNativeFederated, topic: string, user: IUser): Promise<void> {
+	async updateRoomTopic(
+		room: IRoomNativeFederated,
+		topic: string,
+		user: Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>,
+	): Promise<void> {
 		if (!this.homeserverServices) {
 			this.logger.warn('Homeserver services not available, skipping room topic update');
 
 			return;
 		}
 
-		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		const userMui = isUserNativeFederated(user) ? user.username : `@${user.username}:${this.serverName}`;
 
-		await this.homeserverServices.room.setRoomTopic(room.federation.mrid, userMui, topic);
+		await this.homeserverServices.room.setRoomTopic(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(userMui), topic);
 	}
 
 	async addUserRoleRoomScoped(
@@ -917,7 +902,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		} else if (role === 'moderator') {
 			powerLevel = 50;
 		}
-		await this.homeserverServices.room.setPowerLevelForUser(room.federation.mrid, senderMui, userMui, powerLevel);
+		await this.homeserverServices.room.setPowerLevelForUser(
+			roomIdSchema.parse(room.federation.mrid),
+			userIdSchema.parse(senderMui),
+			userIdSchema.parse(userMui),
+			powerLevel,
+		);
 	}
 
 	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
@@ -990,5 +980,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 
 		return results;
+	}
+
+	async emitJoin(membershipEvent: PduForType<'m.room.member'>, eventId: EventID) {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping user role room scoped');
+			return;
+		}
+
+		this.homeserverServices.emitter.emit('homeserver.matrix.membership', {
+			event_id: eventId,
+			event: membershipEvent,
+			room_id: membershipEvent.room_id,
+			state_key: membershipEvent.state_key,
+			content: { membership: 'join' },
+			sender: membershipEvent.sender,
+			origin_server_ts: Date.now(),
+		});
 	}
 }
