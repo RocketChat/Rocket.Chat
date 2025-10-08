@@ -473,6 +473,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Number(c.req.query('limit') || 100);

@@ -355,7 +355,18 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
+			const authenticatedServer = c.get('authenticatedServer');
+			if (!authenticatedServer) {
+				throw new Error('Missing authenticated server from request');
+			}
+
+			const inviteEvent = await invite.processInvite(
+				event,
+				roomIdSchema.parse(roomId),
+				eventIdSchema.parse(eventId),
+				roomVersion,
+				authenticatedServer,
+			);
 
 			setTimeout(
 				() => {
