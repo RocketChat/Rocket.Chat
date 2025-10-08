@@ -1,10 +1,10 @@
 import { Box, Button } from '@rocket.chat/fuselage';
+import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 import { within, fireEvent, waitFor, expect, userEvent } from '@storybook/test';
 import { useEffect, useLayoutEffect, useState, type Ref } from 'react';
 
 import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore';
-import VoipPopupPortal from '../VoipPopupPortal';
 
 class BoundingBoxResizeEvent extends Event {
 	constructor(
@@ -469,9 +469,9 @@ const MockedPage = () => {
 					</Box>
 				</Box>
 			</Box>
-			<VoipPopupPortal>
+			<AnchorPortal id='rcx-draggable-anchor-portal'>
 				<DraggableElement draggableRef={draggableRef} handleRef={handleRef} />
-			</VoipPopupPortal>
+			</AnchorPortal>
 		</>
 	);
 };
