@@ -715,14 +715,10 @@ export class AppManager {
 
 		const descriptor: IAppStorageItem = {
 			...old,
-			createdAt: old.createdAt,
 			id: result.info.id,
 			info: result.info,
 			languageContent: result.languageContent,
-			settings: old.settings,
 			implemented: result.implemented.getValues(),
-			...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
-			...(old.sourcePath && { sourcePath: old.sourcePath }),
 		};
 
 		if (!permissionsGranted) {
