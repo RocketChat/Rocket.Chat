@@ -756,6 +756,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
+			const subscription = await Subscriptions.findOne({ 'rid': room._id, 'u._id': user._id });
+			if (!subscription) {
+				this.logger.debug(`User ${user.username} is not subscribed to room ${room._id}, skipping leave operation`);
+				return;
+			}
+
 			const actualMatrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			await this.homeserverServices.room.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
