@@ -69,7 +69,7 @@ exports[`renders Default without crashing 1`] = `
             Topic
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-1cu4g9m"
+              class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-gji86h"
               title="This is helpful information about the label"
             >
               
