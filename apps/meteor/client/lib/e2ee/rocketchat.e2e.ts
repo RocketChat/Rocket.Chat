@@ -782,8 +782,6 @@ class E2E extends Emitter {
 					return;
 				}
 
-				message.attachments = message.attachments || [];
-
 				let quotedMessage: Serialized<IMessage>;
 				try {
 					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
@@ -798,6 +796,7 @@ class E2E extends Emitter {
 
 				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
 
+				message.attachments = message.attachments || [];
 				const useRealName = settings.peek('UI_Use_Real_Name');
 				const quoteAttachment = createQuoteAttachment(
 					decryptedQuoteMessage,
