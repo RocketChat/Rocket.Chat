@@ -207,6 +207,7 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalBody: queryParams,
 					});
 					return c.json(
 						{
@@ -229,6 +230,7 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalBody: bodyParams,
 					});
 					return c.json(
 						{
@@ -260,6 +262,7 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalBody: body,
 					});
 					return c.json(
 						{
