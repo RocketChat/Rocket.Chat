@@ -17,9 +17,9 @@ api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());
 api.registerService(new OmnichannelEE());
 api.registerService(new VoipFreeSwitchService());
+api.registerService(new AbacService());
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {
-	api.registerService(new AbacService());
 	api.registerService(new InstanceService());
 }
