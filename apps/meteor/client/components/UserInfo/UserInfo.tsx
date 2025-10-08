@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, Palette, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -180,10 +180,7 @@ const UserInfo = ({
 
 					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel title={t('ABAC_Attributes_description')}>
-								{t('ABAC_Attributes')}
-								<Icon name='info' color={Palette.statusColor['status-font-on-info']} mi={4} size='x16' />
-							</InfoPanelLabel>
+							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
 							<UserInfoABACAttributes abacAttributes={abacAttributes} />
 						</InfoPanelField>
 					)}
