@@ -38,7 +38,7 @@ export async function fetchWorkspaceSyncPayload({
 	const assertWorkspaceSyncPayload = workspaceSyncPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceSyncPayload.success) {
-		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceSyncPayload.error.errors });
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceSyncPayload.error.issues });
 	}
 
 	return payload;
