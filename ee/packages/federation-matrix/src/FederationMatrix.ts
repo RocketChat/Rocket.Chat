@@ -838,7 +838,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error(`No Matrix room mapping found for room ${rid}`);
 		}
 
-		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		if (isUserNativeFederated(user)) {
+			this.logger.debug('Only local users can change the name of a room, ignoring action');
+			return;
+		}
+
+		const userMui = `@${user.username}:${this.serverName}`;
 
 		await this.homeserverServices.room.updateRoomName(roomIdSchema.parse(room.federation.mrid), displayName, userIdSchema.parse(userMui));
 	}
@@ -854,7 +859,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		const userMui = isUserNativeFederated(user) ? user.username : `@${user.username}:${this.serverName}`;
+		if (isUserNativeFederated(user)) {
+			this.logger.debug('Only local users can change the topic of a room, ignoring action');
+			return;
+		}
+
+		const userMui = `@${user.username}:${this.serverName}`;
 
 		await this.homeserverServices.room.setRoomTopic(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(userMui), topic);
 	}
@@ -874,17 +884,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('Leader role is not supported');
 		}
 
+		const userSender = await Users.findOneById(senderId);
+		if (!userSender) {
+			throw new Error(`No user found for ID ${senderId}`);
+		}
+
+		if (isUserNativeFederated(userSender)) {
+			this.logger.debug('Only local users can change roles of other users in a room, ignoring action');
+			return;
+		}
+
+		const senderMui = `@${userSender.username}:${this.serverName}`;
+
 		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error(`No user found for ID ${userId}`);
 		}
 		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
-
-		const userSender = await Users.findOneById(senderId);
-		if (!userSender) {
-			throw new Error(`No user found for ID ${senderId}`);
-		}
-		const senderMui = isUserNativeFederated(userSender) ? userSender.federation.mui : `@${userSender.username}:${this.serverName}`;
 
 		let powerLevel = 0;
 		if (role === 'owner') {
