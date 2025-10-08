@@ -1,7 +1,16 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
+import type {
+	IE2EEMessage,
+	IMessage,
+	IRoom,
+	ISubscription,
+	IUser,
+	IUploadWithUser,
+	MessageAttachment,
+	Serialized,
+} from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -775,37 +784,29 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
+				let quotedMessage: Serialized<IMessage>;
 				try {
 					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
-					const quotedMessage = getQuotedMessage?.message;
-
-					if (!quotedMessage) {
-						return;
-					}
-
-					const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
-
-					const useRealName = settings.peek('UI_Use_Real_Name');
-					const quoteAttachment = createQuoteAttachment(
-						decryptedQuoteMessage,
-						url,
-						useRealName,
-						getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
-					);
-
-					message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
+					quotedMessage = getQuotedMessage?.message;
 				} catch (error) {
-					// Prevents client crash when quoted message is inaccessible and notifies user accordingly
-					message.attachments.push(
-						limitQuoteChain(
-							{
-								text: t('You_are_not_allowed_to_see_this_message'),
-								ts: message.ts,
-							},
-							settings.peek('Message_QuoteChainLimit') ?? 2,
-						),
-					);
+					return;
 				}
+
+				if (!quotedMessage) {
+					return;
+				}
+
+				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
+
+				const useRealName = settings.peek('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(
+					decryptedQuoteMessage,
+					url,
+					useRealName,
+					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
+				);
+
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 
