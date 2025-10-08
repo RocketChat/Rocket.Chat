@@ -264,7 +264,6 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
-						originalResponse: body,
 					});
 					return c.json(
 						{
