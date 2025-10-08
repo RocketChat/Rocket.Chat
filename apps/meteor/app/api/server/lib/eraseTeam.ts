@@ -9,11 +9,7 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
 		: [];
 
 	// If we got a list of rooms to delete along with the team, remove them first
-	if (rooms.length) {
-		for await (const room of rooms) {
-			await eraseRoom(room, userId);
-		}
-	}
+	await Promise.all(rooms.map((room) => eraseRoom(room, userId)));
 
 	// Move every other room back to the workspace
 	await Team.unsetTeamIdOfRooms(userId, team._id);
