@@ -11,7 +11,8 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.26.10",
