@@ -167,13 +167,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					return;
 				}
 
-				if (quoteMessageEventId && room.name) {
-					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(
-						room.t as string,
-						room._id,
-						room.name,
-						originalMessage._id,
-					);
+				if (quoteMessageEventId) {
+					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
 					const formatted = await toInternalQuoteMessageFormat({
 						messageToReplyToUrl,
 						formattedMessage: data.content.formatted_body || '',
@@ -209,13 +204,13 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			if (quoteMessageEventId && room.name) {
+			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
 					logger.error('Original message not found for quote:', quoteMessageEventId);
 					return;
 				}
-				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, room.name, originalMessage._id);
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
 				const formatted = await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
 					formattedMessage: data.content.formatted_body || '',
