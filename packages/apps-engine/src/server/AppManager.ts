@@ -488,7 +488,7 @@ export class AppManager {
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
-		await app.validateLicense().catch();
+		await app.validateLicense().catch(() => {});
 
 		return true;
 	}
