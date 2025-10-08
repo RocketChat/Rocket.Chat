@@ -1,11 +1,19 @@
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { Rooms, AbacAttributes } from '@rocket.chat/models';
+import { Logger } from '@rocket.chat/logger';
+import { Rooms, AbacAttributes, Users } from '@rocket.chat/models';
 import type { Filter, UpdateFilter } from 'mongodb';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
+
+	protected logger: Logger;
+
+	constructor() {
+		super();
+		this.logger = new Logger('AbacService');
+	}
 
 	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
 		if (!attribute.values.length) {
@@ -47,11 +55,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const attributes = await cursor.toArray();
 
-		console.log(attributes, {
-			attributes,
-			offset,
-			count: attributes.length,
-		});
 		return {
 			attributes,
 			offset,
@@ -103,6 +106,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		try {
 			await AbacAttributes.updateOne({ _id }, { $set: modifier });
+			this.logger.debug({
+				msg: 'Abac attribute updated',
+				...update,
+			});
 		} catch (e) {
 			if (e instanceof Error && e.message.includes('E11000')) {
 				throw new Error('error-duplicate-attribute-key');
@@ -123,6 +130,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await AbacAttributes.deleteOne({ _id });
+		this.logger.debug({
+			msg: 'Abac attribute deleted',
+			key: existing.key,
+		});
 	}
 
 	async getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }> {
@@ -164,14 +175,42 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		await this.ensureAttributeDefinitionsExist(normalized);
 
-		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		const removed = this.computeAttributesRemoval(previous, normalized);
-
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 
-		if (removed) {
+		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
+		if (this.didAttributesChange(previous, normalized)) {
+			this.logger.debug({
+				msg: 'Room ABAC attributes updated',
+				rid,
+				previous,
+				new: normalized,
+			});
+
 			await this.onRoomAttributesChanged(rid, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
 		}
+	}
+
+	private didAttributesChange(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
+		let added = false;
+		const prevMap = new Map(current.map((a) => [a.key, new Set(a.values)]));
+		for (const { key, values } of next) {
+			const prevValues = prevMap.get(key);
+			if (!prevValues) {
+				added = true;
+				break;
+			}
+			for (const v of values) {
+				if (!prevValues.has(v)) {
+					added = true;
+					break;
+				}
+			}
+			if (added) {
+				break;
+			}
+		}
+
+		return added;
 	}
 
 	private validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
@@ -222,28 +261,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	private computeAttributesRemoval(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
-		if (!next.length) {
-			return previous.length > 0;
-		}
-
-		const newMap = new Map<string, Set<string>>(next.map((a) => [a.key, new Set(a.values)]));
-
-		for (const prev of previous) {
-			const current = newMap.get(prev.key);
-			if (!current) {
-				return true;
-			}
-			for (const val of prev.values) {
-				if (!current.has(val)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
 		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
 		if (!room) {
@@ -261,6 +278,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
+			// Trigger hook when a brand new attribute key is added to the room
+			const next = [...previous, { key, values }];
+
+			this.logger.debug({
+				msg: 'Room ABAC attribute added',
+				rid,
+				attribute: { key, values },
+			});
+			await this.onRoomAttributesChanged(rid, next);
 			return;
 		}
 
@@ -270,13 +296,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const valuesSet = new Set(values);
-		const removed = prevValues.some((v) => !valuesSet.has(v));
+		const prevSet = new Set(prevValues);
+		const added = values.some((v) => !prevSet.has(v));
 
 		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 
-		if (removed) {
+		if (added) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
+			this.logger.debug({
+				msg: 'Room ABAC attributes updated',
+				rid,
+				previous,
+				new: next,
+			});
+
 			await this.onRoomAttributesChanged(rid, next);
 		}
 	}
@@ -293,11 +326,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const next = previous.filter((a) => a.key !== key);
-
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
-
-		await this.onRoomAttributesChanged(rid, next);
+		this.logger.debug({
+			msg: 'Room ABAC attribute removed',
+			rid,
+			key,
+		});
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
@@ -318,7 +352,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
-		await this.onRoomAttributesChanged(rid, updated?.abacAttributes || [...previous, { key, values }]);
+		const next = updated?.abacAttributes || [...previous, { key, values }];
+
+		this.logger.debug({
+			msg: 'Room ABAC attribute added',
+			rid,
+			attribute: { key, values },
+		});
+		await this.onRoomAttributesChanged(rid, next);
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
@@ -334,6 +375,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (exists) {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 
+			this.logger.debug({
+				msg: 'Room ABAC attribute updated',
+				rid,
+				attribute: { key, values },
+			});
 			await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
 			return;
 		}
@@ -343,11 +389,69 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
+
+		this.logger.debug({
+			msg: 'Room ABAC attribute added',
+			rid,
+			attribute: { key, values },
+		});
 		await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
 	}
 
-	protected async onRoomAttributesChanged(_rid: string, _newAttributes: IAbacAttributeDefinition[]): Promise<void> {
-		// Intentionally left blank for adding code later. For now, its no-op
+	protected async onRoomAttributesChanged(rid: string, newAttributes: IAbacAttributeDefinition[]): Promise<void> {
+		if (!newAttributes?.length) {
+			// No attributes => abac room is disabled. Should w remove all members?
+			return;
+		}
+
+		try {
+			// For each room attribute build a violation condition:
+			// Users that either don't have the attribute array or do not contain all required values.
+			// Using $not + $all matches both "missing field" and "array missing any required value".
+			const violationConditions = newAttributes.map(({ key, values }) => ({
+				abacAttributes: {
+					$not: {
+						$elemMatch: {
+							key,
+							values: { $all: values },
+						},
+					},
+				},
+			}));
+
+			if (!violationConditions.length) {
+				return;
+			}
+
+			const query = {
+				__rooms: rid,
+				$or: violationConditions,
+			};
+
+			const cursor = Users.find(query, { projection: { _id: 1 } });
+			const usersToRemove: string[] = [];
+			for await (const doc of cursor) {
+				usersToRemove.push(doc._id);
+			}
+
+			if (!usersToRemove.length) {
+				// Log that the room attributes changed but no users were removed
+				return;
+			}
+
+			this.logger.debug({
+				msg: 'Re-evaluating room subscriptions',
+				rid,
+				newAttributes,
+				usersThatWillBeRemoved: usersToRemove,
+			});
+		} catch (err) {
+			this.logger.error({
+				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
+				rid,
+				err,
+			});
+		}
 	}
 }
 
