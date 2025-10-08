@@ -276,7 +276,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			}
 
 			const messageEvent = await FederationMatrix.getEventById(redactedEventId);
-			if (!messageEvent || messageEvent.type !== 'm.room.message') {
+			if (!messageEvent || messageEvent.event.type !== 'm.room.message') {
 				logger.debug(`Event ${redactedEventId} is not a message event`);
 				return;
 			}
