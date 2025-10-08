@@ -10,7 +10,8 @@
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.26.10",
