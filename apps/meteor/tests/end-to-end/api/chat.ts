@@ -1734,7 +1734,7 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should fail updating a message with "content" if it is not encrypted', () => {
+		it('should fail updating a message with "content" if it is not encrypted', (done) => {
 			void request
 				.post(api('chat.update'))
 				.set(credentials)
@@ -1751,7 +1751,8 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Only encrypted messages can have content updated.');
-				});
+				})
+				.end(done);
 		});
 
 		it('should update a message successfully', (done) => {
