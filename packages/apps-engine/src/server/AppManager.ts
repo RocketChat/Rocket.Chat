@@ -459,13 +459,6 @@ export class AppManager {
 
 		const isSetup = await this.runStartUpProcess(storageItem, rl, true, false);
 
-		if (isSetup) {
-			storageItem.status = await rl.getStatus();
-			// This is async, but we don't care since it only updates in the database
-			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
-		}
-
 		return isSetup;
 	}
 
@@ -496,11 +489,6 @@ export class AppManager {
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
 		await app.validateLicense().catch();
-
-		storageItem.status = await app.getStatus();
-		// This is async, but we don't care since it only updates in the database
-		// and it should not mutate any properties we care about
-		await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 
 		return true;
 	}
@@ -730,7 +718,6 @@ export class AppManager {
 			createdAt: old.createdAt,
 			id: result.info.id,
 			info: result.info,
-			status: (await this.apps.get(old.id)?.getStatus()) || old.status,
 			languageContent: result.languageContent,
 			settings: old.settings,
 			implemented: result.implemented.getValues(),
@@ -1072,17 +1059,6 @@ export class AppManager {
 			result = false;
 
 			await app.setStatus(status, silenceStatus);
-
-			// If some error has happened in initialization, like license or installations invalidation
-			// we need to store this on the DB regardless of what the parameter requests
-			saveToDb = true;
-		}
-
-		if (saveToDb) {
-			// This is async, but we don't care since it only updates in the database
-			// and it should not mutate any properties we care about
-			storageItem.status = await app.getStatus();
-			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return result;
@@ -1167,10 +1143,6 @@ export class AppManager {
 			}
 
 			console.error(e);
-
-			// If some error has happened during enabling, like license or installations invalidation
-			// we need to store this on the DB regardless of what the parameter requests
-			saveToDb = true;
 		}
 
 		if (enable) {
@@ -1186,13 +1158,6 @@ export class AppManager {
 				keepSlashcommands: true,
 				keepOutboundCommunicationProviders: true,
 			});
-		}
-
-		if (saveToDb) {
-			storageItem.status = status;
-			// This is async, but we don't care since it only updates in the database
-			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		await app.setStatus(status, silenceStatus);
