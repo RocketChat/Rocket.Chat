@@ -8618,6 +8618,7 @@ __metadata:
     babel-loader: "npm:^9.2.1"
     babel-plugin-array-includes: "npm:^2.0.3"
     babel-plugin-istanbul: "npm:^6.1.1"
+    babel-plugin-react-compiler: "npm:^19.0.0-beta-ebf51a3-20250411"
     bad-words: "npm:^3.0.4"
     bcrypt: "npm:^5.1.1"
     body-parser: "npm:1.20.3"
@@ -8764,6 +8765,7 @@ __metadata:
     re-resizable: "npm:^6.10.1"
     react: "npm:~18.3.1"
     react-aria: "npm:~3.37.0"
+    react-compiler-runtime: "npm:^19.0.0-beta-ebf51a3-20250411"
     react-docgen-typescript-plugin: "npm:^1.0.8"
     react-dom: "npm:~18.3.1"
     react-error-boundary: "npm:^3.1.4"
@@ -15168,6 +15170,15 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
   checksum: 10/150233571072b6b3dfe946242da39cba8587b7f908d1c006f7545fc88b0e3c3018d445739beb61e7a75835f0c2751dbe884a94ff9b245ec42369d9267e0e1b3f
+  languageName: node
+  linkType: hard
+
+"babel-plugin-react-compiler@npm:^19.0.0-beta-ebf51a3-20250411":
+  version: 19.0.0-beta-ebf51a3-20250411
+  resolution: "babel-plugin-react-compiler@npm:19.0.0-beta-ebf51a3-20250411"
+  dependencies:
+    "@babel/types": "npm:^7.26.0"
+  checksum: 10/aebbe6602a2284d799d54ad5ca4b1a889be5d490639db104b796530a92253e131df4a9e0658d29ef37e48f78e6d40e29403bf96dac43351fde5e538b53c1f5eb
   languageName: node
   linkType: hard
 
@@ -31447,6 +31458,15 @@ __metadata:
     react: ^16.8.5 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.5 || ^17.0.0 || ^18.0.0
   checksum: 10/2de8162a74f7fc78294e5a928b92d3fff02c579d137a25d53b1ab4313abeb108709bb7281512f7f94d18257de3122b8c85cb5a8375113cb8657088b1a9bda65b
+  languageName: node
+  linkType: hard
+
+"react-compiler-runtime@npm:^19.0.0-beta-ebf51a3-20250411":
+  version: 19.0.0-beta-ebf51a3-20250411
+  resolution: "react-compiler-runtime@npm:19.0.0-beta-ebf51a3-20250411"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+  checksum: 10/cb8eb348e2c87787e035e865551786a99490d4078b00ec3b7acab0deb7019bdd530f010761f9aa3f5527454e3692b751fff139444f5b8b71d14efd6ca91ff91a
   languageName: node
   linkType: hard
 

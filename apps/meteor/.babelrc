@@ -10,13 +10,19 @@
 		]
 	],
 	"plugins": [
-    [
-      "@babel/plugin-transform-react-jsx",
-      {
-        "runtime": "automatic"
-      }
-    ]
-  ],
+		[
+			"@babel/plugin-transform-react-jsx",
+			{
+				"runtime": "automatic"
+			}
+		],
+		[
+			"babel-plugin-react-compiler",
+			{
+				"target": "18"
+			}
+		]
+	],
 	"env": {
 		"coverage": {
 			"plugins": [
