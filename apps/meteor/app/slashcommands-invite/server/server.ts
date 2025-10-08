@@ -8,6 +8,10 @@ import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
 
+const isFederatedUsername = (username: string) => {
+	return username.includes('@') && username.includes(':');
+};
+
 /*
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
@@ -17,16 +21,12 @@ slashCommands.add({
 	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'invite'>): Promise<void> => {
 		const usernames = params
 			.split(/[\s,]/)
-			.map((username) => username.replace(/(^@)|( @)/, ''))
+			.map((username) => (isFederatedUsername(username) ? username : username.replace(/(^@)|( @)/, '')))
 			.filter((a) => a !== '');
 		if (usernames.length === 0) {
 			return;
 		}
-		const users = await Users.find({
-			username: {
-				$in: usernames,
-			},
-		}).toArray();
+		const users = await Users.findByUsernames(usernames).toArray();
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('User_doesnt_exist', {
@@ -81,7 +81,12 @@ slashCommands.add({
 					if (typeof error !== 'string') {
 						return;
 					}
-					if (error === 'cant-invite-for-direct-room') {
+
+					if (error === 'error-federated-users-in-non-federated-rooms') {
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+						});
+					} else if (error === 'cant-invite-for-direct-room') {
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 							msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
 						});

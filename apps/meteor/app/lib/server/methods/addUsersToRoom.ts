@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -16,10 +17,6 @@ declare module '@rocket.chat/ddp-client' {
 		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
 	}
 }
-
-const isAFederatedUsername = (username: string) => {
-	return username.includes('@') && username.includes(':');
-};
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
@@ -83,7 +80,20 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !isAFederatedUsername(username)) {
+
+			if (!newUser) {
+				throw new Meteor.Error('error-user-not-found', 'User not found', {
+					method: 'addUsersToRoom',
+				});
+			}
+
+			if (isUserNativeFederated(newUser) && !isRoomNativeFederated(room)) {
+				throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
+					method: 'addUsersToRoom',
+				});
+			}
+
+			if (!newUser && !isUserNativeFederated(newUser)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});
