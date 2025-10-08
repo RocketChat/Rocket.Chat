@@ -82,7 +82,9 @@
 		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
 	},
 	"dependencies": {
+		"@types/qrcode": "^1.5.5",
 		"@types/stream-buffers": "^3.0.7",
-		"node-gyp": "^10.2.0"
+		"node-gyp": "^10.2.0",
+		"qrcode": "^1.5.4"
 	}
 }

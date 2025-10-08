@@ -23,6 +23,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { useQrModalHandler } from './hooks/useQrModalHandler';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -103,6 +104,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const usernameId = useId();
 	const passwordId = useId();
+	const handleQrModal = useQrModalHandler();
 	const loginFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -218,6 +220,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						<ButtonGroup>
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
+							</Button>
+							<Button onClick={handleQrModal} primary>
+								{t('Login_using_QR')}
 							</Button>
 						</ButtonGroup>
 						<p>
