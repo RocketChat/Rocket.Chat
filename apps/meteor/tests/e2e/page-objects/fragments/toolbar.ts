@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import type { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
 import { OmnichannelOnHoldModal } from './omnichannel-on-hold-modal';
 
 export abstract class Toolbar {
@@ -130,6 +130,7 @@ export class OmnichannelQuickActionsRoomToolbar extends Toolbar {
 
 	constructor(page: Page) {
 		super(page.getByRole('toolbar', { name: 'Omnichannel Quick Actions' }));
+		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.onHoldModal = new OmnichannelOnHoldModal(page);
 	}
 
