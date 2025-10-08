@@ -418,7 +418,7 @@ describe('AbacService (unit)', () => {
 				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
 			});
 
-			it('accepts duplicate values unchanged and sets attributes', async () => {
+			it('sets attributes for new key (with duplicate values) and calls hook', async () => {
 				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 				mockAbacFind.mockReturnValueOnce({
 					toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
@@ -427,10 +427,10 @@ describe('AbacService (unit)', () => {
 				await service.setRoomAbacAttributes('r1', { dept: ['eng', 'eng', 'sales'] });
 
 				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'eng', 'sales'] }]);
-				expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'eng', 'sales'] }]);
 			});
 
-			it('calls onRoomAttributesChanged when an existing value is removed', async () => {
+			it('does not call onRoomAttributesChanged when an existing value is removed', async () => {
 				const existing = [{ key: 'dept', values: ['eng', 'sales'] }];
 				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 				mockAbacFind.mockReturnValueOnce({
@@ -439,11 +439,11 @@ describe('AbacService (unit)', () => {
 
 				await service.setRoomAbacAttributes('r1', { dept: ['eng'] }); // removing 'sales'
 
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng'] }]);
+				expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng'] }]);
 			});
 
-			it('does not call onRoomAttributesChanged when only adding values', async () => {
+			it('calls onRoomAttributesChanged when adding values to an existing attribute', async () => {
 				const existing = [{ key: 'dept', values: ['eng'] }];
 				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 				mockAbacFind.mockReturnValueOnce({
@@ -452,7 +452,7 @@ describe('AbacService (unit)', () => {
 
 				await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }); // adding sales
 
-				expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 			});
 		});
@@ -531,18 +531,19 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
 
-		it('updates existing key (addition only) without triggering removal hook', async () => {
+		it('updates existing key (addition only) and triggers hook when a value is added', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales']);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
-			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 		});
 
-		it('updates existing key and triggers hook when a value is removed', async () => {
+		it('updates existing key and does NOT trigger hook when a value is removed', async () => {
+			// Existing attribute loses one value; hook should NOT fire per new behavior
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng']);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng'] }]);
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
 
 		it('validates against global definitions (invalid value)', async () => {
@@ -572,7 +573,8 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
 
-		it('removes attribute and calls hook when key exists', async () => {
+		it('removes attribute and does NOT call hook when key exists', async () => {
+			// Removing an entire attribute should not trigger the hook anymore
 			const existing = [
 				{ key: 'dept', values: ['eng', 'sales'] },
 				{ key: 'other', values: ['x'] },
@@ -580,7 +582,7 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 			await (service as any).removeRoomAbacAttribute('r1', 'dept');
 			expect(mockRemoveAbacAttributeByRoomIdAndKey).toHaveBeenCalledWith('r1', 'dept');
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'other', values: ['x'] }]);
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
 
 		describe('replaceRoomAbacAttributeByKey', () => {
