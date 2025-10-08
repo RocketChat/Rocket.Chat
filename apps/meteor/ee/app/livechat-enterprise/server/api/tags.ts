@@ -68,7 +68,7 @@ API.v1.addRoute(
 );
 
 const livechatTagsEndpoints = API.v1.post(
-	'livechat/tags.remove',
+	'livechat/tags.delete',
 	{
 		response: {
 			200: POSTLivechatTagsRemoveSuccessResponse,

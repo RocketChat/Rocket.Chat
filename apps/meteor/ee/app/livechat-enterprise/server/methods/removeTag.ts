@@ -15,7 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeTag'(id) {
-		methodDeprecationLogger.method('livechat:removeTag', '8.0.0', '/v1/livechat/tags.remove');
+		methodDeprecationLogger.method('livechat:removeTag', '8.0.0', '/v1/livechat/tags.delete');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-tags'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeTag' });

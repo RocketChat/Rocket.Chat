@@ -10,7 +10,7 @@ type CreateTagParams = {
 	departments?: { departmentId: string }[];
 };
 
-const removeTag = async (api: BaseTest['api'], id: string) => api.post('/livechat/tags.remove', { id });
+const removeTag = async (api: BaseTest['api'], id: string) => api.post('/livechat/tags.delete', { id });
 
 export const createTag = async (api: BaseTest['api'], { id = null, name, description = '', departments = [] }: CreateTagParams = {}) => {
 	const response = await api.post('/method.call/livechat:saveTag', {
