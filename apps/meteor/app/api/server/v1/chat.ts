@@ -319,9 +319,15 @@ const chatEndpoints = API.v1
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
+			const hasContent = 'content' in bodyParams;
+
+			if (hasContent && msg.t !== 'e2e') {
+				return API.v1.failure('Only encrypted messages can have content updated.');
+			}
+
 			const updateData: Parameters<typeof executeUpdateMessage> = [
 				this.userId,
-				'content' in bodyParams
+				hasContent
 					? {
 							_id: msg._id,
 							rid: msg.rid,
