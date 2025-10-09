@@ -80,7 +80,6 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	await Promise.all(
 		data.users.map(async (username) => {
 			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-
 			if (!newUser) {
 				throw new Meteor.Error('error-user-not-found', 'User not found', {
 					method: 'addUsersToRoom',
@@ -93,12 +92,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 				});
 			}
 
-			if (!newUser && !isUserNativeFederated(newUser)) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
-					method: 'addUsersToRoom',
-				});
-			}
-			const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
 				await addUserToRoom(data.rid, newUser || username, user);
 			} else {
