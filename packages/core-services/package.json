@@ -44,8 +44,5 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~"
-	},
-	"peerDependencies": {
-		"@rocket.chat/federation-sdk": "*"
 	}
 }
