@@ -22,12 +22,8 @@ describe('useSettingStructure', () => {
 		} as ISetting;
 
 		const { result } = renderHook(() => useSettingStructure('Force_SSL'), {
-			wrapper: mockAppRoot()
-				.withSetting('Force_SSL', true, settingStructure as ISetting)
-				.build(),
+			wrapper: mockAppRoot().withSetting('Force_SSL', true, settingStructure).build(),
 		});
-
-		console.log(result.current);
 
 		expect(result.current).toEqual(settingStructure);
 	});
