@@ -4,18 +4,18 @@ import type { Collection, Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
+import { AbacService } from './index';
+
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {},
 	Room: {
 		// Mimic the DB side-effects of removing a user from a room (no apps/system messages)
 		removeUserFromRoom: async (roomId: string, user: any) => {
-			const { Subscriptions } = require('@rocket.chat/models');
+			const { Subscriptions } = await import('@rocket.chat/models');
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
 }));
-
-import AbacService from './index';
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let mongo: MongoMemoryServer;
