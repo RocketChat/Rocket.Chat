@@ -34,5 +34,6 @@ export const usePermalinkAction = (
 		order,
 		group: 'menu',
 		disabled: encrypted,
+		...(encrypted && { tooltip: t('Action_not_available_encrypted_content', { action: t('Copy_link') }) }),
 	};
 };
