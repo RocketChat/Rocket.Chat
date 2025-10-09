@@ -480,7 +480,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			parsedMessage,
 			userIdSchema.parse(matrixUserId),
 			eventIdSchema.parse(threadRootEventId),
-			eventIdSchema.parse(latestThreadEventId),
+			latestThreadEventId ? eventIdSchema.parse(latestThreadEventId) : undefined,
 		);
 	}
 
