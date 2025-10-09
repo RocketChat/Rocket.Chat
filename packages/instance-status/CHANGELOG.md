@@ -1,15 +1,14 @@
 # @rocket.chat/instance-status
 
-## 0.1.38-rc.2
+## 0.1.39-rc.2
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/models@1.7.0-rc.2
   </details>
 
-## 0.1.38-rc.1
+## 0.1.39-rc.1
 
 ### Patch Changes
 
@@ -18,13 +17,23 @@
   - @rocket.chat/models@1.7.0-rc.1
   </details>
 
-## 0.1.38-rc.0
+## 0.1.39-rc.0
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, 3e177dbd0b65d70bce8587287ba73b30170eb0f7]:</summary>
 
   - @rocket.chat/models@1.7.0-rc.0
+
+  </details>
+
+## 0.1.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.6.1
+
   </details>
 
 ## 0.1.37

@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@23.0.0-rc.2
   </details>
 
@@ -28,6 +27,14 @@
 
   - @rocket.chat/ui-contexts@23.0.0-rc.0
   </details>
+
+## 22.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@22.0.1
+</details>
 
 ## 22.0.0
 
