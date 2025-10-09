@@ -101,9 +101,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		federation_event_id: string;
 		msg?: string;
 		e2e_content?: {
-            algorithm: string,
-            ciphertext: string,
-        },
+			algorithm: string;
+			ciphertext: string;
+		};
 		file?: IMessage['file'];
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
