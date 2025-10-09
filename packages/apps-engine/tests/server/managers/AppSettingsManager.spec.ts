@@ -1,6 +1,7 @@
-import { AsyncTest, Expect, SetupFixture, SpyOn, Test } from 'alsatian';
+import { Any, AsyncTest, Expect, SetupFixture, SpyOn, Test } from 'alsatian';
 
 import { AppMethod } from '../../../src/definition/metadata';
+import type { ISetting } from '../../../src/definition/settings';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
@@ -33,6 +34,7 @@ export class AppSettingsManagerTestFixture {
 	@SetupFixture
 	public setupFixture() {
 		this.mockStorageItem = {
+			_id: 'test_underscore_id',
 			settings: {},
 		} as IAppStorageItem;
 
@@ -55,8 +57,8 @@ export class AppSettingsManagerTestFixture {
 		this.mockBridges = new TestsAppBridges();
 
 		this.mockStorage = {
-			update(item: IAppStorageItem): Promise<IAppStorageItem> {
-				return Promise.resolve(item);
+			updateSetting(appId: string, setting: ISetting): Promise<boolean> {
+				return Promise.resolve(true);
 			},
 		} as AppMetadataStorage;
 
@@ -125,9 +127,8 @@ export class AppSettingsManagerTestFixture {
 	public async updatingSettingViaAppSettingsManager() {
 		const asm = new AppSettingsManager(this.mockManager);
 
-		SpyOn(this.mockStorage, 'update');
+		SpyOn(this.mockStorage, 'updateSetting');
 		SpyOn(this.mockApp, 'call');
-		SpyOn(this.mockApp, 'setStorageItem');
 		SpyOn(this.mockBridges.getAppDetailChangesBridge(), 'doOnAppSettingsChange');
 
 		await Expect(() => asm.updateAppSetting('fake', TestData.getSetting())).toThrowErrorAsync(Error, 'No App found by the provided id.');
@@ -139,8 +140,8 @@ export class AppSettingsManagerTestFixture {
 		const set = TestData.getSetting('testing');
 		await Expect(() => asm.updateAppSetting('testing', set)).not.toThrowAsync();
 
-		Expect(this.mockStorage.update).toHaveBeenCalledWith(this.mockStorageItem).exactly(1);
-		Expect(this.mockApp.setStorageItem).toHaveBeenCalledWith(this.mockStorageItem).exactly(1);
+		Expect(this.mockStorage.updateSetting).toHaveBeenCalledWith('test_underscore_id', Any(Object).thatMatches(set)).exactly(1);
+
 		Expect(this.mockBridges.getAppDetailChangesBridge().doOnAppSettingsChange).toHaveBeenCalledWith('testing', set).exactly(1);
 
 		Expect(this.mockApp.call).toHaveBeenCalledWith(AppMethod.ONSETTINGUPDATED, set).exactly(1);
