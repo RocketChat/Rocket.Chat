@@ -4,13 +4,9 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
-import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { addUsersToRoomMethod, sanitizeUsername } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
-
-const isFederatedUsername = (username: string) => {
-	return username.includes('@') && username.includes(':');
-};
 
 /*
  * Invite is a named function that will replace /invite commands
@@ -21,7 +17,7 @@ slashCommands.add({
 	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'invite'>): Promise<void> => {
 		const usernames = params
 			.split(/[\s,]/)
-			.map((username) => (isFederatedUsername(username) ? username : username.replace(/(^@)|( @)/, '')))
+			.map((username) => sanitizeUsername(username))
 			.filter((a) => a !== '');
 		if (usernames.length === 0) {
 			return;
