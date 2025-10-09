@@ -155,6 +155,11 @@ export const getMessageData = (
 		case 'livechat-started':
 			messageObject.msg = i18n.t('Chat_started');
 			break;
+		case 'abac-removed-user-from-room':
+			messageObject.msg = i18n.t('abac_removed__username__from_the_room', {
+				user_removed: hideUserName(msg.msg, userData, usersMap),
+			});
+			break;
 	}
 
 	return messageObject;
