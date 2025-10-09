@@ -1,21 +1,29 @@
+# Configuration for @rocket-cat bot
+
 bot:
   name: "@rocket-cat"
+
 whitelist:
+  # Users who are allowed to interact with or trigger bot commands
   users:
     - wreiske
     - TwizzyDizzy
     - theorenck
     - JSzaszvari
     - reetp
+
+  # Labels that the bot can apply, recognize, or act upon
   labels:
     - "Contributions: welcome"
     - "Contributions: only core team"
     - "Feature: Request"
     - "Feature: Planned"
     - "type: bug"
-    - "help wanted"    
-    - duplicate
-    - enhancement
-    - invalid
-    - question
-    - wontfix
+    - "help wanted"
+    - "duplicate"
+    - "enhancement"
+    - "invalid"
+    - "question"
+    - "wontfix"
+    - "refactor this code"
+
