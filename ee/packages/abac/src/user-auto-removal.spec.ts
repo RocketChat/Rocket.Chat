@@ -4,6 +4,17 @@ import type { Collection, Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
+jest.mock('@rocket.chat/core-services', () => ({
+	ServiceClass: class {},
+	Room: {
+		// Mimic the DB side-effects of removing a user from a room (no apps/system messages)
+		removeUserFromRoom: async (roomId: string, user: any) => {
+			const { Subscriptions } = require('@rocket.chat/models');
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+		},
+	},
+}));
+
 import AbacService from './index';
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
@@ -95,7 +106,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	});
 
 	describe('setRoomAbacAttributes - new key addition', () => {
-		it('logs users that do not satisfy newly added attribute key or its values', async () => {
+		it('logs users that do not satisfy newly added attribute key or its values and actually removes them', async () => {
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]);
 			await insertRoom([]);
 			await insertUsers([
@@ -117,9 +128,19 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(payload.rid).toBe(rid);
 			expect(payload.newAttributes).toEqual([{ key: 'dept', values: ['eng', 'sales'] }]);
 			expect(payload.usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3']); // only non compliant
+
+			// Assert membership actually updated
+			const remaining = await usersCol
+				.find({ _id: { $in: ['u1', 'u2', 'u3', 'u4'] } }, { projection: { __rooms: 1 } })
+				.toArray()
+				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
+			expect(remaining.u1).toContain(rid);
+			expect(remaining.u4).toContain(rid);
+			expect(remaining.u2).not.toContain(rid);
+			expect(remaining.u3).not.toContain(rid);
 		});
 
-		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant)', async () => {
+		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant and removes them)', async () => {
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
 			await insertRoom([]);
 			await insertUsers([
@@ -135,11 +156,16 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(1);
 			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+
+			const u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
+			const u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
+			expect(u1?.__rooms || []).toContain(rid);
+			expect(u2?.__rooms || []).not.toContain(rid);
 		});
 	});
 
 	describe('updateRoomAbacAttributeValues - new value addition', () => {
-		it('logs users missing newly added value while retaining compliant ones', async () => {
+		it('logs users missing newly added value while retaining compliant ones and removes the missing ones', async () => {
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
 			await insertRoom([{ key: 'dept', values: ['eng'] }]);
 			await insertUsers([
@@ -156,6 +182,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(1);
 			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+
+			const users = await usersCol
+				.find({ _id: { $in: ['u1', 'u2', 'u3'] } }, { projection: { __rooms: 1 } })
+				.toArray()
+				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
+			expect(users.u1).toContain(rid);
+			expect(users.u3).toContain(rid);
+			expect(users.u2).not.toContain(rid);
 		});
 
 		it('produces no evaluation log when only removing values from existing attribute', async () => {
@@ -173,6 +207,12 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.map((c: any[]) => c[0])
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(0);
+
+			// nobody removed because removal only does not trigger reevaluation
+			const u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
+			const u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
+			expect(u1?.__rooms || []).toContain(rid);
+			expect(u2?.__rooms || []).toContain(rid);
 		});
 	});
 
@@ -232,6 +272,16 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(1);
 			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3', 'u5']);
+
+			const memberships = await usersCol
+				.find({ _id: { $in: ['u1', 'u2', 'u3', 'u4', 'u5'] } }, { projection: { __rooms: 1 } })
+				.toArray()
+				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
+			expect(memberships.u1).toContain(rid);
+			expect(memberships.u4).toContain(rid);
+			expect(memberships.u2).not.toContain(rid);
+			expect(memberships.u3).not.toContain(rid);
+			expect(memberships.u5).not.toContain(rid);
 		});
 	});
 
@@ -249,12 +299,23 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			const firstEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Re-evaluating room subscriptions');
 			expect(firstEval.length).toBe(1);
 			expect(firstEval[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+
+			let u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
+			let u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
+			expect(u1?.__rooms || []).toContain(rid);
+			expect(u2?.__rooms || []).not.toContain(rid);
+
 			// Reset mock counts for clarity
 			debugSpy.mockClear();
 
 			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
 			const secondEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Re-evaluating room subscriptions');
 			expect(secondEval.length).toBe(0);
+
+			u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
+			u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
+			expect(u1?.__rooms || []).toContain(rid);
+			expect(u2?.__rooms || []).not.toContain(rid);
 		});
 	});
 
@@ -275,6 +336,11 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(1);
 			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+
+			const u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
+			const u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
+			expect(u1?.__rooms || []).toContain(rid);
+			expect(u2?.__rooms || []).not.toContain(rid);
 		});
 
 		it('removes user missing attribute key entirely', async () => {
@@ -294,6 +360,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
 			expect(evaluationCalls.length).toBe(1);
 			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3']);
+
+			const memberships = await usersCol
+				.find({ _id: { $in: ['u1', 'u2', 'u3'] } }, { projection: { __rooms: 1 } })
+				.toArray()
+				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
+			expect(memberships.u1).toContain(rid);
+			expect(memberships.u2).not.toContain(rid);
+			expect(memberships.u3).not.toContain(rid);
 		});
 	});
 
@@ -327,6 +401,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(removed).toContain('u299');
 			expect(removed).not.toContain('u0');
 			expect(removed).not.toContain('u298');
+
+			const remainingCount = await usersCol.countDocuments({ __rooms: rid });
+			expect(remainingCount).toBe(150);
 		});
 	});
 });
