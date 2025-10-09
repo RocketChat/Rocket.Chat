@@ -8,7 +8,6 @@
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.1.21",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
@@ -36,6 +35,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/federation-sdk": "0.1.21",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/media-signaling": "workspace:^",
@@ -44,8 +44,5 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~"
-	},
-	"peerDependencies": {
-		"@rocket.chat/federation-sdk": "*"
 	}
 }

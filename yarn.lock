@@ -7342,8 +7342,6 @@ __metadata:
     mongodb: "npm:6.10.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.2"
-  peerDependencies:
-    "@rocket.chat/federation-sdk": "*"
   languageName: unknown
   linkType: soft
 
@@ -7560,8 +7558,6 @@ __metadata:
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
     typescript: "npm:~5.8.3"
-  peerDependencies:
-    "@rocket.chat/federation-sdk": "*"
   languageName: unknown
   linkType: soft
 
@@ -9748,7 +9744,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
-    "@rocket.chat/ui-contexts": 23.0.0-rc.1
+    "@rocket.chat/ui-contexts": 23.0.0-rc.2
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
