@@ -23,7 +23,7 @@ export const sanitizeUsername = (username: string) => {
 	if (isFederatedUsername) {
 		return username;
 	}
-	
+
 	return username.replace(/(^@)|( @)/, '');
 };
 
@@ -103,7 +103,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser || username, user);
+				await addUserToRoom(data.rid, newUser, user);
 			} else {
 				if (!newUser.username) {
 					return;
