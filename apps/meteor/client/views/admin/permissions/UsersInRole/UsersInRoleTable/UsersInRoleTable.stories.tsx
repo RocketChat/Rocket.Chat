@@ -1,0 +1,77 @@
+// import type { IPermission, IRole } from '@rocket.chat/core-typings';
+import { Margins } from '@rocket.chat/fuselage';
+import type { Meta, StoryFn } from '@storybook/react';
+
+// import PermissionsTable from './PermissionsTable';
+import UsersInRoleTable from './UsersInRoleTable';
+import { PageContent } from '../../../../../components/Page';
+
+export default {
+	component: UsersInRoleTable,
+	decorators: [
+		(fn) => (
+			<PageContent mb='neg-x8'>
+				<Margins block={8}>{fn()}</Margins>
+			</PageContent>
+		),
+	],
+} satisfies Meta<typeof UsersInRoleTable>;
+
+const generateMockedUsers = (count: number) =>
+	Array.from({ length: count }, (_, i) => ({
+		_id: `${i + 1}`,
+		username: `user.${i + 1}`,
+		name: `User ${i + 1}`,
+		emails: [{ address: `user${i + 1}@example.com`, verified: i % 2 === 0 }],
+		createdAt: new Date().toISOString(),
+		_updatedAt: new Date().toISOString(),
+		roles: [i < 5 ? 'admin' : 'user'],
+		type: 'user',
+		active: true,
+	}));
+
+const mockedUsers = generateMockedUsers(5);
+
+export const Default: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+Default.args = {
+	total: 30,
+	isLoading: false,
+	isError: false,
+	isSuccess: true,
+	users: mockedUsers,
+	onRemove: () => undefined,
+	refetch: () => undefined,
+};
+
+export const Loading: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+Loading.args = {
+	total: 0,
+	isLoading: true,
+	isError: false,
+	isSuccess: false,
+	users: [],
+	onRemove: () => undefined,
+	refetch: () => undefined,
+};
+
+export const Empty: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+Empty.args = {
+	total: 0,
+	isLoading: false,
+	isError: false,
+	isSuccess: true,
+	users: [],
+	onRemove: () => undefined,
+	refetch: () => undefined,
+};
+
+export const Error: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+Error.args = {
+	total: 0,
+	isLoading: false,
+	isError: true,
+	isSuccess: false,
+	users: [],
+	onRemove: () => undefined,
+	refetch: () => undefined,
+};
