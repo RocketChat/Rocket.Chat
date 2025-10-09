@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.55.1
+
+### Patch Changes
+
+- ([#37028](https://github.com/RocketChat/Rocket.Chat/pull/37028) by [@dionisio-bot](https://github.com/dionisio-bot)) Changes a strict behavior on reporting slash commands provided by apps
+
 ## 1.55.0
 
 ### Minor Changes
