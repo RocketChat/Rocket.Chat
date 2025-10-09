@@ -1,25 +1,82 @@
+# .github/dependabot.yml
+# Dependabot configuration file
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
 version: 2
+
 updates:
-  # Main repo NPM package
+  # ----------------------------------------------
+  # 1. Main repository NPM dependencies
+  # ----------------------------------------------
   - package-ecosystem: npm
-    directory: '/'
+    directory: "/"              # Location of package.json
     schedule:
-      interval: daily
+      interval: daily           # Check for updates every day
+      time: "03:00"             # (Optional) UTC time for update checks
     open-pull-requests-limit: 10
     labels:
-      - 'automerge'
+      - "automerge"
+      - "dependencies"
+    reviewers:
+      - "wreiske"
+      - "TwizzyDizzy"
+    assignees:
+      - "theorenck"
 
-  ## EE dependencies
+  # ----------------------------------------------
+  # 2. EE (Enterprise Edition) service dependencies
+  # ----------------------------------------------
   - package-ecosystem: npm
-    directory: '/ee/server/services'
+    directory: "/ee/server/services"
     schedule:
       interval: daily
+      time: "04:00"
     open-pull-requests-limit: 10
     labels:
-      - 'automerge'
+      - "automerge"
+      - "dependencies"
+    reviewers:
+      - "JSzaszvari"
+      - "reetp"
 
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  # ----------------------------------------------
+  # 3. GitHub Actions dependencies
+  # ----------------------------------------------
+  - package-ecosystem: github-actions
+    directory: "/"
     schedule:
-      interval: 'daily'
+      interval: daily
+      time: "05:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "automerge"
+      - "ci"
+    reviewers:
+      - "wreiske"
+
+  # ----------------------------------------------
+  # 4. Optional: Docker dependencies (if applicable)
+  # ----------------------------------------------
+  # - package-ecosystem: docker
+  #   directory: "/"
+  #   schedule:
+  #     interval: weekly
+  #     day: "sunday"
+  #     time: "06:00"
+  #   open-pull-requests-limit: 5
+  #   labels:
+  #     - "dependencies"
+  #     - "docker"
+  #   reviewers:
+  #     - "TwizzyDizzy"
+
+  # ----------------------------------------------
+  # 5. Optional: Grouped updates (to reduce PR noise)
+  # ----------------------------------------------
+  # group:
+  #   security-updates:
+  #     patterns:
+  #       - "*"
+  #     update-types:
+  #       - "security"
+
