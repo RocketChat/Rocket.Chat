@@ -163,6 +163,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private pendingAnswerRequest: ServerMediaSignalRemoteSDP | null;
 
+	public get audioLevel(): number {
+		return this.webrtcProcessor?.audioLevel || 0;
+	}
+
+	public get localAudioLevel(): number {
+		return this.webrtcProcessor?.localAudioLevel || 0;
+	}
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -647,6 +655,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			dtmf,
 			duration,
 		});
+	}
+
+	public async getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null> {
+		return this.webrtcProcessor?.getStats(selector) ?? null;
 	}
 
 	private changeState(newState: CallState): void {

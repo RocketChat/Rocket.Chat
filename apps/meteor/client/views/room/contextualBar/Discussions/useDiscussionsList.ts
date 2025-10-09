@@ -10,7 +10,7 @@ import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useDiscussionsList = (
 	options: DiscussionsListOptions,
-	uid: IUser['_id'] | null,
+	uid: IUser['_id'] | undefined,
 ): {
 	discussionsList: DiscussionsList;
 	initialItemCount: number;

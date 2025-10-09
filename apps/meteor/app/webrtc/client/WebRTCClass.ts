@@ -2,11 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
 import { settings } from '../../../client/lib/settings';
+import { getUserId } from '../../../client/lib/user';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Subscriptions, Users } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
@@ -1035,31 +1035,28 @@ const WebRTC = new (class {
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.watch('WebRTC_Enable_Direct') ?? false;
+					enabled = settings.peek('WebRTC_Enable_Direct') ?? false;
 					break;
 				case 'p':
-					enabled = settings.watch('WebRTC_Enable_Private') ?? false;
+					enabled = settings.peek('WebRTC_Enable_Private') ?? false;
 					break;
 				case 'c':
-					enabled = settings.watch('WebRTC_Enable_Channel') ?? false;
+					enabled = settings.peek('WebRTC_Enable_Channel') ?? false;
 					break;
 				case 'l':
-					enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
+					enabled = settings.peek<string>('Omnichannel_call_provider') === 'WebRTC';
 			}
 		} else {
-			enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
+			enabled = settings.peek<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && (settings.watch('WebRTC_Enabled') ?? false);
+		enabled = enabled && (settings.peek('WebRTC_Enabled') ?? false);
 		if (enabled === false) {
 			return;
 		}
 		if (this.instancesByRoomId[rid] == null) {
-			let uid = Meteor.userId()!;
-			let autoAccept = false;
-			if (visitorId) {
-				uid = visitorId;
-				autoAccept = true;
-			}
+			const uid = visitorId ?? getUserId();
+			if (!uid) return undefined;
+			const autoAccept = !!visitorId;
 			this.instancesByRoomId[rid] = new WebRTCClass(uid, rid, autoAccept);
 		}
 		return this.instancesByRoomId[rid];
