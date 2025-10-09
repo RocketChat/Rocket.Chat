@@ -1,9 +1,13 @@
-import { ServiceClass } from '@rocket.chat/core-services';
+import { Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users } from '@rocket.chat/models';
 import type { Filter, UpdateFilter } from 'mongodb';
+import pLimit from 'p-limit';
+
+// Limit concurrent user removals to avoid overloading the server with too many operations at once
+const limit = pLimit(20);
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -428,10 +432,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 				$or: violationConditions,
 			};
 
-			const cursor = Users.find(query, { projection: { _id: 1 } });
+			const cursor = Users.find(query, { projection: { __rooms: 0 } });
+			const byUser = await Users.findOneById('rocket.cat', { projection: { __rooms: 0 } });
 			const usersToRemove: string[] = [];
+			const userRemovalPromises = [];
 			for await (const doc of cursor) {
 				usersToRemove.push(doc._id);
+				userRemovalPromises.push(
+					limit(() =>
+						Room.removeUserFromRoom(rid, doc, {
+							byUser: byUser!,
+							skipAppPreEvents: true,
+							customSystemMessage: 'abac-removed-user-from-room' as const,
+						}),
+					),
+				);
 			}
 
 			if (!usersToRemove.length) {
@@ -445,6 +460,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 				newAttributes,
 				usersThatWillBeRemoved: usersToRemove,
 			});
+
+			await Promise.all(userRemovalPromises);
 		} catch (err) {
 			this.logger.error({
 				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
