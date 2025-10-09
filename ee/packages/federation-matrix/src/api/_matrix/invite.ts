@@ -172,7 +172,7 @@ async function joinRoom({
 	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
-	const matrixRoom = await state.getFullRoomState2(inviteEvent.roomId);
+	const matrixRoom = await state.getLatestRoomState2(inviteEvent.roomId);
 	if (!matrixRoom) {
 		throw new Error('room not found not processing invite');
 	}
