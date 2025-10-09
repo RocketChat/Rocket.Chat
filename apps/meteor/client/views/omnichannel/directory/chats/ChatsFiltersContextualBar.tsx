@@ -18,8 +18,8 @@ import {
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
-import AutoCompleteUnits from '../../../../omnichannel/additionalForms/AutoCompleteUnits';
 import { CurrentChatTags } from '../../additionalForms';
+import AutoCompleteUnits from '../../additionalForms/AutoCompleteUnits';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 

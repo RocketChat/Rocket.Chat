@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoggedOutBanner from '../../../components/deviceManagement/LoggedOutBanner';
-import { useIframe } from '../../../hooks/iframe/useIframe';
+import { useIframe } from '../hooks/useIframe';
 
 const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; children?: ReactNode }): ReactElement => {
 	const { t } = useTranslation();
