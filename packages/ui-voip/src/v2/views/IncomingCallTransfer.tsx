@@ -7,7 +7,7 @@ import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeade
 const IncomingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, onAccept, peerInfo /* , transferredBy */ } = useMediaCallContext();
+	const { onEndCall, onAccept, peerInfo, transferredBy } = useMediaCallContext();
 
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
@@ -19,9 +19,7 @@ const IncomingCall = () => {
 			<WidgetHeader title={`${t('Transferring_call_incoming')}...`}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetInfo
-				slots={[{ text: t('Transferring_call_incoming_from__user_' /* , { from: transferredBy.displayName } */), type: 'info' }]}
-			/>
+			<WidgetInfo slots={[{ text: t('Transferring_call_incoming__from_', { from: transferredBy }), type: 'info' }]} />
 			<WidgetContent>
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
