@@ -432,7 +432,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			};
 
 			const cursor = Users.find(query, { projection: { __rooms: 0 } });
-			const byUser = await Users.findOneById('rocket.cat', { projection: { __rooms: 0 } });
 			const usersToRemove: string[] = [];
 			const userRemovalPromises = [];
 			for await (const doc of cursor) {
@@ -440,7 +439,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 				userRemovalPromises.push(
 					limit(() =>
 						Room.removeUserFromRoom(rid, doc, {
-							byUser: byUser!,
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
 						}),

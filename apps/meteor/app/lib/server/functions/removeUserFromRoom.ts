@@ -13,7 +13,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/not
 export const removeUserFromRoom = async function (
 	rid: string,
 	user: IUser,
-	options?: { byUser: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
 ): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 

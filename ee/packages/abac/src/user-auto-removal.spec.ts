@@ -89,10 +89,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		roomsCol = db.collection<IRoom>('rocketchat_room');
 		usersCol = db.collection<IUser>('users');
 		defsCol = db.collection('abac_attributes');
-
-		// Silence logs from service hook during tests
-		jest.spyOn(console, 'log').mockImplementation(() => undefined);
-		jest.spyOn(console, 'error').mockImplementation(() => undefined);
 	}, 30_000);
 
 	afterAll(async () => {
