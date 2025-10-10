@@ -365,6 +365,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return null;
 		}
 
+		const replyToMessage = await this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		const quoteMessage = await this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 		try {
 			let lastEventId: { eventId: string } | null = null;
 
@@ -388,6 +390,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				roomIdSchema.parse(matrixRoomId),
 				fileContent,
 				userIdSchema.parse(matrixUserId),
+				replyToMessage || quoteMessage,
 			);
 
 			return lastEventId;
@@ -412,94 +415,62 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			homeServerDomain: matrixDomain,
 		});
 
-		if (message.tmid) {
-			return this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain, parsedMessage);
-		}
-
-		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-			return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
-		}
+		const replyToMessage = await this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		const quoteMessage = await this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 
 		return this.homeserverServices.message.sendMessage(
 			roomIdSchema.parse(matrixRoomId),
 			message.msg,
 			parsedMessage,
 			userIdSchema.parse(matrixUserId),
+			replyToMessage || quoteMessage,
 		);
 	}
 
-	private async handleThreadedMessage(
-		message: IMessage,
-		matrixRoomId: string,
-		matrixUserId: string,
-		matrixDomain: string,
-		parsedMessage: string,
-	): Promise<{ eventId: string } | null> {
+	private async handleThreadedMessage(message: IMessage, matrixRoomId: string, matrixUserId: string, matrixDomain: string) {
 		if (!message.tmid) {
-			throw new Error('Thread message ID not found');
+			return;
 		}
 
 		const threadRootMessage = await Messages.findOneById(message.tmid);
 		const threadRootEventId = threadRootMessage?.federation?.eventId;
 
 		if (!threadRootEventId) {
-			this.logger.warn('Thread root event ID not found, sending as regular message');
-			if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-				return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
-			}
-			return this.homeserverServices.message.sendMessage(
-				roomIdSchema.parse(matrixRoomId),
-				message.msg,
-				parsedMessage,
-				userIdSchema.parse(matrixUserId),
-			);
+			throw new Error('Thread root event ID not found');
 		}
 
-		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id);
-		const latestThreadEventId = latestThreadMessage?.federation?.eventId;
+		const quoteMessageEventId = message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))
+			? (await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain))?.eventToReplyTo
+			: undefined;
 
-		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-			const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
-			if (!quoteMessage) {
-				throw new Error('Failed to retrieve quote message');
-			}
-			return this.homeserverServices.message.sendReplyToInsideThreadMessage(
-				roomIdSchema.parse(matrixRoomId),
-				quoteMessage.rawMessage,
-				quoteMessage.formattedMessage,
-				userIdSchema.parse(matrixUserId),
-				eventIdSchema.parse(threadRootEventId),
-				eventIdSchema.parse(quoteMessage.eventToReplyTo),
-			);
+		const latestThreadMessage = !quoteMessageEventId
+			? (await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id))?.federation?.eventId ||
+				eventIdSchema.parse(threadRootEventId)
+			: undefined;
+
+		if (!quoteMessageEventId && !latestThreadMessage) {
+			throw new Error('No event to reply to found');
 		}
 
-		return this.homeserverServices.message.sendThreadMessage(
-			roomIdSchema.parse(matrixRoomId),
-			message.msg,
-			parsedMessage,
-			userIdSchema.parse(matrixUserId),
-			eventIdSchema.parse(threadRootEventId),
-			latestThreadEventId ? eventIdSchema.parse(latestThreadEventId) : undefined,
-		);
+		const eventToReplyToNormalized = eventIdSchema.parse(quoteMessageEventId ?? latestThreadMessage);
+
+		if (quoteMessageEventId) {
+			return { threadEventId: eventIdSchema.parse(threadRootEventId), replyToEventId: eventToReplyToNormalized };
+		}
+		return { threadEventId: eventIdSchema.parse(threadRootEventId), latestThreadEventId: eventToReplyToNormalized };
 	}
 
-	private async handleQuoteMessage(
-		message: IMessage,
-		matrixRoomId: string,
-		matrixUserId: string,
-		matrixDomain: string,
-	): Promise<{ eventId: string } | null> {
+	private async handleQuoteMessage(message: IMessage, matrixRoomId: string, matrixUserId: string, matrixDomain: string) {
+		if (!message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			return;
+		}
 		const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 		if (!quoteMessage) {
 			throw new Error('Failed to retrieve quote message');
 		}
-		return this.homeserverServices.message.sendReplyToMessage(
-			roomIdSchema.parse(matrixRoomId),
-			quoteMessage.rawMessage,
-			quoteMessage.formattedMessage,
-			eventIdSchema.parse(quoteMessage.eventToReplyTo),
-			userIdSchema.parse(matrixUserId),
-		);
+		return {
+			replyToEventId: eventIdSchema.parse(quoteMessage.eventToReplyTo),
+		};
 	}
 
 	async sendMessage(message: IMessage, room: IRoomNativeFederated, user: IUser): Promise<void> {
