@@ -161,7 +161,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			);
 		} catch (error) {
 			this.sipDialog = null;
-			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error });
+			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error, callId: call._id });
 			const errorCode = this.getSipErrorCode(error);
 			if (errorCode) {
 				void mediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
@@ -354,7 +354,7 @@ export class OutgoingSipCall extends BaseSipCall {
 				logger.debug({ msg: 'REFER was accepted', method: 'OutgoingSipCall.processTransferredCall' });
 			}
 		} catch (error) {
-			logger.debug({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error });
+			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error, callId: call._id });
 			if (!call.ended) {
 				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}

@@ -6,7 +6,7 @@ import type {
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
-import { MediaCallNegotiations } from '@rocket.chat/models';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
@@ -14,6 +14,7 @@ import { BaseSipCall } from './BaseSipCall';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
+import { getMediaCallServer } from '../../server/injection';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
@@ -63,6 +64,21 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const callee = await this.getCalleeFromInvite(req);
 		logger.debug({ msg: 'incoming call to', callee });
+
+		// getCalleeFromInvite already ensures it, but let's safeguard that the callee is an internal user
+		if (callee.type !== 'user' || !callee.id) {
+			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		}
+
+		// User is literally busy
+		if (await MediaCalls.hasUnfinishedCallsByUid(callee.id)) {
+			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		}
+
+		if (!(await getMediaCallServer().permissionCheck(callee.id, 'external'))) {
+			logger.debug({ msg: 'User with no permission received a sip call.', uid: callee.id });
+			throw new SipError(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		}
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
 		logger.debug({ msg: 'incoming call from', caller });
