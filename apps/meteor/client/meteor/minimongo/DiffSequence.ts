@@ -1,7 +1,7 @@
-import { entriesOf } from '../objectUtils';
 import type { IdMap } from './IdMap';
 import { clone, hasOwn, equals } from './common';
 import type { Observer, OrderedObserver, UnorderedObserver } from './observers';
+import { entriesOf } from '../../lib/objectUtils';
 
 function isObjEmpty(obj: Record<string, unknown>): boolean {
 	for (const key in Object(obj)) {
