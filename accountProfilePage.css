@@ -1,0 +1,66 @@
+/* ============== MOBILE PROFILE UI FIXES ==============
+   - Prevent button text overflow
+   - Make email input wide enough on small screens
+   ===================================================== */
+
+/* Generic input/email container targeting profile page */
+.rc-account-profile,
+.account-profile,
+.rocket-account-profile {
+  box-sizing: border-box;
+}
+
+/* Make sure email input stretches */
+.rc-account-profile input[type="email"],
+.account-profile input[type="email"],
+.rocket-account-profile input[type="email"],
+.rcx-profile input[type="email"] {
+  width: 100% !important;
+  min-width: 280px !important;
+  box-sizing: border-box !important;
+}
+
+/* Responsive adjustments for small screens */
+@media screen and (max-width: 480px) {
+  .rc-account-profile,
+  .account-profile,
+  .rocket-account-profile {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rc-account-profile input[type="email"],
+  .account-profile input[type="email"],
+  .rocket-account-profile input[type="email"],
+  .rcx-profile input[type="email"] {
+    width: 90% !important;
+    margin: 0 auto !important;
+  }
+
+  /* Prevent button text overflow — prefer ellipsis */
+  .rc-account-profile button,
+  .account-profile button,
+  .rocket-account-profile button,
+  .rcx-button,
+  .rc-button {
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    max-width: 100% !important;
+    padding: 0.5rem 1rem !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Small accessibility/readability tweak */
+.rc-account-profile label,
+.account-profile label,
+.rocket-account-profile label,
+.rc-account-profile input,
+.account-profile input,
+.rocket-account-profile input,
+.rc-account-profile button {
+  font-size: 0.95rem;
+}
