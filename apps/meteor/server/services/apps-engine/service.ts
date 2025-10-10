@@ -1,7 +1,7 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
+import { Apps } from '@rocket.chat/apps';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppInterface, type IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { AppStatusReport, IAppsEngineService } from '@rocket.chat/core-services';
@@ -23,7 +23,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		super();
 
 		this.onEvent('presence.status', async ({ user, previousStatus }): Promise<void> => {
-			await Apps.self?.triggerEvent(AppEvents.IPostUserStatusChanged, {
+			await Apps.self?.triggerEvent(AppInterface.IPostUserStatusChanged, {
 				user,
 				currentStatus: user.status,
 				previousStatus,
@@ -204,5 +204,9 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		await Promise.all(apps);
 
 		return statusByApp;
+	}
+
+	async triggerEvent(event: AppInterface, ...payload: any[]): Promise<any> {
+		return Apps.self?.triggerEvent(event, ...payload);
 	}
 }
