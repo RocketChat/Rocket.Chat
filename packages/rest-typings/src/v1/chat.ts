@@ -449,6 +449,7 @@ const ChatUpdateSchema = {
 		},
 		text: {
 			type: 'string',
+			minLength: 1,
 		},
 		previewUrls: {
 			type: 'array',
