@@ -27,11 +27,6 @@ function extractEntityId(
 const canAccessResource = (federationAuth: EventAuthorizationService, entityType: 'event' | 'media' | 'room') =>
 	createMiddleware(async (c, next) => {
 		try {
-			const authenticatedServer = c.get('authenticatedServer');
-			if (!authenticatedServer) {
-				return c.json({ errcode: 'M_UNAUTHORIZED', error: 'Missing Authorization header' }, 401);
-			}
-
 			const mediaId = c.req.param('mediaId');
 			const eventId = c.req.param('eventId');
 			const roomId = c.req.param('roomId');
@@ -41,7 +36,7 @@ const canAccessResource = (federationAuth: EventAuthorizationService, entityType
 				return c.json({ errcode: 'M_INVALID_PARAM', error: `Missing required ${entityType} identifier` }, 400);
 			}
 
-			const resourceAccess = await federationAuth.canAccessResource(entityType, resourceId, authenticatedServer);
+			const resourceAccess = await federationAuth.canAccessResource(entityType, resourceId, c.get('authenticatedServer'));
 			if (!resourceAccess) {
 				return c.json(
 					{
