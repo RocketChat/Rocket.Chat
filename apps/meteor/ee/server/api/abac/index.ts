@@ -16,6 +16,7 @@ import {
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
 
 const abacEndpoints = API.v1
@@ -160,7 +161,8 @@ const abacEndpoints = API.v1
 			license: ['abac'],
 		},
 		async function action() {
-			const { key, values, offset, count } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { key, values } = this.queryParams;
 
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
