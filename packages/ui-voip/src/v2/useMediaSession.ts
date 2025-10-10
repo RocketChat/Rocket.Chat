@@ -128,14 +128,16 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				return;
 			}
 
-			const { contact, /* transferredBy, */ state: callState, role, muted, held, hidden } = mainCall;
+			const { contact, transferredBy: callTransferredBy, state: callState, role, muted, held, hidden } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 			const connectionState = deriveConnectionStateFromCallState(callState);
+
+			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
 			if (contact.type === 'sip') {
 				dispatch({
 					type: 'instance_updated',
-					payload: { peerInfo: { number: contact.id || 'unknown' }, /* transferredBy, */ state, muted, held, connectionState, hidden },
+					payload: { peerInfo: { number: contact.id || 'unknown' }, transferredBy, state, muted, held, connectionState, hidden },
 				});
 				return;
 			}
@@ -160,7 +162,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				callerId: contact.sipExtension,
 			} as PeerInfo;
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo, /* transferredBy, */ muted, held, connectionState, hidden } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden } });
 		};
 
 		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
