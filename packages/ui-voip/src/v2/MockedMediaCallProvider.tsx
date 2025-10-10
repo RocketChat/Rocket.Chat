@@ -107,6 +107,7 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		hidden: false,
 		connectionState: 'CONNECTED' as const,
 		peerInfo,
+		transferredBy: undefined,
 		muted,
 		held,
 		onMute,
