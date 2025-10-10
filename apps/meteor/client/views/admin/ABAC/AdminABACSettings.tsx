@@ -2,13 +2,15 @@ import { Box, Callout, Margins } from '@rocket.chat/fuselage';
 import { Trans } from 'react-i18next';
 
 import AdminABACSettingToggle from './AdminABACSettingToggle';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AdminABACSettings = () => {
+	const hasABAC = useHasLicenseModule('abac');
 	return (
 		<Box maxWidth='x600' w='full' alignSelf='center'>
 			<Box>
 				<Margins block={24}>
-					<AdminABACSettingToggle />
+					<AdminABACSettingToggle hasABAC={hasABAC} />
 
 					<Callout>
 						{/* TODO: get documentation URL */}

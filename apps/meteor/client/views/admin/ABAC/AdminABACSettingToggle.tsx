@@ -6,15 +6,18 @@ import { useTranslation } from 'react-i18next';
 import type { EditableSetting } from '../EditableSettingsContext';
 import { useEditableSetting } from '../EditableSettingsContext';
 import AdminABACWarningModal from './AdminABACWarningModal';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import MemoizedSetting from '../settings/Setting/MemoizedSetting';
+import SettingSkeleton from '../settings/Setting/SettingSkeleton';
 
-const AdminABACSettingToggle = () => {
+type AdminABACSettingToggleProps = {
+	hasABAC: 'loading' | boolean;
+};
+
+const AdminABACSettingToggle = ({ hasABAC }: AdminABACSettingToggleProps) => {
 	const setting = useEditableSetting('ABAC_Enabled');
 	const setModal = useSetModal();
 	const dispatch = useSettingsDispatch();
 	const { t } = useTranslation();
-	const hasABAC = useHasLicenseModule('abac');
 
 	const [value, setValue] = useState<boolean>(setting?.value === true);
 
@@ -68,6 +71,10 @@ const AdminABACSettingToggle = () => {
 
 	if (!setting) {
 		return null;
+	}
+
+	if (hasABAC === 'loading') {
+		return <SettingSkeleton />;
 	}
 
 	return (

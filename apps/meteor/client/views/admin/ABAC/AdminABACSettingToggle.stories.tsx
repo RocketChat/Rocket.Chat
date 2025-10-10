@@ -2,7 +2,6 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import AdminABACSettingToggle from './AdminABACSettingToggle';
-import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
 const meta: Meta<typeof AdminABACSettingToggle> = {
@@ -23,16 +22,13 @@ const meta: Meta<typeof AdminABACSettingToggle> = {
 					Cancel: 'Cancel',
 				})
 				.withSetting('ABAC_Enabled', true, {
-					packageValue: true,
+					packageValue: false,
 					blocked: false,
 					public: true,
 					type: 'boolean',
 					i18nLabel: 'ABAC_Enabled',
 					i18nDescription: 'ABAC_Enabled_Description',
 				})
-				.withEndpoint('GET', '/v1/licenses.info', () => ({
-					license: createFakeLicenseInfo({ activeModules: [] }),
-				}))
 				.build();
 
 			return (
@@ -42,9 +38,28 @@ const meta: Meta<typeof AdminABACSettingToggle> = {
 			);
 		},
 	],
+	args: {
+		hasABAC: true,
+	},
 };
 
 export default meta;
 type Story = StoryObj<typeof AdminABACSettingToggle>;
 
-export const Default: Story = {};
+export const Default: Story = {
+	args: {
+		hasABAC: true,
+	},
+};
+
+export const Loading: Story = {
+	args: {
+		hasABAC: 'loading',
+	},
+};
+
+export const False: Story = {
+	args: {
+		hasABAC: false,
+	},
+};
