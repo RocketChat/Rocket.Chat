@@ -16,6 +16,7 @@ import emojione from 'emojione';
 
 import { acceptInvite } from './api/_matrix/invite';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { constructMatrixId, getUserMatrixId, validateFederatedUsername } from './helpers/matrixId';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -24,39 +25,6 @@ export const fileTypes: Record<string, FileMessageType> = {
 	audio: 'm.audio',
 	file: 'm.file',
 };
-
-/** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is UserID {
-	if (!mxid.startsWith('@')) return false;
-
-	const parts = mxid.substring(1).split(':');
-	if (parts.length < 2) return false;
-
-	const localpart = parts[0];
-	const domainAndPort = parts.slice(1).join(':');
-
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
-	if (!localpartRegex.test(localpart)) return false;
-
-	const [domain, port] = domainAndPort.split(':');
-
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
-}
 export const extractDomainFromMatrixUserId = (mxid: string): string => {
 	const separatorIndex = mxid.indexOf(':', 1);
 	if (separatorIndex === -1) {
@@ -88,9 +56,16 @@ export const getUsernameServername = (mxid: string, serverName: string): [mxid: 
  *
  * Because of historical reasons, we can have users only with federated flag but no federation object
  * So we need to upsert the user with the federation object
+ *
+ * IMPORTANT: This function ensures the Matrix User ID (mui) is IMMUTABLE.
+ * Once set, it never changes, even if the RC username changes.
  */
 export async function createOrUpdateFederatedUser(options: { username: UserID; name?: string; origin: string }): Promise<string> {
 	const { username, name = username, origin } = options;
+
+	const matrixUserId = validateFederatedUsername(username)
+		? username
+		: constructMatrixId(username, origin);
 
 	const result = await Users.updateOne(
 		{
@@ -108,7 +83,7 @@ export async function createOrUpdateFederatedUser(options: { username: UserID; n
 				federated: true,
 				federation: {
 					version: 1,
-					mui: username,
+					mui: matrixUserId,
 					origin,
 				},
 				_updatedAt: new Date(),
@@ -213,7 +188,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
-			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
+			const matrixUserId = userIdSchema.parse(getUserMatrixId(owner, this.serverName));
 			const roomName = room.name || room.fname || 'Untitled Room';
 
 			// canonical alias computed from name
@@ -274,7 +249,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error('Creator not found in members list');
 			}
 
-			const actualMatrixUserId = `@${creator.username}:${this.serverName}`;
+			const actualMatrixUserId = getUserMatrixId(creator, this.serverName);
 
 			let matrixRoomResult: { room_id: string; event_id?: string };
 			if (members.length === 2) {
@@ -456,7 +431,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async sendMessage(message: IMessage, room: IRoomNativeFederated, user: IUser): Promise<void> {
 		try {
-			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+			const userMui = getUserMatrixId(user, this.serverName);
 
 			let result;
 			if (message.files && message.files.length > 0) {
@@ -542,7 +517,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async inviteUsersToRoom(room: IRoomNativeFederated, matrixUsersUsername: string[], inviter: IUser): Promise<void> {
 		try {
-			const inviterUserId = `@${inviter.username}:${this.serverName}`;
+			const inviterUserId = getUserMatrixId(inviter, this.serverName);
 
 			await Promise.all(
 				matrixUsersUsername.map(async (username) => {
@@ -561,8 +536,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						return;
 					}
 
+					const userToInvite = await Users.findOneByUsername(username);
+					const inviteeMatrixId = userToInvite
+						? getUserMatrixId(userToInvite, this.serverName)
+						: userIdSchema.parse(`@${username}:${this.serverName}`);
+
 					const result = await federationSDK.inviteUserToRoom(
-						userIdSchema.parse(`@${username}:${this.serverName}`),
+						inviteeMatrixId,
 						roomIdSchema.parse(room.federation.mrid),
 						userIdSchema.parse(inviterUserId),
 					);
@@ -595,7 +575,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+			const userMui = getUserMatrixId(user, this.serverName);
 
 			const eventId = await federationSDK.sendReaction(
 				roomIdSchema.parse(room.federation.mrid),
@@ -635,7 +615,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+			const userMui = getUserMatrixId(user, this.serverName);
 
 			const reactionData = oldMessage.reactions?.[reaction];
 			if (!reactionData?.federationReactionEventIds) {
@@ -684,7 +664,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const actualMatrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+			const subscription = await Subscriptions.findOne({ 'rid': room._id, 'u._id': user._id });
+			if (!subscription) {
+				this.logger.debug(`User ${user.username} is not subscribed to room ${room._id}, skipping leave operation`);
+				return;
+			}
+
+			const actualMatrixUserId = getUserMatrixId(user, this.serverName);
 
 			await federationSDK.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
 
@@ -697,13 +683,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void> {
 		try {
-			const actualKickedMatrixUserId = isUserNativeFederated(removedUser)
-				? removedUser.federation.mui
-				: `@${removedUser.username}:${this.serverName}`;
+			const actualKickedMatrixUserId = getUserMatrixId(removedUser, this.serverName);
 
-			const actualSenderMatrixUserId = isUserNativeFederated(userWhoRemoved)
-				? userWhoRemoved.federation.mui
-				: `@${userWhoRemoved.username}:${this.serverName}`;
+			const actualSenderMatrixUserId = getUserMatrixId(userWhoRemoved, this.serverName);
 
 			await federationSDK.kickUser(
 				roomIdSchema.parse(room.federation.mrid),
@@ -732,7 +714,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+			const userMui = getUserMatrixId(user, this.serverName);
 
 			const parsedMessage = await toExternalMessageFormat({
 				message: message.msg,
@@ -765,7 +747,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		const userMui = `@${user.username}:${this.serverName}`;
+		const userMui = getUserMatrixId(user, this.serverName);
 
 		await federationSDK.updateRoomName(roomIdSchema.parse(room.federation.mrid), displayName, userIdSchema.parse(userMui));
 	}
@@ -780,7 +762,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		const userMui = `@${user.username}:${this.serverName}`;
+		const userMui = getUserMatrixId(user, this.serverName);
 
 		await federationSDK.setRoomTopic(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(userMui), topic);
 	}
@@ -805,13 +787,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		const senderMui = `@${userSender.username}:${this.serverName}`;
+		const senderMui = getUserMatrixId(userSender, this.serverName);
 
 		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error(`No user found for ID ${userId}`);
 		}
-		const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		const userMui = getUserMatrixId(user, this.serverName);
 
 		let powerLevel = 0;
 		if (role === 'owner') {
@@ -847,7 +829,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
+		const userMui = getUserMatrixId(localUser, this.serverName);
 
 		void federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
