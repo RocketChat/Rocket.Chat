@@ -7,7 +7,7 @@ import MediaCallProviderMock from '../MockedMediaCallProvider';
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
 		Transferring_call_incoming: 'Incoming call transfer',
-		Transferring_call_incoming_from__user_: 'From {{user}}',
+		Transferring_call_incoming__from_: 'From {{from}}',
 		Reject: 'Reject',
 		Accept: 'Accept',
 	})
@@ -19,7 +19,7 @@ export default {
 	decorators: [
 		mockedContexts,
 		(Story) => (
-			<MediaCallProviderMock>
+			<MediaCallProviderMock transferredBy='Jason'>
 				<Story />
 			</MediaCallProviderMock>
 		),
