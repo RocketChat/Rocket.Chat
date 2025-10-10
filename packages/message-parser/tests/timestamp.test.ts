@@ -103,7 +103,10 @@ test.each([
     ],
   ],
   [
-    '<t:10:00+00:00>',
+    `<t:10:00${new Date()
+      .toString()
+      .match(/GMT([-+]\d{4})/)?.[1]
+      .replace(/(.{3})/, '$1:')}>`,
     [paragraph([timestamp(timestampFromHours('10', '00', '00'), 't')])],
   ],
 
