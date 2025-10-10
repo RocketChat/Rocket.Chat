@@ -1,7 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { api, credentials, methodCall, request } from './api-data';
+import { api, credentials, methodCall, request, type RequestConfig } from './api-data';
 import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
@@ -160,4 +161,55 @@ export const addUserToRoom = ({
 				msg: 'method',
 			}),
 		});
+};
+
+export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/rooms.info']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('rooms.info'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/rooms.membersOrderedByRole']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('rooms.membersOrderedByRole'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+export const getGroupHistory = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/groups.history']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('groups.history'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
 };
