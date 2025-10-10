@@ -2,7 +2,7 @@ name: E2E Tests with Allure Reports
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [reports]
 
 jobs:
   e2e-tests:
