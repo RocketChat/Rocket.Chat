@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Margins } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
 
 import UserInfoABACAttribute from './UserInfoABACAttribute';
@@ -9,11 +9,11 @@ type UserCardABACAttributesProps = {
 
 const UserInfoABACAttributes = ({ abacAttributes }: UserCardABACAttributesProps): ReactElement => {
 	return (
-		<Box flexWrap='wrap' display='flex' flexShrink={0} mb={8} is='span' fontScale='p2' color='hint' withTruncatedText>
+		<Box flexWrap='wrap' display='flex' flexShrink={0} mb={8} is='span' fontScale='p2' withTruncatedText>
 			{abacAttributes.map((attribute, index) => (
-				<Box m={2} fontScale='c2' key={index}>
+				<Margins inline={2} key={index}>
 					<UserInfoABACAttribute attribute={attribute} />
-				</Box>
+				</Margins>
 			))}
 		</Box>
 	);
