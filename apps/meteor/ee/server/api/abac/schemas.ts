@@ -1,13 +1,9 @@
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ATTRIBUTE_VALUES = 10;
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 const GenericSuccess = {
 	type: 'object',
@@ -68,8 +64,8 @@ const GetAbacAttributesQuery = {
 			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
-		offset: { type: 'integer', minimum: 0, default: 0 },
-		count: { type: 'integer', minimum: 1, maximum: 100, default: 25 },
+		offset: { type: 'number' },
+		count: { type: 'number' },
 	},
 	additionalProperties: false,
 };
@@ -103,9 +99,9 @@ const GetAbacAttributesResponse = {
 			type: 'array',
 			items: AbacAttributeRecord,
 		},
-		offset: { type: 'integer', minimum: 0 },
-		count: { type: 'integer', minimum: 0 },
-		total: { type: 'integer', minimum: 0 },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		total: { type: 'number' },
 	},
 	required: ['attributes', 'offset', 'count', 'total'],
 	additionalProperties: false,
