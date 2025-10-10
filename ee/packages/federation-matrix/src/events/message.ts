@@ -262,6 +262,120 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 		}
 	});
 
+	emitter.on('homeserver.matrix.encrypted', async (data) => {
+		try {
+			if (!data.content.ciphertext) {
+				logger.debug('No message content found in event');
+				return;
+			}
+
+			// at this point we know for sure the user already exists
+			const user = await Users.findOneByUsername(data.sender);
+			if (!user) {
+				throw new Error(`User not found for sender: ${data.sender}`);
+			}
+
+			const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
+			if (!room) {
+				throw new Error(`No mapped room found for room_id: ${data.room_id}`);
+			}
+
+			const relation = data.content['m.relates_to'];
+
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			const hasRelation = relation && 'rel_type' in relation;
+
+			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
+
+			const threadRootEventId = isThreadMessage && relation.event_id;
+
+			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
+			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
+
+			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
+
+			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
+
+			const isEditedMessage = hasRelation && relation.rel_type === 'm.replace';
+			if (isEditedMessage && relation.event_id) {
+				logger.debug('Received edited message from Matrix, updating existing message');
+				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
+				if (!originalMessage) {
+					logger.error('Original message not found for edit:', relation.event_id);
+					return;
+				}
+				if (originalMessage.federation?.eventId !== relation.event_id) {
+					return;
+				}
+				if (originalMessage.content?.ciphertext === data.content.ciphertext) {
+					logger.debug('No changes in message content, skipping update');
+					return;
+				}
+
+				if (quoteMessageEventId) {
+					await Message.updateMessage(
+						{
+							...originalMessage,
+							content: {
+								algorithm: data.content.algorithm,
+								ciphertext: data.content.ciphertext,
+							},
+						},
+						user,
+						originalMessage,
+					);
+					return;
+				}
+
+				await Message.updateMessage(
+					{
+						...originalMessage,
+						content: {
+							algorithm: data.content.algorithm,
+							ciphertext: data.content.ciphertext,
+						},
+					},
+					user,
+					originalMessage,
+				);
+				return;
+			}
+
+			if (quoteMessageEventId) {
+				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
+				if (!originalMessage) {
+					logger.error('Original message not found for quote:', quoteMessageEventId);
+					return;
+				}
+				await Message.saveMessageFromFederation({
+					fromId: user._id,
+					rid: room._id,
+					e2e_content: {
+						algorithm: data.content.algorithm,
+						ciphertext: data.content.ciphertext,
+					},
+					federation_event_id: data.event_id,
+					thread,
+				});
+				return;
+			}
+
+			await Message.saveMessageFromFederation({
+				fromId: user._id,
+				rid: room._id,
+				e2e_content: {
+					algorithm: data.content.algorithm,
+					ciphertext: data.content.ciphertext,
+				},
+				federation_event_id: data.event_id,
+				thread,
+			});
+		} catch (error) {
+			logger.error(error, 'Error processing Matrix message:');
+		}
+	});
+
 	emitter.on('homeserver.matrix.redaction', async (data) => {
 		try {
 			const redactedEventId = data.redacts;

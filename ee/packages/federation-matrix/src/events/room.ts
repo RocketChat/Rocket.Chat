@@ -53,6 +53,11 @@ export function room(emitter: Emitter<HomeserverEventSignatures>, services: Home
 
 		const [allegedUsernameLocal, , allegedUserLocalIsLocal] = getUsernameServername(userId, services.config.serverName);
 		const localUserId = allegedUserLocalIsLocal && (await Users.findOneByUsername(allegedUsernameLocal, { projection: { _id: 1 } }));
+
+		if (!allegedUserLocalIsLocal) {
+			return;
+		}
+
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
