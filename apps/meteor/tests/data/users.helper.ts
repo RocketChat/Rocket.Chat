@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { api, credentials, methodCall, request } from './api-data';
+import { api, credentials, methodCall, request, type RequestConfig } from './api-data';
 import { password } from './user';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
@@ -20,15 +20,19 @@ export const createUser = <TUser extends IUser>(
 		password?: string;
 		freeSwitchExtension?: string;
 	} = {},
+	config?: RequestConfig
 ) =>
 	new Promise<TestUser<TUser>>((resolve, reject) => {
 		const username = userData.username || `user.test.${Date.now()}.${Math.random()}`;
 		const email = userData.email || `${username}@rocket.chat`;
-		void request
+		const requestInstance = config?.request || request;
+		const credentialsInstance = config?.credentials || credentials;
+		
+		void requestInstance
 			.post(api('users.create'))
-			.set(credentials)
+			.set(credentialsInstance)
 			.send({ email, name: username, username, password, ...userData })
-			.end((err, res) => {
+			.end((err: any, res: any) => {
 				if (err) {
 					return reject(err);
 				}
@@ -36,15 +40,20 @@ export const createUser = <TUser extends IUser>(
 			});
 	});
 
-export const login = (username: string | undefined, password: string): Promise<Credentials> =>
+export const login = (
+	username: string | undefined, 
+	password: string,
+	config?: RequestConfig
+): Promise<Credentials> =>
 	new Promise((resolve) => {
-		void request
+		const requestInstance = config?.request || request;
+		void requestInstance
 			.post(api('login'))
 			.send({
 				user: username,
 				password,
 			})
-			.end((_err, res) => {
+			.end((_err: any, res: any) => {
 				resolve({
 					'X-Auth-Token': res.body.data.authToken,
 					'X-User-Id': res.body.data.userId,
@@ -52,43 +61,68 @@ export const login = (username: string | undefined, password: string): Promise<C
 			});
 	});
 
-export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}) =>
-	request
+export const deleteUser = async (
+	user: Pick<IUser, '_id'>, 
+	extraData = {},
+	config?: RequestConfig
+) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+	
+	return requestInstance
 		.post(api('users.delete'))
-		.set(credentials)
+		.set(credentialsInstance)
 		.send({
 			userId: user._id,
 			...extraData,
 		});
+};
 
-export const getUserByUsername = <TUser extends IUser>(username: string) =>
+export const getUserByUsername = <TUser extends IUser>(
+	username: string,
+	config?: RequestConfig
+) =>
 	new Promise<TestUser<TUser>>((resolve) => {
-		void request
+		const requestInstance = config?.request || request;
+		const credentialsInstance = config?.credentials || credentials;
+		
+		void requestInstance
 			.get(api('users.info'))
 			.query({ username })
-			.set(credentials)
-			.end((_err, res) => {
+			.set(credentialsInstance)
+			.end((_err: any, res: any) => {
 				resolve(res.body.user);
 			});
 	});
 
-export const getMe = <TUser extends IUser>(overrideCredential = credentials) =>
+export const getMe = <TUser extends IUser>(
+	overrideCredential = credentials,
+	config?: RequestConfig
+) =>
 	new Promise<TestUser<TUser>>((resolve) => {
-		void request
+		const requestInstance = config?.request || request;
+		void requestInstance
 			.get(api('me'))
 			.set(overrideCredential)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((_end, res) => {
+			.end((_end: any, res: any) => {
 				resolve(res.body);
 			});
 	});
 
-export const setUserActiveStatus = (userId: IUser['_id'], activeStatus = true) =>
+export const setUserActiveStatus = (
+	userId: IUser['_id'], 
+	activeStatus = true,
+	config?: RequestConfig
+) =>
 	new Promise((resolve) => {
-		void request
+		const requestInstance = config?.request || request;
+		const credentialsInstance = config?.credentials || credentials;
+		
+		void requestInstance
 			.post(api('users.setActiveStatus'))
-			.set(credentials)
+			.set(credentialsInstance)
 			.send({
 				userId,
 				activeStatus,
@@ -96,14 +130,24 @@ export const setUserActiveStatus = (userId: IUser['_id'], activeStatus = true) =
 			.end(resolve);
 	});
 
-export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE) =>
-	request.post(api('users.setStatus')).set(overrideCredentials).send({
+export const setUserStatus = (
+	overrideCredentials = credentials, 
+	status = UserStatus.ONLINE,
+	config?: RequestConfig
+) => {
+	const requestInstance = config?.request || request;
+	return requestInstance.post(api('users.setStatus')).set(overrideCredentials).send({
 		message: '',
 		status,
 	});
+};
 
-export const setUserAway = (overrideCredentials = credentials) =>
-	request
+export const setUserAway = (
+	overrideCredentials = credentials,
+	config?: RequestConfig
+) => {
+	const requestInstance = config?.request || request;
+	return requestInstance
 		.post(methodCall('UserPresence:away'))
 		.set(overrideCredentials)
 		.send({
@@ -114,9 +158,14 @@ export const setUserAway = (overrideCredentials = credentials) =>
 				msg: 'method',
 			}),
 		});
+};
 
-export const setUserOnline = (overrideCredentials = credentials) =>
-	request
+export const setUserOnline = (
+	overrideCredentials = credentials,
+	config?: RequestConfig
+) => {
+	const requestInstance = config?.request || request;
+	return requestInstance
 		.post(methodCall('UserPresence:online'))
 		.set(overrideCredentials)
 		.send({
@@ -127,15 +176,22 @@ export const setUserOnline = (overrideCredentials = credentials) =>
 				msg: 'method',
 			}),
 		});
+};
 
-export const removeRoleFromUser = (username: string, roleId: string, overrideCredentials = credentials) =>
-	getUserByUsername(username).then((user) =>
-		request
+export const removeRoleFromUser = (
+	username: string, 
+	roleId: string, 
+	overrideCredentials = credentials,
+	config?: RequestConfig
+) =>
+	getUserByUsername(username, config).then((user) => {
+		const requestInstance = config?.request || request;
+		return requestInstance
 			.post(api('users.update'))
 			.set(overrideCredentials)
 			.send({
 				userId: user._id,
 				data: { roles: user.roles.filter((role) => role !== roleId) },
 			})
-			.expect(200),
-	);
+			.expect(200);
+	});

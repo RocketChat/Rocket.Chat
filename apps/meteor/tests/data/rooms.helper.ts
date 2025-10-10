@@ -1,7 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { api, credentials, methodCall, request } from './api-data';
+import { api, credentials, methodCall, request, type RequestConfig } from './api-data';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -13,6 +14,7 @@ type CreateRoomParams = {
 	credentials?: Credentials;
 	extraData?: Record<string, any>;
 	voipCallDirection?: 'inbound' | 'outbound';
+	config?: RequestConfig;
 };
 
 export const createRoom = ({
@@ -25,10 +27,14 @@ export const createRoom = ({
 	credentials: customCredentials,
 	extraData,
 	voipCallDirection = 'inbound',
+	config,
 }: CreateRoomParams) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
+
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || customCredentials || credentials;
 
 	if (type === 'v') {
 		/* Special handling for voip type of rooms.
@@ -36,10 +42,10 @@ export const createRoom = ({
 		 * a voip room. Hence creation of a voip room
 		 * is handled separately here.
 		 */
-		return request
+		return requestInstance
 			.get(api('voip/room'))
 			.query({ token, agentId, direction: voipCallDirection })
-			.set(customCredentials || credentials)
+			.set(credentialsInstance)
 			.send();
 	}
 
@@ -58,9 +64,9 @@ export const createRoom = ({
 	// which is the only case where type is not in the endpoints object
 	const roomType = endpoints[type as keyof typeof endpoints];
 
-	return request
+	return requestInstance
 		.post(api(roomType))
-		.set(customCredentials || credentials)
+		.set(credentialsInstance)
 		.send({
 			...params,
 			...(members && { members }),
@@ -140,4 +146,55 @@ export const addUserToRoom = ({
 				msg: 'method',
 			}),
 		});
+};
+
+export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+	
+	return new Promise<ReturnType<Endpoints['/v1/rooms.info']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('rooms.info'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+	
+	return new Promise<ReturnType<Endpoints['/v1/rooms.membersOrderedByRole']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('rooms.membersOrderedByRole'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+export const getGroupHistory = (roomId: IRoom['_id'], config?: RequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/groups.history']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('groups.history'))
+			.set(credentialsInstance)
+			.query({
+				roomId,
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
 };
