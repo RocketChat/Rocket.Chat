@@ -5278,7 +5278,7 @@
   "Transferred_call__from__to": "{{from}} transferred call to",
   "Transferring_call": "Transferring call",
   "Transferring_call_incoming": "Incoming call transfer",
-  "Transferring_call_incoming_from__user_": "From {{user}}",
+  "Transferring_call_incoming__from_": "From {{from}}",
   "Translate": "Translate",
   "Translate_to": "Translate to",
   "Translated": "Translated",
