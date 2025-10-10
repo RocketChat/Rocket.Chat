@@ -345,6 +345,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 						{...filter}
 						placeholder={placeholder}
 						role='searchbox'
+						autoComplete='off'
 						addon={<Icon name='cross' size='x20' onClick={onClose} />}
 					/>
 				</Box>
