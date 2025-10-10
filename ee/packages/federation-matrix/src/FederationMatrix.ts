@@ -238,15 +238,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
-			for await (const member of members) {
-				if (member === owner.username) {
-					continue;
-				}
+			const federatedRoom = await Rooms.findOneById(room._id);
 
-				// We are not generating bridged users for members outside of the current workspace
-				// They will be created when the invite is accepted
-
-				await this.homeserverServices.invite.inviteUserToRoom(userIdSchema.parse(member), matrixRoomResult.room_id, matrixUserId);
+			if (federatedRoom && isRoomNativeFederated(federatedRoom)) {
+				await this.inviteUsersToRoom(
+					federatedRoom,
+					members.filter((m) => m !== owner.username),
+					owner,
+				);
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
