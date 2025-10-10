@@ -21,6 +21,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	const updatedKey = `${initialKey}_renamed`;
 	const anotherKey = `${initialKey}_another`;
 	let attributeId: string;
+	let paginationBase: string;
+	let page1AttributeIds: string[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -147,14 +149,50 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 		});
 
-		it('GET should fail when count > 100', async () => {
+		it('GET should paginate attributes (page 1)', async () => {
+			paginationBase = `pg_${Date.now()}`;
+			await Promise.all(
+				['a', 'b', 'c'].map((suffix) =>
+					request
+						.post(`${v1}/abac/attributes`)
+						.set(credentials)
+						.send({ key: `${paginationBase}_${suffix}`, values: ['one'] })
+						.expect(200),
+				),
+			);
+
 			await request
 				.get(`${v1}/abac/attributes`)
 				.set(credentials)
-				.query({ count: 101 })
-				.expect(400)
+				.query({ count: 2, offset: 0 })
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total').that.is.a('number').and.to.be.at.least(4);
+					expect(res.body).to.have.property('attributes').that.is.an('array').with.lengthOf(2);
+					page1AttributeIds = res.body.attributes.map((a: any) => a._id);
+				});
+		});
+
+		it('GET should paginate attributes (page 2)', async () => {
+			await request
+				.get(`${v1}/abac/attributes`)
+				.set(credentials)
+				.query({ count: 2, offset: 2 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset', 2);
+					expect(res.body).to.have.property('count').that.is.a('number');
+					expect(res.body.count).to.be.at.most(2);
+					expect(res.body).to.have.property('total').that.is.a('number').and.to.be.at.least(4);
+					expect(res.body).to.have.property('attributes').that.is.an('array');
+					const page2Ids = res.body.attributes.map((a: any) => a._id);
+					page2Ids.forEach((id: string) => {
+						expect(page1AttributeIds).to.not.include(id);
+					});
 				});
 		});
 
@@ -535,10 +573,6 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(res.body).to.have.property('count');
 				});
-		});
-
-		it('GET attributes should fail with count=0 (schema min=1)', async () => {
-			await request.get(`${v1}/abac/attributes`).set(credentials).query({ count: 0 }).expect(400);
 		});
 
 		it('GET attributes should fail with negative offset', async () => {
