@@ -9,14 +9,14 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, UserID, FileMessageType, PresenceState, PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { acceptInvite } from './api/_matrix/invite';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { constructMatrixId, getUserMatrixId, validateFederatedUsername } from './helpers/matrixId';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -63,9 +63,7 @@ export const getUsernameServername = (mxid: string, serverName: string): [mxid: 
 export async function createOrUpdateFederatedUser(options: { username: UserID; name?: string; origin: string }): Promise<string> {
 	const { username, name = username, origin } = options;
 
-	const matrixUserId = validateFederatedUsername(username)
-		? username
-		: constructMatrixId(username, origin);
+	const matrixUserId = validateFederatedUsername(username) ? username : constructMatrixId(username, origin);
 
 	const result = await Users.updateOne(
 		{
@@ -879,5 +877,68 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 
 		return results;
+	}
+
+	async updateUserProfile(userId: string, displayName: string): Promise<void> {
+		try {
+			const user = await Users.findOneById(userId);
+			if (!user) {
+				this.logger.error(`User not found: ${userId}`);
+				return;
+			}
+
+			let matrixUserId: string;
+			if (isUserNativeFederated(user) && user.federation.mui) {
+				matrixUserId = user.federation.mui;
+				this.logger.info(`Updating Matrix profile for native federated user ${userId} (${matrixUserId}) to "${displayName}"`);
+			} else {
+				if (!user.username) {
+					this.logger.error(`Local user ${userId} has no username, cannot update profile`);
+					return;
+				}
+				matrixUserId = constructMatrixId(user.username, this.serverName);
+				this.logger.info(`Updating Matrix profile for local user ${userId} (${matrixUserId}) to "${displayName}" in federated rooms`);
+			}
+
+			// get all rooms user is member of
+			const subscriptions = Subscriptions.findByUserId(user._id);
+			for await (const sub of subscriptions) {
+				try {
+					const room = await Rooms.findOneById(sub.rid);
+					if (!room || !isRoomNativeFederated(room)) {
+						continue;
+					}
+
+					await federationSDK.updateMemberProfile(
+						roomIdSchema.parse(room.federation.mrid),
+						userIdSchema.parse(matrixUserId),
+						displayName,
+					);
+				} catch (error) {
+					// expected: user not a member of the room (invited but never joined, or left)
+					if (error instanceof Error && error.message.includes('is not a member')) {
+						this.logger.debug(`Skipping room ${sub.rid}: user not a member`);
+					} else {
+						// unexpected error
+						this.logger.error(`Failed to update profile in room ${sub.rid}:`, error);
+					}
+				}
+			}
+		} catch (error) {
+			this.logger.error('Failed to update user profile:', error);
+			throw error;
+		}
+	}
+
+	async emitJoin(membershipEvent: PduForType<'m.room.member'>, eventId: EventID) {
+		void federationSDK.emit('homeserver.matrix.membership', {
+			event_id: eventId,
+			event: membershipEvent,
+			room_id: membershipEvent.room_id,
+			state_key: membershipEvent.state_key,
+			content: { membership: 'join' },
+			sender: membershipEvent.sender,
+			origin_server_ts: Date.now(),
+		});
 	}
 }

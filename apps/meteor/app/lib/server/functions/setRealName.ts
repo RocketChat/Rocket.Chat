@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -34,6 +35,8 @@ export const _setRealName = async function (
 		return user;
 	}
 
+	const oldUser = { ...user };
+
 	// Set new name
 	if (name) {
 		if (updater) {
@@ -48,7 +51,7 @@ export const _setRealName = async function (
 	}
 	user.name = name;
 
-	await onceTransactionCommitedSuccessfully(() => {
+	await onceTransactionCommitedSuccessfully(async () => {
 		if (settings.get('UI_Use_Real_Name') === true) {
 			void api.broadcast('user.nameChanged', {
 				_id: user._id,
@@ -61,6 +64,7 @@ export const _setRealName = async function (
 			name,
 			username: user.username,
 		});
+		void callbacks.run('afterSaveUser', { user, oldUser });
 	}, session);
 
 	return user;

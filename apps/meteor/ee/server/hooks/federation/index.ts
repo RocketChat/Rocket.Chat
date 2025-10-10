@@ -1,5 +1,5 @@
 import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
-import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isEditedMessage, isUserNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -217,4 +217,31 @@ callbacks.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-create-direct-room',
+);
+
+callbacks.add(
+	'afterSaveUser',
+	async ({ user, oldUser }) => {
+		if (!oldUser || !user) {
+			return;
+		}
+
+		if (!isUserNativeFederated(user)) {
+			return;
+		}
+
+		const nameChanged = user.name !== oldUser.name;
+		if (!nameChanged) {
+			return;
+		}
+
+		const newDisplayName = user.name || user.username;
+		if (!newDisplayName) {
+			return;
+		}
+
+		await FederationMatrix.updateUserProfile(user._id, newDisplayName);
+	},
+	callbacks.priority.MEDIUM,
+	'native-federation-after-user-profile-update',
 );

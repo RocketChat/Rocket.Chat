@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, api } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
 import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -59,9 +59,28 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 
 	if (localUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, localUser._id);
+
 		if (subscription) {
+			const newDisplayName = data.content.displayname;
+			if (newDisplayName && newDisplayName !== localUser.name) {
+				// direct DB update for inbound federation events (don't use _setRealName)
+				// this is intentional: using _setRealName would trigger afterSaveUser callback
+				// which would try to send the update back to Matrix, creating a loop
+				await Users.updateOne({ _id: localUser._id }, { $set: { name: newDisplayName } });
+
+				// direct broadcast for federation events (bypasses notifyOnUserChange)
+				// we always want to notify clients about federation updates regardless of DB watcher settings
+				void api.broadcast('watch.users', {
+					clientAction: 'updated',
+					id: localUser._id,
+					diff: { name: 1 },
+					unset: {},
+				});
+			}
+
 			return;
 		}
+
 		await Room.addUserToRoom(room._id, localUser);
 		return;
 	}
