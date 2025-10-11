@@ -171,7 +171,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
-				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req });
+				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (error) {
 				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', error });
 
@@ -201,7 +201,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	protected cancel(res: SipMessage): void {
-		logger.debug({ msg: 'IncomingSipCall.cancel', res });
+		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
 	}
@@ -307,7 +307,7 @@ export class IncomingSipCall extends BaseSipCall {
 			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
 			// Negotiation will always exist; This is just a safe guard
 			if (!negotiation) {
-				logger.error({ msg: 'Invalid Negotiation reference on IncomingSipCall.', localNegotiation });
+				logger.error({ msg: 'Invalid Negotiation reference on IncomingSipCall.', localNegotiation: localNegotiation.id });
 				this.inboundRenegotiations.delete(localNegotiation.id);
 				if (localNegotiation.res) {
 					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);

@@ -146,14 +146,22 @@ export class OutgoingSipCall extends BaseSipCall {
 				},
 				{
 					cbProvisional: (provRes) => {
-						logger.debug({ msg: 'OutgoingSipCall.createDialog - got provisional response', provRes });
+						logger.debug({
+							msg: 'OutgoingSipCall.createDialog - got provisional response',
+							provRes: provRes && this.session.stripDrachtioServerDetails(provRes),
+						});
 					},
 					cbRequest: (_error: unknown, req: SrfRequest) => {
-						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req });
+						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req: this.session.stripDrachtioServerDetails(req) });
 						if (req) {
 							this.sipDialogReq = req;
 							req.on('response', (res, ack) => {
-								logger.debug({ msg: 'OutgoingSipCall - request got a response', req, res, ack });
+								logger.debug({
+									msg: 'OutgoingSipCall - request got a response',
+									req: this.session.stripDrachtioServerDetails(req),
+									res: res && this.session.stripDrachtioServerDetails(res),
+									ack,
+								});
 							});
 						}
 					},
@@ -215,7 +223,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
-				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req });
+				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (error) {
 				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', error });
 
@@ -253,7 +261,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			const negotiation = await MediaCallNegotiations.findOneById(localNegotiation.id);
 			// Negotiation will always exist; This is just a safe guard
 			if (!negotiation) {
-				logger.error({ msg: 'Invalid Negotiation reference on OutgoingSipCall.', localNegotiation });
+				logger.error({ msg: 'Invalid Negotiation reference on OutgoingSipCall.', localNegotiation: localNegotiation.id });
 				this.inboundRenegotiations.delete(localNegotiation.id);
 				if (localNegotiation.res) {
 					localNegotiation.res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
