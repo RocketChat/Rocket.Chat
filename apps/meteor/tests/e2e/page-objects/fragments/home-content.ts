@@ -434,7 +434,7 @@ export class HomeContent {
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
+		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
 	}
 
 	async openLastMessageMenu(): Promise<void> {

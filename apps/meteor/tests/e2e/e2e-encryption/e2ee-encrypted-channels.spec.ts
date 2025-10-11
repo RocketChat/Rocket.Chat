@@ -326,4 +326,64 @@ test.describe('E2EE Encrypted Channels', () => {
 		await lastStarredMessage.locator('role=button[name="More"]').click();
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 	});
+
+	test('expect to edit encrypted message', async ({ page }) => {
+		const channelName = faker.string.uuid();
+		const originalMessage = 'This is the original encrypted message';
+		const editedMessage = 'This is the edited encrypted message';
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage(originalMessage);
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(originalMessage);
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.openLastMessageMenu();
+		await poHomeChannel.content.btnOptionEditMessage.click();
+		await poHomeChannel.content.inputMessage.fill(editedMessage);
+
+		await page.keyboard.press('Enter');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(editedMessage);
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect to edit encrypted message to include mention', async ({ page }) => {
+		const channelName = faker.string.uuid();
+		const originalMessage = 'This is the original encrypted message';
+		const editedMessage = 'This is the edited encrypted message with a mention to @user1 and #general';
+		const displayedMessage = 'This is the edited encrypted message with a mention to user1 and general';
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage(originalMessage);
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(originalMessage);
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.openLastMessageMenu();
+		await poHomeChannel.content.btnOptionEditMessage.click();
+		await poHomeChannel.content.inputMessage.fill(editedMessage);
+
+		await page.keyboard.press('Enter');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(displayedMessage);
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		const userMention = page.getByRole('button', {
+			name: 'user1',
+		});
+
+		await expect(userMention).toBeVisible();
+
+		const channelMention = page.getByRole('button', {
+			name: 'general',
+		});
+
+		await expect(channelMention).toBeVisible();
+	});
 });
