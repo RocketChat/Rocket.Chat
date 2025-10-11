@@ -121,9 +121,9 @@ callbacks.add(
 );
 
 afterLeaveRoomCallback.add(
-	async (user: IUser, room: IRoom): Promise<void> => {
+	async ({ user, kicker }, room: IRoom): Promise<void> => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.leaveRoom(room._id, user);
+			await FederationMatrix.leaveRoom(room._id, user, kicker);
 		}
 	},
 	callbacks.priority.HIGH,
