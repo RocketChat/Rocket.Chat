@@ -1,4 +1,4 @@
-import type { SlashCommand } from '@rocket.chat/core-typings';
+import type { ISlashCommand } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
@@ -35,7 +35,7 @@ const commandsEndpoints = API.v1.get(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<{
-				command: SlashCommand;
+				command: ISlashCommand;
 				success: true;
 			}>({
 				type: 'object',
