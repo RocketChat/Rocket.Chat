@@ -55,10 +55,6 @@ const commandsEndpoints = API.v1.get(
 	async function action() {
 		const params = this.queryParams;
 
-		if (typeof params.command !== 'string') {
-			return API.v1.failure('The query param "command" must be provided.');
-		}
-
 		const cmd = slashCommands.commands[params.command.toLowerCase()];
 
 		if (!cmd) {
