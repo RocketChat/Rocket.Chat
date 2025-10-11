@@ -34362,7 +34362,7 @@ __metadata:
     sodium-plus: "npm:^0.9.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
-    ws: "npm:^8.18.3"
+    ws: "npm:~8.18.3"
   languageName: unknown
   linkType: soft
 
@@ -39383,7 +39383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.3, ws@npm:~8.18.3":
+"ws@npm:~8.18.3":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:
