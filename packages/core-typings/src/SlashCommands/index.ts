@@ -56,3 +56,5 @@ export type SlashCommand<T extends string = string> = {
 	previewCallback?: SlashCommandPreviewCallback;
 	appId?: string;
 };
+
+export interface ISlashCommand extends SlashCommand {}

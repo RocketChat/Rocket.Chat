@@ -35,23 +35,12 @@ const commandsEndpoints = API.v1.get(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<{
-				command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
+				command: SlashCommand;
 				success: true;
 			}>({
 				type: 'object',
 				properties: {
-					command: {
-						type: 'object',
-						properties: {
-							clientOnly: { type: 'boolean' },
-							command: { type: 'string' },
-							description: { type: 'string' },
-							params: { type: 'string' },
-							providesPreview: { type: 'boolean' },
-						},
-						required: ['command', 'providesPreview'],
-						additionalProperties: false,
-					},
+					command: { $ref: '#/components/schemas/ISlashCommand' },
 					success: {
 						type: 'boolean',
 						enum: [true],
