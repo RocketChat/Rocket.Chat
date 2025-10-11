@@ -2,6 +2,9 @@ import { eventIdSchema, roomIdSchema, userIdSchema, type HomeserverServices, typ
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+
 const UsernameSchema = {
 	type: 'string',
 	pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
@@ -350,9 +353,10 @@ const EventAuthResponseSchema = {
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
 export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
-	const { profile } = services;
+	const { profile, federationAuth } = services;
 
 	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
 		.get(
 			'/v1/query/profile',
 			{
@@ -414,14 +418,13 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
-			async (c) => {
-				const { userId } = c.req.param();
-
-				const response = await profile.getDevices(userId);
-
+			async (_c) => {
 				return {
-					body: response,
-					statusCode: 200,
+					body: {
+						errcode: 'M_UNRECOGNIZED',
+						error: 'This endpoint is not implemented on the homeserver side',
+					},
+					statusCode: 501,
 				};
 			},
 		)
@@ -436,6 +439,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, userId } = c.req.param();
 				const url = new URL(c.req.url);
@@ -467,6 +471,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId } = c.req.param();
 				const body = await c.req.json();
@@ -489,6 +494,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, eventId } = c.req.param();
 

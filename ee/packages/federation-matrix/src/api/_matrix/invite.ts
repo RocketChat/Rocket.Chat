@@ -14,6 +14,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -181,7 +182,7 @@ async function joinRoom({
 	const isDM = inviteEvent.getContent<PduMembershipEventContent>().is_direct;
 
 	if (!isDM && !matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
-		throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
+		throw new Error('room is neither direct message - rocketchat is unable to join for now');
 	}
 
 	// need both the sender and the participating user to exist in the room
@@ -320,7 +321,7 @@ export const acceptInvite = async (
 };
 
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
-	const { invite, state, room } = services;
+	const { invite, state, room, federationAuth } = services;
 
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
@@ -333,6 +334,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
+		isAuthenticatedMiddleware(federationAuth),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion } = await c.req.json();
@@ -353,7 +355,13 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
+			const inviteEvent = await invite.processInvite(
+				event,
+				roomIdSchema.parse(roomId),
+				eventIdSchema.parse(eventId),
+				roomVersion,
+				c.get('authenticatedServer'),
+			);
 
 			setTimeout(
 				() => {
