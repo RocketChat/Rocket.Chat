@@ -31,13 +31,13 @@ async function handleMediaMessage(
 	room: IRoom,
 	matrixRoomId: string,
 	eventId: EventID,
-	tmid?: string,
+	thread?: { tmid: string; tshow: boolean },
 ): Promise<{
 	fromId: string;
 	rid: string;
 	msg: string;
 	federation_event_id: string;
-	tmid?: string;
+	thread?: { tmid: string; tshow: boolean };
 	attachments: [FileAttachmentProps];
 }> {
 	const mimeType = fileInfo?.mimetype;
@@ -106,7 +106,7 @@ async function handleMediaMessage(
 		rid: room._id,
 		msg: '',
 		federation_event_id: eventId,
-		tmid,
+		thread,
 		attachments: [attachment],
 	};
 }
@@ -239,7 +239,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					room,
 					data.room_id,
 					data.event_id,
-					thread?.tmid,
+					thread,
 				);
 				await Message.saveMessageFromFederation(result);
 			} else {
