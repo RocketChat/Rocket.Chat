@@ -10,7 +10,7 @@ export interface IFederationMatrixService {
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
 	getEventById(eventId: string): Promise<EventStore | null>;
-	leaveRoom(rid: IRoomFederated['_id'], user: IUser): Promise<void>;
+	leaveRoom(rid: IRoomFederated['_id'], user: IUser, kicker?: IUser): Promise<void>;
 	kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 	updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void>;
 	updateRoomName(rid: string, displayName: string, user: IUser): Promise<void>;

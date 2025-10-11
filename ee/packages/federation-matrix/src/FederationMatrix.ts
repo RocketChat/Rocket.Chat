@@ -732,7 +732,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return this.homeserverServices.event.getEventById(eventId);
 	}
 
-	async leaveRoom(roomId: string, user: IUser): Promise<void> {
+	async leaveRoom(roomId: string, user: IUser, kicker?: IUser): Promise<void> {
+		if (kicker && isUserNativeFederated(kicker)) {
+			this.logger.debug('Only local users can remove others, ignoring action');
+			return;
+		}
+
 		try {
 			const room = await Rooms.findOneById(roomId);
 			if (!room || !isRoomNativeFederated(room)) {
@@ -742,12 +747,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping room leave');
-				return;
-			}
-
-			const subscription = await Subscriptions.findOne({ 'rid': room._id, 'u._id': user._id });
-			if (!subscription) {
-				this.logger.debug(`User ${user.username} is not subscribed to room ${room._id}, skipping leave operation`);
 				return;
 			}
 
