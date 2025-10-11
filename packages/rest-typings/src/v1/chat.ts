@@ -488,17 +488,43 @@ const ChatUpdateSchema = {
 				},
 				content: {
 					type: 'object',
-					properties: {
-						algorithm: {
-							type: 'string',
-							enum: ['rc.v1.aes-sha2'],
-						},
-						ciphertext: {
-							type: 'string',
-						},
+					discriminator: {
+						propertyName: 'algorithm',
 					},
 					required: ['algorithm', 'ciphertext'],
-					additionalProperties: false,
+					oneOf: [
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v1.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+								},
+							},
+							additionalProperties: false,
+						},
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v2.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+								},
+								iv: {
+									type: 'string',
+								},
+								kid: {
+									type: 'string',
+								}
+							},
+							required: ['iv', 'kid'],
+							additionalProperties: false,
+						}
+					]
 				},
 				e2eMentions: {
 					type: 'object',
