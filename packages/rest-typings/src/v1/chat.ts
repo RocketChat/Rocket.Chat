@@ -491,7 +491,6 @@ const ChatUpdateSchema = {
 					discriminator: {
 						propertyName: 'algorithm',
 					},
-					required: ['algorithm', 'ciphertext'],
 					oneOf: [
 						{
 							type: 'object',
@@ -501,8 +500,10 @@ const ChatUpdateSchema = {
 								},
 								ciphertext: {
 									type: 'string',
+									minLength: 1,
 								},
 							},
+							required: ['algorithm', 'ciphertext'],
 							additionalProperties: false,
 						},
 						{
@@ -513,18 +514,21 @@ const ChatUpdateSchema = {
 								},
 								ciphertext: {
 									type: 'string',
+									minLength: 1,
 								},
 								iv: {
 									type: 'string',
+									minLength: 1,
 								},
 								kid: {
 									type: 'string',
-								}
+									minLength: 1,
+								},
 							},
-							required: ['iv', 'kid'],
+							required: ['algorithm', 'ciphertext', 'iv', 'kid'],
 							additionalProperties: false,
-						}
-					]
+						},
+					],
 				},
 				e2eMentions: {
 					type: 'object',
