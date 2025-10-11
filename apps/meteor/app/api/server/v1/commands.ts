@@ -40,7 +40,18 @@ const commandsEndpoints = API.v1.get(
 			}>({
 				type: 'object',
 				properties: {
-					command: { $ref: '#/components/schemas/ISlashCommand' },
+					command: {
+						type: 'object',
+						properties: {
+							clientOnly: { type: 'boolean' },
+							command: { type: 'string' },
+							description: { type: 'string' },
+							params: { type: 'string' },
+							providesPreview: { type: 'boolean' },
+						},
+						required: ['command', 'providesPreview'],
+						additionalProperties: false,
+					},
 					success: {
 						type: 'boolean',
 						enum: [true],
