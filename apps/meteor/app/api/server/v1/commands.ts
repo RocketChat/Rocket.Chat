@@ -35,7 +35,7 @@ const commandsEndpoints = API.v1.get(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<{
-				command: ISlashCommand;
+				command: Pick<ISlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
 				success: true;
 			}>({
 				type: 'object',
@@ -61,7 +61,15 @@ const commandsEndpoints = API.v1.get(
 			return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
 		}
 
-		return API.v1.success({ command: cmd });
+		return API.v1.success({
+			command: {
+				command: cmd.command,
+				description: cmd.description,
+				params: cmd.params,
+				clientOnly: cmd.clientOnly,
+				providesPreview: cmd.providesPreview,
+			},
+		});
 	},
 );
 
