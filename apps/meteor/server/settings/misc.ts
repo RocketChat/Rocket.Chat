@@ -2,7 +2,6 @@ import crypto from 'crypto';
 
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
-import { randomUUID } from 'crypto';
 
 import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
 import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
@@ -61,7 +60,7 @@ export const verifyFingerPrint = async function (emit = true) {
 
 // Insert server unique id if it doesn't exist
 export const createMiscSettings = async () => {
-	await settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || randomUUID(), {
+	await settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || crypto.randomUUID(), {
 		public: true,
 	});
 

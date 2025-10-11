@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
-import { randomUUID } from 'crypto';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';

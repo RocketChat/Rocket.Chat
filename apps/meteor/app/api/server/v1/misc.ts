@@ -16,7 +16,6 @@ import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
-import { randomUUID } from 'crypto';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -681,7 +680,7 @@ API.v1.addRoute(
 
 			const promises = settingsIds.map((settingId) => {
 				if (settingId === 'uniqueID') {
-					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || randomUUID());
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || crypto.randomUUID());
 				}
 
 				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
