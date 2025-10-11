@@ -36,6 +36,7 @@ const commandsEndpoints = API.v1.get(
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<{
 				command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
+				success: true;
 			}>({
 				type: 'object',
 				properties: {
@@ -49,6 +50,7 @@ const commandsEndpoints = API.v1.get(
 							providesPreview: { type: 'boolean' },
 						},
 						required: ['command', 'providesPreview'],
+						additionalProperties: false,
 					},
 					success: {
 						type: 'boolean',
