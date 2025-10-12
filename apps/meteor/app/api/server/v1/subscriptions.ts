@@ -55,6 +55,7 @@ const SubscriptionsGetOneSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['roomId'],
@@ -199,10 +200,6 @@ const subscriptionsEndpoints = API.v1.get(
 
 	async function action() {
 		const { roomId } = this.queryParams;
-
-		if (!roomId) {
-			return API.v1.failure("The 'roomId' param is required");
-		}
 
 		return API.v1.success({
 			subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
