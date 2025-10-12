@@ -54,14 +54,7 @@ export const createRoom = async (api: BaseTest['api'], { visitorToken, agentId }
 		data: room,
 		async delete() {
 			await closeRoom(api, { roomId: room._id, visitorToken });
-			return api.post('/method.call/livechat:removeRoom', {
-				message: JSON.stringify({
-					msg: 'method',
-					id: '16',
-					method: 'livechat:removeRoom',
-					params: [room._id],
-				}),
-			});
+			return api.post('/livechat/rooms.delete', { roomId: room._id });
 		},
 	};
 };

@@ -57,7 +57,7 @@ const horizontalSideLabel = ({ bars, labelSkipWidth }: BarCustomLayerProps<BarDa
 				<text
 					key={data.indexValue}
 					transform={`translate(${width + 8}, ${y + height / 2})`}
-					textAnchor='left'
+					textAnchor='start'
 					dominantBaseline='central'
 					style={sideLabelStyle}
 				>

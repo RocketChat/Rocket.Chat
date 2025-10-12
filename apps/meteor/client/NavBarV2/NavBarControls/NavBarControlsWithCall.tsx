@@ -6,12 +6,11 @@ import { useOmnichannelCallDialPadAction } from '../NavBarOmnichannelGroup/hooks
 import { useOmnichannelCallToggleAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelCallToggleAction';
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
-	voipItems: GenericMenuItemProps[];
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
 };
 
-const NavBarControlsWithCall = ({ voipItems, omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsWithCall = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
 	const {
 		icon: omnichannelCallIcon,
 		title: omnichannelCallTitle,
@@ -44,7 +43,7 @@ const NavBarControlsWithCall = ({ voipItems, omnichannelItems, isPressed, ...pro
 		},
 	] as GenericMenuItemProps[];
 
-	return <NavBarControlsMenu voipItems={voipItems} omnichannelItems={omnichannelItemsWithCall} isPressed={isPressed} {...props} />;
+	return <NavBarControlsMenu omnichannelItems={omnichannelItemsWithCall} isPressed={isPressed} {...props} />;
 };
 
 export default NavBarControlsWithCall;

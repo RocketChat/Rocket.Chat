@@ -19,7 +19,7 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"eslint": "~8.45.0",
 		"rimraf": "~6.0.1",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

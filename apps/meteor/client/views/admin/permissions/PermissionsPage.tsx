@@ -62,7 +62,7 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 						<Tabs.Item
 							data-qa='PermissionTable-Permissions'
 							selected={type === 'permissions'}
-							onClick={handlePermissionsTab}
+							onClick={canViewPermission ? handlePermissionsTab : undefined}
 							disabled={!canViewPermission}
 						>
 							{t('Permissions')}

@@ -430,40 +430,99 @@ const ChatSearchSchema = {
 
 export const isChatSearchProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
-type ChatUpdate = {
+interface IChatUpdate {
 	roomId: IRoom['_id'];
 	msgId: string;
+}
+
+interface IChatUpdateText extends IChatUpdate {
 	text: string;
 	previewUrls?: string[];
-	customFields: IMessage['customFields'];
-};
+	customFields?: IMessage['customFields'];
+}
+
+interface IChatUpdateEncrypted extends IChatUpdate {
+	content: Required<IMessage>['content'];
+	e2eMentions?: IMessage['e2eMentions'];
+}
+
+type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
 
 const ChatUpdateSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		msgId: {
-			type: 'string',
-		},
-		text: {
-			type: 'string',
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		customFields: {
+	oneOf: [
+		{
 			type: 'object',
-			nullable: true,
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				text: {
+					type: 'string',
+				},
+				previewUrls: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+			required: ['roomId', 'msgId', 'text'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId', 'msgId', 'text'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				content: {
+					type: 'object',
+					properties: {
+						algorithm: {
+							type: 'string',
+							enum: ['rc.v1.aes-sha2'],
+						},
+						ciphertext: {
+							type: 'string',
+						},
+					},
+					required: ['algorithm', 'ciphertext'],
+					additionalProperties: false,
+				},
+				e2eMentions: {
+					type: 'object',
+					properties: {
+						e2eUserMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+						e2eChannelMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+					},
+					required: [],
+					additionalProperties: false,
+					nullable: true,
+				},
+			},
+			required: ['roomId', 'msgId', 'content'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);

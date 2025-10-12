@@ -1,9 +1,10 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useConnectionStatus, useSetting } from '@rocket.chat/ui-contexts';
 
 import { useIdleActiveEvents } from './useIdleActiveEvents';
 
-export const useIdleConnection = (uid: string | null) => {
+export const useIdleConnection = (uid: IUser['_id'] | undefined) => {
 	const { status } = useConnectionStatus();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const { disconnect: disconnectServer, reconnect: reconnectServer } = useConnectionStatus();

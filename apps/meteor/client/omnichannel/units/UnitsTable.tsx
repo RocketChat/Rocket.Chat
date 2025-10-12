@@ -1,11 +1,11 @@
-import { Pagination, IconButton } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRemoveUnit } from './useRemoveUnit';
+import UnitTableRow from './UnitTableRow';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
 import {
@@ -13,9 +13,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
-	GenericTableCell,
 	GenericTableLoadingRow,
-	GenericTableRow,
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
@@ -51,8 +49,6 @@ const UnitsTable = () => {
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/units/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
-	const handleDelete = useRemoveUnit();
 
 	const headers = (
 		<>
@@ -103,22 +99,7 @@ const UnitsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' data-qa-id={name} onClick={onRowClick(_id)} action qa-user-id={_id}>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
-									<GenericTableCell>
-										<IconButton
-											icon='trash'
-											small
-											title={t('Remove')}
-											data-qa-id={`remove-unit-${name}`}
-											onClick={(e) => {
-												e.stopPropagation();
-												handleDelete(_id);
-											}}
-										/>
-									</GenericTableCell>
-								</GenericTableRow>
+								<UnitTableRow key={_id} _id={_id} name={name} visibility={visibility} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

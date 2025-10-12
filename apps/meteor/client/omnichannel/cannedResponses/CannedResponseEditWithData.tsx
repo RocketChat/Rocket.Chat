@@ -6,12 +6,15 @@ import { useTranslation } from 'react-i18next';
 
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { FormSkeleton } from '../../components/Skeleton';
 
 const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IOmnichannelCannedResponse['_id'] }) => {
 	const { t } = useTranslation();
 
 	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });
+	const handleDelete = useRemoveCannedResponse(cannedResponseId);
+
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['getCannedResponseById', cannedResponseId],
 		queryFn: async () => getCannedResponseById(),
@@ -30,10 +33,10 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {
-		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} />;
+		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} onDelete={handleDelete} />;
 	}
 
-	return <CannedResponseEdit cannedResponseData={data?.cannedResponse} />;
+	return <CannedResponseEdit cannedResponseData={data?.cannedResponse} onDelete={handleDelete} />;
 };
 
 export default CannedResponseEditWithData;

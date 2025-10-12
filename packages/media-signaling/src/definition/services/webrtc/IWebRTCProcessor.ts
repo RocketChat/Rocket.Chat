@@ -19,7 +19,6 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 	muted: boolean;
 	held: boolean;
-
 	setMuted(muted: boolean): void;
 	setHeld(held: boolean): void;
 	stop(): void;
@@ -31,6 +30,11 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	setRemoteAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
 
 	getRemoteMediaStream(): MediaStream;
+
+	audioLevel: number;
+	localAudioLevel: number;
+
+	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 }
 
 export type WebRTCProcessorConfig = {

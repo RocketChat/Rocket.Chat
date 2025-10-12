@@ -7,13 +7,14 @@ import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
+import { watchUserId } from '../meteor/user';
 
 Meteor.startup(() => {
 	fireGlobalEvent('startup', true);
 
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
-		const uid = Meteor.userId();
+		const uid = watchUserId();
 		if (!uid) {
 			removeLocalUserData();
 			return;

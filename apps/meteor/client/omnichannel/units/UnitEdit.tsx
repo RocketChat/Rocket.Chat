@@ -7,7 +7,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useRemoveUnit } from './useRemoveUnit';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMonitors from '../../components/AutoCompleteMonitors';
 import {
@@ -36,15 +35,14 @@ type UnitEditProps = {
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
 	onClose: () => void;
+	onDelete?: () => void;
 };
 
-const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose }: UnitEditProps) => {
+const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose, onDelete }: UnitEditProps) => {
 	const t = useTranslation();
 	const saveUnit = useMethod('livechat:saveUnit');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
-
-	const handleDeleteUnit = useRemoveUnit();
 
 	const visibilityOpts: SelectOption[] = [
 		['public', t('Public')],
@@ -250,7 +248,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose }: UnitEdit
 				{_id && (
 					<Box mbs={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => handleDeleteUnit(_id)}>
+							<Button icon='trash' danger onClick={() => onDelete?.()}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>
