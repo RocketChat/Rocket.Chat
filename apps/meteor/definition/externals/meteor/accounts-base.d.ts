@@ -76,5 +76,9 @@ declare module 'meteor/accounts-base' {
 
 			function serviceNames(): string[];
 		}
+
+		const connection: {
+			userId(): string | null;
+		};
 	}
 }
