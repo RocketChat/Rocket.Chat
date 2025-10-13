@@ -2361,6 +2361,7 @@
   "Offline_Email_Subject_Description": "다음의 지시어를 사용할 수 있습니다:  \n - 어플리케이션 이름 [Site_Name] / 사이트 URL `[Site_URL]` / 사용자 이름 [User] / 채팅방 이름 [Room]  ",
   "Offline_Link_Message": "메시지로 이동",
   "Offline_Mention_All_Email": "모든 이에게 보내는 멘션 제목",
+  "Offline_Mention_Email": "{{user}}님이 {{room}}에서 멘션을 보냈습니다.",
   "Offline_Message": "오프라인 메시지",
   "Offline_Message_Use_DeepLink": "딥 링크 URL 형식 사용",
   "Offline_form": "오프라인 양식",

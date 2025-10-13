@@ -842,6 +842,7 @@
   "Decline": "Từ chối",
   "Default": "Mặc định",
   "Delete": "Xóa bỏ",
+  "Delete_Room_Warning": "Xóa một phòng sẽ xóa tất cả các tin nhắn được đăng bên trong phòng. Điều này không thể được hoàn tác.",
   "Delete_User_Warning": "Xóa người dùng cũng sẽ xóa tất cả các thư từ người dùng đó. Điều này không thể được hoàn tác.",
   "Delete_User_Warning_Delete": "Xóa người dùng cũng sẽ xóa tất cả các thư từ người dùng đó. Điều này không thể được hoàn tác.",
   "Delete_User_Warning_Keep": "Người dùng sẽ bị xóa, nhưng thông điệp của họ sẽ vẫn hiển thị. Điều này không thể được hoàn tác.",

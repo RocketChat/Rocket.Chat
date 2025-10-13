@@ -748,12 +748,14 @@
   "Decline": "Татгалзах",
   "Default": "Үндсэн байна",
   "Delete": "Устгах",
+  "Delete_Room_Warning": "Өрөөнөөс устгавал өрөөн дотор байгаа бүх мэдэгдлүүдийг устгах болно. Энэ буцаах боломжгүй.",
   "Delete_User_Warning": "Хэрэглэгч устгах нь тухайн хэрэглэгчийн бүх зурвасыг мөн устгах болно. Энэ буцаах боломжгүй.",
   "Delete_User_Warning_Delete": "Хэрэглэгч устгах нь тухайн хэрэглэгчийн бүх зурвасыг мөн устгах болно. Энэ буцаах боломжгүй.",
   "Delete_User_Warning_Keep": "Хэрэглэгч устгагдах боловч тэдний зурвасууд нь харагдах болно. Энэ буцаах боломжгүй.",
   "Delete_User_Warning_Unlink": "Хэрэглэгч устгах нь хэрэглэгчийн нэрийг тэдний бүх зурвасаас хасах болно. Энэ буцаах боломжгүй.",
   "Delete_message": "Мессеж устгах",
   "Delete_my_account": "Акаунтаа устгах",
+  "Delete_roomType_description": "Өрөөнөөс устгавал өрөөн дотор байгаа бүх мэдэгдлүүдийг устгах болно. Энэ буцаах боломжгүй.",
   "Deleted": "Устгагдсан!",
   "Department": "Газар",
   "Department_not_found": "Газар олдсонгүй",
@@ -2206,6 +2208,7 @@
   "UserDataDownload_CompletedRequestExisted_Text": "Таны өгөгдлийн файл үүсгэгдсэн байна. Татаж авах холбоосын талаар и-мэйл хаягаа шалгана уу.",
   "UserDataDownload_EmailBody": "Таны дата файлыг татаж авахад бэлэн боллоо. Энд дарна уу <a href=\"{{download_link}}\">энд</a.",
   "UserDataDownload_EmailSubject": "Таны өгөгдлийн файлыг татаж авахад бэлэн байна",
+  "UserDataDownload_RequestExisted_Text": "Таны өгөгдлийн файл үүсгэгдсэн байна. Үүнийг татаж авах холбоос нь таны имэйл хаяг руу илгээгдэх болно.",
   "UserDataDownload_Requested": "File Requested татаж авах",
   "UserData_EnableDownload": "Хэрэглэгчийн Мэдээллийн Татаж авах",
   "UserData_FileSystemPath": "Системийн зам (Экспортлосон файлууд)",
@@ -2740,5 +2743,6 @@
   "you_are_in_preview_mode_of": "Та сувгийн урьдчилан харах горимд байна <strong>{{room_name}}</strong>",
   "your_message": "таны зурвас",
   "your_message_optional": "таны мессеж (заавал биш)",
-  "__count__empty_rooms_will_be_removed_automatically": "{{count}} тооны хоосон өрөөнүүд автоматаар устгагдах болно"
+  "__count__empty_rooms_will_be_removed_automatically": "{{count}} тооны хоосон өрөөнүүд автоматаар устгагдах болно",
+  "__username__was_set__role__by__user_by_": "__ус_name__ __role_ __"
 }
