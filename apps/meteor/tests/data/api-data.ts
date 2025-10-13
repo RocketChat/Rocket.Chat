@@ -3,10 +3,6 @@ import type { Path } from '@rocket.chat/rest-typings';
 import type { CallbackHandler, Response } from 'supertest';
 import supertest from 'supertest';
 
-export interface RequestConfig {
-	credentials: Credentials;
-	request: any;
-}
 
 import { adminUsername, adminPassword } from './user';
 

@@ -2,10 +2,25 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { api, credentials, methodCall, request, type RequestConfig } from './api-data';
-import { password } from './user';
+import { api, credentials, methodCall, request } from './api-data';
+import supertest from 'supertest';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
+
+export interface RequestConfig {
+	credentials: Credentials;
+	request: any;
+}
+
+export async function getRequestConfig(domain: string, user: string, password: string): Promise<RequestConfig> {
+	const request = supertest(domain);
+	const credentials = await login(user, password, { request, credentials: {} as Credentials });
+	
+	return {
+		credentials,
+		request: request,
+	};
+}
 
 export const createUser = <TUser extends IUser>(
 	userData: {
@@ -31,7 +46,7 @@ export const createUser = <TUser extends IUser>(
 		void requestInstance
 			.post(api('users.create'))
 			.set(credentialsInstance)
-			.send({ email, name: username, username, password, ...userData })
+			.send({ email, name: username, username, password: userData.password, ...userData })
 			.end((err: any, res: any) => {
 				if (err) {
 					return reject(err);
