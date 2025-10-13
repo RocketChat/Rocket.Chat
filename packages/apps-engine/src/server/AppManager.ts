@@ -59,6 +59,7 @@ export interface IAppManagerDeps {
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
 	keepSlashcommands?: boolean;
+	keepOutboundCommunicationProviders?: boolean;
 }
 
 export class AppManager {
@@ -483,7 +484,11 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+		await this.purgeAppConfig(app, {
+			keepScheduledJobs: true,
+			keepSlashcommands: true,
+			keepOutboundCommunicationProviders: true,
+		});
 
 		await app.setStatus(status, silent);
 
@@ -1092,7 +1097,9 @@ export class AppManager {
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
-		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
+			keepReferences: opts.keepOutboundCommunicationProviders,
+		});
 	}
 
 	/**
@@ -1167,7 +1174,11 @@ export class AppManager {
 			this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+			await this.purgeAppConfig(app, {
+				keepScheduledJobs: true,
+				keepSlashcommands: true,
+				keepOutboundCommunicationProviders: true,
+			});
 		}
 
 		if (saveToDb) {

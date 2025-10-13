@@ -265,9 +265,10 @@ export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>
 
 export interface IUserNativeFederated extends IUser {
 	federated: true;
+	username: `@${string}:${string}`;
 	federation: {
 		version: number;
-		mui: string;
+		mui: `@${string}:${string}`;
 		origin: string;
 	};
 }

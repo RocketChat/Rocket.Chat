@@ -2,7 +2,8 @@ import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { canAccessEvent } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
@@ -319,6 +320,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
+			.use(isAuthenticatedMiddleware(federationAuth))
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -365,7 +367,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 			)
 
 			// GET /_matrix/federation/v1/state_ids/{roomId}
-
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -374,6 +375,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateIdsResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -404,6 +406,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -435,7 +438,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				canAccessEvent(federationAuth),
+				canAccessResourceMiddleware(federationAuth, 'event'),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {
@@ -470,6 +473,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Number(c.req.query('limit') || 100);

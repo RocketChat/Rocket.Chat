@@ -1,5 +1,37 @@
 # @rocket.chat/ui-contexts
 
+## 23.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.4
+  - @rocket.chat/rest-typings@7.11.0-rc.4
+  - @rocket.chat/ddp-client@0.3.39-rc.4
+  </details>
+
+## 23.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.3
+  - @rocket.chat/rest-typings@7.11.0-rc.3
+  - @rocket.chat/ddp-client@0.3.39-rc.3
+  </details>
+
+## 23.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.11.0-rc.2
+  - @rocket.chat/rest-typings@7.11.0-rc.2
+  - @rocket.chat/ddp-client@0.3.38-rc.2
+  </details>
+
 ## 23.0.0-rc.1
 
 ### Patch Changes
@@ -27,6 +59,16 @@
   - @rocket.chat/i18n@1.11.0-rc.0
   - @rocket.chat/core-typings@7.11.0-rc.0
   - @rocket.chat/ddp-client@0.3.38-rc.0
+  </details>
+
+## 22.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.1
+  - @rocket.chat/rest-typings@7.10.1
+  - @rocket.chat/ddp-client@0.3.38
   </details>
 
 ## 22.0.0

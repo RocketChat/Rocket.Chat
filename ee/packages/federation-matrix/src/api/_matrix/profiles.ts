@@ -1,6 +1,9 @@
-import type { HomeserverServices, RoomVersion } from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, userIdSchema, type HomeserverServices, type RoomVersion } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const UsernameSchema = {
 	type: 'string',
@@ -350,9 +353,10 @@ const EventAuthResponseSchema = {
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
 export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
-	const { profile } = services;
+	const { profile, federationAuth } = services;
 
 	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
 		.get(
 			'/v1/query/profile',
 			{
@@ -414,14 +418,13 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
-			async (c) => {
-				const { userId } = c.req.param();
-
-				const response = await profile.getDevices(userId);
-
+			async (_c) => {
 				return {
-					body: response,
-					statusCode: 200,
+					body: {
+						errcode: 'M_UNRECOGNIZED',
+						error: 'This endpoint is not implemented on the homeserver side',
+					},
+					statusCode: 501,
 				};
 			},
 		)
@@ -436,12 +439,17 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, userId } = c.req.param();
 				const url = new URL(c.req.url);
 				const verParams = url.searchParams.getAll('ver');
 
-				const response = await profile.makeJoin(roomId, userId, verParams.length > 0 ? (verParams as RoomVersion[]) : ['1']);
+				const response = await profile.makeJoin(
+					roomIdSchema.parse(roomId),
+					userIdSchema.parse(userId),
+					verParams.length > 0 ? (verParams as RoomVersion[]) : ['1'],
+				);
 
 				return {
 					body: {
@@ -463,11 +471,12 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId } = c.req.param();
 				const body = await c.req.json();
 
-				const response = await profile.getMissingEvents(roomId, body.earliest_events, body.latest_events, body.limit);
+				const response = await profile.getMissingEvents(roomIdSchema.parse(roomId), body.earliest_events, body.latest_events, body.limit);
 
 				return {
 					body: response,
@@ -485,10 +494,11 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
+			canAccessResourceMiddleware(federationAuth, 'room'),
 			async (c) => {
 				const { roomId, eventId } = c.req.param();
 
-				const response = await profile.eventAuth(roomId, eventId);
+				const response = await profile.eventAuth(roomIdSchema.parse(roomId), eventIdSchema.parse(eventId));
 
 				return {
 					body: response,

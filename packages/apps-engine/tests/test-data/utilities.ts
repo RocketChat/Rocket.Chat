@@ -10,6 +10,12 @@ import type { IApi, IApiRequest, IApiResponse } from '../../src/definition/api';
 import { ApiSecurity, ApiVisibility } from '../../src/definition/api';
 import type { IApiEndpointInfo } from '../../src/definition/api/IApiEndpointInfo';
 import type { IMessage, IMessageAttachment, IMessageRaw } from '../../src/definition/messages';
+import type {
+	IOutboundEmailMessageProvider,
+	IOutboundMessage,
+	IOutboundPhoneMessageProvider,
+	ProviderMetadata,
+} from '../../src/definition/outboundComunication';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
@@ -480,6 +486,64 @@ export class TestData {
 			title: 'Video Conference',
 			anonymousUsers: 0,
 			providerName: 'test',
+		};
+	}
+
+	public static getOutboundPhoneMessageProvider(name = 'Test Phone Provider'): IOutboundPhoneMessageProvider {
+		return {
+			type: 'phone',
+			appId: `${name}-app-id`,
+			name,
+			supportsTemplates: true,
+			documentationUrl: 'https://rocket.chat',
+			sendOutboundMessage: async (message): Promise<void> => {
+				console.log('Sending message', message);
+			},
+			getProviderMetadata: async (): Promise<ProviderMetadata> => {
+				return {} as ProviderMetadata;
+			},
+		};
+	}
+
+	public static getOutboundEmailMessageProvider(name = 'Test Email Provider'): IOutboundEmailMessageProvider {
+		return {
+			type: 'email',
+			appId: `${name}-app-id`,
+			name,
+			supportsTemplates: true,
+			documentationUrl: 'https://rocket.chat',
+			sendOutboundMessage: async (message): Promise<void> => {
+				console.log('Sending message', message);
+			},
+		};
+	}
+
+	public static getOutboundMessage(): IOutboundMessage {
+		return {
+			to: '+123456789',
+			type: 'template',
+			templateProviderPhoneNumber: '+123456789',
+			agentId: 'agent-id',
+			departmentId: 'department-id',
+			template: {
+				name: 'template-name',
+				language: {
+					code: 'en',
+					policy: 'deterministic',
+				},
+				components: [
+					{
+						type: 'body',
+						parameters: [
+							{
+								type: 'text',
+								text: 'Sample text',
+							},
+						],
+					},
+				],
+				namespace: 'template-namespace',
+			},
 		};
 	}
 

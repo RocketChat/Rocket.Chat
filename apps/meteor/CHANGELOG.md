@@ -1,5 +1,130 @@
 # @rocket.chat/meteor
 
+## 7.11.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.4
+  - @rocket.chat/rest-typings@7.11.0-rc.4
+  - @rocket.chat/federation-matrix@0.0.2-rc.4
+  - @rocket.chat/license@1.1.0-rc.4
+  - @rocket.chat/media-calls@0.0.2-rc.4
+  - @rocket.chat/omnichannel-services@0.3.36-rc.4
+  - @rocket.chat/pdf-worker@0.3.18-rc.4
+  - @rocket.chat/presence@0.2.39-rc.4
+  - @rocket.chat/api-client@0.2.39-rc.4
+  - @rocket.chat/apps@0.5.18-rc.4
+  - @rocket.chat/core-services@0.10.2-rc.4
+  - @rocket.chat/cron@0.1.39-rc.4
+  - @rocket.chat/freeswitch@1.2.26-rc.4
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.4
+  - @rocket.chat/gazzodown@23.0.0-rc.4
+  - @rocket.chat/http-router@7.9.6-rc.4
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.4
+  - @rocket.chat/ui-avatar@19.0.0-rc.4
+  - @rocket.chat/ui-client@23.0.0-rc.4
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  - @rocket.chat/web-ui-registration@23.0.0-rc.4
+  - @rocket.chat/models@1.7.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.4
+  - @rocket.chat/omni-core-ee@0.0.4-rc.4
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.4
+  - @rocket.chat/ui-voip@13.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.39-rc.4
+  - @rocket.chat/omni-core@0.0.4-rc.4
+  </details>
+
+## 7.11.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.3
+  - @rocket.chat/rest-typings@7.11.0-rc.3
+  - @rocket.chat/federation-matrix@0.0.2-rc.3
+  - @rocket.chat/license@1.1.0-rc.3
+  - @rocket.chat/media-calls@0.0.2-rc.3
+  - @rocket.chat/omnichannel-services@0.3.36-rc.3
+  - @rocket.chat/pdf-worker@0.3.18-rc.3
+  - @rocket.chat/presence@0.2.39-rc.3
+  - @rocket.chat/api-client@0.2.39-rc.3
+  - @rocket.chat/apps@0.5.18-rc.3
+  - @rocket.chat/core-services@0.10.2-rc.3
+  - @rocket.chat/cron@0.1.39-rc.3
+  - @rocket.chat/freeswitch@1.2.26-rc.3
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.3
+  - @rocket.chat/gazzodown@23.0.0-rc.3
+  - @rocket.chat/http-router@7.9.6-rc.3
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.3
+  - @rocket.chat/ui-avatar@19.0.0-rc.3
+  - @rocket.chat/ui-client@23.0.0-rc.3
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  - @rocket.chat/web-ui-registration@23.0.0-rc.3
+  - @rocket.chat/models@1.7.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.3
+  - @rocket.chat/omni-core-ee@0.0.4-rc.3
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.3
+  - @rocket.chat/ui-voip@13.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.39-rc.3
+  - @rocket.chat/omni-core@0.0.4-rc.3
+  </details>
+
+## 7.11.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37053](https://github.com/RocketChat/Rocket.Chat/pull/37053)) Fixes stale phone numbers being available for outbound message
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.2
+  - @rocket.chat/rest-typings@7.11.0-rc.2
+  - @rocket.chat/federation-matrix@0.0.2-rc.2
+  - @rocket.chat/license@1.1.0-rc.2
+  - @rocket.chat/media-calls@0.0.2-rc.2
+  - @rocket.chat/omnichannel-services@0.3.35-rc.2
+  - @rocket.chat/pdf-worker@0.3.17-rc.2
+  - @rocket.chat/presence@0.2.38-rc.2
+  - @rocket.chat/api-client@0.2.38-rc.2
+  - @rocket.chat/apps@0.5.17-rc.2
+  - @rocket.chat/core-services@0.10.1-rc.2
+  - @rocket.chat/cron@0.1.38-rc.2
+  - @rocket.chat/freeswitch@1.2.25-rc.2
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.2
+  - @rocket.chat/gazzodown@23.0.0-rc.2
+  - @rocket.chat/http-router@7.9.5-rc.2
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.2
+  - @rocket.chat/ui-avatar@19.0.0-rc.2
+  - @rocket.chat/ui-client@23.0.0-rc.2
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  - @rocket.chat/web-ui-registration@23.0.0-rc.2
+  - @rocket.chat/models@1.7.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.17-rc.2
+  - @rocket.chat/omni-core-ee@0.0.3-rc.2
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.2
+  - @rocket.chat/ui-voip@13.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.38-rc.2
+  - @rocket.chat/omni-core@0.0.3-rc.2
+  </details>
+
 ## 7.11.0-rc.1
 
 ### Patch Changes
@@ -189,6 +314,55 @@
   - @rocket.chat/freeswitch@1.2.25-rc.0
   - @rocket.chat/message-types@0.0.1
   - @rocket.chat/server-cloud-communication@0.0.2
+
+## 7.10.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36962](https://github.com/RocketChat/Rocket.Chat/pull/36962) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes login using iframe authentication.
+
+- ([#37000](https://github.com/RocketChat/Rocket.Chat/pull/37000) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#37028](https://github.com/RocketChat/Rocket.Chat/pull/37028) by [@dionisio-bot](https://github.com/dionisio-bot)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#37041](https://github.com/RocketChat/Rocket.Chat/pull/37041)) Ensures the formatted volume value is kept between 0 and 1
+
+- <details><summary>Updated dependencies [42cea259937ceea4ba8ec62627e4ca40e7e02320]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.1
+  - @rocket.chat/presence@0.2.38
+  - @rocket.chat/apps@0.5.17
+  - @rocket.chat/core-services@0.10.1
+  - @rocket.chat/core-typings@7.10.1
+  - @rocket.chat/fuselage-ui-kit@22.0.1
+  - @rocket.chat/rest-typings@7.10.1
+  - @rocket.chat/license@1.0.29
+  - @rocket.chat/omnichannel-services@0.3.35
+  - @rocket.chat/pdf-worker@0.3.17
+  - @rocket.chat/api-client@0.2.38
+  - @rocket.chat/cron@0.1.38
+  - @rocket.chat/freeswitch@1.2.25
+  - @rocket.chat/gazzodown@22.0.1
+  - @rocket.chat/http-router@7.9.5
+  - @rocket.chat/model-typings@1.7.1
+  - @rocket.chat/ui-avatar@18.0.1
+  - @rocket.chat/ui-client@22.0.1
+  - @rocket.chat/ui-contexts@22.0.1
+  - @rocket.chat/web-ui-registration@22.0.1
+  - @rocket.chat/models@1.6.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.17
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.1
+  - @rocket.chat/ui-voip@12.0.1
+  - @rocket.chat/omni-core-ee@0.0.3
+  - @rocket.chat/instance-status@0.1.38
+  - @rocket.chat/omni-core@0.0.3
+
   </details>
 
 ## 7.10.0
