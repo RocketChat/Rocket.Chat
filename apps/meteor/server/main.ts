@@ -17,6 +17,7 @@ import { startRocketChat } from '../startRocketChat';
 
 import './routes';
 import '../app/lib/server/startup';
+import '../app/live-location/server';
 import './importPackages';
 import './methods';
 import './publications';
