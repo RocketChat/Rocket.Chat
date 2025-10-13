@@ -18,7 +18,11 @@ export const Binary = {
 		// Iterate through the string, getting the character code for each
 		// character and setting it as the value for the corresponding byte.
 		for (let i = 0; i < str.length; i++) {
-			uint8[i] = str.charCodeAt(i);
+			const charCode = str.charCodeAt(i);
+			if (charCode > 0xff) {
+				throw new RangeError(`illegal char code: ${charCode}`);
+			}
+			uint8[i] = charCode;
 		}
 
 		return buffer;
