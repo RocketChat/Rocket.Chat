@@ -7,7 +7,6 @@ import AdminABACPage from './AdminABACPage';
 import ABACUpsellModal from '../../../components/ABAC/ABACUpsellModal/ABACUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../components/PageSkeleton';
-// import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
