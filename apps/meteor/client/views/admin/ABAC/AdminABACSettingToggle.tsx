@@ -25,7 +25,7 @@ const AdminABACSettingToggle = ({ hasABAC }: AdminABACSettingToggleProps) => {
 		setValue(setting?.value === true);
 	}, [setting]);
 
-	const onchange = useCallback(
+	const onChange = useCallback(
 		(value: boolean) => {
 			if (!setting) {
 				return;
@@ -52,7 +52,7 @@ const AdminABACSettingToggle = ({ hasABAC }: AdminABACSettingToggleProps) => {
 		[dispatch, setModal, setting],
 	);
 
-	const onreset = useCallback(() => {
+	const onReset = useCallback(() => {
 		if (!setting) {
 			return;
 		}
@@ -87,8 +87,8 @@ const AdminABACSettingToggle = ({ hasABAC }: AdminABACSettingToggleProps) => {
 			hint={t(setting.i18nDescription || '')}
 			disabled={!hasABAC || setting.blocked}
 			hasResetButton={setting.packageValue !== setting.value}
-			onChangeValue={(value: SettingValue) => onchange(value === true)}
-			onResetButtonClick={() => onreset()}
+			onChangeValue={(value: SettingValue) => onChange(value === true)}
+			onResetButtonClick={() => onReset()}
 		/>
 	);
 };
