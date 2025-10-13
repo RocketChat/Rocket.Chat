@@ -6,6 +6,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { Server } from './Server';
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
+import { methodDeprecationLogger } from '../../../../apps/meteor/app/lib/server/lib/deprecationWarningLogger';
 
 export const server = new Server();
 
@@ -139,6 +140,7 @@ server.methods({
 	},
 	// Copied from /app/livechat/server/methods/setUpConnection.js
 	'livechat:setUpConnection'(data = {}) {
+		methodDeprecationLogger.method('livechat:setupConnection', '8.0.0', 'This functionality is no longer supported');
 		const { token } = data;
 
 		if (typeof token !== 'string') {
