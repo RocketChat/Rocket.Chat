@@ -4,47 +4,35 @@ exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
 <body>
   <div>
     <span
-      class="rcx-box rcx-box--full rcx-css-18c2fq0"
+      class="rcx-box rcx-box--full rcx-css-zr2f9f"
     >
-      <div
-        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      <span
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
       >
         <span
-          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+          class="rcx-tag__inner"
         >
-          <span
-            class="rcx-tag__inner"
-          >
-            Classified
-          </span>
+          Classified
         </span>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
       >
         <span
-          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+          class="rcx-tag__inner"
         >
-          <span
-            class="rcx-tag__inner"
-          >
-            Top Secret
-          </span>
+          Top Secret
         </span>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1i2tyln"
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
       >
         <span
-          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning"
+          class="rcx-tag__inner"
         >
-          <span
-            class="rcx-tag__inner"
-          >
-            Confidential
-          </span>
+          Confidential
         </span>
-      </div>
+      </span>
     </span>
   </div>
 </body>
