@@ -93,7 +93,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		await Rooms.decreaseMessageCountById(message.rid, 1);
 	}
 
-	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+	await callbacks.run('afterDeleteMessage', deletedMsg, { room, user });
 
 	void notifyOnRoomChangedById(message.rid);
 
