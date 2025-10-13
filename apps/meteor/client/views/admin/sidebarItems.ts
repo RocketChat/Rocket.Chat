@@ -68,6 +68,7 @@ export const {
 		href: '/admin/ABAC',
 		i18nLabel: 'ABAC',
 		icon: 'team-lock',
+		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
 		href: '/admin/device-management',
