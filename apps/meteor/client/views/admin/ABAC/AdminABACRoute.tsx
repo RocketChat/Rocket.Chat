@@ -1,6 +1,6 @@
 import { usePermission, useSetModal, useCurrentModal, useRouter, useRouteParameter, useSettingStructure } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACPage from './AdminABACPage';
@@ -25,12 +25,14 @@ const AdminABACRoute = (): ReactElement => {
 	// Check if setting exists in the DB to decide if we show warning or upsell
 	const ABACEnabledSetting = useSettingStructure('ABAC_Enabled');
 
-	if (!tab) {
-		router.navigate({
-			name: 'admin-ABAC',
-			params: { tab: 'settings' },
-		});
-	}
+	useLayoutEffect(() => {
+		if (!tab) {
+			router.navigate({
+				name: 'admin-ABAC',
+				params: { tab: 'settings' },
+			});
+		}
+	}, [tab, router]);
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasABAC);
 
