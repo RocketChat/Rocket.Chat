@@ -16,7 +16,7 @@ const AdminABACSettings = () => {
 						{/* TODO: get documentation URL */}
 						<Trans i18nKey='ABAC_Enabled_callout'>
 							User attributes are synchronized via LDAP
-							<a href='https://rocket.chat' target='_blank'>
+							<a href='https://rocket.chat' rel='noopener noreferrer' target='_blank'>
 								Learn more
 							</a>
 						</Trans>

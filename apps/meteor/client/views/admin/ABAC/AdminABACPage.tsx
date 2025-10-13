@@ -30,7 +30,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 							{/* TODO: get documentation URL */}
 							<Trans i18nKey='ABAC_automatically_disabled_callout_description'>
 								Renew your license to continue using all
-								<a href='https://rocket.chat/docs/abac' target='_blank'>
+								<a href='https://rocket.chat/docs/abac' rel='noopener noreferrer' target='_blank'>
 									{' '}
 									ABAC capabilities without restriction.
 								</a>
