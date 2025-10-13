@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/abac",
 	"version": "0.0.1",
 	"private": true,
-	"description": "Rocket.Chat Enterprise - Attribute Based Access Control (ABAC) support utilities",
+	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -37,9 +37,5 @@
 		"jest": "~30.0.5",
 		"mongodb-memory-server": "^10.1.4",
 		"typescript": "~5.9.2"
-	},
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"license": "SEE LICENSE IN ../../../../LICENSE"
+	}
 }
