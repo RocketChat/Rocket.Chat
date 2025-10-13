@@ -97,7 +97,8 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	private makeInstance(userId: string) {
 		if (this.sessionInstance !== null) {
-			this.sessionInstance.disableStateReport();
+			this.sessionInstance.endSession();
+			this.sessionInstance = null;
 		}
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
