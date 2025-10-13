@@ -14,6 +14,7 @@
 		"babel-jest": "~30.2.0",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
+		"matrix-js-sdk": "^38.4.0",
 		"pino-pretty": "^7.6.1",
 		"typescript": "~5.9.3"
 	},
@@ -21,6 +22,7 @@
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
 		"test": "jest",
+		"testendtoend": "IS_EE=true jest --config jest.config.federation.ts --forceExit --testTimeout=30000",
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck",

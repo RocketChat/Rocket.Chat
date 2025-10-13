@@ -1,8 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { api, credentials, methodCall, request, type RequestConfig } from './api-data';
+import { api, credentials, methodCall, request } from './api-data';
 import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
@@ -195,6 +195,42 @@ export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => 
 				resolve(req.body);
 			});
 	});
+};
+
+export const findRoomMember = async (
+	roomId: IRoom['_id'],
+	username: string,
+	options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
+	config?: RequestConfig,
+): Promise<IUser | null> => {
+	const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
+
+	if (initialDelay > 0) {
+		await new Promise((resolve) => setTimeout(resolve, initialDelay));
+	}
+
+	for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		try {
+			const membersResponse = await getRoomMembers(roomId, config);
+			const member = membersResponse.members.find((member: IUser) => member.username === username);
+
+			if (member) {
+				return member;
+			}
+
+			if (attempt < maxRetries) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		} catch (error) {
+			console.warn(`Attempt ${attempt} to find room member failed:`, error);
+
+			if (attempt < maxRetries) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+	}
+
+	return null;
 };
 
 export const getGroupHistory = (roomId: IRoom['_id'], config?: RequestConfig) => {
