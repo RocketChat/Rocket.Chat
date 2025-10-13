@@ -9,6 +9,7 @@ import {
 	useSetModal,
 	useSelectedDevices,
 	useToastMessageDispatch,
+	useUserPresence,
 } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -211,6 +212,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 					value: user._id,
 					label,
 					identifier,
+					status: user.status,
 					avatarUrl: getAvatarPath({ username: user.username, etag: user.avatarETag }),
 				};
 			}) || []
@@ -221,12 +223,16 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		session.toggleWidget(peerInfo);
 	};
 
+	const status = useUserPresence(session.peerInfo && 'userId' in session.peerInfo ? session.peerInfo.userId : undefined);
+
+	const peerInfo = session.peerInfo ? Object.assign(session.peerInfo, { status: status?.status }) : undefined;
+
 	const contextValue = {
 		connectionState: session.connectionState,
 		state: session.state,
 		muted: session.muted,
 		held: session.held,
-		peerInfo: session.peerInfo,
+		peerInfo,
 		hidden: session.hidden,
 		onMute,
 		onHold,
