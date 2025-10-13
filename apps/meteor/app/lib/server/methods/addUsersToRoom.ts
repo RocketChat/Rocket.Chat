@@ -10,6 +10,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
+import { beforeAddUserToRoom } from '../lib/beforeAddUserToRoom';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -78,6 +79,8 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			method: 'addUsersToRoom',
 		});
 	}
+
+	await beforeAddUserToRoom(data.users, room, user);
 
 	// Validate each user, then add to room
 	if (isRoomFederated(room)) {

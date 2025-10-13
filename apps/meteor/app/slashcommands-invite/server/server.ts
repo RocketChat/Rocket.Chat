@@ -77,7 +77,15 @@ slashCommands.add({
 						},
 						inviter,
 					);
-				} catch ({ error }: any) {
+				} catch (e: any) {
+					if (e instanceof Error) {
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', ...{ details: `\`${(e as any).details.join(', ')} \`` } }),
+						});
+						return;
+					}
+
+					const { error } = e;
 					if (typeof error !== 'string') {
 						return;
 					}

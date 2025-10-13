@@ -409,10 +409,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		try {
-			// For each room attribute build a violation condition:
+			// For each room attribute build a non compliance condition:
 			// Users that either don't have the attribute array or do not contain all required values.
 			// Using $not + $all matches both "missing field" and "array missing any required value".
-			const violationConditions = newAttributes.map(({ key, values }) => ({
+			const nonComplianceConditions = newAttributes.map(({ key, values }) => ({
 				abacAttributes: {
 					$not: {
 						$elemMatch: {
@@ -423,13 +423,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 				},
 			}));
 
-			if (!violationConditions.length) {
+			if (!nonComplianceConditions.length) {
 				return;
 			}
 
 			const query = {
 				__rooms: rid,
-				$or: violationConditions,
+				$or: nonComplianceConditions,
 			};
 
 			const cursor = Users.find(query, { projection: { __rooms: 0 } });
@@ -466,6 +466,44 @@ export class AbacService extends ServiceClass implements IAbacService {
 				rid,
 				err,
 			});
+		}
+	}
+
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
+		if (!usernames.length || !attributes.length) {
+			return;
+		}
+
+		const nonComplianceConditions = attributes.map(({ key, values }) => ({
+			abacAttributes: {
+				$not: {
+					$elemMatch: {
+						key,
+						values: { $all: values },
+					},
+				},
+			},
+		}));
+		const nonCompliantUsersFromList = await Users.find(
+			{
+				username: { $in: usernames },
+				$or: nonComplianceConditions,
+			},
+			{ projection: { username: 1 } },
+		).toArray();
+		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList.map((u) => u.username!));
+		const existingSet = new Set<string>(usernames);
+		for (const uname of usernames) {
+			if (!existingSet.has(uname)) {
+				nonCompliantSet.add(uname);
+			}
+		}
+		if (nonCompliantSet.size) {
+			// Note: open to suggestions, or if it's actually needed. My idea is to return the list of non compliant users, but our current errors dont' allow that
+			// Maybe we should just throw a generic error? idk
+			const err = new Error('error-usernames-not-matching-abac-attributes');
+			(err as any).details = Array.from(nonCompliantSet);
+			throw err;
 		}
 	}
 }
