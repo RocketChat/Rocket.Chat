@@ -190,6 +190,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 				userId: localInfo.value,
 				displayName: localInfo.label,
 				avatarUrl: localInfo.avatarUrl,
+				status: localInfo.status as UserStatus,
 			});
 		},
 		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,
