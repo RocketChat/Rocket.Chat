@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"rootDir": "src",
-		"allowJs": true,
 		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,

@@ -16,7 +16,7 @@ type PermissionsTableProps = {
 	permissions: IPermission[];
 	setFilter: (filter: string) => void;
 	total: number;
-	paginationProps: ReturnType<typeof usePagination>;
+	paginationProps?: ReturnType<typeof usePagination>;
 };
 
 const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationProps }: PermissionsTableProps) => {

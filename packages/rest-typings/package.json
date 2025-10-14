@@ -6,9 +6,9 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
+		"jest": "~30.2.0",
 		"mongodb": "6.10.0",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",

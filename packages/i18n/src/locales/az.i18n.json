@@ -2214,7 +2214,6 @@
   "UserDataDownload_CompletedRequestExisted_Text": "Məlumat faylınız artıq yaradılıb. Yükləmə bağlantısı üçün e-poçt hesabınızı yoxlayın.",
   "UserDataDownload_EmailBody": "Məlumat faylınız artıq yüklənməyə hazırdır. Yükləmək üçün <a href=\"{{download_link}}\">burada</a>vurun.",
   "UserDataDownload_EmailSubject": "Sizin Data Faylınız Yükləməyə Hazırdır",
-  "UserDataDownload_RequestExisted_Text": "Məlumat faylınız artıq yaradılıb. Hazır olduğunuzda onu yükləmək üçün bir link e-poçt ünvanınıza göndəriləcək.",
   "UserDataDownload_Requested": "İstənilən faylı yükləyin",
   "UserData_EnableDownload": "İstifadəçi məlumatlarını yükləyin",
   "UserData_FileSystemPath": "Sistem Yolu (İxrac edilmiş Dosyalar)",

@@ -463,7 +463,7 @@ export class AppManager {
 			storageItem.status = await rl.getStatus();
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return isSetup;
@@ -500,7 +500,7 @@ export class AppManager {
 		storageItem.status = await app.getStatus();
 		// This is async, but we don't care since it only updates in the database
 		// and it should not mutate any properties we care about
-		await this.appMetadataStorage.update(storageItem).catch();
+		await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 
 		return true;
 	}
@@ -519,13 +519,13 @@ export class AppManager {
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
-		await app.validateLicense().catch();
+		await app.validateLicense().catch(() => {});
 
 		storageItem.migrated = true;
 		storageItem.signature = await this.getSignatureManager().signApp(storageItem);
-		// This is async, but we don't care since it only updates in the database
-		// and it should not mutate any properties we care about
-		const stored = await this.appMetadataStorage.update(storageItem).catch();
+
+		const { marketplaceInfo, signature, migrated, _id } = storageItem;
+		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({ marketplaceInfo, signature, migrated, _id });
 
 		await this.updateLocal(stored, app);
 		await this.bridges
@@ -753,7 +753,9 @@ export class AppManager {
 		}
 
 		descriptor.signature = await this.signatureManager.signApp(descriptor);
-		const stored = await this.appMetadataStorage.update(descriptor);
+		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument(descriptor, {
+			unsetPermissionsGranted: typeof permissionsGranted === 'undefined',
+		});
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
@@ -908,7 +910,7 @@ export class AppManager {
 
 				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
 
-				return this.appMetadataStorage.update(appStorageItem);
+				return this.appMetadataStorage.updateMarketplaceInfo(appStorageItem._id, appStorageItem.marketplaceInfo);
 			}),
 		).catch();
 
@@ -944,7 +946,7 @@ export class AppManager {
 						const storageItem = app.getStorageItem();
 						storageItem.status = status;
 
-						return this.appMetadataStorage.update(storageItem).catch(console.error) as Promise<void>;
+						return this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(console.error) as Promise<void>;
 					}),
 			),
 		);
@@ -1075,7 +1077,7 @@ export class AppManager {
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
 			storageItem.status = await app.getStatus();
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return result;
@@ -1185,7 +1187,7 @@ export class AppManager {
 			storageItem.status = status;
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		await app.setStatus(status, silenceStatus);
