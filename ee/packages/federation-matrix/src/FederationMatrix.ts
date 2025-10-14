@@ -314,27 +314,28 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				// For group DMs (more than 2 members), create a private room
 				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
 				matrixRoomResult = await this.homeserverServices.room.createRoom(userIdSchema.parse(actualMatrixUserId), roomName, 'invite');
+
+				for await (const member of members) {
+					if (member._id === creatorId) {
+						continue;
+					}
+
+					if (!isUserNativeFederated(member)) {
+						continue;
+					}
+
+					try {
+						await this.homeserverServices.invite.inviteUserToRoom(
+							userIdSchema.parse(member.username),
+							roomIdSchema.parse(matrixRoomResult.room_id),
+							userIdSchema.parse(actualMatrixUserId),
+						);
+					} catch (error) {
+						this.logger.error('Error creating or updating bridged user for DM:', error);
+					}
+				}
 			}
 
-			for await (const member of members) {
-				if (member._id === creatorId) {
-					continue;
-				}
-
-				if (!isUserNativeFederated(member)) {
-					continue;
-				}
-
-				try {
-					await this.homeserverServices.invite.inviteUserToRoom(
-						userIdSchema.parse(member.username),
-						roomIdSchema.parse(matrixRoomResult.room_id),
-						userIdSchema.parse(actualMatrixUserId),
-					);
-				} catch (error) {
-					this.logger.error('Error creating or updating bridged user for DM:', error);
-				}
-			}
 			await Rooms.setAsFederated(room._id, {
 				mrid: matrixRoomResult.room_id,
 				origin: this.serverName,
