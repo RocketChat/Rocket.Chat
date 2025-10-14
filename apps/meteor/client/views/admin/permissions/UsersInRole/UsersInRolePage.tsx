@@ -59,8 +59,8 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 
 	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const paginationProps = usePagination();
-	const { itemsPerPage, current } = paginationProps;
+	const paginationData = usePagination();
+	const { itemsPerPage, current } = paginationData;
 
 	const query = useMemo(
 		() => ({
@@ -161,7 +161,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							users={data?.users || []}
 							onRemove={handleRemove}
 							refetch={refetch}
-							paginationProps={paginationProps}
+							paginationData={paginationData}
 						/>
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}

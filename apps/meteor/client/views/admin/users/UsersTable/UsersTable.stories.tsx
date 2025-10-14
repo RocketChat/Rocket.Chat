@@ -2,21 +2,13 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UsersTable from './UsersTable';
+import { createMockedPagination } from '../../../../components/GenericTable/hooks/usePagination';
 
 export default {
 	component: UsersTable,
 } satisfies Meta<typeof UsersTable>;
 
-const mockedPagination = {
-	current: 0,
-	setCurrent: () => undefined,
-	itemsPerPage: 25 as const,
-	setItemsPerPage: () => undefined,
-	itemsPerPageLabel: () => 'Items per page:',
-	showingResultsLabel: () => 'Showing results 1 - 5 of 5',
-};
-
-const Template: StoryFn<typeof UsersTable> = (args) => <UsersTable {...args} paginationData={mockedPagination} />;
+const Template: StoryFn<typeof UsersTable> = (args) => <UsersTable {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
@@ -76,11 +68,13 @@ Default.args = {
 	isLoading: false,
 	isSuccess: true,
 	tab: 'all',
+	paginationData: createMockedPagination(5, 5),
 };
 
 export const Loading = Template.bind({});
 Loading.args = {
 	isLoading: true,
+	paginationData: createMockedPagination(),
 };
 
 export const NoResults = Template.bind({});
@@ -90,4 +84,5 @@ NoResults.args = {
 	isLoading: false,
 	isError: false,
 	isSuccess: true,
+	paginationData: createMockedPagination(),
 };

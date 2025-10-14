@@ -7,6 +7,7 @@ import { axe } from 'jest-axe';
 
 import PermissionsTable from './PermissionsTable';
 import * as stories from './PermissionsTable.stories';
+import { createMockedPagination } from '../../../../components/GenericTable/hooks/usePagination';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -51,7 +52,13 @@ const roles: IRole[] = [
 
 test('should display modal if the permission is access-permissions and has only one granted role', async () => {
 	render(
-		<PermissionsTable permissions={defaultPermissions} total={defaultPermissions.length} setFilter={() => undefined} roleList={roles} />,
+		<PermissionsTable
+			permissions={defaultPermissions}
+			total={defaultPermissions.length}
+			setFilter={() => undefined}
+			roleList={roles}
+			paginationData={createMockedPagination()}
+		/>,
 		{
 			wrapper: mockAppRoot().build(),
 		},
@@ -70,9 +77,18 @@ test('should NOT display modal if the permission is access-permissions and has m
 		},
 	];
 
-	render(<PermissionsTable permissions={morePermissions} total={morePermissions.length} setFilter={() => undefined} roleList={roles} />, {
-		wrapper: mockAppRoot().build(),
-	});
+	render(
+		<PermissionsTable
+			permissions={morePermissions}
+			total={morePermissions.length}
+			setFilter={() => undefined}
+			roleList={roles}
+			paginationData={createMockedPagination()}
+		/>,
+		{
+			wrapper: mockAppRoot().build(),
+		},
+	);
 
 	await userEvent.click(screen.getByRole('checkbox', { name: 'access-permissions - Administrator' }));
 	expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

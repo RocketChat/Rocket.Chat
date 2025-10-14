@@ -461,7 +461,7 @@ exports[`renders Default without crashing 1`] = `
           <span
             class="rcx-box rcx-box--full rcx-pagination__label"
           >
-            Showing results 1 - 25 of 30
+            Showing results 1 - 5 of 30
           </span>
           <ol
             class="rcx-box rcx-box--full rcx-pagination__list"

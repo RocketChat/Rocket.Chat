@@ -21,12 +21,13 @@ type UsersInRoleTableProps = {
 	total: number;
 	users: Serialized<IUserInRole>[];
 	onRemove: (username: IUserInRole['username']) => void;
-	paginationProps?: ReturnType<typeof usePagination>;
+	paginationData: ReturnType<typeof usePagination>;
 	refetch: () => void;
 };
 
-const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemove, refetch, paginationProps }: UsersInRoleTableProps) => {
+const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemove, refetch, paginationData }: UsersInRoleTableProps) => {
 	const { t } = useTranslation();
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const headers = (
 		<>
@@ -58,9 +59,11 @@ const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemov
 					</GenericTable>
 					<Pagination
 						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
 						count={total}
-						onSetItemsPerPage={paginationProps?.setItemsPerPage}
-						onSetCurrent={paginationProps?.setCurrent}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>

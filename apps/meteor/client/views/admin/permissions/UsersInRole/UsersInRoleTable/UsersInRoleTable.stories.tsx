@@ -2,6 +2,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UsersInRoleTable from './UsersInRoleTable';
+import { createMockedPagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { PageContent } from '../../../../../components/Page';
 
 export default {
@@ -30,7 +31,9 @@ const generateMockedUsers = (count: number) =>
 
 const mockedUsers = generateMockedUsers(5);
 
-export const Default: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+const Template: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+
+export const Default = Template.bind({});
 Default.args = {
 	total: 30,
 	isLoading: false,
@@ -39,9 +42,10 @@ Default.args = {
 	users: mockedUsers,
 	onRemove: () => undefined,
 	refetch: () => undefined,
+	paginationData: createMockedPagination(mockedUsers.length, 30),
 };
 
-export const Loading: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+export const Loading = Template.bind({});
 Loading.args = {
 	total: 0,
 	isLoading: true,
@@ -50,9 +54,10 @@ Loading.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
+	paginationData: createMockedPagination(),
 };
 
-export const Empty: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+export const Empty = Template.bind({});
 Empty.args = {
 	total: 0,
 	isLoading: false,
@@ -61,9 +66,10 @@ Empty.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
+	paginationData: createMockedPagination(),
 };
 
-export const Error: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
+export const Error = Template.bind({});
 Error.args = {
 	total: 0,
 	isLoading: false,
@@ -72,4 +78,5 @@ Error.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
+	paginationData: createMockedPagination(),
 };
