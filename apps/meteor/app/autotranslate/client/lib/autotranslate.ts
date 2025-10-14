@@ -148,7 +148,6 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 					(record) => record._id === message._id,
 					({ autoTranslateFetching: _, ...record }) => ({
 						...record,
-						autoTranslateShowInverse: true,
 					}),
 				);
 				delete AutoTranslate.messageIdsToWait[message._id];
