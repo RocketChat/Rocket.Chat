@@ -281,7 +281,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
-			// Trigger hook when a brand new attribute key is added to the room
 			const next = [...previous, { key, values }];
 
 			this.logger.debug({
