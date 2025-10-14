@@ -52,13 +52,7 @@ window.addEventListener('load', function() {
 }`;
 
 settings.watchMultiple(
-	[
-		'Custom_Script_Logged_Out',
-		'Custom_Script_Logged_In',
-		'Custom_Script_On_Logout',
-		'Accounts_ForgetUserSessionOnWindowClose',
-		'ECDH_Enabled',
-	],
+	['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose'],
 	() => {
 		const content = getContent();
 		addScript('scripts', content);

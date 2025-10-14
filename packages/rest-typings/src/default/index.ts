@@ -54,9 +54,6 @@ export interface DefaultEndpoints {
 					version: string | undefined;
 			  };
 	};
-	'/ecdh_proxy/initEncryptedSession': {
-		POST: () => void;
-	};
 	'/docs/json': {
 		GET: (params: OpenAPIJSONEndpoint) => {
 			openapi: string;

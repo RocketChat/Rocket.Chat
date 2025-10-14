@@ -25,10 +25,6 @@ function init(session: ClientSession): void {
 }
 
 async function initEncryptedSession(): Promise<void> {
-	if (!window.ECDH_Enabled) {
-		Meteor.connection._stream.allowConnection();
-		return resolveSession();
-	}
 	const { ClientSession } = await import('../app/ecdh/client/ClientSession');
 	const session = new ClientSession();
 	const clientPublicKey = await session.init();
