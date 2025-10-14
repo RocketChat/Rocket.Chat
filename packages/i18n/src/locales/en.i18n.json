@@ -4645,6 +4645,10 @@
   "Search_Installed_Apps": "Search installed apps",
   "Search_Integrations": "Search Integrations",
   "Search_Messages": "Search Messages",
+  "Search_Messages_Count": {
+    "one": "Found {{count}} single result",
+    "other": "Found {{count}} results"
+  },
   "Search_Page_Size": "Page Size",
   "Search_Premium_Apps": "Search Premium apps",
   "Search_Private_Groups": "Search Private Groups",
