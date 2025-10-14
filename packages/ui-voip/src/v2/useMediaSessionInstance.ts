@@ -4,8 +4,9 @@ import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTC
 import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 
-import { useIceServers } from '../hooks/useIceServers';
 import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
+import { MediaCallLogger } from './MediaCallLogger';
+import { useIceServers } from '../hooks/useIceServers';
 
 interface BaseSession {
 	state: State;
@@ -96,7 +97,8 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	private makeInstance(userId: string) {
 		if (this.sessionInstance !== null) {
-			this.sessionInstance.disableStateReport();
+			this.sessionInstance.endSession();
+			this.sessionInstance = null;
 		}
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
@@ -112,6 +114,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
+			logger: new MediaCallLogger(),
 		});
 
 		if (window.sessionStorage) {
