@@ -1,8 +1,8 @@
 import { Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, AbacAttributes, Users } from '@rocket.chat/models';
+import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
@@ -505,6 +505,42 @@ export class AbacService extends ServiceClass implements IAbacService {
 			(err as any).details = Array.from(nonCompliantSet);
 			throw err;
 		}
+	}
+
+	// Here, we're gonna do some cache on the subscription, or on the callback maybe
+	async canAccessRoom(room: IRoom, user: IUser): Promise<boolean> {
+		if (!user?._id) {
+			return false;
+		}
+		const attrs = room?.abacAttributes;
+		if (!attrs?.length) {
+			return true;
+		}
+
+		const andConditions = attrs.map(({ key, values }) => ({
+			abacAttributes: {
+				$elemMatch: {
+					key,
+					values: { $all: values },
+				},
+			},
+		}));
+
+		const userDoc = await Users.findOne(
+			{
+				_id: user._id,
+				$and: andConditions,
+			},
+			{ projection: { _id: 1 } },
+		);
+
+		if (!userDoc) {
+			return false;
+		}
+
+		// Set last time the decision was made
+		await Subscriptions.updateOne({ rid: room._id, uid: user._id }, { $set: { abacLastTimeChecked: new Date() } });
+		return true;
 	}
 }
 

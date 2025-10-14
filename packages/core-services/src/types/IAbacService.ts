@@ -1,4 +1,4 @@
-import type { IAbacAttributeDefinition, IAbacAttribute } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IAbacAttribute, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void>;
@@ -18,4 +18,5 @@ export interface IAbacService {
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[] | Record<string, string[]>): Promise<void>;
+	canAccessRoom(room: IRoom, user: IUser): Promise<boolean>;
 }

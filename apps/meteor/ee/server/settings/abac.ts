@@ -14,6 +14,12 @@ export function addSettings(): void {
 					invalidValue: false,
 					section: 'ABAC',
 				});
+				await this.add('Abac_Cache_Decision_Time_Seconds', 300, {
+					type: 'int',
+					public: true,
+					section: 'ABAC',
+					invalidValue: 0,
+				});
 			},
 		);
 	});

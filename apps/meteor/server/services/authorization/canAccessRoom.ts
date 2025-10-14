@@ -6,6 +6,7 @@ import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/m
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
+import { specialAccessValidators } from '../../../app/lib/server/lib/canAccessSpecialRoom';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -18,6 +19,7 @@ async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 }
 
 const roomAccessValidators: RoomAccessValidator[] = [
+	...specialAccessValidators,
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;
