@@ -1,9 +1,15 @@
 import { Box, Button, Callout } from '@rocket.chat/fuselage';
-import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
+import AdminABACRoomAttributes from './AdminABACRoomAttributes';
 import AdminABACSettings from './AdminABACSettings';
 import AdminABACTabs from './AdminABACTabs';
+import RoomAttributesContextualBar from './RoomAttributesContextualBar';
+import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
+import useIsABACAvailable from './hooks/useIsABACAvailable';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';
@@ -14,8 +20,26 @@ type AdminABACPageProps = {
 
 const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const tab = useRouteParameter('tab');
+	const _id = useRouteParameter('id');
+	const context = useRouteParameter('context');
 	const learnMore = useExternalLink();
+	const isABACAvailable = useIsABACAvailable();
+
+	const handleCloseContextualbar = useEffectEvent((): void => {
+		if (!context) {
+			return;
+		}
+
+		router.navigate(
+			{
+				name: 'admin-ABAC',
+				params: { ...router.getRouteParameters(), context: '', id: '' },
+			},
+			{ replace: true },
+		);
+	});
 
 	return (
 		<Page flexDirection='row'>
@@ -38,8 +62,17 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 					</Box>
 				)}
 				<AdminABACTabs />
-				<PageContent>{tab === 'settings' && <AdminABACSettings />}</PageContent>
+				<PageContent>
+					{tab === 'settings' && <AdminABACSettings />}
+					{tab === 'room-attributes' && <AdminABACRoomAttributes />}
+				</PageContent>
 			</Page>
+			{tab === 'room-attributes' && context !== undefined && isABACAvailable && (
+				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
+					{context === 'new' && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
+					{context === 'edit' && _id && <RoomAttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };
