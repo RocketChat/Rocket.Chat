@@ -3,11 +3,11 @@
 exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
 <body>
   <div>
-    <span
-      class="rcx-box rcx-box--full rcx-css-zr2f9f"
+    <div
+      class="rcx-box rcx-box--full rcx-css-humpxx"
     >
       <span
-        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
       >
         <span
           class="rcx-tag__inner"
@@ -16,7 +16,7 @@ exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
       >
         <span
           class="rcx-tag__inner"
@@ -25,7 +25,7 @@ exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-wcp0mp"
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
       >
         <span
           class="rcx-tag__inner"
@@ -33,7 +33,7 @@ exports[`UserInfoABACAttributes should render with multiple attributes 1`] = `
           Confidential
         </span>
       </span>
-    </span>
+    </div>
   </div>
 </body>
 `;
