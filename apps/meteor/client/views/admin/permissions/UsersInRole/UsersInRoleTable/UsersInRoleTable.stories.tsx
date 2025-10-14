@@ -1,8 +1,6 @@
-// import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
-// import PermissionsTable from './PermissionsTable';
 import UsersInRoleTable from './UsersInRoleTable';
 import { PageContent } from '../../../../../components/Page';
 
