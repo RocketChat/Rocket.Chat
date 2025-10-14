@@ -9,9 +9,9 @@ type UserCardABACAttributesProps = {
 
 const UserInfoABACAttributes = ({ abacAttributes }: UserCardABACAttributesProps): ReactElement => {
 	return (
-		<Box flexWrap='wrap' display='flex' flexShrink={0} mb={8} is='span' fontScale='p2' withTruncatedText>
+		<Box flexWrap='wrap' display='flex'>
 			{abacAttributes.map((attribute, index) => (
-				<Margins inline={2} key={index}>
+				<Margins inline={2} blockEnd={4} key={index}>
 					<UserInfoABACAttribute attribute={attribute} />
 				</Margins>
 			))}
