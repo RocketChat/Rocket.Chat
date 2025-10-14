@@ -59,10 +59,7 @@ const ChatsPerAgentChart = ({ departmentId, dateRange, ...props }: ChatsPerAgent
 			return;
 		}
 
-		if (data.length === 0) {
-			resetChart(context);
-			return;
-		}
+		resetChart(context);
 
 		data.forEach(([name, value]) => {
 			updateChartData(name, [value.open, value.closed, value.onhold]);
