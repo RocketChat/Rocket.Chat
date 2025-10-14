@@ -116,7 +116,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{roles.length !== 0 && (
+					{roles?.length !== 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
@@ -178,7 +178,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{abacAttributes && abacAttributes.length > 0 && (
+					{abacAttributes?.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
 							<UserInfoABACAttributes abacAttributes={abacAttributes} />
