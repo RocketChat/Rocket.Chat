@@ -1,4 +1,4 @@
-import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+import type { IUser, IUserEmail, UserState } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -145,14 +145,14 @@ export async function setUserActiveStatus(
 	const destinations = user.emails.map((email: IUserEmail) => `${user.name || user.username}<${email.address}>`);
 
 	type UserActivated = {
-		subject: (params: { active: boolean }) => string;
-		html: (params: { active: boolean; name: string; username: string }) => string;
+		subject: (params: { active: boolean; username: string; state: UserState }) => string;
+		html: (params: { active: boolean; name: string; username: string; state: UserState }) => string;
 	};
 	const { subject, html } = (Accounts.emailTemplates as unknown as { userActivated: UserActivated }).userActivated;
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: subject({ active } as any),
+		subject: subject({ active, username: user.username, state: user.state } as any),
 		html: html({
 			active,
 			name: user.name,

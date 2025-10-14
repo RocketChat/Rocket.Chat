@@ -1,5 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
+import { isUserActive, UserState } from '@rocket.chat/core-typings';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInDays } from '@rocket.chat/tools';
@@ -74,18 +75,18 @@ Accounts.emailTemplates.userToActivate = {
 };
 
 Accounts.emailTemplates.userActivated = {
-	subject({ active, username }) {
+	subject({ active, username, state }) {
 		const activated = username ? 'Activated' : 'Approved';
-		const action = active ? activated : 'Deactivated';
+		const action = isUserActive({ state }) ? activated : 'Deactivated';
 		const subject = `Accounts_Email_${action}_Subject`;
 		const siteName = settings.get('Site_Name');
 
 		return `[${siteName}] ${i18n.t(subject)}`;
 	},
 
-	html({ active, name, username }) {
+	html({ active, name, username, state }) {
 		const activated = username ? 'Activated' : 'Approved';
-		const action = active ? activated : 'Deactivated';
+		const action = isUserActive({ state }) ? activated : 'Deactivated';
 
 		return Mailer.replace(i18n.t(`Accounts_Email_${action}`), {
 			name: escapeHTML(name),
@@ -204,7 +205,10 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	user.status = 'offline';
-	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	// user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+
+	const userStateForManualApproval = settings.get('Accounts_ManuallyApproveNewUsers') ? UserState.PENDING_APPROVAL : UserState.ACTIVE;
+	user.state = user.state !== undefined ? user.state : userStateForManualApproval;
 
 	if (!user.name) {
 		if (options.profile) {
@@ -236,7 +240,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		}
 	}
 
-	if (!options.skipAdminEmail && !user.active) {
+	if (!options.skipAdminEmail && !isUserActive(user)) {
 		const destinations = [];
 		const usersInRole = await Roles.findUsersInRole('admin');
 		await usersInRole.forEach((adminUser) => {
@@ -415,7 +419,7 @@ const validateLoginAttemptAsync = async function (login) {
 		});
 	}
 
-	if (!!login.user.active !== true) {
+	if (!isUserActive(login.user)) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
 			function: 'Accounts.validateLoginAttempt',
 		});
