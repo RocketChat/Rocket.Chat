@@ -77,7 +77,7 @@ const AdminUsersPage = (): ReactElement => {
 	});
 
 	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
-
+	console.log('pendingUsersCount', pendingUsersCount.data);
 	const handleReload = (): void => {
 		seatsCap?.reload();
 		filteredUsersQueryResult?.refetch();

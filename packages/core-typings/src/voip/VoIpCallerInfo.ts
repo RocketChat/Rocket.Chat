@@ -1,6 +1,6 @@
 import type { CallStates } from './CallStates';
 import type { ICallerInfo } from './ICallerInfo';
-import type { UserState } from './UserState';
+import type { VoIPUserState } from './VoIPUserState';
 
 export interface IState {
 	isReady: boolean;
@@ -10,10 +10,10 @@ export interface IState {
 export type VoIpCallerInfo =
 	| {
 			state: Exclude<CallStates, 'IN_CALL' | 'OFFER_RECEIVED' | 'ON_HOLD' | 'OFFER_SENT'>;
-			userState: UserState;
+			userState: VoIPUserState;
 	  }
 	| {
 			state: 'IN_CALL' | 'ON_HOLD' | 'OFFER_RECEIVED' | 'OFFER_SENT';
-			userState: UserState;
+			userState: VoIPUserState;
 			caller: ICallerInfo;
 	  }; // TODO: Check for additional properties and States (E.g. call on hold, muted, etc)

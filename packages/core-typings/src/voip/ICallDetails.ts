@@ -1,7 +1,7 @@
 import type { ICallerInfo } from './ICallerInfo';
-import type { UserState } from './UserState';
+import type { VoIPUserState } from './VoIPUserState';
 
 export interface ICallDetails {
 	callInfo?: ICallerInfo;
-	userState: UserState;
+	userState: VoIPUserState;
 }

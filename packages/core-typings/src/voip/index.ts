@@ -9,7 +9,7 @@ export * from './IRegisterHandlerDelegate';
 export * from './IRegistrationInfo';
 export * from './Operations';
 export * from './SignalingSocketEvents';
-export * from './UserState';
+export * from './VoIPUserState';
 export * from './VoipClientEvents';
 export * from './VoipEvents';
 export * from './WorkflowTypes';

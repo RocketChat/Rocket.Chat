@@ -183,6 +183,9 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
+//
+
+export type IUserState = 'pending_approval' | 'active' | 'deactivated' | 'inactive';
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
@@ -252,6 +255,7 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	// state: IUserState;
 }
 
 export interface IRegisterUser extends IUser {

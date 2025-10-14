@@ -7,7 +7,7 @@ import {
 	isVoipEventQueueMemberAdded,
 	isVoipEventQueueMemberRemoved,
 	isVoipEventCallAbandoned,
-	UserState,
+	VoIPUserState,
 } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
@@ -339,7 +339,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 			voipSounds.stopAll();
 
-			if (callDetails.userState !== UserState.UAC) {
+			if (callDetails.userState !== VoIPUserState.UAC) {
 				return;
 			}
 			// Agent has sent Invite. So it must create a room.
