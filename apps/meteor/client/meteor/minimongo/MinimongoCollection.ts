@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 
-import { createDocumentMapStore } from './DocumentMapStore';
 import { LocalCollection } from './LocalCollection';
-import type { Query } from './Query';
+import type { Query } from './queries';
+import { createDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 
 /**
  * Implements a minimal version of a MongoDB collection using Zustand for state management.
