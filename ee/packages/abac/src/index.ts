@@ -382,7 +382,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 				rid,
 				attribute: { key, values },
 			});
-			await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
+
+			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
+			const prevSet = new Set(prevValues);
+			const added = values.some((v) => !prevSet.has(v));
+			if (added) {
+				await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
+			}
+
 			return;
 		}
 
