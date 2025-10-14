@@ -1,10 +1,12 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { act, screen, renderHook } from '@testing-library/react';
+import { composeStories } from '@storybook/react';
+import { act, screen, renderHook, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
+import * as stories from './GenericModal.stories';
 import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion';
 
 const renderModal = (modalElement: ReactElement) => {
@@ -24,6 +26,15 @@ const renderModal = (modalElement: ReactElement) => {
 
 	return { setModal };
 };
+
+describe('renders', () => {
+	const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const { baseElement } = render(<Story />);
+		expect(baseElement).toMatchSnapshot();
+	});
+});
 
 describe('callbacks', () => {
 	it('should call onClose callback when dismissed', async () => {
