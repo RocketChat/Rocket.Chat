@@ -115,7 +115,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={users.length || 0}
+						count={data.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
