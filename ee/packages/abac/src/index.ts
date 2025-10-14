@@ -403,15 +403,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	protected async onRoomAttributesChanged(rid: string, newAttributes: IAbacAttributeDefinition[]): Promise<void> {
 		if (!newAttributes?.length) {
-			// No attributes => abac room is disabled. Should w remove all members?
+			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
+			this.logger.debug({
+				msg: 'Room ABAC attributes removed completely. Room is not abac managed anymore',
+				rid,
+			});
+
 			return;
 		}
 
 		try {
-			// For each room attribute build a violation condition:
-			// Users that either don't have the attribute array or do not contain all required values.
-			// Using $not + $all matches both "missing field" and "array missing any required value".
-			const violationConditions = newAttributes.map(({ key, values }) => ({
+			const nonCompliantConditions = newAttributes.map(({ key, values }) => ({
 				abacAttributes: {
 					$not: {
 						$elemMatch: {
@@ -422,13 +424,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 				},
 			}));
 
-			if (!violationConditions.length) {
+			if (!nonCompliantConditions.length) {
 				return;
 			}
 
 			const query = {
 				__rooms: rid,
-				$or: violationConditions,
+				$or: nonCompliantConditions,
 			};
 
 			const cursor = Users.find(query, { projection: { __rooms: 0 } });
@@ -447,7 +449,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 
 			if (!usersToRemove.length) {
-				// Log that the room attributes changed but no users were removed
+				this.logger.debug({
+					msg: 'Room ABAC attributes changed. No user removal necessary',
+					rid,
+					newAttributes,
+				});
 				return;
 			}
 
