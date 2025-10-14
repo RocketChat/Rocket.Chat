@@ -7,7 +7,7 @@ import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
-import { createTargetGroupAndReturnFullRoom, deleteRoom } from '../utils';
+import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { sendMessageFromUser } from '../utils/sendMessage';
 import { test, expect } from '../utils/test';
@@ -150,9 +150,11 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 	describe('E2EE Quotes', () => {
 		let targetRoomId: string;
+		let targetChannelName: string;
 
 		test.afterAll(async ({ api }) => {
 			await deleteRoom(api, targetRoomId);
+			await deleteChannel(api, targetChannelName);
 		});
 
 		test('expect to not crash and not show quote message for a message_link which is not accessible to the user', async ({
@@ -162,11 +164,11 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		}) => {
 			const encryptedRoomPage = new EncryptedRoomPage(page);
 			const sidenav = new HomeSidenav(page);
-			const channelName = faker.string.uuid();
+			targetChannelName = faker.string.uuid();
 
-			await sidenav.createEncryptedChannel(channelName);
+			await sidenav.createEncryptedChannel(targetChannelName);
 
-			await expect(page).toHaveURL(`/group/${channelName}`);
+			await expect(page).toHaveURL(`/group/${targetChannelName}`);
 			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
 			await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
