@@ -1,4 +1,5 @@
 import './serviceWorker';
+import './meteor/startup/absoluteUrl';
 import './meteor/startup/accounts';
 
 import('@rocket.chat/fuselage-polyfills')
