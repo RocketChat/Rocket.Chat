@@ -1,7 +1,6 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import { Base64 } from '@rocket.chat/base64';
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -12,8 +11,8 @@ import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
 import { generatePassphrase } from './helper';
+import { Keychain } from './keychain';
 import { createLogger } from './logger';
-import { getMasterKey, type Pbkdf2Options } from './pbkdf2';
 import { E2ERoom } from './rocketchat.e2e.room';
 import * as Rsa from './rsa';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
@@ -283,7 +282,9 @@ class E2E extends Emitter {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
 
-		const encodedPrivateKey = await this.encodePrivateKey(private_key, password);
+		const keychain = new Keychain(this.getUserId());
+
+		const encodedPrivateKey = await keychain.encryptKey(private_key, password);
 
 		if (!encodedPrivateKey) {
 			throw new Error('Failed to encode private key with provided password.');
@@ -510,25 +511,6 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(privateKey: string, password: string): Promise<{ iv: string; ciphertext: string } & Pbkdf2Options> {
-		const { userId } = this;
-		if (!userId) {
-			throw new Error('No userId found');
-		}
-
-		const salt = `v2:${userId}:${crypto.randomUUID()}`;
-		const iterations = 100_000;
-
-		const result = await getMasterKey(password, { salt, iterations }).encrypt(privateKey);
-
-		return {
-			iv: Base64.encode(result.iv),
-			ciphertext: Base64.encode(new Uint8Array(result.ciphertext)),
-			salt,
-			iterations,
-		};
-	}
-
 	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
@@ -585,11 +567,10 @@ class E2E extends Emitter {
 			return;
 		}
 
-		const { iv, ciphertext, salt, iterations } = this.parsePrivateKey(this.db_private_key);
-		const masterKey = getMasterKey(password, { salt, iterations });
+		const keychain = new Keychain(this.getUserId());
 
 		try {
-			const privateKey = await masterKey.decrypt(iv, ciphertext);
+			const privateKey = await keychain.decryptKey(this.db_private_key, password);
 
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
@@ -607,44 +588,12 @@ class E2E extends Emitter {
 		}
 	}
 
-	parsePrivateKey(privateKey: string): Pbkdf2Options & { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
-		const json: unknown = JSON.parse(privateKey);
-		const userId = this.getUserId();
-
-		if (typeof json !== 'object' || json === null) {
-			throw new TypeError('Invalid private key format');
-		}
-
-		if ('$binary' in json && typeof json.$binary === 'string') {
-			// v1: { $binary: base64(iv[16] + ciphertext) }
-			const binary = Base64.decode(json.$binary);
-			const [iv, ciphertext] = [binary.slice(0, 16), binary.slice(16)];
-			return { iv, ciphertext, iterations: 1000, salt: userId };
-		}
-
-		if (!('iv' in json) || typeof json.iv !== 'string' || !('ciphertext' in json) || typeof json.ciphertext !== 'string') {
-			throw new TypeError('Invalid private key format');
-		}
-
-		// v2: { iv: base64, ciphertext: base64, salt: string, iterations: number }
-
-		const salt = 'salt' in json && typeof json.salt === 'string' ? json.salt : userId;
-		const iterations = 'iterations' in json && typeof json.iterations === 'number' ? json.iterations : 100_000;
-
-		return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext), salt, iterations };
-	}
-
 	async decodePrivateKey(privateKey: string): Promise<string> {
 		// const span = log.span('decodePrivateKey');
 		const password = await this.requestPasswordAlert();
-		const { iv, ciphertext, salt, iterations } = this.parsePrivateKey(privateKey);
-		const masterKey = getMasterKey(password, { salt, iterations });
-
+		const keychain = new Keychain(this.getUserId());
 		try {
-			if (!masterKey) {
-				throw new Error('Error getting master key');
-			}
-			const privKey = await masterKey.decrypt(iv, ciphertext);
+			const privKey = await keychain.decryptKey(privateKey, password);
 			return privKey;
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
