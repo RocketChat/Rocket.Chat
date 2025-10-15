@@ -1,21 +1,21 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const useRemoveUnit = () => {
+export const useRemoveUnit = (id: string) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const queryClient = useQueryClient();
-	const removeUnit = useMethod('livechat:removeUnit');
+	const removeUnit = useEndpoint('DELETE', '/v1/livechat/units/:id', { id });
 
-	const handleDelete = useEffectEvent((id: string) => {
+	const handleDelete = useEffectEvent(() => {
 		const onDeleteAgent = async () => {
 			try {
-				await removeUnit(id);
+				await removeUnit();
 				dispatchToastMessage({ type: 'success', message: t('Unit_removed') });
 				router.navigate('/omnichannel/units');
 				queryClient.invalidateQueries({

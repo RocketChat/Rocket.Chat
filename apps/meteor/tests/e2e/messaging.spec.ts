@@ -173,10 +173,7 @@ test.describe('Messaging', () => {
 
 			await test.step('send edited message', async () => {
 				const editPromise = page.waitForResponse(
-					(response) =>
-						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
-						response.status() === 200 &&
-						response.request().method() === 'POST',
+					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 				);
 
 				await poHomeChannel.content.sendMessage('edited msg2', false);
@@ -187,10 +184,7 @@ test.describe('Messaging', () => {
 
 			await test.step('stress test on message editions', async () => {
 				const editPromise = page.waitForResponse(
-					(response) =>
-						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
-						response.status() === 200 &&
-						response.request().method() === 'POST',
+					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 				);
 
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
