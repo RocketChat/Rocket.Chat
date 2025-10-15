@@ -1,6 +1,5 @@
 import './serviceWorker';
-import './meteor/startup/absoluteUrl';
-import './meteor/startup/accounts';
+import './meteor/startup';
 
 import('@rocket.chat/fuselage-polyfills')
 	.then(() => import('./meteor/overrides'))
