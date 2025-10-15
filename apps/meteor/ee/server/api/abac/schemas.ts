@@ -57,20 +57,14 @@ const GetAbacAttributesQuery = {
 	type: 'object',
 	properties: {
 		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
-		values: {
-			type: 'array',
-			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
-			minItems: 1,
-			maxItems: MAX_ATTRIBUTE_VALUES,
-			uniqueItems: true,
-		},
+		values: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		offset: { type: 'number' },
 		count: { type: 'number' },
 	},
 	additionalProperties: false,
 };
 
-export const GETAbacAttributesQuerySchema = ajv.compile<{ key: string; values: string[]; offset: number; count: number; total: number }>(
+export const GETAbacAttributesQuerySchema = ajv.compile<{ key: string; values: string; offset: number; count: number }>(
 	GetAbacAttributesQuery,
 );
 

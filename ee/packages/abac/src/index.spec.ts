@@ -111,7 +111,10 @@ describe('AbacService (unit)', () => {
 				});
 
 				const result = await service.listAbacAttributes({ key: 'FilterKey' });
-				expect(mockAbacFindPaginated).toHaveBeenCalledWith({ key: 'FilterKey' }, { projection: { key: 1, values: 1 }, skip: 0, limit: 25 });
+				expect(mockAbacFindPaginated).toHaveBeenCalledWith(
+					{ $or: [{ key: /FilterKey/i }] },
+					{ projection: { key: 1, values: 1 }, skip: 0, limit: 25 },
+				);
 				expect(result).toEqual({
 					attributes: docs,
 					offset: 0,
@@ -130,9 +133,9 @@ describe('AbacService (unit)', () => {
 					totalCount: Promise.resolve(10),
 				});
 
-				const result = await service.listAbacAttributes({ values: ['n', 'z'], offset: 5, count: 2 });
+				const result = await service.listAbacAttributes({ values: 'n,z', offset: 5, count: 2 });
 				expect(mockAbacFindPaginated).toHaveBeenCalledWith(
-					{ values: { $in: ['n', 'z'] } },
+					{ $or: [{ values: /n,z/i }] },
 					{ projection: { key: 1, values: 1 }, skip: 5, limit: 2 },
 				);
 				expect(result).toEqual({
@@ -150,9 +153,9 @@ describe('AbacService (unit)', () => {
 					totalCount: Promise.resolve(docs.length),
 				});
 
-				const result = await service.listAbacAttributes({ key: 'gamma', values: ['q'] });
+				const result = await service.listAbacAttributes({ key: 'gamma', values: 'q' });
 				expect(mockAbacFindPaginated).toHaveBeenCalledWith(
-					{ key: 'gamma', values: { $in: ['q'] } },
+					{ $or: [{ key: /gamma/i }, { values: /q/i }] },
 					{ projection: { key: 1, values: 1 }, skip: 0, limit: 25 },
 				);
 				expect(result).toEqual({
@@ -169,7 +172,7 @@ describe('AbacService (unit)', () => {
 					totalCount: Promise.resolve(0),
 				});
 
-				const result = await service.listAbacAttributes({ key: 'nope', values: ['none'] });
+				const result = await service.listAbacAttributes({ key: 'nope', values: 'none' });
 				expect(result).toEqual({
 					attributes: [],
 					offset: 0,
