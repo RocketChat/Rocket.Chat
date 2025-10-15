@@ -37,6 +37,7 @@ import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordConte
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
+import { useVoipExtensionPermission } from './useVoipExtensionPermission';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -54,7 +55,10 @@ type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
+export type UserFormProps = Omit<
+	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	'fields'
+>;
 
 const getInitialValue = ({
 	data,
@@ -81,6 +85,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -106,7 +111,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		control,
 		watch,
 		handleSubmit,
-		formState: { errors, isDirty },
+		formState: { errors, isDirty, dirtyFields },
 		setValue,
 	} = useForm({
 		values: getInitialValue({
@@ -119,7 +124,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
+	const canManageVoipExtension = useVoipExtensionPermission();
+	const assignExtension = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
+
+	const { avatar, username, setRandomPassword, password, name: userFullName, freeSwitchExtension } = watch();
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -137,7 +145,29 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
+			if (dirtyFields.freeSwitchExtension) {
+				try {
+					await assignExtension(freeSwitchExtension?.trim() ? { username, extension: freeSwitchExtension } : { username });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
 			router.navigate(`/admin/users/info/${_id}`);
+			onReload();
+			refetchUserFormData?.();
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
+
+	const handleUpdateExtension = useMutation({
+		mutationFn: assignExtension,
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
+			if (userData?._id) {
+				router.navigate(`/admin/users/info/${userData._id}`);
+			}
 			onReload();
 			refetchUserFormData?.();
 		},
@@ -150,6 +180,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mutationFn: createUserAction,
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('New_user_manually_created') });
+			if (freeSwitchExtension?.trim()) {
+				try {
+					await assignExtension({ username, extension: freeSwitchExtension });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
@@ -166,7 +203,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
+		const { avatar, passwordConfirmation, freeSwitchExtension, ...userFormData } = userFormPayload;
+
+		if (!isNewUserPage && dirtyFields.freeSwitchExtension && Object.keys(dirtyFields).length === 1) {
+			return handleUpdateExtension.mutateAsync(
+				freeSwitchExtension?.trim()
+					? { username: userFormData.username, extension: freeSwitchExtension }
+					: { username: userFormData.username },
+			);
+		}
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
@@ -177,6 +222,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const nameId = useId();
 	const usernameId = useId();
+	const voiceExtensionId = useId();
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
@@ -334,6 +380,18 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
+					{canManageVoipExtension && (
+						<Field>
+							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='freeSwitchExtension'
+									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
 							<PasswordFieldSkeleton />
