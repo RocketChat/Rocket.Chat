@@ -130,10 +130,12 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && (
+					{utcOffset && Number.isInteger(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
-							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
+							<InfoPanelText>
+								<UTCClock utcOffset={utcOffset} />
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 

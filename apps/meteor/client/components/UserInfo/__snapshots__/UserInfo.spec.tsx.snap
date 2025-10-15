@@ -182,20 +182,6 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       class="rcx-box rcx-box--full rcx-css-f0ql1y"
                     >
-                      Local_Time
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
-                    >
-                      7:37 PM (UTC -3)
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1jagyun"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-f0ql1y"
-                    >
                       Bio
                     </div>
                     <div
@@ -449,20 +435,6 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       data-qa="UserInfoUserName"
                     >
                       guilherme.gazzo
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1jagyun"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-f0ql1y"
-                    >
-                      Local_Time
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
-                    >
-                      7:37 PM (UTC -3)
                     </div>
                   </div>
                   <div
