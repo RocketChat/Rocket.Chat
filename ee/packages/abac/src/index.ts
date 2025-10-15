@@ -2,7 +2,8 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes } from '@rocket.chat/models';
-import type { Filter, UpdateFilter } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Document, UpdateFilter } from 'mongodb';
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -22,28 +23,31 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async listAbacAttributes(filters?: { key?: string; values?: string[]; offset?: number; count?: number }): Promise<{
+	async listAbacAttributes(filters?: { key?: string; values?: string; offset?: number; count?: number }): Promise<{
 		attributes: IAbacAttribute[];
 		offset: number;
 		count: number;
 		total: number;
 	}> {
-		const query: Filter<IAbacAttribute> = {};
+		const query: Document[] = [];
 		if (filters?.key) {
-			query.key = filters.key;
+			query.push({ key: new RegExp(escapeRegExp(filters.key), 'i') });
 		}
 		if (filters?.values?.length) {
-			query.values = { $in: filters.values };
+			query.push({ values: new RegExp(escapeRegExp(filters.values), 'i') });
 		}
 
 		const offset = filters?.offset ?? 0;
 		const limit = filters?.count ?? 25;
 
-		const { cursor, totalCount } = AbacAttributes.findPaginated(query, {
-			projection: { key: 1, values: 1 },
-			skip: offset,
-			limit,
-		});
+		const { cursor, totalCount } = AbacAttributes.findPaginated(
+			{ ...(query.length && { $or: query }) },
+			{
+				projection: { key: 1, values: 1 },
+				skip: offset,
+				limit,
+			},
+		);
 
 		const attributes = await cursor.toArray();
 

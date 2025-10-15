@@ -4,7 +4,7 @@ export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void>;
 	listAbacAttributes(filters?: {
 		key?: string;
-		values?: string[];
+		values?: string;
 		offset?: number;
 		count?: number;
 	}): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;
