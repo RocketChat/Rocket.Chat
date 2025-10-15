@@ -146,7 +146,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async isAbacAttributeInUseByKey(key: string): Promise<boolean> {
-		const attribute = await AbacAttributes.findOneById(key, { projection: { values: 1 } });
+		const attribute = await AbacAttributes.findOneByKey(key, { projection: { values: 1 } });
 		if (!attribute) {
 			return false;
 		}
