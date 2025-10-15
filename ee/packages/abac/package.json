@@ -24,6 +24,7 @@
     "@rocket.chat/core-services": "workspace:^",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/models": "workspace:^",
+    "@rocket.chat/string-helpers": "^0.32.0",
     "mongodb": "6.10.0"
   },
   "devDependencies": {
