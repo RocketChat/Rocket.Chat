@@ -34,10 +34,10 @@ const ImageAttachment = ({
 				<MessageContentBody md={descriptionMd} searchText={searchText} />
 			) : searchText ? (
 				<GazzodownText searchText={searchText}>
-					<MarkdownText parseEmoji content={description} />
+					<MarkdownText parseEmoji content={description ?? ''} />
 				</GazzodownText>
 			) : (
-				<MarkdownText parseEmoji content={description} />
+				<MarkdownText parseEmoji content={description ?? ''} />
 			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage

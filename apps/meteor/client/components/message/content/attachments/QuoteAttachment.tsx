@@ -73,7 +73,16 @@ export const QuoteAttachment = ({ attachment, searchText }: QuoteAttachmentProps
 							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} searchText={searchText} />
 						</AttachmentInner>
 					)}
-					{attachment.md ? <MessageContentBody md={attachment.md} searchText={searchText} /> : searchText ? <GazzodownText searchText={searchText}>{attachment.text.substring(attachment.text.indexOf('\n') + 1)}</GazzodownText> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
+					{(() => {
+						const textContent = attachment.text.substring(attachment.text.indexOf('\n') + 1);
+						return attachment.md ? (
+							<MessageContentBody md={attachment.md} searchText={searchText} />
+						) : searchText ? (
+							<GazzodownText searchText={searchText}>{textContent}</GazzodownText>
+						) : (
+							<span>{textContent}</span>
+						);
+					})()}
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>

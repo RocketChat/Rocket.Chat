@@ -78,10 +78,10 @@ const GenericFileAttachment = ({
 				<MessageContentBody md={descriptionMd} searchText={searchText} />
 			) : searchText ? (
 				<GazzodownText searchText={searchText}>
-					<MarkdownText parseEmoji content={description} />
+					<MarkdownText parseEmoji content={description ?? ''} />
 				</GazzodownText>
 			) : (
-				<MarkdownText parseEmoji content={description} />
+				<MarkdownText parseEmoji content={description ?? ''} />
 			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
