@@ -25,7 +25,7 @@ declare module 'meteor/meteor' {
 
 Meteor.methods<ServerMethods>({
 	'livechat:setUpConnection'(data) {
-		methodDeprecationLogger.method('livechat:setupConnection', '8.0.0', 'This functionality is no longer supported');
+		methodDeprecationLogger.method('livechat:setUpConnection', '8.0.0', 'This functionality is no longer supported');
 		check(data, {
 			token: String,
 		});
