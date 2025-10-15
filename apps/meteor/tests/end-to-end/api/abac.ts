@@ -595,7 +595,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await request
 				.get(`${v1}/abac/attributes`)
 				.set(credentials)
-				.query({ 'values[]': 'magenta' })
+				.query({ values: 'magenta' })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
