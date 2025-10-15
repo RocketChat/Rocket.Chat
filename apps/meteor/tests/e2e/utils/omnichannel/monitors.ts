@@ -1,7 +1,6 @@
 import type { BaseTest } from '../test';
 
-const removeMonitor = async (api: BaseTest['api'], username: string) =>
-	api.post('/v1/livechat/monitors.remove', { username });
+const removeMonitor = async (api: BaseTest['api'], username: string) => api.post('/v1/livechat/monitors.remove', { username });
 
 export const createMonitor = async (api: BaseTest['api'], id: string) => {
 	const response = await api.post('/v1/livechat/monitors.save', { username: id });
