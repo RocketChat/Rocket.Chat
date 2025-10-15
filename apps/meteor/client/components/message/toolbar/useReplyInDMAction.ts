@@ -16,7 +16,6 @@ export const useReplyInDMAction = (
 	const user = useUser();
 	const router = useRouter();
 	const encrypted = isE2EEMessage(message);
-	// @ts-expect-error - abacAttributes is not yet implemented in IRoom type
 	const isABACEnabled = !!room.abacAttributes;
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();
