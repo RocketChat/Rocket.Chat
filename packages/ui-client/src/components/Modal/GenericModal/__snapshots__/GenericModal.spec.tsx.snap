@@ -1,500 +1,105 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`renders renders Danger without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r0:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
+exports[`renders should render a modal with icon if variant is danger-secondary 1`] = `
+<dialog
+  aria-labelledby=":r1:-title"
+  aria-modal="true"
+  class="rcx-box rcx-box--full rcx-modal"
+  open=""
+>
+  <div
+    class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+  >
+    <header
+      class="rcx-box rcx-box--full rcx-modal__header"
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__header-inner"
       >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-98qdbd"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r0:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
         >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          <h2
+            class="rcx-box rcx-box--full rcx-modal__title"
+            id=":r1:-title"
           >
-            This is the content.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
-        >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          />
+            Modal
+          </h2>
         </div>
       </div>
-    </dialog>
+    </header>
+    <div
+      class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+      />
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+    >
+      <div
+        class="rcx-button-group rcx-button-group--align-end"
+        role="group"
+      />
+    </div>
   </div>
-</body>
+</dialog>
 `;
 
-exports[`renders renders DangerSecondary without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r1:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
+exports[`renders should render a modal without crashing 1`] = `
+<dialog
+  aria-labelledby=":r0:-title"
+  aria-modal="true"
+  class="rcx-box rcx-box--full rcx-modal"
+  open=""
+>
+  <div
+    class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+  >
+    <header
+      class="rcx-box rcx-box--full rcx-modal__header"
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__header-inner"
       >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r1:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
         >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
           >
-            This is the content.
-          </div>
+            
+          </i>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
         >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          />
+          <h2
+            class="rcx-box rcx-box--full rcx-modal__title"
+            id=":r0:-title"
+          >
+            Modal
+          </h2>
         </div>
       </div>
-    </dialog>
-  </div>
-</body>
-`;
-
-exports[`renders renders Example without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r2:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
+    </header>
+    <div
+      class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-      >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-1kjeq0v"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r2:-title"
-              >
-                Oh Myyy!
-              </h2>
-            </div>
-            <button
-              aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
-              type="button"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
-              >
-                
-              </i>
-            </button>
-          </div>
-        </header>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
-          >
-            The quick brown fox jumps over the lazy dog.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
-        >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          >
-            <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
-              type="button"
-            >
-              <span
-                class="rcx-button--content"
-              >
-                Nay
-              </span>
-            </button>
-            <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="button"
-            >
-              <span
-                class="rcx-button--content"
-              >
-                Yay
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-  </div>
-</body>
-`;
-
-exports[`renders renders Info without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r3:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
+        class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+      />
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-      >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r3:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
-          >
-            This is the content.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
-        >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          />
-        </div>
-      </div>
-    </dialog>
+        class="rcx-button-group rcx-button-group--align-end"
+        role="group"
+      />
+    </div>
   </div>
-</body>
-`;
-
-exports[`renders renders Success without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r4:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-      >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-zlmdip"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-check rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r4:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
-          >
-            This is the content.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
-        >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          />
-        </div>
-      </div>
-    </dialog>
-  </div>
-</body>
-`;
-
-exports[`renders renders Warning without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r5:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-      >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-1kjeq0v"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r5:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
-          >
-            This is the content.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
-        >
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          />
-        </div>
-      </div>
-    </dialog>
-  </div>
-</body>
-`;
-
-exports[`renders renders WithDontAskAgain without crashing 1`] = `
-<body>
-  <div>
-    <dialog
-      aria-labelledby=":r7:-title"
-      aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
-      open=""
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-      >
-        <header
-          class="rcx-box rcx-box--full rcx-modal__header"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
-          >
-            <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
-              >
-                
-              </i>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
-            >
-              <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r7:-title"
-              >
-                Are_you_sure
-              </h2>
-            </div>
-          </div>
-        </header>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
-          >
-            This is the content.
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-rzpqmp"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-omrq7i"
-          >
-            <label
-              class="rcx-box rcx-box--full rcx-check-box"
-            >
-              <input
-                class="rcx-box rcx-box--full rcx-check-box__input"
-                id=":r6:"
-                name="dont_ask_again"
-                type="checkbox"
-              />
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-check-box__fake"
-              />
-            </label>
-            <label
-              class="rcx-box rcx-box--full rcx-label rcx-css-g9rc4a"
-              for=":r6:"
-            >
-              Dont_ask_me_again
-            </label>
-          </div>
-          <div
-            class="rcx-button-group rcx-button-group--align-end"
-            role="group"
-          >
-            <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-              type="button"
-            >
-              <span
-                class="rcx-button--content"
-              >
-                Ok
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-  </div>
-</body>
+</dialog>
 `;

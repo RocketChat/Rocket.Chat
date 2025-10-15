@@ -1,12 +1,10 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { composeStories } from '@storybook/react';
-import { act, screen, renderHook, render } from '@testing-library/react';
+import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
-import * as stories from './GenericModal.stories';
 import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion';
 
 const renderModal = (modalElement: ReactElement) => {
@@ -28,11 +26,20 @@ const renderModal = (modalElement: ReactElement) => {
 };
 
 describe('renders', () => {
-	const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+	it('should render a modal without crashing', async () => {
+		renderModal(<GenericModal title='Modal' />);
 
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
-		expect(baseElement).toMatchSnapshot();
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
+
+		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
+	});
+
+	it('should render a modal with icon if variant is danger-secondary', async () => {
+		renderModal(<GenericModal title='Modal' variant='danger-secondary' />);
+
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
+
+		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
 	});
 });
 
