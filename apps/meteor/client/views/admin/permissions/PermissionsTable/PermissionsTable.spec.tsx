@@ -7,6 +7,7 @@ import { axe } from 'jest-axe';
 
 import PermissionsTable from './PermissionsTable';
 import * as stories from './PermissionsTable.stories';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -23,6 +24,8 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	const results = await axe(container, { rules: { 'label': { enabled: false }, 'button-name': { enabled: false } } });
 	expect(results).toHaveNoViolations();
 });
+
+const paginationData = createMockedPagination();
 
 const defaultPermissions: IPermission[] = [
 	{
@@ -51,7 +54,13 @@ const roles: IRole[] = [
 
 test('should display modal if the permission is access-permissions and has only one granted role', async () => {
 	render(
-		<PermissionsTable permissions={defaultPermissions} total={defaultPermissions.length} setFilter={() => undefined} roleList={roles} />,
+		<PermissionsTable
+			permissions={defaultPermissions}
+			total={defaultPermissions.length}
+			setFilter={() => undefined}
+			roleList={roles}
+			paginationData={paginationData}
+		/>,
 		{
 			wrapper: mockAppRoot().build(),
 		},
@@ -70,9 +79,18 @@ test('should NOT display modal if the permission is access-permissions and has m
 		},
 	];
 
-	render(<PermissionsTable permissions={morePermissions} total={morePermissions.length} setFilter={() => undefined} roleList={roles} />, {
-		wrapper: mockAppRoot().build(),
-	});
+	render(
+		<PermissionsTable
+			permissions={morePermissions}
+			total={morePermissions.length}
+			setFilter={() => undefined}
+			roleList={roles}
+			paginationData={paginationData}
+		/>,
+		{
+			wrapper: mockAppRoot().build(),
+		},
+	);
 
 	await userEvent.click(screen.getByRole('checkbox', { name: 'access-permissions - Administrator' }));
 	expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
