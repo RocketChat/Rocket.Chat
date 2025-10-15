@@ -427,7 +427,9 @@ describe('AbacService (unit)', () => {
 				await service.setRoomAbacAttributes('r1', { dept: ['eng', 'eng', 'sales'] });
 
 				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'eng', 'sales'] }]);
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'eng', 'sales'] }]);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
+					{ key: 'dept', values: ['eng', 'eng', 'sales'] },
+				]);
 			});
 
 			it('does not call onRoomAttributesChanged when an existing value is removed', async () => {
@@ -452,7 +454,9 @@ describe('AbacService (unit)', () => {
 
 				await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }); // adding sales
 
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
+					{ key: 'dept', values: ['eng', 'sales'] },
+				]);
 				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 			});
 		});
@@ -535,7 +539,9 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales']);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
+				{ key: 'dept', values: ['eng', 'sales'] },
+			]);
 		});
 
 		it('updates existing key and does NOT trigger hook when a value is removed', async () => {
@@ -627,7 +633,10 @@ describe('AbacService (unit)', () => {
 
 				expect(mockInsertAbacAttributeIfNotExistsById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
 				expect(mockUpdateAbacAttributeValuesArrayFilteredById).not.toHaveBeenCalled();
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', updatedDoc.abacAttributes);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'r1' }),
+					updatedDoc.abacAttributes,
+				);
 			});
 
 			it('replaces existing key (calls update and hook)', async () => {
@@ -640,7 +649,10 @@ describe('AbacService (unit)', () => {
 
 				expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
 				expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', updatedDoc.abacAttributes);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'r1' }),
+					updatedDoc.abacAttributes,
+				);
 			});
 
 			it('validates definitions and rejects invalid value', async () => {
@@ -708,7 +720,10 @@ describe('AbacService (unit)', () => {
 				await service.addRoomAbacAttributeByKey('r1', 'dept', ['eng', 'sales']);
 
 				expect(mockInsertAbacAttributeIfNotExistsById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', updatedDoc.abacAttributes);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'r1' }),
+					updatedDoc.abacAttributes,
+				);
 			});
 
 			it('inserts new attribute and calls hook with constructed list when DB returns undefined', async () => {
@@ -720,7 +735,10 @@ describe('AbacService (unit)', () => {
 				await service.addRoomAbacAttributeByKey('r1', 'dept', ['eng']);
 
 				expect(mockInsertAbacAttributeIfNotExistsById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
-				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith('r1', [...existing, { key: 'dept', values: ['eng'] }]);
+				expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
+					...existing,
+					{ key: 'dept', values: ['eng'] },
+				]);
 			});
 
 			it('rejects when provided value not allowed by definition', async () => {

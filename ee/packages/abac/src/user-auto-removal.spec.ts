@@ -114,16 +114,22 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
+			const changeSpy = jest.spyOn<any, any>(service as any, 'onRoomAttributesChanged');
 
 			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
 
-			const evaluationCalls = debugSpy.mock.calls.map((c) => c[0]).filter((arg) => arg && arg.msg === 'Re-evaluating room subscriptions');
+			// Assert the protected hook received the full room object (first arg) instead of just the id
+			expect(changeSpy).toHaveBeenCalledTimes(1);
+			expect(changeSpy.mock.calls[0][0]).toMatchObject({ _id: rid });
+			expect(Array.isArray((changeSpy as any).mock.calls[0][0].abacAttributes)).toBe(true);
+
+			const evaluationCalls = debugSpy.mock.calls.map((c) => c[0]).filter((arg) => arg && arg.msg === 'Room ABAC attributes changed');
 
 			expect(evaluationCalls.length).toBe(1);
 			const payload = evaluationCalls[0];
 			expect(payload.rid).toBe(rid);
 			expect(payload.newAttributes).toEqual([{ key: 'dept', values: ['eng', 'sales'] }]);
-			expect(payload.usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3']); // only non compliant
+			expect(payload.usersToRemove.sort()).toEqual(['u2', 'u3']); // only non compliant
 
 			// Assert membership actually updated
 			const remaining = await usersCol
@@ -149,9 +155,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+			expect(evaluationCalls[0].usersToRemove.sort()).toEqual(['u2']);
 
 			const u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
 			const u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
@@ -175,9 +181,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+			expect(evaluationCalls[0].usersToRemove.sort()).toEqual(['u2']);
 
 			const users = await usersCol
 				.find({ _id: { $in: ['u1', 'u2', 'u3'] } }, { projection: { __rooms: 1 } })
@@ -265,9 +271,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3', 'u5']);
+			expect(evaluationCalls[0].usersToRemove.sort()).toEqual(['u2', 'u3', 'u5']);
 
 			const memberships = await usersCol
 				.find({ _id: { $in: ['u1', 'u2', 'u3', 'u4', 'u5'] } }, { projection: { __rooms: 1 } })
@@ -292,9 +298,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
 			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
-			const firstEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Re-evaluating room subscriptions');
+			const firstEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Room ABAC attributes changed');
 			expect(firstEval.length).toBe(1);
-			expect(firstEval[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+			expect(firstEval[0].usersToRemove.sort()).toEqual(['u2']);
 
 			let u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
 			let u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
@@ -305,7 +311,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			debugSpy.mockClear();
 
 			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
-			const secondEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Re-evaluating room subscriptions');
+			const secondEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Room ABAC attributes changed');
 			expect(secondEval.length).toBe(0);
 
 			u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
@@ -329,9 +335,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2']);
+			expect(evaluationCalls[0].usersToRemove.sort()).toEqual(['u2']);
 
 			const u1 = await usersCol.findOne({ _id: 'u1' }, { projection: { __rooms: 1 } });
 			const u2 = await usersCol.findOne({ _id: 'u2' }, { projection: { __rooms: 1 } });
@@ -353,9 +359,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			expect(evaluationCalls[0].usersThatWillBeRemoved.sort()).toEqual(['u2', 'u3']);
+			expect(evaluationCalls[0].usersToRemove.sort()).toEqual(['u2', 'u3']);
 
 			const memberships = await usersCol
 				.find({ _id: { $in: ['u1', 'u2', 'u3'] } }, { projection: { __rooms: 1 } })
@@ -389,9 +395,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
-				.filter((arg: any) => arg && arg.msg === 'Re-evaluating room subscriptions');
+				.filter((arg: any) => arg && arg.msg === 'Room ABAC attributes changed');
 			expect(evaluationCalls.length).toBe(1);
-			const removed = evaluationCalls[0].usersThatWillBeRemoved;
+			const removed = evaluationCalls[0].usersToRemove;
 			expect(removed.length).toBe(150);
 			expect(removed).toContain('u1');
 			expect(removed).toContain('u299');

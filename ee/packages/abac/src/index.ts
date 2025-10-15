@@ -1,6 +1,6 @@
 import { Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -170,7 +170,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -183,14 +185,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (this.didAttributesChange(previous, normalized)) {
-			this.logger.debug({
-				msg: 'Room ABAC attributes updated',
-				rid,
-				previous,
-				new: normalized,
-			});
-
-			await this.onRoomAttributesChanged(rid, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
+			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
 		}
 	}
 
@@ -265,7 +260,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -283,12 +280,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
 			const next = [...previous, { key, values }];
 
-			this.logger.debug({
-				msg: 'Room ABAC attribute added',
-				rid,
-				attribute: { key, values },
-			});
-			await this.onRoomAttributesChanged(rid, next);
+			await this.onRoomAttributesChanged(room, next);
 			return;
 		}
 
@@ -298,26 +290,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const prevSet = new Set(prevValues);
-		const added = values.some((v) => !prevSet.has(v));
-
 		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 
-		if (added) {
+		if (this.wereAttributeValuesAdded(prevValues, values)) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
-			this.logger.debug({
-				msg: 'Room ABAC attributes updated',
-				rid,
-				previous,
-				new: next,
-			});
-
-			await this.onRoomAttributesChanged(rid, next);
+			await this.onRoomAttributesChanged(room, next);
 		}
 	}
 
+	private wereAttributeValuesAdded(prevValues: string[], newValues: string[]) {
+		const prevSet = new Set(prevValues);
+		return newValues.some((v) => !prevSet.has(v));
+	}
+
 	async removeRoomAbacAttribute(rid: string, key: string): Promise<void> {
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes'>>(rid, 'p', { projection: { abacAttributes: 1 } });
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -339,7 +326,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -356,18 +345,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
 		const next = updated?.abacAttributes || [...previous, { key, values }];
 
-		this.logger.debug({
-			msg: 'Room ABAC attribute added',
-			rid,
-			attribute: { key, values },
-		});
-		await this.onRoomAttributesChanged(rid, next);
+		await this.onRoomAttributesChanged(room, next);
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -376,18 +362,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (exists) {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
-
-			this.logger.debug({
-				msg: 'Room ABAC attribute updated',
-				rid,
-				attribute: { key, values },
-			});
-
 			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
-			const prevSet = new Set(prevValues);
-			const added = values.some((v) => !prevSet.has(v));
-			if (added) {
-				await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
+
+			if (this.wereAttributeValuesAdded(prevValues, values)) {
+				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
 
 			return;
@@ -399,19 +377,31 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
 
-		this.logger.debug({
-			msg: 'Room ABAC attribute added',
-			rid,
-			attribute: { key, values },
-		});
-		await this.onRoomAttributesChanged(rid, updated?.abacAttributes || []);
+		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
-	protected async onRoomAttributesChanged(rid: string, newAttributes: IAbacAttributeDefinition[]): Promise<void> {
+	private buildNonCompliantConditions(newAttributes: IAbacAttributeDefinition[]) {
+		return newAttributes.map(({ key, values }) => ({
+			abacAttributes: {
+				$not: {
+					$elemMatch: {
+						key,
+						values: { $all: values },
+					},
+				},
+			},
+		}));
+	}
+
+	protected async onRoomAttributesChanged(
+		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
+		newAttributes: IAbacAttributeDefinition[],
+	): Promise<void> {
+		const rid = room._id;
 		if (!newAttributes?.length) {
 			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
-			this.logger.debug({
-				msg: 'Room ABAC attributes removed completely. Room is not abac managed anymore',
+			this.logger.warn({
+				msg: 'Room ABAC attributes removed. Room is not abac managed anymore',
 				rid,
 			});
 
@@ -419,16 +409,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		try {
-			const nonCompliantConditions = newAttributes.map(({ key, values }) => ({
-				abacAttributes: {
-					$not: {
-						$elemMatch: {
-							key,
-							values: { $all: values },
-						},
-					},
-				},
-			}));
+			const nonCompliantConditions = this.buildNonCompliantConditions(newAttributes);
 
 			if (!nonCompliantConditions.length) {
 				return;
@@ -440,6 +421,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			};
 
 			const cursor = Users.find(query, { projection: { __rooms: 0 } });
+
 			const usersToRemove: string[] = [];
 			const userRemovalPromises = [];
 			for await (const doc of cursor) {
@@ -454,21 +436,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 				);
 			}
 
-			if (!usersToRemove.length) {
-				this.logger.debug({
-					msg: 'Room ABAC attributes changed. No user removal necessary',
-					rid,
-					newAttributes,
-				});
-				return;
-			}
-
 			this.logger.debug({
-				msg: 'Re-evaluating room subscriptions',
+				msg: 'Room ABAC attributes changed',
 				rid,
 				newAttributes,
-				usersThatWillBeRemoved: usersToRemove,
+				usersToRemove,
 			});
+
+			if (!usersToRemove.length) {
+				return;
+			}
 
 			await Promise.all(userRemovalPromises);
 		} catch (err) {
