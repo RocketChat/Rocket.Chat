@@ -31,6 +31,7 @@ jest.mock('@rocket.chat/models', () => ({
 		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
 		findOne: (...args: any[]) => mockAbacFindOne(...args),
 		findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
+		findOneByKey: (...args: any[]) => mockAbacFindOne(...args), // map findOneByKey to same mock
 		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
