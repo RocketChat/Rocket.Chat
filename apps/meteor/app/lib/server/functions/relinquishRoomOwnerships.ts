@@ -16,13 +16,9 @@ const bulkTeamCleanup = async (rids: IRoom['_id'][], userId: string) => {
 
 	await Promise.all(
 		uniqueTeamIds.map(async (teamId) => {
-			if (!userId) {
-				throw new Error('error-user-not-found');
-			}
-
 			const team = await Team.findOneById(teamId);
 			if (!team) {
-				throw new Error('error-team-not-found');
+				return;
 			}
 
 			await eraseTeam(userId, team, []);
