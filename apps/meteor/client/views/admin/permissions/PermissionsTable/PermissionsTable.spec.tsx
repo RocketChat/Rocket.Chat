@@ -25,6 +25,8 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
+const paginationData = createMockedPagination();
+
 const defaultPermissions: IPermission[] = [
 	{
 		_id: 'access-permissions',
@@ -57,7 +59,7 @@ test('should display modal if the permission is access-permissions and has only 
 			total={defaultPermissions.length}
 			setFilter={() => undefined}
 			roleList={roles}
-			paginationData={createMockedPagination()}
+			paginationData={paginationData}
 		/>,
 		{
 			wrapper: mockAppRoot().build(),
@@ -83,7 +85,7 @@ test('should NOT display modal if the permission is access-permissions and has m
 			total={morePermissions.length}
 			setFilter={() => undefined}
 			roleList={roles}
-			paginationData={createMockedPagination()}
+			paginationData={paginationData}
 		/>,
 		{
 			wrapper: mockAppRoot().build(),

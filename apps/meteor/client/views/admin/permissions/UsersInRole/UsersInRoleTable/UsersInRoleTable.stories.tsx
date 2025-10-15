@@ -31,6 +31,8 @@ const generateMockedUsers = (count: number) =>
 
 const mockedUsers = generateMockedUsers(5);
 
+const paginationData = createMockedPagination(mockedUsers.length, 30);
+
 const Template: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
 
 export const Default = Template.bind({});
@@ -42,7 +44,7 @@ Default.args = {
 	users: mockedUsers,
 	onRemove: () => undefined,
 	refetch: () => undefined,
-	paginationData: createMockedPagination(mockedUsers.length, 30),
+	paginationData,
 };
 
 export const withLoading = Template.bind({});
@@ -54,7 +56,7 @@ withLoading.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
-	paginationData: createMockedPagination(),
+	paginationData,
 };
 
 export const withNoResults = Template.bind({});
@@ -66,7 +68,7 @@ withNoResults.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
-	paginationData: createMockedPagination(),
+	paginationData,
 };
 
 export const withError = Template.bind({});
@@ -78,5 +80,5 @@ withError.args = {
 	users: [],
 	onRemove: () => undefined,
 	refetch: () => undefined,
-	paginationData: createMockedPagination(),
+	paginationData,
 };

@@ -99,6 +99,8 @@ const permissions: IPermission[] = [
 	},
 ];
 
+const paginationData = createMockedPagination(permissions.length, 10);
+
 const Template: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
 
 export const Default = Template.bind({});
@@ -107,7 +109,7 @@ Default.args = {
 	permissions,
 	roleList: roles,
 	setFilter: () => undefined,
-	paginationData: createMockedPagination(permissions.length, 10),
+	paginationData,
 };
 
 export const Empty = Template.bind({});
@@ -116,5 +118,5 @@ Empty.args = {
 	permissions: [],
 	roleList: [],
 	setFilter: () => undefined,
-	paginationData: createMockedPagination(),
+	paginationData,
 };
