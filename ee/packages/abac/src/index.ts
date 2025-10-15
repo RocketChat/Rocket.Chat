@@ -200,8 +200,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const keys = normalized.map((a) => a.key);
-		const attributeDefinitionsCursor = AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } });
-		const attributeDefinitions = await attributeDefinitionsCursor.toArray();
+		const attributeDefinitions = await AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
 
 		const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
 		if (definitionValuesMap.size !== keys.length) {
