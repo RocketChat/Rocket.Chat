@@ -61,7 +61,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 };
 
 const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): ReactNode => {
-	if (icon === null) {
+	if (icon === null || iconMap[variant] === undefined) {
 		return null;
 	}
 

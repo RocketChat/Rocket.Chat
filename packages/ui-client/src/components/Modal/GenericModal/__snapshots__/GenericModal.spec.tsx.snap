@@ -82,14 +82,6 @@ exports[`renders renders DangerSecondary without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-seqpcl"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon rcx-css-zozvgz"
-              />
-            </div>
-            <div
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <h2
