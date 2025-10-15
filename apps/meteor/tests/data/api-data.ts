@@ -3,7 +3,6 @@ import type { Path } from '@rocket.chat/rest-typings';
 import type { CallbackHandler, Response } from 'supertest';
 import supertest from 'supertest';
 
-
 import { adminUsername, adminPassword } from './user';
 
 export const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
