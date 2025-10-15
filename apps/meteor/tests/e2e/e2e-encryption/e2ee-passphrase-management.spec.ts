@@ -42,12 +42,12 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: originalSettings.E2E_Enabled_Default_PrivateRooms });
 	});
 
-	test.beforeEach(async ({ api, page }) => {
+	test.beforeEach(async ({ page }) => {
 		const loginPage = new LoginPage(page);
 
-		await api.post('/method.call/e2e.resetOwnE2EKey', {
-			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-		});
+		// await api.post('/method.call/e2e.resetOwnE2EKey', {
+		// 	message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
+		// });
 
 		await page.goto('/home');
 		await loginPage.waitForIt();
@@ -141,6 +141,34 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 		// No error banner
 		await e2EEKeyDecodeFailureBanner.expectToNotBeVisible();
+	});
+
+	test.describe('E2EE Passphrase Management - Recovery', () => {
+		test.use({
+			storageState: {
+				...Users.userE2EE.state,
+				origins: Users.userE2EE.state.origins.map((origin) => ({
+					...origin,
+					localStorage: origin.localStorage.filter((item) => !['e2e.randomPassword', 'private_key', 'public_key'].includes(item.name)),
+				})),
+			},
+		});
+
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/home');
+		});
+
+		test('expect to recover the keys using the recovery key', async ({ page }) => {
+			await test.step('Recover the keys', async () => {
+				const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+				const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+				const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
+
+				await enterE2EEPasswordBanner.click();
+				await enterE2EEPasswordModal.enterPassword(Users.userE2EE.data.e2ePassword!);
+				await e2EEKeyDecodeFailureBanner.expectToNotBeVisible();
+			});
+		});
 	});
 });
 
