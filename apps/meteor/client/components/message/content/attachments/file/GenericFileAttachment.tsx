@@ -16,11 +16,12 @@ import { forAttachmentDownload, registerDownloadForUid } from '../../../../../ho
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
+import GazzodownText from '../../../../GazzodownText';
 import AttachmentSize from '../structure/AttachmentSize';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
-type GenericFileAttachmentProps = MessageAttachmentBase;
+type GenericFileAttachmentProps = MessageAttachmentBase & { searchText?: string };
 
 const GenericFileAttachment = ({
 	title,
@@ -31,6 +32,7 @@ const GenericFileAttachment = ({
 	size,
 	format,
 	collapsed,
+	searchText,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
 	const uid = useId();
@@ -72,7 +74,15 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? (
+				<MessageContentBody md={descriptionMd} searchText={searchText} />
+			) : searchText ? (
+				<GazzodownText searchText={searchText}>
+					<MarkdownText parseEmoji content={description} />
+				</GazzodownText>
+			) : (
+				<MarkdownText parseEmoji content={description} />
+			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent
