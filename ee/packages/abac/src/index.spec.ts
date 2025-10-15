@@ -33,6 +33,7 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
 		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
+		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
 		find: (...args: any[]) => mockAbacFind(...args),
 	},
 }));
@@ -330,7 +331,7 @@ describe('AbacService (unit)', () => {
 				mockRoomsIsAbacAttributeInUse.mockResolvedValueOnce(false);
 				mockAbacDeleteOne.mockResolvedValueOnce({ deletedCount: 1 });
 				await service.deleteAbacAttributeById('id12');
-				expect(mockAbacDeleteOne).toHaveBeenCalledWith({ _id: 'id12' });
+				expect(mockAbacDeleteOne).toHaveBeenCalledWith('id12');
 			});
 		});
 	});
@@ -354,7 +355,7 @@ describe('AbacService (unit)', () => {
 				.mockResolvedValueOnce(true); // c
 
 			const result = await service.getAbacAttributeById('id13');
-			expect(mockAbacFindOne).toHaveBeenCalledWith({ _id: 'id13' }, { projection: { key: 1, values: 1 } });
+			expect(mockAbacFindOne).toHaveBeenCalledWith('id13', { projection: { key: 1, values: 1 } });
 			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(1, 'Attr', ['a']);
 			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(2, 'Attr', ['b']);
 			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(3, 'Attr', ['c']);
