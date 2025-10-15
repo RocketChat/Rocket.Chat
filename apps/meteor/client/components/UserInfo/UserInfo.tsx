@@ -39,6 +39,7 @@ type UserInfoDataProps = Serialized<
 		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
+		| 'freeSwitchExtension'
 	>
 >;
 
@@ -70,6 +71,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	freeSwitchExtension,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -172,6 +174,13 @@ const UserInfo = ({
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{freeSwitchExtension && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
+							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
