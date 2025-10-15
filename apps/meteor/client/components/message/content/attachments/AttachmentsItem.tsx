@@ -10,18 +10,19 @@ import { QuoteAttachment } from './QuoteAttachment';
 type AttachmentsItemProps = {
 	attachment: MessageAttachmentBase;
 	id: string | undefined;
+	searchText?: string;
 };
 
-const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps): ReactElement => {
+const AttachmentsItem = ({ attachment, id, searchText }: AttachmentsItemProps): ReactElement => {
 	if (isFileAttachment(attachment)) {
-		return <FileAttachment id={id} {...attachment} />;
+		return <FileAttachment id={id} {...attachment} searchText={searchText} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {
-		return <QuoteAttachment attachment={attachment} />;
+		return <QuoteAttachment attachment={attachment} searchText={searchText} />;
 	}
 
-	return <DefaultAttachment {...(attachment as any)} />;
+	return <DefaultAttachment {...(attachment as any)} searchText={searchText} />;
 };
 
 export default memo(AttachmentsItem);
