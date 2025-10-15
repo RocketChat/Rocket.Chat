@@ -300,7 +300,7 @@ export class HomeContent {
 	}
 
 	get btnVoiceCall(): Locator {
-		return this.page.getByRole('button', { name: 'Voice call' });
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
 
 	get modalUpsellVoiceCalls(): Locator {
