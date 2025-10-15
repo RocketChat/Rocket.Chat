@@ -22,6 +22,7 @@ import {
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
+import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -70,6 +71,8 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
+	abacAttributes = null,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -113,7 +116,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{roles.length !== 0 && (
+					{roles?.length !== 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
@@ -127,10 +130,12 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && (
+					{utcOffset && Number.isInteger(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
-							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
+							<InfoPanelText>
+								<UTCClock utcOffset={utcOffset} />
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -175,6 +180,12 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
+					{abacAttributes?.length > 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
+							<UserInfoABACAttributes abacAttributes={abacAttributes} />
+						</InfoPanelField>
+					)}
 					{userCustomFields?.map(
 						(customField) =>
 							customField?.value && (
