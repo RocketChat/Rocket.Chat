@@ -5,7 +5,7 @@ import GenericFileAttachment from './file/GenericFileAttachment';
 import ImageAttachment from './file/ImageAttachment';
 import VideoAttachment from './file/VideoAttachment';
 
-const FileAttachment = (attachment: FileAttachmentProps & { searchText?: string }) => {
+const FileAttachment = (attachment: FileAttachmentProps & { searchText?: string; id?: string }) => {
 	if (isFileImageAttachment(attachment)) {
 		return <ImageAttachment {...attachment} />;
 	}
