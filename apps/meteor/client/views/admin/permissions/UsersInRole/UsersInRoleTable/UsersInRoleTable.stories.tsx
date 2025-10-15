@@ -2,7 +2,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UsersInRoleTable from './UsersInRoleTable';
-import { createMockedPagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import { createMockedPagination } from '../../../../../../tests/mocks/data';
 import { PageContent } from '../../../../../components/Page';
 
 export default {
@@ -45,8 +45,8 @@ Default.args = {
 	paginationData: createMockedPagination(mockedUsers.length, 30),
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
+export const withLoading = Template.bind({});
+withLoading.args = {
 	total: 0,
 	isLoading: true,
 	isError: false,
@@ -57,8 +57,8 @@ Loading.args = {
 	paginationData: createMockedPagination(),
 };
 
-export const Empty = Template.bind({});
-Empty.args = {
+export const withNoResults = Template.bind({});
+withNoResults.args = {
 	total: 0,
 	isLoading: false,
 	isError: false,
@@ -69,8 +69,8 @@ Empty.args = {
 	paginationData: createMockedPagination(),
 };
 
-export const Error = Template.bind({});
-Error.args = {
+export const withError = Template.bind({});
+withError.args = {
 	total: 0,
 	isLoading: false,
 	isError: true,

@@ -2,7 +2,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UsersTable from './UsersTable';
-import { createMockedPagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 export default {
 	component: UsersTable,

@@ -530,37 +530,7 @@ exports[`renders Default without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Empty without crashing 1`] = `
-<body>
-  <div>
-    <div
-      class="rcx-box rcx-box--full rcx-css-9x4qdd"
-    >
-      <div
-        class="rcx-box rcx-box--full rcx-css-1wg1u9h"
-      >
-        <div
-          class="rcx-states"
-        >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
-          >
-            
-          </i>
-          <h3
-            class="rcx-states__title"
-          >
-            No_results_found
-          </h3>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-`;
-
-exports[`renders Error without crashing 1`] = `
+exports[`renders withError without crashing 1`] = `
 <body>
   <div>
     <div
@@ -605,7 +575,7 @@ exports[`renders Error without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Loading without crashing 1`] = `
+exports[`renders withLoading without crashing 1`] = `
 <body>
   <div>
     <div
@@ -1096,6 +1066,36 @@ exports[`renders Loading without crashing 1`] = `
               />
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders withNoResults without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-9x4qdd"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1wg1u9h"
+      >
+        <div
+          class="rcx-states"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+          >
+            
+          </i>
+          <h3
+            class="rcx-states__title"
+          >
+            No_results_found
+          </h3>
         </div>
       </div>
     </div>

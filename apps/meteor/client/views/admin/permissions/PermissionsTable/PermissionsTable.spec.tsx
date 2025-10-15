@@ -7,7 +7,7 @@ import { axe } from 'jest-axe';
 
 import PermissionsTable from './PermissionsTable';
 import * as stories from './PermissionsTable.stories';
-import { createMockedPagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

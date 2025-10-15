@@ -5,15 +5,6 @@ import { useItemsPerPage } from './useItemsPerPage';
 import { useItemsPerPageLabel } from './useItemsPerPageLabel';
 import { useShowingResultsLabel } from './useShowingResultsLabel';
 
-export const createMockedPagination = (results = 0, total = 0) => ({
-	current: 0,
-	setCurrent: () => undefined,
-	itemsPerPage: 25 as const,
-	setItemsPerPage: () => undefined,
-	itemsPerPageLabel: () => 'Items per page:',
-	showingResultsLabel: () => `Showing results 1 - ${results} of ${total}`,
-});
-
 /**
  * TODO: Move `usePagination` outside from `GenericTable` folder
  */

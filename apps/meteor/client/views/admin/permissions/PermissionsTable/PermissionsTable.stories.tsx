@@ -3,7 +3,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import PermissionsTable from './PermissionsTable';
-import { createMockedPagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 import { PageContent } from '../../../../components/Page';
 
 export default {
