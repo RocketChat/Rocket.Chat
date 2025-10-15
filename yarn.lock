@@ -8122,6 +8122,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/string-helpers": "npm:^0.32.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.16.1"
@@ -10267,6 +10268,13 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/string-helpers@npm:~0.32.0":
+  version: 0.32.0
+  resolution: "@rocket.chat/string-helpers@npm:0.32.0"
+  checksum: 10/4f503a42e9a93ea9e6e85da320f125da5af5da1693e6782dee828ffc6c0d05e6ec76d75f7efc342d0738a4d37d67a729486a4d96b109642d70610660beb38e21
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/string-helpers@npm:^0.32.0":
   version: 0.32.0
   resolution: "@rocket.chat/string-helpers@npm:0.32.0"
   checksum: 10/4f503a42e9a93ea9e6e85da320f125da5af5da1693e6782dee828ffc6c0d05e6ec76d75f7efc342d0738a4d37d67a729486a4d96b109642d70610660beb38e21
