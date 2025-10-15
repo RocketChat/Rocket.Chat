@@ -38,10 +38,6 @@ export class TestsUserBridge extends UserBridge {
 		throw new Error('Method not implemented.');
 	}
 
-	protected getUserRoomIds(uid: string, appId: string): Promise<string[]> {
-		throw new Error('Method not implemented.');
-	}
-
 	protected deactivate(userId: IUser['id'], confirmRelinquish: boolean, appId: string): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
