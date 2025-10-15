@@ -7,6 +7,7 @@ import { useReloadOnError } from './hooks/useReloadOnError';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
+import GazzodownText from '../../../../GazzodownText';
 
 const AudioAttachment = ({
 	title,
@@ -18,14 +19,23 @@ const AudioAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: AudioAttachmentProps) => {
+	searchText,
+}: AudioAttachmentProps & { searchText?: string }) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'audio');
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? (
+				<MessageContentBody md={descriptionMd} searchText={searchText} />
+			) : searchText ? (
+				<GazzodownText searchText={searchText}>
+					<MarkdownText parseEmoji content={description} />
+				</GazzodownText>
+			) : (
+				<MarkdownText parseEmoji content={description} />
+			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AudioPlayer src={src} type={type} ref={mediaRef} />
 			</MessageCollapsible>

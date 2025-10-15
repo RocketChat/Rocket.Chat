@@ -8,6 +8,7 @@ import { userAgentMIMETypeFallback } from '../../../../../lib/utils/userAgentMIM
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
+import GazzodownText from '../../../../GazzodownText';
 
 const VideoAttachment = ({
 	title,
@@ -19,14 +20,23 @@ const VideoAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: VideoAttachmentProps) => {
+	searchText,
+}: VideoAttachmentProps & { searchText?: string }) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'video');
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? (
+				<MessageContentBody md={descriptionMd} searchText={searchText} />
+			) : searchText ? (
+				<GazzodownText searchText={searchText}>
+					<MarkdownText parseEmoji content={description} />
+				</GazzodownText>
+			) : (
+				<MarkdownText parseEmoji content={description} />
+			)}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata' ref={mediaRef}>
