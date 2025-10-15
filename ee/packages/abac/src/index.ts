@@ -111,7 +111,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async deleteAbacAttributeById(_id: string): Promise<void> {
-		const existing = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
+		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
 			throw new Error('error-attribute-not-found');
 		}
@@ -121,11 +121,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-attribute-in-use');
 		}
 
-		await AbacAttributes.deleteOne({ _id });
+		await AbacAttributes.removeById(_id);
 	}
 
 	async getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }> {
-		const attribute = await AbacAttributes.findOne({ _id }, { projection: { key: 1, values: 1 } });
+		const attribute = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!attribute) {
 			throw new Error('error-attribute-not-found');
 		}
@@ -146,7 +146,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async isAbacAttributeInUseByKey(key: string): Promise<boolean> {
-		const attribute = await AbacAttributes.findOne({ key }, { projection: { values: 1 } });
+		const attribute = await AbacAttributes.findOneById(key, { projection: { values: 1 } });
 		if (!attribute) {
 			return false;
 		}
@@ -200,8 +200,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const keys = normalized.map((a) => a.key);
-		const attributeDefinitionsCursor = AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } });
-		const attributeDefinitions = await attributeDefinitionsCursor.toArray();
+		const attributeDefinitions = await AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
 
 		const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
 		if (definitionValuesMap.size !== keys.length) {
