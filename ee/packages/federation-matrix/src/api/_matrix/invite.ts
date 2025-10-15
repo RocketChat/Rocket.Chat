@@ -1,6 +1,5 @@
 import { FederationMatrix, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
-import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -9,6 +8,7 @@ import type {
 	PersistentEventBase,
 	RoomVersion,
 } from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, NotAllowedError } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
@@ -355,32 +355,52 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(
-				event,
-				roomIdSchema.parse(roomId),
-				eventIdSchema.parse(eventId),
-				roomVersion,
-				c.get('authenticatedServer'),
-			);
+			try {
+				const inviteEvent = await invite.processInvite(
+					event,
+					roomIdSchema.parse(roomId),
+					eventIdSchema.parse(eventId),
+					roomVersion,
+					c.get('authenticatedServer'),
+				);
 
-			setTimeout(
-				() => {
-					void startJoiningRoom({
-						inviteEvent,
-						user: ourUser,
-						room,
-						state,
-					});
-				},
-				inviteEvent.event.content.is_direct ? 2000 : 0,
-			);
+				setTimeout(
+					() => {
+						void startJoiningRoom({
+							inviteEvent,
+							user: ourUser,
+							room,
+							state,
+						});
+					},
+					inviteEvent.event.content.is_direct ? 2000 : 0,
+				);
 
-			return {
-				body: {
-					event: inviteEvent.event,
-				},
-				statusCode: 200,
-			};
+				return {
+					body: {
+						event: inviteEvent.event,
+					},
+					statusCode: 200,
+				};
+			} catch (error) {
+				if (error instanceof NotAllowedError) {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: 'This server does not allow joining this type of room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: error instanceof Error ? error.message : 'Internal server error while processing request',
+					},
+					statusCode: 500,
+				};
+			}
 		},
 	);
 };
