@@ -18,7 +18,7 @@ const MobileItems = ({ message, room, subscription }: MobileItemsProps) => {
 			<ReactionMessageAction message={message} room={room} subscription={subscription} />
 			<QuoteMessageAction message={message} subscription={subscription} />
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
-			<ForwardMessageAction message={message} />
+			<ForwardMessageAction message={message} room={room} />
 			<JumpToMessageAction id='jump-to-message' message={message} />
 		</>
 	);

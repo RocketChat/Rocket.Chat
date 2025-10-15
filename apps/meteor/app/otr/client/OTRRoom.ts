@@ -9,6 +9,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { getUser } from '../../../client/lib/user';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Messages } from '../../../client/stores';
@@ -102,10 +103,9 @@ export class OTRRoom implements IOTRRoom {
 		]);
 
 		if (refresh) {
-			const user = Meteor.user();
-			if (!user) {
-				return;
-			}
+			const user = getUser();
+			if (!user) return;
+
 			await sdk.rest.post('/v1/chat.otr', {
 				roomId: this._roomId,
 				type: otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,

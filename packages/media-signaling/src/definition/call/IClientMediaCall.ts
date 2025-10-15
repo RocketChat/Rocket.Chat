@@ -77,6 +77,9 @@ export interface IClientMediaCall {
 	busy: boolean;
 
 	contact: CallContact;
+	transferredBy: CallContact | null;
+	audioLevel: number;
+	localAudioLevel: number;
 
 	emitter: Emitter<CallEvents>;
 
@@ -90,4 +93,6 @@ export interface IClientMediaCall {
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
+
+	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 }

@@ -1734,6 +1734,27 @@ describe('[Chat]', () => {
 				});
 		});
 
+		it('should fail updating a message with "content" if it is not encrypted', (done) => {
+			void request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					content: {
+						algorithm: 'rc.v1.aes-sha2',
+						ciphertext: 'U2FsdGVkX1+u3j0u2+oXg4o3kw5y4t7D9sdfsdff==',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Only encrypted messages can have content updated.');
+				})
+				.end(done);
+		});
+
 		it('should update a message successfully', (done) => {
 			void request
 				.post(api('chat.update'))
