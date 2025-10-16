@@ -141,7 +141,7 @@ export class Keychain {
 		return Binary.toString(decrypted.buffer);
 	}
 
-	async encryptKey(privateKey: string, password: string): Promise<EncryptedKey> {
+	async encryptKey(privateKey: string, password: string): Promise<StoredKey> {
 		const salt = generateSalt(this.userId);
 		const iterations = 100_000;
 		const algorithm = 'AES-GCM';
@@ -150,12 +150,6 @@ export class Keychain {
 		const key = await Pbkdf2.importKey(derivedBits, algorithm);
 		const content = await Pbkdf2.encrypt(key, new Uint8Array(Binary.toArrayBuffer(privateKey)));
 
-		return {
-			content,
-			options: {
-				salt,
-				iterations,
-			},
-		};
+		return EncryptedKey.encode({ content, options: { salt, iterations } });
 	}
 }
