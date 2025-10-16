@@ -1,18 +1,15 @@
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { UpsellVoiceCallsModal } from './page-objects/fragments/upsell-modal';
-import { createDirectMessage } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
 test.describe('Voice Calls - Community Edition', () => {
+	test.skip(IS_EE, 'Community Edition Only');
 	let poHomeChannel: HomeChannel;
 	let upsellVoiceCallsModal: UpsellVoiceCallsModal;
-
-	test.beforeAll(async ({ api }) => {
-		await createDirectMessage(api);
-	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
