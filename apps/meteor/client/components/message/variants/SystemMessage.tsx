@@ -90,8 +90,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody data-qa-type='system-message-body' style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
+						<MessageSystemBody style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
+							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
