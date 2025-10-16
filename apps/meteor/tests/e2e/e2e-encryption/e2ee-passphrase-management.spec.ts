@@ -42,12 +42,12 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: originalSettings.E2E_Enabled_Default_PrivateRooms });
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		const loginPage = new LoginPage(page);
 
-		// await api.post('/method.call/e2e.resetOwnE2EKey', {
-		// 	message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
-		// });
+		await api.post('/method.call/e2e.resetOwnE2EKey', {
+			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
+		});
 
 		await page.goto('/home');
 		await loginPage.waitForIt();
