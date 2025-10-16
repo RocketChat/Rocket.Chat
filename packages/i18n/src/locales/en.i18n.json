@@ -5594,7 +5594,7 @@
   "Username_has_been_updated": "Username has been updated",
   "Username_invalid": "<strong>%s</strong> is not a valid username,<br/> use only letters, numbers, dots, hyphens and underscores",
   "Username_is_already_in_here": "`@%s` is already in here.",
-  "Username_name_email": "Username, name or e-mail",
+  "Username_name_email": "Username, name or email",
   "Username_title": "Register username",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "{{username}} wants to start OTR. Do you want to accept?",
   "Users": "Users",
