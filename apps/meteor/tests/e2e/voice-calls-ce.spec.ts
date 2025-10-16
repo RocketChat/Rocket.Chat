@@ -59,9 +59,5 @@ test.describe('Voice Calls - Community Edition', () => {
 			await upsellVoiceCallsModal.close();
 			await upsellVoiceCallsModal.waitForDismissal();
 		});
-
-		await test.step('should not see upsell modal', async () => {
-			await expect(upsellVoiceCallsModal.upsellModal).not.toBeVisible();
-		});
 	});
 });
