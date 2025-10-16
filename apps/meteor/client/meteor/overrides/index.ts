@@ -1,6 +1,6 @@
 import './ddpOverREST';
 import './totpOnCall';
-import './oauthRedirectUri';
+// import './oauthRedirectUri';
 import './unstoreLoginToken';
 import './userAndUsers';
 import './login/cas';
