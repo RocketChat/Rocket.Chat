@@ -1,8 +1,15 @@
 import fs from 'fs/promises';
+import { resolve, join, relative } from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
 import { expect } from '../../utils/test';
+
+const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
+
+export function getFilePath(fileName: string): string {
+	return join(FIXTURES_PATH, fileName);
+}
 
 export class HomeContent {
 	protected readonly page: Page;
@@ -379,7 +386,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropTxtFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -395,7 +402,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropLstFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'lst-test.lst', {
@@ -411,7 +418,7 @@ export class HomeContent {
 	}
 
 	async dragAndDropTxtFileToThread(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -427,7 +434,7 @@ export class HomeContent {
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
+		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
 	}
 
 	async openLastMessageMenu(): Promise<void> {
