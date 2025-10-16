@@ -6,7 +6,6 @@ import * as Pbkdf2 from './pbkdf2';
 
 export type Serialized<T> = T extends BufferSource ? string : { [K in keyof T]: Serialized<T[K]> };
 
-
 /**
  * Version 1 format:
  * ```
@@ -71,12 +70,12 @@ const StoredKey: Codec<string, StoredKey> = {
 type EncryptedKeyContent = {
 	iv: Uint8Array<ArrayBuffer>;
 	ciphertext: Uint8Array<ArrayBuffer>;
-}
+};
 
 type EncryptedKeyOptions = {
 	salt: string;
 	iterations: number;
-}
+};
 
 type EncryptedKey = {
 	content: EncryptedKeyContent;

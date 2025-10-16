@@ -6,13 +6,13 @@ Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
 
 /**
  * Calculates the length of a base64-encoded string given the length of the original byte array.
- * 
+ *
  * @param byteLength The length of the byte array to be encoded.
  * @returns The length of the resulting base64-encoded string.
  */
 const base64Length = (byteLength: number) => {
-	return ((4 * byteLength / 3) + 3) & ~3
-}
+	return ((4 * byteLength) / 3 + 3) & ~3;
+};
 
 const pwdv1web = {
 	userId: 'userE2EE',
