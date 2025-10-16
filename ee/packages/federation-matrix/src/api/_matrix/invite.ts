@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/federation-sdk';
 import { eventIdSchema, roomIdSchema, NotAllowedError } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -323,10 +324,25 @@ export const acceptInvite = async (
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	const { invite, state, room, federationAuth } = services;
 
+	const logger = new Logger('matrix-invite');
+
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
+			body: ajv.compile({
+				type: 'object',
+				properties: {
+					event: RoomMemberEventSchema,
+					room_version: {
+						type: 'string',
+					},
+					invite_room_state: {
+						type: 'array',
+						items: EventBaseSchema,
+					},
+				},
+				required: ['event', 'room_version'],
+			}), // TODO: add schema from room package.
 			params: isProcessInviteParamsProps,
 			response: {
 				200: isProcessInviteResponseProps,
@@ -337,12 +353,22 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 		isAuthenticatedMiddleware(federationAuth),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion } = await c.req.json();
+			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
 
 			const userToCheck = event.state_key as string;
 
 			if (!userToCheck) {
 				throw new Error('join event has missing state key, unable to determine user to join');
+			}
+
+			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+				return {
+					body: {
+						errcode: 'M_MISSING_PARAM',
+						error: 'Missing invite_room_state: m.room.create event is required',
+					},
+					statusCode: 400,
+				};
 			}
 
 			const [username /* domain */] = userToCheck.split(':');
@@ -362,6 +388,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 					eventIdSchema.parse(eventId),
 					roomVersion,
 					c.get('authenticatedServer'),
+					strippedStateEvents,
 				);
 
 				setTimeout(
@@ -392,6 +419,8 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 						statusCode: 403,
 					};
 				}
+
+				logger.error({ msg: 'Error processing invite', err: error });
 
 				return {
 					body: {
