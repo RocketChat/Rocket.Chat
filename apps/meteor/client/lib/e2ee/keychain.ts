@@ -23,8 +23,8 @@ interface IStoredKeyV1 {
 
 /**
  * Version 2 format:
- * ```
- * { iv: base64(iv[12]), ciphertext: base64(data[...]), salt: string(), iterations: number() }
+ * ```typescript
+ * json({ iv: base64(iv[12]), ciphertext: base64(data[...]), salt: string(), iterations: number() })
  * ```
  */
 interface IStoredKeyV2 {
