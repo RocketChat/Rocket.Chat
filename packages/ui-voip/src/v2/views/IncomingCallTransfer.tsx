@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaCallContext } from '../MediaCallContext';
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, WidgetInfo } from '../components';
 
-const IncomingCall = () => {
+const IncomingCallTransfer = () => {
 	const { t } = useTranslation();
 
 	const { onEndCall, onAccept, peerInfo, transferredBy } = useMediaCallContext();
@@ -19,7 +19,7 @@ const IncomingCall = () => {
 			<WidgetHeader title={`${t('Transferring_call_incoming')}...`}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetInfo slots={[{ text: t('Transferring_call_incoming__from_', { from: transferredBy }), type: 'info' }]} />
+			{transferredBy && <WidgetInfo slots={[{ text: t('Transferring_call_incoming__from_', { from: transferredBy }), type: 'info' }]} />}
 			<WidgetContent>
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
@@ -37,4 +37,4 @@ const IncomingCall = () => {
 	);
 };
 
-export default IncomingCall;
+export default IncomingCallTransfer;

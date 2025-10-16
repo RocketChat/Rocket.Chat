@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaCallContext } from '../MediaCallContext';
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../components';
 
-const OutgoingCall = () => {
+const OutgoingCallTransfer = () => {
 	const { t } = useTranslation();
 
 	const { onEndCall, peerInfo, connectionState, transferredBy } = useMediaCallContext();
@@ -21,7 +21,7 @@ const OutgoingCall = () => {
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : `${t('Transferring_call')}...`}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetInfo slots={[{ text: t('Transferred_call__from__to', { from: transferredBy }), type: 'info' }]} />
+			{transferredBy && <WidgetInfo slots={[{ text: t('Transferred_call__from__to', { from: transferredBy }), type: 'info' }]} />}
 			<WidgetContent>
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
@@ -36,4 +36,4 @@ const OutgoingCall = () => {
 	);
 };
 
-export default OutgoingCall;
+export default OutgoingCallTransfer;
