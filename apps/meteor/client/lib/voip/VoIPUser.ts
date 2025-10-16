@@ -19,7 +19,7 @@ import type {
 	IState,
 	VoipEvents,
 } from '@rocket.chat/core-typings';
-import { Operation, VoIPUserState, WorkflowTypes } from '@rocket.chat/core-typings';
+import { Operation, UserState, WorkflowTypes } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { UserAgentOptions, InvitationAcceptOptions, Session, SessionInviteOptions } from 'sip.js';
 import { UserAgent, Invitation, SessionState, Registerer, RequestPendingError, Inviter } from 'sip.js';
@@ -79,7 +79,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	protected _callerInfo: ICallerInfo | undefined;
 
-	protected _userState: VoIPUserState = VoIPUserState.IDLE;
+	protected _userState: UserState = UserState.IDLE;
 
 	protected _opInProgress: Operation = Operation.OP_NONE;
 
@@ -87,7 +87,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		return this._opInProgress;
 	}
 
-	get userState(): VoIPUserState | undefined {
+	get userState(): UserState | undefined {
 		return this._userState;
 	}
 
@@ -298,7 +298,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (this.callState === 'REGISTERED') {
 			this._opInProgress = Operation.OP_PROCESS_INVITE;
 			this._callState = 'OFFER_RECEIVED';
-			this._userState = VoIPUserState.UAS;
+			this._userState = UserState.UAS;
 			this.session = invitation;
 			this.setupSessionEventHandlers(invitation);
 			const callerInfo: ICallerInfo = {
@@ -338,7 +338,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 					this.emit('ringing', { userState: this._userState, callInfo: this._callerInfo });
 					break;
 				case SessionState.Established:
-					if (this._userState === VoIPUserState.UAC) {
+					if (this._userState === UserState.UAC) {
 						/**
 						 * We need to decide about user-state ANSWER-RECEIVED for outbound.
 						 * This state is there for the symmetry of ANSWER-SENT.
@@ -369,7 +369,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 					this.session = undefined;
 					this._callState = 'REGISTERED';
 					this._opInProgress = Operation.OP_NONE;
-					this._userState = VoIPUserState.IDLE;
+					this._userState = UserState.IDLE;
 					this.emit('callterminated');
 					this.remoteStream?.clear();
 					this.emit('stateChanged');

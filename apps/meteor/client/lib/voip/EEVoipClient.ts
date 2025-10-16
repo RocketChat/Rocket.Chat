@@ -1,5 +1,5 @@
 import type { ICallerInfo, IMediaStreamRenderer, VoIPUserConfiguration } from '@rocket.chat/core-typings';
-import { Operation, VoIPUserState } from '@rocket.chat/core-typings';
+import { Operation, UserState } from '@rocket.chat/core-typings';
 import { Inviter, UserAgent } from 'sip.js';
 import type { IncomingResponse } from 'sip.js/lib/core';
 
@@ -58,7 +58,7 @@ export class EEVoipClient extends VoIPUser {
 			host: inviter.remoteIdentity.uri.host,
 		};
 		this._callerInfo = callerInfo;
-		this._userState = VoIPUserState.UAC;
+		this._userState = UserState.UAC;
 		this.emit('stateChanged');
 	}
 
