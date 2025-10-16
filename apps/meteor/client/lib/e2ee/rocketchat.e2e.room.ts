@@ -16,10 +16,10 @@ import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
 import * as Aes from './aes';
-import { decodePrefixedBase64, encodePrefixedBase64 } from './codec';
+import { Binary } from './binary';
+import { PrefixedBase64 } from './codec';
 import { decodeEncryptedContent } from './content';
 import {
-	toString,
 	toArrayBuffer,
 	readFileAsArrayBuffer,
 	encryptAESCTR,
@@ -365,7 +365,7 @@ export class E2ERoom extends Emitter {
 
 	async exportSessionKey(key: string) {
 		const span = log.span('exportSessionKey');
-		const [prefix, decodedKey] = decodePrefixedBase64(key);
+		const [prefix, decodedKey] = PrefixedBase64.decode(key);
 
 		span.set('prefix', prefix);
 
@@ -376,12 +376,12 @@ export class E2ERoom extends Emitter {
 
 		const decryptedKey = await Rsa.decrypt(e2e.privateKey, decodedKey);
 		span.info('Key decrypted');
-		return toString(decryptedKey);
+		return Binary.toString(decryptedKey.buffer);
 	}
 
 	async importGroupKey(groupKey: string) {
 		const span = log.span('importGroupKey');
-		const [kid, decodedKey] = decodePrefixedBase64(groupKey);
+		const [kid, decodedKey] = PrefixedBase64.decode(groupKey);
 
 		span.set('kid', kid);
 
@@ -396,7 +396,7 @@ export class E2ERoom extends Emitter {
 				throw new Error('Private key not found');
 			}
 			const decryptedKey = await Rsa.decrypt(e2e.privateKey, decodedKey);
-			this.sessionKeyExportedString = toString(decryptedKey);
+			this.sessionKeyExportedString = Binary.toString(decryptedKey.buffer);
 		} catch (error) {
 			span.set('error', error).error('Error decrypting group key');
 			return false;
@@ -549,8 +549,8 @@ export class E2ERoom extends Emitter {
 				if (!oldRoomKey.E2EKey) {
 					continue;
 				}
-				const encryptedKey = await Rsa.encrypt(userKey, toArrayBuffer(oldRoomKey.E2EKey));
-				const encryptedKeyToString = encodePrefixedBase64(oldRoomKey.e2eKeyId, encryptedKey);
+				const encryptedKey = await Rsa.encrypt(userKey, Binary.toArrayBuffer(oldRoomKey.E2EKey));
+				const encryptedKeyToString = PrefixedBase64.encode([oldRoomKey.e2eKeyId, encryptedKey]);
 
 				keys.push({ ...oldRoomKey, E2EKey: encryptedKeyToString });
 			}
@@ -571,8 +571,8 @@ export class E2ERoom extends Emitter {
 
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await Rsa.encrypt(userKey, toArrayBuffer(this.sessionKeyExportedString));
-			const encryptedUserKeyToString = encodePrefixedBase64(this.keyID, encryptedUserKey);
+			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.toArrayBuffer(this.sessionKeyExportedString!));
+			const encryptedUserKeyToString = PrefixedBase64.encode([this.keyID, encryptedUserKey]);
 			span.info('Group key encrypted for participant');
 			return encryptedUserKeyToString;
 		} catch (error) {
