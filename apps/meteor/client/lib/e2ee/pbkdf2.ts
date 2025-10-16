@@ -14,7 +14,7 @@ type Narrow<T, U extends { [P in keyof T]?: T[P] }> = {
 
 export type BaseKey = Narrow<
 	CryptoKey,
-	{ algorithm: Narrow<KeyAlgorithm, { name: 'PBKDF2' }>; extractable: false; type: 'secret'; usages: ['deriveBits'] }
+	{ algorithm: Narrow<KeyAlgorithm, { readonly name: 'PBKDF2' }>; extractable: false; type: 'secret'; usages: ['deriveBits'] }
 >;
 
 export const importBaseKey = async (keyData: Uint8Array<ArrayBuffer>): Promise<BaseKey> => {
