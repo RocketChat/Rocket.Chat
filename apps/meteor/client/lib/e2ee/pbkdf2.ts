@@ -73,7 +73,7 @@ export const decrypt = async (key: DerivedKey, content: EncryptedContent): Promi
 	return new Uint8Array(decrypted);
 };
 
-export const encrypt = async (key: DerivedKey, data: Uint8Array<ArrayBuffer>): Promise<EncryptedContent> => {
+export const encrypt = async (key: DerivedKey<'AES-GCM'>, data: Uint8Array<ArrayBuffer>): Promise<EncryptedContent> => {
 	// Always use AES-GCM for new data
 	const iv = crypto.getRandomValues(new Uint8Array(12));
 	const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv } satisfies AesGcmParams, key, data);
