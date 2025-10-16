@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ABACHeaderTag should render the ABAC tag when room has ABAC attributes 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1kopyx3"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+        title="Only compliant users have access to attribute-based access controlled rooms."
+      >
+        <span
+          class="rcx-tag__inner"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-12a8uky"
+          >
+            ABAC
+          </div>
+        </span>
+      </span>
+    </div>
+  </div>
+</body>
+`;
