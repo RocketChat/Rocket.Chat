@@ -18,7 +18,7 @@ type ThreadListItemProps = {
 };
 
 const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps): ReactElement => {
-	const uid = useUserId() ?? undefined;
+	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
 	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
 

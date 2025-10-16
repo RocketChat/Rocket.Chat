@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyGuestStatusChanged } from '../lib/guests';
 
 declare module '@rocket.chat/ddp-client' {
@@ -24,6 +25,7 @@ declare module 'meteor/meteor' {
 
 Meteor.methods<ServerMethods>({
 	'livechat:setUpConnection'(data) {
+		methodDeprecationLogger.method('livechat:setUpConnection', '8.0.0', 'This functionality is no longer supported');
 		check(data, {
 			token: String,
 		});

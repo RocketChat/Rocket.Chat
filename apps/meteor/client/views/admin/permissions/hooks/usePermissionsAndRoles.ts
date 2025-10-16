@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/shallow';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
-import { pipe } from '../../../../lib/cachedStores';
+import { pipe } from '../../../../lib/cachedStores/pipe';
 import { Permissions, Roles } from '../../../../stores';
 
 export const usePermissionsAndRoles = (
