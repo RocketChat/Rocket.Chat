@@ -6,6 +6,6 @@ addMigration({
 	version: 324,
 	name: 'Remove Log_View_Limit setting',
 	async up() {
-		await Promise.all([Settings.deleteOne({ _id: 'Log_View_Limit' })]);
+		await Settings.deleteOne({ _id: 'Log_View_Limit' });
 	},
 });
