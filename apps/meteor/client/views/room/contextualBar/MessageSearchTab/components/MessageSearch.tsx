@@ -38,7 +38,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 			{messageSearchQuery.data && (
 				<>
 					{messageSearchQuery.data.length === 0 && (
-						<Box is='section' aria-live='assertive' aria-atomic='true' tabindex={-1}
+						<Box is='section' aria-live='assertive' aria-atomic='true' tabIndex={-1}
 							key={`no-results-${messageSearchQuery.data.length}`}
 							aria-label={t('Search_Messages_Count', { count: messageSearchQuery.data.length })}
 						>
