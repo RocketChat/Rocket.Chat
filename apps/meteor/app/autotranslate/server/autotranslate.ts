@@ -82,22 +82,28 @@ export class TranslationProviderRegistry {
 		return languages;
 	}
 
-	static getBCP47FromLanguageCode(language: string): any {
-		if (!language) return null;
-		const normalized = language.replace('_', '-');
+	static getBCP47FromLanguageCode(language: string): string | undefined {
+		if (!language) {
+			return undefined;
+		}
 
-		if (bcp47Mapping[normalized]) return bcp47Mapping[normalized];
+		const normalized = language.trim().replace(/_/g, '-');
+		const lowerCased = normalized.toLowerCase();
+
+		const mapped = bcp47Mapping[normalized] ?? bcp47Mapping[lowerCased];
+		if (mapped) {
+			return mapped;
+		}
 
 		if (normalized.includes('-')) {
 			try {
 				return new Intl.Locale(normalized).toString();
 			} catch {
-				return normalized;
+				return undefined;
 			}
 		}
 
-		if (ISO6391.validate(normalized)) return normalized;
-		return null;
+		return ISO6391.validate(lowerCased) ? lowerCased : undefined;
 	}
 
 	static async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
