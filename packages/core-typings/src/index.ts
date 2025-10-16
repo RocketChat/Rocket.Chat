@@ -19,7 +19,6 @@ export * from './RoomType';
 export * from './IInvite';
 export * from './IRocketChatRecord';
 export * from './UserStatus';
-export * from './UserState';
 export * from './IUserAction';
 export * from './IBanner';
 export * from './IStats';

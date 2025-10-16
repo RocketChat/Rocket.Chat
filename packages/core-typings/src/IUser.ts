@@ -1,7 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
-import { UserState } from './UserState';
 import type { UserStatus } from './UserStatus';
 
 export interface ILoginToken {
@@ -184,6 +183,9 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
+//
+
+export type IUserState = 'pending_approval' | 'active' | 'deactivated' | 'inactive';
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
@@ -253,34 +255,8 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
-	state?: UserState;
+	// state: IUserState;
 }
-
-export interface IActiveUser extends IUser {
-	state: UserState.ACTIVE;
-}
-export interface IDeactivatedUser extends IUser {
-	state: UserState.DEACTIVATED;
-}
-
-export interface IInactiveUser extends IUser {
-	state: UserState.INACTIVE;
-}
-
-export interface IPendingApprovalUser extends IUser {
-	state: UserState.PENDING_APPROVAL;
-}
-
-export const isUserActive = (user: Partial<IUser> | Partial<Serialized<IUser>>): user is IActiveUser => user.state === UserState.ACTIVE;
-
-export const isUserDeactivated = (user: Partial<IUser> | Partial<Serialized<IUser>>): user is IDeactivatedUser =>
-	user.state === UserState.DEACTIVATED;
-
-export const isUserInactive = (user: Partial<IUser> | Partial<Serialized<IUser>>): user is IInactiveUser =>
-	user.state === UserState.INACTIVE;
-
-export const isUserPendingApproval = (user: Partial<IUser> | Partial<Serialized<IUser>>): user is IPendingApprovalUser =>
-	user.state === UserState.PENDING_APPROVAL;
 
 export interface IRegisterUser extends IUser {
 	username: string;
