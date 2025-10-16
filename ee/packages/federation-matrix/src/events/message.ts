@@ -224,6 +224,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					msg: formatted,
 					federation_event_id: data.event_id,
 					thread,
+					ts: new Date(data.origin_server_ts),
 				});
 				return;
 			}
@@ -241,7 +242,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					data.event_id,
 					thread,
 				);
-				await Message.saveMessageFromFederation(result);
+				await Message.saveMessageFromFederation({ ...result, ts: new Date(data.origin_server_ts) });
 			} else {
 				const formatted = toInternalMessageFormat({
 					rawMessage: messageBody,
@@ -255,6 +256,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					msg: formatted,
 					federation_event_id: data.event_id,
 					thread,
+					ts: new Date(data.origin_server_ts),
 				});
 			}
 		} catch (error) {
@@ -357,6 +359,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					},
 					federation_event_id: data.event_id,
 					thread,
+					ts: new Date(data.origin_server_ts),
 				});
 				return;
 			}
@@ -370,6 +373,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				},
 				federation_event_id: data.event_id,
 				thread,
+				ts: new Date(data.origin_server_ts),
 			});
 		} catch (error) {
 			logger.error(error, 'Error processing Matrix message:');
