@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds a user bridge method to apps engine so apps can retrieve the room ids the user is part of. 
+Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
