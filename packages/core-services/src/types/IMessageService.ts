@@ -19,7 +19,6 @@ export interface IMessageService {
 		files,
 		attachments,
 		thread,
-		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -33,7 +32,6 @@ export interface IMessageService {
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
-		ts: Date;
 	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
