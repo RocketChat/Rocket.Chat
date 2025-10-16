@@ -97,106 +97,40 @@ class DeeplAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		this.supportedLanguages[target] = [
-			{
-				language: 'bg',
-				name: i18n.t('Language_Bulgarian', { lng: target }),
-			},
-			{
-				language: 'cs',
-				name: i18n.t('Language_Czech', { lng: target }),
-			},
-			{
-				language: 'da',
-				name: i18n.t('Language_Danish', { lng: target }),
-			},
-			{
-				language: 'de',
-				name: i18n.t('Language_German', { lng: target }),
-			},
-			{
-				language: 'el',
-				name: i18n.t('Language_Greek', { lng: target }),
-			},
-			{
-				language: 'en',
-				name: i18n.t('Language_English', { lng: target }),
-			},
-			{
-				language: 'es',
-				name: i18n.t('Language_Spanish', { lng: target }),
-			},
-			{
-				language: 'et',
-				name: i18n.t('Language_Estonian', { lng: target }),
-			},
-			{
-				language: 'fi',
-				name: i18n.t('Language_Finnish', { lng: target }),
-			},
-			{
-				language: 'fr',
-				name: i18n.t('Language_French', { lng: target }),
-			},
-			{
-				language: 'hu',
-				name: i18n.t('Language_Hungarian', { lng: target }),
-			},
-			{
-				language: 'it',
-				name: i18n.t('Language_Italian', { lng: target }),
-			},
-			{
-				language: 'ja',
-				name: i18n.t('Language_Japanese', { lng: target }),
-			},
-			{
-				language: 'lt',
-				name: i18n.t('Language_Lithuanian', { lng: target }),
-			},
-			{
-				language: 'lv',
-				name: i18n.t('Language_Latvian', { lng: target }),
-			},
-			{
-				language: 'nl',
-				name: i18n.t('Language_Dutch', { lng: target }),
-			},
-			{
-				language: 'pl',
-				name: i18n.t('Language_Polish', { lng: target }),
-			},
-			{
-				language: 'pt',
-				name: i18n.t('Language_Portuguese', { lng: target }),
-			},
-			{
-				language: 'ro',
-				name: i18n.t('Language_Romanian', { lng: target }),
-			},
-			{
-				language: 'ru',
-				name: i18n.t('Language_Russian', { lng: target }),
-			},
-			{
-				language: 'sk',
-				name: i18n.t('Language_Slovak', { lng: target }),
-			},
-			{
-				language: 'sl',
-				name: i18n.t('Language_Slovenian', { lng: target }),
-			},
-			{
-				language: 'sv',
-				name: i18n.t('Language_Swedish', { lng: target }),
-			},
-			{
-				language: 'zh',
-				name: i18n.t('Language_Chinese', { lng: target }),
-			},
-		];
+		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
-		return this.supportedLanguages[target];
+		try {
+			const request = await fetch(`https://api.deepl.com/v2/languages?type=target`, {
+				headers: {
+					Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+				},
+			});
+			if (!request.ok) {
+				throw new Error('Failed to fetch supported languages');
+			}
+
+			result = (await request.json()) as typeof result;
+		} catch (e: any) {
+			// Fallback: Maybe the key is free api key
+			const request = await fetch(`https://api-free.deepl.com/v2/languages?type=target`, {
+				headers: {
+					Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+				},
+			});
+			if (!request.ok) {
+				throw new Error('Failed to fetch supported languages');
+			}
+			result = (await request.json()) as typeof result;
+		}
+
+		if (this.supportedLanguages[target]) {
+			return this.supportedLanguages[target];
+		}
+		this.supportedLanguages[target || 'en'] = result.map(({ language, ...other }) => ({
+			...other,
+			language: new Intl.Locale(language).toString(),
+		}));
+		return this.supportedLanguages[target || 'en'];
 	}
 
 	/**
