@@ -73,6 +73,9 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
+			/**
+			 * TODO: We shouldn't use UserCard components outside UserCard
+			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,

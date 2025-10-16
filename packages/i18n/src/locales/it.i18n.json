@@ -2800,7 +2800,7 @@
   "Username_has_been_updated": "Il nome utente è stato aggiornato",
   "Username_invalid": "<strong>%s</strong> non è un nome utente valido, <br/> usa solo lettere, numeri, punti, trattini e underscore.",
   "Username_is_already_in_here": "`@%s` è già qui.",
-  "Username_name_email": "Nome utente, nome o e-mail",
+  "Username_name_email": "Nome utente, nome o email",
   "Username_title": "Registra nome utente",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "{{username}} vuole iniziare OTR. Vuoi accettare?",
   "Users": "Utenti",
