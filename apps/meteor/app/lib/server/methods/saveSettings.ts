@@ -11,6 +11,7 @@ import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
+import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -39,32 +40,6 @@ const checkInteger = (value: ISetting['value']) => {
 		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${value}`, {
 			method: 'saveSettings',
 		});
-	}
-};
-
-const hasNumericBounds = (setting: ISetting): setting is ISetting & { minValue?: number; maxValue?: number } => {
-	return setting.type === 'int' || setting.type === 'range';
-};
-
-const checkSettingValueBounds = (setting: ISetting, value: number): void => {
-	if (!hasNumericBounds(setting)) {
-		return;
-	}
-
-	if (typeof setting.minValue === 'number' && value < setting.minValue) {
-		throw new Meteor.Error(
-			'error-invalid-setting-value',
-			`Value for setting ${setting._id} must be greater than or equal to ${setting.minValue}`,
-			{ method: 'saveSettings' },
-		);
-	}
-
-	if (typeof setting.maxValue === 'number' && value > setting.maxValue) {
-		throw new Meteor.Error(
-			'error-invalid-setting-value',
-			`Value for setting ${setting._id} must be less than or equal to ${setting.maxValue}`,
-			{ method: 'saveSettings' },
-		);
 	}
 };
 
