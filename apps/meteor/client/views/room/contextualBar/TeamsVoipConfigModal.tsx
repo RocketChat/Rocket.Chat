@@ -15,7 +15,8 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useId, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
