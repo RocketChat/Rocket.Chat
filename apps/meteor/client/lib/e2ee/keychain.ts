@@ -4,12 +4,13 @@ import { Binary } from './binary';
 import type { Codec } from './codec';
 import * as Pbkdf2 from './pbkdf2';
 
-const generateSalt = (userId: string): string => `v2:${userId}:${crypto.randomUUID()}`;
+export type Serialized<T> = T extends BufferSource ? string : { [K in keyof T]: Serialized<T[K]> };
+
 
 /**
  * Version 1 format:
  * ```
- * { $binary: base64(iv[16] + ciphertext) }
+ * json({ $binary: base64(iv[16] + ciphertext) })
  * ```
  */
 interface IStoredKeyV1 {
@@ -145,8 +146,8 @@ export class Keychain {
 		return Binary.toString(decrypted.buffer);
 	}
 
-	async encryptKey(privateKey: string, password: string): Promise<StoredKey> {
-		const salt = generateSalt(this.userId);
+	async encryptKey(privateKey: string, password: string): Promise<IStoredKeyV2> {
+		const salt = `v2:${this.userId}:${crypto.randomUUID()}`;
 		const iterations = 100_000;
 		const algorithm = 'AES-GCM';
 		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.toArrayBuffer(password)));
