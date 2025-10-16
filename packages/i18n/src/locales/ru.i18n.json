@@ -4047,7 +4047,6 @@
   "User__username__removed_from__room_name__moderators": "Пользователь {{username}} удален из модераторов {{room_name}}",
   "User__username__removed_from__room_name__owners": "Пользователь {{username}} удален из владельцев {{room_name}}",
   "User__username__unmuted_in_room__roomName__": "Пользователь {{username}} перестал быть заглушенным в чате {{roomName}}",
-  "User_added": "Пользователь {{user_added}} добавлен.",
   "User_added_by": "Пользователь {{user_added}} добавлен {{user_by}}.",
   "User_added_successfully": "Пользователь успешно добавлен",
   "User_and_group_mentions_only": "Только упоминания пользователей и групп",

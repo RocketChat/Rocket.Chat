@@ -2752,7 +2752,7 @@
   "User__username__removed_from__room_name__leaders": "Utente {{username}} rimosso dai leader {{room_name}}",
   "User__username__removed_from__room_name__moderators": "L'Utente {{username}}rimosso dai moderatori {{room_name}}",
   "User__username__removed_from__room_name__owners": "L'Utente {{username}}rimosso dai proprietari {{room_name}}",
-  "User_added": "Utente {{user_added}} aggiunto.",
+  "User_added": "Utente aggiunto",
   "User_added_by": "Utente {{user_added}} aggiunto da {{user_by}}.",
   "User_added_successfully": "Utente aggiunto correttamente",
   "User_and_group_mentions_only": "Solo utenti e gruppi menzionano",
