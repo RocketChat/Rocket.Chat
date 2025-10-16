@@ -303,10 +303,6 @@ export class HomeContent {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
 
-	get modalUpsellVoiceCalls(): Locator {
-		return this.page.getByRole('heading', { name: 'Team voice calls' });
-	}
-
 	get btnRecordAudio(): Locator {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}

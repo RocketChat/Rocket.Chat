@@ -15,7 +15,7 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useId, type ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -31,6 +31,7 @@ type TeamsVoipConfigModalProps = {
 const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsVoipConfigModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const openExternalLink = useExternalLink();
+	const teamsVoipConfigModalId = useId();
 
 	const getCalloutWarning = () => {
 		if (isAdmin && !hasModule) {
@@ -45,11 +46,11 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 	};
 
 	return (
-		<Modal>
+		<Modal aria-labelledby={`${teamsVoipConfigModalId}-title`}>
 			<ModalHeader>
 				<ModalHeaderText>
 					<ModalTagline>{t('VoIP')}</ModalTagline>
-					<ModalTitle>{t('Team_voice_call')}</ModalTitle>
+					<ModalTitle id={`${teamsVoipConfigModalId}-title`}>{t('Team_voice_call')}</ModalTitle>
 				</ModalHeaderText>
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>

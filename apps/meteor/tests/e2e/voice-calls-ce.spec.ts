@@ -1,5 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { UpsellVoiceCallsModal } from './page-objects/fragments/upsell-modal';
 import { createDirectMessage } from './utils';
 import { expect, test } from './utils/test';
 
@@ -7,6 +8,7 @@ test.use({ storageState: Users.user1.state });
 
 test.describe('Voice Calls - Community Edition', () => {
 	let poHomeChannel: HomeChannel;
+	let upsellVoiceCallsModal: UpsellVoiceCallsModal;
 
 	test.beforeAll(async ({ api }) => {
 		await createDirectMessage(api);
@@ -14,6 +16,7 @@ test.describe('Voice Calls - Community Edition', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		upsellVoiceCallsModal = new UpsellVoiceCallsModal(page);
 		await page.goto('/home');
 	});
 
@@ -25,7 +28,7 @@ test.describe('Voice Calls - Community Edition', () => {
 
 		await test.step('should click voice call from room toolbar and see upsell modal', async () => {
 			await poHomeChannel.content.btnVoiceCall.click();
-			await expect(poHomeChannel.content.modalUpsellVoiceCalls).toBeVisible();
+			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
 		});
 	});
 
@@ -38,7 +41,7 @@ test.describe('Voice Calls - Community Edition', () => {
 		await test.step('should click voice call from contact information and see upsell modal', async () => {
 			await poHomeChannel.content.btnContactInformation.click();
 			await poHomeChannel.content.btnContactInfoVoiceCall.click();
-			await expect(poHomeChannel.content.modalUpsellVoiceCalls).toBeVisible();
+			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
 		});
 	});
 
@@ -49,7 +52,16 @@ test.describe('Voice Calls - Community Edition', () => {
 		});
 
 		await test.step('should see upsell modal', async () => {
-			await expect(poHomeChannel.content.modalUpsellVoiceCalls).toBeVisible();
+			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
+		});
+
+		await test.step('should close upsell modal', async () => {
+			await upsellVoiceCallsModal.close();
+			await upsellVoiceCallsModal.waitForDismissal();
+		});
+
+		await test.step('should not see upsell modal', async () => {
+			await expect(upsellVoiceCallsModal.upsellModal).not.toBeVisible();
 		});
 	});
 });
