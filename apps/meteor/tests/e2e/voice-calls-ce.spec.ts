@@ -1,7 +1,7 @@
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { UpsellVoiceCallsModal } from './page-objects/fragments/upsell-modal';
+import { VoiceCallsUpsellModal } from './page-objects/fragments/upsell-modal';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -9,11 +9,11 @@ test.use({ storageState: Users.user1.state });
 test.describe('Voice Calls - Community Edition', () => {
 	test.skip(IS_EE, 'Community Edition Only');
 	let poHomeChannel: HomeChannel;
-	let upsellVoiceCallsModal: UpsellVoiceCallsModal;
+	let upsellVoiceCallsModal: VoiceCallsUpsellModal;
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		upsellVoiceCallsModal = new UpsellVoiceCallsModal(page);
+		upsellVoiceCallsModal = new VoiceCallsUpsellModal(page);
 		await page.goto('/home');
 	});
 
@@ -25,7 +25,7 @@ test.describe('Voice Calls - Community Edition', () => {
 
 		await test.step('should click voice call from room toolbar and see upsell modal', async () => {
 			await poHomeChannel.content.btnVoiceCall.click();
-			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
+			await upsellVoiceCallsModal.waitForDisplay();
 		});
 	});
 
@@ -38,7 +38,7 @@ test.describe('Voice Calls - Community Edition', () => {
 		await test.step('should click voice call from contact information and see upsell modal', async () => {
 			await poHomeChannel.content.btnContactInformation.click();
 			await poHomeChannel.content.btnContactInfoVoiceCall.click();
-			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
+			await upsellVoiceCallsModal.waitForDisplay();
 		});
 	});
 
@@ -49,12 +49,11 @@ test.describe('Voice Calls - Community Edition', () => {
 		});
 
 		await test.step('should see upsell modal', async () => {
-			await expect(upsellVoiceCallsModal.upsellModal).toBeVisible();
+			await upsellVoiceCallsModal.waitForDisplay();
 		});
 
 		await test.step('should close upsell modal', async () => {
 			await upsellVoiceCallsModal.close();
-			await upsellVoiceCallsModal.waitForDismissal();
 		});
 	});
 });
