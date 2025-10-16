@@ -8,24 +8,26 @@ export type EncryptedContent = {
 	ciphertext: Uint8Array<ArrayBuffer>;
 };
 
-export type BaseKey = CryptoKey & { algorithm: { name: 'PBKDF2' }; extractable: false; type: 'secret'; usages: ['deriveBits'] };
+type Narrow<T, U extends { [P in keyof T]?: T[P] }> = {
+	[P in keyof T]: P extends keyof U ? U[P] : T[P];
+};
+
+export type BaseKey = Narrow<
+	CryptoKey,
+	{ algorithm: Narrow<KeyAlgorithm, { name: 'PBKDF2' }>; extractable: false; type: 'secret'; usages: ['deriveBits'] }
+>;
 
 export const importBaseKey = async (keyData: Uint8Array<ArrayBuffer>): Promise<BaseKey> => {
 	const baseKey = await crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, ['deriveBits']);
 	return baseKey as BaseKey;
 };
 
-type Narrow<T, U extends { [P in keyof T]?: T[P] }> = {
-	[P in keyof T]: P extends keyof U ? U[P] : T[P];
-};
+type Throws<F> = F extends (...args: infer TArgs) => infer TRet ? (...args: TArgs) => TRet & never : never;
 
 type FixedSizeArrayBuffer<N extends number> = Narrow<
 	ArrayBuffer,
 	{
-		// transferToFixedLength: never;
-		// resize: never;
-		// slice: never;
-		// transfer: never;
+		resize: Throws<ArrayBuffer['resize']>;
 		readonly byteLength: N;
 		get maxByteLength(): N;
 		get resizable(): false;
@@ -44,20 +46,22 @@ export const deriveBits = async (key: BaseKey, options: Options): Promise<Derive
 	return bits as DerivedBits;
 };
 
-export type DerivedKey = Narrow<
+export type DerivedKeyAlgorithmName = 'AES-CBC' | 'AES-GCM';
+
+export type DerivedKey<T extends DerivedKeyAlgorithmName = DerivedKeyAlgorithmName> = Narrow<
 	CryptoKey,
 	{
-		readonly algorithm: Narrow<AesKeyAlgorithm, { length: 256; name: 'AES-CBC' | 'AES-GCM' }>;
+		readonly algorithm: Narrow<AesKeyAlgorithm, { length: 256; name: T }>;
 		readonly extractable: false;
 		readonly type: 'secret';
-		readonly usages: ['decrypt'] | ['encrypt', 'decrypt'] | ['decrypt', 'encrypt'];
+		readonly usages: T extends 'AES-CBC' ? ['decrypt'] : ['encrypt', 'decrypt'];
 	}
 >;
 
-export const importKey = async (derivedBits: DerivedBits, algorithm: 'AES-CBC' | 'AES-GCM'): Promise<DerivedKey> => {
+export const importKey = async <T extends DerivedKeyAlgorithmName>(derivedBits: DerivedBits, algorithm: T): Promise<DerivedKey<T>> => {
 	const usages: ['decrypt'] | ['encrypt', 'decrypt'] = algorithm === 'AES-CBC' ? ['decrypt'] : ['encrypt', 'decrypt'];
 	const key = await crypto.subtle.importKey('raw', derivedBits, { name: algorithm, length: 256 } satisfies AesKeyGenParams, false, usages);
-	return key as DerivedKey;
+	return key as DerivedKey<T>;
 };
 
 export const decrypt = async (key: DerivedKey, content: EncryptedContent): Promise<Uint8Array<ArrayBuffer>> => {
