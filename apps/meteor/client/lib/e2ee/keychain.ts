@@ -13,6 +13,11 @@ const generateSalt = (userId: string): string => `v2:${userId}:${crypto.randomUU
  * ```
  */
 interface IStoredKeyV1 {
+	/**
+	 * Base64-encoded binary data
+	 * - first 16 bytes are the IV
+	 * - remaining bytes are the ciphertext
+	 */
 	$binary: string;
 }
 
