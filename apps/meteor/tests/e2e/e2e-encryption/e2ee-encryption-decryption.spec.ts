@@ -148,7 +148,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 	});
 
-	describe('E2EE Quotes', () => {
+	test.describe('E2EE Quotes', () => {
 		let targetRoomId: string;
 		let targetChannelName: string;
 
