@@ -2516,7 +2516,6 @@
   "Log_Trace_Subscriptions": "Śledź połączenia subskrypcji",
   "Log_Trace_Subscriptions_Filter": "Śledź filtr subskrypcji",
   "Log_Trace_Subscriptions_Filter_Description": "Tekst tutaj zostanie oceniony jako RegExp (`new RegExp ('text')`). Pozostaw to puste, aby pokazać ślad każdego połączenia.",
-  "Log_View_Limit": "Limit przeglądania logów",
   "Log_out_devices_remotely": "Zdalne wylogowanie urządzeń",
   "Logged_In_Via": "Zalogowano się za pośrednictwem",
   "Logged_Out_Banner_Text": "Twój administrator przestrzeni roboczej zakończył sesję na tym urządzeniu. Zaloguj się ponownie, aby kontynuować.",
