@@ -67,19 +67,23 @@ const StoredKey: Codec<string, StoredKey> = {
 	encode: (data) => JSON.stringify(data),
 };
 
+type EncryptedKeyContent = {
+	iv: Uint8Array<ArrayBuffer>;
+	ciphertext: Uint8Array<ArrayBuffer>;
+}
+
+type EncryptedKeyOptions = {
+	salt: string;
+	iterations: number;
+}
+
 type EncryptedKey = {
-	content: {
-		iv: Uint8Array<ArrayBuffer>;
-		ciphertext: Uint8Array<ArrayBuffer>;
-	};
-	options: {
-		salt: string;
-		iterations: number;
-	};
+	content: EncryptedKeyContent;
+	options: EncryptedKeyOptions;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-const EncryptedKey: Codec<StoredKey, EncryptedKey> = {
+const EncryptedKey: Codec<StoredKey, EncryptedKey, IStoredKeyV2> = {
 	encode: (encryptedKey) => {
 		return {
 			iv: Base64.encode(encryptedKey.content.iv),
