@@ -1,8 +1,8 @@
 import { Base64 } from '@rocket.chat/base64';
 
-export type Codec<TIn, TOut> = {
+export type Codec<TIn, TOut, TEnc extends TIn = TIn> = {
 	decode: (data: TIn) => TOut;
-	encode: (data: TOut) => TIn;
+	encode: (data: TOut) => TEnc;
 };
 
 // A 256-byte array always encodes to 344 characters in Base64.
