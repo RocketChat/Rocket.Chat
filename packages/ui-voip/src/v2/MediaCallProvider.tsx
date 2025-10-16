@@ -227,6 +227,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		muted: session.muted,
 		held: session.held,
 		peerInfo: session.peerInfo,
+		transferredBy: session.transferredBy,
 		hidden: session.hidden,
 		onMute,
 		onHold,

@@ -77,6 +77,7 @@ export interface IClientMediaCall {
 	busy: boolean;
 
 	contact: CallContact;
+	transferredBy: CallContact | null;
 	audioLevel: number;
 	localAudioLevel: number;
 

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
+import { useRemoveUnit } from './useRemoveUnit';
 import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
 const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
@@ -13,6 +14,7 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
 	const getMonitorsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/monitors', { unitId });
 	const getDepartmentsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/departments', { unitId });
+	const removeUnit = useRemoveUnit(unitId);
 
 	const {
 		data: unitData,
@@ -55,7 +57,13 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 	}
 
 	return (
-		<UnitEdit unitData={unitData} unitMonitors={unitMonitors?.monitors} unitDepartments={unitDepartments?.departments} onClose={onClose} />
+		<UnitEdit
+			unitData={unitData}
+			unitMonitors={unitMonitors?.monitors}
+			unitDepartments={unitDepartments?.departments}
+			onClose={onClose}
+			onDelete={removeUnit}
+		/>
 	);
 };
 
