@@ -329,20 +329,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			body: ajv.compile({
-				type: 'object',
-				properties: {
-					event: RoomMemberEventSchema,
-					room_version: {
-						type: 'string',
-					},
-					invite_room_state: {
-						type: 'array',
-						items: EventBaseSchema,
-					},
-				},
-				required: ['event', 'room_version'],
-			}), // TODO: add schema from room package.
+			body: ajv.compile({ type: 'object' }), // TODO: add schema from room package.
 			params: isProcessInviteParamsProps,
 			response: {
 				200: isProcessInviteResponseProps,
