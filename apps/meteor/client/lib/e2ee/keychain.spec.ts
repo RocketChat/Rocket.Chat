@@ -4,6 +4,16 @@ import { Keychain } from './keychain';
 
 Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
 
+/**
+ * Calculates the length of a base64-encoded string given the length of the original byte array.
+ * 
+ * @param byteLength The length of the byte array to be encoded.
+ * @returns The length of the resulting base64-encoded string.
+ */
+const base64Length = (byteLength: number) => {
+	return ((4 * byteLength / 3) + 3) & ~3
+}
+
 const pwdv1web = {
 	userId: 'userE2EE',
 	persisted:
@@ -20,7 +30,7 @@ test('decrypt v1 private key', async () => {
 	const decrypted = await keychain.decryptKey(pwdv1web.persisted, pwdv1web.passphrase);
 	expect(decrypted).toBe(pwdv1web.private_key);
 	const encrypted = await keychain.encryptKey(decrypted, pwdv1web.passphrase);
-	expect(encrypted.content.iv).toHaveLength(12);
+	expect(encrypted.iv).toHaveLength(base64Length(12));
 });
 
 const pwdv2web: typeof pwdv1web = {
@@ -45,5 +55,5 @@ test('roundtrip v2 private key', async () => {
 	const decrypted = await keychain.decryptKey(pwdv2web.persisted, pwdv2web.passphrase);
 	expect(decrypted).toBe(pwdv2web.private_key);
 	const encrypted = await keychain.encryptKey(decrypted, pwdv2web.passphrase);
-	expect(encrypted.content.iv).toHaveLength(12);
+	expect(encrypted.iv).toHaveLength(base64Length(12));
 });
