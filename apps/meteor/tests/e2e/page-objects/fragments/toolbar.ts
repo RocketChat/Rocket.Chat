@@ -146,8 +146,11 @@ export class OmnichannelQuickActionsRoomToolbar extends Toolbar {
 		return this.root.getByRole('button', { name: 'End conversation' });
 	}
 
+	/**
+	 * FIXME: This `clickCount` seems a hack for a bad implementation
+	 */
 	async placeChatOnHold() {
-		await this.btnOnHold.click();
+		await this.btnOnHold.click({ clickCount: 2 });
 		await this.onHoldModal.confirm();
 	}
 
