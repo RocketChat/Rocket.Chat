@@ -1,21 +1,42 @@
-import { Team } from '@rocket.chat/core-services';
+import { AppEvents, Apps } from '@rocket.chat/apps';
+import { Message, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
-export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove: IRoom['_id'][]) => {
+type eraseRoomFnType = (rid: string, userIdOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
+
+export const eraseTeamShared = async (
+	userIdOrUserForUnset: string | Pick<IUser, '_id' | 'username' | 'name'>,
+	team: ITeam,
+	roomsToRemove: IRoom['_id'][] = [],
+	eraseRoomFn: eraseRoomFnType,
+) => {
 	const rooms: string[] = roomsToRemove.length
 		? (await Team.getMatchingTeamRooms(team._id, roomsToRemove)).filter((t) => t !== team.roomId)
 		: [];
 
+	const user =
+		typeof userIdOrUserForUnset === 'string'
+			? await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userIdOrUserForUnset, { projection: { username: 1, name: 1 } })
+			: userIdOrUserForUnset;
+
+	if (!user) {
+		throw new MeteorError('Invalid user provided for erasing team', 'error-invalid-user', {
+			method: 'eraseTeamShared',
+		});
+	}
+
 	// If we got a list of rooms to delete along with the team, remove them first
-	await Promise.all(rooms.map((room) => eraseRoom(room, userId)));
+	await Promise.all(rooms.map((room) => eraseRoomFn(room, user)));
 
 	// Move every other room back to the workspace
-	await Team.unsetTeamIdOfRooms(userId, team._id);
+	await Team.unsetTeamIdOfRooms(user, team._id);
 
 	// Remove the team's main room
-	await eraseRoom(team.roomId, userId);
+	await eraseRoomFn(team.roomId, user);
 
 	// Delete all team memberships
 	await Team.removeAllMembersFromTeam(team._id);
@@ -23,3 +44,68 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
 	// And finally delete the team itself
 	await Team.deleteById(team._id);
 };
+
+export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove: IRoom['_id'][]) => {
+	await eraseTeamShared(userId, team, roomsToRemove, async (rid, user) => {
+		return eraseRoom(rid, typeof user === 'string' ? user : user._id);
+	});
+};
+
+/**
+ * @param team
+ * @param roomsToRemove
+ * @returns deleted room ids
+ */
+export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []) => {
+	const deletedRooms = new Set<string>();
+	deletedRooms.add(team.roomId);
+	await eraseTeamShared('rocket.cat', team, roomsToRemove, async (rid, user) => {
+		const isDeleted = await eraseRoomLooseValidation(rid, user);
+		if (isDeleted) {
+			deletedRooms.add(rid);
+		}
+	});
+	return Array.from(deletedRooms);
+};
+
+export async function eraseRoomLooseValidation(
+	rid: string,
+	userIdOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>,
+): Promise<boolean> {
+	const room = await Rooms.findOneById(rid);
+
+	if (!room) {
+		return false;
+	}
+
+	if (room.federated) {
+		return false;
+	}
+
+	const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { roomId: 1 } }));
+
+	if (Apps.self?.isLoaded()) {
+		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPreRoomDeletePrevent, room);
+		if (prevent) {
+			return false;
+		}
+	}
+
+	await deleteRoom(rid);
+
+	if (team) {
+		const user =
+			typeof userIdOrUser === 'string'
+				? await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userIdOrUser, { projection: { username: 1, name: 1 } })
+				: userIdOrUser;
+		if (user) {
+			await Message.saveSystemMessage('user-deleted-room-from-team', team.roomId, room.name || '', user);
+		}
+	}
+
+	if (Apps.self?.isLoaded()) {
+		void Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPostRoomDeleted, room);
+	}
+
+	return true;
+}

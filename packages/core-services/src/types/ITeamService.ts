@@ -106,7 +106,10 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
-	unsetTeamIdOfRooms(uid: string, teamId: string): void;
+	unsetTeamIdOfRooms(
+		uidOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>,
+		teamIdOrTeam: string | Pick<ITeam, '_id' | 'roomId'>,
+	): void;
 	getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P extends Document>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null>;
