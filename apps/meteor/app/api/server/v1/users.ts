@@ -611,7 +611,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
 			return API.v1.success(
 				await findPaginatedUsersByStatus({
@@ -624,6 +624,7 @@ API.v1.addRoute(
 					searchTerm,
 					hasLoggedIn,
 					type,
+					inactiveReason,
 				}),
 			);
 		},

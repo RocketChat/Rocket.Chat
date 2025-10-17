@@ -12,6 +12,7 @@ export type UsersListStatusParamsGET = PaginatedRequest<{
 	type?: string;
 	roles?: string[];
 	searchTerm?: string;
+	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
 }>;
 const UsersListStatusParamsGetSchema = {
 	type: 'object',
@@ -49,6 +50,14 @@ const UsersListStatusParamsGetSchema = {
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
+		},
+		inactiveReason: {
+			type: 'array',
+			items: {
+				type: 'string',
+				enum: ['deactivated', 'pending_approval', 'idle_too_long'],
+			},
 			nullable: true,
 		},
 	},

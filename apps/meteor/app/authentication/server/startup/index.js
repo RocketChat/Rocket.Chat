@@ -204,7 +204,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	user.status = 'offline';
+
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	user.inactiveReason = settings.get('Accounts_ManuallyApproveNewUsers') && !user.active ? 'pending_approval' : undefined;
 
 	if (!user.name) {
 		if (options.profile) {
