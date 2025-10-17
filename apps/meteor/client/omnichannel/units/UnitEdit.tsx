@@ -2,7 +2,7 @@ import type { ILivechatDepartment, ILivechatUnitMonitor, Serialized, IOmnichanne
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -34,13 +34,25 @@ type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
-	onClose: () => void;
+	onUpdate?: (params: {
+		unitData: {
+			name: string;
+			visibility: string;
+			enabled?: boolean;
+			description?: string;
+			email?: string;
+			showOnOfflineForm?: boolean;
+		};
+		unitMonitors: { monitorId: string; username: string }[];
+		unitDepartments: { departmentId: string }[];
+	}) => void;
 	onDelete?: () => void;
+	onClose: () => void;
 };
 
-const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose, onDelete }: UnitEditProps) => {
+const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete, onClose }: UnitEditProps) => {
 	const t = useTranslation();
-	const saveUnit = useMethod('livechat:saveUnit');
+	const saveUnit = useEndpoint('POST', '/v1/livechat/units');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 
@@ -94,8 +106,19 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose, onDelete }
 			username: monitor.label,
 		}));
 
+		const payload = {
+			unitData: { name, visibility },
+			unitMonitors: monitorsData,
+			unitDepartments: departmentsData,
+		};
+
 		try {
-			await saveUnit(_id as unknown as string, { name, visibility }, monitorsData, departmentsData);
+			if (_id && onUpdate) {
+				await onUpdate(payload);
+			} else {
+				await saveUnit(payload);
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-units'],
