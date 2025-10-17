@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBox } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import { useId, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): Re
 					{t('Invite_Link')}
 				</FieldLabel>
 				<FieldRow>
-					{!linkText && <InputBox.Skeleton />}
+					{!linkText && <InputBoxSkeleton />}
 					{linkText && (
 						<UrlInput id={inviteLinkId} value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
 					)}
