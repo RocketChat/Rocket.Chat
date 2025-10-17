@@ -1,5 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,9 +12,10 @@ type QuickActionOptionsProps = {
 	options: QuickActionsActionOptions;
 	action: (id: string) => void;
 	room: IOmnichannelRoom;
+	icon: IconName;
 };
 
-const QuickActionOptions = ({ options, room, action, ...props }: QuickActionOptionsProps) => {
+const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActionOptionsProps) => {
 	const { t } = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -26,7 +28,7 @@ const QuickActionOptions = ({ options, room, action, ...props }: QuickActionOpti
 
 	return (
 		<>
-			<HeaderToolbarAction ref={reference} onClick={(): void => toggle()} secondary={isVisible} {...props} />
+			<HeaderToolbarAction ref={reference} icon={icon} onClick={() => toggle()} secondary={isVisible} {...props} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target}>
 					{options.map(({ id, label, validate }) => {
