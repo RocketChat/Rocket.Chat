@@ -111,7 +111,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		control,
 		watch,
 		handleSubmit,
-		formState: { errors, isDirty, dirtyFields },
+		formState: { errors, isDirty },
 		setValue,
 	} = useForm({
 		values: getInitialValue({
@@ -125,9 +125,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const canManageVoipExtension = useVoipExtensionPermission();
-	const assignExtension = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 
-	const { avatar, username, setRandomPassword, password, name: userFullName, freeSwitchExtension } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
 	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -145,29 +144,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
-			if (dirtyFields.freeSwitchExtension) {
-				try {
-					await assignExtension(freeSwitchExtension?.trim() ? { username, extension: freeSwitchExtension } : { username });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			}
 			router.navigate(`/admin/users/info/${_id}`);
-			onReload();
-			refetchUserFormData?.();
-		},
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-	});
-
-	const handleUpdateExtension = useMutation({
-		mutationFn: assignExtension,
-		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
-			if (userData?._id) {
-				router.navigate(`/admin/users/info/${userData._id}`);
-			}
 			onReload();
 			refetchUserFormData?.();
 		},
@@ -180,13 +157,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mutationFn: createUserAction,
 		onSuccess: async ({ user: { _id } }) => {
 			dispatchToastMessage({ type: 'success', message: t('New_user_manually_created') });
-			if (freeSwitchExtension?.trim()) {
-				try {
-					await assignExtension({ username, extension: freeSwitchExtension });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			}
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
@@ -203,15 +173,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, freeSwitchExtension, ...userFormData } = userFormPayload;
-
-		if (!isNewUserPage && dirtyFields.freeSwitchExtension && Object.keys(dirtyFields).length === 1) {
-			return handleUpdateExtension.mutateAsync(
-				freeSwitchExtension?.trim()
-					? { username: userFormData.username, extension: freeSwitchExtension }
-					: { username: userFormData.username },
-			);
-		}
+		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
