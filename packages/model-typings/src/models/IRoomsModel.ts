@@ -204,7 +204,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
 	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
-	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByIdAndType<T extends Document = IRoom>(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<T>): Promise<T | null>;
 	findOneByDisplayName(displayName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndType(
 		name: string,
