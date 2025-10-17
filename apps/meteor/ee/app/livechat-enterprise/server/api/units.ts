@@ -16,11 +16,33 @@ declare module '@rocket.chat/rest-typings' {
 		};
 		'/v1/livechat/units': {
 			GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: {
+				unitData: {
+					name: string;
+					visibility: string;
+					enabled?: boolean;
+					description?: string;
+					email?: string;
+					showOnOfflineForm?: boolean;
+				};
+				unitMonitors: { monitorId: string; username: string }[];
+				unitDepartments: { departmentId: string }[];
+			}) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
 			GET: () => IOmnichannelBusinessUnit;
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: {
+				unitData: {
+					name: string;
+					visibility: string;
+					enabled?: boolean;
+					description?: string;
+					email?: string;
+					showOnOfflineForm?: boolean;
+				};
+				unitMonitors: { monitorId: string; username: string }[];
+				unitDepartments: { departmentId: string }[];
+			}) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
 	}
