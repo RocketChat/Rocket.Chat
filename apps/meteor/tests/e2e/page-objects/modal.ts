@@ -1,5 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
+/**
+ * TODO: merge this class with the Modal class in fragments/modal.ts
+ */
 export class Modal {
 	protected readonly page: Page;
 
