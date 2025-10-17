@@ -1,7 +1,11 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent, HomeFlextab, HomeSidenav } from './fragments';
+import { RoomToolbar } from './fragments/toolbar';
 
+/**
+ * TODO: HomeTeam shouldn't exist since the rooms are the same
+ */
 export class HomeTeam {
 	private readonly page: Page;
 
@@ -11,11 +15,14 @@ export class HomeTeam {
 
 	readonly tabs: HomeFlextab;
 
+	readonly roomToolbar: RoomToolbar;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
 		this.tabs = new HomeFlextab(page);
+		this.roomToolbar = new RoomToolbar(page);
 	}
 
 	get inputTeamName(): Locator {
