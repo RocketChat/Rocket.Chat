@@ -36,7 +36,7 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 	// no bulk deletion for files
 	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
-	const [,,,deletedRoomIds] = await Promise.all([
+	const [, , , deletedRoomIds] = await Promise.all([
 		Subscriptions.removeByRoomIds(rids, {
 			async onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
@@ -48,12 +48,14 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 	]);
 
 	const restRidsToRemove = rids.filter((rid) => !deletedRoomIds.includes(rid));
-	await Promise.all(restRidsToRemove.map(async (rid) => {
-		const isDeleted = await eraseRoomLooseValidation(rid, 'rocket.cat');
-		if (isDeleted) {
-			deletedRoomIds.push(rid);
-		}
-	}));
+	await Promise.all(
+		restRidsToRemove.map(async (rid) => {
+			const isDeleted = await eraseRoomLooseValidation(rid, 'rocket.cat');
+			if (isDeleted) {
+				deletedRoomIds.push(rid);
+			}
+		}),
+	);
 
 	return deletedRoomIds;
 };
