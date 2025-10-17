@@ -34,6 +34,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 
 	apiEndPointUrl: string;
 
+	private supportedLanguageEndpointUrl: string;
+
 	/**
 	 * setup api reference to deepl translate to be used as message translation provider.
 	 * @constructor
@@ -50,9 +52,11 @@ class DeeplAutoTranslate extends AutoTranslate {
 			// if the api key ends with `:fx` it is a free api key
 			if (/:fx$/.test(value)) {
 				this.apiEndPointUrl = freeApiEndpoint;
+				this.supportedLanguageEndpointUrl = `https://api-free.deepl.com/v2/languages`;
 				return;
 			}
 			this.apiEndPointUrl = proApiEndpoint;
+			this.supportedLanguageEndpointUrl = `https://api.deepl.com/v2/languages`;
 		});
 	}
 
@@ -99,29 +103,18 @@ class DeeplAutoTranslate extends AutoTranslate {
 		}
 		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
-		try {
-			const request = await fetch(`https://api.deepl.com/v2/languages?type=target`, {
-				headers: {
-					Authorization: `DeepL-Auth-Key ${this.apiKey}`,
-				},
-			});
-			if (!request.ok) {
-				throw new Error('Failed to fetch supported languages');
-			}
-
-			result = (await request.json()) as typeof result;
-		} catch (e: any) {
-			// Fallback: Maybe the key is free api key
-			const request = await fetch(`https://api-free.deepl.com/v2/languages?type=target`, {
-				headers: {
-					Authorization: `DeepL-Auth-Key ${this.apiKey}`,
-				},
-			});
-			if (!request.ok) {
-				throw new Error('Failed to fetch supported languages');
-			}
-			result = (await request.json()) as typeof result;
+		const request = await fetch(this.supportedLanguageEndpointUrl, {
+			params: { type: 'target' },
+			headers: {
+				Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+			},
+		});
+		if (!request.ok) {
+			console.log(await request.text());
+			throw new Error('Failed to fetch supported languages');
 		}
+
+		result = (await request.json()) as typeof result;
 
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
