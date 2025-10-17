@@ -1,12 +1,13 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
@@ -17,9 +18,10 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib
  * This function adds user to the given room.
  * Caution - It does not validates if the user has permission to join room
  */
-export const addUserToRoom = async function (
+
+export const addUserToRoom = async (
 	rid: string,
-	user: Pick<IUser, '_id'> | string,
+	user: Pick<IUser, '_id' | 'username'>,
 	inviter?: Pick<IUser, '_id' | 'username'>,
 	{
 		skipSystemMessage,
@@ -30,7 +32,7 @@ export const addUserToRoom = async function (
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
 	} = {},
-): Promise<boolean | undefined> {
+): Promise<boolean | undefined> => {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
 
@@ -40,7 +42,7 @@ export const addUserToRoom = async function (
 		});
 	}
 
-	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
+	const userToBeAdded = await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {
@@ -55,10 +57,12 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await callbacks.run('federation.beforeAddUserToARoom', { user: userToBeAdded, inviter }, room);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: (inviter && (await Users.findOneById(inviter._id))) || undefined }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
+
+	// TODO: are we calling this twice?
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
@@ -77,7 +81,7 @@ export const addUserToRoom = async function (
 
 		throw error;
 	}
-
+	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);

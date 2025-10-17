@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "0.3.39",
+	"version": "0.3.40-rc.7",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -34,6 +34,7 @@
 	"dependencies": {
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^"
 	}
 }

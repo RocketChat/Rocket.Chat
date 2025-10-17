@@ -8,9 +8,11 @@ const myData: any[] = Array.from({ length: 100 }, (_, i) => ({ value: `user-${i}
 
 const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React.ReactNode; state?: State }) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
-		name: 'John Doe',
+		displayName: 'John Doe',
+		userId: '1234567890',
 		avatarUrl,
-		identifier: '1234567890',
+		username: 'john.doe',
+		callerId: '1234567890',
 	});
 	const [widgetState, setWidgetState] = useState<State>(state);
 	const [muted, setMuted] = useState(false);
@@ -24,7 +26,7 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		setHeld(false);
 	};
 
-	const onDeviceChange = (device: string) => {
+	const onDeviceChange = (device: any) => {
 		console.log('device', device);
 	};
 
@@ -53,9 +55,11 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		}
 
 		return Promise.resolve({
-			name: peerInfo.label,
+			displayName: peerInfo.label,
+			userId: peerInfo.value,
 			avatarUrl: peerInfo.avatarUrl,
-			identifier: peerInfo.value,
+			username: peerInfo.identifier,
+			callerId: peerInfo.value,
 		});
 	};
 
@@ -94,8 +98,14 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		}
 	};
 
+	const onSelectPeer = (peerInfo: PeerInfo) => {
+		setPeerInfo(peerInfo);
+	};
+
 	const contextValue = {
 		state: widgetState,
+		hidden: false,
+		connectionState: 'CONNECTED' as const,
 		peerInfo,
 		muted,
 		held,
@@ -106,7 +116,9 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		onTone,
 		onEndCall,
 		onCall,
+		onAccept: onCall,
 		onToggleWidget,
+		onSelectPeer,
 		getAutocompleteOptions,
 		getPeerInfo,
 	};

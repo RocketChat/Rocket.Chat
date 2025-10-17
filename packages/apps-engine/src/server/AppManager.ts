@@ -32,7 +32,7 @@ import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
 import type { IMarketplaceInfo } from './marketplace';
 import { defaultPermissions } from './permissions/AppPermissions';
-import type { DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import { EmptyRuntime } from './runtime/EmptyRuntime';
 import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
@@ -59,6 +59,7 @@ export interface IAppManagerDeps {
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
 	keepSlashcommands?: boolean;
+	keepOutboundCommunicationProviders?: boolean;
 }
 
 export class AppManager {
@@ -277,16 +278,7 @@ export class AppManager {
 				console.warn(`Error while compiling the App "${item.info.name} (${item.id})":`);
 				console.error(e);
 
-				const prl = new ProxiedApp(this, item, {
-					// Maybe we should have an "EmptyRuntime" class for this?
-					getStatus() {
-						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
-					},
-
-					on(): void {
-						return undefined;
-					},
-				} as unknown as DenoRuntimeSubprocessController);
+				const prl = new ProxiedApp(this, item, new EmptyRuntime(item.id));
 
 				this.apps.set(item.id, prl);
 			}
@@ -364,7 +356,7 @@ export class AppManager {
 
 			this.listenerManager.releaseEssentialEvents(app);
 
-			app.getDenoRuntime().stopApp();
+			app.getRuntimeController().stopApp();
 		}
 
 		// Remove all the apps from the system now that we have unloaded everything
@@ -492,7 +484,11 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+		await this.purgeAppConfig(app, {
+			keepScheduledJobs: true,
+			keepSlashcommands: true,
+			keepOutboundCommunicationProviders: true,
+		});
 
 		await app.setStatus(status, silent);
 
@@ -605,7 +601,7 @@ export class AppManager {
 
 		undoSteps.push(() =>
 			this.getRuntime()
-				.stopRuntime(app.getDenoRuntime())
+				.stopRuntime(app.getRuntimeController())
 				.catch(() => {}),
 		);
 
@@ -703,7 +699,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(app.getDenoRuntime())
+			.stopRuntime(app.getRuntimeController())
 			.catch(() => {});
 
 		this.apps.delete(app.getID());
@@ -761,7 +757,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(this.apps.get(old.id).getDenoRuntime())
+			.stopRuntime(this.apps.get(old.id).getRuntimeController())
 			.catch(() => {});
 
 		const app = await this.getCompiler().toSandBox(this, descriptor, result);
@@ -815,7 +811,7 @@ export class AppManager {
 
 				// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 				await this.getRuntime()
-					.stopRuntime(this.apps.get(stored.id).getDenoRuntime())
+					.stopRuntime(this.apps.get(stored.id).getRuntimeController())
 					.catch(() => {});
 
 				return this.getCompiler().toSandBox(this, stored, parseResult);
@@ -1101,7 +1097,9 @@ export class AppManager {
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
-		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
+			keepReferences: opts.keepOutboundCommunicationProviders,
+		});
 	}
 
 	/**
@@ -1176,7 +1174,11 @@ export class AppManager {
 			this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+			await this.purgeAppConfig(app, {
+				keepScheduledJobs: true,
+				keepSlashcommands: true,
+				keepOutboundCommunicationProviders: true,
+			});
 		}
 
 		if (saveToDb) {

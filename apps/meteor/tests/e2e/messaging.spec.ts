@@ -3,14 +3,15 @@ import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { HomeChannel, ToastBar } from './page-objects';
+import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
 test.describe('Messaging', () => {
 	let poHomeChannel: HomeChannel;
+	let poToastBar: ToastBar;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -19,91 +20,108 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		poToastBar = new ToastBar(page);
 
 		await page.goto('/home');
 	});
 
+	test.afterAll(async ({ api }) => {
+		await deleteChannel(api, targetChannel);
+	});
+
 	test.describe.serial('Navigation', () => {
 		test('should navigate on messages using keyboard', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.content.sendMessage('msg1');
-			await poHomeChannel.content.sendMessage('msg2');
+			await test.step('open chat and send message', async () => {
+				await poHomeChannel.sidenav.openChat(targetChannel);
+				await poHomeChannel.content.sendMessage('msg1');
+				await poHomeChannel.content.sendMessage('msg2');
+			});
 
-			// move focus to the second message
-			await page.keyboard.press('Shift+Tab');
-			await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			await test.step('move focus to the second message', async () => {
+				await page.keyboard.press('Shift+Tab');
+				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			});
 
-			// move focus to the first system message
-			await page.keyboard.press('ArrowUp');
-			await page.keyboard.press('ArrowUp');
-			await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+			await test.step('move focus to the first system message', async () => {
+				await page.keyboard.press('ArrowUp');
+				await page.keyboard.press('ArrowUp');
+				await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+			});
 
-			// move focus to the first typed message
-			await page.keyboard.press('ArrowDown');
-			await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+			await test.step('move focus to the first typed message', async () => {
+				await page.keyboard.press('ArrowDown');
+				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+			});
 
-			// move focus to the room title
-			await page.keyboard.press('Shift+Tab');
-			await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+			await test.step('move focus to the room title', async () => {
+				await page.keyboard.press('Shift+Tab');
+				await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
+			});
 
-			// refocus on the first typed message
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+			await test.step('move focus to the channel list', async () => {
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+			});
 
-			// move focus to the message toolbar
-			await page
-				.locator('[data-qa-type="message"]:has-text("msg1")')
-				.locator('[role=toolbar][aria-label="Message actions"]')
-				.getByRole('button', { name: 'Add reaction' })
-				.waitFor();
-
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await expect(
-				page
+			await test.step('move focus to the message toolbar', async () => {
+				await page
 					.locator('[data-qa-type="message"]:has-text("msg1")')
 					.locator('[role=toolbar][aria-label="Message actions"]')
-					.getByRole('button', { name: 'Add reaction' }),
-			).toBeFocused();
+					.getByRole('button', { name: 'Add reaction' })
+					.waitFor();
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await expect(
+					page
+						.locator('[data-qa-type="message"]:has-text("msg1")')
+						.locator('[role=toolbar][aria-label="Message actions"]')
+						.getByRole('button', { name: 'Add reaction' }),
+				).toBeFocused();
+			});
 
-			// move focus to the composer
-			await page.keyboard.press('Tab');
-			await page
-				.locator('[data-qa-type="message"]:has-text("msg2")')
-				.locator('[role=toolbar][aria-label="Message actions"]')
-				.getByRole('button', { name: 'Add reaction' })
-				.waitFor();
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await expect(poHomeChannel.composer).toBeFocused();
+			await test.step('move focus to the composer', async () => {
+				await page.keyboard.press('Tab');
+				await page
+					.locator('[data-qa-type="message"]:has-text("msg2")')
+					.locator('[role=toolbar][aria-label="Message actions"]')
+					.getByRole('button', { name: 'Add reaction' })
+					.waitFor();
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.composer).toBeFocused();
+			});
 		});
 
 		test('should navigate properly on the user card', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
-			// open UserCard
-			await page.keyboard.press('Shift+Tab');
-			await page.keyboard.press('ArrowUp');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Space');
-			await expect(poHomeChannel.userCardToolbar).toBeVisible();
+			await test.step('open UserCard', async () => {
+				await page.keyboard.press('Shift+Tab');
+				await page.keyboard.press('ArrowUp');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Space');
+				await expect(poHomeChannel.userCardToolbar).toBeVisible();
+			});
 
-			// close UserCard with Esc
-			await page.keyboard.press('Escape');
-			await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+			await test.step('close UserCard with Esc', async () => {
+				await page.keyboard.press('Escape');
+				await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+			});
 
-			// with focus restored reopen toolbar
-			await page.keyboard.press('Space');
-			await expect(poHomeChannel.userCardToolbar).toBeVisible();
+			await test.step('with focus restored reopen toolbar', async () => {
+				await page.keyboard.press('Space');
+				await expect(poHomeChannel.userCardToolbar).toBeVisible();
+			});
 
-			// close UserCard with button
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Space');
-			await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+			await test.step('close UserCard with button', async () => {
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Space');
+				await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
+			});
 		});
 
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
@@ -126,19 +144,67 @@ test.describe('Messaging', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await page.getByRole('button', { name: targetChannel }).first().focus();
 
-			// move focus to the list
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			await test.step('move focus to the list', async () => {
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			});
 
-			await page.getByRole('button', { name: targetChannel }).first().focus();
+			await test.step('move focus to the list again', async () => {
+				await page.getByRole('button', { name: targetChannel }).first().focus();
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Tab');
+				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			});
+		});
+	});
 
-			// move focus to the list again
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+	test.describe.serial('Message edition', () => {
+		test('should edit messages', async ({ page }) => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+
+			await test.step('focus on the second message', async () => {
+				await page.keyboard.press('ArrowUp');
+
+				expect(await poHomeChannel.composer.inputValue()).toBe('msg2');
+			});
+
+			await test.step('send edited message', async () => {
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				await poHomeChannel.content.sendMessage('edited msg2', false);
+				await editPromise;
+
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2');
+			});
+
+			await test.step('stress test on message editions', async () => {
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
+					// eslint-disable-next-line no-await-in-loop
+					await page.keyboard.press('ArrowUp');
+					// eslint-disable-next-line no-await-in-loop
+					await poHomeChannel.content.sendMessage(element, false);
+				}
+
+				await editPromise;
+				const toastError = await poToastBar.waitForError();
+
+				expect(toastError).toBe(true);
+			});
 		});
 	});
 
