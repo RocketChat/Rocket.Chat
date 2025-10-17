@@ -941,8 +941,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		return this.findOne({ _id: roomId, t: type }, options);
+	findOneByIdAndType<T extends Document = IRoom>(
+		roomId: IRoom['_id'],
+		type: IRoom['t'],
+		options: FindOptions<T> = {} as FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>({ _id: roomId, t: type }, options);
 	}
 
 	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
