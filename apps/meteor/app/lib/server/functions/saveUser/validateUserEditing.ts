@@ -12,7 +12,7 @@ const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['rol
 	(newRoles.some((item) => !previousRoles.includes(item)) || previousRoles.some((item) => !newRoles.includes(item)));
 const isEditingField = (previousValue?: string, newValue?: string) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
-const canEditExtension = async (userId: string, newExtension?: string) => {
+export const canEditExtension = async (userId: string, newExtension?: string) => {
 	if (!settings.get('VoIP_TeamCollab_Enabled')) {
 		return false;
 	}
