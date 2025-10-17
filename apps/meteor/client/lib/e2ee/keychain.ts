@@ -1,10 +1,8 @@
 import { Base64 } from '@rocket.chat/base64';
 
 import { Binary } from './binary';
-import type { Codec } from './codec';
+import type { ICodec } from './codec';
 import * as Pbkdf2 from './pbkdf2';
-
-export type Serialized<T> = T extends BufferSource ? string : { [K in keyof T]: Serialized<T[K]> };
 
 /**
  * Version 1 format:
@@ -37,7 +35,7 @@ interface IStoredKeyV2 {
 type StoredKey = IStoredKeyV1 | IStoredKeyV2;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-const StoredKey: Codec<string, StoredKey> = {
+const StoredKey: ICodec<string, StoredKey> = {
 	decode: (data) => {
 		const json: unknown = JSON.parse(data);
 
@@ -82,34 +80,39 @@ type EncryptedKey = {
 	options: EncryptedKeyOptions;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-const EncryptedKey: Codec<StoredKey, EncryptedKey, IStoredKeyV2> = {
-	encode: (encryptedKey) => {
+class EncryptedKeyCodec implements ICodec<string, EncryptedKey, IStoredKeyV2> {
+	userId: string;
+
+	constructor(userId: string) {
+		this.userId = userId;
+	}
+
+	encode(encryptedKey: EncryptedKey): IStoredKeyV2 {
 		return {
 			iv: Base64.encode(encryptedKey.content.iv),
 			ciphertext: Base64.encode(encryptedKey.content.ciphertext),
 			salt: encryptedKey.options.salt,
 			iterations: encryptedKey.options.iterations,
 		};
-	},
-	decode: (storedKey) => {
-		if ('$binary' in storedKey) {
+	}
+
+	decode(storedKey: string): EncryptedKey {
+		const storedKeyObj = StoredKey.decode(storedKey);
+		if ('$binary' in storedKeyObj) {
 			// v1
-			const binary = Base64.decode(storedKey.$binary);
-			const iv = binary.slice(0, 16);
-			const ciphertext = binary.slice(16);
+			const binary = Base64.decode(storedKeyObj.$binary);
 
 			return {
-				content: { iv, ciphertext },
+				content: { iv: binary.slice(0, 16), ciphertext: binary.slice(16) },
 				options: {
-					salt: '',
+					salt: this.userId,
 					iterations: 1000,
 				},
 			};
 		}
 
 		// v2
-		const { iv, ciphertext, salt, iterations } = storedKey;
+		const { iv, ciphertext, salt, iterations } = storedKeyObj;
 		return {
 			content: {
 				iv: Base64.decode(iv),
@@ -120,20 +123,21 @@ const EncryptedKey: Codec<StoredKey, EncryptedKey, IStoredKeyV2> = {
 				iterations,
 			},
 		};
-	},
-};
+	}
+}
 
 export class Keychain {
-	userId: string;
+	private readonly userId: string;
+
+	private readonly codec: EncryptedKeyCodec;
 
 	constructor(userId: string) {
 		this.userId = userId;
+		this.codec = new EncryptedKeyCodec(userId);
 	}
 
 	async decryptKey(privateKey: string, password: string): Promise<string> {
-		const storedKey = StoredKey.decode(privateKey);
-		const { content, options } = EncryptedKey.decode(storedKey);
-		options.salt = options.salt ? options.salt : this.userId;
+		const { content, options } = this.codec.decode(privateKey);
 		const algorithm = content.iv.length === 16 ? 'AES-CBC' : 'AES-GCM';
 		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.toArrayBuffer(password)));
 		const derivedBits = await Pbkdf2.deriveBits(baseKey, {
@@ -154,6 +158,6 @@ export class Keychain {
 		const key = await Pbkdf2.importKey(derivedBits, algorithm);
 		const content = await Pbkdf2.encrypt(key, new Uint8Array(Binary.toArrayBuffer(privateKey)));
 
-		return EncryptedKey.encode({ content, options: { salt, iterations } });
+		return this.codec.encode({ content, options: { salt, iterations } });
 	}
 }
