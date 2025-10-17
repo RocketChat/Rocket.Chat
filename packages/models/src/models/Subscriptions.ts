@@ -1906,6 +1906,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.insertMany(subscriptions);
 	}
 
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				abacLastTimeChecked: time,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	// REMOVE
 	async removeByUserId(userId: string): Promise<number> {
 		const query = {

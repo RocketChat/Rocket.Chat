@@ -1,4 +1,11 @@
-import type { IAbacAttributeDefinition, IAbacAttribute } from '@rocket.chat/core-typings';
+import type {
+	IAbacAttributeDefinition,
+	IAbacAttribute,
+	AbacAccessOperation,
+	AbacObjectType,
+	IRoom,
+	IUser,
+} from '@rocket.chat/core-typings';
 
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void>;
@@ -17,4 +24,7 @@ export interface IAbacService {
 	removeRoomAbacAttribute(rid: string, key: string): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
+
+	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void>;
+	canAccessObject(room: IRoom, user: IUser, action: AbacAccessOperation, objectType: AbacObjectType): Promise<boolean>;
 }
