@@ -29,7 +29,61 @@ import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
 
 export class RealAppBridges extends AppBridges {
-	constructor(orch) {
+	private _actBridge: AppActivationBridge;
+
+	private _cmdBridge: AppCommandsBridge;
+
+	private _apiBridge: AppApisBridge;
+
+	private _detBridge: AppDetailChangesBridge;
+
+	private _envBridge: AppEnvironmentalVariableBridge;
+
+	private _httpBridge: AppHttpBridge;
+
+	private _lisnBridge: AppListenerBridge;
+
+	private _msgBridge: AppMessageBridge;
+
+	private _persistBridge: AppPersistenceBridge;
+
+	private _roomBridge: AppRoomBridge;
+
+	private _internalBridge: AppInternalBridge;
+
+	private _setsBridge: AppSettingBridge;
+
+	private _userBridge: AppUserBridge;
+
+	private _livechatBridge: AppLivechatBridge;
+
+	private _uploadBridge: AppUploadBridge;
+
+	private _uiInteractionBridge: UiInteractionBridge;
+
+	private _schedulerBridge: AppSchedulerBridge;
+
+	private _cloudWorkspaceBridge: AppCloudBridge;
+
+	private _videoConfBridge: AppVideoConferenceBridge;
+
+	private _oAuthBridge: AppOAuthAppsBridge;
+
+	private _internalFedBridge: AppInternalFederationBridge;
+
+	private _moderationBridge: AppModerationBridge;
+
+	private _threadBridge: AppThreadBridge;
+
+	private _roleBridge: AppRoleBridge;
+
+	private _emailBridge: AppEmailBridge;
+
+	private _contactBridge: AppContactBridge;
+
+	private _outboundMessageBridge: OutboundCommunicationBridge;
+
+	constructor(orch: any) {
 		super();
 
 		this._actBridge = new AppActivationBridge(orch);
@@ -61,111 +115,111 @@ export class RealAppBridges extends AppBridges {
 		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
 	}
 
-	getCommandBridge() {
+	getCommandBridge(): AppCommandsBridge {
 		return this._cmdBridge;
 	}
 
-	getApiBridge() {
+	getApiBridge(): AppApisBridge {
 		return this._apiBridge;
 	}
 
-	getEnvironmentalVariableBridge() {
+	getEnvironmentalVariableBridge(): AppEnvironmentalVariableBridge {
 		return this._envBridge;
 	}
 
-	getHttpBridge() {
+	getHttpBridge(): AppHttpBridge {
 		return this._httpBridge;
 	}
 
-	getListenerBridge() {
+	getListenerBridge(): AppListenerBridge {
 		return this._lisnBridge;
 	}
 
-	getMessageBridge() {
+	getMessageBridge(): AppMessageBridge {
 		return this._msgBridge;
 	}
 
-	getThreadBridge() {
+	getThreadBridge(): AppThreadBridge {
 		return this._threadBridge;
 	}
 
-	getPersistenceBridge() {
+	getPersistenceBridge(): AppPersistenceBridge {
 		return this._persistBridge;
 	}
 
-	getAppActivationBridge() {
+	getAppActivationBridge(): AppActivationBridge {
 		return this._actBridge;
 	}
 
-	getAppDetailChangesBridge() {
+	getAppDetailChangesBridge(): AppDetailChangesBridge {
 		return this._detBridge;
 	}
 
-	getRoomBridge() {
+	getRoomBridge(): AppRoomBridge {
 		return this._roomBridge;
 	}
 
-	getInternalBridge() {
+	getInternalBridge(): AppInternalBridge {
 		return this._internalBridge;
 	}
 
-	getServerSettingBridge() {
+	getServerSettingBridge(): AppSettingBridge {
 		return this._setsBridge;
 	}
 
-	getUserBridge() {
+	getUserBridge(): AppUserBridge {
 		return this._userBridge;
 	}
 
-	getLivechatBridge() {
+	getLivechatBridge(): AppLivechatBridge {
 		return this._livechatBridge;
 	}
 
-	getUploadBridge() {
+	getUploadBridge(): AppUploadBridge {
 		return this._uploadBridge;
 	}
 
-	getUiInteractionBridge() {
+	getUiInteractionBridge(): UiInteractionBridge {
 		return this._uiInteractionBridge;
 	}
 
-	getSchedulerBridge() {
+	getSchedulerBridge(): AppSchedulerBridge {
 		return this._schedulerBridge;
 	}
 
-	getCloudWorkspaceBridge() {
+	getCloudWorkspaceBridge(): AppCloudBridge {
 		return this._cloudWorkspaceBridge;
 	}
 
-	getVideoConferenceBridge() {
+	getVideoConferenceBridge(): AppVideoConferenceBridge {
 		return this._videoConfBridge;
 	}
 
-	getOutboundMessageBridge() {
+	getOutboundMessageBridge(): OutboundCommunicationBridge {
 		return this._outboundMessageBridge;
 	}
 
-	getOAuthAppsBridge() {
+	getOAuthAppsBridge(): AppOAuthAppsBridge {
 		return this._oAuthBridge;
 	}
 
-	getInternalFederationBridge() {
+	getInternalFederationBridge(): AppInternalFederationBridge {
 		return this._internalFedBridge;
 	}
 
-	getModerationBridge() {
+	getModerationBridge(): AppModerationBridge {
 		return this._moderationBridge;
 	}
 
-	getRoleBridge() {
+	getRoleBridge(): AppRoleBridge {
 		return this._roleBridge;
 	}
 
-	getEmailBridge() {
+	getEmailBridge(): AppEmailBridge {
 		return this._emailBridge;
 	}
 
-	getContactBridge() {
+	getContactBridge(): AppContactBridge {
 		return this._contactBridge;
 	}
 }

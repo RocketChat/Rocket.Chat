@@ -2,11 +2,13 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
-	constructor(orch) {
+	private orch: any;
+
+	constructor(orch: any) {
 		this.orch = orch;
 	}
 
-	async handleEvent(event, ...payload) {
+	async handleEvent(event: string, ...payload: any[]): Promise<any> {
 		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
@@ -68,11 +70,11 @@ export class AppListenerBridge {
 		return this[method](event, ...payload);
 	}
 
-	async defaultEvent(inte, payload) {
+	async defaultEvent(inte: string, payload: any): Promise<any> {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
 	}
 
-	async messageEvent(inte, message, ...payload) {
+	async messageEvent(inte: string, message: any, ...payload: any[]): Promise<any> {
 		const msg = await this.orch.getConverters().get('messages').convertMessage(message);
 
 		const params = (() => {
@@ -132,7 +134,7 @@ export class AppListenerBridge {
 		return this.orch.getConverters().get('messages').convertAppMessage(result);
 	}
 
-	async roomEvent(inte, room, ...payload) {
+	async roomEvent(inte: string, room: any, ...payload: any[]): Promise<any> {
 		const rm = await this.orch.getConverters().get('rooms').convertRoom(room);
 
 		const params = (() => {
@@ -166,7 +168,7 @@ export class AppListenerBridge {
 		return this.orch.getConverters().get('rooms').convertAppRoom(result);
 	}
 
-	async livechatEvent(inte, data) {
+	async livechatEvent(inte: string, data: any): Promise<any> {
 		switch (inte) {
 			case AppInterface.IPostLivechatAgentAssigned:
 			case AppInterface.IPostLivechatAgentUnassigned:
@@ -216,8 +218,8 @@ export class AppListenerBridge {
 		}
 	}
 
-	async userEvent(inte, data) {
-		let context;
+	async userEvent(inte: string, data: any): Promise<any> {
+		let context: any;
 		switch (inte) {
 			case AppInterface.IPostUserLoggedIn:
 			case AppInterface.IPostUserLogout:
