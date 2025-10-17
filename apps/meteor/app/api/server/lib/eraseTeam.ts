@@ -58,13 +58,13 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
  */
 export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []) => {
 	const deletedRooms = new Set<string>();
-	deletedRooms.add(team.roomId);
 	await eraseTeamShared('rocket.cat', team, roomsToRemove, async (rid, user) => {
 		const isDeleted = await eraseRoomLooseValidation(rid, user);
 		if (isDeleted) {
 			deletedRooms.add(rid);
 		}
 	});
+	deletedRooms.add(team.roomId);
 	return Array.from(deletedRooms);
 };
 
