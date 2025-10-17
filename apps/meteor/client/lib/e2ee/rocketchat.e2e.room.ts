@@ -17,7 +17,6 @@ import EJSON from 'ejson';
 import type { E2ERoomState } from './E2ERoomState';
 import * as Aes from './aes';
 import { Binary } from './binary';
-import { PrefixedBase64 } from './codec';
 import { decodeEncryptedContent } from './content';
 import {
 	toArrayBuffer,
@@ -28,13 +27,13 @@ import {
 	createSha256HashFromText,
 } from './helper';
 import { createLogger } from './logger';
+import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
 import * as Rsa from './rsa';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { Messages, Rooms, Subscriptions } from '../../stores';
-// import { RoomManager } from '../RoomManager';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const log = createLogger('E2E:Room');
