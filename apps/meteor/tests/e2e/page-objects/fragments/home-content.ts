@@ -320,7 +320,7 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
 	get btnContactInfoVoiceCall(): Locator {
