@@ -10,6 +10,7 @@ import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { loginServices } from '../lib/loginServices';
 import { settings } from '../lib/settings';
+import { getUser } from '../lib/user';
 import { router } from '../providers/RouterProvider';
 
 const commands = {
@@ -77,11 +78,10 @@ const commands = {
 	},
 
 	async 'logout'() {
-		const user = Meteor.user();
+		const user = getUser();
 		Meteor.logout(() => {
-			if (!user) {
-				return;
-			}
+			if (!user) return;
+
 			void afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return router.navigate('/home');
