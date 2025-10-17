@@ -353,7 +353,7 @@ test.describe.only('Federation - Threads', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 
-				await expect(poFederationChannelServer1.tabs.btnThread).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.btnThreads).toBeVisible();
 			});
 
 			test('expect to see the thread list sent in the group on Server B', async () => {
@@ -361,7 +361,7 @@ test.describe.only('Federation - Threads', () => {
 
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 
-				await expect(poFederationChannelServer2.tabs.btnThread).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.btnThreads).toBeVisible();
 			});
 		});
 	});
