@@ -21,7 +21,7 @@ export const useE2EEncryption = () => {
 			return;
 		}
 
-		if (window.crypto && enabled && !adminEmbedded) {
+		if (enabled && !adminEmbedded) {
 			e2e.startClient(userId);
 		} else {
 			e2e.setState('DISABLED');

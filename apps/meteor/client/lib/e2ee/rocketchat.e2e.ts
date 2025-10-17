@@ -211,7 +211,7 @@ class E2E extends Emitter {
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
 					} else {
-						span.error('invalidE2ESuggestedKey', sub.E2ESuggestedKey);
+						span.error('invalidE2ESuggestedKey');
 						await e2e.rejectSuggestedKey(sub.rid);
 					}
 

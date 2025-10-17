@@ -65,10 +65,12 @@ export interface IUpload {
 	};
 }
 
-export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };
+export interface IUploadWithUser extends IUpload {
+	user?: Pick<IUser, '_id' | 'name' | 'username'>;
+}
 
-export type IE2EEUpload = IUpload & {
+export interface IE2EEUpload extends IUpload {
 	content: EncryptedContent;
-};
+}
 
 export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);
