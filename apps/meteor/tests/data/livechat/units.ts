@@ -35,23 +35,15 @@ export const createUnit = async (
 ): Promise<IOmnichannelBusinessUnit> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(methodCall(`livechat:saveUnit`))
+			.post(api('livechat/units'))
 			.set(credentials)
 			.send({
-				message: JSON.stringify({
-					method: 'livechat:saveUnit',
-					params: [
-						null,
-						{
-							name: name || `${faker.person.firstName()} ${faker.string.uuid()}`,
-							visibility: faker.helpers.arrayElement(['public', 'private']),
-						},
-						[{ monitorId, username }, ...extraMonitor],
-						departmentIds.map((departmentId) => ({ departmentId })),
-					],
-					id: '101',
-					msg: 'method',
-				}),
+				unitData: {
+					name: name || `${faker.person.firstName()} ${faker.string.uuid()}`,
+					visibility: faker.helpers.arrayElement(['public', 'private']),
+				},
+				unitMonitors: [{ monitorId, username }, ...extraMonitor],
+				unitDepartments: departmentIds.map((departmentId) => ({ departmentId })),
 			})
 			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
 				if (err) {
