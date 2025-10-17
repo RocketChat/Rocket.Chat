@@ -3827,7 +3827,7 @@
   "Office_hours_updated": "Office hours updated",
   "Offline": "Offline",
   "Offline_DM_Email": "Direct Message Email Subject",
-  "Offline_Email_Subject_Description": "You may use the following placeholders:  \n - `[Site_Name]`, `[Site_URL]`, `[User]` & `[Room]` for the Application Name, URL, Username & Roomname respectively. ",
+  "Offline_Email_Subject_Description": "You may use the following placeholders:  \n - `[Site_Name]`, `[Site_URL]`, `[User]` & `[Room]` for the Application Name, URL, Username & room name respectively. ",
   "Offline_Link_Message": "GO TO MESSAGE",
   "Offline_Mention_All_Email": "Mention All Email Subject",
   "Offline_Mention_Email": "Mention Email Subject",
