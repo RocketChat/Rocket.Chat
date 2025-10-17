@@ -110,7 +110,6 @@ class DeeplAutoTranslate extends AutoTranslate {
 			},
 		});
 		if (!request.ok) {
-			console.log(await request.text());
 			throw new Error('Failed to fetch supported languages');
 		}
 
