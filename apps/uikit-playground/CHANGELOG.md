@@ -1,6 +1,6 @@
 # @rocket.chat/uikit-playground
 
-## 0.6.30-rc.6
+## 0.6.31-rc.6
 
 ### Patch Changes
 
@@ -53,7 +53,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-- @rocket.chat/core-typings@7.11.0-rc.2
+
+  - @rocket.chat/core-typings@7.11.0-rc.2
   - @rocket.chat/fuselage-ui-kit@23.0.0-rc.2
   - @rocket.chat/ui-avatar@19.0.0-rc.2
   - @rocket.chat/ui-contexts@23.0.0-rc.2
@@ -83,6 +84,18 @@
   - @rocket.chat/fuselage-ui-kit@23.0.0-rc.0
   - @rocket.chat/ui-avatar@19.0.0-rc.0
   - @rocket.chat/core-typings@7.11.0-rc.0
+  </details>
+
+## 0.6.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  - @rocket.chat/fuselage-ui-kit@22.0.2
+  - @rocket.chat/ui-avatar@18.0.2
+  - @rocket.chat/ui-contexts@22.0.2
   </details>
 
 ## 0.6.29

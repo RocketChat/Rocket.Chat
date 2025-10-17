@@ -18,6 +18,8 @@
 
 - ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
 
+## 7.10.2
+
 ## 7.10.1
 
 ## 7.10.0

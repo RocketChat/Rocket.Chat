@@ -82,6 +82,17 @@
   - @rocket.chat/core-typings@7.11.0-rc.0
   </details>
 
+## 22.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  - @rocket.chat/ui-client@22.0.2
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
 ## 22.0.1
 
 ### Patch Changes

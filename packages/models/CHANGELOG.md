@@ -75,6 +75,16 @@
   - @rocket.chat/model-typings@1.8.0-rc.0
   </details>
 
+## 1.6.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.10.2
+  - @rocket.chat/model-typings@1.7.2
+  </details>
+
 ## 1.6.1
 
 ### Patch Changes
@@ -1704,8 +1714,6 @@
 
   - @rocket.chat/model-typings@0.3.9
   </details>
-
-> > > > > > > origin/master
 
 ## 0.0.36
 

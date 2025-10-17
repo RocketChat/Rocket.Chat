@@ -88,6 +88,15 @@
   - @rocket.chat/core-typings@7.11.0-rc.0
   </details>
 
+## 7.10.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  </details>
+
 ## 7.10.1
 
 ### Patch Changes
@@ -1831,8 +1840,6 @@
 
   - @rocket.chat/core-typings@6.7.2
   </details>
-
-> > > > > > > origin/master
 
 ## 6.7.1
 

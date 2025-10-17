@@ -91,7 +91,22 @@
   - @rocket.chat/ui-contexts@23.0.0-rc.0
   - @rocket.chat/ui-video-conf@23.0.0-rc.0
   - @rocket.chat/ui-avatar@19.0.0-rc.0
-  - # @rocket.chat/core-typings@7.11.0-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+
+  </details>
+
+## 22.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  - @rocket.chat/gazzodown@22.0.2
+  - @rocket.chat/ui-avatar@18.0.2
+  - @rocket.chat/ui-contexts@22.0.2
+  - @rocket.chat/ui-video-conf@22.0.2
+  </details>
 
 ## 22.0.1
 
@@ -104,7 +119,7 @@
   - @rocket.chat/gazzodown@22.0.1
   - @rocket.chat/ui-avatar@18.0.1
   - @rocket.chat/ui-contexts@22.0.1
-    > > > > > > > origin/master
+  </details>
 
 ## 22.0.0
 
@@ -2121,8 +2136,6 @@
   - @rocket.chat/ui-avatar@1.0.2
   - @rocket.chat/ui-video-conf@5.0.2
   </details>
-
-> > > > > > > origin/master
 
 ## 5.0.1
 

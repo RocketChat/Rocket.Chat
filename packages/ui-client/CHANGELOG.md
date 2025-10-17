@@ -77,6 +77,16 @@
   - @rocket.chat/ui-avatar@19.0.0-rc.0
   </details>
 
+## 22.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@18.0.2
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
 ## 22.0.1
 
 ### Patch Changes
@@ -1647,8 +1657,6 @@
 
   - @rocket.chat/ui-contexts@5.0.2
   </details>
-
-> > > > > > > origin/master
 
 ## 5.0.1
 

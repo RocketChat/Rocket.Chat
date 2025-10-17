@@ -1,6 +1,6 @@
 # @rocket.chat/livechat Change Log
 
-## 1.23.10-rc.6
+## 1.23.11-rc.6
 
 ### Patch Changes
 
@@ -61,6 +61,15 @@
 
   - @rocket.chat/gazzodown@23.0.0-rc.0
 
+  </details>
+
+## 1.23.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@22.0.2
   </details>
 
 ## 1.23.9
