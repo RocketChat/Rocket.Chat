@@ -320,7 +320,7 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
+		return this.page.getByRole('button', { name: 'User Info' });
 	}
 
 	get btnContactInfoVoiceCall(): Locator {
