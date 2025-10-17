@@ -7,21 +7,14 @@ import type { DummyResponse } from './utils';
 export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(methodCall(`livechat:addMonitor`))
+			.post('/v1/livechat/monitors.save')
 			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:addMonitor',
-					params: [username],
-					id: '101',
-					msg: 'method',
-				}),
-			})
-			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+			.send({ username })
+			.end((err: Error, res: DummyResponse<{ _id: string; username: string; roles: string[] }, 'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(res.body);
 			});
 	});
 };
