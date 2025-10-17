@@ -202,13 +202,11 @@ export async function findPaginatedUsersByStatus({
 	}
 
 	if (inactiveReason) {
-		// 	match.inactiveReason = { $in: inactiveReason };
-		// }
-
-		// if (inactiveReason && (inactiveReason.includes('deactivated') || inactiveReason.includes('idle_too_long'))) {
 		const inactiveReasonCondition = {
 			$or: [
 				{ inactiveReason: { $in: inactiveReason } },
+				// This condition is to make it backward compatible with the old behavior
+				// The deactivated users not having the inactiveReason field should be returned as well
 				...(inactiveReason.includes('deactivated') || inactiveReason.includes('idle_too_long')
 					? [{ inactiveReason: { $exists: false } }]
 					: []),
