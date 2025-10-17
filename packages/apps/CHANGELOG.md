@@ -1,5 +1,15 @@
 # @rocket.chat/apps
 
+## 0.5.19-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.7
+  - @rocket.chat/model-typings@1.8.0-rc.7
+  </details>
+
 ## 0.5.19-rc.6
 
 ### Patch Changes

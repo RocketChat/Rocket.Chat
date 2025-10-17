@@ -1,5 +1,14 @@
 # @rocket.chat/omni-core
 
+## 0.0.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.7
+  </details>
+
 ## 0.0.5-rc.6
 
 ### Patch Changes
