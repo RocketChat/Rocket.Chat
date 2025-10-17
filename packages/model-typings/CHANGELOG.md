@@ -1,5 +1,18 @@
 # @rocket.chat/model-typings
 
+## 1.8.0
+
+### Minor Changes
+
+- ([#36589](https://github.com/RocketChat/Rocket.Chat/pull/36589)) Adds new endpoint to disable Livechat Contacts by its id, with a new permission `delete-livechat-contact`.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
+
+  - @rocket.chat/core-typings@7.11.0
+  </details>
+
 ## 1.8.0-rc.7
 
 ### Patch Changes
