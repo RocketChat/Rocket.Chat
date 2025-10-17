@@ -329,8 +329,7 @@ export class E2ERoom extends Emitter {
 			}
 		} catch (error) {
 			this.setState('ERROR');
-			span.set('error', error);
-			span.error('Error fetching group key');
+			span.error('Error fetching group key', error);
 			return;
 		}
 
@@ -620,7 +619,7 @@ export class E2ERoom extends Emitter {
 				throw new Error('No group session key found.');
 			}
 
-			const { iv, ciphertext } = await Aes.encrypt(data, this.groupSessionKey);
+			const { iv, ciphertext } = await Aes.encrypt(this.groupSessionKey, data);
 			const encryptedData = {
 				kid: this.keyID,
 				iv: Base64.encode(iv),
@@ -707,7 +706,7 @@ export class E2ERoom extends Emitter {
 		span.set('type', key.type);
 		span.set('usages', key.usages.toString());
 		try {
-			const result = await Aes.decrypt({ iv, ciphertext }, key);
+			const result = await Aes.decrypt(key, { iv, ciphertext });
 			const ret: unknown = EJSON.parse(result);
 			if (typeof ret !== 'object' || ret === null) {
 				span.error('Decrypted message is not an object');

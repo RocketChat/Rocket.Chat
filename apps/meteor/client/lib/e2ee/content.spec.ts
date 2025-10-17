@@ -70,14 +70,14 @@ const aeskeyv1 = { alg: 'A128CBC', ext: true, k: 'qb8In0Rpa9nwSusvxxDcbQ', key_o
 test('parse v1 web message', async () => {
 	const parsed = decodeEncryptedContent(msgv1web.content);
 	const key = await importKey(aeskeyv1);
-	const decrypted = await decrypt(parsed, key);
+	const decrypted = await decrypt(key, parsed);
 	expect(decrypted).toMatchInlineSnapshot(`"{"msg":"hello"}"`);
 });
 
 test('parse v1 mobile message', async () => {
 	const parsed = decodeEncryptedContent(msgv1mob.content);
 	const key = await importKey(aeskeyv1);
-	const decrypted = await decrypt(parsed, key);
+	const decrypted = await decrypt(key, parsed);
 	expect(decrypted).toMatchInlineSnapshot(
 		`"{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}"`,
 	);
@@ -86,7 +86,7 @@ test('parse v1 mobile message', async () => {
 test('parse v1 mobile message from msg field', async () => {
 	const parsed = decodeEncryptedContent(msgv1mob.msg);
 	const key = await importKey(aeskeyv1);
-	const decrypted = await decrypt(parsed, key);
+	const decrypted = await decrypt(key, parsed);
 	expect(decrypted).toMatchInlineSnapshot(
 		`"{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}"`,
 	);
@@ -134,6 +134,6 @@ const aeskeyv2 = {
 test('parse v2 web message', async () => {
 	const parsed = decodeEncryptedContent(msgv2web.content);
 	const key = await importKey(aeskeyv2);
-	const decrypted = await decrypt(parsed, key);
+	const decrypted = await decrypt(key, parsed);
 	expect(decrypted).toMatchInlineSnapshot(`"{"msg":"hello"}"`);
 });
