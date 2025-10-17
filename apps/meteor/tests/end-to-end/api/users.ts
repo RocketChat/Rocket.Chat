@@ -2296,6 +2296,92 @@ describe('[Users]', () => {
 				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', null);
 			});
 		});
+
+		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
+			let user: TestUser<IUser>;
+
+			before(async () => {
+				user = await createUser();
+			});
+
+			after(async () => {
+				await Promise.all([
+					deleteUser(user),
+					updateSetting('VoIP_TeamCollab_Enabled', true),
+					updatePermission('manage-voip-extensions', ['admin']),
+				]);
+			});
+
+			beforeEach(async () => {
+				await Promise.all([updatePermission('manage-voip-extensions', ['admin']), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+			});
+
+			it("should update the user's voice call extension", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+					});
+			});
+
+			it("should not update the user's voice call extension if the extension is already assigned to another user", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Extension is already assigned to another user [error-extension-not-available]');
+					});
+			});
+
+			it("should not update the user's voice call extension if the user has no permission to manage voip extensions", async () => {
+				await updatePermission('manage-voip-extensions', []);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '9998',
+						},
+					})
+					.expect(400);
+			});
+
+			it("should not update the user's voice call extension if voip setting is disabled", async () => {
+				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '9998',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Edit user voice call extension is not allowed [error-action-not-allowed]');
+					});
+			});
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
