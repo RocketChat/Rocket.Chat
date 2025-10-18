@@ -1,9 +1,10 @@
 import type { IOutboundProvider, Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { useOmnichannelEnterpriseEnabled } from '../../../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
@@ -14,17 +15,19 @@ type UseOutboundProvidersListProps<TData> = Omit<UseQueryOptions<OutboundProvide
 };
 
 const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: UseOutboundProvidersListProps<TData>) => {
-	const { type = 'phone', enabled = true, staleTime = 0, gcTime = 0, ...queryOptions } = options || {};
+	const { type = 'phone', enabled = true, staleTime = 5 * 60 * 1000, ...queryOptions } = options || {};
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
-	const hasModule = useHasLicenseModule('outbound-messaging');
+
+	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
+	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
+	const canSendOutboundMessages = usePermission('outbound.send-messages');
 
 	return useQuery<OutboundProvidersResponse, Error, TData>({
 		queryKey: omnichannelQueryKeys.outboundProviders({ type }),
 		queryFn: () => getProviders({ type }),
 		retry: 3,
-		enabled: hasModule && enabled,
+		enabled: isOmnichannelEnabled && hasOutboundModule && canSendOutboundMessages && enabled,
 		staleTime,
-		gcTime,
 		...queryOptions,
 	});
 };
