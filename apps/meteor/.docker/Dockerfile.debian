@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 ARG DENO_VERSION="1.37.1"
 
 FROM denoland/deno:bin-${DENO_VERSION} as deno
@@ -6,7 +8,7 @@ FROM node:22.14.0-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-# dependencies
+# 1) System and user (rarely changes)
 RUN groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
     && mkdir -p /app/uploads \
@@ -14,12 +16,10 @@ RUN groupadd -g 65533 -r rocketchat \
     && apt-get update \
     && apt-get install -y --no-install-recommends fontconfig
 
+# Deno binary
 COPY --from=deno /deno /bin/deno
 
-# --chown requires Docker 17.12 and works only on Linux
-ADD --chown=rocketchat:rocketchat . /app
-
-# needs a mongoinstance - defaults to container linking with alias 'mongo'
+# 2) Stable ENVs
 ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
     MONGO_URL=mongodb://mongo:27017/rocketchat \
@@ -28,21 +28,30 @@ ENV DEPLOY_METHOD=docker \
     ROOT_URL=http://localhost:3000 \
     Accounts_AvatarStorePath=/app/uploads
 
+# 3) Build toolchain (for native modules) + cleanup
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null
 
+# 4) Prepare bundle WORKDIR and install only deps (stable layer)
 USER rocketchat
 
+# Copy only server deps manifests to leverage cache between code changes
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm/node_modules/isolated-vm /app/bundle/programs/server/npm/node_modules/isolated-vm
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm/node_modules/meteor /app/bundle/programs/server/npm/node_modules/meteor
+COPY --chown=rocketchat:rocketchat bundle/programs/server/package*.json /app/bundle/programs/server/
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm-*.js* /app/bundle/programs/server/
+
 RUN cd /app/bundle/programs/server \
-    && npm install \
+    && npm install --omit=dev \
     && cd npm/node_modules/isolated-vm \
-    && npm install \
-    && npm cache clear --force
+    && npm rebuild \
+    && npm cache clean --force
 
+# 6) Cleanup toolchain while preserving required libs
 USER root
-
 RUN find /usr/local -type f -executable -exec ldd '{}' ';' \
     | awk '/=>/ { print $(NF-1) }' \
     | sort -u \
@@ -52,7 +61,34 @@ RUN find /usr/local -type f -executable -exec ldd '{}' ';' \
     | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 
+# 5) Copy the remaining code/bundle (changes more frequently)
 USER rocketchat
+
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm/node_modules/aws-sdk /app/bundle/programs/server/npm/node_modules/aws-sdk
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm/node_modules/@rocket.chat/jwt /app/bundle/programs/server/npm/node_modules/@rocket.chat/jwt
+COPY --chown=rocketchat:rocketchat bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine
+
+COPY --chown=rocketchat:rocketchat bundle/programs/web.browser/app/livechat /app/bundle/programs/web.browser/app/livechat
+COPY --chown=rocketchat:rocketchat bundle/programs/web.browser.legacy/app/livechat /app/bundle/programs/web.browser.legacy/app/livechat
+
+COPY --chown=rocketchat:rocketchat \
+    --exclude=bundle/programs/server/npm/node_modules/isolated-vm \
+    --exclude=bundle/programs/server/npm/node_modules/meteor \
+    --exclude=bundle/programs/server/npm/node_modules/aws-sdk \
+    bundle/programs/server/npm /app/bundle/programs/server/npm
+
+COPY --chown=rocketchat:rocketchat bundle/programs/web.browser/dynamic/node_modules /app/bundle/programs/web.browser/dynamic/node_modules
+COPY --chown=rocketchat:rocketchat bundle/programs/web.browser.legacy/dynamic/node_modules /app/bundle/programs/web.browser.legacy/dynamic/node_modules
+
+COPY --chown=rocketchat:rocketchat \
+    --exclude=bundle/programs/server/package*.json \
+    --exclude=bundle/programs/server/npm-*.js* \
+    --exclude=bundle/programs/server/npm \
+    --exclude=bundle/programs/web.browser/app/livechat \
+    --exclude=bundle/programs/web.browser/dynamic/node_modules \
+    --exclude=bundle/programs/web.browser.legacy/app/livechat \
+    --exclude=bundle/programs/web.browser.legacy/dynamic/node_modules \
+    . /app
 
 VOLUME /app/uploads
 

@@ -111,4 +111,4 @@ runs:
     - name: Clean up temporary files
       shell: bash
       run: |
-        sudo rm -rf /tmp/bundle
+        sudo rm -rf /tmp/build
