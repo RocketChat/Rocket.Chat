@@ -85,10 +85,13 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	};
 
 	const insertText = (text: string): void => {
+
+		const newCursorPosition = input.selectionStart + text.length;
+
 		setText(text, {
 			selection: ({ start, end }) => ({
-				start: start + text.length,
-				end: end + text.length,
+				start: newCursorPosition,
+				end: newCursorPosition,
 			}),
 		});
 	};
@@ -279,8 +282,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selectionStart + text.length;
-		input.selectionEnd = selectionStart + text.length;
+		input.selectionStart = input.selectionEnd = (selection.start ?? 0) + text.length;
+
 		if (selectionStart !== selectionEnd) {
 			input.selectionStart = selectionStart;
 		}
