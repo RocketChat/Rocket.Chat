@@ -2,6 +2,8 @@ import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+
 const UsernameSchema = {
 	type: 'string',
 	pattern: '^@[A-Za-z0-9_=\\/.+-]+:(.+)$',
@@ -222,7 +224,7 @@ const SendJoinResponseSchema = {
 const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 
 export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
-	const { sendJoin } = services;
+	const { sendJoin, federationAuth } = services;
 
 	return new Router('/federation').put(
 		'/v2/send_join/:roomId/:stateKey',
@@ -235,6 +237,7 @@ export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
+		canAccessResourceMiddleware(federationAuth, 'room'),
 		async (c) => {
 			const { roomId, stateKey } = c.req.param();
 			const body = await c.req.json();

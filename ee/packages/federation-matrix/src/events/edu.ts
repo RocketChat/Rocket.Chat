@@ -20,14 +20,8 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 				return;
 			}
 
-			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
-			if (!matrixUser?.username) {
-				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
-				return;
-			}
-
 			void api.broadcast('user.activity', {
-				user: matrixUser.username,
+				user: data.user_id,
 				isTyping: data.typing,
 				roomId: matrixRoom._id,
 			});
@@ -42,7 +36,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 		}
 
 		try {
-			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
+			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
 				logger.debug(`No federated user found for Matrix user_id: ${data.user_id}`);
 				return;
