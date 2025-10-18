@@ -74,10 +74,10 @@ export function addSettings(): Promise<void> {
 						enableQuery,
 					});
 
-					await this.add('VoIP_TeamCollab_SIP_Server_Port', 5080, {
+					await this.add('VoIP_TeamCollab_SIP_Server_Port', 5060, {
 						type: 'int',
 						public: false,
-						invalidValue: 5080,
+						invalidValue: 5060,
 						enableQuery,
 					});
 				});
