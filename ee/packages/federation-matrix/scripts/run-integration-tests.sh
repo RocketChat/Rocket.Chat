@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_ROOT="$(dirname "$SCRIPT_DIR")"
 DOCKER_COMPOSE_FILE="$PACKAGE_ROOT/docker-compose.test.yml"
-MAX_WAIT_TIME=150  # 2:30 minutes
+MAX_WAIT_TIME=240  # 4 minutes
 CHECK_INTERVAL=5   # Check every 5 seconds
 RC1_CONTAINER="rc1"
 
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --element         Include Element web client in the test environment"
             echo "  --help, -h        Show this help message"
             echo ""
-            echo "By default, only runs the 'test' profile (Rocket.Chat, Synapse, MongoDB)"
+            echo "By default, runs the 'test' profile (Rocket.Chat, Synapse, MongoDB)"
             echo "Use --element to run all services including Element web client"
             exit 0
             ;;
@@ -83,7 +83,7 @@ cleanup() {
             log_info "  - Element: https://element"
         fi
         if [ "$INCLUDE_ELEMENT" = true ]; then
-            log_info "To stop containers manually, run: docker-compose -f $DOCKER_COMPOSE_FILE --profile test --profile element down -v"
+            log_info "To stop containers manually, run: docker-compose -f $DOCKER_COMPOSE_FILE --profile element down -v"
         else
             log_info "To stop containers manually, run: docker-compose -f $DOCKER_COMPOSE_FILE --profile test down -v"
         fi
@@ -91,7 +91,7 @@ cleanup() {
         log_info "Cleaning up services..."
         if [ -f "$DOCKER_COMPOSE_FILE" ]; then
             if [ "$INCLUDE_ELEMENT" = true ]; then
-                docker-compose -f "$DOCKER_COMPOSE_FILE" --profile test --profile element down -v 2>/dev/null || true
+                docker-compose -f "$DOCKER_COMPOSE_FILE" --profile element down -v 2>/dev/null || true
             else
                 docker-compose -f "$DOCKER_COMPOSE_FILE" --profile test down -v 2>/dev/null || true
             fi
@@ -123,8 +123,8 @@ log_info "====================================="
 
 # Start services
 if [ "$INCLUDE_ELEMENT" = true ]; then
-    log_info "Starting federation services with Element web client..."
-    docker-compose -f "$DOCKER_COMPOSE_FILE" --profile test --profile element up -d --build
+    log_info "Starting all federation services including Element web client..."
+    docker-compose -f "$DOCKER_COMPOSE_FILE" --profile element up -d --build
 else
     log_info "Starting federation services (test profile only)..."
     docker-compose -f "$DOCKER_COMPOSE_FILE" --profile test up -d --build

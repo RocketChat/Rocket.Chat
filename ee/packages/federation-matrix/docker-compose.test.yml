@@ -7,6 +7,9 @@ services:
   traefik:
     image: traefik:v2.9
     container_name: traefik
+    profiles:
+      - test
+      - element
     command:
       - "--api.insecure=true"
       # - "--log.level=DEBUG"
@@ -43,6 +46,7 @@ services:
     container_name: hs1
     profiles:
       - test
+      - element
     entrypoint: |
       sh -c
       "update-ca-certificates && 
@@ -81,6 +85,7 @@ services:
     container_name: rc1
     profiles:
       - test
+      - element
     environment:
       ROOT_URL: https://rc1
       PORT: 3000
@@ -120,6 +125,7 @@ services:
     container_name: mongo
     profiles:
       - test
+      - element
     restart: on-failure
     ports:
       - "27017:27017"
