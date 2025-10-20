@@ -73,7 +73,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 	}
 
 	// TODO: CACHE: maybe a queue?
-	await afterLeaveRoomCallback.run(user, room);
+	await afterLeaveRoomCallback.run({ user, kicker: options?.byUser }, room);
 
 	void notifyOnRoomChangedById(rid);
 
