@@ -2006,7 +2006,6 @@
   "Log_Trace_Subscriptions": "구독 요청 추적",
   "Log_Trace_Subscriptions_Filter": "구독 필터 추적",
   "Log_Trace_Subscriptions_Filter_Description": "정규식(`new RegExp('text')`)으로 취급됩니다. 모든 요청을 보려면 비워두세요.",
-  "Log_View_Limit": "표시 제한 로그",
   "Logged_out_of_other_clients_successfully": "다른 클라이언트에서 로그아웃 했습니다.",
   "Login": "로그인",
   "Login_Attempts": "로그인 시도 실패",
