@@ -261,8 +261,6 @@ export interface StreamerEvents {
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
 
-	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
-
 	'room-data': [{ key: string; args: [IOmnichannelRoom | Pick<IOmnichannelRoom, '_id'>] }];
 
 	'notify-room-users': [
