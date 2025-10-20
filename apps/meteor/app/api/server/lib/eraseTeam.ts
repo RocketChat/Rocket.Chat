@@ -64,7 +64,6 @@ export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRe
 			deletedRooms.add(rid);
 		}
 	});
-	deletedRooms.add(team.roomId);
 	return Array.from(deletedRooms);
 };
 
