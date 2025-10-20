@@ -11,7 +11,8 @@ import { useIceServers } from '../hooks/useIceServers';
 interface BaseSession {
 	state: State;
 	connectionState: ConnectionState;
-	peerInfo?: PeerInfo;
+	peerInfo: PeerInfo | undefined;
+	transferredBy: string | undefined;
 	muted: boolean;
 	held: boolean;
 	startedAt: Date | null; // todo not sure if I need this

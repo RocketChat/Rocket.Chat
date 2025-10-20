@@ -76,7 +76,7 @@ test.describe.parallel('Federation - CE version', () => {
 		]);
 
 		await poFederationChannelServer2.sidenav.openChat(channelName);
-		await poFederationChannelServer2.tabs.btnTabMembers.click();
+		await poFederationChannelServer2.roomToolbar.openMembersTab();
 		await poFederationChannelServer2.tabs.members.showAllUsers();
 
 		await expect(poFederationChannelServer2.tabs.members.getUserInList(constants.RC_SERVER_2.username)).toBeVisible();

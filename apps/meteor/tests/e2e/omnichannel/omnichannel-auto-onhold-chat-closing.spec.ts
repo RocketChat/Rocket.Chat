@@ -4,7 +4,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
@@ -13,7 +13,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
@@ -24,7 +24,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
 	test.afterAll(async ({ api }) => {
 		await agent.page.close();
@@ -56,7 +56,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
 		await agent.poHomeChannel.content.sendMessage('this_is_a_test_message_from_agent');
 
-		await agent.poHomeChannel.content.btnOnHold.click();
+		await agent.poHomeChannel.quickActionsRoomToolbar.placeChatOnHold();
 
 		await agent.poHomeChannel.content.btnModalConfirm.click();
 
