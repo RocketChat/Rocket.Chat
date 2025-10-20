@@ -1,6 +1,13 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import {
+	type AtLeast,
+	type IRoom,
+	type IUser,
+	type MessageTypesValues,
+	isOmnichannelRoom,
+	isRoomWithJoinCode,
+} from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -77,7 +84,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(roomId, user, inviter, options);
 	}
 
-	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
+	async removeUserFromRoom(
+		roomId: string,
+		user: IUser,
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 

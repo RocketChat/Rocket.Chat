@@ -14,6 +14,7 @@
   "ABAC": "Attribute Based Access Control (ABAC)",
   "ABAC_Enabled": "Enable Attribute Based Access Control (ABAC)",
   "abac-management": "Manage ABAC configuration",
+  "abac_removed_user_from_the_room": "was removed by ABAC",
   "AI_Actions": "AI actions",
   "API": "API",
   "API_Add_Personal_Access_Token": "Add new Personal Access Token",
