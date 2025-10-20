@@ -28,9 +28,7 @@ export const createOrUpdateUnit = async (
 		unitDepartments: departments,
 	};
 
-	const response = id
-		? await api.post(`/livechat/units/${id}`, unitPayload)
-		: await api.post('/livechat/units', unitPayload);
+	const response = id ? await api.post(`/livechat/units/${id}`, unitPayload) : await api.post('/livechat/units', unitPayload);
 
 	if (response.status() !== 200) {
 		throw new Error(`Failed to create or update unit [http status: ${response.status()}]`);
