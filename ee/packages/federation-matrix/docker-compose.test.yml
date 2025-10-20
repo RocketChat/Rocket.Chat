@@ -8,8 +8,10 @@ services:
     image: traefik:v2.9
     container_name: traefik
     profiles:
-      - test
-      - element
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
     command:
       - "--api.insecure=true"
       # - "--log.level=DEBUG"
@@ -45,8 +47,10 @@ services:
     image: matrixdotorg/synapse:latest
     container_name: hs1
     profiles:
-      - test
-      - element
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
     entrypoint: |
       sh -c
       "update-ca-certificates && 
@@ -79,13 +83,57 @@ services:
       - "traefik.http.routers.hs1.tls=true"
       - "traefik.http.services.hs1.loadbalancer.server.port=8008"
 
-# Rocket.Chat rc1 (container)
-  rc1:
-    image: rocketchat/rocket.chat:7.11.0-rc.4
+# Rocket.Chat rc1 (local build)
+  rc1-local:
+    build:
+      context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
+      dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
+    image: rocket.chat:local-test
     container_name: rc1
     profiles:
-      - test
-      - element
+      - test-local
+      - element-local
+    environment:
+      ROOT_URL: https://rc1
+      PORT: 3000
+      MONGO_URL: mongodb://mongo:27017/rc1?replicaSet=rs0
+      NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/rootCA.pem
+      LOG_LEVEL: debug
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC1}
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      OVERWRITE_SETTING_Federation_Service_Enabled: true
+      OVERWRITE_SETTING_Federation_Service_Domain: rc1
+      OVERWRITE_SETTING_Federation_Service_Matrix_Signing_Key: ${MATRIX_SIGNING_KEY_RC1}
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
+      ADMIN_USERNAME: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: admin@admin.com
+      TEST_MODE: true
+    volumes:
+      - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
+    networks:
+      - rc1-net
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rc1.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1.entrypoints=websecure"
+      - "traefik.http.routers.rc1.tls=true"
+      - "traefik.http.services.rc1.loadbalancer.server.port=3000"
+      # HTTPS Redirect
+      - "traefik.http.middlewares.rc1.redirectscheme.scheme=https"
+      - "traefik.http.routers.rc1-http.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1-http.middlewares=rc1"
+
+# Rocket.Chat rc1 (pre-built image)
+  rc1-prebuilt:
+    image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
+    container_name: rc1
+    profiles:
+      - test-prebuilt
+      - element-prebuilt
     environment:
       ROOT_URL: https://rc1
       PORT: 3000
@@ -124,8 +172,10 @@ services:
     image: mongo:8.0
     container_name: mongo
     profiles:
-      - test
-      - element
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
     restart: on-failure
     ports:
       - "27017:27017"
@@ -148,7 +198,8 @@ services:
     image: vectorim/element-web
     container_name: element
     profiles:
-      - element
+      - element-local
+      - element-prebuilt
     # ports:
     #   - "8080:80"
     volumes:
