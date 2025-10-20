@@ -306,7 +306,7 @@ export const isDeletedMessage = (message: IMessage): message is IEditedMessage =
 export interface IFederatedMessage extends IMessage {
 	federation: {
 		eventId: string;
-	}
+	};
 }
 
 export interface INativeFederatedMessage extends IMessage {
