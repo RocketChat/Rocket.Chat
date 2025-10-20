@@ -1353,7 +1353,6 @@
   "Log_Trace_Subscriptions": "Galwadau tanysgrifio olrhain",
   "Log_Trace_Subscriptions_Filter": "Dilynwch hidlo tanysgrifio",
   "Log_Trace_Subscriptions_Filter_Description": "Bydd y testun yma yn cael ei werthuso fel RegExp (`RegExp newydd ('testun')`). Cadwch yn wag i ddangos olrhain pob galwad.",
-  "Log_View_Limit": "Cyfyngiad Gweld Log",
   "Logged_out_of_other_clients_successfully": "Wedi'i gyrraedd allan o gleientiaid eraill yn llwyddiannus",
   "Login": "Mewngofnodi",
   "Login_with": "Mewngofnodi gyda %s",
