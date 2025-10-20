@@ -70,7 +70,7 @@ const validators: RoomSettingsValidators = {
 				action: 'Viewing_room_administration',
 			});
 		}
-		if (settings.get('Abac_Enabled') && value && room?.abacAttributes?.length) {
+		if (settings.get('ABAC_Enabled') && value && room?.abacAttributes?.length) {
 			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
