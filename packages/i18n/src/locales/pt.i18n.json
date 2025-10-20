@@ -1597,7 +1597,6 @@
   "Log_Trace_Subscriptions": "Chamadas de assinatura de pesquisa",
   "Log_Trace_Subscriptions_Filter": "Filtro de assinatura de pesquisa",
   "Log_Trace_Subscriptions_Filter_Description": "O texto aqui será avaliado como RegExp (`new RegExp ('text')`). Mantenha-o vazio para mostrar a pesquisa de todas as chamadas.",
-  "Log_View_Limit": "Limite de Visualização de Log",
   "Logged_out_of_other_clients_successfully": "Desconectado de outros clientes com sucesso",
   "Login": "Entrar",
   "Login_with": "Entrar com %s",

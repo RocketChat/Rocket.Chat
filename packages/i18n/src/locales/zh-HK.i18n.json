@@ -1375,7 +1375,6 @@
   "Log_Trace_Subscriptions": "跟踪订阅通话",
   "Log_Trace_Subscriptions_Filter": "跟踪订阅过滤器",
   "Log_Trace_Subscriptions_Filter_Description": "这里的文本将被评估为RegExp（`new RegExp（'text'）`）。保持空白以显示每个呼叫的跟踪。",
-  "Log_View_Limit": "日志视图限制",
   "Logged_out_of_other_clients_successfully": "成功退出其他客户端",
   "Login": "登录",
   "Login_with": "使用%s登录",

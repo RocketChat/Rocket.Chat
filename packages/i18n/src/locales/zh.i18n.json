@@ -2036,7 +2036,6 @@
   "Log_Trace_Subscriptions": "跟踪订阅调用",
   "Log_Trace_Subscriptions_Filter": "跟踪订阅过滤器",
   "Log_Trace_Subscriptions_Filter_Description": "这里的文本将被作为正则表达式求值（`new RegExp（'text'）`）。保持空白以显示每个调用的跟踪。",
-  "Log_View_Limit": "日志展示上限",
   "Logged_out_of_other_clients_successfully": "登出其它设备成功",
   "Login": "登录",
   "Login_Attempts": "失败的登录尝试",

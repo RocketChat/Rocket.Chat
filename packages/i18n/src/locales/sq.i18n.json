@@ -1357,7 +1357,6 @@
   "Log_Trace_Subscriptions": "Thërret thirrjet e abonimit",
   "Log_Trace_Subscriptions_Filter": "Trajto filtrin e pajtimit",
   "Log_Trace_Subscriptions_Filter_Description": "Teksti këtu do të vlerësohet si RegExp (`new RegExp ('text')`). Mbajeni bosh për të treguar gjurmimin e çdo thirrjeje.",
-  "Log_View_Limit": "Identifikohu Shiko Limit",
   "Logged_out_of_other_clients_successfully": "Identifikuar nga klientë të tjerë me sukses",
   "Login": "Hyrje",
   "Login_with": "Identifikohuni me %s",

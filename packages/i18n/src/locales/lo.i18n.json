@@ -1386,7 +1386,6 @@
   "Log_Trace_Subscriptions": "ຕິດຕາມການໂທຈອງ",
   "Log_Trace_Subscriptions_Filter": "ຕິດຕາມກວດສອບການກັ່ນຕອງ",
   "Log_Trace_Subscriptions_Filter_Description": "ຂໍ້ຄວາມທີ່ນີ້ຈະຖືກປະເມີນເປັນ RegExp (`ໃຫມ່ RegExp ('ຂໍ້ຄວາມ')`). ໃຫ້ມັນຫວ່າງເພື່ອສະແດງໃຫ້ເຫັນການຕິດຕາມຂອງທຸກໆສາຍ.",
-  "Log_View_Limit": "ເຂົ້າສູ່ລະບົບເບິ່ງຈໍາກັດ",
   "Logged_out_of_other_clients_successfully": "ອອກຈາກລະບົບຂອງລູກຄ້າອື່ນໆຢ່າງສໍາເລັດຜົນ",
   "Login": "ເຂົ້າ​ສູ່​ລະ​ບົບ",
   "Login_with": "ເຂົ້າສູ່ລະບົບ %s",
