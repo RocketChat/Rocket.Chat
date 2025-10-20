@@ -1,7 +1,7 @@
 {
 	"$schema": "https://www.schemastore.org/package",
 	"name": "@rocket.chat/desktop-api",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"type": "module",
 	"exports": {
 		".": {

@@ -294,7 +294,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return getURL(path, params, cloudDeepLinkUrl);
 	}
 
-	async getMessageURLToReplyTo(roomType: string, roomId: string, roomName: string, messageIdToReplyTo: string): Promise<string> {
-		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId, name: roomName })}?msg=${messageIdToReplyTo}`, { full: true });
+	async getMessageURLToReplyTo(roomType: string, roomId: string, messageIdToReplyTo: string): Promise<string> {
+		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId })}?msg=${messageIdToReplyTo}`, { full: true });
 	}
 }
