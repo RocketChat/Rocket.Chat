@@ -599,6 +599,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	describe('ABAC Managed Room Default Conversion Restrictions', () => {
 		const conversionAttrKey = `conversion_test_${Date.now()}`;
+		const teamName = `abac-conversion-team-${Date.now()}`;
 		let abacRoomId: string;
 		let teamIdForConversion: string;
 		let teamRoomId: string;
@@ -624,7 +625,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		before('create team, private room inside, add ABAC attribute', async () => {
-			const teamName = `abac-conversion-team-${Date.now()}`;
+			// Public team
 			const teamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
 			teamIdForConversion = teamRes.body.team._id;
 
@@ -640,6 +641,10 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(credentials)
 				.send({ values: ['beta'] })
 				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([deleteTeam(credentials, teamName)]);
 		});
 
 		it('should fail converting ABAC-managed private room into default room', async () => {
@@ -665,14 +670,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.error).to.include('error-room-is-abac-managed');
 				});
 		});
-
-		after(async () => {
-			await deleteTeam(credentials, teamIdForConversion);
-		});
 	});
 
 	describe('Extended Validations & Edge Cases', () => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		let secondAttributeId: string;
 		const firstKey = `${initialKey}_first`;
 		const secondKey = `${initialKey}_second`;
