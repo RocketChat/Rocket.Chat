@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -41,7 +41,11 @@ export interface IRoomService {
 			createAsHidden?: boolean;
 		},
 	): Promise<boolean | undefined>;
-	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
+	removeUserFromRoom(
+		roomId: string,
+		user: IUser,
+		options?: { byUser?: Pick<IUser, '_id' | 'username'>; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,
