@@ -1357,7 +1357,6 @@
   "Log_Trace_Subscriptions": "ட்ரேஸ் சந்தா அழைப்பு",
   "Log_Trace_Subscriptions_Filter": "ட்ரேஸ் சந்தா வடிப்பான்",
   "Log_Trace_Subscriptions_Filter_Description": "இங்கு உரை RegExp (`புதிய RegExp ('உரை')` `என மதிப்பிடப்படுகிறது. ஒவ்வொரு அழைப்பினதும் சுவடுகளைக் காட்டுவதற்கு காலியாக வைக்கவும்.",
-  "Log_View_Limit": "பார்வை வரம்பை உள்நுழைய",
   "Logged_out_of_other_clients_successfully": "வெற்றிகரமாக மற்ற வாடிக்கையாளர்கள் வெளியேற்றப்படுவீர்கள்",
   "Login": "உள் நுழை",
   "Login_with": "%s கொண்டு உள்நுழை",

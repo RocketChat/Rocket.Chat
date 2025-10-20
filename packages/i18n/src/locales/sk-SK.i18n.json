@@ -1363,7 +1363,6 @@
   "Log_Trace_Subscriptions": "Trasové odberové hovory",
   "Log_Trace_Subscriptions_Filter": "Trasovací odberový filter",
   "Log_Trace_Subscriptions_Filter_Description": "Text tu bude hodnotený ako RegExp (`new RegExp ('text')`). Nechajte ju prázdne, aby ste zobrazili stopu každého hovoru.",
-  "Log_View_Limit": "Limit zobrazenia denníka",
   "Logged_out_of_other_clients_successfully": "Odhlásený z iných klientov úspešne",
   "Login": "Prihlásiť sa",
   "Login_with": "Prihláste sa s%s",

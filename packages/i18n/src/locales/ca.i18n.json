@@ -2295,7 +2295,6 @@
   "Log_Trace_Subscriptions": "Seguiment de trucades de subscripció",
   "Log_Trace_Subscriptions_Filter": "Filtre de subscripció de seguiment",
   "Log_Trace_Subscriptions_Filter_Description": "El text aquí s'avaluarà com RegExp ( `new RegExp ( 'text')`). Manteniu-buit per mostrar el rastre de cada trucada.",
-  "Log_View_Limit": "Límit de vista del registre",
   "Logged_out_of_other_clients_successfully": "S'han tancat les sessions des d'altres clients correctament",
   "Login": "Inicia sessió",
   "Login_Attempts": "Intents d’inici de sessió fallits",
