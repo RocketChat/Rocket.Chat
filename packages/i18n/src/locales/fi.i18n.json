@@ -2627,7 +2627,6 @@
   "Log_Trace_Subscriptions": "Jäljitä tilauskutsuja",
   "Log_Trace_Subscriptions_Filter": "Jäljitä tilauksen suodatin",
   "Log_Trace_Subscriptions_Filter_Description": "Tässä oleva teksti arvioidaan RegExp:nä (`new RegExp('text')`). Jättämällä sen tyhjäksi voit näyttää joka kutsun jäljityksen.",
-  "Log_View_Limit": "Lokinäkymän raja",
   "Log_out_devices_remotely": "Etäkirjaudu ulos laitteista",
   "Logged_In_Via": "Kirjautumistapa",
   "Logged_Out_Banner_Text": "Työtilan ylläpitäjä lopetti istuntosi tässä laitteessa. Jatka kirjautumalla sisään uudelleen.",

@@ -1372,7 +1372,6 @@
   "Log_Trace_Subscriptions": "Izsekot abonētos zvanus",
   "Log_Trace_Subscriptions_Filter": "Izsekot abonentus filtrs",
   "Log_Trace_Subscriptions_Filter_Description": "Šeit teksts tiks vērtēts kā RegExp (`new RegExp ('text')`). Saglabājiet to tukšu, lai parādītu katra zvana pēdas.",
-  "Log_View_Limit": "Reģistrēt skatījumu limitu",
   "Logged_out_of_other_clients_successfully": "Sekmīgi izrakstījās no citiem klientiem",
   "Login": "Pieteikties",
   "Login_with": "Pieteikties ar %s",
