@@ -1560,7 +1560,6 @@
   "Log_Trace_Subscriptions": "Abonnement-Anrufe verfolgen",
   "Log_Trace_Subscriptions_Filter": "Trace-Abonnementfilter",
   "Log_Trace_Subscriptions_Filter_Description": "Der Text hier wird als RegExp (`new RegExp ('text') ') ausgewertet. Lass es leer, um eine Trace jedes Anrufs anzuzeigen.",
-  "Log_View_Limit": "Begrenzung der Log-Ansicht",
   "Logged_out_of_other_clients_successfully": "Du wurdest von allen anderen Geräten abgemeldet",
   "Login": "Anmelden",
   "Login_with": "Anmelden mit %s",
