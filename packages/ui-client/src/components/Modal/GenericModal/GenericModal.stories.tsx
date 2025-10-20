@@ -47,7 +47,7 @@ export const Success = Template.bind({});
 Success.args = { variant: 'success' };
 
 export const DangerSecondary = Template.bind({});
-DangerSecondary.args = { variant: 'danger-secondary' };
+DangerSecondary.args = { variant: 'secondary-danger' };
 
 export const WithDontAskAgain: StoryFn<typeof GenericModalDoNotAskAgain> = (args) => <GenericModalDoNotAskAgain {...args} />;
 WithDontAskAgain.args = {

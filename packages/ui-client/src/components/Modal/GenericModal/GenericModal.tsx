@@ -22,7 +22,7 @@ import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
 import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
-type VariantType = 'danger' | 'danger-secondary' | 'warning' | 'info' | 'success' | 'upsell';
+type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
@@ -50,7 +50,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 	switch (variant) {
 		case 'danger':
 			return { danger: true };
-		case 'danger-secondary':
+		case 'secondary-danger':
 			return { secondary: true, danger: true };
 		case 'warning':
 		case 'upsell':

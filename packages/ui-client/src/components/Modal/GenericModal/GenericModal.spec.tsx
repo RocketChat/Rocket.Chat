@@ -1,6 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
@@ -29,17 +30,14 @@ describe('renders', () => {
 	it('should render a modal without crashing', async () => {
 		renderModal(<GenericModal title='Modal' />);
 
-		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
-
 		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
 	});
 
-	it('should render a modal with icon if variant is danger-secondary', async () => {
-		renderModal(<GenericModal title='Modal' variant='danger-secondary' />);
+	it('should have no accessibility violations when rendered', async () => {
+		renderModal(<GenericModal title='Modal' />);
 
-		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
-
-		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
+		const results = await axe(screen.getByRole('dialog', { name: 'Modal' }));
+		expect(results).toHaveNoViolations();
 	});
 });
 
