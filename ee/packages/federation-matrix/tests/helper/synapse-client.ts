@@ -144,39 +144,6 @@ export class SynapseClient {
 		return null;
 	}
 
-	async createUser(username: string, password: string, displayName?: string): Promise<string> {
-		if (!this.matrixClient) {
-			throw new Error('Matrix client not initialized');
-		}
-
-		const userId = `@${username}:${this.url.replace('https://', '').replace('http://', '')}`;
-		
-		try {
-			// Use the admin API to create a user
-			const response = await fetch(`${this.url}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`, {
-				method: 'PUT',
-				headers: {
-					'Authorization': `Bearer ${this.matrixClient.getAccessToken()}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					password,
-					displayname: displayName || username,
-					admin: false,
-				}),
-			});
-
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(`Failed to create user: ${response.status} ${response.statusText} - ${errorText}`);
-			}
-
-			return userId;
-		} catch (error) {
-			throw new Error(`Failed to create user ${username}: ${error}`);
-		}
-	}
-
 	async close(): Promise<void> {
 		if (this.matrixClient) {
 			this.matrixClient.stopClient();

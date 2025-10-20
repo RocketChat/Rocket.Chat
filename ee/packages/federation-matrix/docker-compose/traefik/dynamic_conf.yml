@@ -1,0 +1,56 @@
+tls:
+  certificates:
+    # synapse1
+    - certFile: "/etc/traefik/certs/hs1.pem"
+      keyFile: "/etc/traefik/certs/hs1-key.pem"
+
+    # synapse2
+    - certFile: "/etc/traefik/certs/hs2.pem"
+      keyFile: "/etc/traefik/certs/hs2-key.pem"
+
+    # rocket.chat rc1 (container)
+    - certFile: "/etc/traefik/certs/rc1.pem"
+      keyFile: "/etc/traefik/certs/rc1-key.pem"
+
+    # rocket.chat rc2 (container)
+    - certFile: "/etc/traefik/certs/rc2.pem"
+      keyFile: "/etc/traefik/certs/rc2-key.pem"
+
+    # rocket.chat rc.host (local)
+    - certFile: "/etc/traefik/certs/rc.host.pem"
+      keyFile: "/etc/traefik/certs/rc.host-key.pem"
+
+    # rocket.chat rocketchat.host (local)
+    - certFile: "/etc/traefik/certs/rocketchat.host.pem"
+      keyFile: "/etc/traefik/certs/rocketchat.host-key.pem"
+
+    # element
+    - certFile: "/etc/traefik/certs/element.pem"
+      keyFile: "/etc/traefik/certs/element-key.pem"
+
+http:
+  services:
+    rc_host:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:3000"
+        passHostHeader: true
+
+  routers:
+    rc_host:
+      rule: "Host(`rc.host`)"
+      entryPoints: ["websecure"]
+      tls: true
+      service: "rc_host"
+    rc_host_http:
+      rule: "Host(`rc.host`)"
+      entryPoints: ["web"]
+      service: "rc_host"
+      middlewares:
+        - redirect-to-https
+
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true

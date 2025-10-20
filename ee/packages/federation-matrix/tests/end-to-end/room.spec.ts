@@ -1,8 +1,8 @@
-import { IS_EE } from '../../.././../../apps/meteor/tests/e2e/config/constants';
+import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { SynapseClient } from '../helper/synapse-client';
 import { federationConfig } from '../helper/config';
-import { getRequestConfig, createUser } from '../../.././../../apps/meteor/tests/data/users.helper';
-import { createRoom, getRoomInfo, getGroupHistory, findRoomMember } from '../../.././../../apps/meteor/tests/data/rooms.helper';
+import { getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
+import { createRoom, getRoomInfo, getGroupHistory, findRoomMember } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { IMessage } from '@rocket.chat/core-typings';
 // import { KnownMembership } from 'matrix-js-sdk';
 // import { t } from 'i18next';
@@ -58,18 +58,10 @@ import { IMessage } from '@rocket.chat/core-typings';
 		);
 		await hs1AdminApp.initialize();
 
-		// Generate dynamic user credentials with randomness
-		
-		hs1User1Username = `user-${timestamp}`;
-		hs1User1Password = `pass-${timestamp}`;
+		// User previously created in Synapse
+		hs1User1Username = `alice`;
+		hs1User1Password = `alice`;
 		hs1User1MatrixId = `@${hs1User1Username}:${federationConfig.hs1.homeserver}`;
-
-		// Create additional user in hs1 for testing multiple federated users
-		await hs1AdminApp.createUser(
-			hs1User1Username,
-			hs1User1Password,
-			hs1User1Username
-		);
 
 		// Create user1 Synapse client for HS1
 		hs1User1App = new SynapseClient(
