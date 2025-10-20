@@ -425,7 +425,7 @@ export class LDAPEEManager extends LDAPManager {
 		const teamNames = this.getDataMappedByLdapGroups(map, ldapUserTeams);
 
 		const allTeamNames = [...new Set(Object.values(map).flat())];
-		const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
+		const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1, roomId: 1 } });
 
 		const inTeamIds = allTeams.filter(({ name }) => teamNames.includes(name)).map(({ _id }) => _id);
 		const notInTeamIds = allTeams.filter(({ name }) => !teamNames.includes(name)).map(({ _id }) => _id);
