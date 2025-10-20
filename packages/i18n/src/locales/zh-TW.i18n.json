@@ -2262,7 +2262,6 @@
   "Log_Trace_Subscriptions": "追踪訂閱通話",
   "Log_Trace_Subscriptions_Filter": "跟踪訂閱過濾器",
   "Log_Trace_Subscriptions_Filter_Description": "這裡的文字將被評估為RegExp（`new RegExp（'text'）`）。保持空白以顯示每個通話的追踪。",
-  "Log_View_Limit": "日誌檢視限制",
   "Logged_out_of_other_clients_successfully": "登出其他客戶端成功",
   "Login": "登入",
   "Login_Attempts": "嘗試登入失敗",

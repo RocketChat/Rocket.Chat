@@ -3258,7 +3258,6 @@
   "Log_Trace_Subscriptions": "Trace subscription calls",
   "Log_Trace_Subscriptions_Filter": "Trace subscription filter",
   "Log_Trace_Subscriptions_Filter_Description": "The text here will be evaluated as RegExp (`new RegExp('text')`). Keep it empty to show trace of every call.",
-  "Log_View_Limit": "Log View Limit",
   "Log_in_to_sync": "Log in to sync",
   "Log_out_devices_remotely": "Log out devices remotely",
   "Logged_In_Via": "Logged in via",

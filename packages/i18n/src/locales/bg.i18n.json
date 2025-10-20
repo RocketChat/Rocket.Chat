@@ -1355,7 +1355,6 @@
   "Log_Trace_Subscriptions": "Проследяване на абонаментните обаждания",
   "Log_Trace_Subscriptions_Filter": "Филтър за абонамент за проследяване",
   "Log_Trace_Subscriptions_Filter_Description": "Текстът тук ще бъде оценен като RegExp (\"new RegExp ('text')`). Задръжте го празен, за да покажете следа от всяко обаждане.",
-  "Log_View_Limit": "Грешка при показването на дневника",
   "Logged_out_of_other_clients_successfully": "Излезли успешно от други клиенти",
   "Login": "Влез",
   "Login_with": "Влез с%s",
