@@ -11,7 +11,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe.only : describe.skip)('[ABAC] (Enterprise Only)', function () {
+(IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let testRoom: IRoom;
