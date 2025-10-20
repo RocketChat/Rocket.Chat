@@ -1448,7 +1448,6 @@
   "Log_Trace_Subscriptions": "Theo dõi cuộc gọi đăng ký",
   "Log_Trace_Subscriptions_Filter": "Bộ lọc đăng ký theo dõi",
   "Log_Trace_Subscriptions_Filter_Description": "Văn bản ở đây sẽ được đánh giá là RegExp (`new RegExp ('text')`). Giữ trống để hiển thị dấu vết của mọi cuộc gọi.",
-  "Log_View_Limit": "Log giới hạn view",
   "Logged_out_of_other_clients_successfully": "Đăng nhập thành công từ các khách hàng khác",
   "Login": "Đăng nhập",
   "Login_with": "Đăng nhập với%s",

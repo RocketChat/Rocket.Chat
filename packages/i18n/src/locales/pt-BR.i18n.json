@@ -3083,7 +3083,6 @@
   "Log_Trace_Subscriptions": "Chamadas de assinatura de rastreamento",
   "Log_Trace_Subscriptions_Filter": "Filtro de assinatura de rastreamento",
   "Log_Trace_Subscriptions_Filter_Description": "O texto aqui será avaliado como RegExp (`novo RegExp ('text')`). Mantenha-o vazio para mostrar o rastreamento de todas as chamadas.",
-  "Log_View_Limit": "Limite de visualização de registro",
   "Log_in_to_sync": "Faça login para sincronizar",
   "Log_out_devices_remotely": "Logout de dispositivos remotamente",
   "Logged_In_Via": "Conectado via",

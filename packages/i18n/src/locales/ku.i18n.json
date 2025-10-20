@@ -1351,7 +1351,6 @@
   "Log_Trace_Subscriptions": "Telefonên traceya trace",
   "Log_Trace_Subscriptions_Filter": "Parastina fonksiyona trace",
   "Log_Trace_Subscriptions_Filter_Description": "Vê nivîsê dê wekî RegExp (`RegExp nû '(' text ')` binirxînin. Vala binivîse ku nîşan bide her telefonê nîşan bide.",
-  "Log_View_Limit": "Têkeve View Sînora",
   "Logged_out_of_other_clients_successfully": "Logged out of din ji mişterî bi serkeftî",
   "Login": "چوونەژوور",
   "Login_with": "Login bi %s",

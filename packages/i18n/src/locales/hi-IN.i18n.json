@@ -2736,7 +2736,6 @@
   "Log_Trace_Subscriptions": "सदस्यता कॉल ट्रेस करें",
   "Log_Trace_Subscriptions_Filter": "सदस्यता फ़िल्टर ट्रेस करें",
   "Log_Trace_Subscriptions_Filter_Description": "यहां टेक्स्ट का मूल्यांकन रेगएक्सपी (`नया रेगएक्सपी('टेक्स्ट')`) के रूप में किया जाएगा। प्रत्येक कॉल का ट्रेस दिखाने के लिए इसे खाली रखें।",
-  "Log_View_Limit": "लॉग दृश्य सीमा",
   "Log_in_to_sync": "सिंक करने के लिए लॉग इन करें",
   "Log_out_devices_remotely": "डिवाइसों को दूरस्थ रूप से लॉग आउट करें",
   "Logged_In_Via": "के माध्यम से लॉग इन किया गया",
