@@ -2322,7 +2322,6 @@
   "Log_Trace_Subscriptions": "تتبع مكالمات الاشتراك",
   "Log_Trace_Subscriptions_Filter": "تتبع عامل تصفية الاشتراك",
   "Log_Trace_Subscriptions_Filter_Description": "سيتم تقييم النص هنا على أنه تعبير نمطي (\"تعبير نمطي جديد (\"نص\")\"). احتفظ به فارغًا لإظهار تتبع كل مكالمة.",
-  "Log_View_Limit": "حد عرض التسجيل",
   "Logged_out_of_other_clients_successfully": "تم تسجيل الخروج من الأجهزة الأخرى بنجاح",
   "Login": "تسجيل الدخول",
   "Login_Attempts": "محاولات تسجيل الدخول الفاشلة",

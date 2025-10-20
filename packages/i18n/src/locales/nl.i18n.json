@@ -2313,7 +2313,6 @@
   "Log_Trace_Subscriptions": "Abonnementsgesprekken traceren",
   "Log_Trace_Subscriptions_Filter": "Traceer abonnementsfilter",
   "Log_Trace_Subscriptions_Filter_Description": "De tekst hier wordt geëvalueerd als RegExp (`new RegExp ('text)`). Houd het leeg om het spoor van elk gesprek te tonen.",
-  "Log_View_Limit": "Limiet logboekweergave",
   "Logged_out_of_other_clients_successfully": "Met succes afgemeld bij andere clients",
   "Login": "Log in",
   "Login_Attempts": "Mislukte aanmeldingspogingen",

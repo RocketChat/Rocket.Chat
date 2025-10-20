@@ -2317,7 +2317,6 @@
   "Log_Trace_Subscriptions": "Tracer les appels d'abonnement",
   "Log_Trace_Subscriptions_Filter": "Tracer le filtre d'abonnement",
   "Log_Trace_Subscriptions_Filter_Description": "Ce texte sera évalué comme expression régulière (`new RegExp ('text')`). Laissez le champ vide pour afficher la trace de chaque appel.",
-  "Log_View_Limit": "Limite d'affichage du journal",
   "Logged_out_of_other_clients_successfully": "Déconnexion des autres clients réussie",
   "Login": "Connexion",
   "Login_Attempts": "Échecs de tentatives de connexion",

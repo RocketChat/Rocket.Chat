@@ -1848,7 +1848,6 @@
   "Log_Trace_Subscriptions": "გამოწერის მოთხოვნების მოძიება",
   "Log_Trace_Subscriptions_Filter": "გამოწერის ფილტრის მოძიება",
   "Log_Trace_Subscriptions_Filter_Description": "ამ ველის ტექსტი შეფასდება როგორც RegExp (`new RegExp('text')`). დატოვეთ ცარიელი ყველა ზარის კვალის სანახავად",
-  "Log_View_Limit": "ლოგის ხედვის ზღვარი",
   "Logged_out_of_other_clients_successfully": "სხვა კლიენტებთან წარმატებით გამოვიდა",
   "Login": "შესვლა",
   "Login_with": "შესვლა%s- ით",

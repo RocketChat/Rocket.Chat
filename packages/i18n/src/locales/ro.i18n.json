@@ -1357,7 +1357,6 @@
   "Log_Trace_Subscriptions": "Urmăriți apelurile de abonament",
   "Log_Trace_Subscriptions_Filter": "Trace filtrul de abonament",
   "Log_Trace_Subscriptions_Filter_Description": "Textul de aici va fi evaluat ca RegExp (`nou RegExp ('text')`). Păstrați-o goală pentru a afișa urmele fiecărui apel.",
-  "Log_View_Limit": "Limită vizualizare log-uri",
   "Logged_out_of_other_clients_successfully": "Delogat cu succes din alți clienți",
   "Login": "Autentificare",
   "Login_with": "Autentifică-te cu %s",

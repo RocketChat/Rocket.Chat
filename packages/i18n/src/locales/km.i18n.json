@@ -1609,7 +1609,6 @@
   "Log_Trace_Subscriptions": "តាមដានការហៅតាមការជាវ",
   "Log_Trace_Subscriptions_Filter": "តាមដានតម្រងជាវ",
   "Log_Trace_Subscriptions_Filter_Description": "អត្ថបទនៅទីនេះនឹងត្រូវបានវាយតម្លៃជា RegExp (`បទថ្មី RegExp ('អត្ថបទ')`) ។ រក្សាវាឱ្យនៅទទេដើម្បីបង្ហាញពីដានរាល់ការហៅ។",
-  "Log_View_Limit": "ចូលមើលដែនកំណត់",
   "Logged_out_of_other_clients_successfully": "បានចេញនៃអតិថិជនផ្សេងទៀតដោយជោគជ័យ",
   "Login": "ឡុក​ចូល",
   "Login_with": "ឡុក​ចូល​ជាមួយ %s",

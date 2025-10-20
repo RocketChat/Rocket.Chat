@@ -2433,7 +2433,6 @@
   "Log_Trace_Subscriptions": "Запросы подписки на трассировку",
   "Log_Trace_Subscriptions_Filter": "Фильтр подписки на трассировку",
   "Log_Trace_Subscriptions_Filter_Description": "Текст здесь будет оцениваться как RegExp (`new RegExp ('text')`). Держите его пустым, чтобы показывать след каждого вызова.",
-  "Log_View_Limit": "Лимит строк",
   "Logged_out_of_other_clients_successfully": "Сеансы в других клиентах успешно завершены",
   "Login": "Авторизация",
   "Login_Attempts": "Неудачные попытки входа",
