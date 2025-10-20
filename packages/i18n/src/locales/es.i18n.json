@@ -2352,7 +2352,6 @@
   "Log_Trace_Subscriptions": "Seguimiento de llamadas de suscripción",
   "Log_Trace_Subscriptions_Filter": "Seguimiento de filtro de suscripción",
   "Log_Trace_Subscriptions_Filter_Description": "El texto de aquí se evaluará como regex (\"new RegExp('text')\"). Dejar vacío para mostrar el rastro de cada llamada.",
-  "Log_View_Limit": "Límite de vista de registro",
   "Logged_out_of_other_clients_successfully": "Sesiones de otros clientes cerradas correctamente",
   "Login": "Iniciar sesión",
   "Login_Attempts": "Intentos fallidos de inicio de sesión",

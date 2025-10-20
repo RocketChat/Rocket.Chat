@@ -1359,7 +1359,6 @@
   "Log_Trace_Subscriptions": "Jejaki panggilan langganan",
   "Log_Trace_Subscriptions_Filter": "Salurkan penapis langganan",
   "Log_Trace_Subscriptions_Filter_Description": "Teks di sini akan dinilai sebagai RegExp (`baru RegExp ('text')`). Pastikan ia kosong untuk menunjukkan jejak setiap panggilan.",
-  "Log_View_Limit": "Log Lihat Had",
   "Logged_out_of_other_clients_successfully": "Log keluar daripada pelanggan lain berjaya",
   "Login": "Log masuk",
   "Login_with": "Log masuk dengan %s",

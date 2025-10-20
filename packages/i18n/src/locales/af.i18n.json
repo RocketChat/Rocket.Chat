@@ -1358,7 +1358,6 @@
   "Log_Trace_Subscriptions": "Spoor inskrywing oproepe",
   "Log_Trace_Subscriptions_Filter": "Trace intekening filter",
   "Log_Trace_Subscriptions_Filter_Description": "Die teks hier sal geëvalueer word as RegExp (`nuwe RegExp ('text')`). Hou dit leeg om spoor van elke oproep te wys.",
-  "Log_View_Limit": "Log View Limit",
   "Logged_out_of_other_clients_successfully": "Log uit ander kliënte suksesvol",
   "Login": "Teken aan",
   "Login_with": "Inloggen met%s",

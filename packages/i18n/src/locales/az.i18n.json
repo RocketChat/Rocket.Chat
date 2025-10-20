@@ -1358,7 +1358,6 @@
   "Log_Trace_Subscriptions": "Abunə zənglərini izləyin",
   "Log_Trace_Subscriptions_Filter": "Abunəliyin filtresini izləyin",
   "Log_Trace_Subscriptions_Filter_Description": "Buradaki mətn, RegExp (`yeni RegExp ('text')`) kimi qiymətləndirilir. Hər bir çağırış izini göstərmək üçün boş saxlayın.",
-  "Log_View_Limit": "Gündəlik Görünüş Limiti",
   "Logged_out_of_other_clients_successfully": "Başqa müştərilərdən müvəffəqiyyətlə həyata keçirilir",
   "Login": "Daxil ol",
   "Login_with": "%s ilə daxil olun",

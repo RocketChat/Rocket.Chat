@@ -1748,7 +1748,6 @@
   "Log_Trace_Subscriptions": "Rintraccia chiamate in abbonamento",
   "Log_Trace_Subscriptions_Filter": "Traccia filtro di sottoscrizione",
   "Log_Trace_Subscriptions_Filter_Description": "Il testo qui verrà valutato come RegExp (`new RegExp ('text')`). Tienilo vuoto per mostrare la traccia di ogni chiamata.",
-  "Log_View_Limit": "Limite Visione Registro",
   "Logged_out_of_other_clients_successfully": "Scollegato da altre postazioni con successo",
   "Login": "Login",
   "Login_with": "Accedi con %s",

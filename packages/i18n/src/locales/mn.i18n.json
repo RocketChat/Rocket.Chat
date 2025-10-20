@@ -1356,7 +1356,6 @@
   "Log_Trace_Subscriptions": "Захиалгын дуудлагыг дагана",
   "Log_Trace_Subscriptions_Filter": "Захиалга оруулах шүүлтүүр",
   "Log_Trace_Subscriptions_Filter_Description": "Энд байгаа текстийг RegExp (`new RegExp ('text')`) гэж үнэлнэ. Дуудлага бүрийн ул мөрийг харуулахын тулд хоосон байлга.",
-  "Log_View_Limit": "Хязгаарын Лог харах",
   "Logged_out_of_other_clients_successfully": "Бусад үйлчлүүлэгчид амжилттай ажиллуулав",
   "Login": "Нэвтрэх",
   "Login_with": "%s-тай нэвтрэх",
