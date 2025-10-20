@@ -6,11 +6,12 @@ import { before, after, describe, it } from 'mocha';
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
+(IS_EE ? describe.only : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let testRoom: IRoom;
@@ -403,6 +404,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		let teamDefaultRoomId: string;
 		const localAbacKey = `default_team_test_${Date.now()}`;
 		let mainRoomIdSaveSettings: string;
+		let teamIdMainRoom: string;
 
 		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
 			const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
@@ -411,6 +413,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(credentials)
 				.send({ name: teamNameMainRoom, type: 1 })
 				.expect(200);
+			teamIdMainRoom = createTeamMain.body.team._id;
 
 			mainRoomIdSaveSettings = createTeamMain.body.team?.roomId;
 
@@ -534,6 +537,13 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.success).to.be.true;
 				});
 		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
+
+			await deleteTeam(credentials, teamId);
+			await deleteTeam(credentials, teamIdMainRoom);
+		});
 	});
 
 	describe('Usage & Deletion', () => {
@@ -654,6 +664,10 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.success).to.be.false;
 					expect(res.body.error).to.include('error-room-is-abac-managed');
 				});
+		});
+
+		after(async () => {
+			await deleteTeam(credentials, teamIdForConversion);
 		});
 	});
 
