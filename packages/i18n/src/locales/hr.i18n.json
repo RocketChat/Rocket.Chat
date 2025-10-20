@@ -1473,7 +1473,6 @@
   "Log_Trace_Subscriptions": "Tra¾i pretplatne pozive",
   "Log_Trace_Subscriptions_Filter": "Filtar za pretplatu u tragovima",
   "Log_Trace_Subscriptions_Filter_Description": "Tekst ovdje će biti ocijenjen kao RegExp (`new RegExp ('tekst')`). Zadržite je prazno da biste vidjeli trag svakog poziva.",
-  "Log_View_Limit": "Ograniči prikaza zabilješki",
   "Logged_out_of_other_clients_successfully": "Odjava iz drugih klijenata je uspješna",
   "Login": "Prijava",
   "Login_with": "Prijavi se sa %s",
