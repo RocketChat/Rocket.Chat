@@ -14,7 +14,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 	const defaultRooms = await getDefaultChannels();
 
 	for await (const room of defaultRooms) {
-		if (settings.get('Abac_Enable') && room?.abacAttributes?.length) {
+		if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
 			continue;
 		}
 
