@@ -2026,7 +2026,6 @@
   "Log_Trace_Subscriptions": "Spor abonnements-opkald",
   "Log_Trace_Subscriptions_Filter": "Spor abonnementsfilter",
   "Log_Trace_Subscriptions_Filter_Description": "Teksten her vil blive vurderet som RegExp ('New RegExp ('text')'). Lad det være tomt for at vise trace fra hvert opkald.",
-  "Log_View_Limit": "Log View Limit",
   "Logged_out_of_other_clients_successfully": "Logget ud af andre klienter med succes",
   "Login": "Login",
   "Login_Attempts": "Mislykkede loginforsøg",

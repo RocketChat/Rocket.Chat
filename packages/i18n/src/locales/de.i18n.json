@@ -2561,7 +2561,6 @@
   "Log_Trace_Subscriptions": "Abonnement-Anrufe verfolgen",
   "Log_Trace_Subscriptions_Filter": "Trace-Abonnementfilter",
   "Log_Trace_Subscriptions_Filter_Description": "Der Text hier wird als RegExp (`new RegExp ('text') ') ausgewertet. Lassen Sie es leer, um die Spur jedes Anrufs anzuzeigen.",
-  "Log_View_Limit": "Begrenzung der Protokollansicht",
   "Log_out_devices_remotely": "Geräte aus der Ferne abmelden",
   "Logged_In_Via": "Eingeloggt über",
   "Logged_Out_Banner_Text": "Ihr Arbeitsbereich-Administrator hat Ihre Sitzung auf diesem Gerät beendet. Bitte melden Sie sich erneut an, um fortzufahren.",
