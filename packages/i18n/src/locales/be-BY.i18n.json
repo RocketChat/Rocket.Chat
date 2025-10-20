@@ -1376,7 +1376,6 @@
   "Log_Trace_Subscriptions": "падпіска трасіроўкі выклікаў",
   "Log_Trace_Subscriptions_Filter": "падпіска на фільтр трасіроўкі",
   "Log_Trace_Subscriptions_Filter_Description": "Тэкст тут будзе ацэньвацца як RegExp ( `новы RegExp (« тэкст »)`). Трымаеце яго пустым, каб паказаць след кожнага выкліку.",
-  "Log_View_Limit": "Прагляд часопіса Limit",
   "Logged_out_of_other_clients_successfully": "Запісаны з іншых кліентаў паспяхова",
   "Login": "Увайсці",
   "Login_with": "Увайсці% з",

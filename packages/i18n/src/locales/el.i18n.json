@@ -1362,7 +1362,6 @@
   "Log_Trace_Subscriptions": "Παρακολούθηση κλήσεων συνδρομής",
   "Log_Trace_Subscriptions_Filter": "Φιλτράρισμα συνδρομής παρακολούθησης",
   "Log_Trace_Subscriptions_Filter_Description": "Το κείμενο εδώ θα αξιολογηθεί ως RegExp (`νέο RegExp ('κείμενο')`). Κρατήστε το κενό για να εμφανίσετε το ίχνος κάθε κλήσης.",
-  "Log_View_Limit": "Συνδεθείτε Δείτε Όριο",
   "Logged_out_of_other_clients_successfully": "Αποσυνδεθεί από άλλους πελάτες με επιτυχία",
   "Login": "Είσοδος",
   "Login_with": "Είσοδος με %s",

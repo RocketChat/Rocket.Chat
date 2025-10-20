@@ -1627,7 +1627,6 @@
   "Log_Trace_Subscriptions": "Abonelik aramalarını izleme",
   "Log_Trace_Subscriptions_Filter": "İzleme aboneliği filtresi",
   "Log_Trace_Subscriptions_Filter_Description": "Buradaki metin RegExp (`new RegExp ('text')`) olarak değerlendirilecektir. Her aramanın izini göstermek için boş tutun.",
-  "Log_View_Limit": "Görünüm Sınırı Log",
   "Logged_out_of_other_clients_successfully": "başarılı bir şekilde diğer müşterilerin oturumu",
   "Login": "Oturum aç",
   "Login_with": "%s ile oturum aç",

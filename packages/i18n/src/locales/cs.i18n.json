@@ -1946,7 +1946,6 @@
   "Log_Trace_Subscriptions": "Filtr logu přihlášení",
   "Log_Trace_Subscriptions_Filter": "Filtr logu přihlášení",
   "Log_Trace_Subscriptions_Filter_Description": "Text zde bude vyhodnocen jako RegExp (`new RegExp ('text')`). Nechte ji prázdnou, aby se zobrazil záznam každého volání.",
-  "Log_View_Limit": "Limit zobrazení logu",
   "Logged_out_of_other_clients_successfully": "Odhlášení z ostatních klientů úspěšné",
   "Login": "Přihlásit se",
   "Login_Attempts": "Neúspěšné pokusy přihlášení",

@@ -1352,7 +1352,6 @@
   "Log_Trace_Subscriptions": "ติดตามการสมัครรับข้อมูล",
   "Log_Trace_Subscriptions_Filter": "ติดตามตัวกรองการสมัครรับข้อมูล",
   "Log_Trace_Subscriptions_Filter_Description": "ข้อความที่นี่จะได้รับการประเมินเป็น RegExp (`RegExp ใหม่ ('ข้อความ')`) ให้มันว่างเปล่าเพื่อแสดงร่องรอยของทุกสาย",
-  "Log_View_Limit": "ขีด จำกัด มุมมองล็อก",
   "Logged_out_of_other_clients_successfully": "บันทึกการติดต่อจากลูกค้ารายอื่นเรียบร้อยแล้ว",
   "Login": "เข้าสู่ระบบ",
   "Login_with": "เข้าสู่ระบบด้วย%s",

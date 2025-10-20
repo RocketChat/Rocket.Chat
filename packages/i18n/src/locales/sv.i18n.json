@@ -3096,7 +3096,6 @@
   "Log_Trace_Subscriptions": "Spåra prenumerationssamtal",
   "Log_Trace_Subscriptions_Filter": "Spåra abonnemangsfilter",
   "Log_Trace_Subscriptions_Filter_Description": "Texten här kommer att utvärderas som RegExp (`ny RegExp ('text')`). Håll det tomt för att visa spår av alla samtal.",
-  "Log_View_Limit": "Gräns för loggvisning",
   "Log_in_to_sync": "Logga in för att synkronisera",
   "Log_out_devices_remotely": "Logga ut enheter på distans",
   "Logged_In_Via": "Loggade in via",

@@ -1406,7 +1406,6 @@
   "Log_Trace_Subscriptions": "Trace prenumeratos skambučiai",
   "Log_Trace_Subscriptions_Filter": "Trace prenumeratos filtras",
   "Log_Trace_Subscriptions_Filter_Description": "Čia tekstas bus vertinamas kaip RegExp (\"naujas RegExp ('tekstas')\"). Laikykite tuščią, kad parodytumėte kiekvieno skambučio pėdsakus.",
-  "Log_View_Limit": "Log View Limit",
   "Logged_out_of_other_clients_successfully": "Sėkmingai atsijungė iš kitų klientų",
   "Login": "Prisijungti",
   "Login_with": "Prisijunkite naudodami%s",

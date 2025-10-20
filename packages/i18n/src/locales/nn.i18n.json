@@ -3039,7 +3039,6 @@
   "Log_Trace_Subscriptions": "Spor abonnementssamtaler",
   "Log_Trace_Subscriptions_Filter": "Spor abonnement filter",
   "Log_Trace_Subscriptions_Filter_Description": "Teksten her vil bli vurdert som RegExp (`ny RegExp ('text')`). Hold det tomt for å vise spor av hver samtale.",
-  "Log_View_Limit": "Logggrense",
   "Log_in_to_sync": "Logg på for å synkronisere",
   "Log_out_devices_remotely": "Logg ut enheter eksternt",
   "Logged_In_Via": "Logget inn via",

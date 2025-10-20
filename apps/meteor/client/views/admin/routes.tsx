@@ -69,8 +69,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/invites';
 		};
 		'admin-view-logs': {
-			pathname: '/admin/reports';
-			pattern: '/admin/reports';
+			pathname: '/admin/analytic-reports';
+			pattern: '/admin/analytic-reports';
 		};
 		'admin-permissions': {
 			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
@@ -197,7 +197,7 @@ registerAdminRoute('/invites', {
 	component: lazy(() => import('./invites/InvitesRoute')),
 });
 
-registerAdminRoute('/reports', {
+registerAdminRoute('/analytic-reports', {
 	name: 'admin-view-logs',
 	component: lazy(() => import('./viewLogs/ViewLogsRoute')),
 });

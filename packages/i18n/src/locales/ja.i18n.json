@@ -2297,7 +2297,6 @@
   "Log_Trace_Subscriptions": "サブスクリプション呼び出しのトレース",
   "Log_Trace_Subscriptions_Filter": "サブスクリプションのトレースフィルター",
   "Log_Trace_Subscriptions_Filter_Description": "ここのテキストはRegExp（「new RegExp ( 'text')」）として評価されます。すべての通話のトレースを表示するには、空のままにしておきます。",
-  "Log_View_Limit": "ログ表示制限",
   "Logged_out_of_other_clients_successfully": "他のクライアントを正常にログアウトさせました",
   "Login": "ログイン",
   "Login_Attempts": "失敗したログイン試行",

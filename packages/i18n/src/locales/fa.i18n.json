@@ -1602,7 +1602,6 @@
   "Log_Trace_Subscriptions": "ردیابی تماس های اشتراک",
   "Log_Trace_Subscriptions_Filter": "ردیابی فیلتر اشتراک",
   "Log_Trace_Subscriptions_Filter_Description": "متن در اینجا به عنوان RegExp (`RegExp جدید ('متن')`) ارزیابی می شود. آن را خالی نگه دارید تا ردیابی هر تماس را نشان دهد.",
-  "Log_View_Limit": "ورود مشخصات محدود",
   "Logged_out_of_other_clients_successfully": "از نشست های دیگر با موفقیت خارج شد",
   "Login": "ورود",
   "Login_with": "ورود با %s",

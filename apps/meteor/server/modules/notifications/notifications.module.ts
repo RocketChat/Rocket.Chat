@@ -39,8 +39,6 @@ export class NotificationsModule {
 
 	public readonly streamLivechatQueueData: IStreamer<'livechat-inquiry-queue-observer'>;
 
-	public readonly streamStdout: IStreamer<'stdout'>;
-
 	public readonly streamRoomData: IStreamer<'room-data'>;
 
 	public readonly streamLocal: IStreamer<'local'>;
@@ -60,7 +58,6 @@ export class NotificationsModule {
 		this.streamIntegrationHistory = new this.Streamer('integrationHistory');
 		this.streamLivechatRoom = new this.Streamer('livechat-room');
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
-		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
@@ -346,14 +343,6 @@ export class NotificationsModule {
 		this.streamLivechatQueueData.allowWrite('none');
 		this.streamLivechatQueueData.allowRead(async function () {
 			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
-		});
-
-		this.streamStdout.allowWrite('none');
-		this.streamStdout.allowRead(async function () {
-			if (!this.userId) {
-				return false;
-			}
-			return Authorization.hasPermission(this.userId, 'view-logs');
 		});
 
 		this.streamRoomData.allowWrite('none');

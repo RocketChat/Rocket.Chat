@@ -1356,7 +1356,6 @@
   "Log_Trace_Subscriptions": "Atentu abonajn alvokojn",
   "Log_Trace_Subscriptions_Filter": "Atentu filtrilon de abono",
   "Log_Trace_Subscriptions_Filter_Description": "Ĉi tie la teksto estos taksita kiel RegExp ('nova RegExp (' teksto ')'). Konservu ĝin malplena por montri spuron de ĉiu alvoko.",
-  "Log_View_Limit": "Ŝargu Vida limigo",
   "Logged_out_of_other_clients_successfully": "Elŝaltita de aliaj klientoj sukcese",
   "Login": "Ensaluti",
   "Login_with": "Ensalutu per%s",

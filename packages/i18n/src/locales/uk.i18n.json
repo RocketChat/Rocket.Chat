@@ -1770,7 +1770,6 @@
   "Log_Trace_Subscriptions": "Дзвінки підписки на трасі",
   "Log_Trace_Subscriptions_Filter": "Фільтр підписки на трасі",
   "Log_Trace_Subscriptions_Filter_Description": "Текст тут буде оцінюватися як RegExp (`new RegExp ('text')`). Тримайте його порожнім, щоб показати сліду кожного дзвінка.",
-  "Log_View_Limit": "Log View Limit",
   "Logged_out_of_other_clients_successfully": "Записаний з інших клієнтів успішно",
   "Login": "Логін",
   "Login_with": "Вхід з%s",

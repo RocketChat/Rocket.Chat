@@ -1208,7 +1208,6 @@
   "Log_Trace_Subscriptions": "Тражити претплатнички позив",
   "Log_Trace_Subscriptions_Filter": "Траце претплатнички филтер",
   "Log_Trace_Subscriptions_Filter_Description": "Текст ће бити евалуиран као РегЕкп (`нови РегЕкп ('текст')`). Држите празно да бисте приказали траг сваког позива.",
-  "Log_View_Limit": "Ограничење приказа записа",
   "Logged_out_of_other_clients_successfully": "Пријављени од других клијената успешно",
   "Login": "Пријава",
   "Login_with": "Пријави се са %s",

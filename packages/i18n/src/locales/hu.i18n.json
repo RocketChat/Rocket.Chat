@@ -2503,7 +2503,6 @@
   "Log_Trace_Subscriptions": "Feliratkozási hívások nyomon követése",
   "Log_Trace_Subscriptions_Filter": "Feliratkozás nyomon követésének szűrője",
   "Log_Trace_Subscriptions_Filter_Description": "Az itt lévő szöveg reguláris kifejezésként lesz kiértékelve („new RegExp('text')”). Hagyja üresen az összes hívás nyomon követésének megjelenítéséhez.",
-  "Log_View_Limit": "Naplónézet korlátja",
   "Log_out_devices_remotely": "Eszközök kijelentkeztetése távolról",
   "Logged_In_Via": "Bejelentkezés ezen keresztül:",
   "Logged_Out_Banner_Text": "A munkaterület adminisztrátora befejezte a munkamenetet ezen az eszközön. Jelentkezzen be újra a folytatáshoz.",
