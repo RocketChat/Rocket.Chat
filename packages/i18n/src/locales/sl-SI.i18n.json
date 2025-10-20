@@ -1353,7 +1353,6 @@
   "Log_Trace_Subscriptions": "Klici na naročnino",
   "Log_Trace_Subscriptions_Filter": "Trace filter naročnine",
   "Log_Trace_Subscriptions_Filter_Description": "Besedilo bo ocenjeno kot RegExp (`novi RegExp ('besedilo')`). Naj bo prazno, da prikaže sled vsakega klica.",
-  "Log_View_Limit": "Omejitev pogleda dnevnika",
   "Logged_out_of_other_clients_successfully": "Uspešno odjavljeni iz drugih naprav",
   "Login": "Prijava",
   "Login_with": "Prijava z %s",
