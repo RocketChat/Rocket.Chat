@@ -135,17 +135,29 @@ export type MessageMention = {
 
 export interface IMessageCustomFields {}
 
-export type EncryptedContent =
-	| {
-			algorithm: 'rc.v1.aes-sha2';
-			ciphertext: string;
-	  }
-	| {
-			algorithm: 'rc.v2.aes-sha2';
-			ciphertext: string;
-			iv: string; // Initialization Vector
-			kid: string; // ID of the key used to encrypt the message
-	  };
+interface IEncryptedContent {
+	algorithm: string;
+	ciphertext: string;
+}
+
+interface IEncryptedContentV1 extends IEncryptedContent {
+	algorithm: 'rc.v1.aes-sha2';
+	ciphertext: string;
+}
+
+interface IEncryptedContentV2 extends IEncryptedContent {
+	algorithm: 'rc.v2.aes-sha2';
+	ciphertext: string;
+	iv: string; // Initialization Vector
+	kid: string; // ID of the key used to encrypt the message
+}
+
+interface IEncryptedContentFederation extends IEncryptedContent {
+	algorithm: 'm.megolm.v1.aes-sha2';
+	ciphertext: string;
+}
+
+export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -247,9 +259,7 @@ export interface IMessage extends IRocketChatRecord {
 	content?: EncryptedContent;
 }
 
-export type EncryptedMessageContent = {
-	content: EncryptedContent;
-};
+export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;
 
 export function isEncryptedMessageContent(value: unknown): value is EncryptedMessageContent {
 	return (
@@ -296,7 +306,7 @@ export const isDeletedMessage = (message: IMessage): message is IEditedMessage =
 export interface IFederatedMessage extends IMessage {
 	federation: {
 		eventId: string;
-	};
+	}
 }
 
 export interface INativeFederatedMessage extends IMessage {
