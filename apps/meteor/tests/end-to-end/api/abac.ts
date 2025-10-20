@@ -405,6 +405,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		const localAbacKey = `default_team_test_${Date.now()}`;
 		let mainRoomIdSaveSettings: string;
 		let teamIdMainRoom: string;
+		const teamName = `abac-team-${Date.now()}`;
 
 		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
 			const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
@@ -439,7 +440,6 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		before('create private team, private room inside it and set as team default', async () => {
-			const teamName = `abac-team-${Date.now()}`;
 			const createTeamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
 			teamId = createTeamRes.body.team._id;
 
@@ -459,6 +459,10 @@ import { IS_EE } from '../../e2e/config/constants';
 			if (setDefaultRes.body?.room?.teamDefault) {
 				teamDefaultRoomId = teamPrivateRoomId;
 			}
+		});
+
+		after(async () => {
+			await deleteTeam(credentials, teamName);
 		});
 
 		it('should fail adding ABAC attribute to private default room', async () => {
