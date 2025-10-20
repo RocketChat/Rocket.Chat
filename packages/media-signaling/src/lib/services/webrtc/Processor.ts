@@ -290,15 +290,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this.iceGatheringTimedOut = true;
 				this.changeInternalState('iceUntrickler');
 			},
+			processor: this.config.timerProcessor,
 		});
 
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
 		await iceGatheringData.promise;
 
-		// always wait a little extra to ensure all relevant events have been fired
-		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process any local stuff
-		await new Promise((resolve) => setTimeout(resolve, 30));
+		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering.done', this.iceCandidateCount);
 	}
 
 	private registerPeerEvents() {
@@ -487,7 +486,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		if (iceGatheringData.timeout) {
-			clearTimeout(iceGatheringData.timeout);
+			this.config.timerProcessor.clearTimeout(iceGatheringData.timeout);
 		}
 
 		if (error) {

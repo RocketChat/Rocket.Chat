@@ -13,7 +13,7 @@ export class MediaSignalTransportWrapper {
 	constructor(
 		public readonly contractId: string,
 		private sendSignalFn: MediaSignalTransport<ClientMediaSignal>,
-		private logger?: IMediaSignalLogger,
+		private logger?: IMediaSignalLogger | null,
 	) {}
 
 	public sendToServer<T extends ClientMediaSignalType>(callId: string, type: T, signal: ClientMediaSignalBody<T>) {

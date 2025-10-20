@@ -5,6 +5,7 @@ import { MediaSignalTransportWrapper } from './TransportWrapper';
 import type {
 	ClientMediaSignal,
 	IServiceProcessorFactoryList,
+	ITimerProcessor,
 	MediaSignalTransport,
 	MediaStreamFactory,
 	RandomStringFactory,
@@ -12,6 +13,7 @@ import type {
 } from '../definition';
 import type { IClientMediaCall, CallActorType, CallContact } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
+import { defaultTimerProcessor } from './utils/defaultTimerProcessor';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -23,13 +25,15 @@ export type MediaSignalingEvents = {
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
-	oldSessionId?: string;
-	logger?: IMediaSignalLogger;
+	oldSessionId?: string | null;
+	logger?: IMediaSignalLogger | null;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
+	iceServers?: RTCIceServer[] | null;
+	timerProcessor?: ITimerProcessor<unknown, unknown>;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -45,7 +49,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private transporter: MediaSignalTransportWrapper;
 
-	private recurringStateReportHandler: ReturnType<typeof setInterval> | null;
+	private recurringStateReportHandler: unknown | null;
 
 	private inputTrack: MediaStreamTrack | null;
 
@@ -61,6 +65,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
 
+	private config: Required<MediaSignalingSessionConfig>;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -69,8 +75,17 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this._userId;
 	}
 
-	constructor(private config: MediaSignalingSessionConfig) {
+	constructor(config: MediaSignalingSessionConfig) {
 		super();
+		this.config = {
+			...config,
+			timerProcessor: config.timerProcessor || defaultTimerProcessor,
+			iceGatheringTimeout: config.iceGatheringTimeout || 5000,
+			oldSessionId: config.oldSessionId || null,
+			logger: config.logger || null,
+			iceServers: config.iceServers || null,
+		};
+
 		this._userId = config.userId;
 		this._sessionId = config.randomStringFactory();
 		this.recurringStateReportHandler = null;
@@ -96,14 +111,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	public enableStateReport(interval: number): void {
 		this.disableStateReport();
 
-		this.recurringStateReportHandler = setInterval(() => {
+		this.recurringStateReportHandler = this.config.timerProcessor.setInterval(() => {
 			this.reportState();
 		}, interval);
 	}
 
 	public disableStateReport(): void {
 		if (this.recurringStateReportHandler) {
-			clearInterval(this.recurringStateReportHandler);
+			this.config.timerProcessor.clearInterval(this.recurringStateReportHandler);
 			this.recurringStateReportHandler = null;
 		}
 	}
@@ -213,6 +228,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public setIceGatheringTimeout(newTimeout: number): void {
 		this.config.iceGatheringTimeout = newTimeout;
+	}
+
+	public setIceServers(iceServers: RTCIceServer[]): void {
+		this.config.iceServers = iceServers;
 	}
 
 	private createTemporaryCallId(): string {
@@ -447,11 +466,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
-			logger: this.config.logger,
+			logger: this.config.logger || undefined,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
+			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
+			timerProcessor: this.config.timerProcessor,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
