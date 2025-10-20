@@ -1,4 +1,4 @@
-import { Media, Team } from '@rocket.chat/core-services';
+import { Media, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -130,7 +130,21 @@ API.v1.addRoute(
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
-			await eraseRoom(roomId, this.userId);
+			const room = await Rooms.findOneById(roomId);
+
+			if (!room) {
+				throw new MeteorError('error-invalid-room', 'Invalid room', {
+					method: 'eraseRoom',
+				});
+			}
+
+			if (room.teamMain) {
+				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+					method: 'eraseRoom',
+				});
+			}
+
+			await eraseRoom(room, this.userId);
 
 			return API.v1.success();
 		},
