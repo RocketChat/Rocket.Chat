@@ -464,6 +464,126 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
+		it('should throw an error when the properties (attachments.fields.title) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									value: 'This is attachment field value',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when the properties (attachments.fields.value) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									title: 'This is attachment field title',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('attachment.fields should work fine when value and title are provided', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					attachments: [
+						{
+							text: 'This is attachment field',
+							color: '#764FA5',
+							fields: [{ short: true, value: 'This is value', title: 'This is title' }],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
+					expect(res.body).to.have.nested.property('message.attachments').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].short', true);
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].value', 'This is value');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
+				})
+				.end(done);
+		});
+
 		it('should return statusCode 200 when postMessage successfully', (done) => {
 			void request
 				.post(api('chat.postMessage'))
