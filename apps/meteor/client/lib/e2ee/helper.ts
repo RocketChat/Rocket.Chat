@@ -1,49 +1,9 @@
-import ByteBuffer from 'bytebuffer';
-
-export function toString(thing: any) {
-	if (typeof thing === 'string') {
-		return thing;
-	}
-
-	return ByteBuffer.wrap(thing).toString('binary');
-}
-
-export function toArrayBuffer(thing: any) {
-	if (thing === undefined) {
-		return undefined;
-	}
-	if (typeof thing === 'object') {
-		if (Object.getPrototypeOf(thing) === ArrayBuffer.prototype) {
-			return thing;
-		}
-	}
-
-	if (typeof thing !== 'string') {
-		throw new Error(`Tried to convert a non-string of type ${typeof thing} to an array buffer`);
-	}
-
-	return ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
-}
-
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'AES-CTR', counter, length: 64 }, key, data);
 }
 
 export function generateAESCTRKey(): Promise<CryptoKey> {
 	return crypto.subtle.generateKey({ name: 'AES-CTR', length: 256 }, true, ['encrypt', 'decrypt']);
-}
-
-export function readFileAsArrayBuffer(file: File) {
-	return new Promise<ArrayBuffer>((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = (evt) => {
-			resolve(evt.target?.result as ArrayBuffer);
-		};
-		reader.onerror = (evt) => {
-			reject(evt);
-		};
-		reader.readAsArrayBuffer(file);
-	});
 }
 
 /**
