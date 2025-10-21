@@ -18,14 +18,7 @@ import type { E2ERoomState } from './E2ERoomState';
 import * as Aes from './aes';
 import { Binary } from './binary';
 import { decodeEncryptedContent } from './content';
-import {
-	toArrayBuffer,
-	readFileAsArrayBuffer,
-	encryptAESCTR,
-	generateAESCTRKey,
-	sha256HashFromArrayBuffer,
-	createSha256HashFromText,
-} from './helper';
+import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha256HashFromText } from './helper';
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
@@ -374,7 +367,7 @@ export class E2ERoom extends Emitter {
 
 		const decryptedKey = await Rsa.decrypt(e2e.privateKey, decodedKey);
 		span.info('Key decrypted');
-		return Binary.toString(decryptedKey.buffer);
+		return Binary.encode(decryptedKey.buffer);
 	}
 
 	async importGroupKey(groupKey: string) {
@@ -394,7 +387,7 @@ export class E2ERoom extends Emitter {
 				throw new Error('Private key not found');
 			}
 			const decryptedKey = await Rsa.decrypt(e2e.privateKey, decodedKey);
-			this.sessionKeyExportedString = Binary.toString(decryptedKey.buffer);
+			this.sessionKeyExportedString = Binary.encode(decryptedKey.buffer);
 		} catch (error) {
 			span.set('error', error).error('Error decrypting group key');
 			return false;
@@ -547,7 +540,7 @@ export class E2ERoom extends Emitter {
 				if (!oldRoomKey.E2EKey) {
 					continue;
 				}
-				const encryptedKey = await Rsa.encrypt(userKey, Binary.toArrayBuffer(oldRoomKey.E2EKey));
+				const encryptedKey = await Rsa.encrypt(userKey, Binary.decode(oldRoomKey.E2EKey));
 				const encryptedKeyToString = PrefixedBase64.encode([oldRoomKey.e2eKeyId, encryptedKey]);
 
 				keys.push({ ...oldRoomKey, E2EKey: encryptedKeyToString });
@@ -569,7 +562,7 @@ export class E2ERoom extends Emitter {
 
 		// Encrypt session key for this user with his/her public key
 		try {
-			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.toArrayBuffer(this.sessionKeyExportedString!));
+			const encryptedUserKey = await Rsa.encrypt(userKey, Binary.decode(this.sessionKeyExportedString!));
 			const encryptedUserKeyToString = PrefixedBase64.encode([this.keyID, encryptedUserKey]);
 			span.info('Group key encrypted for participant');
 			return encryptedUserKeyToString;
@@ -582,7 +575,7 @@ export class E2ERoom extends Emitter {
 	async encryptFile(file: File) {
 		const span = log.span('encryptFile');
 
-		const fileArrayBuffer = await readFileAsArrayBuffer(file);
+		const fileArrayBuffer = await file.arrayBuffer();
 
 		const hash = await sha256HashFromArrayBuffer(fileArrayBuffer);
 
@@ -599,7 +592,7 @@ export class E2ERoom extends Emitter {
 
 		const fileName = await createSha256HashFromText(file.name);
 
-		const encryptedFile = new File([toArrayBuffer(result)], fileName);
+		const encryptedFile = new File([result], fileName);
 
 		return {
 			file: encryptedFile,

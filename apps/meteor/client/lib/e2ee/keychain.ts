@@ -18,7 +18,6 @@ interface IStoredKeyV1 {
 	 */
 	$binary: string;
 }
-
 /**
  * Version 2 format:
  * ```typescript
@@ -139,24 +138,24 @@ export class Keychain {
 	async decryptKey(privateKey: string, password: string): Promise<string> {
 		const { content, options } = this.codec.decode(privateKey);
 		const algorithm = content.iv.length === 16 ? 'AES-CBC' : 'AES-GCM';
-		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.toArrayBuffer(password)));
+		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.decode(password)));
 		const derivedBits = await Pbkdf2.deriveBits(baseKey, {
-			salt: new Uint8Array(Binary.toArrayBuffer(options.salt)),
+			salt: new Uint8Array(Binary.decode(options.salt)),
 			iterations: options.iterations,
 		});
 		const key = await Pbkdf2.importKey(derivedBits, algorithm);
 		const decrypted = await Pbkdf2.decrypt(key, content);
-		return Binary.toString(decrypted.buffer);
+		return Binary.encode(decrypted.buffer);
 	}
 
 	async encryptKey(privateKey: string, password: string): Promise<IStoredKeyV2> {
 		const salt = `v2:${this.userId}:${crypto.randomUUID()}`;
 		const iterations = 100_000;
 		const algorithm = 'AES-GCM';
-		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.toArrayBuffer(password)));
-		const derivedBits = await Pbkdf2.deriveBits(baseKey, { salt: new Uint8Array(Binary.toArrayBuffer(salt)), iterations });
+		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.decode(password)));
+		const derivedBits = await Pbkdf2.deriveBits(baseKey, { salt: new Uint8Array(Binary.decode(salt)), iterations });
 		const key = await Pbkdf2.importKey(derivedBits, algorithm);
-		const content = await Pbkdf2.encrypt(key, new Uint8Array(Binary.toArrayBuffer(privateKey)));
+		const content = await Pbkdf2.encrypt(key, new Uint8Array(Binary.decode(privateKey)));
 
 		return this.codec.encode({ content, options: { salt, iterations } });
 	}
