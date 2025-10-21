@@ -1,5 +1,7 @@
-export const Binary = {
-	toString(buffer: ArrayBuffer): string {
+import type { ICodec } from './codec';
+
+export const Binary: ICodec<string, ArrayBuffer> = {
+	encode(buffer: ArrayBuffer): string {
 		const uint8 = new Uint8Array(buffer);
 		const CHUNK_SIZE = 8192; // Process in chunks for performance
 		let result = '';
@@ -9,7 +11,7 @@ export const Binary = {
 		}
 		return result;
 	},
-	toArrayBuffer(str: string): ArrayBuffer {
+	decode(str: string): ArrayBuffer {
 		// Create a Uint8Array of the same length as the string.
 		// This will be a view on the new ArrayBuffer.
 		const buffer = new ArrayBuffer(str.length);
