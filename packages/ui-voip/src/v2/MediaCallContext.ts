@@ -30,11 +30,13 @@ type MediaCallContextType = {
 	connectionState: ConnectionState;
 
 	peerInfo: PeerInfo | undefined;
+	transferredBy: string | undefined;
 
 	hidden: boolean;
 
 	muted: boolean;
 	held: boolean;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -61,6 +63,7 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	connectionState: 'CONNECTED',
 
 	peerInfo: undefined,
+	transferredBy: undefined,
 
 	hidden: false,
 

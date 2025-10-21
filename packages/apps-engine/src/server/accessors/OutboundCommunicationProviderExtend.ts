@@ -1,5 +1,5 @@
 import type { IOutboundCommunicationProviderExtend } from '../../definition/accessors/IOutboundCommunicationProviderExtend';
-import type { IOutboundPhoneMessageProvider, IOutboundEmailMessageProvider } from '../../definition/outboundComunication';
+import type { IOutboundPhoneMessageProvider, IOutboundEmailMessageProvider } from '../../definition/outboundCommunication';
 import type { AppOutboundCommunicationProviderManager } from '../managers/AppOutboundCommunicationProviderManager';
 
 export class OutboundMessageProviderExtend implements IOutboundCommunicationProviderExtend {

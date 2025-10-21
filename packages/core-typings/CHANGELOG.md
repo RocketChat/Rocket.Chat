@@ -1,5 +1,35 @@
 # @rocket.chat/core-typings
 
+## 7.11.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+## 7.11.0-rc.7
+
+## 7.11.0-rc.6
+
+## 7.11.0-rc.5
+
+## 7.11.0-rc.4
+
+## 7.11.0-rc.3
+
+## 7.11.0-rc.2
+
+## 7.11.0-rc.1
+
+## 7.11.0-rc.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+## 7.10.2
+
+## 7.10.1
+
 ## 7.10.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useIframe = () => {
 	const [iframeLoginUrl, setIframeLoginUrl] = useState<string | undefined>(undefined);
@@ -74,6 +74,10 @@ export const useIframe = () => {
 			callback?.(error instanceof Error ? error : undefined, null);
 		}
 	});
+
+	useEffect(() => {
+		tryLogin();
+	}, [tryLogin]);
 
 	return {
 		enabled,
