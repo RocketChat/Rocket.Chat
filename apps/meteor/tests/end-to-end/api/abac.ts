@@ -406,9 +406,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		let mainRoomIdSaveSettings: string;
 		let teamIdMainRoom: string;
 		const teamName = `abac-team-${Date.now()}`;
+		const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
 
 		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
-			const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
 			const createTeamMain = await request
 				.post(`${v1}/teams.create`)
 				.set(credentials)
@@ -459,10 +459,6 @@ import { IS_EE } from '../../e2e/config/constants';
 			if (setDefaultRes.body?.room?.teamDefault) {
 				teamDefaultRoomId = teamPrivateRoomId;
 			}
-		});
-
-		after(async () => {
-			await deleteTeam(credentials, teamName);
 		});
 
 		it('should fail adding ABAC attribute to private default room', async () => {
@@ -544,9 +540,8 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		after(async () => {
 			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
-
-			await deleteTeam(credentials, teamId);
-			await deleteTeam(credentials, teamIdMainRoom);
+			await deleteTeam(credentials, teamName);
+			await deleteTeam(credentials, teamNameMainRoom);
 		});
 	});
 
@@ -648,7 +643,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await Promise.all([deleteTeam(credentials, teamName)]);
+			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
 		});
 
 		it('should fail converting ABAC-managed private room into default room', async () => {
