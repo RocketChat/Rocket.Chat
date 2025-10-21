@@ -751,7 +751,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, { $unset: { autoTranslate: 1 } });
 	}
 
-	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult> {
+	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string, autoTranslateLanguageBcp47?: string): Promise<UpdateResult> {
 		const query = {
 			_id,
 		};
@@ -759,6 +759,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const update: UpdateFilter<ISubscription> = {
 			$set: {
 				autoTranslateLanguage,
+				...(autoTranslateLanguageBcp47 ? { autoTranslateLanguageBcp47 } : {}),
 			},
 		};
 
