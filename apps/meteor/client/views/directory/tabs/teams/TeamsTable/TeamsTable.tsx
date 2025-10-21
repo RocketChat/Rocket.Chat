@@ -75,10 +75,10 @@ const TeamsTable = () => {
 
 	const [announcementText, setAnnouncementText] = useState('');
 	useEffect(() => {
-		if (data?.result) {
-			setAnnouncementText(t('Teams_Search_Count', { count: data.result.length }));
+		if (data?.total !== undefined) {
+			setAnnouncementText(t('Teams_Search_Count', { count: data.total }));
 		}
-	}, [data?.result, t]);
+	}, [data?.total, t]);
 
 	return (
 		<>
