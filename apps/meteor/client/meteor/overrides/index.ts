@@ -1,4 +1,4 @@
-import './ddpOverREST';
+// import './ddpOverREST';
 import './totpOnCall';
 // import './oauthRedirectUri';
 // import './unstoreLoginToken';

@@ -1,3 +1,4 @@
+import './meteor/overrides/ddpOverREST';
 import './meteor/overrides/oauthRedirectUri';
 import './meteor/overrides/unstoreLoginToken';
 import './meteor/startup';
