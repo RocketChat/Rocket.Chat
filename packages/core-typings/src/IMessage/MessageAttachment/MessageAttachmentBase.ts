@@ -23,10 +23,7 @@ export type MessageAttachmentBase = {
 };
 
 export type EncryptedMessageAttachment = MessageAttachmentBase & {
-	encryption: {
-		iv: string;
-		key: JsonWebKey;
-	};
+	encryption: Required<MessageAttachmentBase>['encryption'];
 };
 
 export const isEncryptedMessageAttachment = (attachment: MessageAttachmentBase): attachment is EncryptedMessageAttachment => {
