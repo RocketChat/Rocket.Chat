@@ -24,7 +24,7 @@ RC1_CONTAINER="rc1"
 
 # Build configuration
 # Use a temporary directory outside the repo to avoid symlink traversal issues during Meteor build
-BUILD_DIR="$(mktemp -d "${FEDERATION_TEST_TMPDIR:-/tmp}/rc-federation-build.XXXXXX")"
+BUILD_DIR="$(mktemp -d "${FEDERATION_TEST_TMPDIR:-/tmp}/rc-federation-build")"
 ROCKETCHAT_ROOT="$(cd "$PACKAGE_ROOT/../../.." && pwd)"  # Go up to project root
 
 # Parse command line arguments
@@ -47,19 +47,26 @@ while [[ $# -gt 0 ]]; do
             ;;
         --image)
             USE_PREBUILT_IMAGE=true
-            PREBUILT_IMAGE="$2"
-            shift 2
+            # If no IMAGE value is provided (or next token is another flag), default to latest
+            if [[ -z "${2:-}" || "$2" == -* ]]; then
+                PREBUILT_IMAGE="rocketchat/rocket.chat:latest"
+                shift 1
+            else
+                PREBUILT_IMAGE="$2"
+                shift 2
+            fi
             ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo "Options:"
             echo "  --keep-running    Keep Docker containers running after tests complete"
             echo "  --element         Include Element web client in the test environment"
-            echo "  --image IMAGE     Use a pre-built Docker image instead of building locally"
+            echo "  --image [IMAGE]   Use a pre-built Docker image instead of building locally"
             echo "  --help, -h        Show this help message"
             echo ""
             echo "By default, builds Rocket.Chat locally and runs the 'test' profile"
             echo "Use --image to test against a pre-built image (e.g., --image rocketchat/rocket.chat:latest)"
+            echo "If --image is provided without a value, defaults to rocketchat/rocket.chat:latest"
             echo "Use --element to run all services including Element web client"
             exit 0
             ;;
