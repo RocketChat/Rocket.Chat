@@ -16,7 +16,7 @@ import type {
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { AppApi } from '../../../src/server/managers/AppApi';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { AppLogStorage } from '../../../src/server/storage';
+import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
@@ -38,7 +38,7 @@ export class AppApiManagerTestFixture {
 	public setupFixture() {
 		this.mockBridges = new TestsAppBridges();
 
-		this.mockApp = TestData.getMockApp({ id: 'testing', name: 'TestApp' }, this.mockManager);
+		this.mockApp = TestData.getMockApp({ info: { id: 'testing', name: 'TestApp' } } as IAppStorageItem, this.mockManager);
 
 		const bri = this.mockBridges;
 		const app = this.mockApp;
