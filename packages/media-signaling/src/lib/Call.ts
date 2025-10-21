@@ -132,6 +132,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.isPendingAcceptance() && !this.isOver();
 	}
 
+	public get confirmed(): boolean {
+		return this.hasRemoteData;
+	}
+
+	public get tempCallId(): string {
+		return this.localCallId;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -339,6 +347,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!wasInitialized) {
 			this.emitter.emit('initialized');
 		}
+		this.emitter.emit('confirmed');
 
 		await this.processEarlySignals();
 	}

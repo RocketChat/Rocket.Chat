@@ -141,12 +141,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(): IClientMediaCall | null {
+	public getMainCall(skipLocal = true): IClientMediaCall | null {
 		let ringingCall: IClientMediaCall | null = null;
 		let pendingCall: IClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored) {
+				continue;
+			}
+			if (skipLocal && !call.confirmed) {
 				continue;
 			}
 
@@ -208,6 +211,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
+		if (this.getMainCall(false)) {
+			throw new Error(`Already on a call.`);
+		}
+
 		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
@@ -483,6 +490,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('clientStateChange', () => this.onCallClientStateChange(call));
 		call.emitter.on('trackStateChange', () => this.onTrackStateChange(call));
 		call.emitter.on('initialized', () => this.onNewCall(call));
+		call.emitter.on('confirmed', () => this.onConfirmedCall(call));
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
@@ -509,6 +517,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onNewCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onNewCall');
+		this.onSessionStateChange();
+	}
+
+	private onConfirmedCall(_call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onConfirmedCall');
 		this.onSessionStateChange();
 	}
 
@@ -544,14 +557,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		const mainCall = this.getMainCall();
-		const hasCall = Boolean(mainCall);
-		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
-		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
-
 		const hadCall = this.lastState.hasCall;
 		const hadVisibleCall = this.lastState.hasVisibleCall;
 		const hadBusyCall = this.lastState.hasBusyCall;
+
+		// Do not skip local calls if we transitioned from a different active call to it
+		const mainCall = this.getMainCall(!hadCall);
+		const hasCall = Boolean(mainCall);
+		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
+		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
 
 		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
 
