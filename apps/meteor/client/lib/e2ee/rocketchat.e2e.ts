@@ -45,13 +45,15 @@ const ROOM_KEY_EXCHANGE_SIZE = 10;
 class E2E extends Emitter {
 	private userId: string | false = false;
 
+	private keychain: Keychain;
+
 	private instancesByRoomId: Record<IRoom['_id'], E2ERoom> = {};
 
 	private db_public_key: string | null | undefined;
 
 	private db_private_key: string | null | undefined;
 
-	public privateKey: Rsa.PrivateKey | undefined;
+	public privateKey: Rsa.IPrivateKey | undefined;
 
 	public publicKey: string | undefined;
 
@@ -129,7 +131,11 @@ class E2E extends Emitter {
 			}
 		}
 
-		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+		if (sub.encrypted) {
+			e2eRoom.resume();
+		} else {
+			e2eRoom.pause();
+		}
 
 		// Cover private groups and direct messages
 		if (!e2eRoom.isSupportedRoomType(sub.t)) {
@@ -175,11 +181,6 @@ class E2E extends Emitter {
 		});
 	}
 
-	shouldAskForE2EEPassword() {
-		const { private_key } = this.getKeysFromLocalStorage();
-		return this.db_private_key && !private_key;
-	}
-
 	setState(nextState: E2EEState) {
 		const span = log.span('setState').set('prevState', this.state).set('nextState', nextState);
 		const prevState = this.state;
@@ -215,7 +216,11 @@ class E2E extends Emitter {
 						await e2e.rejectSuggestedKey(sub.rid);
 					}
 
-					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+					if (sub.encrypted) {
+						e2eRoom.resume();
+					} else {
+						e2eRoom.pause();
+					}
 				}),
 		);
 		span.info('handledAsyncE2ESuggestedKey');
@@ -282,9 +287,7 @@ class E2E extends Emitter {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
 
-		const keychain = new Keychain(this.getUserId());
-
-		const encodedPrivateKey = await keychain.encryptKey(private_key, password);
+		const encodedPrivateKey = await this.keychain.encryptKey(private_key, password);
 
 		if (!encodedPrivateKey) {
 			throw new Error('Failed to encode private key with provided password.');
@@ -350,6 +353,7 @@ class E2E extends Emitter {
 		span.info(this.state);
 
 		this.userId = userId;
+		this.keychain = new Keychain(userId);
 
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
@@ -359,10 +363,10 @@ class E2E extends Emitter {
 			public_key = this.db_public_key;
 		}
 
-		if (this.shouldAskForE2EEPassword()) {
+		if (this.db_private_key && !private_key) {
 			try {
 				this.setState('ENTER_PASSWORD');
-				private_key = await this.decodePrivateKey(this.db_private_key!);
+				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
 				this.userId = false;
 				failedToDecodeKey = true;
@@ -419,7 +423,9 @@ class E2E extends Emitter {
 		this.privateKey = undefined;
 		this.publicKey = undefined;
 		this.userId = false;
-		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
+		if (this.keyDistributionInterval) {
+			clearInterval(this.keyDistributionInterval);
+		}
 		this.keyDistributionInterval = null;
 		this.setState('DISABLED');
 	}
@@ -480,7 +486,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const publicKey = await Rsa.exportKey(keyPair.publicKey);
+			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
@@ -490,7 +496,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const privateKey = await Rsa.exportKey(keyPair.privateKey);
+			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
 
 			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
@@ -567,10 +573,8 @@ class E2E extends Emitter {
 			return;
 		}
 
-		const keychain = new Keychain(this.getUserId());
-
 		try {
-			const privateKey = await keychain.decryptKey(this.db_private_key, password);
+			const privateKey = await this.keychain.decryptKey(this.db_private_key, password);
 
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
@@ -591,9 +595,8 @@ class E2E extends Emitter {
 	async decodePrivateKey(privateKey: string): Promise<string> {
 		// const span = log.span('decodePrivateKey');
 		const password = await this.requestPasswordAlert();
-		const keychain = new Keychain(this.getUserId());
 		try {
-			const privKey = await keychain.decryptKey(privateKey, password);
+			const privKey = await this.keychain.decryptKey(privateKey, password);
 			return privKey;
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
@@ -847,7 +850,7 @@ class E2E extends Emitter {
 			try {
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
-				return span.set('error', error).error('provideUsersSuggestedGroupKeys');
+				return span.error('provideUsersSuggestedGroupKeys', error);
 			}
 		};
 
