@@ -34,7 +34,7 @@ import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-en
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { notifyAppInstall } from '../marketplace/appInstall';
+import { notifyMarketplace } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
@@ -469,7 +469,7 @@ export class AppsRestApi {
 
 					info.status = await aff.getApp().getStatus();
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
+					void notifyMarketplace('install', info);
 
 					try {
 						await canEnableApp(aff.getApp().getStorageItem());
@@ -976,7 +976,7 @@ export class AppsRestApi {
 
 					info.status = await aff.getApp().getStatus();
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
+					void notifyMarketplace('update', info);
 
 					void orchestrator.getNotifier().appUpdated(info.id);
 
@@ -1007,7 +1007,7 @@ export class AppsRestApi {
 						return API.v1.failure({ app: info });
 					}
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
+					void notifyMarketplace('uninstall', info);
 
 					return API.v1.success({ app: info });
 				},

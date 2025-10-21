@@ -1,13 +1,13 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { Apps } from '../orchestrator';
 
-type installAction = 'install' | 'update' | 'uninstall';
+type MarketplaceNotificationType = 'install' | 'update' | 'uninstall';
 
-export async function notifyAppInstall(marketplaceBaseUrl: string, action: installAction, appInfo: IAppInfo): Promise<void> {
+export async function notifyMarketplace(action: MarketplaceNotificationType, appInfo: IAppInfo): Promise<void> {
 	const headers: { Authorization?: string } = {};
 
 	try {
@@ -34,10 +34,10 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 		siteUrl,
 	};
 
-	const pendingSentUrl = `${marketplaceBaseUrl}/v1/apps/${appInfo.id}/install`;
+	const pendingSentUrl = `v1/apps/${appInfo.id}/install`;
 
 	try {
-		await fetch(pendingSentUrl, {
+		await Apps.getMarketplaceClient().fetch(pendingSentUrl, {
 			method: 'POST',
 			headers,
 			body: data,
