@@ -37,7 +37,7 @@ const AdminABACWarningModal = ({ onConfirm, onCancel }: AdminABACWarningModalPro
 				control, it must be removed from ABAC management in
 				<Box is='a' onClick={handleNavigate}>
 					{' '}
-					ABAC {'>'} Rooms'
+					ABAC {'>'} Rooms
 				</Box>
 				.
 			</Trans>
