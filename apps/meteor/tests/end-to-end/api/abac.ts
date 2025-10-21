@@ -404,7 +404,6 @@ import { IS_EE } from '../../e2e/config/constants';
 		let teamDefaultRoomId: string;
 		const localAbacKey = `default_team_test_${Date.now()}`;
 		let mainRoomIdSaveSettings: string;
-		let teamIdMainRoom: string;
 		const teamName = `abac-team-${Date.now()}`;
 		const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
 
@@ -414,7 +413,6 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(credentials)
 				.send({ name: teamNameMainRoom, type: 1 })
 				.expect(200);
-			teamIdMainRoom = createTeamMain.body.team._id;
 
 			mainRoomIdSaveSettings = createTeamMain.body.team?.roomId;
 
