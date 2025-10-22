@@ -251,7 +251,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ _id: response._id, shortcut: dupshortcut, text: 'edited text', scope: 'user' })
+				.send({ _id: response._id, shortcut: `${dupshortcut}-edited`, text: 'edited text', scope: 'user' })
 				.expect(200);
 			expect(body).to.have.property('success', true);
 
