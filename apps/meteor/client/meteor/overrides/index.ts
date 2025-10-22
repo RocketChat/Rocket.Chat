@@ -1,5 +1,5 @@
 // import './ddpOverREST';
-import './totpOnCall';
+// import './totpOnCall';
 // import './oauthRedirectUri';
 // import './unstoreLoginToken';
 import './userAndUsers';
