@@ -235,10 +235,10 @@ API.v1.addRoute(
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
 
-			if (settings.get('ABAC_Enabled')) {
+			if (settings.get('ABAC_Enabled') && isDefault) {
 				const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
 				if (room?.abacAttributes?.length) {
-					throw new Error('error-room-is-abac-managed');
+					return API.v1.failure('error-room-is-abac-managed');
 				}
 			}
 
