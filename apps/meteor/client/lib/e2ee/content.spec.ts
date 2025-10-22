@@ -1,9 +1,5 @@
-import { webcrypto } from 'node:crypto';
-
-import { importKey, decrypt, type Key } from './aes';
 import { decodeEncryptedContent } from './content';
-
-Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
+import { importKey, decrypt, type Key } from './crypto/aes';
 
 describe('content', () => {
 	const msgv1web = Object.freeze({

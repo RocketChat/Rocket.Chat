@@ -1,8 +1,4 @@
-import { webcrypto } from 'node:crypto';
-
 import { Keychain } from './keychain';
-
-Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
 
 describe('Keychain', () => {
 	/**

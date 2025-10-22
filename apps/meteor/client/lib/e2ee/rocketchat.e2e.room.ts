@@ -15,14 +15,14 @@ import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
 import type { E2ERoomState } from './E2ERoomState';
-import * as Aes from './aes';
 import { Binary } from './binary';
 import { decodeEncryptedContent } from './content';
+import * as Aes from './crypto/aes';
+import * as Rsa from './crypto/rsa';
 import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha256HashFromText } from './helper';
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
-import * as Rsa from './rsa';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
@@ -86,7 +86,7 @@ export class E2ERoom extends Emitter {
 
 	sessionKeyExportedString: string | undefined;
 
-	sessionKeyExported: JsonWebKey | undefined;
+	sessionKeyExported: Aes.Jwk | undefined;
 
 	constructor(userId: string, room: IRoom) {
 		super();
@@ -414,7 +414,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createNewGroupKey() {
-		this.groupSessionKey = await Aes.generateKey();
+		this.groupSessionKey = await Aes.generate();
 		const sessionKeyExported = await Aes.exportKey(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 		this.keyID = crypto.randomUUID();

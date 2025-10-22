@@ -1,8 +1,4 @@
-import { webcrypto } from 'node:crypto';
-
 import { importBaseKey, deriveBits, importKey } from './pbkdf2';
-
-Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
 
 describe('pbkdf2', () => {
 	it('should import a base key', async () => {

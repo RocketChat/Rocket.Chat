@@ -1,3 +1,5 @@
+import { subtle, getRandomValues, generateKey, type IKey } from './shared';
+
 type AesKeyAlgorithmLength = 128 | 256;
 
 interface IAesCbcKeyAlgorithm<TLength extends AesKeyAlgorithmLength> extends AesKeyAlgorithm {
@@ -13,7 +15,7 @@ interface IAesGcmKeyAlgorithm<TLength extends AesKeyAlgorithmLength> extends Aes
 type SupportedAesKeyAlgorithm = IAesCbcKeyAlgorithm<128> | IAesGcmKeyAlgorithm<256>;
 
 type JwkAlg = 'A128CBC' | 'A256GCM';
-type Jwk<TAlg extends JwkAlg = JwkAlg> = {
+export type Jwk<TAlg extends JwkAlg = JwkAlg> = {
 	kty: 'oct';
 	k: string;
 	key_ops: ['encrypt', 'decrypt'] | ['decrypt', 'encrypt'];
@@ -52,23 +54,23 @@ export const importKey = async <const TJwk extends Jwk>(jwk: TJwk): Promise<Key<
 
 	const algorithm = JWK_ALG_TO_AES_KEY_ALGORITHM[jwk.alg];
 
-	const key = await crypto.subtle.importKey('jwk', jwk, algorithm, true, ['encrypt', 'decrypt']);
+	const key = await subtle.importKey('jwk', jwk, algorithm, true, ['encrypt', 'decrypt']);
 
 	return key as Key<(typeof JWK_ALG_TO_AES_KEY_ALGORITHM)[TJwk['alg']]>;
 };
 
 export const exportKey = async <TAlgorithm extends SupportedAesKeyAlgorithm>(key: Key<TAlgorithm>): Promise<Jwk<ToJwkAlg<TAlgorithm>>> => {
-	const jwk = await crypto.subtle.exportKey('jwk', key);
+	const jwk = await subtle.exportKey('jwk', key);
 	return jwk as Jwk<ToJwkAlg<TAlgorithm>>;
 };
 
-export const generateKey = async (): Promise<Key<{ name: 'AES-GCM'; length: 256 }>> => {
-	const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
-	return key as Key<{ name: 'AES-GCM'; length: 256 }>;
+export const generate = async (): Promise<IKey<{ name: 'AES-GCM'; length: 256 }, true, 'secret', ['encrypt', 'decrypt']>> => {
+	const key = await generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+	return key;
 };
 
 export const decrypt = async (key: Key, content: AesEncryptedContent): Promise<string> => {
-	const decrypted = await crypto.subtle.decrypt(
+	const decrypted = await subtle.decrypt(
 		{ name: key.algorithm.name, iv: content.iv } satisfies AesGcmParams | AesCbcParams,
 		key,
 		content.ciphertext,
@@ -78,7 +80,7 @@ export const decrypt = async (key: Key, content: AesEncryptedContent): Promise<s
 
 export const encrypt = async (key: Key, plaintext: Uint8Array<ArrayBuffer>): Promise<AesEncryptedContent> => {
 	const ivLength = key.algorithm.name === 'AES-GCM' ? 12 : 16;
-	const iv = crypto.getRandomValues(new Uint8Array(ivLength));
-	const ciphertext = await crypto.subtle.encrypt({ name: key.algorithm.name, iv }, key, plaintext);
+	const iv = getRandomValues(new Uint8Array(ivLength));
+	const ciphertext = await subtle.encrypt({ name: key.algorithm.name, iv }, key, plaintext);
 	return { iv, ciphertext: new Uint8Array(ciphertext) };
 };

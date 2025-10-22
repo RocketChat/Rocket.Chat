@@ -62,7 +62,7 @@ const decodeV2EncryptedContent = (payload: Extract<EncryptedContent, { algorithm
 	return { kid: payload.kid, iv, ciphertext };
 };
 
-export const normalizePayload = (payload: string | EncryptedContent): EncryptedContent => {
+const normalizePayload = (payload: string | EncryptedContent): EncryptedContent => {
 	if (typeof payload === 'string') {
 		return { algorithm: 'rc.v1.aes-sha2', ciphertext: payload } as const;
 	}

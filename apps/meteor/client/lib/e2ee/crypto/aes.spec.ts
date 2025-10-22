@@ -1,15 +1,11 @@
-import { webcrypto } from 'node:crypto';
-
-import { generateKey, decrypt, encrypt, exportKey, importKey, type Key } from './aes';
-
-Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
+import { generate, decrypt, encrypt, exportKey, importKey, type Key } from './aes';
 
 describe('aes', () => {
 	describe('256-gcm', () => {
 		let key: Key<{ name: 'AES-GCM'; length: 256 }>;
 
 		beforeAll(async () => {
-			key = await generateKey();
+			key = await generate();
 		});
 
 		it('generate a key with correct properties', async () => {

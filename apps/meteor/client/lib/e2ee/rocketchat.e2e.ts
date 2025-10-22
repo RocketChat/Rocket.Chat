@@ -10,11 +10,11 @@ import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
+import * as Rsa from './crypto/rsa';
 import { generatePassphrase } from './helper';
 import { Keychain } from './keychain';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import * as Rsa from './rsa';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -22,7 +22,7 @@ import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { Messages, Rooms, Subscriptions } from '../../stores';
+import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import * as banners from '../banners';
@@ -53,7 +53,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null | undefined;
 
-	public privateKey: Rsa.IPrivateKey | undefined;
+	public privateKey: Rsa.PrivateKey | undefined;
 
 	public publicKey: string | undefined;
 
@@ -478,7 +478,7 @@ class E2E extends Emitter {
 		this.setState('LOADING_KEYS');
 		let keyPair;
 		try {
-			keyPair = await Rsa.generateKeyPair();
+			keyPair = await Rsa.generate();
 			this.privateKey = keyPair.privateKey;
 		} catch (error) {
 			this.setState('ERROR');
@@ -663,13 +663,6 @@ class E2E extends Emitter {
 		return message;
 	}
 
-	async decryptPendingMessages(): Promise<void> {
-		await Messages.state.updateAsync(
-			(record) => record.t === 'e2e' && record.e2e === 'pending',
-			(record) => this.decryptMessage(record),
-		);
-	}
-
 	async decryptSubscription(subscription: SubscriptionWithRoom): Promise<void> {
 		const span = log.span('decryptSubscription');
 		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
@@ -801,14 +794,9 @@ class E2E extends Emitter {
 	}
 
 	getUserId(): string {
-		const span = log.span('getUserId');
 		if (!this.userId) {
-			span.error('No userId found');
-
 			throw new Error('No userId found');
 		}
-
-		span.set('userId', this.userId).info('found userId');
 		return this.userId;
 	}
 

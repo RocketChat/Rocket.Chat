@@ -2,7 +2,8 @@ import { Base64 } from '@rocket.chat/base64';
 
 import { Binary } from './binary';
 import type { ICodec } from './codec';
-import * as Pbkdf2 from './pbkdf2';
+import * as Pbkdf2 from './crypto/pbkdf2';
+import { randomUUID } from './crypto/shared';
 
 /**
  * Version 1 format:
@@ -149,7 +150,7 @@ export class Keychain {
 	}
 
 	async encryptKey(privateKey: string, password: string): Promise<IStoredKeyV2> {
-		const salt = `v2:${this.userId}:${crypto.randomUUID()}`;
+		const salt = `v2:${this.userId}:${randomUUID()}`;
 		const iterations = 100_000;
 		const algorithm = 'AES-GCM';
 		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.decode(password)));

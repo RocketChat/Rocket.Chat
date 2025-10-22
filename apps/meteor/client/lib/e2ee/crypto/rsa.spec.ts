@@ -1,23 +1,19 @@
-import { webcrypto } from 'node:crypto';
-
 import {
-	generateKeyPair,
+	generate,
 	decrypt,
 	encrypt,
 	exportPublicKey,
 	exportPrivateKey,
 	importPrivateKey,
 	importPublicKey,
-	type IKeyPair,
+	type KeyPair,
 } from './rsa';
 
-Object.assign(globalThis.crypto, { subtle: webcrypto.subtle });
-
 describe('rsa', () => {
-	let keyPair: IKeyPair;
+	let keyPair: KeyPair;
 
 	beforeAll(async () => {
-		keyPair = await generateKeyPair();
+		keyPair = await generate();
 	});
 
 	it('generate a key pair with correct properties', async () => {
@@ -60,6 +56,7 @@ describe('rsa', () => {
 		expect(privateJwk.n).toEqual(publicJwk.n);
 
 		const importedPublicKey = await importPublicKey(publicJwk);
+		expect<2048>(importedPublicKey.algorithm.modulusLength).toBe(2048);
 		expect<'RSA-OAEP'>(importedPublicKey.algorithm.name).toBe('RSA-OAEP');
 		expect<true>(importedPublicKey.extractable).toBe(true);
 		expect<'public'>(importedPublicKey.type).toBe('public');
@@ -67,6 +64,7 @@ describe('rsa', () => {
 		expect<['encrypt']>(importedPublicKey.usages).toEqual(['encrypt']);
 
 		const importedPrivateKey = await importPrivateKey(privateJwk);
+		expect<2048>(importedPrivateKey.algorithm.modulusLength).toBe(2048);
 		expect<'RSA-OAEP'>(importedPrivateKey.algorithm.name).toBe('RSA-OAEP');
 		expect<true>(importedPrivateKey.extractable).toBe(true);
 		expect<'private'>(importedPrivateKey.type).toBe('private');

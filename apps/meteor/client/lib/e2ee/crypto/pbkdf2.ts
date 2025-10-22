@@ -1,3 +1,5 @@
+import { subtle, getRandomValues } from './shared';
+
 export type Options = {
 	salt: Uint8Array<ArrayBuffer>;
 	iterations: number;
@@ -18,7 +20,7 @@ export type BaseKey = Narrow<
 >;
 
 export const importBaseKey = async (keyData: Uint8Array<ArrayBuffer>): Promise<BaseKey> => {
-	const baseKey = await crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, ['deriveBits']);
+	const baseKey = await subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, ['deriveBits']);
 	return baseKey as BaseKey;
 };
 
@@ -38,7 +40,7 @@ type FixedSizeArrayBuffer<N extends number> = Narrow<
 export type DerivedBits = FixedSizeArrayBuffer<32>;
 
 export const deriveBits = async (key: BaseKey, options: Options): Promise<DerivedBits> => {
-	const bits = await crypto.subtle.deriveBits(
+	const bits = await subtle.deriveBits(
 		{ name: key.algorithm.name, hash: 'SHA-256', salt: options.salt, iterations: options.iterations },
 		key,
 		256,
@@ -60,12 +62,12 @@ export type DerivedKey<T extends DerivedKeyAlgorithmName = DerivedKeyAlgorithmNa
 
 export const importKey = async <T extends DerivedKeyAlgorithmName>(derivedBits: DerivedBits, algorithm: T): Promise<DerivedKey<T>> => {
 	const usages: ['decrypt'] | ['encrypt', 'decrypt'] = algorithm === 'AES-CBC' ? ['decrypt'] : ['encrypt', 'decrypt'];
-	const key = await crypto.subtle.importKey('raw', derivedBits, { name: algorithm, length: 256 } satisfies AesKeyGenParams, false, usages);
+	const key = await subtle.importKey('raw', derivedBits, { name: algorithm, length: 256 } satisfies AesKeyGenParams, false, usages);
 	return key as DerivedKey<T>;
 };
 
 export const decrypt = async (key: DerivedKey, content: EncryptedContent): Promise<Uint8Array<ArrayBuffer>> => {
-	const decrypted = await crypto.subtle.decrypt(
+	const decrypted = await subtle.decrypt(
 		{ name: key.algorithm.name, iv: content.iv } satisfies AesCbcParams | AesGcmParams,
 		key,
 		content.ciphertext,
@@ -75,7 +77,7 @@ export const decrypt = async (key: DerivedKey, content: EncryptedContent): Promi
 
 export const encrypt = async (key: DerivedKey<'AES-GCM'>, data: Uint8Array<ArrayBuffer>): Promise<EncryptedContent> => {
 	// Always use AES-GCM for new data
-	const iv = crypto.getRandomValues(new Uint8Array(12));
-	const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv } satisfies AesGcmParams, key, data);
+	const iv = getRandomValues(new Uint8Array(12));
+	const ciphertext = await subtle.encrypt({ name: 'AES-GCM', iv } satisfies AesGcmParams, key, data);
 	return { iv, ciphertext: new Uint8Array(ciphertext) };
 };
