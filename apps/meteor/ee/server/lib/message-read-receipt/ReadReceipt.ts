@@ -107,7 +107,7 @@ class ReadReceiptClass {
 
 		void this.storeReadReceipts(
 			() => {
-				return Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray();
+				return Messages.findUnreadThreadMessagesByDate(message.rid, tmid, userId, userLastSeen).toArray();
 			},
 			message.rid,
 			userId,
