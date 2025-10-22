@@ -226,39 +226,58 @@ log_info "Waiting for Rocket.Chat and Synapse servers to be ready..."
 wait_for_service() {
     local url=$1
     local name=$2
+    local host=$3
     local elapsed=0
-    
-    log_info "Checking $name at $url..."
-    
+    local ca_cert="${CA_CERT:-$PACKAGE_ROOT/docker-compose/traefik/certs/ca/rootCA.crt}"
+
+    # Derive host/port from URL when not explicitly provided
+    local host_with_port="${url#*://}"
+    host_with_port="${host_with_port%%/*}"
+    if [ -z "$host" ]; then
+        host="${host_with_port%%:*}"
+    fi
+    local port
+    if [[ "$host_with_port" == *:* ]]; then
+        port="${host_with_port##*:}"
+    else
+        if [[ "$url" == https://* ]]; then
+            port=443
+        else
+            port=80
+        fi
+    fi
+
+    log_info "Checking $name at $url (host $host -> 127.0.0.1:$port)..."
+
     while [ $elapsed -lt $MAX_WAIT_TIME ] && [ "$INTERRUPTED" = false ]; do
-        if curl -f -s "$url" >/dev/null 2>&1; then
+        if curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" >/dev/null 2>&1; then
             log_success "$name is ready!"
             return 0
         fi
-        
+
         log_info "$name not ready yet, waiting... (${elapsed}s/${MAX_WAIT_TIME}s)"
         sleep $CHECK_INTERVAL
         elapsed=$((elapsed + CHECK_INTERVAL))
     done
-    
+
     if [ "$INTERRUPTED" = true ]; then
         log_info "Service check interrupted by user"
         return 1
     fi
-    
+
     log_error "$name failed to become ready within ${MAX_WAIT_TIME} seconds"
     return 1
 }
 
 # Wait for Rocket.Chat
-if ! wait_for_service "https://rc1/api/info" "Rocket.Chat"; then
+if ! wait_for_service "https://rc1/api/info" "Rocket.Chat" "rc1"; then
     log_error "Last 50 lines of rc1 logs:"
     docker logs --tail 50 "$RC1_CONTAINER" 2>&1 | sed 's/^/  /'
     exit 1
 fi
 
 # Wait for Synapse
-if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse"; then
+if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; then
     log_error "Last 50 lines of hs1 logs:"
     docker logs --tail 50 "hs1" 2>&1 | sed 's/^/  /'
     exit 1

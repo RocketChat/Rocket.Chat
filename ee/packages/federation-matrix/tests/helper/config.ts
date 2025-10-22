@@ -52,9 +52,9 @@ function getFederationConfig(): FederationConfig {
 			adminPassword: validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', process.env.FEDERATION_RC1_ADMIN_PASSWORD, 'admin'),
 			adminMatrixUserId: validateEnvVar('FEDERATION_RC1_USER_ID', process.env.FEDERATION_RC1_USER_ID, '@admin:rc1'),
 			additionalUser1: {
-				username: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2'),
-				password: validateEnvVar('FEDERATION_RC1_ADDITIONAL_PASSWORD', process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
-				matrixUserId: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER_ID', process.env.FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID, '@user2:rc1'),
+					username: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2'),
+					password: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD', process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
+					matrixUserId: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID', process.env.FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID, '@user2:rc1'),
 			},
 		},
 		hs1: {
@@ -65,9 +65,9 @@ function getFederationConfig(): FederationConfig {
 			adminUser: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin'),
 			adminPassword: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', process.env.FEDERATION_SYNAPSE_ADMIN_PASSWORD, 'admin'),
 			additionalUser1: {
-				username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'user2'),
-				password: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_PASSWORD', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
-				matrixUserId: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER_ID', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID, '@user2:hs1'),
+					username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'user2'),
+					password: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
+					matrixUserId: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID, '@user2:hs1'),
 			},
 		},
 	};

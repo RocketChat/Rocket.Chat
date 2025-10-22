@@ -54,8 +54,11 @@ export class SynapseClient {
 	}
 
 	getRoom(roomName: string): Room {
-		const room = this.matrixClient?.getRooms()
-			.find(room => room.name === roomName);
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const rooms = this.matrixClient.getRooms();
+		const room = rooms.find((room) => room.name === roomName);
 		
 		if (room) {
 			return room;
@@ -65,14 +68,17 @@ export class SynapseClient {
 	}
 
 	getRoomIdByRoomNameAndMembership(roomName: string, membership: KnownMembership): string {
-		const room = this.matrixClient?.getRooms()
-			.find(room => room.name === roomName && room.getMyMembership() === membership);
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const rooms = this.matrixClient.getRooms();
+		const room = rooms.find((room) => room.name === roomName && room.getMyMembership() === membership);
 		
 		if (room) {
 			return room.roomId;
 		}
 
-		throw new Error(`No room found with name ${roomName} and membership ${membership.toString()}`);
+		throw new Error(`No room found with name ${roomName} and membership ${membership}`);
 	}
 
 	async acceptInvitationForRoomName(
@@ -81,24 +87,28 @@ export class SynapseClient {
 		retryDelay: number = 1000,
 		initialDelay: number = 5000
 	): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
 		if (initialDelay) {
 			await wait(initialDelay);
 		}
+		const retries = Math.max(1, maxRetries);
 		let lastError: Error | null = null;
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		for (let attempt = 1; attempt <= retries; attempt++) {
 			try {
 				const roomId = this.getRoomIdByRoomNameAndMembership(roomName, KnownMembership.Invite);
-				await this.matrixClient?.joinRoom(roomId);
+				await this.matrixClient.joinRoom(roomId);
 				return roomId;
 			} catch (error) {
-				if (attempt < maxRetries) {
+				if (attempt < retries) {
 					await wait(retryDelay);
 				}
 				lastError = error as Error;
 			}
 		}
 		
-		throw lastError;
+		throw new Error(`Failed to accept invitation for room ${roomName} after ${retries} attempts${lastError ? `: ${lastError.message}` : ''}`);
 	}
 
 	async getRoomMembers(roomName: string): Promise<RoomMember[]> {
