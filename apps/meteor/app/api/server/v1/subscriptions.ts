@@ -34,8 +34,8 @@ API.v1.addRoute(
       }
 
       const result = await getSubscriptions(this.userId, updatedSinceDate);
-
-      const subscriptionsWithUnread = Array.isArray(result)
+	  const isArrayResult = Array.isArray(result);
+      const subscriptionsWithUnread = isArrayResult
         ? await Promise.all(
             result.map(async (sub) => {
               const unreadCount = await unreadMessages.countByRoomIdAndUserId(sub.rid, this.userId);
@@ -48,7 +48,7 @@ API.v1.addRoute(
         : result;
 
       return API.v1.success(
-        Array.isArray(result)
+		  isArrayResult
           ? {
               update: subscriptionsWithUnread,
               remove: [],
