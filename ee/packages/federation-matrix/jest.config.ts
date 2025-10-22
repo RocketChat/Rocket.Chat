@@ -8,4 +8,6 @@ export default {
 		'<rootDir>/node_modules/@jest',
 		'/node_modules/(?!marked|@testing-library/)',
 	],
+	// Exclude integration/e2e tests from unit test runs
+	testPathIgnorePatterns: ['<rootDir>/tests/end-to-end/'],
 } satisfies Config;
