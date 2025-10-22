@@ -50,10 +50,11 @@ export class MarketplaceAPIClient {
 }
 
 /**
- * Mocked fetch for marketplace related APIs
- * This allows us to prevent actual calls to Marketplace service
- * during TEST_MODE (CI, local tests, etc.), i.e., remove our dependency
- * an external unrelated service
+ * Provide mocked HTTP responses for supported Marketplace API endpoints.
+ *
+ * @param input - The request URL or path used to determine which mock response to return
+ * @returns A `Response` with status 200 and a JSON body corresponding to the requested marketplace endpoint
+ * @throws Error when `input` does not match any supported mock endpoint
  */
 function mockMarketplaceFetch(input: string, _options?: ExtendedFetchOptions, _allowSelfSignedCerts?: boolean): Promise<Response> {
 	let content: string;

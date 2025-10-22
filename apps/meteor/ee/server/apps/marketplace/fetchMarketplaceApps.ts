@@ -129,6 +129,15 @@ const fetchMarketplaceAppsSchema = z.array(
 	}),
 );
 
+/**
+ * Fetches marketplace apps available to the workspace.
+ *
+ * @param endUserID - Optional end-user identifier used to filter apps returned by the marketplace.
+ * @returns An array of marketplace `App` objects describing available apps and their latest release metadata.
+ * @throws MarketplaceConnectionError when the marketplace cannot be reached.
+ * @throws MarketplaceUnsupportedVersionError when the marketplace reports an unsupported client version.
+ * @throws MarketplaceAppsError for marketplace-side errors, including invalid apps engine version, internal marketplace errors, or a generic failure to fetch apps.
+ */
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
