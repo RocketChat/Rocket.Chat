@@ -81,6 +81,7 @@ slashCommands.add({
 						return;
 					}
 
+					const { error } = e;
 					if (error === 'error-federated-users-in-non-federated-rooms') {
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
