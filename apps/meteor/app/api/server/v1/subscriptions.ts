@@ -26,8 +26,8 @@ API.v1.addRoute(
       if (updatedSince) {
         if (isNaN(Date.parse(updatedSince as string))) {
           throw new Meteor.Error(
-            'error-roomId-param-invalid',
-            'The "lastUpdate" query parameter must be a valid date.'
+            'error-invalid-date',
+            'The "updatedSince" query parameter must be a valid date.'
           );
         }
         updatedSinceDate = new Date(updatedSince as string);
