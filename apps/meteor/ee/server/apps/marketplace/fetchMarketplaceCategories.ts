@@ -17,6 +17,14 @@ const fetchMarketplaceCategoriesSchema = z.array(
 	}),
 );
 
+/**
+ * Fetches marketplace categories from the marketplace API.
+ *
+ * @returns An array of marketplace categories (`AppCategory[]`).
+ * @throws MarketplaceConnectionError when the HTTP request cannot be made.
+ * @throws MarketplaceUnsupportedVersionError when the marketplace responds with status 426 and `errorMsg` equals `"unsupported version"`.
+ * @throws MarketplaceAppsError when the marketplace returns an internal error (specific internal codes) or any other non-successful response.
+ */
 export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
