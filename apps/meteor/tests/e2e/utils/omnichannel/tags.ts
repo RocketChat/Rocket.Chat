@@ -16,11 +16,10 @@ export const createTag = async (api: BaseTest['api'], { id = null, name, descrip
 		id,
 		tagData: {
 			name,
-			description
+			description,
 		},
 		tagDepartments: departments.map((department: { departmentId: string }) => department.departmentId),
 	});
-
 
 	if (response.status() !== 200) {
 		throw new Error(`Failed to create tag [http status: ${response.status()}]`);
