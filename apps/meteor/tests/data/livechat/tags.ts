@@ -1,27 +1,26 @@
 import { faker } from '@faker-js/faker';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 
-import { credentials, methodCall, request } from '../api-data';
+import { credentials, methodCall, request, api } from '../api-data';
 import type { DummyResponse } from './utils';
 
 export const saveTags = (departments: string[] = []): Promise<ILivechatTag> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(methodCall(`livechat:saveTag`))
+			.post(api('livechat/tags.save'))
 			.set(credentials)
 			.send({
-				message: JSON.stringify({
-					method: 'livechat:saveTag',
-					params: [undefined, { name: faker.string.uuid(), description: faker.lorem.sentence() }, departments],
-					id: '101',
-					msg: 'method',
-				}),
+				tagData: {
+					name: faker.string.uuid(),
+					description: faker.lorem.sentence(),
+				},
+				tagDepartments: departments,
 			})
-			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+			.end((err: Error, res: DummyResponse<ILivechatTag, 'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(res.body);
 			});
 	});
 };
