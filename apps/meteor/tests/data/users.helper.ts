@@ -1,25 +1,25 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-
-import { api, credentials, methodCall, request } from './api-data';
 import supertest from 'supertest';
 import type { Response } from 'supertest';
 
+import { api, credentials, methodCall, request } from './api-data';
+
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
 
-export interface RequestConfig {
+export interface IRequestConfig {
 	credentials: Credentials;
 	request: ReturnType<typeof supertest>;
 }
 
-export async function getRequestConfig(domain: string, user: string, password: string): Promise<RequestConfig> {
+export async function getRequestConfig(domain: string, user: string, password: string): Promise<IRequestConfig> {
 	const request = supertest(domain);
 	const credentials = await login(user, password, { request, credentials: {} as Credentials });
-	
+
 	return {
 		credentials,
-		request: request,
+		request,
 	};
 }
 
@@ -36,14 +36,14 @@ export const createUser = <TUser extends IUser>(
 		password?: string;
 		freeSwitchExtension?: string;
 	} = {},
-	config?: RequestConfig
+	config?: IRequestConfig,
 ) =>
 	new Promise<TestUser<TUser>>((resolve, reject) => {
 		const username = userData.username || `user.test.${Date.now()}.${Math.random()}`;
 		const email = userData.email || `${username}@rocket.chat`;
 		const requestInstance = config?.request || request;
 		const credentialsInstance = config?.credentials || credentials;
-		
+
 		void requestInstance
 			.post(api('users.create'))
 			.set(credentialsInstance)
@@ -56,11 +56,7 @@ export const createUser = <TUser extends IUser>(
 			});
 	});
 
-export const login = (
-	username: string | undefined, 
-	password: string,
-	config?: RequestConfig
-): Promise<Credentials> =>
+export const login = (username: string | undefined, password: string, config?: IRequestConfig): Promise<Credentials> =>
 	new Promise((resolve) => {
 		const requestInstance = config?.request || request;
 		void requestInstance
@@ -77,14 +73,9 @@ export const login = (
 			});
 	});
 
-export const deleteUser = async (
-	user: Pick<IUser, '_id'>, 
-	extraData = {},
-	config?: RequestConfig
-) => {
+export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
-	
 	return requestInstance
 		.post(api('users.delete'))
 		.set(credentialsInstance)
@@ -94,14 +85,11 @@ export const deleteUser = async (
 		});
 };
 
-export const getUserByUsername = <TUser extends IUser>(
-	username: string,
-	config?: RequestConfig
-) =>
+export const getUserByUsername = <TUser extends IUser>(username: string, config?: IRequestConfig) =>
 	new Promise<TestUser<TUser>>((resolve) => {
 		const requestInstance = config?.request || request;
 		const credentialsInstance = config?.credentials || credentials;
-		
+
 		void requestInstance
 			.get(api('users.info'))
 			.query({ username })
@@ -111,10 +99,7 @@ export const getUserByUsername = <TUser extends IUser>(
 			});
 	});
 
-export const getMe = <TUser extends IUser>(
-	overrideCredential = credentials,
-	config?: RequestConfig
-) =>
+export const getMe = <TUser extends IUser>(overrideCredential = credentials, config?: IRequestConfig) =>
 	new Promise<TestUser<TUser>>((resolve) => {
 		const requestInstance = config?.request || request;
 		const credentialsInstance = config?.credentials || overrideCredential;
@@ -128,15 +113,11 @@ export const getMe = <TUser extends IUser>(
 			});
 	});
 
-export const setUserActiveStatus = (
-	userId: IUser['_id'], 
-	activeStatus = true,
-	config?: RequestConfig
-) =>
+export const setUserActiveStatus = (userId: IUser['_id'], activeStatus = true, config?: IRequestConfig) =>
 	new Promise((resolve) => {
 		const requestInstance = config?.request || request;
 		const credentialsInstance = config?.credentials || credentials;
-		
+
 		void requestInstance
 			.post(api('users.setActiveStatus'))
 			.set(credentialsInstance)
@@ -147,11 +128,7 @@ export const setUserActiveStatus = (
 			.end(resolve);
 	});
 
-export const setUserStatus = (
-	overrideCredentials = credentials, 
-	status = UserStatus.ONLINE,
-	config?: RequestConfig
-) => {
+export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	return requestInstance.post(api('users.setStatus')).set(overrideCredentials).send({
 		message: '',
@@ -159,10 +136,7 @@ export const setUserStatus = (
 	});
 };
 
-export const setUserAway = (
-	overrideCredentials = credentials,
-	config?: RequestConfig
-) => {
+export const setUserAway = (overrideCredentials = credentials, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	return requestInstance
 		.post(methodCall('UserPresence:away'))
@@ -177,10 +151,7 @@ export const setUserAway = (
 		});
 };
 
-export const setUserOnline = (
-	overrideCredentials = credentials,
-	config?: RequestConfig
-) => {
+export const setUserOnline = (overrideCredentials = credentials, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	return requestInstance
 		.post(methodCall('UserPresence:online'))
@@ -195,12 +166,7 @@ export const setUserOnline = (
 		});
 };
 
-export const removeRoleFromUser = (
-	username: string, 
-	roleId: string, 
-	overrideCredentials = credentials,
-	config?: RequestConfig
-) =>
+export const removeRoleFromUser = (username: string, roleId: string, overrideCredentials = credentials, config?: IRequestConfig) =>
 	getUserByUsername(username, config).then((user) => {
 		const requestInstance = config?.request || request;
 		return requestInstance

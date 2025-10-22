@@ -3,7 +3,7 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
 import { api, credentials, methodCall, request } from './api-data';
-import type { RequestConfig } from './users.helper';
+import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -15,7 +15,7 @@ type CreateRoomParams = {
 	credentials?: Credentials;
 	extraData?: Record<string, any>;
 	voipCallDirection?: 'inbound' | 'outbound';
-	config?: RequestConfig;
+	config?: IRequestConfig;
 };
 
 export const createRoom = ({
@@ -43,11 +43,7 @@ export const createRoom = ({
 		 * a voip room. Hence creation of a voip room
 		 * is handled separately here.
 		 */
-		return requestInstance
-			.get(api('voip/room'))
-			.query({ token, agentId, direction: voipCallDirection })
-			.set(credentialsInstance)
-			.send();
+		return requestInstance.get(api('voip/room')).query({ token, agentId, direction: voipCallDirection }).set(credentialsInstance).send();
 	}
 
 	if (type === 'd' && !username) {
@@ -149,10 +145,10 @@ export const addUserToRoom = ({
 		});
 };
 
-export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getRoomInfo = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
-	
+
 	return new Promise<ReturnType<Endpoints['/v1/rooms.info']['GET']>>((resolve) => {
 		void requestInstance
 			.get(api('rooms.info'))
@@ -166,10 +162,10 @@ export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
 	});
 };
 
-export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getRoomMembers = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
-	
+
 	return new Promise<ReturnType<Endpoints['/v1/rooms.membersOrderedByRole']['GET']>>((resolve) => {
 		void requestInstance
 			.get(api('rooms.membersOrderedByRole'))
@@ -184,44 +180,46 @@ export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => 
 };
 
 export const findRoomMember = async (
-	roomId: IRoom['_id'], 
-	username: string, 
+	roomId: IRoom['_id'],
+	username: string,
 	options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
-	config?: RequestConfig
+	config?: IRequestConfig,
 ): Promise<IUser | null> => {
 	const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
-	
+
 	if (initialDelay > 0) {
-		await new Promise(resolve => setTimeout(resolve, initialDelay));
+		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
-	
+
+	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
+			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
-			const member = membersResponse.members.find((member: IUser) => 
-				member.username === username
-			);
-			
+			const member = membersResponse.members.find((member: IUser) => member.username === username);
+
 			if (member) {
 				return member;
 			}
-			
+
 			if (attempt < maxRetries) {
-				await new Promise(resolve => setTimeout(resolve, delay));
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
-			
+
 			if (attempt < maxRetries) {
-				await new Promise(resolve => setTimeout(resolve, delay));
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
 	}
-	
+
 	return null;
 };
 
-export const getGroupHistory = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getGroupHistory = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
