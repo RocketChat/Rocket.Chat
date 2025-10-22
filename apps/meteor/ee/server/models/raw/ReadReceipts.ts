@@ -39,7 +39,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 	}
 
 	removeOTRReceiptsUntilDate(roomId: string, until: Date): Promise<DeleteResult> {
-		const query = {
+		return this.col.deleteMany({
 			roomId,
 			t: {
 				$in: [
@@ -50,8 +50,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 				],
 			},
 			ts: { $lte: until },
-		};
-		return this.col.deleteMany(query);
+		});
 	}
 
 	async removeByIdPinnedTimestampLimitAndUsers(
