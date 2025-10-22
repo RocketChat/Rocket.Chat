@@ -245,17 +245,30 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(0);
 		});
+
 		it('should persist userId when updating a canned response', async () => {
 			const response = await createCannedResponse();
+
+			const {
+				body: { cannedResponses },
+			} = await request.get(api('canned-responses')).set(credentials).query({}).expect(200);
+
+			const targetCannedResponse = cannedResponses.find(
+				(cannedResponse: IOmnichannelCannedResponse) => cannedResponse.shortcut === response.shortcut,
+			);
 
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ _id: response._id, shortcut: `${dupshortcut}-edited`, text: 'edited text', scope: 'user' })
+				.send({ _id: targetCannedResponse._id, shortcut: `${targetCannedResponse.shortcut}-edited`, text: 'edited text', scope: 'user' })
 				.expect(200);
 			expect(body).to.have.property('success', true);
 
-			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ _id: response._id }).expect(200);
+			const { body: getResult } = await request
+				.get(api('canned-responses'))
+				.set(credentials)
+				.query({ shortcut: `${targetCannedResponse.shortcut}-edited` })
+				.expect(200);
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses[0]).to.have.property('userId', adminUsername);
 		});
