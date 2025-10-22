@@ -9,7 +9,7 @@ import { createAgent, createDepartment } from '../../../data/livechat/rooms';
 import { removeTag, saveTags } from '../../../data/livechat/tags';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
+import { password, adminUsername } from '../../../data/user';
 import { createUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -244,6 +244,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			expect(getResult).to.have.property('success', true);
 			expect(getResult.cannedResponses).to.be.an('array').with.lengthOf(0);
+		});
+		it('should persist userId when updating a canned response', async () => {
+			const response = await createCannedResponse();
+
+			const { body } = await request
+				.post(api('canned-responses'))
+				.set(credentials)
+				.send({ _id: response._id, shortcut: dupshortcut, text: 'edited text', scope: 'user' })
+				.expect(200);
+			expect(body).to.have.property('success', true);
+
+			const { body: getResult } = await request.get(api('canned-responses')).set(credentials).query({ _id: response._id }).expect(200);
+			expect(getResult).to.have.property('success', true);
+			expect(getResult.cannedResponses[0]).to.have.property('userId', adminUsername);
 		});
 	});
 
