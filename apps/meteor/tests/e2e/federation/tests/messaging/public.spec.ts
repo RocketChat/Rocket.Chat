@@ -1012,7 +1012,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 
-				await expect(poFederationChannelServer1.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see the file list sent in the channel on Server B', async () => {
@@ -1020,79 +1020,79 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
-				await expect(poFederationChannelServer2.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see all the mentions sent in the channel on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnMentionedMessagesList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemMentions).toBeVisible();
 			});
 
 			test('expect to see all the mentions sent in the channel on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnMentionedMessagesList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemMentions).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the channel on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the channel on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the channel on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the channel on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the channel on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the channel on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 		});
 	});

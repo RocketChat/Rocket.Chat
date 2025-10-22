@@ -9,6 +9,7 @@ import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEna
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
+	callItem?: GenericMenuItemProps;
 };
 
 const NavBarControlsMenu = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {

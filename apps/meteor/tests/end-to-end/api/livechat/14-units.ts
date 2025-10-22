@@ -635,8 +635,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
-			expect(fullDepartment).to.have.property('parentId').that.is.null;
-			expect(fullDepartment).to.have.property('ancestors').that.is.null;
+			expect(fullDepartment).to.not.have.property('parentId');
+			expect(fullDepartment).to.not.have.property('ancestors');
 		});
 
 		it('should fail adding a department into an existing unit that a monitor does not supervise', async () => {
@@ -658,8 +658,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
-			expect(fullDepartment).to.have.property('parentId').that.is.null;
-			expect(fullDepartment).to.have.property('ancestors').that.is.null;
+			expect(fullDepartment).to.not.have.property('parentId');
+			expect(fullDepartment).to.not.have.property('ancestors');
 		});
 
 		it('should succesfully add a department into an existing unit that a monitor supervises', async () => {
@@ -732,8 +732,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('name', updatedName);
-			expect(fullDepartment).to.have.property('parentId').that.is.null;
-			expect(fullDepartment).to.have.property('ancestors').that.is.null;
+			expect(fullDepartment).to.not.have.property('parentId');
+			expect(fullDepartment).to.not.have.property('ancestors');
 		});
 	});
 
@@ -872,8 +872,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
-			expect(fullDepartment).to.have.property('parentId').that.is.null;
-			expect(fullDepartment).to.have.property('ancestors').that.is.null;
+			expect(fullDepartment).to.not.have.property('parentId');
+			expect(fullDepartment).to.not.have.property('ancestors');
 		});
 
 		it('should succesfully add an existing department to a unit as an admin', async () => {
@@ -904,8 +904,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
-			expect(fullDepartment).to.have.property('parentId').that.is.null;
-			expect(fullDepartment).to.have.property('ancestors').that.is.null;
+			expect(fullDepartment).to.not.have.property('parentId');
+			expect(fullDepartment).to.not.have.property('ancestors');
 		});
 
 		it('should succesfully add an existing department to a unit that a monitor supervises', async () => {
