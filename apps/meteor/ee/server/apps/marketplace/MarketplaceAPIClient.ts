@@ -59,18 +59,36 @@ function mockMarketplaceFetch(input: string, _options?: ExtendedFetchOptions, _a
 	let content: string;
 
 	switch (true) {
+		// This is not an exhaustive list of endpoints
 		case input.indexOf('v1/apps') !== -1:
 		case input.indexOf('v1/categories') !== -1:
+		case input.indexOf('v1/bundles') !== -1:
 			content = '[]';
 			break;
+		case input.indexOf('v1/featured-apps') !== -1:
+			content = '{"sections":[]}';
+			break;
+		case input.indexOf('v1/app-request/stats') !== -1:
+			content = '{"data":{"totalSeen":0,"totalUnseen":0}}';
+			break;
+		case input.indexOf('v1/app-request/markAsSeen') !== -1:
+			content = '{"success":false}';
+			break;
+		case input.indexOf('v1/app-request') !== -1:
+			content = '{"data":[],"meta":{"limit":25,"offset":0,"sort":"","filter":"","total":0}}';
+			break;
+		case input.indexOf('v1/workspaces') !== -1:
+			content = '{}';
+			break;
 		default:
-			throw new Error(`Uncovered input ${input}`);
+			throw new Error(`Invalid marketplace mock request ${input}`);
 	}
 
 	const response = new Response(Buffer.from(content), {
 		headers: {
 			'content-type': 'application/json',
 		},
+		status: 200,
 	});
 
 	return Promise.resolve(response);
