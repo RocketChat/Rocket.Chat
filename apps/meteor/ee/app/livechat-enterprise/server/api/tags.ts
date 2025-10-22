@@ -1,4 +1,6 @@
 import {
+	isPOSTLivechatTagsSaveParams,
+	POSTLivechatTagsSaveSuccessResponse,
 	isPOSTLivechatTagsRemoveParams,
 	POSTLivechatTagsRemoveSuccessResponse,
 	validateBadRequestErrorResponse,
@@ -67,7 +69,38 @@ API.v1.addRoute(
 	},
 );
 
-const livechatTagsEndpoints = API.v1.post(
+const livechatTagsEndpoints = API.v1
+	.post(
+		'livechat/tags.save',
+		{
+			response: {
+				200: POSTLivechatTagsSaveSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissions: ['manage-livechat-tags'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatTagsSaveParams,
+		},
+		async function action() {
+			const { _id, tagData, tagDepartments } = this.bodyParams;
+
+			try {
+				const result = await LivechatEnterprise.saveTag(_id, tagData, tagDepartments);
+
+				return API.v1.success(result);
+			} catch (error) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
+				return API.v1.failure('error-saving-tag');
+			}
+		},
+	)
+	.post(
 	'livechat/tags.delete',
 	{
 		response: {

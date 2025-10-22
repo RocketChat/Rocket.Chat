@@ -513,6 +513,78 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
+type POSTLivechatTagsSaveParams = {
+	_id?: string;
+	tagData: {
+		name: string;
+		description?: string;
+	};
+	tagDepartments: string[];
+};
+
+const POSTLivechatTagsSaveParamsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		tagData: {
+			type: 'object',
+			properties: {
+				name: {
+					type: 'string',
+				},
+				description: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+		},
+		tagDepartments: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['tagData', 'tagDepartments'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatTagsSaveParams = ajv.compile<POSTLivechatTagsSaveParams>(POSTLivechatTagsSaveParamsSchema);
+
+const POSTLivechatTagsSaveSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+		},
+		numDepartments: {
+			type: 'number',
+		},
+		departments: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<ILivechatTag>(POSTLivechatTagsSaveSuccessResponseSchema);
+
 type POSTLivechatTagsRemoveParams = {
 	id: string;
 };
