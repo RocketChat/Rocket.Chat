@@ -1,14 +1,7 @@
 import { Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import {
-	IAbacAttribute,
-	IAbacAttributeDefinition,
-	IRoom,
-	AtLeast,
-	AbacAccessOperation,
-	AbacObjectType,
-	IUser,
-} from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
+import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
