@@ -426,7 +426,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 
 			try {
-				call.hangup('service-error');
+				call.hangup('input-error');
 			} catch {
 				//
 			}

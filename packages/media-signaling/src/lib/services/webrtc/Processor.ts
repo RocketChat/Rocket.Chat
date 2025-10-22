@@ -398,7 +398,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceCandidateError');
 		this.config.logger?.error(event);
-		this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
+
+		this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error', errorDetails: JSON.stringify(event) });
 	}
 
 	private onNegotiationNeeded() {
