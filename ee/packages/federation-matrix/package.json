@@ -23,6 +23,7 @@
 		"lint:fix": "eslint src --fix",
 		"test": "jest",
 		"testend-to-end": "IS_EE=true jest --config jest.config.federation.ts --forceExit --testTimeout=30000",
+		"test:integration": "./tests/scripts/run-integration-tests.sh",
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck",

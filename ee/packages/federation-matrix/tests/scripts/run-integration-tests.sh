@@ -24,7 +24,7 @@ RC1_CONTAINER="rc1"
 
 # Build configuration
 # Use a temporary directory outside the repo to avoid symlink traversal issues during Meteor build
-BUILD_DIR="$(mktemp -d "${FEDERATION_TEST_TMPDIR:-/tmp}/rc-federation-build")"
+BUILD_DIR="$(mktemp -d "${FEDERATION_TEST_TMPDIR:-/tmp}/rc-federation-build-XXXXXX")"
 ROCKETCHAT_ROOT="$(cd "$PACKAGE_ROOT/../../.." && pwd)"  # Go up to project root
 
 # Parse command line arguments
