@@ -45,11 +45,11 @@ export const createUnit = async (
 				unitMonitors: [{ monitorId, username }, ...extraMonitor],
 				unitDepartments: departmentIds.map((departmentId) => ({ departmentId })),
 			})
-			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+			.end((err: Error, res: DummyResponse<IOmnichannelBusinessUnit, 'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(res.body);
 			});
 	});
 };
