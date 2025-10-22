@@ -431,11 +431,13 @@ export class LDAPManager {
 
 	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
 		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
+		// Return undefined when extension syncing is disabled
 		if (!extensionAttribute) {
-			return;
+			return undefined;
 		}
 
-		return getLdapString(ldapUser, extensionAttribute);
+		// Return empty string when sync is enabled but the user has no extension
+		return getLdapString(ldapUser, extensionAttribute) || '';
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {

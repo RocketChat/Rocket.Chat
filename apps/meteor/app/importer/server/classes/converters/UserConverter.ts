@@ -280,6 +280,13 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
+			}),
+			// If voipExtension is an empty string, then extension syncing is enabled and this user has no extension, so unset it
+			...(userData.voipExtension === '' && {
+				$unset: {
+					freeSwitchExtension: 1,
+				},
 			}),
 		});
 
@@ -353,7 +360,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(userData.importIds?.length && { importIds: userData.importIds }),
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
-			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
+			...(userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
 			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}
