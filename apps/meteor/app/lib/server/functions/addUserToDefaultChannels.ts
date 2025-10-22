@@ -5,6 +5,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import { getDefaultChannels } from './getDefaultChannels';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
@@ -13,6 +14,10 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 	const defaultRooms = await getDefaultChannels();
 
 	for await (const room of defaultRooms) {
+		if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
+			continue;
+		}
+
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
 			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
 
