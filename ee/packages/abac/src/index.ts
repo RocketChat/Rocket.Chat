@@ -170,11 +170,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
+		}
+		if (room.default || room.teamDefault) {
+			throw new Error('error-cannot-convert-default-room-to-abac');
 		}
 
 		const normalized = this.validateAndNormalizeAttributes(attributes);
@@ -260,12 +267,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
+
+		if (room.default || room.teamDefault) {
+			throw new Error('error-cannot-convert-default-room-to-abac');
+		}
+
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
 		const existingIndex = previous.findIndex((a) => a.key === key);
@@ -304,9 +320,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes'>>(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default'>>(rid, 'p', {
+			projection: { abacAttributes: 1, default: 1, teamDefault: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
+		}
+
+		if (room.default || room.teamDefault) {
+			throw new Error('error-cannot-convert-default-room-to-abac');
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
@@ -326,11 +348,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
+		}
+
+		if (room.default || room.teamDefault) {
+			throw new Error('error-cannot-convert-default-room-to-abac');
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
@@ -351,11 +381,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
+		}
+
+		if (room.default || room.teamDefault) {
+			throw new Error('error-cannot-convert-default-room-to-abac');
 		}
 
 		const exists = room?.abacAttributes?.some((a) => a.key === key);
