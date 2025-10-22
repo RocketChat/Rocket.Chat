@@ -1,4 +1,4 @@
-import { generateKey, generateKeyPair, exportKey, importKey } from './shared';
+import { generateKey, generateKeyPair, exportKey, importJwk, encryptBuffer, decryptBuffer, getRandomValues } from './shared';
 
 describe('Shared Crypto Functions', () => {
 	describe('generateKey', () => {
@@ -55,8 +55,7 @@ describe('Shared Crypto Functions', () => {
 
 	describe('importKey', () => {
 		it('should import an AES key from JWK format', async () => {
-			const key = await importKey(
-				'jwk',
+			const key = await importJwk(
 				{
 					kty: 'oct' as const,
 					k: 'qb8In0Rpa9nwSusvxxDcbQ',
@@ -126,6 +125,17 @@ describe('Shared Crypto Functions', () => {
 			expect<string>(exportedKey.dp).toBeDefined();
 			expect<string>(exportedKey.dq).toBeDefined();
 			expect<string>(exportedKey.qi).toBeDefined();
+		});
+	});
+
+	describe('encryptBuffer', () => {
+		it('should encrypt and decrypt data correctly', async () => {
+			const key = await generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+			const plaintext = new TextEncoder().encode('Test encryption');
+			const iv = getRandomValues(new Uint8Array(12));
+			const ciphertext = await encryptBuffer(key, { name: 'AES-GCM', iv }, plaintext);
+			const decrypted = await decryptBuffer(key, { name: 'AES-GCM', iv }, ciphertext);
+			expect(new TextDecoder().decode(decrypted)).toBe('Test encryption');
 		});
 	});
 });

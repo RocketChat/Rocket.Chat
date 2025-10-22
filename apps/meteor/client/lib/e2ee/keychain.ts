@@ -140,11 +140,11 @@ export class Keychain {
 		const { content, options } = this.codec.decode(privateKey);
 		const algorithm = content.iv.length === 16 ? 'AES-CBC' : 'AES-GCM';
 		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.decode(password)));
-		const derivedBits = await Pbkdf2.deriveBits(baseKey, {
+		const derivedBits = await Pbkdf2.derive(baseKey, {
 			salt: new Uint8Array(Binary.decode(options.salt)),
 			iterations: options.iterations,
 		});
-		const key = await Pbkdf2.importKey(derivedBits, algorithm);
+		const key = await Pbkdf2.importKey(derivedBits, { name: algorithm, length: 256 });
 		const decrypted = await Pbkdf2.decrypt(key, content);
 		return Binary.encode(decrypted.buffer);
 	}
@@ -154,8 +154,8 @@ export class Keychain {
 		const iterations = 100_000;
 		const algorithm = 'AES-GCM';
 		const baseKey = await Pbkdf2.importBaseKey(new Uint8Array(Binary.decode(password)));
-		const derivedBits = await Pbkdf2.deriveBits(baseKey, { salt: new Uint8Array(Binary.decode(salt)), iterations });
-		const key = await Pbkdf2.importKey(derivedBits, algorithm);
+		const derivedBits = await Pbkdf2.derive(baseKey, { salt: new Uint8Array(Binary.decode(salt)), iterations });
+		const key = await Pbkdf2.importKey(derivedBits, { name: algorithm, length: 256 });
 		const content = await Pbkdf2.encrypt(key, new Uint8Array(Binary.decode(privateKey)));
 
 		return this.codec.encode({ content, options: { salt, iterations } });

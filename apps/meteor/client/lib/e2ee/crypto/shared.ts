@@ -7,9 +7,49 @@ const crypto: Crypto = (() => {
 	return webcrypto as Crypto;
 })();
 
-export const { subtle } = crypto;
+const { subtle } = crypto;
 export const randomUUID = crypto.randomUUID.bind(crypto);
 export const getRandomValues = crypto.getRandomValues.bind(crypto);
+
+interface IAesGcmParams extends AesGcmParams {
+	name: 'AES-GCM';
+}
+
+interface IAesCbcParams extends AesCbcParams {
+	name: 'AES-CBC';
+}
+
+interface IAesCtrParams extends AesCtrParams {
+	name: 'AES-CTR';
+}
+
+interface IRsaOaepParams extends RsaOaepParams {
+	name: 'RSA-OAEP';
+}
+
+type ParamsMap = {
+	'AES-GCM': IAesGcmParams;
+	'AES-CTR': IAesCtrParams;
+	'AES-CBC': IAesCbcParams;
+	'RSA-OAEP': IRsaOaepParams;
+};
+
+type ParamsOf<TKey extends IKey> = TKey['algorithm'] extends { name: infer TName extends keyof ParamsMap } ? ParamsMap[TName] : never;
+type HasUsage<TKey extends IKey, TUsage extends KeyUsage> = TUsage extends TKey['usages'][number]
+	? TKey
+	: TKey & `The provided key cannot be used for ${TUsage}`;
+
+export const encryptBuffer = <TKey extends IKey, TParams extends ParamsOf<TKey>>(
+	key: HasUsage<TKey, 'encrypt'>,
+	params: TParams,
+	data: BufferSource,
+): Promise<ArrayBuffer> => subtle.encrypt(params, key, data) as Promise<ArrayBuffer>;
+export const decryptBuffer = <TKey extends IKey>(
+	key: HasUsage<TKey, 'decrypt'>,
+	params: ParamsOf<TKey>,
+	data: BufferSource,
+): Promise<ArrayBuffer> => subtle.decrypt(params, key, data) as Promise<ArrayBuffer>;
+export const deriveBits = subtle.deriveBits.bind(subtle);
 
 type AesParams = {
 	name: 'AES-CBC' | 'AES-GCM' | 'AES-CTR';
@@ -115,20 +155,24 @@ type KeyToJwk<T extends IKey> = T['extractable'] extends false
 					}
 				: never;
 
-type KeyExportType<TFormat extends KeyFormat, TKey extends IKey = IKey> = TFormat extends 'jwk' ? KeyToJwk<TKey> : ArrayBuffer;
+export type Exported<TFormat extends KeyFormat, TKey extends IKey = IKey> = TFormat extends 'jwk' ? KeyToJwk<TKey> : ArrayBuffer;
 
 export async function exportKey<const TFormat extends KeyFormat = KeyFormat, const TKey extends IKey = IKey>(
 	format: TFormat,
 	key: TKey,
-): Promise<KeyExportType<TFormat, TKey>> {
+): Promise<Exported<TFormat, TKey>> {
 	const exportedKey = await subtle.exportKey(format, key);
-	return exportedKey as KeyExportType<TFormat>;
+	return exportedKey as Exported<TFormat, TKey>;
 }
 
-export async function importKey<
-	const TFormat extends KeyFormat = KeyFormat,
-	const TKeyData extends TFormat extends 'jwk' ? JsonWebKey : ArrayBuffer = TFormat extends 'jwk' ? JsonWebKey : ArrayBuffer,
-	const TAlgorithm extends KeyAlgorithm = KeyAlgorithm,
+type KtyParams = {
+	oct: AesParams;
+	RSA: RsaParams;
+};
+
+export async function importJwk<
+	const TKeyData extends JsonWebKey,
+	const TAlgorithm extends TKeyData extends { kty: infer Kty extends keyof KtyParams } ? KtyParams[Kty] : KeyAlgorithm,
 	const TExtractable extends boolean = boolean,
 	const TUsages extends KeyUsage[] = KeyUsage[],
 	const TKeyType extends KeyType = TKeyData extends { kty: 'oct' }
@@ -137,14 +181,27 @@ export async function importKey<
 			? Op extends 'encrypt'
 				? 'public'
 				: 'private'
-			: never,
+			: KeyType,
 >(
-	format: TFormat,
-	keyData: TKeyData,
+	jwk: TKeyData,
 	algorithm: TAlgorithm,
 	extractable: TExtractable,
 	keyUsages: TUsages,
 ): Promise<IKey<TAlgorithm, TExtractable, TKeyType, TUsages>> {
-	const key = await subtle.importKey(format as any, keyData as any, algorithm, extractable, keyUsages);
+	const key = await subtle.importKey('jwk', jwk, algorithm, extractable, keyUsages);
 	return key as IKey<TAlgorithm, TExtractable, TKeyType, TUsages>;
+}
+
+export async function importRaw<
+	const TAlgorithm extends KeyAlgorithm = KeyAlgorithm,
+	const TExtractable extends boolean = boolean,
+	const TUsages extends KeyUsage[] = KeyUsage[],
+>(
+	rawKey: BufferSource,
+	algorithm: TAlgorithm,
+	extractable: TExtractable,
+	keyUsages: TUsages,
+): Promise<IKey<TAlgorithm, TExtractable, 'secret', TUsages>> {
+	const key = await subtle.importKey('raw', rawKey, algorithm, extractable, keyUsages);
+	return key as IKey<TAlgorithm, TExtractable, 'secret', TUsages>;
 }

@@ -415,7 +415,7 @@ export class E2ERoom extends Emitter {
 
 	async createNewGroupKey() {
 		this.groupSessionKey = await Aes.generate();
-		const sessionKeyExported = await Aes.exportKey(this.groupSessionKey);
+		const sessionKeyExported = await Aes.exportJwk(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 		this.keyID = crypto.randomUUID();
 	}

@@ -1,4 +1,4 @@
-import { generate, decrypt, encrypt, exportKey, importKey, type Key } from './aes';
+import { generate, decrypt, encrypt, exportJwk, importKey, type Key } from './aes';
 
 describe('aes', () => {
 	describe('256-gcm', () => {
@@ -25,7 +25,7 @@ describe('aes', () => {
 		});
 
 		it('should export and re-import the key correctly', async () => {
-			const jwk = await exportKey(key);
+			const jwk = await exportJwk(key);
 			const importedKey = await importKey(jwk);
 			expect<256>(importedKey.algorithm.length).toBe(256);
 			expect<'AES-GCM'>(importedKey.algorithm.name).toBe('AES-GCM');
@@ -60,7 +60,7 @@ describe('aes', () => {
 		});
 
 		it('should export and re-import the key correctly', async () => {
-			const jwk = await exportKey(key);
+			const jwk = await exportJwk(key);
 			const importedKey = await importKey(jwk);
 			expect<128>(importedKey.algorithm.length).toBe(128);
 			expect<'AES-CBC'>(importedKey.algorithm.name).toBe('AES-CBC');
@@ -81,7 +81,7 @@ describe('aes', () => {
 				key_ops: ['encrypt', 'decrypt'],
 				kty: 'oct',
 			}),
-		).rejects.toThrow('Unsupported JWK alg: A128GCM');
+		).rejects.toThrow('Unrecognized algorithm name');
 
 		await expect(
 			importKey({
@@ -92,6 +92,6 @@ describe('aes', () => {
 				key_ops: ['encrypt', 'decrypt'],
 				kty: 'oct',
 			}),
-		).rejects.toThrow('Unsupported JWK alg: A256CBC');
+		).rejects.toThrow('Unrecognized algorithm name');
 	});
 });

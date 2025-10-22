@@ -1,4 +1,4 @@
-import { generateKeyPair, exportKey, importKey, type IKeyPair, subtle } from './shared';
+import { generateKeyPair, exportKey, importJwk, type IKeyPair, encryptBuffer, decryptBuffer } from './shared';
 
 export type KeyPair = IKeyPair<
 	{
@@ -69,12 +69,13 @@ export const exportPrivateKey = async (key: PrivateKey): Promise<IPrivateJwk> =>
 };
 
 export const importPrivateKey = async (keyData: IPrivateJwk): Promise<PrivateKey> => {
-	const key = await importKey(
-		'jwk',
+	const key = await importJwk(
 		keyData,
 		{
 			name: 'RSA-OAEP',
 			hash: { name: 'SHA-256' },
+			modulusLength: 2048,
+			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
 		},
 		true,
 		['decrypt'],
@@ -83,12 +84,13 @@ export const importPrivateKey = async (keyData: IPrivateJwk): Promise<PrivateKey
 };
 
 export const importPublicKey = async (keyData: IPublicJwk): Promise<PublicKey> => {
-	const key = await importKey(
-		'jwk',
+	const key = await importJwk(
 		keyData,
 		{
 			name: 'RSA-OAEP',
 			hash: { name: 'SHA-256' },
+			modulusLength: 2048,
+			publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
 		},
 		true,
 		['encrypt'],
@@ -97,11 +99,11 @@ export const importPublicKey = async (keyData: IPublicJwk): Promise<PublicKey> =
 };
 
 export const encrypt = async (key: PublicKey, data: BufferSource): Promise<Uint8Array<ArrayBuffer>> => {
-	const encrypted = await subtle.encrypt({ name: key.algorithm.name } satisfies RsaOaepParams, key, data);
+	const encrypted = await encryptBuffer(key, { name: key.algorithm.name }, data);
 	return new Uint8Array(encrypted);
 };
 
 export const decrypt = async (key: PrivateKey, data: BufferSource): Promise<Uint8Array<ArrayBuffer>> => {
-	const decrypted = await subtle.decrypt({ name: key.algorithm.name } satisfies RsaOaepParams, key, data);
+	const decrypted = await decryptBuffer(key, { name: key.algorithm.name }, data);
 	return new Uint8Array(decrypted);
 };
