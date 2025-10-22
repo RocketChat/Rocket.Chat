@@ -50,7 +50,13 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
+		this.storeReadReceipts(
+			() => {
+				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
+			},
+			roomId,
+			userId,
+		);
 
 		await updateMessages(room);
 	},
@@ -76,7 +82,14 @@ export const ReadReceipt = {
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
-		this.storeReadReceipts([message], roomId, userId, extraData);
+		this.storeReadReceipts(
+			() => {
+				return [message];
+			},
+			roomId,
+			userId,
+			extraData,
+		);
 	},
 
 	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
@@ -91,13 +104,23 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray(), message.rid, userId);
+		this.storeReadReceipts(
+			() => {
+				return Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray();
+			},
+			message.rid,
+			userId,
+		);
 	},
 
-	async storeReadReceipts(messages, roomId, userId, extraData = {}) {
+	async storeReadReceipts(getMessages, roomId, userId, extraData = {}) {
+		if (typeof getMessages !== 'function') {
+			throw new Error('First parameter must be a function that returns the messages to store read receipts for');
+		}
+
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
-			const receipts = messages.map((message) => ({
+			const receipts = (await getMessages()).map((message) => ({
 				_id: Random.id(),
 				roomId,
 				userId,
