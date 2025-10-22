@@ -163,7 +163,7 @@ export const addUserToRoom = ({
 		});
 };
 
-export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getRoomInfo = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
@@ -180,7 +180,7 @@ export const getRoomInfo = (roomId: IRoom['_id'], config?: RequestConfig) => {
 	});
 };
 
-export const getRoomMembers = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getRoomMembers = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
@@ -201,7 +201,7 @@ export const findRoomMember = async (
 	roomId: IRoom['_id'],
 	username: string,
 	options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
-	config?: RequestConfig,
+	config?: IRequestConfig,
 ): Promise<IUser | null> => {
 	const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
 
@@ -209,8 +209,10 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
+	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
+			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
 			const member = membersResponse.members.find((member: IUser) => member.username === username);
 
@@ -219,12 +221,14 @@ export const findRoomMember = async (
 			}
 
 			if (attempt < maxRetries) {
+				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 			if (attempt < maxRetries) {
+				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
@@ -233,7 +237,7 @@ export const findRoomMember = async (
 	return null;
 };
 
-export const getGroupHistory = (roomId: IRoom['_id'], config?: RequestConfig) => {
+export const getGroupHistory = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
 
