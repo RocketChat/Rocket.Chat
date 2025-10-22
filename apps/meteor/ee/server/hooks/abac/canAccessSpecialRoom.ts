@@ -6,7 +6,7 @@ import { canAccessSpecialRoom } from '../../../../app/lib/server/lib/canAccessSp
 import { settings } from '../../../../app/settings/server';
 
 canAccessSpecialRoom.patch(async (_prev, room, user) => {
-	if (!room?.abacAttributes?.length || !user || !License.hasModule('abac') || room.t !== 'p' || !settings.get('Abac_Enabled')) {
+	if (!room?.abacAttributes?.length || !user || !License.hasModule('abac') || room.t !== 'p' || !settings.get('ABAC_Enabled')) {
 		// ignore the check and let other checks run
 		return false;
 	}
