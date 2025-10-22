@@ -80,6 +80,7 @@
   },
   "changesets": [
     "beige-planets-suffer",
+    "bump-patch-1761094588008",
     "calm-hounds-look",
     "chatty-foxes-attend",
     "chilled-chicken-drop",
