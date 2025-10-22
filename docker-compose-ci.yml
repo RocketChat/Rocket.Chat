@@ -24,6 +24,8 @@ services:
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
       - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
+      - Federation_Service_Enabled=true
+      - 'Federation_Service_Domain=rc.host'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:

@@ -193,10 +193,10 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 		await expect(poHomeChannel.btnRoomSaveE2EEPassword).toBeVisible();
 
-		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
-		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
-		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
-		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
+		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();
+		await expect(poHomeChannel.roomToolbar.btnDisableE2EEncryption).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
@@ -238,10 +238,10 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await expect(poHomeChannel.btnRoomEnterE2EEPassword).toBeVisible();
 
-		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
-		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
-		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
-		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
+		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();
+		await expect(poHomeChannel.roomToolbar.btnDisableE2EEncryption).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
@@ -308,9 +308,9 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 
-		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
-		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
-		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
-		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
+		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();
+		await expect(poHomeChannel.roomToolbar.btnDisableE2EEncryption).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
+		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 	});
 });
