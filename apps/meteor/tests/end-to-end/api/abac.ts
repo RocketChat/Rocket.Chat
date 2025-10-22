@@ -1,7 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -9,7 +10,22 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
+
+// NOTE: This manipulates the DB directly to add ABAC attributes to a user
+// The idea is to avoid having to go through LDAP to add info to the user
+let connection: MongoClient;
+const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
+	connection = await MongoClient.connect(URL_MONGODB);
+
+	await connection.db().collection('users').updateOne(
+		{
+			// @ts-expect-error - collection types for _id
+			_id: userId,
+		},
+		{ $set: { abacAttributes } },
+	);
+};
 
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
@@ -40,6 +56,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(async () => {
 		await deleteRoom({ type: 'p', roomId: testRoom._id });
 		await deleteUser(unauthorizedUser);
+
+		await connection.close();
 	});
 
 	const v1 = '/api/v1';
@@ -1054,6 +1072,76 @@ import { IS_EE } from '../../e2e/config/constants';
 			after(async () => {
 				await updateSetting('ABAC_Enabled', true);
 			});
+		});
+	});
+
+	describe('Room access', () => {
+		let roomWithoutAttr: IRoom;
+		let roomWithAttr: IRoom;
+		const accessAttrKey = `access_attr_${Date.now()}`;
+
+		before(async () => {
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: accessAttrKey, values: ['v1'] })
+				.expect(200);
+
+			// We have to add them directly cause otherwise the abac engine would kick the user from the room after the attribute is added
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
+
+			// Create two private rooms: one will stay without attributes, the other will get the attribute
+			roomWithoutAttr = (await createRoom({ type: 'p', name: `abac-access-noattr-${Date.now()}` })).body.group;
+			roomWithAttr = (await createRoom({ type: 'p', name: `abac-access-withattr-${Date.now()}` })).body.group;
+
+			// Assign the attribute to the second room
+			await request
+				.post(`${v1}/abac/room/${roomWithAttr._id}/attributes/${accessAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: roomWithoutAttr._id });
+			await deleteRoom({ type: 'p', roomId: roomWithAttr._id });
+		});
+
+		it('INVITE: user without attributes invited to room without attributes succeeds', async () => {
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithoutAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('INVITE: user without attributes invited to room with attributes should fail', async () => {
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.includes('error-usernames-not-matching-abac-attributes');
+				});
+		});
+
+		it('INVITE: after room loses attributes user without attributes can be invited', async () => {
+			await request.delete(`${v1}/abac/room/${roomWithAttr._id}/attributes/${accessAttrKey}`).set(credentials).expect(200);
+
+			// Try inviting again - should now succeed
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 	});
 });

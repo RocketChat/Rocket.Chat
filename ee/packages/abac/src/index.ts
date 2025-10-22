@@ -537,6 +537,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			(err as any).details = Array.from(nonCompliantSet);
 			throw err;
 		}
+
+		this.logger.debug({
+			msg: 'User list complied with ABAC attributes for room',
+			usernames,
+		});
 	}
 
 	async canAccessObject(room: IRoom, user: IUser, action: AbacAccessOperation, objectType: AbacObjectType) {
