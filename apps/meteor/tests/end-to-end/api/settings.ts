@@ -128,7 +128,7 @@ describe('[Settings]', () => {
 			await updatePermission('edit-privileged-setting', ['admin']);
 		});
 
-		it('should succesfully return one setting (GET)', async () => {
+		it('should successfully return one setting (GET)', async () => {
 			return request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
@@ -154,7 +154,7 @@ describe('[Settings]', () => {
 				});
 		});
 
-		it('should succesfully set the value of a setting (POST)', async () => {
+		it('should successfully set the value of a setting (POST)', async () => {
 			return request
 				.post(api('settings/LDAP_Enable'))
 				.set(credentials)
@@ -165,6 +165,42 @@ describe('[Settings]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail updating the value of a setting less than its minValue (POST)', async () => {
+			return request
+				.post(api('settings/Accounts_Default_User_Preferences_masterVolume'))
+				.set(credentials)
+				.send({
+					value: '-1',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						'Value for setting Accounts_Default_User_Preferences_masterVolume must be greater than or equal to 0 [error-invalid-setting-value]',
+					);
+				});
+		});
+
+		it('should fail updating the value of a setting greater than its maxValue (POST)', async () => {
+			return request
+				.post(api('settings/Accounts_Default_User_Preferences_masterVolume'))
+				.set(credentials)
+				.send({
+					value: '101',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property(
+						'error',
+						'Value for setting Accounts_Default_User_Preferences_masterVolume must be less than or equal to 100 [error-invalid-setting-value]',
+					);
 				});
 		});
 

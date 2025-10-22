@@ -5,7 +5,6 @@ import RoomFiles from './RoomFiles';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomFiles',
 	component: RoomFiles,
 	parameters: {
 		layout: 'fullscreen',

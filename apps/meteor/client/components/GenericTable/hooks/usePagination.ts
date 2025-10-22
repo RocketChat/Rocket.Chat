@@ -5,6 +5,9 @@ import { useItemsPerPage } from './useItemsPerPage';
 import { useItemsPerPageLabel } from './useItemsPerPageLabel';
 import { useShowingResultsLabel } from './useShowingResultsLabel';
 
+/**
+ * TODO: Move `usePagination` outside from `GenericTable` folder
+ */
 export const usePagination = (): {
 	current: ReturnType<typeof useCurrent>[0];
 	setCurrent: ReturnType<typeof useCurrent>[1];

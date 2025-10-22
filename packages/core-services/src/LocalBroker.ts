@@ -71,6 +71,8 @@ export class LocalBroker implements IBroker {
 		}
 		instance.removeAllListeners();
 		await instance.stopped();
+
+		this.services.delete(namespace);
 	}
 
 	/**

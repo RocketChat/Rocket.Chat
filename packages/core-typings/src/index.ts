@@ -146,5 +146,6 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+export * from './mediaCalls';
 
 export { schemas } from './Ajv';

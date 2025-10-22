@@ -3,6 +3,7 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import type { Headers } from 'node-fetch';
 import { UAParser } from 'ua-parser-js';
 
 import * as Mailer from '../../../../app/mailer/server/api';
@@ -66,7 +67,9 @@ export const listenSessionLogin = () => {
 			username,
 			emails: [{ address: email }],
 		} = user;
-		const { browser, os, device, cpu, app } = await uaParser(connection.httpHeaders['user-agent']);
+		// TODO: Find why the httpheaders is being casted to IncomingHttpHeaders instead of Headers
+		const userAgentString = connection?.httpHeaders && (connection.httpHeaders as unknown as Headers).get('user-agent');
+		const { browser, os, device, cpu, app } = await uaParser(userAgentString || '');
 
 		const mailData = {
 			name,

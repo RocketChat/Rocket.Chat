@@ -1,5 +1,5 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, FieldHint, Margins } from '@rocket.chat/fuselage';
+import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
 import type { ElementType, ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -15,6 +15,7 @@ import LanguageSettingInput from './inputs/LanguageSettingInput';
 import LookupSettingInput from './inputs/LookupSettingInput';
 import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
 import PasswordSettingInput from './inputs/PasswordSettingInput';
+import RangeSettingInput from './inputs/RangeSettingInput';
 import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
 import RoomPickSettingInput from './inputs/RoomPickSettingInput';
 import SelectSettingInput from './inputs/SelectSettingInput';
@@ -41,6 +42,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	timezone: SelectTimezoneSettingInput,
 	lookup: LookupSettingInput,
 	timespan: TimespanSettingInput,
+	range: RangeSettingInput,
 	date: GenericSettingInput, // @todo: implement
 	group: GenericSettingInput, // @todo: implement
 };
@@ -99,7 +101,6 @@ const MemoizedSetting = ({
 					disabled={disabled}
 					{...inputProps}
 				/>
-				{hint && type !== 'code' && <FieldHint>{hint}</FieldHint>}
 				{callout && (
 					<Margins block={16}>
 						<Callout type='warning'>{callout}</Callout>

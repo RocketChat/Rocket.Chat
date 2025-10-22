@@ -14,7 +14,7 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
@@ -72,13 +72,16 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 		formState: { isDirty, errors },
 	} = methods;
 
-	const saveCustomField = useMethod('livechat:saveCustomField');
+	const saveCustomField = useEndpoint('POST', '/v1/livechat/custom-fields.save');
 
 	const handleSave = useEffectEvent(async ({ visibility, ...data }: EditCustomFieldsFormData) => {
 		try {
-			await saveCustomField(customFieldData?._id as unknown as string, {
-				visibility: visibility ? 'visible' : 'hidden',
-				...data,
+			await saveCustomField({
+				customFieldId: customFieldData?._id as unknown as string,
+				customFieldData: {
+					visibility: visibility ? 'visible' : 'hidden',
+					...data,
+				},
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });

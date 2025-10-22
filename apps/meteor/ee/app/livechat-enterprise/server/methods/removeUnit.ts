@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeUnit'(id) {
+		methodDeprecationLogger.method('livechat:removeUnit', '8.0.0', 'DELETE /v1/livechat/units/:id');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-units'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeUnit' });

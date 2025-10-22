@@ -1,5 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message, Team } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,8 +8,8 @@ import { roomCoordinator } from './rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 
-export async function eraseRoom(rid: string, uid: string): Promise<void> {
-	const room = await Rooms.findOneById(rid);
+export async function eraseRoom(roomOrId: string | IRoom, uid: string): Promise<void> {
+	const room = typeof roomOrId === 'string' ? await Rooms.findOneById(roomOrId) : roomOrId;
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -46,7 +47,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		}
 	}
 
-	await deleteRoom(rid);
+	await deleteRoom(room._id);
 
 	if (team) {
 		const user = await Meteor.userAsync();

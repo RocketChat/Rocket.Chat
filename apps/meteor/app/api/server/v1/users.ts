@@ -56,6 +56,7 @@ import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
+import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -323,6 +324,10 @@ API.v1.addRoute(
 
 			if (this.bodyParams.customFields) {
 				validateCustomFields(this.bodyParams.customFields);
+			}
+
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.userId, this.bodyParams.freeSwitchExtension))) {
+				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
 			const newUserId = await saveUser(this.userId, this.bodyParams);

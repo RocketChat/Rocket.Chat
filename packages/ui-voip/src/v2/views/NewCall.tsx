@@ -13,22 +13,19 @@ import {
 	DevicePicker,
 	ActionButton,
 } from '../components';
-import { useKeypad } from '../useKeypad';
 
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { onKeypadPress, peerInfo, ...autocomplete } = usePeerAutocomplete();
+	const { onCall, onToggleWidget, peerInfo, onSelectPeer } = useMediaCallContext();
 
-	const keypad = useKeypad(onKeypadPress);
-
-	const { onCall, onToggleWidget } = useMediaCallContext();
+	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
 
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={t('New_Call')}>
-				<ActionButton tiny secondary={false} label='close' icon='cross' onClick={onToggleWidget} />
+			<WidgetHeader title={t('New_call')}>
+				<ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={onToggleWidget} />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
@@ -39,11 +36,9 @@ const NewCall = () => {
 				)}
 			</WidgetContent>
 			<WidgetFooter>
-				{keypad.element}
 				<ButtonGroup stretch>
-					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary onClick={keypad.toggleOpen} />
 					<DevicePicker secondary />
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => onCall(autocomplete.value)}>
+					<Button medium icon='phone' success flexGrow={1} onClick={onCall}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

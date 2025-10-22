@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import MailerPage from './MailerPage';
 
 export default {
-	title: 'Admin/Mailer/Mailer',
 	component: MailerPage,
 	parameters: {
 		layout: 'fullscreen',

@@ -2,7 +2,6 @@
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
-		"allowJs": true, // TODO: Remove this line
 		"outDir": "./dist"
 	},
 	"files": ["./src/service.ts"],

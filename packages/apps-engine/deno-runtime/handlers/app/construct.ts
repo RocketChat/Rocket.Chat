@@ -26,22 +26,25 @@ function prepareEnvironment() {
 // 2. To require external npm packages we may provide
 // 3. To require apps-engine files
 function buildRequire(): (module: string) => unknown {
-	return (module: string): unknown => {
-		if (ALLOWED_NATIVE_MODULES.includes(module)) {
-			return require(`node:${module}`);
-		}
+    return (module: string): unknown => {
+        // Normalize Node built-in specifiers: accept both 'crypto' and 'node:crypto'
+        const normalized = module.replace('node:', '');
 
-		if (ALLOWED_EXTERNAL_MODULES.includes(module)) {
-			return require(`npm:${module}`);
-		}
+        if (ALLOWED_NATIVE_MODULES.includes(normalized)) {
+            return require(`node:${normalized}`);
+        }
 
-		if (module.startsWith('@rocket.chat/apps-engine')) {
-			// Our `require` function knows how to handle these
-			return require(module);
-		}
+        if (ALLOWED_EXTERNAL_MODULES.includes(module)) {
+            return require(`npm:${module}`);
+        }
 
-		throw new Error(`Module ${module} is not allowed`);
-	};
+        if (module.startsWith('@rocket.chat/apps-engine')) {
+            // Our `require` function knows how to handle these
+            return require(module);
+        }
+
+        throw new Error(`Module ${module} is not allowed`);
+    };
 }
 
 function wrapAppCode(code: string): (require: (module: string) => unknown) => Promise<Record<string, unknown>> {

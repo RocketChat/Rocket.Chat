@@ -7,6 +7,7 @@ import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 import VideoConfPopupIcon from './VideoConfPopupIcon';
 import VideoConfPopupInfo from './VideoConfPopupInfo';
+import VideoConfPopupSkeleton from './VideoConfPopupSkeleton';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
 
 export {
@@ -20,4 +21,5 @@ export {
 	VideoConfPopupControllers,
 	VideoConfPopupFooter,
 	VideoConfPopupFooterButtons,
+	VideoConfPopupSkeleton,
 };

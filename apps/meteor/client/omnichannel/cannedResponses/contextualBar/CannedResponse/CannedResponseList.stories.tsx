@@ -6,7 +6,6 @@ import CannedResponseList from './CannedResponseList';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Omnichannel/CannedResponseList',
 	component: CannedResponseList,
 	parameters: {
 		actions: {

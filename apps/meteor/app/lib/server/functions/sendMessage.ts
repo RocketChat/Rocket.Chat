@@ -292,7 +292,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	}
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
-	await afterSaveMessage(message, room);
+	await afterSaveMessage(message, room, user);
 
 	void notifyOnMessageChange({ id: message._id });
 

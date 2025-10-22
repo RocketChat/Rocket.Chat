@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ function SelectSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -51,6 +52,7 @@ function SelectSettingInput({
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

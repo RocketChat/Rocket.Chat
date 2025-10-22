@@ -152,7 +152,11 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
-			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
+			// TODO: Replace Modal with GenericModal
+			<Modal
+				aria-label={t('Wrap_up_conversation')}
+				wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
+			>
 				<ModalHeader>
 					<ModalIcon name='baloon-close-top-right' />
 					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>

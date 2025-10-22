@@ -8,7 +8,6 @@ import type { ContextType } from 'react';
 import Sidebar from './SidebarRegion';
 
 export default {
-	title: 'SidebarV2',
 	component: Sidebar,
 } satisfies Meta<typeof Sidebar>;
 

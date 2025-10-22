@@ -1297,7 +1297,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 
-				await expect(poFederationChannelServer1.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see the file list sent in the DM on Server B', async () => {
@@ -1305,61 +1305,61 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 
-				await expect(poFederationChannelServer2.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 		});
 	});

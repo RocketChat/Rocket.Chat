@@ -16,7 +16,7 @@ const ThreadsItems = ({ message, room, subscription }: ThreadsItemsProps) => {
 		<>
 			<ReactionMessageAction message={message} room={room} subscription={subscription} />
 			<QuoteMessageAction message={message} subscription={subscription} />
-			<ForwardMessageAction message={message} />
+			<ForwardMessageAction message={message} room={room} />
 			<JumpToMessageAction id='jump-to-message' message={message} />
 		</>
 	);

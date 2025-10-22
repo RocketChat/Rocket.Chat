@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import EditCustomFields from './EditCustomFields';
 
 export default {
-	title: 'Omnichannel/CustomFields',
 	component: EditCustomFields,
 	decorators: [
 		(fn) => (

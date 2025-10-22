@@ -7,7 +7,6 @@ export enum AdminSectionsHref {
 	Subscription = '/admin/subscription',
 	Engagement = '/admin/engagement/users',
 	Moderation = '/admin/moderation',
-	Federation = '/admin/federation',
 	Rooms = '/admin/rooms',
 	Users = '/admin/users',
 	Invites = '/admin/invites',

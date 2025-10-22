@@ -1,13 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { LoginPage } from '../login';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
 	private readonly page: Page;
 
+	private readonly login: LoginPage;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.login = new LoginPage(page);
 	}
 
 	get advancedSettingsAccordion(): Locator {
@@ -101,6 +105,10 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
 	}
 
+	get accountLogoutOption(): Locator {
+		return this.userProfileMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
 	get searchList(): Locator {
 		return this.page.getByRole('search').getByRole('listbox');
 	}
@@ -165,7 +173,8 @@ export class HomeSidenav {
 
 	async logout(): Promise<void> {
 		await this.btnUserProfileMenu.click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.accountLogoutOption.click();
+		await this.login.waitForIt();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {

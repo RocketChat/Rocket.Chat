@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
-import { applyQueryOptions } from '../lib/cachedStores';
+import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 

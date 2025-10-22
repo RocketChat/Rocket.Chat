@@ -5,7 +5,6 @@ import PruneMessages from './PruneMessages';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/PruneMessages',
 	component: PruneMessages,
 	parameters: {
 		layout: 'fullscreen',

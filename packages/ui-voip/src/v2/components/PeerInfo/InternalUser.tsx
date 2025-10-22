@@ -1,24 +1,24 @@
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 
 type InternalUserProps = {
-	name: string;
-	avatarUrl: string;
-	identifier: string | number;
+	displayName: string;
+	avatarUrl?: string;
+	callerId?: string | number;
 };
 
-const InternalUser = ({ name, avatarUrl, identifier }: InternalUserProps) => {
+const InternalUser = ({ displayName, avatarUrl, callerId }: InternalUserProps) => {
 	return (
-		<Box display='flex' flexDirection='row'>
-			<Box mie={8}>
-				<Avatar url={avatarUrl} size='x20' />
-			</Box>
+		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
+			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='column' fontScale='p2b'>
-					{name}
+				<Box display='flex' flexDirection='column' fontScale='p2b' color='default'>
+					{displayName}
 				</Box>
-				<Box fontScale='c1' color='secondary-info'>
-					{identifier}
-				</Box>
+				{callerId && (
+					<Box fontScale='c1' color='secondary-info'>
+						{callerId}
+					</Box>
+				)}
 			</Box>
 		</Box>
 	);

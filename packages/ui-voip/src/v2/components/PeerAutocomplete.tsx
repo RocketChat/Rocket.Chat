@@ -1,4 +1,4 @@
-import { AutoComplete, Option, Avatar, Field, FieldRow, FieldDescription } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Avatar, Field, FieldRow, FieldDescription, FieldError } from '@rocket.chat/fuselage';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,18 +17,23 @@ type PeerAutocompleteProps = {
 	onChangeFilter: (filter: string) => void;
 	filter: string;
 	value: string | undefined;
+	error?: string;
 };
 
-const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilter }: PeerAutocompleteProps) => {
+const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilter, error }: PeerAutocompleteProps) => {
 	const { t } = useTranslation();
 
-	const id = useId();
+	const fieldDescriptionId = useId();
+	const fieldErrorId = useId();
 
 	return (
 		<Field mb={-2}>
 			<FieldRow>
 				<AutoComplete
-					aria-labelledby={id}
+					aria-labelledby={fieldDescriptionId}
+					aria-describedby={error ? fieldErrorId : undefined}
+					aria-invalid={!!error}
+					error={!!error}
 					setFilter={onChangeFilter}
 					filter={filter}
 					onChange={onChangeValue}
@@ -44,7 +49,8 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 					renderSelected={() => null}
 				/>
 			</FieldRow>
-			<FieldDescription id={id}>{t('Enter_username_or_number')}</FieldDescription>
+			{error && <FieldError id={fieldErrorId}>{error}</FieldError>}
+			<FieldDescription id={fieldDescriptionId}>{t('Enter_username_or_number')}</FieldDescription>
 		</Field>
 	);
 };

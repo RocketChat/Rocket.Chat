@@ -125,4 +125,39 @@ test.describe('Admin users custom fields', () => {
 			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 		});
 	});
+
+	test.describe('with invalid custom field type', () => {
+		test.beforeAll(async ({ api }) => {
+			await api.post('/settings/Accounts_CustomFields', {
+				value: JSON.stringify({
+					customFieldText1: {
+						type: 'invalid_type',
+						required: false,
+					},
+					customFieldText2: {
+						type: 'text',
+						required: false,
+					},
+				}),
+			});
+		});
+
+		test('should not render fields with invalid custom field type', async () => {
+			await test.step('should find and click on add test user', async () => {
+				await poAdmin.inputSearchUsers.fill(addTestUser.data.username);
+
+				await expect(poAdmin.getUserRowByUsername(addTestUser.data.username)).toBeVisible();
+				await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
+			});
+
+			await test.step('should navigate to edit user form', async () => {
+				await poAdmin.btnEdit.click();
+			});
+
+			await test.step('should verify custom field is not rendered', async () => {
+				await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).not.toBeVisible();
+				await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toBeVisible();
+			});
+		});
+	});
 });

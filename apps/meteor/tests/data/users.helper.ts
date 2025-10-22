@@ -18,6 +18,7 @@ export const createUser = <TUser extends IUser>(
 		requirePasswordChange?: boolean;
 		name?: string;
 		password?: string;
+		freeSwitchExtension?: string;
 	} = {},
 ) =>
 	new Promise<TestUser<TUser>>((resolve, reject) => {

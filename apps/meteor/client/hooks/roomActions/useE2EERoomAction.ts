@@ -115,7 +115,7 @@ export const useE2EERoomAction = () => {
 		return {
 			id: 'e2e',
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
-			title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
+			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
 			order: 13,
 			action,

@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { removeUserFromRole } from '../../../authorization/server/methods/removeUserFromRole';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -17,6 +18,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setAdminStatus(userId, admin) {
+		methodDeprecationLogger.method('setAdminStatus', '8.0.0', 'Use `/v1/roles.addUserToRole` or `/v1/roles.removeUserFromRole`.');
+
 		check(userId, String);
 		check(admin, Match.Optional(Boolean));
 

@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 
 export default {
-	title: 'Enterprise/Omnichannel/CreateCannedResponseModal',
 	component: CreateCannedResponseModal,
 	parameters: {
 		actions: {

@@ -47,7 +47,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((message: 
 	return createPredicateFromFilter(query);
 };
 
-export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {
+export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | undefined, rid: IRoom['_id'] | null): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 

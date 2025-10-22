@@ -15,6 +15,7 @@ import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
 import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAction';
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
+import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
@@ -33,7 +34,6 @@ import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroup
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
-import { useVoiceCallRoomAction } from './hooks/roomActions/useVoiceCallRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { RoomToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
@@ -70,7 +70,7 @@ export const roomActionHooks = [
 	useWebRTCVideoRoomAction,
 	useAppsRoomStarActions,
 	useVideoCallRoomAction,
-	useVoiceCallRoomAction,
+	useMediaCallRoomAction,
 ] satisfies (() => RoomToolboxActionConfig | undefined)[];
 
 export const quickActionHooks = [

@@ -123,27 +123,34 @@ export class Callbacks<
 		callback: TEventLikeCallbackSignatures[Hook],
 		priority?: CallbackPriority,
 		id?: string,
-	): void;
+	): () => void;
 
 	add<Hook extends keyof TChainedCallbackSignatures>(
 		hook: Hook,
 		callback: TChainedCallbackSignatures[Hook],
 		priority?: CallbackPriority,
 		id?: string,
-	): void;
+	): () => void;
 
 	add<TItem, TConstant, TNextItem = TItem>(
 		hook: THook,
 		callback: (item: TItem, constant?: TConstant) => TNextItem,
 		priority?: CallbackPriority,
 		id?: string,
-	): void;
+	): () => void;
 
-	add(hook: THook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = Random.id()): void {
+	add(
+		hook: THook,
+		callback: (item: unknown, constant?: unknown) => unknown,
+		priority = this.priority.MEDIUM,
+		id = Random.id(),
+	): () => void {
 		const callbacks = this.getCallbacks(hook);
 
 		if (callbacks.some((cb) => cb.id === id)) {
-			return;
+			return () => {
+				this.remove(hook, id);
+			};
 		}
 
 		callbacks.push(
@@ -157,6 +164,10 @@ export class Callbacks<
 		callbacks.sort(compareByRanking((callback: Callback<THook>): number => callback.priority ?? this.priority.MEDIUM));
 
 		this.setCallbacks(hook, callbacks);
+
+		return () => {
+			this.remove(hook, id);
+		};
 	}
 
 	/**

@@ -13,7 +13,9 @@ export class LoginPage {
 		return this.page.getByRole('button', { name: 'Login', exact: true });
 	}
 
-	/** @deprecated ideally the previous action should ensure the user is logged out and we should just assume to be at the login page */
+	/**
+	 * Ideally the previous action should ensure the user is logged out and we should just assume to be at the login page
+	 * */
 	async waitForIt() {
 		await this.loginButton.waitFor();
 	}

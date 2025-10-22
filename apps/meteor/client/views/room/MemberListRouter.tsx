@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 
 import { useRoom } from './contexts/RoomContext';
@@ -6,7 +6,7 @@ import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
 
-const getUid = (room: IRoom, ownUserId: string | null) => {
+const getUid = (room: IRoom, ownUserId: IUser['_id'] | undefined) => {
 	if (room.uids?.length === 1) {
 		return room.uids[0];
 	}

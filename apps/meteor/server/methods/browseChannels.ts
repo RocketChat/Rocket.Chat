@@ -9,9 +9,6 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { federationSearchUsers } from '../../app/federation/server/handler';
-import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
-import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { settings } from '../../app/settings/server';
 import { isTruthy } from '../../lib/isTruthy';
 import { trim } from '../../lib/utils/stringUtils';
@@ -233,13 +230,7 @@ const findUsers = async ({
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept<FederatedUser>(
-			text,
-			[],
-			options,
-			searchFields,
-			getFederationDomain(),
-		);
+		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept<FederatedUser>(text, [], options, searchFields);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -247,13 +238,7 @@ const findUsers = async ({
 		};
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept<FederatedUser>(
-		text,
-		[],
-		options,
-		searchFields,
-		getFederationDomain(),
-	);
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept<FederatedUser>(text, [], options, searchFields);
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
@@ -278,29 +263,6 @@ const getUsers = async (
 	const viewFullOtherUserInfo = await hasPermissionAsync(user._id, 'view-full-other-user-info');
 
 	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
-
-	// Try to find federated users, when applicable
-	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {
-		const users = await federationSearchUsers(text);
-
-		for (const user of users) {
-			if (results.find((e) => e._id === user._id)) {
-				continue;
-			}
-
-			// Add the federated user to the results
-			results.unshift({
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-				bio: user.bio,
-				nickname: user.nickname,
-				emails: user.emails,
-				federation: user.federation,
-				isRemote: true,
-			});
-		}
-	}
 
 	return {
 		total,

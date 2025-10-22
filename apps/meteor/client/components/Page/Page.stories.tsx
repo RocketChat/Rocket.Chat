@@ -5,7 +5,6 @@ import type { ComponentType } from 'react';
 import { Page, PageContent, PageHeader, PageScrollableContent, PageScrollableContentWithShadow } from '.';
 
 export default {
-	title: 'Components/Page',
 	component: Page,
 	subcomponents: {
 		PageContent: PageContent as ComponentType<any>,

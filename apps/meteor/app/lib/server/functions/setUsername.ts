@@ -1,7 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Invites, Users } from '@rocket.chat/models';
+import { Invites, Users, Subscriptions } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -20,6 +21,13 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { notifyOnUserChange } from '../lib/notifyListener';
 
+const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
+	const cursor = Subscriptions.findUserFederatedRoomIds(userId);
+	const hasAny = await cursor.hasNext();
+	await cursor.close();
+	return hasAny;
+};
+
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {
 		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
@@ -29,6 +37,12 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+	}
+
+	if (isUserNativeFederated(user) || (await isUserInFederatedRooms(userId))) {
+		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+			method: 'setUsername',
+		});
 	}
 
 	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
@@ -82,6 +96,12 @@ export const _setUsername = async function (
 
 	if (!validateUsername(username)) {
 		return false;
+	}
+
+	if (isUserNativeFederated(fullUser) || (await isUserInFederatedRooms(userId))) {
+		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+			method: 'setUsername',
+		});
 	}
 
 	const user = fullUser || (await Users.findOneById(userId, { session }));

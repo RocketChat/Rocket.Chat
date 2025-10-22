@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CannedResponsesComposer from './CannedResponsesComposer';
 
 export default {
-	title: 'Enterprise/Omnichannel/CannedResponsesComposer',
 	component: CannedResponsesComposer,
 } satisfies Meta<typeof CannedResponsesComposer>;
 

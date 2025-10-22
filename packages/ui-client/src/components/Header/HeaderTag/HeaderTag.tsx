@@ -2,7 +2,7 @@ import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ComponentProps, FC } from 'react';
 
 const HeaderTag: FC<ComponentProps<typeof Tag>> = ({ children, ...props }) => (
-	<Box p={4} withTruncatedText minWidth='x64'>
+	<Box p={4} withTruncatedText minWidth='x32'>
 		<Tag medium {...props}>
 			{children}
 		</Tag>

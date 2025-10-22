@@ -1,4 +1,4 @@
-import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -6,7 +6,7 @@ import { hashKey, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
-import { useRemoveCannedResponse } from './useRemoveCannedResponse';
+import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -74,8 +74,6 @@ const CannedResponsesTable = () => {
 
 		router.navigate(`/omnichannel/canned-responses/edit/${id}`);
 	});
-
-	const handleDelete = useRemoveCannedResponse();
 
 	const defaultOptions = useMemo(
 		() => ({
@@ -170,19 +168,7 @@ const CannedResponsesTable = () => {
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{getTime(_createdAt)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{tags.join(', ')}</GenericTableCell>
-									{!(scope === 'global' && isMonitor && !isManager) && (
-										<GenericTableCell withTruncatedText>
-											<IconButton
-												icon='trash'
-												small
-												title={t('Remove')}
-												onClick={(e) => {
-													e.stopPropagation();
-													handleDelete(_id);
-												}}
-											/>
-										</GenericTableCell>
-									)}
+									{!(scope === 'global' && isMonitor && !isManager) && <RemoveCannedResponseButton id={_id} />}
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

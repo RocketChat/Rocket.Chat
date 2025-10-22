@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import FileUploadModal from '.';
 
 export default {
-	title: 'Room/Modals/FileUploadModal',
 	component: FileUploadModal,
 	parameters: {
 		layout: 'fullscreen',

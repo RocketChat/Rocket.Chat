@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
+import { RoomToolbar } from './fragments/toolbar';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -17,6 +18,8 @@ export class HomeChannel {
 
 	readonly tabs: HomeFlextab;
 
+	readonly roomToolbar: RoomToolbar;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
@@ -25,6 +28,7 @@ export class HomeChannel {
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
+		this.roomToolbar = new RoomToolbar(page);
 	}
 
 	goto() {
@@ -86,7 +90,7 @@ export class HomeChannel {
 	}
 
 	get dialogSaveE2EEPassword(): Locator {
-		return this.page.getByRole('dialog', { name: 'Save your encryption password' });
+		return this.page.getByRole('dialog', { name: 'Save your new E2EE password' });
 	}
 
 	get btnRoomSaveE2EEPassword(): Locator {
@@ -102,7 +106,7 @@ export class HomeChannel {
 	}
 
 	get bannerSaveEncryptionPassword(): Locator {
-		return this.page.getByRole('button', { name: 'Save your encryption password' });
+		return this.page.getByRole('button', { name: 'Save your new E2EE password' });
 	}
 
 	get bannerEnterE2EEPassword(): Locator {

@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../../../lib/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { sendTranscript } from '../lib/sendTranscript';
 
 declare module '@rocket.chat/ddp-client' {
@@ -17,6 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:sendTranscript'(token, rid, email, subject) {
+		methodDeprecationLogger.method('livechat:sendTranscript', '8.0.0', '/v1/livechat/transcript');
 		check(rid, String);
 		check(email, String);
 

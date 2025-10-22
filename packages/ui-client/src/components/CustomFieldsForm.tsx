@@ -64,6 +64,10 @@ const CustomField = <T extends FieldValues>({
 	const error = get(errors, name);
 	const errorMessage = useMemo(() => getErrorMessage(error), [error, getErrorMessage]);
 
+	if (!Component) {
+		return null;
+	}
+
 	return (
 		<Controller<T, any>
 			name={name}
@@ -72,23 +76,25 @@ const CustomField = <T extends FieldValues>({
 			rules={{ minLength: props.minLength, maxLength: props.maxLength, validate: { required: validateRequired } }}
 			render={({ field }) => (
 				<Field rcx-field-group__item>
-					<FieldLabel htmlFor={fieldId} required={required}>
+					<FieldLabel is='span' id={fieldId} required={required}>
 						{label || t(name as TranslationKey)}
 					</FieldLabel>
 					<FieldRow>
 						<Component
 							{...props}
 							{...field}
-							id={fieldId}
-							aria-describedby={`${fieldId}-error`}
+							aria-labelledby={fieldId}
+							aria-describedby={errorMessage && `${fieldId}-error`}
 							error={errorMessage}
 							options={selectOptions as SelectOption[]}
 							flexGrow={1}
 						/>
 					</FieldRow>
-					<FieldError aria-live='assertive' id={`${fieldId}-error`}>
-						{errorMessage}
-					</FieldError>
+					{errorMessage ? (
+						<FieldError aria-live='assertive' id={`${fieldId}-error`}>
+							{errorMessage}
+						</FieldError>
+					) : null}
 				</Field>
 			)}
 		/>
@@ -98,9 +104,8 @@ const CustomField = <T extends FieldValues>({
 // eslint-disable-next-line react/no-multi-comp
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => (
 	<>
-		{metadata.map(({ name: fieldName, ...props }) => {
-			props.label = props.label ?? fieldName;
-			return <CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} {...props} />;
-		})}
+		{metadata.map(({ name: fieldName, label, ...props }) => (
+			<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label ?? fieldName} {...props} />
+		))}
 	</>
 );

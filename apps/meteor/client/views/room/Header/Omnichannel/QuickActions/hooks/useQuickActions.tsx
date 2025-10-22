@@ -7,7 +7,6 @@ import {
 	usePermission,
 	useRole,
 	useEndpoint,
-	useMethod,
 	useTranslation,
 	useRouter,
 	useUserSubscription,
@@ -107,12 +106,12 @@ export const useQuickActions = (): {
 		}
 	}, [dispatchToastMessage, sendTranscriptPDF, t]);
 
-	const sendTranscript = useMethod('livechat:sendTranscript');
+	const sendTranscript = useEndpoint('POST', '/v1/livechat/transcript');
 
 	const handleSendTranscript = useCallback(
 		async (email: string, subject: string, token: string) => {
 			try {
-				await sendTranscript(token, rid, email, subject);
+				await sendTranscript({ token, rid, email, subject });
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

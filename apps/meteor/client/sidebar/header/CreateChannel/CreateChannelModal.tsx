@@ -30,6 +30,7 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
@@ -61,13 +62,17 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
+const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
+
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
+
+	const federationEnabled = useIsFederationEnabled();
+
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
@@ -238,10 +243,19 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						<Controller
 							control={control}
 							name='members'
+							rules={{
+								validate: (members) =>
+									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
+							}}
 							render={({ field: { onChange, value } }): ReactElement => (
 								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
 							)}
 						/>
+						{errors.members && (
+							<FieldError aria-live='assertive' id={`${addMembersId}-error`}>
+								{errors.members.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
 						<FieldRow>

@@ -7,17 +7,19 @@ import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetConte
 const OutgoingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, peerInfo } = useMediaCallContext();
+	const { onEndCall, peerInfo, connectionState } = useMediaCallContext();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
 	}
 
+	const connecting = connectionState === 'CONNECTING';
+
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={`${t('Calling')}...`}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : `${t('Calling')}...`}>
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>

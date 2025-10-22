@@ -8,7 +8,6 @@ import InviteUsersLoading from './InviteUsersLoading';
 import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomMembers/InviteUsers',
 	component: InviteUsers,
 	parameters: {
 		layout: 'fullscreen',

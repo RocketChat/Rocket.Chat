@@ -33,3 +33,7 @@ export function isLastDocDelayed(): boolean {
 	}
 	return watcher.isLastDocDelayed();
 }
+
+export function pingMongo() {
+	return mongo.db.command({ ping: 1 });
+}

@@ -13,7 +13,6 @@ import {
 import GenericNoResults from '../GenericNoResults/GenericNoResults';
 
 export default {
-	title: 'Components/GenericTable',
 	component: GenericTable,
 	parameters: {
 		layout: 'padded',

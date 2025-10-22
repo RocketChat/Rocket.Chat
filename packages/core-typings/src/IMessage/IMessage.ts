@@ -215,6 +215,7 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+		version?: number;
 	};
 
 	/* used when message type is "omnichannel_sla_change_history" */
@@ -236,6 +237,20 @@ export interface IMessage extends IRocketChatRecord {
 		ciphertext: string; // Encrypted subset JSON of IMessage
 	};
 }
+
+export type EncryptedMessageContent = {
+	content: {
+		algorithm: 'rc.v1.aes-sha2';
+		ciphertext: string;
+	};
+};
+
+export const isEncryptedMessageContent = (content: unknown): content is EncryptedMessageContent =>
+	typeof content === 'object' &&
+	content !== null &&
+	'content' in content &&
+	typeof (content as any).content === 'object' &&
+	(content as any).content?.algorithm === 'rc.v1.aes-sha2';
 
 export interface ISystemMessage extends IMessage {
 	t: MessageTypesValues;
@@ -259,8 +274,25 @@ export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
 	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
-export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+
+export interface IFederatedMessage extends IMessage {
+	federation: {
+		eventId: string;
+	};
+}
+
+export interface INativeFederatedMessage extends IMessage {
+	federation: {
+		version: number;
+		eventId: string;
+	};
+}
+
+export const isMessageFromMatrixFederation = (message: IMessage): message is IFederatedMessage =>
 	'federation' in message && Boolean(message.federation?.eventId);
+
+export const isMessageFromNativeFederation = (message: IMessage): message is INativeFederatedMessage =>
+	isMessageFromMatrixFederation(message) && 'version' in message.federation;
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };

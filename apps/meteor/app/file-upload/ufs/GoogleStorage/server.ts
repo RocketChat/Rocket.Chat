@@ -28,7 +28,12 @@ class GoogleStorageStore extends UploadFS.Store {
 	constructor(options: GStoreOptions) {
 		super(options);
 
-		const gcs = new Storage(options.connection);
+		const userAgent = process.env.FILE_STORAGE_CUSTOM_USER_AGENT?.trim();
+
+		const gcs = new Storage({
+			...(userAgent && { userAgent }),
+			...options.connection,
+		});
 		const bucket = gcs.bucket(options.bucket);
 
 		options.getPath =

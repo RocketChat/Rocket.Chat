@@ -154,10 +154,6 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
-	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
-	}
-
 	get btnContactEdit(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
 	}
