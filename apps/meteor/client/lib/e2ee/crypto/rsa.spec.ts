@@ -1,13 +1,4 @@
-import {
-	generate,
-	decrypt,
-	encrypt,
-	exportPublicKey,
-	exportPrivateKey,
-	importPrivateKey,
-	importPublicKey,
-	type KeyPair,
-} from './rsa';
+import { generate, decrypt, encrypt, exportPublicKey, exportPrivateKey, importPrivateKey, importPublicKey, type KeyPair } from './rsa';
 
 describe('rsa', () => {
 	let keyPair: KeyPair;
