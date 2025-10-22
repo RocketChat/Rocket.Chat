@@ -389,6 +389,18 @@ describe('AbacService (unit)', () => {
 				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
 			});
 
+			it('throws error-cannot-convert-default-room-to-abac when room is default', async () => {
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
+				await expect(service.setRoomAbacAttributes('r1', { dept: ['eng'] })).rejects.toThrow('error-cannot-convert-default-room-to-abac');
+				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
+			it('throws error-cannot-convert-default-room-to-abac when room is teamDefault', async () => {
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
+				await expect(service.setRoomAbacAttributes('r1', { dept: ['eng'] })).rejects.toThrow('error-cannot-convert-default-room-to-abac');
+				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
 			it('throws error-invalid-attribute-key for invalid key format', async () => {
 				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 				await expect(service.setRoomAbacAttributes('r1', { 'bad key': ['v'] } as any)).rejects.toThrow('error-invalid-attribute-key');
@@ -515,6 +527,20 @@ describe('AbacService (unit)', () => {
 			await expect(service.updateRoomAbacAttributeValues('missing', 'dept', ['eng'])).rejects.toThrow('error-room-not-found');
 		});
 
+		it('throws error-cannot-convert-default-room-to-abac when room is default', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
+			await expect(service.updateRoomAbacAttributeValues('r1', 'dept', ['eng'])).rejects.toThrow(
+				'error-cannot-convert-default-room-to-abac',
+			);
+		});
+
+		it('throws error-cannot-convert-default-room-to-abac when room is teamDefault', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
+			await expect(service.updateRoomAbacAttributeValues('r1', 'dept', ['eng'])).rejects.toThrow(
+				'error-cannot-convert-default-room-to-abac',
+			);
+		});
+
 		it('throws error-invalid-attribute-values if adding new key exceeds max attributes', async () => {
 			const existing = Array.from({ length: 10 }, (_, i) => ({ key: `k${i}`, values: ['x'] }));
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
@@ -572,6 +598,18 @@ describe('AbacService (unit)', () => {
 			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
 		});
 
+		it('throws error-cannot-convert-default-room-to-abac when room is default', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
+			await expect((service as any).removeRoomAbacAttribute('r1', 'dept')).rejects.toThrow('error-cannot-convert-default-room-to-abac');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
+		});
+
+		it('throws error-cannot-convert-default-room-to-abac when room is teamDefault', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
+			await expect((service as any).removeRoomAbacAttribute('r1', 'dept')).rejects.toThrow('error-cannot-convert-default-room-to-abac');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
+		});
+
 		it('returns early (no update, no hook) when attribute key not present', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'other', values: ['x'] }] });
 			await (service as any).removeRoomAbacAttribute('r1', 'dept');
@@ -612,6 +650,20 @@ describe('AbacService (unit)', () => {
 			it('throws error-room-not-found if room missing', async () => {
 				mockFindOneByIdAndType.mockResolvedValueOnce(null);
 				await expect((service as any).replaceRoomAbacAttributeByKey('missing', 'dept', ['eng'])).rejects.toThrow('error-room-not-found');
+			});
+
+			it('throws error-cannot-convert-default-room-to-abac when room is default', async () => {
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
+				await expect((service as any).replaceRoomAbacAttributeByKey('r1', 'dept', ['eng'])).rejects.toThrow(
+					'error-cannot-convert-default-room-to-abac',
+				);
+			});
+
+			it('throws error-cannot-convert-default-room-to-abac when room is teamDefault', async () => {
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
+				await expect((service as any).replaceRoomAbacAttributeByKey('r1', 'dept', ['eng'])).rejects.toThrow(
+					'error-cannot-convert-default-room-to-abac',
+				);
 			});
 
 			it('throws error-invalid-attribute-values if adding new key exceeds max attributes', async () => {
@@ -681,6 +733,20 @@ describe('AbacService (unit)', () => {
 				mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
 				mockFindOneByIdAndType.mockResolvedValueOnce(null);
 				await expect(service.addRoomAbacAttributeByKey('missing', 'dept', ['eng'])).rejects.toThrow('error-room-not-found');
+				expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
+			});
+
+			it('throws error-cannot-convert-default-room-to-abac when room is default', async () => {
+				mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
+				await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'])).rejects.toThrow('error-cannot-convert-default-room-to-abac');
+				expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
+			});
+
+			it('throws error-cannot-convert-default-room-to-abac when room is teamDefault', async () => {
+				mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
+				mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
+				await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'])).rejects.toThrow('error-cannot-convert-default-room-to-abac');
 				expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
 			});
 
