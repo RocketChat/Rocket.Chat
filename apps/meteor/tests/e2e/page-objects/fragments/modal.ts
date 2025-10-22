@@ -19,8 +19,8 @@ export abstract class Modal {
 
 	async close() {
 		await this.btnClose.click();
-    	await this.waitForDismissal();
-  	}
+		await this.waitForDismissal();
+	}
 
 	private get btnSave() {
 		return this.root.getByRole('button', { name: 'Save' });
