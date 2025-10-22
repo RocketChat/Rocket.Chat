@@ -33,4 +33,9 @@ export class HomeDiscussion {
 	get btnCreate(): Locator {
 		return this.page.locator('role=dialog >> role=group >> role=button[name="Create"]');
 	}
+
+	async addMember(username: string): Promise<void> {
+		await this.page.locator('role=textbox[name="Members"]').fill(username);
+		await this.page.getByRole('option', { name: username }).click();
+	}
 }
