@@ -167,10 +167,6 @@ export class AppServerOrchestrator {
 		}
 	}
 
-	getMarketplaceUrl() {
-		return this._marketplaceUrl;
-	}
-
 	async load() {
 		// Don't try to load it again if it has
 		// already been loaded

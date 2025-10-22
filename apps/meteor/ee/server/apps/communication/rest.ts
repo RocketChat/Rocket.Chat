@@ -502,7 +502,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid request. Please ensure an appId is attached to the request.' });
 					}
 
-					const baseUrl = orchestrator.getMarketplaceUrl();
+					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 
 					const requester = {
