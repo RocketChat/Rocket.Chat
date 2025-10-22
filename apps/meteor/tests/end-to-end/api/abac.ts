@@ -6,6 +6,7 @@ import { before, after, describe, it } from 'mocha';
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -396,6 +397,152 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('Default and Team Default Room Restrictions', () => {
+		let privateDefaultRoomId: string;
+		let teamId: string;
+		let teamPrivateRoomId: string;
+		let teamDefaultRoomId: string;
+		const localAbacKey = `default_team_test_${Date.now()}`;
+		let mainRoomIdSaveSettings: string;
+		const teamName = `abac-team-${Date.now()}`;
+		const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
+
+		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
+			const createTeamMain = await request
+				.post(`${v1}/teams.create`)
+				.set(credentials)
+				.send({ name: teamNameMainRoom, type: 1 })
+				.expect(200);
+
+			mainRoomIdSaveSettings = createTeamMain.body.team?.roomId;
+
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: true }).expect(200);
+		});
+
+		before('create local ABAC attribute definition for tests', async () => {
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: localAbacKey, values: ['red', 'green'] })
+				.expect(200);
+		});
+
+		before('create private room and try to set it as default', async () => {
+			const res = await createRoom({
+				type: 'p',
+				name: `abac-default-room-${Date.now()}`,
+			});
+			privateDefaultRoomId = res.body.group._id;
+
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: true }).expect(200);
+		});
+
+		before('create private team, private room inside it and set as team default', async () => {
+			const createTeamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
+			teamId = createTeamRes.body.team._id;
+
+			const roomRes = await createRoom({
+				type: 'p',
+				name: `abac-team-room-${Date.now()}`,
+				extraData: { teamId },
+			});
+			teamPrivateRoomId = roomRes.body.group._id;
+
+			const setDefaultRes = await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ teamId, roomId: teamPrivateRoomId, isDefault: true })
+				.expect(200);
+
+			if (setDefaultRes.body?.room?.teamDefault) {
+				teamDefaultRoomId = teamPrivateRoomId;
+			}
+		});
+
+		it('should fail adding ABAC attribute to private default room', async () => {
+			await request
+				.post(`${v1}/abac/room/${privateDefaultRoomId}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['red'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
+				});
+		});
+
+		it('should fail adding ABAC attribute to team default private room', async () => {
+			await request
+				.post(`${v1}/abac/room/${teamDefaultRoomId}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['red'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
+				});
+		});
+
+		it('should allow adding ABAC attribute after removing default flag from private room', async () => {
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: false }).expect(200);
+
+			await request
+				.post(`${v1}/abac/room/${privateDefaultRoomId}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['red'] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+				});
+		});
+
+		it('should allow adding ABAC attribute after removing team default flag', async () => {
+			await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
+				.expect(200);
+
+			await request
+				.post(`${v1}/abac/room/${teamDefaultRoomId}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['green'] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+				});
+		});
+
+		it('should enforce restriction on team main room when default using rooms.saveRoomSettings', async () => {
+			await request
+				.post(`${v1}/abac/room/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['red'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
+				});
+
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: false }).expect(200);
+
+			await request
+				.post(`${v1}/abac/room/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
+				.set(credentials)
+				.send({ values: ['red'] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+				});
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
+			await deleteTeam(credentials, teamName);
+			await deleteTeam(credentials, teamNameMainRoom);
+		});
+	});
+
 	describe('Usage & Deletion', () => {
 		it('POST add room usage for attribute (re-add after clearing) and expect delete while in use to fail', async () => {
 			await request
@@ -447,8 +594,82 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
+	describe('ABAC Managed Room Default Conversion Restrictions', () => {
+		const conversionAttrKey = `conversion_test_${Date.now()}`;
+		const teamName = `abac-conversion-team-${Date.now()}`;
+		let abacRoomId: string;
+		let teamIdForConversion: string;
+		let teamRoomId: string;
+
+		before('create attribute definition and ABAC-managed private room', async () => {
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: conversionAttrKey, values: ['alpha', 'beta'] })
+				.expect(200);
+
+			const roomRes = await createRoom({
+				type: 'p',
+				name: `abac-conversion-room-${Date.now()}`,
+			});
+			abacRoomId = roomRes.body.group._id;
+
+			await request
+				.post(`${v1}/abac/room/${abacRoomId}/attributes/${conversionAttrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+		});
+
+		before('create team, private room inside, add ABAC attribute', async () => {
+			// Public team
+			const teamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
+			teamIdForConversion = teamRes.body.team._id;
+
+			const teamRoomRes = await createRoom({
+				type: 'p',
+				name: `abac-team-conversion-room-${Date.now()}`,
+				extraData: { teamId: teamIdForConversion },
+			});
+			teamRoomId = teamRoomRes.body.group._id;
+
+			await request
+				.post(`${v1}/abac/room/${teamRoomId}/attributes/${conversionAttrKey}`)
+				.set(credentials)
+				.send({ values: ['beta'] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
+		});
+
+		it('should fail converting ABAC-managed private room into default room', async () => {
+			await request
+				.post(`${v1}/rooms.saveRoomSettings`)
+				.set(credentials)
+				.send({ rid: abacRoomId, default: true })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.include('Setting an ABAC managed room as default is not allowed [error-action-not-allowed]');
+				});
+		});
+
+		it('should fail converting ABAC-managed team room into team default room', async () => {
+			await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.include('error-room-is-abac-managed');
+				});
+		});
+	});
+
 	describe('Extended Validations & Edge Cases', () => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		let secondAttributeId: string;
 		const firstKey = `${initialKey}_first`;
 		const secondKey = `${initialKey}_second`;
