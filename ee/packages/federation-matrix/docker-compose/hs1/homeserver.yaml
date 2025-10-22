@@ -31,7 +31,7 @@ trusted_key_servers: []
   # - server_name: "matrix.org"
   #   accept_keys_insecurely: true
 
-federation_client_minimum_tls_version: 1
+federation_client_minimum_tls_version: 1.2
 federation_verify_certificates: false
 suppress_key_server_warning: true
 
@@ -51,7 +51,6 @@ password_config:
 
 # Optionally, add your Docker network to the whitelist
 ip_range_whitelist:
-  - '172.26.0.0/16'
   - '0.0.0.0/0'
 
 # --------------------------------------------------------------------
