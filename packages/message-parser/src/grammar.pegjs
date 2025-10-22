@@ -282,11 +282,11 @@ LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(any
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
-LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
+LinkRef = URL / FilePath / LinkPhone
 
-MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / MarkdownLinkPhone
+LinkPhone = p:Phone { return 'tel:' + p.number; }
 
-MarkdownLinkPhone = p:Phone { return 'tel:' + p.number; }
+MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / LinkPhone
 
 MarkdownLinkURL
   = $(URLScheme URLAuthority MarkdownLinkURLBody*)
