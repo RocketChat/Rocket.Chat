@@ -11,8 +11,8 @@ providers:
     filename: "/etc/traefik/dynamic_conf.yml"
 
 api:
-  dashboard: true
-  insecure: true
+  dashboard: false
+  insecure: false
 
 # accessLog:
 #   filePath: "/logs/access.log"

@@ -4,12 +4,13 @@ import { UserStatus } from '@rocket.chat/core-typings';
 
 import { api, credentials, methodCall, request } from './api-data';
 import supertest from 'supertest';
+import type { Response } from 'supertest';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
 
 export interface RequestConfig {
 	credentials: Credentials;
-	request: any;
+	request: ReturnType<typeof supertest>;
 }
 
 export async function getRequestConfig(domain: string, user: string, password: string): Promise<RequestConfig> {
@@ -47,7 +48,7 @@ export const createUser = <TUser extends IUser>(
 			.post(api('users.create'))
 			.set(credentialsInstance)
 			.send({ email, name: username, username, password: userData.password, ...userData })
-			.end((err: any, res: any) => {
+			.end((err: unknown, res: Response) => {
 				if (err) {
 					return reject(err);
 				}
@@ -68,7 +69,7 @@ export const login = (
 				user: username,
 				password,
 			})
-			.end((_err: any, res: any) => {
+			.end((_err: unknown, res: Response) => {
 				resolve({
 					'X-Auth-Token': res.body.data.authToken,
 					'X-User-Id': res.body.data.userId,
@@ -105,7 +106,7 @@ export const getUserByUsername = <TUser extends IUser>(
 			.get(api('users.info'))
 			.query({ username })
 			.set(credentialsInstance)
-			.end((_err: any, res: any) => {
+			.end((_err: unknown, res: Response) => {
 				resolve(res.body.user);
 			});
 	});
@@ -116,12 +117,13 @@ export const getMe = <TUser extends IUser>(
 ) =>
 	new Promise<TestUser<TUser>>((resolve) => {
 		const requestInstance = config?.request || request;
+		const credentialsInstance = config?.credentials || overrideCredential;
 		void requestInstance
 			.get(api('me'))
-			.set(overrideCredential)
+			.set(credentialsInstance)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((_end: any, res: any) => {
+			.end((_end: unknown, res: Response) => {
 				resolve(res.body);
 			});
 	});

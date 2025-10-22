@@ -127,7 +127,7 @@ import { IMessage } from '@rocket.chat/core-typings';
 					expect(roomInfo.room).toHaveProperty('federated', true);
 
 					// Synapse view: Check in Element
-					const elementRoom = await hs1AdminApp.getRoom(channelName);
+					const elementRoom = hs1AdminApp.getRoom(channelName);
 					expect(elementRoom).toHaveProperty('name', channelName);
 				});
 
@@ -236,11 +236,11 @@ import { IMessage } from '@rocket.chat/core-typings';
 				expect(roomInfo.room).toHaveProperty('federated', true);
 
 				// Synapse view: Check in Element for admin user
-				const elementRoom1 = await hs1AdminApp.getRoom(channelName);
+				const elementRoom1 = hs1AdminApp.getRoom(channelName);
 				expect(elementRoom1).toHaveProperty('name', channelName);
 
 				// Synapse view: Check in Element for user1
-				const elementRoom2 = await hs1User1App.getRoom(channelName);
+				const elementRoom2 = hs1User1App.getRoom(channelName);
 				expect(elementRoom2).toHaveProperty('name', channelName);
 			});
 
