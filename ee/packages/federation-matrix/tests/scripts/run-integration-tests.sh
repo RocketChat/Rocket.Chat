@@ -250,12 +250,17 @@ wait_for_service() {
     log_info "Checking $name at $url (host $host -> 127.0.0.1:$port)..."
 
     while [ $elapsed -lt $MAX_WAIT_TIME ] && [ "$INTERRUPTED" = false ]; do
-        if curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" >/dev/null 2>&1; then
+        # Capture curl output and error for debugging
+        curl_output=$(curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" 2>&1)
+        curl_exit_code=$?
+        
+        if [ $curl_exit_code -eq 0 ]; then
             log_success "$name is ready!"
             return 0
         fi
 
         log_info "$name not ready yet, waiting... (${elapsed}s/${MAX_WAIT_TIME}s)"
+        log_info "Curl error: $curl_output"
         sleep $CHECK_INTERVAL
         elapsed=$((elapsed + CHECK_INTERVAL))
     done
