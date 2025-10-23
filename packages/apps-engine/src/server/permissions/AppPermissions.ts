@@ -122,6 +122,9 @@ export const AppPermissions = {
 	'outboundComms': {
 		provide: { name: 'outbound-communication.provide' },
 	},
+	'experimental': {
+		getUserRoomIds: { name: 'experimental.getUserRoomIds' },
+	},
 };
 
 /**

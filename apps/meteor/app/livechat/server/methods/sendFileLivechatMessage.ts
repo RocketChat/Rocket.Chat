@@ -13,6 +13,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { sendMessageLivechat } from './sendMessageLivechat';
 import { FileUpload } from '../../../file-upload/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 interface ISendFileLivechatMessage {
 	roomId: string;
@@ -112,6 +113,7 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 Meteor.methods<ServerMethods>({
 	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
+		methodDeprecationLogger.method('sendFileLivechatMessage', '8.0.0', '/v1/livechat/upload/:rid');
 		return sendFileLivechatMessage({ roomId, visitorToken, file, msgData });
 	},
 });
