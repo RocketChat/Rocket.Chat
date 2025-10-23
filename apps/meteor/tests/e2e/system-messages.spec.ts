@@ -48,7 +48,7 @@ test.describe.serial('System Messages', () => {
 			return;
 		}
 
-		await poHomeChannel.sidenav.openChat(group.name);
+		await poHomeChannel.navbar.openChat(group.name);
 	});
 
 	test.afterAll(async ({ api }) => {

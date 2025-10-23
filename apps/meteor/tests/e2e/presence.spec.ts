@@ -32,7 +32,7 @@ test.describe.serial('Presence', () => {
 
 		test('should user custom status be reactive', async ({ browser }) => {
 			await test.step('user1 custom status should be empty', async () => {
-				await poHomeChannel.sidenav.openChat('user1');
+				await poHomeChannel.navbar.openChat('user1');
 
 				await expect(poHomeChannel.content.channelHeader).not.toContainText(customStatus);
 			});
@@ -47,7 +47,7 @@ test.describe.serial('Presence', () => {
 			});
 
 			await test.step('should user1 custom status be updated', async () => {
-				await poHomeChannel.sidenav.openChat('user1');
+				await poHomeChannel.navbar.openChat('user1');
 
 				await expect(poHomeChannel.content.channelHeader).toContainText(customStatus);
 			});
