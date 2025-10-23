@@ -1,8 +1,7 @@
-import { Authorization, Abac } from '@rocket.chat/core-services';
+import { Authorization, Abac, License } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IUser, ITeam } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
@@ -63,7 +62,11 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		]);
 
 		// When there's no ABAC setting, license or values on the room, fallback to previous behavior
-		if (!room?.abacAttributes?.length || !License.hasModule('abac') || (!(await Settings.getValueById('ABAC_Enabled')) as boolean)) {
+		if (
+			!room?.abacAttributes?.length ||
+			!(await License.hasModule('abac')) ||
+			(!(await Settings.getValueById('ABAC_Enabled')) as boolean)
+		) {
 			if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
 				return false;
 			}
