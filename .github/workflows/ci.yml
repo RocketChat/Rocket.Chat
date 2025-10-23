@@ -533,6 +533,19 @@ jobs:
           ENTERPRISE_LICENSE_RC1: ${{ needs.release-versions.outputs.enterprise-license }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
       
+      - name: Display container logs
+        run: |
+          echo "=========================================="
+          echo "ROCKET.CHAT (rc1) CONTAINER LOGS"
+          echo "=========================================="
+          docker logs rc1 || echo "Rocket.Chat container not found or no logs"
+          
+          echo ""
+          echo "=========================================="
+          echo "SYNAPSE (hs1) CONTAINER LOGS"
+          echo "=========================================="
+          docker logs hs1 || echo "Synapse container not found or no logs"
+      
 
   tests-done:
     name: ✅ Tests Done
