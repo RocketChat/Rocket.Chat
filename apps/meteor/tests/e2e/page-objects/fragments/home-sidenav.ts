@@ -87,12 +87,6 @@ export class HomeSidenav {
 		return this.sidebarToolbar.getByRole('button', { name: 'Administration' });
 	}
 
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.page.keyboard.press('Escape');
-	}
-
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
 		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
@@ -185,12 +179,6 @@ export class HomeSidenav {
 
 	async openDirectory(): Promise<void> {
 		await this.btnDirectory.click();
-	}
-
-	async openChat(name: string): Promise<void> {
-		await this.searchRoom(name);
-		await this.getSearchItemByName(name).click();
-		await this.waitForChannel();
 	}
 
 	async waitForChannel(): Promise<void> {
