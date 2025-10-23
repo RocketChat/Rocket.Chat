@@ -18,6 +18,8 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getUserAvatarURL } from '../../../../app/utils/client';
+import { Users } from '../../../stores';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -57,6 +59,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
 	const goToThread = useGoToThread();
+
+	const avatarEtag = Users.use((state) => state.get(message.u._id)?.avatarETag);
+	const avatarUrl = getUserAvatarURL(message.u?.username, avatarEtag);
 
 	const handleThreadClick = () => {
 		if (!isSelecting) {
@@ -119,6 +124,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 					{!isSelecting && showUserAvatar && (
 						<MessageAvatar
 							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
+							avatarUrl={avatarUrl}
 							username={message.u.username}
 							size='x18'
 						/>
