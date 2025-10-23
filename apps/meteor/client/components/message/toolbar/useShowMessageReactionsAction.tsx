@@ -15,7 +15,7 @@ export const useShowMessageReactionsAction = (message: IMessage): MessageActionC
 		id: 'reaction-list',
 		icon: 'emoji',
 		label: 'Reactions',
-		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
+		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads', 'federated'],
 		type: 'interaction',
 		action() {
 			setModal(

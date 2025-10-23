@@ -3,6 +3,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import PermissionsTable from './PermissionsTable';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 import { PageContent } from '../../../../components/Page';
 
 export default {
@@ -80,56 +81,42 @@ const permissions: IPermission[] = [
 		_id: '0',
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['admin'],
-		group: 'admin',
-		level: 'settings',
-		section: 'General',
-		settingId: 'general_settings',
-		sorter: 1,
 	},
 	{
 		_id: '1',
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
-		group: 'admin',
-		level: 'settings',
-		section: 'General',
-		settingId: 'general_settings',
-		sorter: 2,
 	},
 	{
 		_id: '2',
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
-		group: 'admin',
-		level: 'settings',
-		section: 'General',
-		settingId: 'general_settings',
-		sorter: 3,
 	},
 	{
 		_id: '3',
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
-		group: 'admin',
-		level: 'settings',
-		section: 'General',
-		settingId: 'general_settings',
-		sorter: 4,
 	},
 ];
 
-export const Default: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+const paginationData = createMockedPagination(permissions.length, 10);
+
+const Template: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+
+export const Default = Template.bind({});
 Default.args = {
-	total: permissions.length,
+	total: 10,
 	permissions,
 	roleList: roles,
 	setFilter: () => undefined,
+	paginationData,
 };
 
-export const Empty: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+export const Empty = Template.bind({});
 Empty.args = {
 	total: 0,
 	permissions: [],
 	roleList: [],
 	setFilter: () => undefined,
+	paginationData,
 };

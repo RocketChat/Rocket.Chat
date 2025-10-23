@@ -576,6 +576,123 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
+			beforeEach(async () => {
+				await updateSetting('VoIP_TeamCollab_Enabled', true);
+				await updatePermission('manage-voip-extensions', ['admin']);
+			});
+
+			after(async () => {
+				await updateSetting('VoIP_TeamCollab_Enabled', true);
+				await updatePermission('manage-voip-extensions', ['admin']);
+			});
+
+			it('should create a user with a voice call extension', async () => {
+				const freeSwitchExtension = '888999';
+				let user: TestUser<IUser>;
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'success_extension_user@rocket.chat',
+						name: 'success_extension_user',
+						username: 'success_extension_user',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.freeSwitchExtension', freeSwitchExtension);
+						user = res.body.user;
+					});
+
+				if (user!) {
+					await deleteUser(user);
+				}
+			});
+
+			it('should not create a user with a voice call extension that is already in use', async () => {
+				const freeSwitchExtension = '123123';
+				const user = await createUser({ freeSwitchExtension });
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'fail_extension_in_use@rocket.chat',
+						name: 'fail_extension_in_use',
+						username: 'fail_extension_in_use',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-extension-not-available');
+					});
+
+				await deleteUser(user);
+			});
+
+			it('should not create a user if voip is disabled', async () => {
+				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'fail_voip_disabled@rocket.chat',
+						name: 'fail_voip_disabled',
+						username: 'fail_voip_disabled',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension: '999',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					});
+			});
+
+			it('should not create a user if user has no permission to manage voip extensions', async () => {
+				await updatePermission('manage-voip-extensions', []);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'fail_no_permission@rocket.chat',
+						name: 'fail_no_permission',
+						username: 'fail_no_permission',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension: '999',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					});
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -2294,6 +2411,92 @@ describe('[Users]', () => {
 
 				expect(updateResponse.body).to.have.property('success', true);
 				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', null);
+			});
+		});
+
+		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
+			let user: TestUser<IUser>;
+
+			before(async () => {
+				user = await createUser();
+			});
+
+			after(async () => {
+				await Promise.all([
+					deleteUser(user),
+					updateSetting('VoIP_TeamCollab_Enabled', true),
+					updatePermission('manage-voip-extensions', ['admin']),
+				]);
+			});
+
+			beforeEach(async () => {
+				await Promise.all([updatePermission('manage-voip-extensions', ['admin']), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+			});
+
+			it("should update the user's voice call extension", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+					});
+			});
+
+			it("should not update the user's voice call extension if the extension is already assigned to another user", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Extension is already assigned to another user [error-extension-not-available]');
+					});
+			});
+
+			it("should not update the user's voice call extension if the user has no permission to manage voip extensions", async () => {
+				await updatePermission('manage-voip-extensions', []);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '9998',
+						},
+					})
+					.expect(400);
+			});
+
+			it("should not update the user's voice call extension if voip setting is disabled", async () => {
+				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '9998',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Edit user voice call extension is not allowed [error-action-not-allowed]');
+					});
 			});
 		});
 	});
