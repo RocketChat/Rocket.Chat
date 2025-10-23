@@ -621,10 +621,6 @@ jobs:
           sudo cp ./ee/packages/federation-matrix/docker-compose/traefik/certs/ca/rootCA.crt /usr/local/share/ca-certificates/rootCA.crt
           sudo update-ca-certificates
 
-          # Set certificate permissions
-          chmod 644 ./ee/packages/federation-matrix/docker-compose/traefik/certs/*.pem
-          chmod 644 ./ee/packages/federation-matrix/docker-compose/traefik/certs/ca/*.crt
-
       - name: Fix Docker socket permissions for Traefik
         run: |
           # Ensure Docker socket is accessible to containers
