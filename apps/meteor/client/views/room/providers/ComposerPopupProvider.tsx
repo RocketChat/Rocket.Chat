@@ -153,7 +153,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						};
 					});
 				},
-				getValue: (item) => item.username,
+				getValue: (item) => (item.username.startsWith('@') ? item.username.substring(1) : item.username),
 				renderItem: ({ item }) => <ComposerBoxPopupUser {...item} />,
 			}),
 			createMessageBoxPopupConfig<ComposerBoxPopupRoomProps>({

@@ -35,12 +35,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		href: '/admin/federation',
-		i18nLabel: 'Federation',
-		icon: 'discover',
-		permissionGranted: (): boolean => hasPermission('view-federation-data'),
-	},
-	{
 		href: '/admin/rooms',
 		i18nLabel: 'Rooms',
 		icon: 'hashtag',

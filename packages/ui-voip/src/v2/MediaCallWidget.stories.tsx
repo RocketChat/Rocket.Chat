@@ -63,9 +63,23 @@ export const IncomingCall: Story = {
 	},
 };
 
-export const Calling: Story = {
+export const IncomingCallTransfer: Story = {
+	args: {
+		state: 'ringing',
+		transferredBy: 'Jason',
+	},
+};
+
+export const OutgoingCall: Story = {
 	args: {
 		state: 'calling',
+	},
+};
+
+export const OutgoingCallTransfer: Story = {
+	args: {
+		state: 'calling',
+		transferredBy: 'Joy',
 	},
 };
 

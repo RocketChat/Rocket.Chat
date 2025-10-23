@@ -47,6 +47,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('emails.0.verified', userData.verified);
 	}
 
+	if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== '') {
+		updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+	}
+
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 

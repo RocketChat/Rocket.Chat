@@ -2,7 +2,7 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 
 const OutboubdMessageWizardSkeleton = () => {
 	return (
-		<Box>
+		<Box role='status' aria-busy='true'>
 			<Box display='flex'>
 				<Skeleton width={75} height={40} />
 				<Skeleton mis={8} width={100} height={50} />

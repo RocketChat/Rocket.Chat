@@ -88,10 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
-		user: {
-			username: string;
-			_id: string;
-		},
+		user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 		sendMessage = true,
 	): Promise<void> {
 		await saveRoomTopic(roomId, roomTopic, user, sendMessage);

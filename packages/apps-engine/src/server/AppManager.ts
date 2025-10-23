@@ -59,6 +59,7 @@ export interface IAppManagerDeps {
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
 	keepSlashcommands?: boolean;
+	keepOutboundCommunicationProviders?: boolean;
 }
 
 export class AppManager {
@@ -483,7 +484,11 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+		await this.purgeAppConfig(app, {
+			keepScheduledJobs: true,
+			keepSlashcommands: true,
+			keepOutboundCommunicationProviders: true,
+		});
 
 		await app.setStatus(status, silent);
 
@@ -904,10 +909,15 @@ export class AppManager {
 				}
 
 				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
+				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
 
-				return this.appMetadataStorage.updateMarketplaceInfo(appStorageItem._id, appStorageItem.marketplaceInfo);
+				return this.appMetadataStorage.updatePartialAndReturnDocument({
+					_id: appStorageItem._id,
+					marketplaceInfo: appStorageItem.marketplaceInfo,
+					signature: appStorageItem.signature,
+				});
 			}),
-		).catch();
+		).catch(() => {});
 
 		const queue = [] as Array<Promise<void>>;
 
@@ -928,7 +938,7 @@ export class AppManager {
 							return;
 						}
 
-						await this.purgeAppConfig(app);
+						await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 						return app.setStatus(AppStatus.INVALID_LICENSE_DISABLED);
 					})
@@ -1094,7 +1104,9 @@ export class AppManager {
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
-		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
+			keepReferences: opts.keepOutboundCommunicationProviders,
+		});
 	}
 
 	/**
@@ -1169,7 +1181,11 @@ export class AppManager {
 			this.videoConfProviderManager.registerProviders(app.getID());
 			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
+			await this.purgeAppConfig(app, {
+				keepScheduledJobs: true,
+				keepSlashcommands: true,
+				keepOutboundCommunicationProviders: true,
+			});
 		}
 
 		if (saveToDb) {

@@ -109,6 +109,12 @@ export class SipServerSession {
 		return `sip:${extension}@${host}${portStr}`;
 	}
 
+	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {
+		const { _agent, socket: _socket, _req, _res, ...data } = reqOrRes as Record<string, any>;
+
+		return data;
+	}
+
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {
 		return Boolean(settings.enabled && settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
 	}

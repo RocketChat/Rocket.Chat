@@ -12,8 +12,9 @@ export interface IMessageService {
 	saveMessageFromFederation({
 		fromId,
 		rid,
-		msg,
 		federation_event_id,
+		msg,
+		e2e_content,
 		file,
 		files,
 		attachments,
@@ -21,8 +22,12 @@ export interface IMessageService {
 	}: {
 		fromId: string;
 		rid: string;
-		msg: string;
 		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: string;
+			ciphertext: string;
+		};
 		file?: IMessage['file'];
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];

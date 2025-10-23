@@ -7,6 +7,7 @@ import { CommandBridge } from './CommandBridge';
 import { ContactBridge } from './ContactBridge';
 import { EmailBridge } from './EmailBridge';
 import { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
+import { ExperimentalBridge } from './ExperimentalBridge';
 import { HttpBridge, IHttpBridgeRequestInfo } from './HttpBridge';
 import { IInternalBridge } from './IInternalBridge';
 import { IInternalFederationBridge } from './IInternalFederationBridge';
@@ -45,6 +46,7 @@ export {
 	UserBridge,
 	UploadBridge,
 	EmailBridge,
+	ExperimentalBridge,
 	UiInteractionBridge,
 	SchedulerBridge,
 	AppBridges,

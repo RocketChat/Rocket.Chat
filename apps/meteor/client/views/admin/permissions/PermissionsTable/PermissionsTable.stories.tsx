@@ -3,6 +3,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import PermissionsTable from './PermissionsTable';
+import { createMockedPagination } from '../../../../../tests/mocks/data';
 import { PageContent } from '../../../../components/Page';
 
 export default {
@@ -98,18 +99,24 @@ const permissions: IPermission[] = [
 	},
 ];
 
-export const Default: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+const paginationData = createMockedPagination(permissions.length, 10);
+
+const Template: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+
+export const Default = Template.bind({});
 Default.args = {
-	total: permissions.length,
+	total: 10,
 	permissions,
 	roleList: roles,
 	setFilter: () => undefined,
+	paginationData,
 };
 
-export const Empty: StoryFn<typeof PermissionsTable> = (args) => <PermissionsTable {...args} />;
+export const Empty = Template.bind({});
 Empty.args = {
 	total: 0,
 	permissions: [],
 	roleList: [],
 	setFilter: () => undefined,
+	paginationData,
 };

@@ -2,19 +2,15 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
-import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
 import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
 
 export class HomeOmnichannelContent extends HomeContent {
-	readonly closeChatModal: OmnichannelCloseChatModal;
-
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
 	readonly contactReviewModal: OmnichannelContactReviewModal;
 
 	constructor(page: Page) {
 		super(page);
-		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
 		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
@@ -43,18 +39,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
-	}
-
-	get btnGuestInfo(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
-	}
-
 	get contactContextualBar() {
 		return this.page.getByRole('dialog', { name: 'Contact' });
 	}
@@ -64,29 +48,15 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	get btnReturn(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
+		return this.page.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {
 		return this.page.locator('role=button[name="Resume"]');
 	}
 
-	get modalOnHold(): Locator {
-		return this.page.locator('[data-qa-id="on-hold-modal"]');
-	}
-
-	get btnOnHoldConfirm(): Locator {
-		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
-	}
-
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
-	}
-
-	async closeChat() {
-		await this.btnCloseChat.click();
-		await this.closeChatModal.inputComment.fill('any_comment');
-		await this.closeChatModal.btnConfirm.click();
 	}
 
 	async useCannedResponse(cannedResponseName: string): Promise<void> {

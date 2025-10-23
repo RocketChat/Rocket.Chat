@@ -40,18 +40,6 @@ export class HomeFlextab {
 		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
 	}
 
-	get btnTabMembers(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-members]');
-	}
-
-	get btnRoomInfo(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
-	}
-
-	get btnChannels(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
-	}
-
 	get btnTeamMembers(): Locator {
 		return this.page.locator('role=menuitem[name="Teams Members"]');
 	}
@@ -70,10 +58,6 @@ export class HomeFlextab {
 
 	get btnPruneMessages(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
-	}
-
-	get btnE2EERoomSetupDisableE2E(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
 	}
 
 	get btnDisableE2E(): Locator {

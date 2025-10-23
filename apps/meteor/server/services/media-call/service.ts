@@ -90,7 +90,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 				sipServer: {
 					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
-					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5080,
+					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
 				},
 			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),

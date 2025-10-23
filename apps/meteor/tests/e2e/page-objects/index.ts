@@ -20,6 +20,5 @@ export * from './omnichannel-settings';
 export * from './omnichannel-business-hours';
 export * from './omnichannel-tags';
 export * from './utils';
-export * from './modal';
 export * from './marketplace';
 export * from './toastBar';

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-composer",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

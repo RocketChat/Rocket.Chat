@@ -51,6 +51,11 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	expiresAt: Date;
 
+	/** The timestamp of the moment the callee accepted the call */
+	acceptedAt?: Date;
+	/** The timestamp of the moment either side reported the call as active for the first time */
+	activatedAt?: Date;
+
 	callerRequestedId?: string;
 	parentCallId?: string;
 

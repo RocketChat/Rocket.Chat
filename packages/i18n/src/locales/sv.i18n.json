@@ -4146,6 +4146,7 @@
   "Read_only_changed_successfully": "Endast läsning ändrades framgångsrikt",
   "Read_only_channel": "Endast läsning Channel",
   "Read_only_field_hint_disabled": "Vem som helst kan skicka nya meddelanden",
+  "Read_only_field_hint_enabled": "Endast ägare till {{roomType}} kan skicka nya meddelanden",
   "Read_only_group": "Endast läsning grupp",
   "Readability": "Läsbarhet",
   "RealName_Change_Disabled": "Din Rocket.Chat-administratör har inaktiverat namnändring",

@@ -76,9 +76,11 @@ export const omnichannelQueryKeys = {
 	contacts: (query?: { filter: string; limit?: number }) =>
 		!query ? [...omnichannelQueryKeys.all, 'contacts'] : ([...omnichannelQueryKeys.all, 'contacts', query] as const),
 	contact: (contactId?: string) => [...omnichannelQueryKeys.contacts(), contactId] as const,
-	outboundProviders: ({ type }: { type: IOutboundProvider['providerType'] }) =>
-		[...omnichannelQueryKeys.all, 'outbound', 'providers', { type }] as const,
-	outboundProviderMetadata: (providerId: string) => [...omnichannelQueryKeys.all, 'outbound', 'provider', 'metadata', providerId] as const,
+	outboundProviders: (filter?: { type: IOutboundProvider['providerType'] }) =>
+		!filter
+			? ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers'] as const)
+			: ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers', filter] as const),
+	outboundProviderMetadata: (providerId: string) => [...omnichannelQueryKeys.outboundProviders(), providerId] as const,
 };
 
 export const deviceManagementQueryKeys = {

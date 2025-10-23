@@ -8,6 +8,7 @@ import { useOmnichannelCallToggleAction } from '../NavBarOmnichannelGroup/hooks/
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
+	callItem?: GenericMenuItemProps;
 };
 
 const NavBarControlsWithCall = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {

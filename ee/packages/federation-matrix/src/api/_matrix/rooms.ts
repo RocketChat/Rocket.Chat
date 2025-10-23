@@ -2,6 +2,8 @@ import type { HomeserverServices } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+
 const PublicRoomsQuerySchema = {
 	type: 'object',
 	properties: {
@@ -122,9 +124,10 @@ const PublicRoomsPostBodySchema = {
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
 export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
-	const { state } = services;
+	const { state, federationAuth } = services;
 
 	return new Router('/federation')
+		.use(isAuthenticatedMiddleware(federationAuth))
 		.get(
 			'/v1/publicRooms',
 			{

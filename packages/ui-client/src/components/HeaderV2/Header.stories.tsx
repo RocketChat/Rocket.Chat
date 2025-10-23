@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Avatar, Box, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
@@ -99,15 +99,15 @@ export const Default = () => (
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('click')} icon='star' />
+				<HeaderState onClick={action('click')} title='star' icon='star' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' action={action('action')} />
-			<HeaderToolbarAction icon='key' action={action('action')} />
-			<HeaderToolbarAction icon='kebab' action={action('action')} />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -115,7 +115,7 @@ export const Default = () => (
 export const WithBurger = () => (
 	<Header>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='burger' action={action('action')} />
+			<IconButton title='burger' icon='burger' />
 		</HeaderToolbar>
 		<HeaderAvatar>
 			<CustomAvatar />
@@ -124,15 +124,15 @@ export const WithBurger = () => (
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} title='star' icon='star' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' action={action('action')} />
-			<HeaderToolbarAction icon='key' action={action('action')} />
-			<HeaderToolbarAction icon='kebab' action={action('action')} />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -146,20 +146,20 @@ export const WithActionBadge = () => (
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} title='star' icon='star' />
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='phone' action={action('action')}>
+			<HeaderToolbarAction title='call' icon='phone'>
 				<HeaderToolbarActionBadge variant='primary'>1</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone' action={action('action')}>
+			<HeaderToolbarAction title='disable' icon='phone'>
 				<HeaderToolbarActionBadge variant='danger'>2</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone' action={action('action')}>
+			<HeaderToolbarAction title='decline' icon='phone'>
 				<HeaderToolbarActionBadge variant='warning'>99</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='kebab' action={action('action')} />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -174,16 +174,16 @@ export const WithTopic = () => (
 				<HeaderContentRow>
 					{icon && <HeaderIcon icon={icon} />}
 					<HeaderTitle>{room.name}</HeaderTitle>
-					<HeaderState onClick={action('onClick')} icon='star' />
+					<HeaderState onClick={action('onClick')} title='star' icon='star' />
 					<HeaderState icon='key' />
 					<HeaderState icon='language' />
 					<Box withTruncatedText>{room.topic}</Box>
 				</HeaderContentRow>
 			</HeaderContent>
 			<HeaderToolbar>
-				<HeaderToolbarAction icon='magnifier' action={action('action')} />
-				<HeaderToolbarAction icon='key' action={action('action')} />
-				<HeaderToolbarAction icon='kebab' action={action('action')} />
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
 			</HeaderToolbar>
 		</Header>
 	</>
@@ -199,15 +199,15 @@ export const WithAnnouncement = () => (
 				<HeaderContentRow>
 					{icon && <HeaderIcon icon={icon} />}
 					<HeaderTitle>{room.name}</HeaderTitle>
-					<HeaderState onClick={action('onClick')} icon='star' />
+					<HeaderState onClick={action('onClick')} title='star' icon='star' />
 					<HeaderState icon='key' />
 					<HeaderState icon='language' />
 				</HeaderContentRow>
 			</HeaderContent>
 			<HeaderToolbar>
-				<HeaderToolbarAction icon='magnifier' action={action('action')} />
-				<HeaderToolbarAction icon='key' action={action('action')} />
-				<HeaderToolbarAction icon='kebab' action={action('action')} />
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
 			</HeaderToolbar>
 		</Header>
 		<AnnouncementBanner onClick={action('clicked')}>{room.announcement}</AnnouncementBanner>

@@ -1,4 +1,4 @@
-import type { IUserInRole } from '@rocket.chat/core-typings';
+import type { IUserInRole, Serialized } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -10,7 +10,7 @@ import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 
 type UsersInRoleTableRowProps = {
-	user: IUserInRole;
+	user: Serialized<IUserInRole>;
 	onRemove: (username: IUserInRole['username']) => void;
 };
 

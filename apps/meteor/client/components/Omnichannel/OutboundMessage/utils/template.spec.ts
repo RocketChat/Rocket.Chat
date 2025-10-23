@@ -1,4 +1,4 @@
-import type { IOutboundProviderTemplate } from '@rocket.chat/apps-engine/definition/outboundComunication';
+import type { IOutboundProviderTemplate } from '@rocket.chat/apps-engine/definition/outboundCommunication';
 import { capitalize } from '@rocket.chat/string-helpers';
 
 import { extractParameterMetadata, processTemplatePreviewText } from './template';

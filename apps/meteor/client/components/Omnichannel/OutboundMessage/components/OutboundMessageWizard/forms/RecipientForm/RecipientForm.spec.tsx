@@ -7,6 +7,8 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import RecipientForm from './RecipientForm';
 import { createFakeContactChannel, createFakeContactWithManagerData } from '../../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate, createFakeProviderMetadata } from '../../../../../../../../tests/mocks/data/outbound-message';
+import type { OmnichannelContextValue } from '../../../../../../../contexts/OmnichannelContext';
+import { OmnichannelContext } from '../../../../../../../contexts/OmnichannelContext';
 
 const recipientOnePhoneNumber = '+12125554567';
 const recipientTwoPhoneNumber = '+12125557788';
@@ -81,7 +83,9 @@ const appRoot = mockAppRoot()
 		Submit: 'Submit',
 	})
 	.wrap((children) => (
-		<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 28 }}>{children}</VirtuosoMockContext.Provider>
+		<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 28 }}>
+			<OmnichannelContext.Provider value={{ enabled: true } as OmnichannelContextValue}>{children}</OmnichannelContext.Provider>
+		</VirtuosoMockContext.Provider>
 	));
 
 describe('RecipientForm', () => {

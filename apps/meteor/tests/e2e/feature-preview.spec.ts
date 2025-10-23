@@ -345,7 +345,7 @@ test.describe.serial('feature preview', () => {
 			await page.goto(`/group/${sidepanelTeam}`);
 			await poHomeChannel.content.waitForChannel();
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnCreateNew.click();
 			await poHomeChannel.sidenav.inputChannelName.fill(targetChannelNameInTeam);
 			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
@@ -381,7 +381,7 @@ test.describe.serial('feature preview', () => {
 		test('should show channel in sidepanel after adding existing one', async ({ page }) => {
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
 			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
 			await expect(async () => {
@@ -403,7 +403,7 @@ test.describe.serial('feature preview', () => {
 
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
 			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
 			await expect(async () => {
@@ -508,7 +508,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidebar.allTeamCollabFilter.click();
 			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.roomToolbar.openRoomInfo();
 			await poHomeChannel.tabs.room.btnMore.click();
 			await poHomeChannel.tabs.room.getMoreOption('Delete').click();
 			await poHomeChannel.tabs.room.confirmDeleteDiscussion();

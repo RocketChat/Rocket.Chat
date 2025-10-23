@@ -1,7 +1,7 @@
 import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Registration, HomeChannel } from './page-objects';
-import { Modal } from './page-objects/modal';
+import { EditStatusModal } from './page-objects/fragments/edit-status-modal';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
@@ -48,12 +48,11 @@ test.describe.serial('Presence', () => {
 				const user1Page = await browser.newPage({ storageState: Users.user1.state });
 				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
-				const user1Modal = new Modal(user1Page);
+				const user1Modal = new EditStatusModal(user1Page);
 
 				await user1Channel.sidenav.btnUserProfileMenu.click();
 				await user1Channel.sidenav.getUserProfileMenuOption('Custom Status').click();
-				await user1Modal.getModalByName('Edit Status').getByRole('textbox', { name: 'Status message' }).fill('new status');
-				await user1Modal.getModalByName('Edit Status').getByRole('button', { name: 'Save' }).click();
+				await user1Modal.changeStatusMessage('new status');
 
 				await user1Page.close();
 			});

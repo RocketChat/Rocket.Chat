@@ -1,7 +1,16 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
+import type {
+	IE2EEMessage,
+	IMessage,
+	IRoom,
+	ISubscription,
+	IUser,
+	IUploadWithUser,
+	MessageAttachment,
+	Serialized,
+} from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -773,8 +782,14 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
-				const quotedMessage = getQuotedMessage?.message;
+				let quotedMessage: Serialized<IMessage>;
+				try {
+					const getQuotedMessage = await sdk.rest.get('/v1/chat.getMessage', { msgId });
+					quotedMessage = getQuotedMessage?.message;
+				} catch (error) {
+					console.error(`Error getting quoted message: ${error}`);
+					return;
+				}
 
 				if (!quotedMessage) {
 					return;
@@ -783,7 +798,6 @@ class E2E extends Emitter {
 				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
 
 				message.attachments = message.attachments || [];
-
 				const useRealName = settings.peek('UI_Use_Real_Name');
 				const quoteAttachment = createQuoteAttachment(
 					decryptedQuoteMessage,

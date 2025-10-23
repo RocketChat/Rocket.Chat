@@ -15,4 +15,6 @@ export type ServerMediaSignalNewCall = {
 	requestedCallId?: string;
 	/** If this new call initiated from a transfer, this will hold the id of the call that was transferred */
 	replacingCallId?: string;
+	/** If this new call initiated from a transfer, this will hold the information of the user who requested the transfer */
+	transferredBy?: CallContact;
 };

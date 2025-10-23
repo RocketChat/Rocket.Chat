@@ -2971,6 +2971,7 @@
   "Offline_Email_Subject_Description": "Możesz użyć następujących symboli zastępczych:  \n - [Nazwa witryny], `[Site_URL]`, `[User]` i `[Room]` odpowiednio dla nazwy aplikacji, adresu URL, nazwy użytkownika i nazwy pokoju. ",
   "Offline_Link_Message": "PRZEJDŹ DO KOMUNIKATU",
   "Offline_Mention_All_Email": "Wymień cały temat e-mail",
+  "Offline_Mention_Email": "Temat wiadomości e-mail",
   "Offline_Message": "Wiadomość offline",
   "Offline_Message_Use_DeepLink": "Użyj formatu Deep Link URL",
   "Offline_form": "Formularz nieaktywny",
