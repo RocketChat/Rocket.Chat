@@ -15,10 +15,12 @@ const Encrypted = ({ room }: { room: IRoom }) => {
 			icon='key'
 			color={colors.g800}
 			aria-hidden={false}
-			aria-live="polite"
-			role="img"
+			aria-live='polite'
+			role='img'
 			tabindex={0}
-			aria-label={t('Encrypted')}/> : null;
+			aria-label={t('Encrypted_channel', { roomName: room.name })}
+		/>
+	) : null;
 };
 
 export default memo(Encrypted);
