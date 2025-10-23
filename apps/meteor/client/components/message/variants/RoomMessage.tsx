@@ -7,6 +7,8 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { getUserAvatarURL } from '../../../../app/utils/client';
+import { Users } from '../../../stores';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -63,6 +65,9 @@ const RoomMessage = ({
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
 
+	const avatarEtag = Users.use((state) => state.get(message.u._id)?.avatarETag);
+	const avatarUrl = getUserAvatarURL(message.u?.username, avatarEtag);
+
 	return (
 		<Message
 			ref={messageRef}
@@ -91,7 +96,7 @@ const RoomMessage = ({
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
 					<MessageAvatar
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
-						avatarUrl={message.avatar}
+						avatarUrl={avatarUrl}
 						username={message.u.username}
 						size='x36'
 						onClick={(e) => openUserCard(e, message.u.username)}
