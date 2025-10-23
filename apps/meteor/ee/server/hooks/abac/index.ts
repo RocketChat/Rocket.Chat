@@ -1,2 +1,1 @@
 import './beforeAddUserToRoom';
-import './canAccessSpecialRoom';

@@ -1,12 +1,12 @@
-import { Authorization } from '@rocket.chat/core-services';
+import { Authorization, Abac } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { AbacAccessOperation, AbacObjectType, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IUser, ITeam } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomVoip } from './canAccessRoomVoip';
-import { specialAccessValidators } from '../../../app/lib/server/lib/canAccessSpecialRoom';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -19,7 +19,6 @@ async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 }
 
 const roomAccessValidators: RoomAccessValidator[] = [
-	...specialAccessValidators,
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;
@@ -58,16 +57,25 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		if (!room?._id || !user?._id) {
 			return false;
 		}
+		const [canViewJoined, canViewT] = await Promise.all([
+			Authorization.hasPermission(user._id, 'view-joined-room'),
+			Authorization.hasPermission(user._id, `view-${room.t}-room`),
+		]);
 
-		if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
-			return false;
+		// When there's no ABAC setting, license or values on the room, fallback to previous behavior
+		if (!room?.abacAttributes?.length || !License.hasModule('abac') || (!(await Settings.getValueById('ABAC_Enabled')) as boolean)) {
+			if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
+				return false;
+			}
+
+			if (canViewJoined) {
+				return true;
+			}
+
+			return canViewT;
 		}
 
-		if (await Authorization.hasPermission(user._id, 'view-joined-room')) {
-			return true;
-		}
-
-		return Authorization.hasPermission(user._id, `view-${room.t}-room`);
+		return (canViewJoined || canViewT) && Abac.canAccessObject(room, user, AbacAccessOperation.READ, AbacObjectType.ROOM);
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {
