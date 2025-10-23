@@ -15,4 +15,4 @@ import './login/password';
 import './login/saml';
 import './login/twitter';
 import './settings';
-import './desktopInjection';
+// import './desktopInjection';
