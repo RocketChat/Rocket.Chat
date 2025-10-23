@@ -20,20 +20,20 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-v8622k"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Canned_Responses
               </div>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
