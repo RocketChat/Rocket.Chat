@@ -144,7 +144,6 @@ services:
       OVERWRITE_SETTING_Show_Setup_Wizard: completed
       OVERWRITE_SETTING_Federation_Service_Enabled: true
       OVERWRITE_SETTING_Federation_Service_Domain: rc1
-      OVERWRITE_SETTING_Federation_Service_Matrix_Signing_Key: ${MATRIX_SIGNING_KEY_RC1}
       OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
       OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
       ADMIN_USERNAME: admin

@@ -1,7 +1,7 @@
 /**
  * Federation environment configuration interface
  */
-export interface FederationConfig {
+export interface IFederationConfig {
 	rc1: {
 		apiUrl: string;
 		adminUser: string;
@@ -28,8 +28,6 @@ export interface FederationConfig {
 	};
 }
 
-
-
 /**
  * Validates that a required environment variable exists and is not empty
  */
@@ -44,7 +42,7 @@ function validateEnvVar(name: string, value: string | undefined, defaultValue?: 
 /**
  * Gets and validates all federation environment variables
  */
-function getFederationConfig(): FederationConfig {
+function getFederationConfig(): IFederationConfig {
 	return {
 		rc1: {
 			apiUrl: validateEnvVar('FEDERATION_RC1_API_URL', process.env.FEDERATION_RC1_API_URL, 'https://rc1'),
@@ -52,9 +50,17 @@ function getFederationConfig(): FederationConfig {
 			adminPassword: validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', process.env.FEDERATION_RC1_ADMIN_PASSWORD, 'admin'),
 			adminMatrixUserId: validateEnvVar('FEDERATION_RC1_USER_ID', process.env.FEDERATION_RC1_USER_ID, '@admin:rc1'),
 			additionalUser1: {
-					username: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2'),
-					password: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD', process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
-					matrixUserId: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID', process.env.FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID, '@user2:rc1'),
+				username: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2'),
+				password: validateEnvVar(
+					'FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD',
+					process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD,
+					'user2pass',
+				),
+				matrixUserId: validateEnvVar(
+					'FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID',
+					process.env.FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID,
+					'@user2:rc1',
+				),
 			},
 		},
 		hs1: {
@@ -65,16 +71,24 @@ function getFederationConfig(): FederationConfig {
 			adminUser: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin'),
 			adminPassword: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', process.env.FEDERATION_SYNAPSE_ADMIN_PASSWORD, 'admin'),
 			additionalUser1: {
-					username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'user2'),
-					password: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD, 'user2pass'),
-					matrixUserId: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID, '@user2:hs1'),
+				username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'user2'),
+				password: validateEnvVar(
+					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD',
+					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD,
+					'user2pass',
+				),
+				matrixUserId: validateEnvVar(
+					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID',
+					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID,
+					'@user2:hs1',
+				),
 			},
 		},
 	};
 }
 
 // Validate and export federation configuration
-let federationConfig: FederationConfig;
+let federationConfig: IFederationConfig;
 try {
 	federationConfig = getFederationConfig();
 } catch (error) {
