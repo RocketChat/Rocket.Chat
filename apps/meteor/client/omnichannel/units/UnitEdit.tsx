@@ -1,4 +1,10 @@
-import type { ILivechatDepartment, ILivechatUnitMonitor, Serialized, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import {
+	ILivechatDepartment,
+	ILivechatUnitMonitor,
+	Serialized,
+	IOmnichannelBusinessUnit,
+	ISaveOmnichannelBusinessUnit,
+} from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
@@ -34,18 +40,7 @@ type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
-	onUpdate?: (params: {
-		unitData: {
-			name: string;
-			visibility: string;
-			enabled?: boolean;
-			description?: string;
-			email?: string;
-			showOnOfflineForm?: boolean;
-		};
-		unitMonitors: { monitorId: string; username: string }[];
-		unitDepartments: { departmentId: string }[];
-	}) => void;
+	onUpdate?: (params: ISaveOmnichannelBusinessUnit) => void;
 	onDelete?: () => void;
 	onClose: () => void;
 };
