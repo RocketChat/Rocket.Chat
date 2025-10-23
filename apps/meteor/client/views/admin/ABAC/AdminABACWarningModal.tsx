@@ -23,7 +23,6 @@ const AdminABACWarningModal = ({ onConfirm, onCancel }: AdminABACWarningModalPro
 	return (
 		<GenericModal
 			title={t('ABAC_Warning_Modal_Title')}
-			// @ts-expect-error - Remove this once https://github.com/RocketChat/Rocket.Chat/pull/37223 is merged and the branch synced
 			variant='secondary-danger'
 			confirmText={t('ABAC_Warning_Modal_Confirm_Text')}
 			cancelText={t('Cancel')}
