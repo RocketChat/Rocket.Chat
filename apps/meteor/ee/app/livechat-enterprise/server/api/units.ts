@@ -1,4 +1,4 @@
-import { ILivechatUnitMonitor, IOmnichannelBusinessUnit, ISaveOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, ISaveOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
