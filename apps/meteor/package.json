@@ -27,7 +27,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "yarn stylelint && yarn eslint",
 		"eslint": "NODE_OPTIONS=\"--max-old-space-size=8192\" eslint --ext .js,.jsx,.ts,.tsx .  --cache",
-		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix --cache",
+		"eslint:fix": "yarn eslint --fix",
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\"",
