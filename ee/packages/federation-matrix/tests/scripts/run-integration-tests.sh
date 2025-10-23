@@ -107,17 +107,17 @@ cleanup() {
             log_info "  - Element: https://element"
         fi
         if [ "$INCLUDE_ELEMENT" = true ]; then
-            log_info "To stop containers manually, run: docker-compose -f $DOCKER_COMPOSE_FILE --profile element-$PROFILE_PREFIX down -v"
+            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile element-$PROFILE_PREFIX down -v"
         else
-            log_info "To stop containers manually, run: docker-compose -f $DOCKER_COMPOSE_FILE --profile test-$PROFILE_PREFIX down -v"
+            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile test-$PROFILE_PREFIX down -v"
         fi
     else
         log_info "Cleaning up services..."
         if [ -f "$DOCKER_COMPOSE_FILE" ]; then
             if [ "$INCLUDE_ELEMENT" = true ]; then
-                docker-compose -f "$DOCKER_COMPOSE_FILE" --profile "element-$PROFILE_PREFIX" down -v 2>/dev/null || true
+                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element-$PROFILE_PREFIX" down -v 2>/dev/null || true
             else
-                docker-compose -f "$DOCKER_COMPOSE_FILE" --profile "test-$PROFILE_PREFIX" down -v 2>/dev/null || true
+                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test-$PROFILE_PREFIX" down -v 2>/dev/null || true
             fi
         fi
         log_success "Cleanup completed"
@@ -190,11 +190,11 @@ fi
 if [ "$INCLUDE_ELEMENT" = true ]; then
     PROFILE="element-$PROFILE_PREFIX"
     log_info "Starting all federation services including Element web client..."
-    docker-compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
 else
     PROFILE="test-$PROFILE_PREFIX"
     log_info "Starting federation services (test profile only)..."
-    docker-compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
 fi
 
 # Wait for rc1 container to be running
