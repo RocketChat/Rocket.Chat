@@ -544,7 +544,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
-	async canAccessObject(room: IRoom, user: IUser, action: AbacAccessOperation, objectType: AbacObjectType) {
+	async canAccessObject(
+		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+		user: Pick<IUser, '_id'>,
+		action: AbacAccessOperation,
+		objectType: AbacObjectType,
+	) {
 		// We may need this flex for phase 2, but for now only ROOM/READ is supported
 		if (objectType !== AbacObjectType.ROOM) {
 			throw new Error('error-abac-unsupported-object-type');

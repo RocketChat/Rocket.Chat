@@ -26,5 +26,10 @@ export interface IAbacService {
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void>;
-	canAccessObject(room: IRoom, user: IUser, action: AbacAccessOperation, objectType: AbacObjectType): Promise<boolean>;
+	canAccessObject(
+		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+		user: Pick<IUser, '_id'>,
+		action: AbacAccessOperation,
+		objectType: AbacObjectType,
+	): Promise<boolean>;
 }
