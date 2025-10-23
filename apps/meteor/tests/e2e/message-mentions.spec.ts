@@ -114,7 +114,7 @@ test.describe.serial('message-mentions', () => {
 	});
 
 	test('expect show "all" and "here" options', async () => {
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.navbar.openChat('general');
 		await poHomeChannel.content.inputMessage.type('@');
 
 		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="all"')).toBeVisible();
@@ -137,7 +137,7 @@ test.describe.serial('message-mentions', () => {
 			const mentionText = getMentionText(Users.user1.data.username, 1);
 
 			await test.step('receive bot message', async () => {
-				await adminPage.sidenav.openChat(targetChannel);
+				await adminPage.navbar.openChat(targetChannel);
 				await adminPage.content.sendMessage(getMentionText(Users.user1.data.username));
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 			});
@@ -183,7 +183,7 @@ test.describe.serial('message-mentions', () => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('receive bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel);
+					await userPage.navbar.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -203,7 +203,7 @@ test.describe.serial('message-mentions', () => {
 				});
 
 				await test.step('receive second bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel);
+					await userPage.navbar.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -241,7 +241,7 @@ test.describe.serial('message-mentions', () => {
 				});
 
 				await test.step('receive bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel2);
+					await userPage.navbar.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -260,7 +260,7 @@ test.describe.serial('message-mentions', () => {
 				});
 
 				await test.step('receive second bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel2);
+					await userPage.navbar.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
@@ -286,7 +286,7 @@ test.describe.serial('message-mentions', () => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('receive bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel2);
+					await userPage.navbar.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user3.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(
 						getMentionText(Users.user3.data.username, 2),
@@ -320,7 +320,7 @@ test.describe.serial('message-mentions', () => {
 				const userPage = new HomeChannel(page);
 
 				await test.step('do not receive bot message', async () => {
-					await userPage.sidenav.openChat(targetChannel);
+					await userPage.navbar.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(team));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).not.toBeVisible();
 				});

@@ -32,7 +32,7 @@ test.describe.serial('mark-unread', () => {
 		});
 
 		test('should mark a populated room as unread', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel.name);
+			await poHomeChannel.navbar.openChat(targetChannel.name);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel.name);
 
@@ -40,7 +40,7 @@ test.describe.serial('mark-unread', () => {
 		});
 
 		test('should mark a populated room as unread - search', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel.name);
+			await poHomeChannel.navbar.openChat(targetChannel.name);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel.name);
 			await poHomeChannel.sidenav.searchRoom(targetChannel.name);
@@ -61,7 +61,7 @@ test.describe.serial('mark-unread', () => {
 			});
 
 			await expect(async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel.name);
+				await poHomeChannel.navbar.openChat(targetChannel.name);
 				await poHomeChannel.content.openLastMessageMenu();
 				await poHomeChannel.markUnread.click();
 				await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel.name)).toBeVisible();

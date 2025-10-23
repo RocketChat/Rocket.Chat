@@ -365,7 +365,7 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await test.step('Expect registered guest to be in dep1', async () => {
-					await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+					await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 					await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
 				});
 
@@ -382,7 +382,7 @@ test.describe('OC - Livechat API', () => {
 				});
 
 				await test.step('Expect registered guest to still be in dep1', async () => {
-					await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+					await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 					await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
 				});
 			});
@@ -456,7 +456,7 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await test.step('Expect registered guest to be in dep1', async () => {
-					await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+					await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 					await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
 				});
 
@@ -493,7 +493,7 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to have valid info', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+				await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
@@ -539,7 +539,7 @@ test.describe('OC - Livechat API', () => {
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
 
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor1.name);
+				await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor1.name);
 				await poAuxContext.poHomeOmnichannel.content.sendMessage('this_is_a_test_message_from_agent');
 				await expect(poLiveChat.txtChatMessage('this_is_a_test_message_from_agent')).toBeVisible();
 			});
@@ -627,7 +627,7 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to have valid info', async () => {
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+				await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
@@ -653,7 +653,7 @@ test.describe('OC - Livechat API', () => {
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
 
 			await test.step('Expect setGuestEmail to change a guest email', async () => {
 				await poLiveChat.page.evaluate(
@@ -801,7 +801,7 @@ test.describe('OC - Livechat API', () => {
 					}),
 				);
 
-				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+				await poAuxContext.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 				await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 				await watchForTrigger;
 			});
@@ -859,7 +859,7 @@ test.describe('OC - Livechat API', () => {
 				}),
 			);
 
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
 
 			await watchForTrigger;
