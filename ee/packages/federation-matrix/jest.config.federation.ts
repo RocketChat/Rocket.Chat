@@ -13,9 +13,7 @@ export default {
 	testTimeout: 30000, // 30 seconds timeout for federation tests
 	forceExit: true, // Force Jest to exit after tests complete
 	detectOpenHandles: true, // Detect open handles that prevent Jest from exiting
-	// Global teardown to ensure cleanup
 	globalTeardown: '<rootDir>/tests/teardown.ts',
-	// Suppress verbose output
 	verbose: false,
-	silent: false, // Keep this false to see test results
+	silent: false,
 } satisfies Config;

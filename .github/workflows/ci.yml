@@ -488,7 +488,7 @@ jobs:
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage, packages-build, release-versions]
     runs-on: ubuntu-24.04
     
     steps:
@@ -501,6 +501,17 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
+      
+      - uses: rharkor/caching-for-turbo@v1.8
+      
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+      
+      - name: Build packages
+        run: yarn build
       
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
@@ -515,94 +526,13 @@ jobs:
           sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
           sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
       
-      - name: Trust self-signed certificates
-        run: |
-          # Copy CA certificate to system trust store
-          sudo cp ./ee/packages/federation-matrix/docker-compose/traefik/certs/ca/rootCA.crt /usr/local/share/ca-certificates/rootCA.crt
-          sudo update-ca-certificates
-      
-      - name: Fix Docker socket permissions for Traefik
-        run: |
-          # Ensure Docker socket is accessible to containers
-          sudo chmod 666 /var/run/docker.sock
-          
-          # Add current user to docker group (if needed)
-          sudo usermod -aG docker $USER || true
-      
-      - name: Debug Docker and Traefik setup
-        run: |
-          echo "=== Docker version ==="
-          docker --version
-          docker compose version
-          
-          echo "=== Docker socket permissions ==="
-          ls -la /var/run/docker.sock
-          
-          echo "=== Certificate files ==="
-          ls -la ./ee/packages/federation-matrix/docker-compose/traefik/certs/
-          
-          echo "=== Test certificate validity ==="
-          openssl x509 -in ./ee/packages/federation-matrix/docker-compose/traefik/certs/rc1.pem -text -noout | head -10
-      
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
           ENTERPRISE_LICENSE_RC1: ${{ needs.release-versions.outputs.enterprise-license }}
-        run: |
-          yarn test:integration --image "${ROCKETCHAT_IMAGE}"
-          
-          echo "=== Post-test debugging ==="
-          echo "=== Container status after test ==="
-          docker ps -a
-          
-          echo "=== Port 80 and 443 listening status ==="
-          netstat -tlnp | grep -E ':(80|443)\s' || echo "No processes listening on ports 80 or 443"
-          
-          echo "=== All listening ports ==="
-          netstat -tlnp | grep LISTEN
-          
-          echo "=== Traefik container logs (last 50 lines) ==="
-          docker logs traefik --tail 50 || echo "Traefik container not found or no logs"
-          
-          echo "=== Rocket.Chat container logs (last 50 lines) ==="
-          docker logs rc1 --tail 50 || echo "Rocket.Chat container not found or no logs"
-          
-          echo "=== Synapse container logs (last 50 lines) ==="
-          docker logs hs1 --tail 50 || echo "Synapse container not found or no logs"
-          
-          echo "=== Test direct connectivity ==="
-          echo "Testing direct connection to rc1:3000..."
-          curl -v http://127.0.0.1:3000/api/info || echo "Direct connection to rc1:3000 failed"
-          
-          echo "Testing direct connection to hs1:8008..."
-          curl -v http://127.0.0.1:8008/_matrix/client/versions || echo "Direct connection to hs1:8008 failed"
-          
-          echo "Testing Traefik on port 80..."
-          curl -v http://127.0.0.1:80 || echo "Traefik port 80 not responding"
-          
-          echo "Testing Traefik on port 443..."
-          curl -v -k https://127.0.0.1:443 || echo "Traefik port 443 not responding"
+        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
       
-      - name: Debug port listening and container status
-        run: |
-          echo "=== Container status ==="
-          docker ps -a
-          
-          echo "=== Port 80 and 443 listening status ==="
-          netstat -tlnp | grep -E ':(80|443)\s' || echo "No processes listening on ports 80 or 443"
-          
-          echo "=== All listening ports ==="
-          netstat -tlnp | grep LISTEN
-          
-          echo "=== Traefik container logs ==="
-          docker logs traefik --tail 50 || echo "Traefik container not found or no logs"
-          
-          echo "=== Rocket.Chat container logs ==="
-          docker logs rc1 --tail 50 || echo "Rocket.Chat container not found or no logs"
-          
-          echo "=== Synapse container logs ==="
-          docker logs hs1 --tail 50 || echo "Synapse container not found or no logs"
 
   tests-done:
     name: ✅ Tests Done
