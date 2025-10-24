@@ -299,6 +299,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
+	get btnVoiceCall(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
+	}
+
 	get btnRecordAudio(): Locator {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}
@@ -313,6 +317,14 @@ export class HomeContent {
 
 	get linkUserCard(): Locator {
 		return this.userCard.locator('a');
+	}
+
+	get btnContactInformation(): Locator {
+		return this.page.getByRole('button', { name: 'User Info' });
+	}
+
+	get btnContactInfoVoiceCall(): Locator {
+		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
 	get btnContactEdit(): Locator {
