@@ -358,6 +358,11 @@ export class LDAPEEManager extends LDAPManager {
 					return;
 				}
 
+				if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
+					logger.error({ msg: 'Cannot add user to channel. Channel is ABAC managed', userChannelName });
+					continue;
+				}
+
 				if (room.teamMain) {
 					logger.error(`Can't add user to channel ${userChannelName} because it is a team.`);
 				} else {
@@ -430,7 +435,23 @@ export class LDAPEEManager extends LDAPManager {
 		});
 		const currentTeamIds = currentTeams?.map(({ teamId }) => teamId);
 		const teamsToRemove = currentTeamIds?.filter((teamId) => notInTeamIds.includes(teamId));
-		const teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
+		let teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
+
+		if (settings.get('ABAC_Enabled')) {
+			const roomsWithAbacAttributes = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(
+				allTeams.filter((t) => teamsToAdd.includes(t._id)).map((t) => t.roomId),
+				{ projection: { teamId: 1 } },
+			)
+				.map((r) => r.teamId)
+				.toArray();
+
+			logger.debug({ msg: 'Some teams will be ignored from sync because they are abac managed', roomsWithAbacAttributes });
+
+			teamsToAdd = teamsToAdd.filter((teamId) => !roomsWithAbacAttributes.includes(teamId));
+			if (!teamsToAdd.length) {
+				return;
+			}
+		}
 
 		await Team.insertMemberOnTeams(user._id, teamsToAdd);
 		if (teamsToRemove) {
