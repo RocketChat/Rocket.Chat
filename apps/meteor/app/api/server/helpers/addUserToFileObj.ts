@@ -18,7 +18,7 @@ const stripUrlOrigin = (href?: string): string | undefined => {
 		const relative = `${parsed.pathname}${parsed.search}${parsed.hash}`;
 		return relative || '/';
 	} catch {
-		return value;
+		return undefined;
 	}
 };
 
@@ -32,13 +32,14 @@ export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { u
 
 		const sanitizedUrl = stripUrlOrigin(file.url);
 		const sanitizedPath = stripUrlOrigin(file.path);
-		const normalizedPath = sanitizedPath ?? sanitizedUrl ?? file.path;
-		const normalizedUrl = sanitizedUrl ?? sanitizedPath ?? file.url;
+		const normalizedPath = sanitizedPath ?? sanitizedUrl;
+		const normalizedUrl = sanitizedUrl ?? sanitizedPath;
 
 		return {
 			...file,
-			...(normalizedPath ? { path: normalizedPath } : {}),
-			...(normalizedUrl ? { url: normalizedUrl } : {}),
+			user,
+			path: normalizedPath ?? undefined,
+			url: normalizedUrl ?? undefined,
 			...(user && { user }),
 		};
 	});

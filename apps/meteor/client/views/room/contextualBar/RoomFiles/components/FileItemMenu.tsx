@@ -94,7 +94,7 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 
 				const normalizedHref = normalizeFileHref(rawHref);
 
-				if (!normalizedHref) {
+				if (!normalizedHref || /^https?:\/\//i.test(normalizedHref)) {
 					return;
 				}
 
