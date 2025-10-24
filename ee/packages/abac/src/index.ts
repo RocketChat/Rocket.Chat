@@ -184,6 +184,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-cannot-convert-default-room-to-abac');
 		}
 
+		if (!Object.keys(attributes).length) {
+			await Rooms.unsetAbacAttributesById(rid);
+			return;
+		}
+
 		const normalized = this.validateAndNormalizeAttributes(attributes);
 
 		await this.ensureAttributeDefinitionsExist(normalized);
@@ -334,6 +339,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
 		if (!exists) {
+			return;
+		}
+
+		// if is the last attribute, just remove all
+		if (previous.length === 1) {
+			await Rooms.unsetAbacAttributesById(rid);
 			return;
 		}
 
