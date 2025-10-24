@@ -1980,6 +1980,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
 	}
 
+	unsetAbacAttributesById(_id: IRoom['_id']): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $unset: { abacAttributes: 1 } });
+	}
+
 	updateSingleAbacAttributeValuesById(_id: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id, 'abacAttributes.key': key };
 
