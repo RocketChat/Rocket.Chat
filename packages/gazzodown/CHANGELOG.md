@@ -1,5 +1,16 @@
 # @rocket.chat/gazzodown
 
+## 22.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4464136bdcbb7e488025d3faeabcccfdd4ed8df5]:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.3
+  - @rocket.chat/ui-client@22.0.3
+  - @rocket.chat/core-typings@7.10.3
+  </details>
+
 ## 22.0.2
 
 ### Patch Changes

@@ -1,5 +1,49 @@
 # @rocket.chat/meteor
 
+## 7.10.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37298](https://github.com/RocketChat/Rocket.Chat/pull/37298) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with iframe authentication where login should always fallback to iframe authentication in case of any erorrs.
+
+- ([#37291](https://github.com/RocketChat/Rocket.Chat/pull/37291) by [@dionisio-bot](https://github.com/dionisio-bot)) Show iframe authentication page, when login through iframe authentication API token fails
+
+- <details><summary>Updated dependencies [4464136bdcbb7e488025d3faeabcccfdd4ed8df5]:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.3
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@22.0.3
+  - @rocket.chat/gazzodown@22.0.3
+  - @rocket.chat/ui-avatar@18.0.3
+  - @rocket.chat/ui-client@22.0.3
+  - @rocket.chat/ui-video-conf@22.0.3
+  - @rocket.chat/ui-voip@12.0.3
+  - @rocket.chat/web-ui-registration@22.0.3
+  - @rocket.chat/core-typings@7.10.3
+  - @rocket.chat/rest-typings@7.10.3
+  - @rocket.chat/license@1.0.31
+  - @rocket.chat/omnichannel-services@0.3.37
+  - @rocket.chat/pdf-worker@0.3.19
+  - @rocket.chat/presence@0.2.40
+  - @rocket.chat/api-client@0.2.40
+  - @rocket.chat/apps@0.5.19
+  - @rocket.chat/core-services@0.10.3
+  - @rocket.chat/cron@0.1.40
+  - @rocket.chat/freeswitch@1.2.27
+  - @rocket.chat/http-router@7.9.7
+  - @rocket.chat/model-typings@1.7.3
+  - @rocket.chat/models@1.6.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.19
+  - @rocket.chat/omni-core-ee@0.0.5
+  - @rocket.chat/instance-status@0.1.40
+  - @rocket.chat/omni-core@0.0.5
+  </details>
+
 ## 7.10.2
 
 ### Patch Changes

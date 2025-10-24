@@ -1,5 +1,18 @@
 # @rocket.chat/ui-contexts
 
+## 22.0.3
+
+### Patch Changes
+
+- ([#37291](https://github.com/RocketChat/Rocket.Chat/pull/37291) by [@dionisio-bot](https://github.com/dionisio-bot)) Show iframe authentication page, when login through iframe authentication API token fails
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.3
+  - @rocket.chat/rest-typings@7.10.3
+  - @rocket.chat/ddp-client@0.3.40
+  </details>
+
 ## 22.0.2
 
 ### Patch Changes
