@@ -54,11 +54,6 @@ export async function getSubscribedRoomsForUserWithDetails(
 					if (uid === userId) {
 						continue;
 					}
-
-					if (roomData.shouldChangeOwner) {
-						break;
-					}
-
 					const newOwner = await Users.findOneActiveById(uid, { projection: { _id: 1 } });
 					if (!newOwner) {
 						continue;
@@ -66,6 +61,7 @@ export async function getSubscribedRoomsForUserWithDetails(
 
 					roomData.newOwner = uid;
 					roomData.shouldChangeOwner = true;
+					break;
 				}
 
 				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
