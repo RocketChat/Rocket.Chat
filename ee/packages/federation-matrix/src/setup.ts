@@ -42,6 +42,11 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 	const settingEnabled = (await Settings.getValueById<boolean>('Federation_Service_Enabled')) || false;
 	const serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
 
+	const serviceEnabled = (await License.hasModule('federation')) && settingEnabled && validateDomain(serverName);
+	if (!serviceEnabled) {
+		return false;
+	}
+
 	const processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 	const processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	const signingKey = (await Settings.getValueById<string>('Federation_Service_Matrix_Signing_Key')) || '';
@@ -103,11 +108,6 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 			},
 			config,
 		);
-
-		const serviceEnabled = (await License.hasModule('federation')) && settingEnabled && validateDomain(serverName);
-		if (!serviceEnabled) {
-			return false;
-		}
 
 		registerEvents(eventHandler, serverName, {
 			typing: processEDUTyping,

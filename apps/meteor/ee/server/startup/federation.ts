@@ -22,19 +22,19 @@ const CRITICAL_SETTINGS = [
 ];
 
 let serviceRegistered = false;
+let watcherRegistered = false;
 
 export const startFederationService = async (): Promise<void> => {
 	try {
 		const isEnabled = await setupFederationMatrix(InstanceStatus.id());
-
-		if (!serviceRegistered) {
-			api.registerService(new FederationMatrix());
-			serviceRegistered = true;
-		}
-
-		await registerFederationRoutes();
-
 		if (isEnabled) {
+			if (!serviceRegistered) {
+				api.registerService(new FederationMatrix());
+				serviceRegistered = true;
+			}
+
+			await registerFederationRoutes();
+
 			// TODO move to service/setup?
 			StreamerCentral.on('broadcast', (name, eventName, args) => {
 				if (name === 'notify-room' && eventName.endsWith('user-activity')) {
@@ -45,9 +45,12 @@ export const startFederationService = async (): Promise<void> => {
 			});
 		}
 
-		settings.watchMultiple(CRITICAL_SETTINGS, async () => {
-			await startFederationService();
-		});
+		if (!watcherRegistered) {
+			settings.watchMultiple(CRITICAL_SETTINGS, async () => {
+				await startFederationService();
+			});
+			watcherRegistered = true;
+		}
 	} catch (error) {
 		logger.error('Failed to start federation service', { error });
 		throw error;
