@@ -3,7 +3,7 @@ import type {
 	ILivechatUnitMonitor,
 	Serialized,
 	IOmnichannelBusinessUnit,
-	ISaveOmnichannelBusinessUnit,
+	OmnichannelBusinessUnitPayload,
 } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
@@ -40,7 +40,7 @@ type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
-	onUpdate?: (params: ISaveOmnichannelBusinessUnit) => void;
+	onUpdate?: (params: OmnichannelBusinessUnitPayload) => void;
 	onDelete?: () => void;
 	onClose: () => void;
 };

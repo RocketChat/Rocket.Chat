@@ -11,7 +11,7 @@ export interface IOmnichannelBusinessUnit extends IRocketChatRecord {
 	ancestors?: string[];
 }
 
-export interface ISaveOmnichannelBusinessUnit {
+export type OmnichannelBusinessUnitPayload = {
 	unitData: {
 		name: string;
 		visibility: string;
@@ -22,4 +22,4 @@ export interface ISaveOmnichannelBusinessUnit {
 	};
 	unitMonitors: { monitorId: string; username: string }[];
 	unitDepartments: { departmentId: string }[];
-}
+};
