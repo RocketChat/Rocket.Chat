@@ -47,6 +47,22 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 		[fileData, t, uid],
 	);
 
+	const normalizeFileHref = (href: string): string => {
+		const value = href.trim();
+
+		if (!/^https?:\/\//i.test(value) && !value.startsWith('//')) {
+			return value;
+		}
+
+		try {
+			const parsed = new URL(value.startsWith('//') ? `http:${value}` : value);
+			const relative = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+			return relative || '/';
+		} catch {
+			return value;
+		}
+	};
+
 	const menuOptions = [
 		{
 			id: 'download',
@@ -66,10 +82,36 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 					return;
 				}
 
-				if (fileData.url && fileData.name) {
+				if (!fileData.name) {
+					return;
+				}
+
+				const rawHref = fileData.path ?? fileData.url;
+
+				if (!rawHref) {
+					return;
+				}
+
+				const normalizedHref = normalizeFileHref(rawHref);
+
+				if (!normalizedHref) {
+					return;
+				}
+
+				if (normalizedHref.startsWith('blob:') || normalizedHref.startsWith('data:')) {
+					download(normalizedHref, fileData.name);
+					if (normalizedHref.startsWith('blob:')) {
+						const URL = window.webkitURL ?? window.URL;
+						URL.revokeObjectURL(normalizedHref);
+					}
+					return;
+				}
+
+				const href = getURL(normalizedHref);
+				download(href, fileData.name);
+
+				if (fileData.url?.startsWith('blob:')) {
 					const URL = window.webkitURL ?? window.URL;
-					const href = getURL(fileData.url);
-					download(href, fileData.name);
 					URL.revokeObjectURL(fileData.url);
 				}
 			},

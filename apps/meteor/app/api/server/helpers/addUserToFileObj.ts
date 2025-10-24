@@ -3,6 +3,25 @@ import { Users } from '@rocket.chat/models';
 
 const isString = (value: unknown): value is string => typeof value === 'string';
 
+const stripUrlOrigin = (href?: string): string | undefined => {
+	if (!href) {
+		return href;
+	}
+
+	const value = href.trim();
+	if (!/^https?:\/\//i.test(value) && !value.startsWith('//')) {
+		return value;
+	}
+
+	try {
+		const parsed = new URL(value.startsWith('//') ? `http:${value}` : value);
+		const relative = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+		return relative || '/';
+	} catch {
+		return value;
+	}
+};
+
 export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> })[]> {
 	const uids = files.map(({ userId }) => userId).filter(isString);
 
@@ -10,12 +29,17 @@ export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { u
 
 	return files.map((file) => {
 		const user = users.find(({ _id: userId }) => file.userId && userId === file.userId);
-		if (!user) {
-			return file;
-		}
+
+		const sanitizedUrl = stripUrlOrigin(file.url);
+		const sanitizedPath = stripUrlOrigin(file.path);
+		const normalizedPath = sanitizedPath ?? sanitizedUrl ?? file.path;
+		const normalizedUrl = sanitizedUrl ?? sanitizedPath ?? file.url;
+
 		return {
 			...file,
-			user,
+			...(normalizedPath ? { path: normalizedPath } : {}),
+			...(normalizedUrl ? { url: normalizedUrl } : {}),
+			...(user && { user }),
 		};
 	});
 }
