@@ -6,19 +6,19 @@ type CreateTagParams = {
 	id?: string | null;
 	name?: string;
 	description?: string;
-	departments?: { departmentId: string }[];
+	departments?: string[];
 };
 
 const removeTag = async (api: BaseTest['api'], id: string) => api.post('/livechat/tags.delete', { id });
 
 export const createTag = async (api: BaseTest['api'], { id = null, name, description = '', departments = [] }: CreateTagParams = {}) => {
 	const response = await api.post('/livechat/tags.save', {
-		id,
+		_id: id,
 		tagData: {
 			name,
 			description,
 		},
-		tagDepartments: departments.map((department: { departmentId: string }) => department.departmentId),
+		tagDepartments: departments,
 	});
 
 	if (response.status() !== 200) {
