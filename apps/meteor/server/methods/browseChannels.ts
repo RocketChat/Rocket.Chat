@@ -333,6 +333,8 @@ export const browseChannelsMethod = async (
 		return;
 	}
 
+	user.__rooms = user.__rooms ?? (await Users.findOneById(user._id, { projection: { __rooms: 1 } }))?.__rooms ?? [];
+
 	switch (type) {
 		case 'channels':
 			return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
