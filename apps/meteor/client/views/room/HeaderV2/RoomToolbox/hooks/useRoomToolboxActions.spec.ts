@@ -48,12 +48,14 @@ const appsActions: RoomToolboxActionConfig[] = [
 		title: 'app-42212581-0966-44aa-8366-b3e92aa00df4.action_button_label_files',
 		groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 		type: 'apps',
+		icon: undefined as unknown as RoomToolboxActionConfig['icon'],
 	},
 	{
 		id: 'app2',
 		title: 'app-42212581-0966-44aa-8366-b3e92aa00df4.action_button_label_files',
 		groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 		type: 'apps',
+		icon: undefined as unknown as RoomToolboxActionConfig['icon'],
 	},
 ];
 

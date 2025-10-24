@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { Modal } from '../page-objects/modal';
+import { AppsModal } from '../page-objects/fragments/apps-modal';
 import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -11,7 +11,7 @@ test.use({ storageState: Users.user1.state });
 test.describe.serial('Apps > Modal', () => {
 	test.skip(!IS_EE, 'Premium Only');
 	let poHomeChannel: HomeChannel;
-	let poModal: Modal;
+	let poModal: AppsModal;
 
 	let page: Page;
 
@@ -19,7 +19,7 @@ test.describe.serial('Apps > Modal', () => {
 		page = await browser.newPage();
 
 		poHomeChannel = new HomeChannel(page);
-		poModal = new Modal(page);
+		poModal = new AppsModal(page);
 
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat('general');
@@ -29,23 +29,17 @@ test.describe.serial('Apps > Modal', () => {
 		await page.close();
 	});
 
-	test('expect allow user open app modal', async () => {
+	test('should allow user open app modal', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/modal');
-		await expect(poModal.btnModalSubmit).toBeVisible();
+		await poModal.waitForDisplay();
 	});
 
-	test('expect validation error message appears in app modal', async () => {
-		await expect(poModal.textInput).toBeVisible();
-
-		await poModal.btnModalSubmit.click();
-
+	test('should display validation error message in app modal', async () => {
+		await poModal.btnSubmit.click();
 		await expect(poModal.textInputErrorMessage).toBeVisible();
 	});
 
-	test("expect validation error message don't appears in app modal", async () => {
-		await poModal.textInput.fill('something');
-		await poModal.btnModalSubmit.click();
-
-		await expect(poModal.textInputErrorMessage).not.toBeVisible();
+	test('should not display validation error message in app modal', async () => {
+		await poModal.submit('something');
 	});
 });

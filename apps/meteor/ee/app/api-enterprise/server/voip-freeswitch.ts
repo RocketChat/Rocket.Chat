@@ -68,6 +68,10 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['manage-voip-extensions'],
 		validateParams: isVoipFreeSwitchExtensionAssignProps,
+		deprecation: {
+			version: '8.0.0',
+			alternatives: ['/v1/users.update'],
+		},
 		license: ['voip-enterprise'],
 	},
 	{
