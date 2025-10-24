@@ -8358,7 +8358,6 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
-    "@rocket.chat/patch-injection": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
