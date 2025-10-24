@@ -1,6 +1,5 @@
 import { FederationMatrix, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
-import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
 import type {
 	HomeserverServices,
 	RoomService,
@@ -9,7 +8,9 @@ import type {
 	PersistentEventBase,
 	RoomVersion,
 } from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, NotAllowedError } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -170,7 +171,7 @@ async function joinRoom({
 	}
 
 	// backoff needed for this call, can fail
-	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
+	await room.joinUser(inviteEvent, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
 	const matrixRoom = await state.getLatestRoomState2(inviteEvent.roomId);
@@ -317,11 +318,13 @@ export const acceptInvite = async (
 		throw new Error('User is native federated');
 	}
 
-	await services.room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
+	await services.room.joinUser(inviteEvent, inviteEvent.event.state_key);
 };
 
 export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 	const { invite, state, room, federationAuth } = services;
+
+	const logger = new Logger('matrix-invite');
 
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
@@ -337,12 +340,22 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 		isAuthenticatedMiddleware(federationAuth),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion } = await c.req.json();
+			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
 
 			const userToCheck = event.state_key as string;
 
 			if (!userToCheck) {
 				throw new Error('join event has missing state key, unable to determine user to join');
+			}
+
+			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+				return {
+					body: {
+						errcode: 'M_MISSING_PARAM',
+						error: 'Missing invite_room_state: m.room.create event is required',
+					},
+					statusCode: 400,
+				};
 			}
 
 			const [username /* domain */] = userToCheck.split(':');
@@ -355,32 +368,55 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(
-				event,
-				roomIdSchema.parse(roomId),
-				eventIdSchema.parse(eventId),
-				roomVersion,
-				c.get('authenticatedServer'),
-			);
+			try {
+				const inviteEvent = await invite.processInvite(
+					event,
+					roomIdSchema.parse(roomId),
+					eventIdSchema.parse(eventId),
+					roomVersion,
+					c.get('authenticatedServer'),
+					strippedStateEvents,
+				);
 
-			setTimeout(
-				() => {
-					void startJoiningRoom({
-						inviteEvent,
-						user: ourUser,
-						room,
-						state,
-					});
-				},
-				inviteEvent.event.content.is_direct ? 2000 : 0,
-			);
+				setTimeout(
+					() => {
+						void startJoiningRoom({
+							inviteEvent,
+							user: ourUser,
+							room,
+							state,
+						});
+					},
+					inviteEvent.event.content.is_direct ? 2000 : 0,
+				);
 
-			return {
-				body: {
-					event: inviteEvent.event,
-				},
-				statusCode: 200,
-			};
+				return {
+					body: {
+						event: inviteEvent.event,
+					},
+					statusCode: 200,
+				};
+			} catch (error) {
+				if (error instanceof NotAllowedError) {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: 'This server does not allow joining this type of room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				logger.error({ msg: 'Error processing invite', err: error });
+
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: error instanceof Error ? error.message : 'Internal server error while processing request',
+					},
+					statusCode: 500,
+				};
+			}
 		},
 	);
 };

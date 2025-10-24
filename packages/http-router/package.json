@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.6-rc.4",
+	"version": "7.9.7",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
@@ -31,6 +31,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",

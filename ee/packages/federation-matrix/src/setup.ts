@@ -45,6 +45,8 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 	const signingKey = (await Settings.getValueById<string>('Federation_Service_Matrix_Signing_Key')) || '';
 	const signingAlg = (await Settings.getValueById<string>('Federation_Service_Matrix_Signing_Algorithm')) || '';
 	const signingVersion = (await Settings.getValueById<string>('Federation_Service_Matrix_Signing_Version')) || '';
+	const allowedEncryptedRooms = (await Settings.getValueById<boolean>('Federation_Service_Join_Encrypted_Rooms')) || false;
+	const allowedNonPrivateRooms = (await Settings.getValueById<boolean>('Federation_Service_Join_Non_Private_Rooms')) || false;
 
 	// TODO are these required?
 	const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
@@ -82,6 +84,10 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 				uploadPerMinute: Number.parseInt(process.env.MEDIA_UPLOAD_RATE_LIMIT || '10', 10),
 				downloadPerMinute: Number.parseInt(process.env.MEDIA_DOWNLOAD_RATE_LIMIT || '60', 10),
 			},
+		},
+		invite: {
+			allowedEncryptedRooms,
+			allowedNonPrivateRooms,
 		},
 	});
 
