@@ -51,9 +51,14 @@ export async function getSubscribedRoomsForUserWithDetails(
 					u: { _id: uid },
 				} of subscribersCursor) {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
-					if (roomData.shouldChangeOwner || uid === userId) {
+					if (uid === userId) {
 						continue;
 					}
+
+					if (roomData.shouldChangeOwner) {
+						break;
+					}
+
 					const newOwner = await Users.findOneActiveById(uid, { projection: { _id: 1 } });
 					if (!newOwner) {
 						continue;
