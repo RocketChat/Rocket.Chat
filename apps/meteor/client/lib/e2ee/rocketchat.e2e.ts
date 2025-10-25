@@ -163,7 +163,7 @@ class E2E extends Emitter {
 		const span = log.span('observeSubscriptions');
 		this.unsubscribeFromSubscriptions?.();
 
-		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe(async (state) => {
+		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
