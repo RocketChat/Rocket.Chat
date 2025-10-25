@@ -1,74 +1,52 @@
-// Unified map provider interface + two implementations (Google, OpenStreetMap via LocationIQ)
+// mapProvider.ts
 
-export type MapProviderName = 'google' | 'openstreetmap';
+export type MapProviderName = 'openstreetmap';
+
+export type ProviderOpts = {
+	apiKey?: string;
+};
 
 export interface IMapProvider {
 	name: MapProviderName;
-	// Static preview image for messages / modal
-	getStaticMapUrl(
-		lat: number,
-		lng: number,
-		opts?: { zoom?: number; width?: number; height?: number; theme?: string; scale?: number },
-	): string;
-	// Deep link that opens the native app or web directions
+	getStaticMapUrl(lat: number, lng: number, opts?: { zoom?: number; width?: number; height?: number }): string;
 	getMapsLink(lat: number, lng: number): string;
-	// Human-readable attribution (OSM requires)
-	getAttribution?: () => string | undefined;
+	getAttribution(): string;
 }
 
-type ProviderOpts = {
-	googleApiKey?: string; // required for Google Static Maps
-	locationIqKey?: string; // required for LocationIQ static (OSM-backed)
-};
-
-// ------------ Google ------------
-export class GoogleProvider implements IMapProvider {
-	name: MapProviderName = 'google';
-
-	constructor(private opts: ProviderOpts) {}
-
-	getStaticMapUrl(lat: number, lng: number, opts?: { zoom?: number; width?: number; height?: number }): string {
-		const key = this.opts.googleApiKey;
-		const zoom = opts?.zoom ?? 15;
-		const width = opts?.width ?? 600;
-		const height = opts?.height ?? 320;
-		// NOTE: consider server-side signing if you need URL signing for premium usage.
-		return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&markers=${lat},${lng}&key=${key}`;
-	}
-
-	getMapsLink(lat: number, lng: number): string {
-		// works on web + mobile
-		return `https://maps.google.com/?q=${lat},${lng}`;
-	}
-}
-
-// ------------ OpenStreetMap via LocationIQ ------------
 export class OSMProvider implements IMapProvider {
 	name: MapProviderName = 'openstreetmap';
 
-	constructor(private opts: ProviderOpts) {}
+	private readonly _opts: ProviderOpts;
+
+	constructor(opts: ProviderOpts = {}) {
+		// store options for future extensibility (e.g., API keys, style params)
+		this._opts = opts;
+		// read to avoid TS "is declared but its value is never read" when not yet used
+		void this._opts;
+	}
 
 	getStaticMapUrl(lat: number, lng: number, opts?: { zoom?: number; width?: number; height?: number }): string {
-		const key = this.opts.locationIqKey;
 		const zoom = opts?.zoom ?? 15;
 		const width = opts?.width ?? 600;
 		const height = opts?.height ?? 320;
-		// LocationIQ static map API (OSM-backed). See their docs for style params.
-		return `https://maps.locationiq.com/v2/staticmap?key=${key}&center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&markers=icon:large-red-cutout|${lat},${lng}`;
+
+		return `https://staticmap.openstreetmap.fr/staticmap.php?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&markers=${lat},${lng},red-pushpin`;
 	}
 
 	getMapsLink(lat: number, lng: number): string {
-		// Deep link to openstreetmap
-		return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+		const defaultZoom = 16;
+		return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=${defaultZoom}/${lat}/${lng}`;
 	}
 
-	getAttribution() {
+	getAttribution(): string {
 		return '© OpenStreetMap contributors';
 	}
 }
 
-// ------------ Factory ------------
-export function createMapProvider(name: MapProviderName, keys: ProviderOpts): IMapProvider {
-	if (name === 'google') return new GoogleProvider(keys);
-	return new OSMProvider(keys);
+export function createMapProvider(name: MapProviderName = 'openstreetmap', opts: ProviderOpts = {}): IMapProvider {
+	switch (name) {
+		case 'openstreetmap':
+		default:
+			return new OSMProvider(opts);
+	}
 }

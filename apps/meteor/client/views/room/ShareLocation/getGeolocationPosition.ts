@@ -1,15 +1,53 @@
 // getGeolocationPosition.ts
+
 type AnyErr = GeolocationPositionError & { message?: string };
 
-const CACHE_KEY = 'lastGeoPosition';
-const MAX_CACHE_AGE_MS = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_AGE_MS = 30_000;
+const COARSE_DP = 3;
+
+type Cached = { timestamp: number; position: GeolocationPosition };
+let memCache: Cached | null = null;
+
+try {
+	sessionStorage.removeItem('lastGeoPosition');
+} catch {
+	// ignore sessionStorage unavailability (SSR, privacy mode, etc.)
+	void 0;
+}
+const quantize = (v: number, dp: number) => {
+	const f = 10 ** dp;
+	return Math.round(v * f) / f;
+};
+
+function toCoarsePosition(src: GeolocationPosition, dp = COARSE_DP): GeolocationPosition {
+	const c = src.coords;
+	const coarse: GeolocationPosition = {
+		coords: {
+			latitude: quantize(c.latitude, dp),
+			longitude: quantize(c.longitude, dp),
+			accuracy: c.accuracy,
+			altitude: c.altitude ?? null,
+			altitudeAccuracy: c.altitudeAccuracy ?? null,
+			heading: c.heading ?? null,
+			speed: c.speed ?? null,
+		} as GeolocationCoordinates,
+		timestamp: Date.now(),
+		toJSON() {
+			return {
+				coords: this.coords,
+				timestamp: this.timestamp,
+			};
+		},
+	};
+	return coarse;
+}
 
 export async function getGeolocationPosition(opts?: PositionOptions): Promise<GeolocationPosition> {
 	if (typeof window === 'undefined' || !('geolocation' in navigator)) {
 		throw new Error('Geolocation API not available');
 	}
 
-	// 0) Serve a fresh cached fix immediately if available
+	// 0) Serve a fresh cached fix immediately if available (in-memory only)
 	const cached = readCached();
 	if (cached && Date.now() - cached.timestamp < MAX_CACHE_AGE_MS) {
 		return cached.position;
@@ -23,13 +61,13 @@ export async function getGeolocationPosition(opts?: PositionOptions): Promise<Ge
 			maximumAge: 60_000,
 			...opts,
 		});
-		cache(pos);
-		return pos;
+		const coarse = toCoarsePosition(pos);
+		cache(coarse);
+		return coarse;
 	} catch (e) {
 		const err = e as AnyErr;
 		// If the user denied, bail immediately
 		if (err.code === err.PERMISSION_DENIED) throw err;
-		// Otherwise continue to fallback
 	}
 
 	// 2) Transient fallback: wait for the first fix via watchPosition (up to 20s)
@@ -40,11 +78,11 @@ export async function getGeolocationPosition(opts?: PositionOptions): Promise<Ge
 			maximumAge: 0,
 			...opts,
 		});
-		cache(pos);
-		return pos;
+		const coarse = toCoarsePosition(pos);
+		cache(coarse);
+		return coarse;
 	} catch (e) {
 		const err = e as AnyErr;
-		// If it's the well-known transient Apple error, try one more relaxed single read
 		if (isTransient(err)) {
 			try {
 				const pos = await getOnce({
@@ -53,10 +91,12 @@ export async function getGeolocationPosition(opts?: PositionOptions): Promise<Ge
 					maximumAge: 2 * 60_000,
 					...opts,
 				});
-				cache(pos);
-				return pos;
-			} catch {
-				// fall through to final attempt
+				const coarse = toCoarsePosition(pos);
+				cache(coarse);
+				return coarse;
+			} catch (e) {
+				// ignore transient failure; a final high-accuracy attempt will follow
+				void e;
 			}
 		}
 	}
@@ -68,8 +108,9 @@ export async function getGeolocationPosition(opts?: PositionOptions): Promise<Ge
 		maximumAge: 0,
 		...opts,
 	});
-	cache(pos);
-	return pos;
+	const coarse = toCoarsePosition(pos);
+	cache(coarse);
+	return coarse;
 }
 
 function getOnce(options: PositionOptions): Promise<GeolocationPosition> {
@@ -104,29 +145,17 @@ function watchOnce(options: PositionOptions): Promise<GeolocationPosition> {
 
 function isTransient(err: AnyErr): boolean {
 	if (!err) return false;
-	// POSITION_UNAVAILABLE (2) is commonly transient
 	if (err.code === err.POSITION_UNAVAILABLE) return true;
 	const m = String(err.message || '').toLowerCase();
-	// Apple/macOS transient message
 	if (m.includes('kclerrorlocationunknown')) return true;
 	if (m.includes('location unknown')) return true;
 	return false;
 }
 
 function cache(position: GeolocationPosition) {
-	try {
-		sessionStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), position }));
-	} catch {
-		// ignore
-	}
+	memCache = { timestamp: Date.now(), position };
 }
 
-function readCached(): { timestamp: number; position: GeolocationPosition } | null {
-	try {
-		const raw = sessionStorage.getItem(CACHE_KEY);
-		if (!raw) return null;
-		return JSON.parse(raw);
-	} catch {
-		return null;
-	}
+function readCached(): Cached | null {
+	return memCache;
 }
