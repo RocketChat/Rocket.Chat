@@ -172,18 +172,18 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 			);
 		}
 
-		const onConfirmStatic = (): void => {
+		const onConfirmStatic = async (): Promise<void> => {
 			if (!positionData) return;
 			const { latitude, longitude } = positionData.coords;
 
 			try {
 				const mapsLink = map.getMapsLink(latitude, longitude);
 
-				const locationMessage = `📍 **Location Shared**
-🔗 **[View on OpenStreetMap](${mapsLink})**
+				const locationMessage = `📍 **{t('Shared_Location')}**
+🔗 **[${t('View_on_OpenStreetMap')}](${mapsLink})**
 📌 \`${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°\``;
 
-				void sendMessage({
+				await sendMessage({
 					message: {
 						rid,
 						tmid,
