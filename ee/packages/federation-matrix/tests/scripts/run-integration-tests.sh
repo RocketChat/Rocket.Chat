@@ -97,6 +97,35 @@ log_error() {
 
 # Cleanup function
 cleanup() {
+    # Show container logs if tests failed
+    if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
+        echo ""
+        echo "=========================================="
+        echo "CONTAINER LOGS (Test Failed)"
+        echo "=========================================="
+        
+        echo ""
+        echo "ROCKET.CHAT (rc1) LOGS:"
+        echo "----------------------------------------"
+        if docker ps -q -f name=rc1 | grep -q .; then
+            docker logs rc1 2>&1 | sed 's/^/  /'
+        else
+            echo "  Rocket.Chat container not found or no logs"
+        fi
+        
+        echo ""
+        echo "SYNAPSE (hs1) LOGS:"
+        echo "----------------------------------------"
+        if docker ps -q -f name=hs1 | grep -q .; then
+            docker logs hs1 2>&1 | sed 's/^/  /'
+        else
+            echo "  Synapse container not found or no logs"
+        fi
+        
+        echo ""
+        echo "=========================================="
+    fi
+    
     if [ "$KEEP_RUNNING" = true ]; then
         log_info "Keeping Docker containers running (--keep-running flag set)"
         log_info "Services are available at:"

@@ -626,25 +626,26 @@ jobs:
           sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
           sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
 
+      - name: Debug enterprise license variable
+        run: |
+          echo "=== Debugging ENTERPRISE_LICENSE_RC1 ==="
+          echo "GitHub variable (vars.ENTERPRISE_LICENSE_RC1):"
+          echo "Value: '${{ vars.ENTERPRISE_LICENSE_RC1 }}'"
+
+          echo ""
+          echo "GitHub secret (secrets.ENTERPRISE_LICENSE_RC1):"
+          echo "Value: '${{ secrets.ENTERPRISE_LICENSE_RC1 }}'"
+
+          echo ""
+          echo "Release versions output (needs.release-versions.outputs.enterprise-license):"
+          echo "Value: '${{ needs.release-versions.outputs.enterprise-license }}'"
+
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
-          ENTERPRISE_LICENSE_RC1: ${{ needs.release-versions.outputs.enterprise-license }}
+          ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
-
-      - name: Display container logs
-        run: |
-          echo "=========================================="
-          echo "ROCKET.CHAT (rc1) CONTAINER LOGS"
-          echo "=========================================="
-          docker logs rc1 || echo "Rocket.Chat container not found or no logs"
-
-          echo ""
-          echo "=========================================="
-          echo "SYNAPSE (hs1) CONTAINER LOGS"
-          echo "=========================================="
-          docker logs hs1 || echo "Synapse container not found or no logs"
 
   report-coverage:
     name: 📊 Report Coverage
