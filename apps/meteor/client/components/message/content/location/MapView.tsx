@@ -1,3 +1,4 @@
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import MapViewFallback from './MapViewFallback';
@@ -10,12 +11,14 @@ type MapViewProps = {
 };
 
 const MapView = ({ latitude, longitude }: MapViewProps) => {
-	const locationIQKey = 'pk.898e468814facdcffda869b42260a2f0';
+	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
 
-	const linkUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`;
+	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 
 	const imageUrl = useAsyncImage(
-		`https://maps.locationiq.com/v2/staticmap?key=${locationIQKey}&center=${latitude},${longitude}&zoom=16&size=250x250&markers=icon:small-red-cutout|${latitude},${longitude}`,
+		googleMapsApiKey
+			? `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${latitude},${longitude}&key=${googleMapsApiKey}`
+			: undefined,
 	);
 
 	if (!linkUrl) {

@@ -4886,26 +4886,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@matrix-org/matrix-sdk-crypto-nodejs@npm:0.3.0-beta.1":
-  version: 0.3.0-beta.1
-  resolution: "@matrix-org/matrix-sdk-crypto-nodejs@npm:0.3.0-beta.1"
-  dependencies:
-    https-proxy-agent: "npm:^7.0.5"
-    node-downloader-helper: "npm:^2.1.9"
-  checksum: 10/0d82b7a009e6c2a8254e21d9587a4d181bd36a75f5baaa0ef9c30814223701eb60d3ea66c7a53f4bc5ea35653278760c5e822b821afed0d8cd6cd0c310ef3e40
-  languageName: node
-  linkType: hard
-
-"@matrix-org/matrix-sdk-crypto-nodejs@npm:0.4.0-beta.1":
-  version: 0.4.0-beta.1
-  resolution: "@matrix-org/matrix-sdk-crypto-nodejs@npm:0.4.0-beta.1"
-  dependencies:
-    https-proxy-agent: "npm:^7.0.5"
-    node-downloader-helper: "npm:^2.1.9"
-  checksum: 10/a1402d18b166cd9fc8122ae40c40f179f1df225dd7c98b8c89ef7a00f94a08256e988ab923d79c2aa44c6dd050792ee4f787ecdbde3c88b276fba96558ae0f50
-  languageName: node
-  linkType: hard
-
 "@mdx-js/react@npm:^3.0.0":
   version: 3.0.1
   resolution: "@mdx-js/react@npm:3.0.1"
@@ -9216,6 +9196,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
+    "@rocket.chat/federation-sdk": "npm:0.2.0"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:~0.66.4"
     "@rocket.chat/fuselage-forms": "npm:~0.1.0"
