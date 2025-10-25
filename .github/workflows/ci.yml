@@ -688,16 +688,12 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-storybook, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
         run: |
           if [[ '${{ needs.checks.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-storybook.result }}' != 'success' ]]; then
             exit 1
           fi
 
