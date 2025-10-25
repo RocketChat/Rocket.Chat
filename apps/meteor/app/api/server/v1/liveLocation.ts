@@ -7,6 +7,18 @@ import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { API } from '../api';
 
 const MIN_INTERVAL_MS = 3000;
+const MAX_DURATION_SEC = 3600; // 1 hour, adjust as needed
+
+const isValidCoords = (c?: { lat: number; lon: number }) =>
+	c &&
+	typeof c.lat === 'number' &&
+	Number.isFinite(c.lat) &&
+	c.lat >= -90 &&
+	c.lat <= 90 &&
+	typeof c.lon === 'number' &&
+	Number.isFinite(c.lon) &&
+	c.lon >= -180 &&
+	c.lon <= 180;
 
 // Type definitions for API route contexts
 interface IAPIRouteContext {
@@ -60,6 +72,16 @@ API.v1.addRoute(
 
 			if (!rid || typeof rid !== 'string') {
 				return API.v1.failure('The required "rid" param is missing or invalid.');
+			}
+
+			if (durationSec !== undefined) {
+				if (typeof durationSec !== 'number' || !Number.isFinite(durationSec) || durationSec <= 0 || durationSec > MAX_DURATION_SEC) {
+					return API.v1.failure(`"durationSec" must be a positive number ≤ ${MAX_DURATION_SEC}.`);
+				}
+			}
+
+			if (initial !== undefined && !isValidCoords(initial)) {
+				return API.v1.failure('Invalid "initial" coordinates.');
 			}
 
 			const uid = this.userId;
@@ -169,7 +191,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "msgId" param is missing or invalid.');
 			}
 
-			if (!coords || typeof coords !== 'object') {
+			if (!coords || !isValidCoords(coords)) {
 				return API.v1.failure('The required "coords" param is missing or invalid.');
 			}
 
@@ -211,13 +233,21 @@ API.v1.addRoute(
 
 			const updateTime = new Date();
 			const res = await Messages.updateOne(
-				{ _id: msgId },
+				{ _id: msgId, rid, 'u._id': uid },
 				{
 					$set: {
-						'attachments.0.live.coords': coords,
-						'attachments.0.live.lastUpdateAt': updateTime,
+						'attachments.$[liveAtt].live.coords': coords,
+						'attachments.$[liveAtt].live.lastUpdateAt': updateTime,
 					},
 				},
+				{
+					arrayFilters: [
+						{
+							'liveAtt.type': 'live-location',
+							'liveAtt.live.isActive': true,
+						},
+					],
+				} as any,
 			);
 
 			if (res.modifiedCount > 0) {
@@ -256,6 +286,10 @@ API.v1.addRoute(
 				return API.v1.failure('User not authenticated');
 			}
 
+			if (finalCoords !== undefined && !isValidCoords(finalCoords)) {
+				return API.v1.failure('Invalid "finalCoords" coordinates.');
+			}
+
 			if (!(await canAccessRoomIdAsync(rid, uid))) {
 				return API.v1.failure('Not allowed');
 			}
@@ -266,35 +300,29 @@ API.v1.addRoute(
 			}
 
 			const selector = {
-				'_id': msgId,
+				_id: msgId,
 				rid,
 				'u._id': uid,
-				'attachments': {
-					$elemMatch: {
-						'type': 'live-location',
-						'live.isActive': true,
-					},
-				},
 			};
-
-			const modifier: {
-				$set: {
-					'attachments.0.live.isActive': boolean;
-					'attachments.0.live.stoppedAt': Date;
-					'attachments.0.live.coords'?: { lat: number; lon: number };
-				};
-			} = {
-				$set: {
-					'attachments.0.live.isActive': false,
-					'attachments.0.live.stoppedAt': new Date(),
-				},
+			const $set: Record<string, unknown> = {
+				'attachments.$[liveAtt].live.isActive': false,
+				'attachments.$[liveAtt].live.stoppedAt': new Date(),
 			};
-
-			if (finalCoords) {
-				modifier.$set['attachments.0.live.coords'] = finalCoords;
+			if (finalCoords !== undefined) {
+				$set['attachments.$[liveAtt].live.coords'] = finalCoords;
 			}
-
-			const res = await Messages.updateOne(selector, modifier);
+			const res = await Messages.updateOne(
+				selector,
+				{ $set },
+				{
+					arrayFilters: [
+					{
+						'liveAtt.type': 'live-location',
+						'liveAtt.live.isActive': true,
+					},
+					],
+				} as any,
+			);
 			const success = Boolean(res.modifiedCount);
 
 			if (success) {

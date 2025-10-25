@@ -1,6 +1,6 @@
 // MapLibreMap.tsx
 import type { FeatureCollection, LineString } from 'geojson';
-import type { Map } from 'maplibre-gl';
+import type { Map as MLMap } from 'maplibre-gl';
 import maplibregl from 'maplibre-gl';
 import { useEffect, useRef } from 'react';
 
@@ -15,7 +15,7 @@ type Props = {
 
 export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoords, visible = true }: Props) {
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const mapRef = useRef<Map | null>(null);
+	const mapRef = useRef<MLMap | null>(null);
 	const markerRef = useRef<maplibregl.Marker | null>(null);
 	const trailRef = useRef<maplibregl.GeoJSONSource | null>(null);
 	const trailCoordsRef = useRef<[number, number][]>([]);
