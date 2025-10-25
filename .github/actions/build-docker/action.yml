@@ -86,6 +86,17 @@ runs:
       if: inputs.setup == 'true'
       shell: bash
 
+    - name: Set up Docker
+      uses: docker/setup-docker-action@v4
+      with:
+        daemon-config: |
+          {
+            "debug": true,
+            "features": {
+              "containerd-snapshotter": true
+            }
+          }
+
     - name: Build Docker images
       shell: bash
       run: |
