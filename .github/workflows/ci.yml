@@ -446,145 +446,145 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
-  # test-storybook:
-  #   name: 🔨 Test Storybook
-  #   needs: [packages-build, release-versions]
+  test-storybook:
+    name: 🔨 Test Storybook
+    needs: [packages-build, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-storybook.yml
-  #   with:
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #   secrets:
-  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    uses: ./.github/workflows/ci-test-storybook.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # test-unit:
-  #   name: 🔨 Test Unit
-  #   needs: [packages-build, release-versions]
+  test-unit:
+    name: 🔨 Test Unit
+    needs: [packages-build, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-unit.yml
-  #   with:
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-  #   secrets:
-  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    uses: ./.github/workflows/ci-test-unit.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # test-api:
-  #   name: 🔨 Test API (CE)
-  #   needs: [checks, build-gh-docker-publish, release-versions]
+  test-api:
+    name: 🔨 Test API (CE)
+    needs: [checks, build-gh-docker-publish, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-e2e.yml
-  #   with:
-  #     type: api
-  #     release: ce
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #   secrets:
-  #     CR_USER: ${{ secrets.CR_USER }}
-  #     CR_PAT: ${{ secrets.CR_PAT }}
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api
+      release: ce
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
-  # test-ui:
-  #   name: 🔨 Test UI (CE)
-  #   needs: [checks, build-gh-docker-publish, release-versions]
+  test-ui:
+    name: 🔨 Test UI (CE)
+    needs: [checks, build-gh-docker-publish, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-e2e.yml
-  #   with:
-  #     type: ui
-  #     release: ce
-  #     transporter: 'nats://nats:4222'
-  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-  #     shard: '[1, 2, 3, 4]'
-  #     total-shard: 4
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #     retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-  #   secrets:
-  #     CR_USER: ${{ secrets.CR_USER }}
-  #     CR_PAT: ${{ secrets.CR_PAT }}
-  #     QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-  #     REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-  #     REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-  #     REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: ce
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4]'
+      total-shard: 4
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
-  # test-api-ee:
-  #   name: 🔨 Test API (EE)
-  #   needs: [checks, build-gh-docker-publish, release-versions]
+  test-api-ee:
+    name: 🔨 Test API (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-e2e.yml
-  #   with:
-  #     type: api
-  #     release: ee
-  #     transporter: 'nats://nats:4222'
-  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-  #     mongodb-version: "['5.0', '8.2']"
-  #     coverage: '8.2'
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #   secrets:
-  #     CR_USER: ${{ secrets.CR_USER }}
-  #     CR_PAT: ${{ secrets.CR_PAT }}
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['5.0', '8.2']"
+      coverage: '8.2'
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
-  # test-ui-ee:
-  #   name: 🔨 Test UI (EE)
-  #   needs: [checks, build-gh-docker-publish, release-versions]
+  test-ui-ee:
+    name: 🔨 Test UI (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-e2e.yml
-  #   with:
-  #     type: ui
-  #     release: ee
-  #     transporter: 'nats://nats:4222'
-  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-  #     shard: '[1, 2, 3, 4, 5]'
-  #     total-shard: 5
-  #     mongodb-version: "['5.0']"
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #     retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-  #   secrets:
-  #     CR_USER: ${{ secrets.CR_USER }}
-  #     CR_PAT: ${{ secrets.CR_PAT }}
-  #     QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-  #     REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-  #     REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  #     REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
+      mongodb-version: "['5.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
-  # test-ui-ee-watcher:
-  #   name: 🔨 Test UI (EE)
-  #   needs: [checks, build-gh-docker-publish, release-versions]
+  test-ui-ee-watcher:
+    name: 🔨 Test UI (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
 
-  #   uses: ./.github/workflows/ci-test-e2e.yml
-  #   with:
-  #     type: ui
-  #     release: ee
-  #     transporter: 'nats://nats:4222'
-  #     enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-  #     shard: '[1, 2, 3, 4, 5]'
-  #     total-shard: 5
-  #     mongodb-version: "['8.2']"
-  #     coverage: '8.2'
-  #     node-version: ${{ needs.release-versions.outputs.node-version }}
-  #     deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #     lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-  #     gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #     retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-  #     db-watcher-disabled: 'false'
-  #   secrets:
-  #     CR_USER: ${{ secrets.CR_USER }}
-  #     CR_PAT: ${{ secrets.CR_PAT }}
-  #     QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-  #     REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-  #     REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  #     REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
+      mongodb-version: "['8.2']"
+      coverage: '8.2'
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      db-watcher-disabled: 'false'
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
@@ -625,20 +625,6 @@ jobs:
         run: |
           sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
           sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
-
-      - name: Debug enterprise license variable
-        run: |
-          echo "=== Debugging ENTERPRISE_LICENSE_RC1 ==="
-          echo "GitHub variable (vars.ENTERPRISE_LICENSE_RC1):"
-          echo "Value: '${{ vars.ENTERPRISE_LICENSE_RC1 }}'"
-
-          echo ""
-          echo "GitHub secret (secrets.ENTERPRISE_LICENSE_RC1):"
-          echo "Value: '${{ secrets.ENTERPRISE_LICENSE_RC1 }}'"
-
-          echo ""
-          echo "Release versions output (needs.release-versions.outputs.enterprise-license):"
-          echo "Value: '${{ needs.release-versions.outputs.enterprise-license }}'"
 
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
@@ -702,12 +688,40 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-federation-matrix] # Temporarily reduced for testing
+    needs: [checks, test-storybook, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
         run: |
           if [[ '${{ needs.checks.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-storybook.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-unit.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
             exit 1
           fi
 
