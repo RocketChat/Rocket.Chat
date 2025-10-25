@@ -2,7 +2,7 @@ import type { IMessage } from './IMessage/IMessage';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
-export type ReadReceipt = {
+export type IReadReceipt = {
 	token?: string;
 	messageId: IMessage['_id'];
 	roomId: IRoom['_id'];
@@ -13,4 +13,8 @@ export type ReadReceipt = {
 	tmid?: IMessage['tmid'];
 	userId: IUser['_id'];
 	_id: string;
+};
+
+export type IReadReceiptWithUser = IReadReceipt & {
+	user?: Pick<IUser, '_id' | 'name' | 'username'> | undefined;
 };

@@ -1,5 +1,5 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
-import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, IReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -56,7 +56,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			includeInRoomSearch(): boolean {
 				return false;
 			},
-			getReadReceiptsExtraData(_message: IMessage): Partial<ReadReceipt> {
+			getReadReceiptsExtraData(_message: IMessage): Partial<IReadReceipt> {
 				return {};
 			},
 			includeInDashboard(): boolean {

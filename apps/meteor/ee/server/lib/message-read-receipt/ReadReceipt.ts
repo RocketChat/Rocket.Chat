@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, ReadReceipt as IReadReceipt, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -147,17 +147,15 @@ class ReadReceiptClass {
 		}
 	}
 
-	async getReceipts(
-		message: Pick<IMessage, '_id'>,
-	): Promise<Array<IReadReceipt & { user: Pick<IUser, '_id' | 'name' | 'username'> | null }>> {
+	async getReceipts(message: Pick<IMessage, '_id'>): Promise<IReadReceiptWithUser[]> {
 		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
 
 		return Promise.all(
 			receipts.map(async (receipt) => ({
 				...receipt,
-				user: receipt.token
+				user: (receipt.token
 					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1 } }),
+					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1, token: 1 } })) as IReadReceiptWithUser['user'],
 			})),
 		);
 	}
