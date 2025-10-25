@@ -21,7 +21,7 @@ import { settings } from '../../../../app/settings/server';
 
 const abacEndpoints = API.v1
 	.post(
-		'abac/room/:rid/attributes',
+		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
@@ -49,7 +49,7 @@ const abacEndpoints = API.v1
 		},
 	)
 	.delete(
-		'abac/room/:rid/attributes',
+		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
@@ -72,7 +72,7 @@ const abacEndpoints = API.v1
 	)
 	// add an abac attribute by key
 	.post(
-		'abac/room/:rid/attributes/:key',
+		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
@@ -99,7 +99,7 @@ const abacEndpoints = API.v1
 	)
 	// edit a room attribute
 	.put(
-		'abac/room/:rid/attributes/:key',
+		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
@@ -126,7 +126,7 @@ const abacEndpoints = API.v1
 	)
 	// delete a room attribute
 	.delete(
-		'abac/room/:rid/attributes/:key',
+		'abac/rooms/:rid/attributes/:key',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],

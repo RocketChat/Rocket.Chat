@@ -282,7 +282,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('POST room attribute should fail with duplicate values', async () => {
 			await request
-				.post(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`)
+				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
 				.send({ values: ['dup', 'dup'] })
 				.expect(400)
@@ -293,7 +293,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('POST room attribute should add values and reflect usage/inUse=true', async () => {
 			await request
-				.post(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`)
+				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
 				.send({ values: ['cyan'] })
 				.expect(200)
@@ -326,7 +326,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('PUT room attribute should replace values and update usage map accordingly', async () => {
 			await request
-				.put(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`)
+				.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
 				.send({ values: ['magenta', 'yellow'] })
 				.expect(200)
@@ -357,7 +357,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('DELETE room attribute key should succeed and clear usage/inUse=false', async () => {
 			await request
-				.delete(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`)
+				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -386,7 +386,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await updateSetting('ABAC_Enabled', false);
 
 			await request
-				.delete(`${v1}/abac/room/${testRoom._id}/attributes`)
+				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -461,7 +461,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('should fail adding ABAC attribute to private default room', async () => {
 			await request
-				.post(`${v1}/abac/room/${privateDefaultRoomId}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['red'] })
 				.expect(400)
@@ -473,7 +473,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('should fail adding ABAC attribute to team default private room', async () => {
 			await request
-				.post(`${v1}/abac/room/${teamDefaultRoomId}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['red'] })
 				.expect(400)
@@ -487,7 +487,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: false }).expect(200);
 
 			await request
-				.post(`${v1}/abac/room/${privateDefaultRoomId}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['red'] })
 				.expect(200)
@@ -504,7 +504,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(200);
 
 			await request
-				.post(`${v1}/abac/room/${teamDefaultRoomId}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['green'] })
 				.expect(200)
@@ -515,7 +515,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('should enforce restriction on team main room when default using rooms.saveRoomSettings', async () => {
 			await request
-				.post(`${v1}/abac/room/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['red'] })
 				.expect(400)
@@ -527,7 +527,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: false }).expect(200);
 
 			await request
-				.post(`${v1}/abac/room/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
+				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
 				.send({ values: ['red'] })
 				.expect(200)
@@ -546,7 +546,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	describe('Usage & Deletion', () => {
 		it('POST add room usage for attribute (re-add after clearing) and expect delete while in use to fail', async () => {
 			await request
-				.post(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`)
+				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
 				.send({ values: ['cyan'] })
 				.expect(200);
@@ -572,7 +572,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 
 			// Remove room attribute again
-			await request.delete(`${v1}/abac/room/${testRoom._id}/attributes/${updatedKey}`).set(credentials).expect(200);
+			await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`).set(credentials).expect(200);
 
 			await request
 				.get(`${v1}/abac/attributes/${updatedKey}/is-in-use`)
@@ -615,7 +615,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			abacRoomId = roomRes.body.group._id;
 
 			await request
-				.post(`${v1}/abac/room/${abacRoomId}/attributes/${conversionAttrKey}`)
+				.post(`${v1}/abac/rooms/${abacRoomId}/attributes/${conversionAttrKey}`)
 				.set(credentials)
 				.send({ values: ['alpha'] })
 				.expect(200);
@@ -634,7 +634,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			teamRoomId = teamRoomRes.body.group._id;
 
 			await request
-				.post(`${v1}/abac/room/${teamRoomId}/attributes/${conversionAttrKey}`)
+				.post(`${v1}/abac/rooms/${teamRoomId}/attributes/${conversionAttrKey}`)
 				.set(credentials)
 				.send({ values: ['beta'] })
 				.expect(200);
@@ -827,13 +827,13 @@ import { IS_EE } from '../../e2e/config/constants';
 			it('POST bulk room attributes should fail when more than 10 distinct attribute keys provided', async () => {
 				const tooMany: Record<string, string[]> = {};
 				for (let i = 0; i < 11; i++) tooMany[`${bulkAttrPrefix}_${i}`] = ['v1'];
-				await request.post(`${v1}/abac/room/${testRoom._id}/attributes`).set(credentials).send({ attributes: tooMany }).expect(400);
+				await request.post(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).send({ attributes: tooMany }).expect(400);
 			});
 
 			it('POST bulk room attributes should fail when one attribute has >10 values', async () => {
 				const bigValues = Array.from({ length: 11 }, (_, i) => `v${i}`);
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
 					.send({ attributes: { [`${bulkAttrPrefix}_k1`]: bigValues } })
 					.expect(400);
@@ -841,7 +841,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			it('POST bulk room attributes should fail when using a value not in attribute definition', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
 					.send({ attributes: { [secondKey]: ['alpha', 'delta'] } })
 					.expect(400);
@@ -849,7 +849,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			it('POST bulk room attributes should succeed when providing valid subset for existing definitions', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
 					.send({
 						attributes: {
@@ -863,12 +863,16 @@ import { IS_EE } from '../../e2e/config/constants';
 		describe('Room attribute key/value validation edge cases', () => {
 			it('POST single room attribute should fail with >10 values', async () => {
 				const eleven = Array.from({ length: 11 }, (_, i) => `x${i}`);
-				await request.post(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`).set(credentials).send({ values: eleven }).expect(400);
+				await request
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
+					.set(credentials)
+					.send({ values: eleven })
+					.expect(400);
 			});
 
 			it('POST single room attribute should fail when value not allowed by definition', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
 					.send({ values: ['alpha', 'zzz'] })
 					.expect(400);
@@ -876,7 +880,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			it('PUT single room attribute should fail with value not in definition', async () => {
 				await request
-					.put(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
 					.send({ values: ['gamma', 'invalid'] })
 					.expect(400);
@@ -886,7 +890,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		describe('Room attribute limits (max 10 attribute keys)', () => {
 			const tempAttrKeys: string[] = [];
 			it('Reset room attributes before limit test and populate with 10 keys', async () => {
-				await request.delete(`${v1}/abac/room/${testRoom._id}/attributes`).set(credentials).expect(200);
+				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).expect(200);
 
 				const timestamp = Date.now();
 				const keys = Array.from({ length: 10 }, (_, i) => `limitk_${timestamp}_${i}`);
@@ -900,7 +904,7 @@ import { IS_EE } from '../../e2e/config/constants';
 							.expect(200)
 							.then(() =>
 								request
-									.post(`${v1}/abac/room/${testRoom._id}/attributes/${k}`)
+									.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${k}`)
 									.set(credentials)
 									.send({ values: ['v1'] })
 									.expect(200),
@@ -918,7 +922,7 @@ import { IS_EE } from '../../e2e/config/constants';
 					.expect(200);
 
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes/${extraKey}`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${extraKey}`)
 					.set(credentials)
 					.send({ values: ['v1'] })
 					.expect(400);
@@ -926,24 +930,24 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		describe('Permission & Auth extended checks', () => {
-			it('POST /abac/room/:rid/attributes/:key should return 403 for unauthorized user', async () => {
+			it('POST /abac/rooms/:rid/attributes/:key should return 403 for unauthorized user', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(unauthorizedCredentials)
 					.send({ values: ['alpha'] })
 					.expect(403);
 			});
 
-			it('PUT /abac/room/:rid/attributes/:key should return 403 for unauthorized user', async () => {
+			it('PUT /abac/rooms/:rid/attributes/:key should return 403 for unauthorized user', async () => {
 				await request
-					.put(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(unauthorizedCredentials)
 					.send({ values: ['alpha'] })
 					.expect(403);
 			});
 
-			it('DELETE /abac/room/:rid/attributes/:key should return 403 for unauthorized user', async () => {
-				await request.delete(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`).set(unauthorizedCredentials).expect(403);
+			it('DELETE /abac/rooms/:rid/attributes/:key should return 403 for unauthorized user', async () => {
+				await request.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`).set(unauthorizedCredentials).expect(403);
 			});
 
 			it('GET /abac/attributes/:key/is-in-use should return 403 for unauthorized user', async () => {
@@ -1018,9 +1022,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					});
 			});
 
-			it('POST /abac/room/:rid/attributes/:key should fail while disabled', async () => {
+			it('POST /abac/rooms/:rid/attributes/:key should fail while disabled', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
 					.send({ values: ['alpha'] })
 					.expect(400)
@@ -1029,9 +1033,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					});
 			});
 
-			it('PUT /abac/room/:rid/attributes/:key should fail while disabled', async () => {
+			it('PUT /abac/rooms/:rid/attributes/:key should fail while disabled', async () => {
 				await request
-					.put(`${v1}/abac/room/${testRoom._id}/attributes/${secondKey}`)
+					.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${secondKey}`)
 					.set(credentials)
 					.send({ values: ['alpha'] })
 					.expect(400)
@@ -1040,9 +1044,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					});
 			});
 
-			it('POST /abac/room/:rid/attributes (bulk replace) should fail while disabled', async () => {
+			it('POST /abac/rooms/:rid/attributes (bulk replace) should fail while disabled', async () => {
 				await request
-					.post(`${v1}/abac/room/${testRoom._id}/attributes`)
+					.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
 					.set(credentials)
 					.send({ attributes: { [secondKey]: ['alpha'] } })
 					.expect(400)
