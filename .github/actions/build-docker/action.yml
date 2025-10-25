@@ -93,7 +93,7 @@ runs:
 
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        docker compose -f docker-compose-ci.yml build "${args[@]}"
+        docker buildx bake -f docker-compose-ci.yml --load "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
