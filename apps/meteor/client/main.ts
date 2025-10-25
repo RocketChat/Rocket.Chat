@@ -1,6 +1,7 @@
 import './meteor/overrides/desktopInjection';
 import './meteor/overrides/ddpOverREST';
 import './meteor/overrides/oauthRedirectUri';
+import './meteor/overrides/settings';
 import './meteor/overrides/totpOnCall';
 import './meteor/overrides/unstoreLoginToken';
 import './meteor/overrides/userAndUsers';
