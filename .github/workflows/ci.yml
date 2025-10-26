@@ -178,6 +178,18 @@ jobs:
       - name: Build Rocket.Chat Packages
         run: yarn build
 
+      # - name: Archive build output
+      #   run: |
+      #     tar -czf RocketChat-packages-build.tar.gz \
+      #       packages/*/dist
+
+      # - name: Upload build artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: packages-build-${{ runner.os }}-${{ runner.arch }}
+      #     path: RocketChat-packages-build.tar.gz
+      #     retention-days: 5
+
       - name: Store turbo build
         uses: actions/upload-artifact@v4
         with:
@@ -253,15 +265,15 @@ jobs:
     runs-on: ubuntu-24.04
 
     env:
-      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
+      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.alpine
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.alpine
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
-        platform: ['alpine']
+        service: ['rocketchat', 'authorization-service', 'account-service', 'ddp-streamer-service', 'presence-service', 'stream-hub-service', 'queue-worker-service', 'omnichannel-transcript-service']
 
     steps:
       - uses: actions/checkout@v4
@@ -274,17 +286,17 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          platform: 'alpine'
+          build-containers: ${{ matrix.service }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == needs.release-versions.outputs.official-platform && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: matrix.service == 'rocketchat' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
+          docker tag ${IMAGE_NAME_BASE}.alpine ${IMAGE_NAME_BASE}.official
           docker push ${IMAGE_NAME_BASE}.official
 
   build-gh-docker:
@@ -312,8 +324,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          platform: 'alpine'
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry

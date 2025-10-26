@@ -49,22 +49,35 @@ runs:
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
 
-    - name: Restore build
+    # - name: Restore packages build
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: packages-build-${{ runner.os }}-${{ runner.arch }}
+    #     path: .
+
+    # - name: Unpack packages build
+    #   shell: bash
+    #   run: |
+    #     tar -xzf RocketChat-packages-build.tar.gz
+
+    - name: Restore meteor build
+      if: inputs.build-containers == 'rocketchat'
       uses: actions/download-artifact@v4
       with:
         name: build
         path: /tmp/build
 
-    - name: Unpack build
+    - name: Unpack meteor build
+      if: inputs.build-containers == 'rocketchat'
       shell: bash
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-    - uses: rharkor/caching-for-turbo@v1.5
+    - uses: rharkor/caching-for-turbo@v1.8
       # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
-      if: inputs.turbo-cache == 'true'
+      # if: inputs.turbo-cache == 'true'
 
     - name: Setup NodeJS
       uses: ./.github/actions/setup-node
@@ -97,24 +110,53 @@ runs:
             }
           }
 
+    - uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+        # image: tonistiigi/binfmt:qemu-v10.0.4
+        image: tonistiigi/binfmt:qemu-v8.1.5
+
+    - name: Config QEMU
+      shell: bash
+      run: echo "QEMU_CPU=max" >> $GITHUB_ENV
+
+    - uses: docker/setup-buildx-action@v3
+      with:
+        # driver-opts: |
+        #   image=moby/buildkit:v0.13.3
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage=4000
+
     - name: Build Docker images
       shell: bash
       run: |
-        args=(rocketchat ${{ inputs.build-containers }})
+        args=(${{ inputs.build-containers }})
 
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        docker buildx bake -f docker-compose-ci.yml --load "${args[@]}"
+        docker buildx bake -f docker-compose-ci.yml --load --allow=fs.read=/tmp/build --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       shell: bash
       run: |
-        args=(rocketchat ${{ inputs.build-containers }})
+        args=(${{ inputs.build-containers }})
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"
+        # docker buildx bake -f docker-compose-ci.yml --push --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
 
-    - name: Clean up temporary files
+    - name: Debug BuildKit container
+      if: failure()
       shell: bash
       run: |
-        sudo rm -rf /tmp/bundle
+        docker ps -a --filter "name=buildx_buildkit" || true
+        ID=$(docker ps -a --filter "name=buildx_buildkit" --format "{{.ID}}" | head -n1)
+        if [ -n "$ID" ]; then
+          echo "Logs do BuildKit ($ID):"
+          docker logs --tail 200 "$ID" || true
+        fi
+
+    - name: Clean up temporary files
+      if: inputs.build-containers == 'rocketchat'
+      shell: bash
+      run: |
+        sudo rm -rf /tmp/build
