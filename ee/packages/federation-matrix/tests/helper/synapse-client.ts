@@ -1,65 +1,127 @@
+/* eslint-disable no-await-in-loop */
 /**
  * Federation test data and configuration
  * This file provides validated federation configuration for federation tests.
  */
 
-import { createClient, MatrixClient, KnownMembership, Room, RoomMember } from 'matrix-js-sdk';
-import { federationConfig } from './config';
+import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember } from 'matrix-js-sdk';
 
+/**
+ * Creates a promise that resolves after the specified delay.
+ *
+ * Utility function for adding delays in async operations, particularly
+ * useful for retry logic and handling eventual consistency in distributed systems.
+ *
+ * @param ms - The delay in milliseconds
+ * @returns Promise that resolves after the specified delay
+ */
 export function wait(ms: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Client for interacting with Matrix Synapse homeserver during federation tests.
+ *
+ * Provides a simplified interface for Matrix operations needed in federation
+ * testing scenarios, including room management, member operations, and
+ * invitation handling with built-in retry logic for eventual consistency.
+ */
 export class SynapseClient {
-
 	private matrixClient: MatrixClient | null = null;
+
 	private url: string;
+
 	private username: string;
+
 	private password: string;
 
+	/**
+	 * Creates a new SynapseClient instance.
+	 *
+	 * @param url - The Matrix homeserver URL
+	 * @param username - Matrix user ID (e.g., @user:domain.com)
+	 * @param password - User password for authentication
+	 */
 	constructor(url: string, username: string, password: string) {
 		this.url = url;
 		this.username = username;
 		this.password = password;
 	}
 
+	/**
+	 * Initializes the Matrix client connection.
+	 *
+	 * Creates and authenticates a Matrix client, then starts the client
+	 * to enable real-time operations. Must be called before using other methods.
+	 *
+	 * @returns Promise that resolves when initialization is complete
+	 * @throws Error if authentication fails or client cannot be started
+	 */
 	async initialize(): Promise<void> {
 		const client = await this.createClient(this.username, this.password, this.url);
 		await client.startClient();
 		this.matrixClient = client;
 	}
 
+	/**
+	 * Creates and authenticates a Matrix client with silent logging.
+	 *
+	 * Sets up a Matrix client with minimal logging to reduce noise during
+	 * test execution while maintaining full functionality for federation testing.
+	 *
+	 * @param username - Matrix user ID for authentication
+	 * @param password - User password for authentication
+	 * @param url - Matrix homeserver URL
+	 * @returns Authenticated Matrix client ready for use
+	 * @throws Error if login fails or client creation fails
+	 */
 	private async createClient(username: string, password: string, url: string): Promise<MatrixClient> {
 		const silentLogger = {
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			trace: () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			debug: () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			info: () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			warn: () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			error: () => {},
-			getChild: () => silentLogger
+			getChild: () => silentLogger,
 		};
-		
+
 		const client = createClient({
 			baseUrl: url,
 			useAuthorizationHeader: true,
 			logger: silentLogger,
 		});
-		
+
 		await client.login('m.login.password', {
 			user: username,
-			password: password,
+			password,
 		});
-		
+
 		return client;
 	}
 
+	/**
+	 * Retrieves a room by its display name.
+	 *
+	 * Searches through all known rooms to find one matching the specified
+	 * display name. Useful for federation testing where room names are
+	 * used as identifiers.
+	 *
+	 * @param roomName - The display name of the room to find
+	 * @returns The Matrix room object
+	 * @throws Error if client is not initialized or room is not found
+	 */
 	getRoom(roomName: string): Room {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
 		const rooms = this.matrixClient.getRooms();
 		const room = rooms.find((room) => room.name === roomName);
-		
+
 		if (room) {
 			return room;
 		}
@@ -67,13 +129,25 @@ export class SynapseClient {
 		throw new Error(`No room found with name ${roomName}`);
 	}
 
+	/**
+	 * Finds a room by name and membership status.
+	 *
+	 * Searches for a room that matches both the display name and the current
+	 * user's membership status. Useful for finding rooms in specific states
+	 * like 'invite' or 'join' during federation testing.
+	 *
+	 * @param roomName - The display name of the room to find
+	 * @param membership - The required membership status (e.g., 'invite', 'join')
+	 * @returns The Matrix room ID
+	 * @throws Error if client is not initialized or room is not found
+	 */
 	getRoomIdByRoomNameAndMembership(roomName: string, membership: KnownMembership): string {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
 		const rooms = this.matrixClient.getRooms();
 		const room = rooms.find((room) => room.name === roomName && room.getMyMembership() === membership);
-		
+
 		if (room) {
 			return room.roomId;
 		}
@@ -81,12 +155,21 @@ export class SynapseClient {
 		throw new Error(`No room found with name ${roomName} and membership ${membership}`);
 	}
 
-	async acceptInvitationForRoomName(
-		roomName: string,
-		maxRetries: number = 5,
-		retryDelay: number = 1000,
-		initialDelay: number = 5000
-	): Promise<string> {
+	/**
+	 * Accepts a room invitation with configurable retry logic.
+	 *
+	 * Handles the process of accepting a room invitation, which is common
+	 * in federation scenarios where users are invited to remote rooms.
+	 * Includes retry logic to handle eventual consistency in distributed systems.
+	 *
+	 * @param roomName - The display name of the room to join
+	 * @param maxRetries - Maximum number of retry attempts (default: 5)
+	 * @param retryDelay - Delay between retries in milliseconds (default: 1000)
+	 * @param initialDelay - Initial delay before first attempt in milliseconds (default: 5000)
+	 * @returns The room ID of the successfully joined room
+	 * @throws Error if client is not initialized or all retry attempts fail
+	 */
+	async acceptInvitationForRoomName(roomName: string, maxRetries = 5, retryDelay = 1000, initialDelay = 5000): Promise<string> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
@@ -107,53 +190,88 @@ export class SynapseClient {
 				lastError = error as Error;
 			}
 		}
-		
-		throw new Error(`Failed to accept invitation for room ${roomName} after ${retries} attempts${lastError ? `: ${lastError.message}` : ''}`);
+
+		throw new Error(
+			`Failed to accept invitation for room ${roomName} after ${retries} attempts${lastError ? `: ${lastError.message}` : ''}`,
+		);
 	}
 
+	/**
+	 * Retrieves all members of a room.
+	 *
+	 * Gets the complete list of room members, which is essential
+	 * for verifying federation state and member synchronization.
+	 *
+	 * @param roomName - The display name of the room
+	 * @returns Array of room member objects
+	 * @throws Error if client is not initialized or room is not found
+	 */
 	async getRoomMembers(roomName: string): Promise<RoomMember[]> {
 		const room = this.getRoom(roomName);
 
 		return room.getMembers();
 	}
 
+	/**
+	 * Finds a specific room member with retry logic.
+	 *
+	 * Searches for a member in a room by username or user ID, with configurable
+	 * retry logic to handle eventual consistency in federated systems.
+	 * This is crucial for federation testing where member synchronization
+	 * may take time to propagate across homeservers.
+	 *
+	 * @param roomName - The display name of the room to search
+	 * @param username - The username or user ID to find
+	 * @param options - Retry configuration options
+	 * @param options.maxRetries - Maximum number of retry attempts (default: 3)
+	 * @param options.delay - Delay between retries in milliseconds (default: 1000)
+	 * @param options.initialDelay - Initial delay before first attempt in milliseconds (default: 0)
+	 * @returns The room member if found, null otherwise
+	 */
 	async findRoomMember(
-		roomName: string, 
-		username: string, 
-		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {}
+		roomName: string,
+		username: string,
+		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
 	): Promise<RoomMember | null> {
 		const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
-		
+
 		if (initialDelay > 0) {
 			await wait(initialDelay);
 		}
-		
+
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
 				const members = await this.getRoomMembers(roomName);
-				const member = members.find((member: RoomMember) => 
-					member.name === username || member.userId === username
-				);
-				
+				const member = members.find((member: RoomMember) => member.name === username || member.userId === username);
+
 				if (member) {
 					return member;
 				}
-				
+
 				if (attempt < maxRetries) {
 					await wait(delay);
 				}
 			} catch (error) {
 				console.warn(`Attempt ${attempt} to find room member failed:`, error);
-				
+
 				if (attempt < maxRetries) {
 					await wait(delay);
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
+	/**
+	 * Closes the Matrix client connection and cleans up resources.
+	 *
+	 * Properly shuts down the Matrix client, clears all data stores,
+	 * removes event listeners, and logs out. Essential for preventing
+	 * resource leaks during test execution.
+	 *
+	 * @returns Promise that resolves when cleanup is complete
+	 */
 	async close(): Promise<void> {
 		if (this.matrixClient) {
 			this.matrixClient.stopClient();
@@ -165,4 +283,3 @@ export class SynapseClient {
 		}
 	}
 }
-

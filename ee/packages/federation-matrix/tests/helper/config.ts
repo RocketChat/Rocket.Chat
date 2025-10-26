@@ -1,5 +1,9 @@
 /**
- * Federation environment configuration interface
+ * Configuration interface for federation test environment.
+ *
+ * Defines the structure for all federation-related configuration including
+ * Rocket.Chat instances, Matrix homeservers, and user credentials needed
+ * for end-to-end federation testing.
  */
 export interface IFederationConfig {
 	rc1: {
@@ -29,7 +33,17 @@ export interface IFederationConfig {
 }
 
 /**
- * Validates that a required environment variable exists and is not empty
+ * Validates that a required environment variable exists and is not empty.
+ *
+ * Ensures that all federation test configuration is properly set by validating
+ * environment variables and providing sensible defaults where appropriate.
+ * Throws an error if a required variable is missing or empty.
+ *
+ * @param name - The name of the environment variable for error messages
+ * @param value - The environment variable value (may be undefined)
+ * @param defaultValue - Optional default value to use if variable is not set
+ * @returns The validated value (either the env var or default)
+ * @throws Error if the variable is required but missing or empty
  */
 function validateEnvVar(name: string, value: string | undefined, defaultValue?: string): string {
 	const finalValue = value || defaultValue;
@@ -40,7 +54,15 @@ function validateEnvVar(name: string, value: string | undefined, defaultValue?: 
 }
 
 /**
- * Gets and validates all federation environment variables
+ * Builds and validates the complete federation test configuration.
+ *
+ * Reads all federation-related environment variables, validates them,
+ * and constructs a complete configuration object. Uses sensible defaults
+ * for development and testing scenarios while ensuring all required
+ * values are present.
+ *
+ * @returns Complete federation configuration object
+ * @throws Error if any required configuration is missing or invalid
  */
 function getFederationConfig(): IFederationConfig {
 	return {
@@ -87,7 +109,13 @@ function getFederationConfig(): IFederationConfig {
 	};
 }
 
-// Validate and export federation configuration
+/**
+ * Validated federation configuration for test execution.
+ *
+ * This configuration is loaded at module initialization time and
+ * will cause the process to exit if any required environment
+ * variables are missing or invalid.
+ */
 let federationConfig: IFederationConfig;
 try {
 	federationConfig = getFederationConfig();
