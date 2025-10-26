@@ -2,7 +2,7 @@ import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,
-	ReadReceipt,
+	IReadReceiptWithUser,
 	OtrSystemMessages,
 	MessageUrl,
 	IThreadMainMessage,
@@ -963,7 +963,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {
-		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
+		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {
