@@ -123,22 +123,95 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
 			});
 	});
 
+/**
+ * Adds users to a room using the addUsersToRoom method.
+ *
+ * Invites one or more users to join a room using the DDP method call.
+ * Supports both local and federated users, with proper error handling
+ * for federation restrictions.
+ *
+ * @param usernames - Array of usernames to add to the room
+ * @param rid - The unique identifier of the room
+ * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the method call response
+ */
 export const addUserToRoom = ({
 	usernames,
 	rid,
 	userCredentials,
+	config,
 }: {
 	usernames: string[];
 	rid: IRoom['_id'];
 	userCredentials?: Credentials;
+	config?: IRequestConfig;
 }) => {
-	return request
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || userCredentials || credentials;
+
+	return requestInstance
 		.post(methodCall('addUsersToRoom'))
-		.set(userCredentials ?? credentials)
+		.set(credentialsInstance)
 		.send({
 			message: JSON.stringify({
 				method: 'addUsersToRoom',
 				params: [{ rid, users: usernames }],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+};
+
+/**
+ * Adds users to a room using the /invite slash command via method.call.
+ *
+ * Executes the /invite slash command using the DDP method call to add users to a room.
+ * This simulates the user experience of using slash commands in the UI.
+ * Supports both local and federated users, with proper error handling for federation restrictions.
+ *
+ * @param usernames - Array of usernames to add to the room
+ * @param rid - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the method call response
+ * @note The slash command expects parameters: { cmd: string, params: string, msg: IMessage, triggerId: string }
+ */
+export const addUserToRoomSlashCommand = ({
+	usernames,
+	rid,
+	config,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	config?: IRequestConfig;
+}) => {
+	if (!usernames || usernames.length === 0) {
+		throw new Error('"usernames" is required in "addUserToRoomSlashCommand" test helper');
+	}
+	if (!rid) {
+		throw new Error('"rid" is required in "addUserToRoomSlashCommand" test helper');
+	}
+
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return requestInstance
+		.post(methodCall('slashCommand'))
+		.set(credentialsInstance)
+		.send({
+			message: JSON.stringify({
+				method: 'slashCommand',
+				params: [
+					{
+						cmd: 'invite',
+						params: usernames.join(' '),
+						msg: {
+							rid,
+							_id: `test-${Date.now()}`,
+						},
+						triggerId: `test-trigger-${Date.now()}`,
+					},
+				],
 				id: 'id',
 				msg: 'method',
 			}),
