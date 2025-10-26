@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix/src/FederationMatrix';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
