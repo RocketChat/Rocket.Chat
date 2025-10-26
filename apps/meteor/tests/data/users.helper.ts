@@ -8,11 +8,29 @@ import { api, credentials, methodCall, request } from './api-data';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
 
+/**
+ * Configuration interface for custom request handling.
+ *
+ * Provides a way to override the default request instance and credentials
+ * for testing scenarios that require custom domains or authentication.
+ */
 export interface IRequestConfig {
 	credentials: Credentials;
 	request: ReturnType<typeof supertest>;
 }
 
+/**
+ * Creates a request configuration for a specific domain.
+ *
+ * Sets up a new request instance and authenticates with the specified
+ * domain, user, and password. This is essential for federation testing
+ * where multiple Rocket.Chat instances need to be accessed.
+ *
+ * @param domain - The base URL of the Rocket.Chat instance
+ * @param user - The username for authentication
+ * @param password - The password for authentication
+ * @returns Promise resolving to request configuration with credentials
+ */
 export async function getRequestConfig(domain: string, user: string, password: string): Promise<IRequestConfig> {
 	const request = supertest(domain);
 	const credentials = await login(user, password, { request, credentials: {} as Credentials });

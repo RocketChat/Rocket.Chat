@@ -1,3 +1,10 @@
+/**
+ * Jest configuration for federation integration tests.
+ *
+ * Extends the base server preset with federation-specific settings including
+ * extended timeouts for distributed system operations, proper module transformation
+ * for Matrix SDK dependencies, and global teardown for resource cleanup.
+ */
 import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 

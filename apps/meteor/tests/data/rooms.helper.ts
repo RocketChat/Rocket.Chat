@@ -145,6 +145,16 @@ export const addUserToRoom = ({
 		});
 };
 
+/**
+ * Retrieves detailed information about a room.
+ *
+ * Fetches comprehensive room metadata including federation status,
+ * member counts, and other room properties needed for federation testing.
+ *
+ * @param roomId - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to room information response
+ */
 export const getRoomInfo = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
@@ -162,6 +172,17 @@ export const getRoomInfo = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	});
 };
 
+/**
+ * Retrieves room members ordered by their role hierarchy.
+ *
+ * Gets the complete list of room members with their roles and permissions,
+ * ordered by importance. Essential for verifying federation member synchronization
+ * and role assignments across different Rocket.Chat instances.
+ *
+ * @param roomId - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to ordered member list response
+ */
 export const getRoomMembers = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
@@ -179,6 +200,22 @@ export const getRoomMembers = (roomId: IRoom['_id'], config?: IRequestConfig) =>
 	});
 };
 
+/**
+ * Finds a specific room member with configurable retry logic.
+ *
+ * Searches for a member in a room by username, with retry logic to handle
+ * eventual consistency in federated systems. This is crucial for federation
+ * testing where member synchronization may take time to propagate.
+ *
+ * @param roomId - The unique identifier of the room to search
+ * @param username - The username to find
+ * @param options - Retry configuration options
+ * @param options.maxRetries - Maximum number of retry attempts (default: 3)
+ * @param options.delay - Delay between retries in milliseconds (default: 1000)
+ * @param options.initialDelay - Initial delay before first attempt in milliseconds (default: 0)
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the user object if found, null otherwise
+ */
 export const findRoomMember = async (
 	roomId: IRoom['_id'],
 	username: string,
@@ -219,6 +256,17 @@ export const findRoomMember = async (
 	return null;
 };
 
+/**
+ * Retrieves the message history for a group/private room.
+ *
+ * Fetches the complete message history including system messages,
+ * user messages, and federation events. Essential for verifying
+ * message synchronization and system message generation in federated rooms.
+ *
+ * @param roomId - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to message history response
+ */
 export const getGroupHistory = (roomId: IRoom['_id'], config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || credentials;
