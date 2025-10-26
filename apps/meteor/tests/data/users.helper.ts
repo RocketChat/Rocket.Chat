@@ -5,6 +5,7 @@ import supertest from 'supertest';
 import type { Response } from 'supertest';
 
 import { api, credentials, methodCall, request } from './api-data';
+import { password } from './user';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
 
@@ -65,7 +66,7 @@ export const createUser = <TUser extends IUser>(
 		void requestInstance
 			.post(api('users.create'))
 			.set(credentialsInstance)
-			.send({ email, name: username, username, password: userData.password, ...userData })
+			.send({ email, name: username, username, password, ...userData })
 			.end((err: unknown, res: Response) => {
 				if (err) {
 					return reject(err);
