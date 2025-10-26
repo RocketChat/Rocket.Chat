@@ -321,10 +321,5 @@ fi
 log_info "Running end-to-end tests..."
 cd "$PACKAGE_ROOT"
 
-# Set NODE_EXTRA_CA_CERTS to use the custom CA certificate
-export NODE_EXTRA_CA_CERTS="$(pwd)/docker-compose/traefik/certs/ca/rootCA.crt"
-
 yarn testend-to-end
 TEST_EXIT_CODE=$?
-
-
