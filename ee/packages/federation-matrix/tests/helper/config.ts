@@ -93,16 +93,16 @@ function getFederationConfig(): IFederationConfig {
 			adminUser: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin'),
 			adminPassword: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', process.env.FEDERATION_SYNAPSE_ADMIN_PASSWORD, 'admin'),
 			additionalUser1: {
-				username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'user2'),
+				username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'alice'),
 				password: validateEnvVar(
 					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD',
 					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD,
-					'user2pass',
+					'alice',
 				),
 				matrixUserId: validateEnvVar(
 					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID',
 					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID,
-					'@user2:hs1',
+					'@alice:hs1',
 				),
 			},
 		},

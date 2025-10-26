@@ -77,12 +77,16 @@ export class DDPListener {
 	 * Wait for an ephemeral message with a specific content
 	 * @param expectedContent - The expected message content (partial match)
 	 * @param timeoutMs - Timeout in milliseconds (default: 5000)
+	 * @param roomId - Optional room ID to validate the message belongs to the correct room
 	 * @returns Promise that resolves with the message or rejects on timeout
 	 */
-	async waitForEphemeralMessage(expectedContent: string, timeoutMs = 5000): Promise<IMessage> {
+	async waitForEphemeralMessage(expectedContent: string, timeoutMs = 5000, roomId?: string): Promise<IMessage> {
 		return new Promise((resolve, reject) => {
+			// Check if message already exists
 			const existingMessage = this.ephemeralMessages.find((msg) => {
-				return msg.msg?.includes(expectedContent);
+				const contentMatches = msg.msg?.includes(expectedContent);
+				const roomMatches = !roomId || msg.rid === roomId;
+				return contentMatches && roomMatches;
 			});
 
 			if (existingMessage) {
@@ -96,12 +100,15 @@ export class DDPListener {
 				if (interval) {
 					clearInterval(interval);
 				}
-				reject(new Error(`Timeout waiting for ephemeral message containing: "${expectedContent}"`));
+				const roomInfo = roomId ? ` for room ${roomId}` : '';
+				reject(new Error(`Timeout waiting for ephemeral message containing: "${expectedContent}"${roomInfo}`));
 			}, timeoutMs);
 
 			const checkMessages = () => {
 				const message = this.ephemeralMessages.find((msg) => {
-					return msg.msg?.includes(expectedContent);
+					const contentMatches = msg.msg?.includes(expectedContent);
+					const roomMatches = !roomId || msg.rid === roomId;
+					return contentMatches && roomMatches;
 				});
 
 				if (message) {
