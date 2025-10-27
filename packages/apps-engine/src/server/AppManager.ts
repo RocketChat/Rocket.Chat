@@ -558,7 +558,7 @@ export class AppManager {
 		const descriptor: IAppStorageItem = {
 			id: result.info.id,
 			info: result.info,
-			status: AppStatus.MANUALLY_ENABLED,
+			status: enable ? AppStatus.MANUALLY_ENABLED : AppStatus.MANUALLY_DISABLED,
 			settings: {},
 			implemented: result.implemented.getValues(),
 			installationSource: marketplaceInfo ? AppInstallationSource.MARKETPLACE : AppInstallationSource.PRIVATE,
