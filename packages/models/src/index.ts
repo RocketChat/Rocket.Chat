@@ -91,6 +91,7 @@ import type {
 	IMediaCallsModel,
 	IMediaCallChannelsModel,
 	IMediaCallNegotiationsModel,
+	ICallHistoryModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -145,6 +146,7 @@ export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
 export const Banners = proxify<IBannersModel>('IBannersModel');
+export const CallHistory = proxify<ICallHistoryModel>('ICallHistoryModel');
 export const CannedResponse = proxify<ICannedResponseModel>('ICannedResponseModel');
 export const CredentialTokens = proxify<ICredentialTokensModel>('ICredentialTokensModel');
 export const CustomSounds = proxify<ICustomSoundsModel>('ICustomSoundsModel');
