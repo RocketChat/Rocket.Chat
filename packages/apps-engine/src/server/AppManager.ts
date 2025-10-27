@@ -633,7 +633,7 @@ export class AppManager {
 				// If an error occurs during this, oh well.
 			});
 
-		await this.installApp(created, app, user);
+		await this.installApp(app, user);
 
 		// Should enable === true, then we go through the entire start up process
 		// Otherwise, we only initialize it.
@@ -998,7 +998,7 @@ export class AppManager {
 		return this.enableApp(storageItem, app, true, isManual, silenceStatus);
 	}
 
-	private async installApp(_storageItem: IAppStorageItem, app: ProxiedApp, user: IUser): Promise<boolean> {
+	private async installApp(app: ProxiedApp, user: IUser): Promise<boolean> {
 		let result: boolean;
 		const context = { user };
 
