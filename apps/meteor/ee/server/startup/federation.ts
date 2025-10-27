@@ -30,18 +30,20 @@ export const startFederationService = async (): Promise<void> => {
 		if (isEnabled) {
 			if (!serviceRegistered) {
 				api.registerService(new FederationMatrix());
+
 				await registerFederationRoutes();
+
+				// TODO move to service/setup?
+				StreamerCentral.on('broadcast', (name, eventName, args) => {
+					if (name === 'notify-room' && eventName.endsWith('user-activity')) {
+						const [rid] = eventName.split('/');
+						const [user, activity] = args;
+						void FederationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
+					}
+				});
+
 				serviceRegistered = true;
 			}
-
-			// TODO move to service/setup?
-			StreamerCentral.on('broadcast', (name, eventName, args) => {
-				if (name === 'notify-room' && eventName.endsWith('user-activity')) {
-					const [rid] = eventName.split('/');
-					const [user, activity] = args;
-					void FederationMatrixService.notifyUserTyping(rid, user, activity.includes('user-typing'));
-				}
-			});
 		}
 
 		if (!watcherRegistered) {
