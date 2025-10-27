@@ -146,8 +146,10 @@ services:
       - nats
 
   mongo:
-    image: docker.io/bitnami/mongodb:7.0
+    image: docker.io/bitnamilegacy/mongodb:7.0.1
     restart: on-failure
+    ports:
+      - 27017:27017
     environment:
       MONGODB_REPLICA_SET_MODE: primary
       MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
