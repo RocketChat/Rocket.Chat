@@ -15,8 +15,19 @@ export const useNotificationUserCalendar = (user: IUser) => {
 			return;
 		}
 
+		let body = notification.text;
+		if (notification.payload.tsUTC) {
+			try {
+				const time = new Date(notification.payload.tsUTC);
+				const convertedTime = time.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' });
+				body = convertedTime;
+			} catch {
+				//
+			}
+		}
+
 		const n = new Notification(notification.title, {
-			body: notification.text,
+			body,
 			tag: notification.payload._id,
 			silent: true,
 			requireInteraction,
