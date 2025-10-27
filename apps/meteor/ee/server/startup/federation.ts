@@ -30,10 +30,9 @@ export const startFederationService = async (): Promise<void> => {
 		if (isEnabled) {
 			if (!serviceRegistered) {
 				api.registerService(new FederationMatrix());
+				await registerFederationRoutes();
 				serviceRegistered = true;
 			}
-
-			await registerFederationRoutes();
 
 			// TODO move to service/setup?
 			StreamerCentral.on('broadcast', (name, eventName, args) => {
