@@ -589,10 +589,46 @@ class E2E extends Emitter {
 		});
 	}
 
-	async requestPasswordAlert(): Promise<string> {
+	modal(privateKey: string): Promise<string | void> {
 		return new Promise((resolve) => {
-			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
+			imperativeModal.open({
+				component: EnterE2EPasswordModal,
+				props: {
+					onClose: imperativeModal.close,
+					onCancel: () => {
+						failedToDecodeKey = false;
+						dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
+						this.closeAlert();
+						imperativeModal.close();
+					},
+					onConfirm: async (password) => {
+						const masterKey = await this.getMasterKey(password);
 
+						const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
+
+						try {
+							if (!masterKey) {
+								throw new Error('Error getting master key');
+							}
+							const privKey = await decryptAES(vector, masterKey, cipherText);
+							this.closeAlert();
+							imperativeModal.close();
+							resolve(toString(privKey));
+						} catch (error) {
+							this.setState(E2EEState.ENTER_PASSWORD);
+							dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
+							dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
+							throw new Error('E2E -> Error decrypting private key');
+						}
+					},
+				},
+			});
+		});
+	}
+
+	async requestPasswordAlert(key: string): Promise<string | void> {
+		const showModal = this.modal.bind(this);
+		return new Promise((resolve) => {
 			const showAlert = () => {
 				this.openAlert({
 					title: () => t('Enter_your_E2E_password'),
@@ -601,13 +637,13 @@ class E2E extends Emitter {
 					closable: false,
 					icon: 'key',
 					action() {
-						showModal();
+						resolve(showModal(key));
 					},
 				});
 			};
 
 			if (failedToDecodeKey) {
-				showModal();
+				resolve(showModal(key));
 			} else {
 				showAlert();
 			}
@@ -652,24 +688,11 @@ class E2E extends Emitter {
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		const password = await this.requestPasswordAlert();
-
-		const masterKey = await this.getMasterKey(password);
-
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
-
-		try {
-			if (!masterKey) {
-				throw new Error('Error getting master key');
-			}
-			const privKey = await decryptAES(vector, masterKey, cipherText);
-			return toString(privKey);
-		} catch (error) {
-			this.setState(E2EEState.ENTER_PASSWORD);
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
-			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
+		const key = await this.requestPasswordAlert(privateKey);
+		if (!key) {
 			throw new Error('E2E -> Error decrypting private key');
 		}
+		return key;
 	}
 
 	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {

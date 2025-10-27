@@ -23,6 +23,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 		control,
 		setFocus,
 		formState: { errors },
+		setError,
 	} = useForm({
 		defaultValues: {
 			password: '',
@@ -53,7 +54,22 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(({ password }) => onConfirm(password))} {...props} />}
+			wrapperFunction={(props) => (
+				<Box
+					is='form'
+					onSubmit={handleSubmit(async ({ password }) => {
+						try {
+							await onConfirm(password);
+						} catch (error: any) {
+							setError('password', {
+								type: 'manual',
+								message: error?.message || t('Invalid_pass'),
+							});
+						}
+					})}
+					{...props}
+				/>
+			)}
 			variant='warning'
 			title={t('Enter_E2E_password')}
 			icon='warning'
