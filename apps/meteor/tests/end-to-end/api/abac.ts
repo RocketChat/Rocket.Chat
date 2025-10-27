@@ -1059,5 +1059,181 @@ import { IS_EE } from '../../e2e/config/constants';
 				await updateSetting('ABAC_Enabled', true);
 			});
 		});
+
+		describe('ABAC Room Type Conversion', () => {
+			const attrKey = `type_conversion_${Date.now()}`;
+
+			let roomNoAttr: string;
+			let roomWithAttr: string;
+			let roomWithAttrAbacDisabled: string;
+
+			before(async () => {
+				await updateSetting('ABAC_Enabled', true);
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: attrKey, values: ['val1', 'val2'] })
+					.expect(200);
+
+				roomNoAttr = (await createRoom({ type: 'p', name: `abac-type-room-no-attr-${Date.now()}` })).body.group._id;
+
+				roomWithAttr = (await createRoom({ type: 'p', name: `abac-type-room-with-attr-${Date.now()}` })).body.group._id;
+				await request
+					.post(`${v1}/abac/room/${roomWithAttr}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['val1'] })
+					.expect(200);
+
+				roomWithAttrAbacDisabled = (await createRoom({ type: 'p', name: `abac-type-room-with-attr-disabled-${Date.now()}` })).body.group
+					._id;
+				await request
+					.post(`${v1}/abac/room/${roomWithAttrAbacDisabled}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['val2'] })
+					.expect(200);
+			});
+
+			after(async () => {
+				await updateSetting('ABAC_Enabled', false);
+				await Promise.all([
+					deleteRoom({ type: 'c', roomId: roomNoAttr }),
+					deleteRoom({ type: 'p', roomId: roomWithAttr }),
+					deleteRoom({ type: 'c', roomId: roomWithAttrAbacDisabled }),
+				]);
+			});
+
+			it('should convert private room without ABAC attributes to public', async () => {
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: roomNoAttr, roomType: 'c' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.true;
+					});
+			});
+
+			it('should fail converting ABAC managed private room to public', async () => {
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: roomWithAttr, roomType: 'c' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.success).to.be.false;
+						expect(res.body.error).to.include('Changing an ABAC managed private room to public is not allowed');
+					});
+			});
+
+			it('should allow converting ABAC managed private room to public when ABAC disabled', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: roomWithAttrAbacDisabled, roomType: 'c' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.true;
+					});
+			});
+		});
+
+		describe('ABAC Team Type Conversion', () => {
+			const attrKeyTeam = `team_type_conversion_${Date.now()}`;
+			const teamNameWithAttr = `abac-team-with-attr-${Date.now()}`;
+			const teamNameWithAttrAbacDisabled = `abac-team-with-attr-disabled-${Date.now()}`;
+
+			let teamNameNoAttr: string;
+			let mainRoomIdNoAttr: string;
+			let mainRoomIdWithAttr: string;
+			let mainRoomIdWithAttrAbacDisabled: string;
+
+			before(async () => {
+				await updateSetting('ABAC_Enabled', true);
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: attrKeyTeam, values: ['alpha', 'beta'] })
+					.expect(200);
+
+				teamNameNoAttr = `abac-team-no-attr-${Date.now()}`;
+				const teamNoAttrRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamNameNoAttr, type: 1 }).expect(200);
+				mainRoomIdNoAttr = teamNoAttrRes.body.team.roomId;
+
+				const teamWithAttrRes = await request
+					.post(`${v1}/teams.create`)
+					.set(credentials)
+					.send({ name: teamNameWithAttr, type: 1 })
+					.expect(200);
+				mainRoomIdWithAttr = teamWithAttrRes.body.team.roomId;
+				await request
+					.post(`${v1}/abac/room/${mainRoomIdWithAttr}/attributes/${attrKeyTeam}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+
+				const teamWithAttrDisRes = await request
+					.post(`${v1}/teams.create`)
+					.set(credentials)
+					.send({ name: teamNameWithAttrAbacDisabled, type: 1 })
+					.expect(200);
+				mainRoomIdWithAttrAbacDisabled = teamWithAttrDisRes.body.team.roomId;
+				await request
+					.post(`${v1}/abac/room/${mainRoomIdWithAttrAbacDisabled}/attributes/${attrKeyTeam}`)
+					.set(credentials)
+					.send({ values: ['beta'] })
+					.expect(200);
+			});
+
+			after(async () => {
+				await updateSetting('ABAC_Enabled', false);
+				await Promise.all([
+					deleteTeam(credentials, teamNameNoAttr),
+					deleteTeam(credentials, teamNameWithAttr),
+					deleteTeam(credentials, teamNameWithAttrAbacDisabled),
+				]);
+			});
+
+			it('should convert private team (main room) without ABAC attributes to public', async () => {
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: mainRoomIdNoAttr, roomType: 'c' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.true;
+					});
+			});
+
+			it('should fail converting private team (main room) with ABAC attributes to public', async () => {
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: mainRoomIdWithAttr, roomType: 'c' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.success).to.be.false;
+						// Ideally this should say "Changing an ABAC managed private team to public is not allowed" but the room check is done before the team check
+						// And it fails there
+						expect(res.body.error).to.include('Changing an ABAC managed private room to public is not allowed');
+					});
+			});
+
+			it('should allow converting private team (main room) with ABAC attributes to public when ABAC disabled', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				await request
+					.post(`${v1}/rooms.saveRoomSettings`)
+					.set(credentials)
+					.send({ rid: mainRoomIdWithAttrAbacDisabled, roomType: 'c' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.true;
+					});
+			});
+		});
 	});
 });
