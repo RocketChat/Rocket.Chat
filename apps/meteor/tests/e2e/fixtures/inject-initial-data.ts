@@ -13,6 +13,7 @@ export default async function injectInitialData() {
 		createUserFixture(Users.user2),
 		createUserFixture(Users.user3),
 		createUserFixture(Users.userE2EE),
+		createUserFixture(Users.userE2EE2),
 		createUserFixture(Users.userNotAllowedByApp),
 	];
 
