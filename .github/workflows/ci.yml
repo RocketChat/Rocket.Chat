@@ -178,17 +178,17 @@ jobs:
       - name: Build Rocket.Chat Packages
         run: yarn build
 
-      # - name: Archive build output
-      #   run: |
-      #     tar -czf RocketChat-packages-build.tar.gz \
-      #       packages/*/dist
+      - name: Archive packages build output
+        run: |
+          tar -czf /tmp/RocketChat-packages-build.tar.gz \
+            $(git ls-files -oi --exclude-standard -- '*/dist/*' 'packages/apps-engine/*' ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude)packages/livechat/*')
 
-      # - name: Upload build artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: packages-build-${{ runner.os }}-${{ runner.arch }}
-      #     path: RocketChat-packages-build.tar.gz
-      #     retention-days: 5
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-build
+          path: /tmp/RocketChat-packages-build.tar.gz
+          retention-days: 5
 
       - name: Store turbo build
         uses: actions/upload-artifact@v4
@@ -262,7 +262,7 @@ jobs:
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.alpine
@@ -274,6 +274,7 @@ jobs:
       fail-fast: false
       matrix:
         service: ['rocketchat', 'authorization-service', 'account-service', 'ddp-streamer-service', 'presence-service', 'stream-hub-service', 'queue-worker-service', 'omnichannel-transcript-service']
+        arch: ['amd64', 'arm64']
 
     steps:
       - uses: actions/checkout@v4
@@ -287,6 +288,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: 'alpine'
+          arch: ${{ matrix.arch }}
           build-containers: ${{ matrix.service }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 

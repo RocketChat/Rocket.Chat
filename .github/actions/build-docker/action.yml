@@ -17,6 +17,10 @@ inputs:
     required: false
     description: 'Platform'
     default: 'alpine'
+  arch:
+    required: false
+    description: 'Architecture'
+    default: 'amd64'
   build-containers:
     required: false
     description: 'Containers to build along with Rocket.Chat'
@@ -41,6 +45,12 @@ runs:
   using: composite
 
   steps:
+    # - name: Install system dependencies
+    #   shell: bash
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y build-essential libpng-dev autoconf automake libtool
+
     - name: Login to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@v3
@@ -49,16 +59,16 @@ runs:
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
 
-    # - name: Restore packages build
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: packages-build-${{ runner.os }}-${{ runner.arch }}
-    #     path: .
+    - name: Restore packages build
+      uses: actions/download-artifact@v4
+      with:
+        name: packages-build
+        path: /tmp
 
-    # - name: Unpack packages build
-    #   shell: bash
-    #   run: |
-    #     tar -xzf RocketChat-packages-build.tar.gz
+    - name: Unpack packages build
+      shell: bash
+      run: |
+        tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
     - name: Restore meteor build
       if: inputs.build-containers == 'rocketchat'
@@ -75,29 +85,29 @@ runs:
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-    - uses: rharkor/caching-for-turbo@v1.8
-      # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
-      # if: inputs.turbo-cache == 'true'
+    # - uses: rharkor/caching-for-turbo@v1.8
+    #   # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
+    #   if: inputs.turbo-cache == 'true'
 
-    - name: Setup NodeJS
-      uses: ./.github/actions/setup-node
-      if: inputs.setup == 'true'
-      with:
-        node-version: ${{ inputs.node-version }}
-        deno-version: ${{ inputs.deno-version }}
-        cache-modules: true
-        install: true
-        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
+    # - name: Setup NodeJS
+    #   uses: ./.github/actions/setup-node
+    #   if: inputs.setup == 'true'
+    #   with:
+    #     node-version: ${{ inputs.node-version }}
+    #     deno-version: ${{ inputs.deno-version }}
+    #     cache-modules: true
+    #     install: true
+    #     NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
-    - name: Restore turbo build
-      uses: actions/download-artifact@v4
-      with:
-        name: turbo-build
-        path: .turbo/cache
+    # - name: Restore turbo build
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: turbo-build
+    #     path: .turbo/cache
 
-    - run: yarn build
-      if: inputs.setup == 'true'
-      shell: bash
+    # - run: yarn build
+    #   if: inputs.setup == 'true'
+    #   shell: bash
 
     - name: Set up Docker
       uses: docker/setup-docker-action@v4
@@ -110,15 +120,15 @@ runs:
             }
           }
 
-    - uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-        # image: tonistiigi/binfmt:qemu-v10.0.4
-        image: tonistiigi/binfmt:qemu-v8.1.5
+    # - uses: docker/setup-qemu-action@v3
+    #   with:
+    #     platforms: arm64
+    #     # image: tonistiigi/binfmt:qemu-v10.0.4
+    #     image: tonistiigi/binfmt:qemu-v8.1.5
 
-    - name: Config QEMU
-      shell: bash
-      run: echo "QEMU_CPU=max" >> $GITHUB_ENV
+    # - name: Config QEMU
+    #   shell: bash
+    #   run: echo "QEMU_CPU=max" >> $GITHUB_ENV
 
     - uses: docker/setup-buildx-action@v3
       with:
@@ -133,7 +143,7 @@ runs:
 
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        docker buildx bake -f docker-compose-ci.yml --load --allow=fs.read=/tmp/build --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
+        docker buildx bake -f docker-compose-ci.yml --load --allow=fs.read=/tmp/build --set *.platform=linux/${{ inputs.arch }} --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
