@@ -13,6 +13,15 @@ export abstract class Modal {
 		return expect(this.root).not.toBeVisible();
 	}
 
+	private get btnClose() {
+		return this.root.getByRole('button', { name: 'Close' });
+	}
+
+	async close() {
+		await this.btnClose.click();
+		await this.waitForDismissal();
+	}
+
 	private get btnSave() {
 		return this.root.getByRole('button', { name: 'Save' });
 	}
