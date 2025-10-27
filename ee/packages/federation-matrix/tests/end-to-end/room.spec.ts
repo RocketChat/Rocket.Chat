@@ -72,6 +72,74 @@ import { SynapseClient } from '../helper/synapse-client';
 	});
 
 	describe('Rooms', () => {
+		describe('Create a room on RC as private, explicitly not federated, with federated users in creation modal', () => {
+			describe('Add 1 federated user in the creation modal', () => {
+				it('It should not allow the creation of the room', async () => {
+					const channelName = `non-federated-channel-single-fed-${Date.now()}`;
+
+					// RC view: Attempt to create a non-federated private room with 1 federated user
+					const response = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: {
+							federated: false,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					// RC view: Verify the room creation failed
+					expect(response.status).toBe(400);
+					expect(response.body).toHaveProperty('success', false);
+					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+				});
+			});
+
+			describe('Add 2 federated users in the creation modal', () => {
+				it('It should not allow the creation of the room', async () => {
+					const channelName = `non-federated-channel-multi-fed-${Date.now()}`;
+
+					// RC view: Attempt to create a non-federated private room with 2 federated users
+					const response = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
+						extraData: {
+							federated: false,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					// RC view: Verify the room creation failed
+					expect(response.status).toBe(400);
+					expect(response.body).toHaveProperty('success', false);
+					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+				});
+			});
+
+			describe('Add 1 federated user and 1 local user in the creation modal', () => {
+				it('It should not allow the creation of the room', async () => {
+					const channelName = `non-federated-channel-mixed-${Date.now()}`;
+
+					// RC view: Attempt to create a non-federated private room with 1 federated user and 1 local user
+					const response = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+						extraData: {
+							federated: false,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					// RC view: Verify the room creation failed
+					expect(response.status).toBe(400);
+					expect(response.body).toHaveProperty('success', false);
+					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
+				});
+			});
+		});
+
 		describe('Create a room on RC as private, do not mark as federated and', () => {
 			let nonFederatedChannel: { _id: string; name: string; t: string; federated?: boolean };
 
