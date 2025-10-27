@@ -84,6 +84,7 @@ export class DDPListener {
 		return new Promise((resolve, reject) => {
 			// Check if message already exists
 			const existingMessage = this.ephemeralMessages.find((msg) => {
+				console.log('msg', msg);
 				const contentMatches = msg.msg?.includes(expectedContent);
 				const roomMatches = !roomId || msg.rid === roomId;
 				return contentMatches && roomMatches;
@@ -106,6 +107,7 @@ export class DDPListener {
 
 			const checkMessages = () => {
 				const message = this.ephemeralMessages.find((msg) => {
+					console.log('msg', msg);
 					const contentMatches = msg.msg?.includes(expectedContent);
 					const roomMatches = !roomId || msg.rid === roomId;
 					return contentMatches && roomMatches;
