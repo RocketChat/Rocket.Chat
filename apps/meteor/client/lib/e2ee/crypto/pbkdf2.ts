@@ -1,12 +1,6 @@
 import { importRaw, getRandomValues, decryptBuffer, encryptBuffer, deriveBits, type IKey } from './shared';
 
-type AlgorithmMap = {
-	A256GCM: { name: 'AES-GCM'; length: 256 };
-	A128CBC: { name: 'AES-CBC'; length: 256 };
-};
-
-type Jwa = keyof AlgorithmMap;
-type Algorithms = AlgorithmMap[Jwa];
+type Algorithms = { name: 'AES-GCM'; length: 256 } | { name: 'AES-CBC'; length: 256 };
 
 export type DerivedKey<TAlgorithm extends Algorithms = Algorithms> = IKey<
 	TAlgorithm,
