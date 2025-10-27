@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
 	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
 export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) => {
 	const isAdmin = useRole('admin');
+	const subscription = useRoomSubscription();
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 
@@ -28,7 +30,9 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
-	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
+	const hasRetentionPermission = usePermission('edit-room-retention-policy', room._id);
+	const isRoomOwner = Boolean(subscription?.roles?.includes('owner'));
+	const canEditRoomRetentionPolicy = hasRetentionPermission || isRoomOwner;
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,

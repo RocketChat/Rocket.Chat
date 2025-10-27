@@ -229,7 +229,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionIgnoreThreads = useId();
 
 	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
-	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
+	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy !== undefined;
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 

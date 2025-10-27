@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
 export type EditRoomInfoFormData = {
@@ -33,7 +34,10 @@ export type EditRoomInfoFormData = {
 
 export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partial<EditRoomInfoFormData> => {
 	const retentionPolicy = useRetentionPolicy(room);
-	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
+	const subscription = useRoomSubscription();
+	const hasRetentionPermission = usePermission('edit-room-retention-policy', room._id);
+	const isRoomOwner = Boolean(subscription?.roles?.includes('owner'));
+	const canEditRoomRetentionPolicy = hasRetentionPermission || isRoomOwner;
 
 	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
@@ -54,7 +58,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
 			encrypted,
 			...(canEditRoomRetentionPolicy &&
-				retentionPolicy?.enabled && {
+				retentionPolicy && {
 					retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
 					retentionOverrideGlobal: !!retention?.overrideGlobal,
 					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
@@ -78,6 +82,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			encrypted,
 			reactWhenReadOnly,
 			canEditRoomRetentionPolicy,
+			subscription,
 		],
 	);
 };
