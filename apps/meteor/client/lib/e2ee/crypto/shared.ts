@@ -1,12 +1,3 @@
-const crypto: Crypto = (() => {
-	if (typeof globalThis.crypto !== 'undefined' && 'subtle' in globalThis.crypto) {
-		return globalThis.crypto as Crypto;
-	}
-	// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/consistent-type-imports
-	const { webcrypto } = require('node:crypto') as typeof import('node:crypto');
-	return webcrypto as Crypto;
-})();
-
 const { subtle } = crypto;
 export const randomUUID = crypto.randomUUID.bind(crypto);
 export const getRandomValues = crypto.getRandomValues.bind(crypto);
