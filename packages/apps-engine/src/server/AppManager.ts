@@ -329,7 +329,7 @@ export class AppManager {
 		for (const app of this.apps.values()) {
 			const status = await app.getStatus();
 			if (!AppStatusUtils.isDisabled(status) && AppStatusUtils.isEnabled(app.getPreviousStatus())) {
-				await this.enableApp(app.getStorageItem(), app, true, app.getPreviousStatus() === AppStatus.MANUALLY_ENABLED).catch(console.error);
+				await this.enableApp(app, app.getPreviousStatus() === AppStatus.MANUALLY_ENABLED).catch(console.error);
 			} else if (!AppStatusUtils.isError(status)) {
 				this.listenerManager.lockEssentialEvents(app);
 				this.uiActionButtonManager.clearAppActionButtons(app.getID());
@@ -971,7 +971,7 @@ export class AppManager {
 		}
 
 		if (!AppStatusUtils.isDisabled(await rl.getStatus()) && AppStatusUtils.isEnabled(rl.getPreviousStatus())) {
-			await this.enableApp(item, rl, false, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED, silenceStatus);
+			await this.enableApp(rl, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED, silenceStatus);
 		}
 
 		return this.apps.get(item.id);
@@ -995,7 +995,7 @@ export class AppManager {
 			return false;
 		}
 
-		return this.enableApp(storageItem, app, true, isManual, silenceStatus);
+		return this.enableApp(app, isManual, silenceStatus);
 	}
 
 	private async installApp(app: ProxiedApp, user: IUser): Promise<boolean> {
@@ -1113,13 +1113,7 @@ export class AppManager {
 		return result;
 	}
 
-	private async enableApp(
-		storageItem: IAppStorageItem,
-		app: ProxiedApp,
-		saveToDb = true,
-		isManual: boolean,
-		silenceStatus = false,
-	): Promise<boolean> {
+	private async enableApp(app: ProxiedApp, isManual: boolean, silenceStatus = false): Promise<boolean> {
 		let enable: boolean;
 		let status = AppStatus.ERROR_DISABLED;
 
