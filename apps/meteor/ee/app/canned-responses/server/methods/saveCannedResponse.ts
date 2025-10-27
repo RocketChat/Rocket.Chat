@@ -99,7 +99,11 @@ export const saveCannedResponse = async (
 			});
 		}
 
-		result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
+		result = await CannedResponse.updateCannedResponse(_id, {
+			...responseData,
+			...(cannedResponse.scope === 'user' && { userId: cannedResponse.userId }),
+			createdBy: cannedResponse.createdBy,
+		});
 	} else {
 		const user = await Users.findOneById(userId);
 
