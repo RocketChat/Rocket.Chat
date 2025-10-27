@@ -1,15 +1,9 @@
-import './meteor/overrides/desktopInjection';
-import './meteor/overrides/ddpOverREST';
-import './meteor/overrides/oauthRedirectUri';
-import './meteor/overrides/settings';
-import './meteor/overrides/totpOnCall';
-import './meteor/overrides/unstoreLoginToken';
-import './meteor/overrides/userAndUsers';
+import './meteor/overrides';
 import './meteor/startup';
 import './serviceWorker';
 
 import('@rocket.chat/fuselage-polyfills')
-	.then(() => import('./meteor/overrides'))
+	.then(() => import('./meteor/login'))
 	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => import('./startup'))
