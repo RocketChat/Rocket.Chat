@@ -310,7 +310,7 @@ export class AppManager {
 				continue;
 			}
 
-			await this.initializeApp(rl.getStorageItem(), rl, false, true).catch(console.error);
+			await this.initializeApp(rl, true).catch(console.error);
 		}
 
 		// Let's ensure the required settings are all set
@@ -641,7 +641,7 @@ export class AppManager {
 			// Start up the app
 			await this.runStartUpProcess(created, app, false, false);
 		} else {
-			await this.initializeApp(created, app, true);
+			await this.initializeApp(app);
 		}
 
 		return aff;
@@ -821,7 +821,7 @@ export class AppManager {
 
 	public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
 		const app = await this.updateLocal(stored, appPackageOrInstance);
-		await this.initializeApp(stored, app, true, true);
+		await this.initializeApp(app, true);
 	}
 
 	public getLanguageContent(): { [key: string]: object } {
@@ -964,7 +964,7 @@ export class AppManager {
 
 		const item = rl.getStorageItem();
 
-		await this.initializeApp(item, rl, false, silenceStatus);
+		await this.initializeApp(rl, silenceStatus);
 
 		if (!this.areRequiredSettingsSet(item)) {
 			await rl.setStatus(AppStatus.INVALID_SETTINGS_DISABLED);
@@ -984,7 +984,7 @@ export class AppManager {
 		silenceStatus: boolean,
 	): Promise<boolean> {
 		if ((await app.getStatus()) !== AppStatus.INITIALIZED) {
-			const isInitialized = await this.initializeApp(storageItem, app, true, silenceStatus);
+			const isInitialized = await this.initializeApp(app, silenceStatus);
 			if (!isInitialized) {
 				return false;
 			}
@@ -1035,7 +1035,7 @@ export class AppManager {
 		return result;
 	}
 
-	private async initializeApp(storageItem: IAppStorageItem, app: ProxiedApp, saveToDb = true, silenceStatus = false): Promise<boolean> {
+	private async initializeApp(app: ProxiedApp, silenceStatus = false): Promise<boolean> {
 		let result: boolean;
 
 		try {
