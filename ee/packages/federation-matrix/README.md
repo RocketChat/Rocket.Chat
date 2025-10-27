@@ -24,6 +24,7 @@ The integration test script builds Rocket.Chat locally, starts federation servic
 - `--image [IMAGE]`: Uses a pre-built Docker image instead of building locally (defaults to `rocketchat/rocket.chat:latest` if no image specified)
 - `--keep-running`: Keeps containers running after tests complete for manual validation
 - `--element`: Includes Element web client in the test environment
+- `--no-test`: Starts containers and skips running tests (useful for manual testing or debugging)
 
 ### Usage Examples
 
@@ -52,12 +53,22 @@ yarn test:integration --keep-running
 yarn test:integration --element
 ```
 
+**Start containers only (skip tests):**
+```bash
+yarn test:integration --no-test
+```
+
+**Start containers with Element and keep them running (skip tests):**
+```bash
+yarn test:integration --keep-running --element --no-test
+```
+
 **Combine flags:**
 ```bash
 yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --element
 ```
 
-### Service URLs (when using --keep-running)
+### Service URLs (when using --keep-running or --no-test)
 
 - **Rocket.Chat**: https://rc1
 - **Synapse**: https://hs1  

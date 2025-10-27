@@ -34,6 +34,7 @@ USE_PREBUILT_IMAGE=false
 PREBUILT_IMAGE=""
 INTERRUPTED=false
 PROFILE_PREFIX="local"  # Default to local build
+NO_TEST=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -43,6 +44,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --element)
             INCLUDE_ELEMENT=true
+            shift
+            ;;
+        --no-test)
+            NO_TEST=true
             shift
             ;;
         --image)
@@ -61,6 +66,7 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  --keep-running    Keep Docker containers running after tests complete"
             echo "  --element         Include Element web client in the test environment"
+            echo "  --no-test         Start containers and skip running tests"
             echo "  --image [IMAGE]   Use a pre-built Docker image instead of building locally"
             echo "  --help, -h        Show this help message"
             echo ""
@@ -68,6 +74,7 @@ while [[ $# -gt 0 ]]; do
             echo "Use --image to test against a pre-built image (e.g., --image rocketchat/rocket.chat:latest)"
             echo "If --image is provided without a value, defaults to rocketchat/rocket.chat:latest"
             echo "Use --element to run all services including Element web client"
+            echo "Use --no-test to start containers and skip running tests"
             exit 0
             ;;
         *)
@@ -318,8 +325,23 @@ if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; the
 fi
 
 # Run the end-to-end tests
-log_info "Running end-to-end tests..."
-cd "$PACKAGE_ROOT"
-
-yarn testend-to-end
-TEST_EXIT_CODE=$?
+if [ "$NO_TEST" = false ]; then
+    log_info "Running end-to-end tests..."
+    cd "$PACKAGE_ROOT"
+    
+    yarn testend-to-end
+    TEST_EXIT_CODE=$?
+else
+    log_info "No-test mode: skipping test execution"
+    log_info "Services are ready and running. You can now:"
+    log_info "  - Access Rocket.Chat at: https://rc1"
+    log_info "  - Access Synapse at: https://hs1"
+    log_info "  - Access MongoDB at: localhost:27017"
+    if [ "$INCLUDE_ELEMENT" = true ]; then
+        log_info "  - Access Element at: https://element"
+    fi
+    log_info ""
+    log_info "To run tests manually, execute: yarn testend-to-end"
+    log_info "To stop containers, use: docker compose -f $DOCKER_COMPOSE_FILE down"
+    TEST_EXIT_CODE=0
+fi
