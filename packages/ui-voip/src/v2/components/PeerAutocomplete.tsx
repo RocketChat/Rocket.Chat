@@ -8,7 +8,7 @@ import { isFirstPeerAutocompleteOption } from '../MediaCallContext';
 export type PeerAutocompleteOptions = {
 	value: string; // user id
 	label: string; // name or username
-	status?: string;
+	status?: UserStatus;
 	identifier?: string | number; // extension number
 	avatarUrl?: string;
 };
@@ -51,7 +51,7 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 								key={value}
 								label={
 									<Box display='flex' flexDirection='row' alignItems='center'>
-										<StatusBullet status={thisOption?.status as UserStatus} />
+										<StatusBullet status={thisOption?.status} />
 										<Box mis={4}>{label}</Box>
 									</Box>
 								}
