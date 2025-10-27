@@ -200,7 +200,7 @@ export const metrics = {
 		help: 'total apps that failed to load',
 	}),
 	appBridgeMethods: new client.Summary({
-		name: 'rocketchat_app_bridge_methods',
+		name: 'rocketchat_apps_bridge_methods',
 		help: 'summary of app bridge method calls count and time',
 		labelNames: ['bridge', 'method', 'app_id'],
 		percentiles,
