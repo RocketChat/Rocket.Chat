@@ -72,15 +72,19 @@ export class AgendaCronJobs {
 		this.scheduler.on('ready', () => {
 			logger?.debug('Cron scheduler is running');
 		});
+
 		this.scheduler.on('error', (err) => {
 			logger?.error({ msg: 'Error in cron scheduler', err });
 		});
+
 		this.scheduler.on('fail', (err, job) => {
 			logger?.error({ msg: 'Cron job failed', err, job });
 		});
+
 		this.scheduler.on('success', (job) => {
 			logger?.debug({ msg: 'Cron job succeeded', job });
 		});
+
 		this.scheduler.on('start', (job) => {
 			logger?.debug({ msg: 'Cron job started', job });
 		});
