@@ -89,6 +89,7 @@ const MessageTypes = [
 	'room_e2e_disabled',
 	'user-muted',
 	'user-unmuted',
+	'user-display-name-changed',
 	'room-removed-read-only',
 	'room-set-read-only',
 	'room-allowed-reacting',

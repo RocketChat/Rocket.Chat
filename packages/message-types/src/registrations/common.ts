@@ -116,6 +116,17 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'user-display-name-changed',
+		system: true,
+		text: (t, message) =>
+			t('User_changed_display_name', {
+				username: message.u.username,
+				old_name: message.msg.split('|')[0],
+				new_name: message.msg.split('|')[1],
+			}),
+	});
+
+	instance.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		text: (t, message) => t('set__username__as__role_', { username: message.msg, role: message.role ?? '' }),
