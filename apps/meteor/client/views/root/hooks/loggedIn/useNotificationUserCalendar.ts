@@ -22,7 +22,7 @@ export const useNotificationUserCalendar = (user: IUser) => {
 				const formattedTime = time.toLocaleTimeString(undefined, {
 					hour: 'numeric',
 					minute: 'numeric',
-					hour12: true,
+					dayPeriod: 'narrow',
 				});
 				body = `${notification.text} - ${formattedTime}`;
 			} catch (error) {
