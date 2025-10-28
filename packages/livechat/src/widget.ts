@@ -154,7 +154,8 @@ const updateWidgetStyle = (isOpened: boolean) => {
 	}
 
 	if (isOpened) {
-		widget.style.left = isFullscreen ? '0' : 'auto';
+			widget.style.left = smallScreen ? '0' : '5px';
+		widget.style.right = smallScreen ? '0' : 'auto';
 
 		/**
 		 * If we use widget.style.height = smallScreen ? '100vh' : ...
@@ -167,7 +168,8 @@ const updateWidgetStyle = (isOpened: boolean) => {
 		widget.style.height = isFullscreen ? '100%' : `${WIDGET_MARGIN + widgetHeight + WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT}px`;
 		widget.style.width = isFullscreen ? '100%' : `${WIDGET_MARGIN + WIDGET_OPEN_WIDTH + WIDGET_MARGIN}px`;
 	} else {
-		widget.style.left = 'auto';
+		widget.style.left = '5px';
+		widget.style.right = 'auto';
 		widget.style.width = `${WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN}px`;
 		widget.style.height = `${WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN}px`;
 	}
@@ -180,8 +182,8 @@ const createWidget = (url: string) => {
 	widget.style.width = `${WIDGET_MARGIN + WIDGET_MINIMIZED_WIDTH + WIDGET_MARGIN}px`;
 	widget.style.height = `${WIDGET_MARGIN + WIDGET_MINIMIZED_HEIGHT + WIDGET_MARGIN}px`;
 	widget.style.maxHeight = '100vh';
-	widget.style.bottom = '0';
-	widget.style.left = '0';
+	widget.style.bottom = '5px';
+	widget.style.left = '5px';
 	widget.style.zIndex = '12345';
 	widget.dataset.state = 'closed';
 
@@ -234,13 +236,13 @@ const openWidget = () => {
 	emitCallback('chat-maximized');
 };
 
-const setWidgetPosition = (position: 'left' | 'right' = 'right') => {
+const setWidgetPosition = (position: 'left' | 'right' = 'left') => {
 	if (!widget) {
 		throw new Error('Widget is not initialized');
 	}
 
-	widget.style.left = position === 'left' ? '0' : 'auto';
-	widget.style.right = position !== 'left' ? '0' : 'auto';
+	widget.style.left = position === 'left' ? '5px' : 'auto';
+	widget.style.right = position !== 'left' ? '5px' : 'auto';
 };
 
 const resizeWidget = (height: number) => {

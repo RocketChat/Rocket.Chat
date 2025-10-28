@@ -11,7 +11,7 @@ Those widgets, at Rocket.Chat, are called **LiveChat**.
 
 ## Running a development environment
 
-With your **Rocket.chat** running locally at http://localhost:3000
+With your **Rocket.chat** running locally at https://chatbot-stg.charisma.digital
 <br />
 
 1. Install all node dependencies.
@@ -43,7 +43,7 @@ To select a different host on your local widget, check this configuration at `/s
 ``` javascript
 const host = window.SERVER_URL
 	|| queryString.parse(window.location.search).serverUrl
-	|| (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null);
+	|| (process.env.NODE_ENV === 'development' ? 'https://chatbot-stg.charisma.digital' : null);
 ```
 
 Here, you can change to your new configuration.

@@ -218,7 +218,7 @@ WithQuotation.storyName = 'with quotation';
 WithQuotation.args = {
 	attachments: [
 		{
-			message_link: 'http://localhost:3000/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
+			message_link: 'https://chatbot-stg.charisma.digital/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
 			text: defaultMessageExtra,
 		},
 	],

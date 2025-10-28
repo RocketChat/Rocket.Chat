@@ -11,15 +11,17 @@ type ComposerActionProps = {
 	className?: string;
 	style?: CSSProperties;
 	children?: ComponentChildren;
+	disabled?: boolean;
 };
 
-export const ComposerAction = memo(({ text, onClick, className, style = {}, children }: ComposerActionProps) => (
+export const ComposerAction = memo(({ text, onClick, className, style = {}, children, disabled }: ComposerActionProps) => (
 	<button
 		type='button'
 		aria-label={text}
 		onClick={onClick}
 		className={createClassName(styles, 'composer__action', {}, [className])}
 		style={style}
+		disabled={disabled}
 	>
 		{children}
 	</button>
