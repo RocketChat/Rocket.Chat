@@ -124,8 +124,15 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			const newPassword = faker.internet.password({
 				// At least 30 characters
 				length: 30,
-				// At least one lowercase, one uppercase, one number, one special character
-				prefix: faker.string.alphanumeric({ casing: 'mixed' }) + faker.string.symbol(),
+				prefix:
+					// At least one lowercase,
+					faker.string.alpha({ casing: 'lower' }) +
+					// At least one uppercase,
+					faker.string.alpha({ casing: 'upper' }) +
+					// At least one number,
+					faker.string.numeric() +
+					// At least one symbol
+					faker.string.symbol(),
 			});
 
 			await setupE2EEPassword(page);
