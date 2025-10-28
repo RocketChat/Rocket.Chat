@@ -12,12 +12,6 @@ on:
       lowercase-repo:
         required: true
         type: string
-      rc-dockerfile:
-        required: true
-        type: string
-      rc-docker-tag:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -76,9 +70,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-24.04
-    env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false

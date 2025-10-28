@@ -30,8 +30,6 @@ jobs:
       docker-tag: ${{ steps.docker.outputs.docker-tag }}
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
-      rc-dockerfile: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}'
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       official-platform: 'alpine'
@@ -265,9 +263,7 @@ jobs:
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
-      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.alpine
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.alpine
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}-${{ matrix.arch }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
@@ -292,14 +288,83 @@ jobs:
           build-containers: ${{ matrix.service }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.service == 'rocketchat' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        run: |
-          IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
+  build-gh-docker-coverage-publish:
+    name: 🚢 Build Docker Images for Testing (Publish)
+    needs: [build-gh-docker-coverage, release-versions]
+    runs-on: ubuntu-24.04
 
-          echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-          docker tag ${IMAGE_NAME_BASE}.alpine ${IMAGE_NAME_BASE}.official
-          docker push ${IMAGE_NAME_BASE}.official
+    env:
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+
+    steps:
+      - name: Login to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Download digests
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: actions/download-artifact@v4
+        with:
+          pattern: digests-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Show digests
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        run: |
+          find /tmp/digests -maxdepth 3 -type f -name 'digest.txt' -print
+          cat /tmp/digests/presence-service/amd64/digest.txt
+          cat /tmp/digests/presence-service/arm64/digest.txt
+      
+      - name: Create and push multi-arch manifests
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          for service_dir in /tmp/digests/*; do
+            [[ -d "$service_dir" ]] || continue
+            service="$(basename "$service_dir")"
+            echo "Creating manifest for $service"
+
+            mapfile -t refs < <(
+              find "$service_dir" -type f -name 'digest.txt' -print0 \
+                | xargs -0 -I{} sh -c "tr -d '\r' < '{}' | sed '/^[[:space:]]*$/d'"
+            )
+
+            # Validação e log
+            if [[ ${#refs[@]} -eq 0 ]]; then
+              echo "::error::Sem refs em $service_dir"; exit 1
+            fi
+            echo "Refs detectados para $service:"
+            printf '  - %s\n' "${refs[@]}"
+
+            # Regex de sanity-check
+            for r in "${refs[@]}"; do
+              if [[ ! "$r" =~ ^[a-z0-9._/-]+(:[a-z0-9._-]+)?@sha256:[a-f0-9]{64}$ ]]; then
+                echo "::error::Ref inválido: '$r'"; exit 1
+              fi
+            done
+
+            echo "Digest for $service: ${refs[@]}"
+
+            if [[ "$service" == "rocketchat" ]]; then
+              docker buildx imagetools create \
+                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}" \
+                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}.alpine" \
+                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}.official" \
+                ${refs[@]}
+            else
+              docker buildx imagetools create \
+                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/${service}:${DOCKER_TAG}" \
+                ${refs[@]}
+            fi
+          done
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -307,8 +372,6 @@ jobs:
     runs-on: ubuntu-24.04
 
     env:
-      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
@@ -376,7 +439,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -385,8 +448,6 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -394,7 +455,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -407,8 +468,6 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -421,7 +480,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -433,8 +492,6 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -442,7 +499,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -456,8 +513,6 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -471,7 +526,7 @@ jobs:
 
   test-ui-ee-watcher:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [checks, build-gh-docker-coverage-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -485,8 +540,6 @@ jobs:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
       db-watcher-disabled: 'false'
@@ -596,10 +649,6 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [deploy, release-versions]
 
-    strategy:
-      matrix:
-        # this is currently a mix of variants and different images
-        release: ['alpine']
     env:
       IMAGE_NAME: 'rocketchat/rocket.chat'
 
@@ -620,7 +669,7 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
+          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
@@ -636,17 +685,8 @@ jobs:
 
       - name: Publish Docker image
         run: |
-          if [[ '${{ matrix.release }}' = 'preview' ]]; then
-            IMAGE_NAME="${IMAGE_NAME}.preview"
-          fi;
-
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
-
-          # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian' ]]; then
-            DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
-          fi;
 
           PUBLISHED_TAGS=()
 
@@ -658,10 +698,6 @@ jobs:
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
-
-            if [[ '${{ matrix.release }}' = 'debian' ]]; then
-              RELEASE="${RELEASE}-${{ matrix.release }}"
-            fi;
 
             echo "RELEASE: $RELEASE"
 
@@ -682,11 +718,6 @@ jobs:
 
           # commit hash
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
-
-          # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian' ]]; then
-            TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
-          fi;
 
           docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
           docker push $IMAGE_NAME:$TAG_SHA

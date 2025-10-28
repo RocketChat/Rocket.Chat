@@ -143,16 +143,57 @@ runs:
 
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        docker buildx bake -f docker-compose-ci.yml --load --allow=fs.read=/tmp/build --set *.platform=linux/${{ inputs.arch }} --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
+        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+          LOAD_OR_PUSH="--push"
+        else
+          LOAD_OR_PUSH="--load"
+        fi
 
-    - name: Publish Docker images to GitHub Container Registry
-      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        docker buildx bake \
+          -f docker-compose-ci.yml \
+          ${LOAD_OR_PUSH} \
+          --allow=fs.read=/tmp/build \
+          --set *.platform=linux/${{ inputs.arch }} \
+          --set *.cache-from=type=gha \
+          --set *.cache-to=type=gha,mode=max \
+          --metadata-file "/tmp/meta.json" \
+          "${args[@]}"
+
+        # mkdir -p /tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}
+        # DIGEST=$(jq -r '.containerimage.digest' "/tmp/meta.json")
+        # # TODO Remove line below
+        # # IMAGE_NO_TAG=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image' | sed 's/:.*$//')
+        # IMAGE_NO_TAG=$(jq -r '.["image.name"] | if type=="array" then .[0] else . end' /tmp/meta.json | sed 's/:.*$//')
+        # echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}/digest.txt"
+
+    # - name: Publish Docker images to GitHub Container Registry
+    #   if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+    #   shell: bash
+    #   run: |
+    #     args=(${{ inputs.build-containers }})
+
+    #     docker compose -f docker-compose-ci.yml push "${args[@]}"
+
+    - name: Save digest
       shell: bash
       run: |
-        args=(${{ inputs.build-containers }})
+        mkdir -p /tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}
+        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image')
+        IMAGE_NO_TAG=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image' | sed 's/:.*$//')
 
-        docker compose -f docker-compose-ci.yml push "${args[@]}"
-        # docker buildx bake -f docker-compose-ci.yml --push --set *.cache-from=type=gha --set *.cache-to=type=gha,mode=max "${args[@]}"
+        DIGEST=$(docker buildx imagetools inspect "$IMAGE" | awk '/^Digest:/ {print $2; exit}')
+        if [[ -z "$DIGEST" ]]; then
+          echo "::error::Not possible to get the digest of $IMAGE (tag was already sent to registry?)"
+          exit 1
+        fi
+        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}/digest.txt"
+
+    - uses: actions/upload-artifact@v4
+      if: inputs.publish-image == 'true'
+      with:
+        name: digests-${{ inputs.build-containers }}-${{ inputs.arch }}
+        path: /tmp/digests
+        retention-days: 5
 
     - name: Debug BuildKit container
       if: failure()

@@ -6,7 +6,7 @@ services:
       - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
-      dockerfile: ${RC_DOCKERFILE}
+      dockerfile: ${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
       x-bake:
         platforms:
@@ -14,7 +14,7 @@ services:
           - linux/arm64
       args:
         DENO_VERSION: ${DENO_VERSION}
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
       - DEBUG=${DEBUG}
