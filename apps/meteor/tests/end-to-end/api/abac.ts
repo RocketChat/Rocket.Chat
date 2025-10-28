@@ -1261,6 +1261,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let managedRoomId: string;
 			let plainRoomId: string;
 			let plainRoomInviteToken: string;
+			const createdInviteIds: string[] = [];
 
 			before(async () => {
 				await updatePermission('create-invite-links', ['admin']);
@@ -1282,6 +1283,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('days', 1);
 						expect(res.body).to.have.property('maxUses', 0);
 						plainRoomInviteToken = res.body._id;
+						createdInviteIds.push(plainRoomInviteToken);
 					});
 			});
 
@@ -1400,12 +1402,12 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rid', managedRoomId);
+						createdInviteIds.push(res.body._id);
 					});
 			});
 
 			after(async () => {
-				await deleteRoom({ type: 'p', roomId: managedRoomId });
-				await deleteRoom({ type: 'p', roomId: plainRoomId });
+				await Promise.all(createdInviteIds.map((id) => request.delete(`${v1}/removeInvite/${id}`).set(credentials)));
 			});
 		});
 	});
