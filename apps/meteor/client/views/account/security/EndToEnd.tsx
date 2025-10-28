@@ -1,25 +1,35 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
+import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { PassphraseVerifier } from './PassphraseVerifier';
-import { useValidatePassphrase } from './useVerifyPassphrase';
+import { usePasswordPolicy } from './usePasswordPolicy';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
+import { useE2EEState } from '../../room/hooks/useE2EEState';
+
+const PASSWORD_POLICY = Object.freeze({
+	enabled: true,
+	minLength: 30,
+	mustContainAtLeastOneLowercase: true,
+	mustContainAtLeastOneUppercase: true,
+	mustContainAtLeastOneNumber: true,
+	mustContainAtLeastOneSpecialCharacter: true,
+	forbidRepeatingCharacters: false,
+});
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const publicKey = Accounts.storageLocation.getItem('public_key');
-	const privateKey = Accounts.storageLocation.getItem('private_key');
+	const e2eeState = useE2EEState();
 
 	const resetE2EPassword = useResetE2EPasswordMutation();
+	const verify = usePasswordPolicy(PASSWORD_POLICY);
 
 	const {
 		handleSubmit,
@@ -36,13 +46,9 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	const { password } = watch();
 
-	/**
-	 * TODO: We need to figure out a way to make this reactive,
-	 * so the form will allow change password as soon the user enter the current E2EE password
-	 */
-	const keysExist = Boolean(publicKey && privateKey);
+	const keysExist = e2eeState === 'READY' || e2eeState === 'SAVE_PASSWORD';
 
-	const passwordIsValid = useValidatePassphrase(password);
+	const { valid, validations } = verify(password);
 
 	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
 		try {
@@ -97,7 +103,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 								)}
 							/>
 						</FieldRow>
-						{keysExist && <PassphraseVerifier passphrase={password} id={passphraseVerifierId} />}
+						{keysExist && <PasswordVerifierList id={passphraseVerifierId} validations={validations} />}
 						{!keysExist && (
 							<FieldHint id={`${passwordId}-hint`}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
@@ -121,7 +127,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 							</FieldError>
 						)}
 					</Field>
-					{passwordIsValid && (
+					{valid && (
 						<Field>
 							<FieldLabel htmlFor={passwordConfirmId}>{t('Confirm_new_E2EE_password')}</FieldLabel>
 							<FieldRow>
@@ -153,7 +159,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				</FieldGroup>
 				<Button
 					primary
-					disabled={!(keysExist && isValid && passwordIsValid)}
+					disabled={!(keysExist && isValid && valid)}
 					onClick={handleSubmit(saveNewPassword)}
 					mbs={12}
 					data-qa-type='e2e-encryption-save-password-button'

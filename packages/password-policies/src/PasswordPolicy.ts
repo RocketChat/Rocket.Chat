@@ -1,11 +1,24 @@
 import { PasswordPolicyError } from './PasswordPolicyError';
 
+export type PasswordPolicyOptions = {
+	enabled?: boolean | undefined;
+	minLength?: number | undefined;
+	maxLength?: number | undefined;
+	forbidRepeatingCharacters?: boolean | undefined;
+	forbidRepeatingCharactersCount?: number | undefined;
+	mustContainAtLeastOneLowercase?: boolean | undefined;
+	mustContainAtLeastOneUppercase?: boolean | undefined;
+	mustContainAtLeastOneNumber?: boolean | undefined;
+	mustContainAtLeastOneSpecialCharacter?: boolean | undefined;
+	throwError?: boolean | undefined;
+};
+
 type PasswordPolicyType = {
 	enabled: boolean;
 	policy: [name: string, options?: Record<string, unknown>][];
 };
 
-type ValidationMessageType = {
+export type PasswordPolicyValidation = {
 	name: string;
 	isValid: boolean;
 	limit?: number;
@@ -51,7 +64,7 @@ export class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	}) {
+	}: PasswordPolicyOptions) {
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
@@ -87,12 +100,8 @@ export class PasswordPolicy {
 		return false;
 	}
 
-	sendValidationMessage(password: string): {
-		name: string;
-		isValid: boolean;
-		limit?: number;
-	}[] {
-		const validationReturn: ValidationMessageType[] = [];
+	sendValidationMessage(password: string): PasswordPolicyValidation[] {
+		const validationReturn: PasswordPolicyValidation[] = [];
 
 		if (!this.enabled) {
 			return [];
