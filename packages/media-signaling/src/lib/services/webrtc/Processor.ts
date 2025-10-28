@@ -49,11 +49,28 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private addedEmptyTransceiver = false;
 
+	private _audioLevelTracker: ReturnType<typeof setInterval> | null;
+
+	private _audioLevel: number;
+
+	public get audioLevel(): number {
+		return this._audioLevel;
+	}
+
+	private _localAudioLevel: number;
+
+	public get localAudioLevel(): number {
+		return this._localAudioLevel;
+	}
+
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
+		this._audioLevel = 0;
+		this._localAudioLevel = 0;
+		this._audioLevelTracker = null;
 
 		this.peer = new RTCPeerConnection(config.rtc);
 
@@ -62,6 +79,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.emitter = new Emitter();
 		this.registerPeerEvents();
+
+		this.registerAudioLevelTracker();
 	}
 
 	public getRemoteMediaStream() {
@@ -138,6 +157,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.remoteStream.stopAudio();
 		this.unregisterPeerEvents();
+		this.unregisterAudioLevelTracker();
 
 		this.peer.close();
 	}
@@ -212,6 +232,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				}
 				return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
 		}
+	}
+
+	public async getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null> {
+		if (this.stopped) {
+			return null;
+		}
+
+		return this.peer.getStats(selector);
 	}
 
 	private changeInternalState(stateName: keyof WebRTCInternalStateMap): void {
@@ -303,6 +331,51 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 	}
 
+	private registerAudioLevelTracker() {
+		if (this._audioLevelTracker) {
+			this.unregisterAudioLevelTracker();
+		}
+
+		this._audioLevelTracker = setInterval(() => {
+			this.getStats()
+				.then((stats) => {
+					if (!stats) {
+						return;
+					}
+
+					stats.forEach((report) => {
+						if (report.kind !== 'audio') {
+							return;
+						}
+
+						switch (report.type) {
+							case 'inbound-rtp':
+								this._audioLevel = report.audioLevel ?? 0;
+								break;
+							case 'media-source':
+								this._localAudioLevel = report.audioLevel ?? 0;
+								break;
+						}
+					});
+				})
+				.catch(() => {
+					this._audioLevel = 0;
+					this._localAudioLevel = 0;
+				});
+		}, 50);
+	}
+
+	private unregisterAudioLevelTracker() {
+		if (!this._audioLevelTracker) {
+			return;
+		}
+
+		clearInterval(this._audioLevelTracker);
+		this._audioLevelTracker = null;
+		this._audioLevel = 0;
+		this._localAudioLevel = 0;
+	}
+
 	private restartIce() {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.restartIce');
 		this.startNewNegotiation();
@@ -325,7 +398,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceCandidateError');
 		this.config.logger?.error(event);
-		this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
+
+		this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error', errorDetails: JSON.stringify(event) });
 	}
 
 	private onNegotiationNeeded() {

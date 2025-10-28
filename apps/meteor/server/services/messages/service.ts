@@ -85,6 +85,48 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(fromId, { rid, msg });
 	}
 
+	async saveMessageFromFederation({
+		fromId,
+		rid,
+		federation_event_id,
+		msg,
+		e2e_content,
+		file,
+		files,
+		attachments,
+		thread,
+	}: {
+		fromId: string;
+		rid: string;
+		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: 'm.megolm.v1.aes-sha2';
+			ciphertext: string;
+		};
+		file?: IMessage['file'];
+		files?: IMessage['files'];
+		attachments?: IMessage['attachments'];
+		thread?: { tmid: string; tshow: boolean };
+	}): Promise<IMessage> {
+		return executeSendMessage(fromId, {
+			rid,
+			msg,
+			...thread,
+			federation: {
+				eventId: federation_event_id,
+				version: 1,
+			},
+			...(file && { file }),
+			...(files && { files }),
+			...(attachments && { attachments }),
+			...(e2e_content && {
+				t: 'e2e',
+				content: e2e_content,
+			}),
+		});
+	}
+
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
 		return sendMessage(user, message, room, upsert);
 	}

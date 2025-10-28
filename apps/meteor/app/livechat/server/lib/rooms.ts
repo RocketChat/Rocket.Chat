@@ -1,4 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+import { Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IMessage,
@@ -8,6 +9,7 @@ import type {
 	IOmnichannelRoom,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
 	LivechatContacts,
@@ -211,11 +213,15 @@ export async function saveRoomInfo(
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
 	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
 	if (!room.open) {
-		throw new Meteor.Error('room-closed');
+		throw new Meteor.Error('room-closed', 'Room closed');
 	}
 
 	if (room.onHold) {
 		throw new Meteor.Error('error-room-onHold');
+	}
+
+	if (!(await Omnichannel.isWithinMACLimit(room))) {
+		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
 	if (!room.servedBy) {
@@ -260,6 +266,14 @@ export async function removeOmnichannelRoom(rid: string) {
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+	}
+
+	if (!isOmnichannelRoom(room)) {
+		throw new Meteor.Error('error-this-is-not-a-livechat-room');
+	}
+
+	if (room.open) {
+		throw new Meteor.Error('error-room-is-not-closed');
 	}
 
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid);

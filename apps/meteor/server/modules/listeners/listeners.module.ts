@@ -185,6 +185,10 @@ export class ListenersModule {
 			});
 		});
 
+		service.onEvent('user.activity', ({ isTyping, roomId, user }) => {
+			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
+		});
+
 		service.onEvent('watch.messages', async ({ message }) => {
 			if (!message.rid) {
 				return;

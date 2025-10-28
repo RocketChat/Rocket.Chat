@@ -282,6 +282,77 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'chat.update',
+		{
+			authRequired: true,
+			body: isChatUpdateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { bodyParams } = this;
+
+			const msg = await Messages.findOneById(bodyParams.msgId);
+
+			// Ensure the message exists
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
+			}
+
+			if (bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			const hasContent = 'content' in bodyParams;
+
+			if (hasContent && msg.t !== 'e2e') {
+				return API.v1.failure('Only encrypted messages can have content updated.');
+			}
+
+			const updateData: Parameters<typeof executeUpdateMessage> = [
+				this.userId,
+				hasContent
+					? {
+							_id: msg._id,
+							rid: msg.rid,
+							content: bodyParams.content,
+							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
+						}
+					: {
+							_id: msg._id,
+							rid: msg.rid,
+							msg: bodyParams.text,
+							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+						},
+				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
+			];
+
+			// Permission checks are already done in the updateMessage method, so no need to duplicate them
+			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(...updateData));
+
+			const updatedMessage = await Messages.findOneById(msg._id);
+			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -417,48 +488,6 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.update',
-	{ authRequired: true, validateParams: isChatUpdateProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId);
-
-			// Ensure the message exists
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			const msgFromBody = this.bodyParams.text;
-
-			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() =>
-				executeUpdateMessage(
-					this.userId,
-					{
-						_id: msg._id,
-						msg: msgFromBody,
-						rid: msg.rid,
-						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
-					},
-					this.bodyParams.previewUrls,
-				),
-			);
-
-			const updatedMessage = await Messages.findOneById(msg._id);
-			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
-
-			return API.v1.success({
-				message,
-			});
 		},
 	},
 );
