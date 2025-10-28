@@ -15,7 +15,7 @@ import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 const AdminABACRoute = (): ReactElement => {
 	const { t } = useTranslation();
 	// TODO: Check what permission is needed to view the ABAC page
-	const canViewABACPage = usePermission('manage-cloud');
+	const canViewABACPage = !usePermission('dummy');
 	const hasABAC = useHasLicenseModule('abac') === true;
 	const isModalOpen = !!useCurrentModal();
 	const tab = useRouteParameter('tab');

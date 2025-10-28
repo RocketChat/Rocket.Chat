@@ -68,7 +68,8 @@ export const {
 		href: '/admin/ABAC',
 		i18nLabel: 'ABAC',
 		icon: 'team-lock',
-		permissionGranted: (): boolean => hasPermission('manage-cloud'),
+		// TODO: Check what permission is needed to view the ABAC page
+		permissionGranted: (): boolean => !hasPermission('dummy'),
 	},
 	{
 		href: '/admin/device-management',
