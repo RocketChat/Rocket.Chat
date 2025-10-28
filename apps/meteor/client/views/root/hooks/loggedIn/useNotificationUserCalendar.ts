@@ -24,7 +24,7 @@ export const useNotificationUserCalendar = (user: IUser) => {
 					minute: 'numeric',
 					dayPeriod: 'narrow',
 				});
-				body = `${notification.text} - ${formattedTime}`;
+				body = formattedTime;
 			} catch (error) {
 				console.error('Failed to format calendar notification time:', error);
 				body = notification.text;
