@@ -8,7 +8,7 @@ function sanitizeForMatrixLocalpart(username: string): string {
 	}
 
 	let sanitized = username.toLowerCase().replace(/[^a-z0-9._=-]/g, '_');
-	sanitized = sanitized.replace(/^_+|_+$/g, '');
+	sanitized = sanitized.replace(/^_+/, '').replace(/_+$/, '');
 
 	if (sanitized.length === 0) {
 		sanitized = 'user';
@@ -64,10 +64,7 @@ export function validateFederatedUsername(mxid: string): mxid is UserID {
 	return true;
 }
 
-export function getUserMatrixId(
-	user: Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>,
-	serverName: string,
-): UserID {
+export function getUserMatrixId(user: Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>, serverName: string): UserID {
 	if (isUserNativeFederated(user)) {
 		if (!user.federation.mui) {
 			throw new Error(`Native federated user ${user._id} is missing Matrix ID (mui)`);
