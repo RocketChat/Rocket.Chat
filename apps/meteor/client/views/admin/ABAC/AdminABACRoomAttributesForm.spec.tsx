@@ -55,7 +55,13 @@ describe('AdminABACRoomAttributesForm', () => {
 
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 		const { baseElement } = render(<Story />, { wrapper: appRoot });
-		expect(baseElement).toMatchSnapshot();
+		// React Hook Forms Array fields use random uuid for each field, instead of changing the component to match the test
+		// the snapshot content is edited to remove the offending ids
+		const htmlContent = baseElement.innerHTML.replace(
+			/id="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/g,
+			'id="mock-uuid"',
+		);
+		expect(htmlContent).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
