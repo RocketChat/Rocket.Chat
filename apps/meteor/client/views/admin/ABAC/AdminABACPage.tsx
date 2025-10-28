@@ -15,12 +15,15 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const { t } = useTranslation();
 	const tab = useRouteParameter('tab');
 	const learnMore = useExternalLink();
+	// TODO: replace both links with an go.rocket.chat link
+	const documentationUrl = '#';
+	const licenseRenewalUrl = '#';
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('ABAC')}>
-					<Button icon='new-window' secondary onClick={() => learnMore('https://rocket.chat/docs/abac')}>
+					<Button icon='new-window' secondary onClick={() => learnMore(documentationUrl)}>
 						{t('ABAC_Learn_More')}
 					</Button>
 				</PageHeader>
@@ -29,9 +32,8 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 						<Callout type='warning' title={t('ABAC_automatically_disabled_callout')}>
 							{/* TODO: get documentation URL */}
 							<Trans i18nKey='ABAC_automatically_disabled_callout_description'>
-								Renew your license to continue using all
-								<a href='https://rocket.chat/docs/abac' rel='noopener noreferrer' target='_blank'>
-									{' '}
+								Renew your license to continue using all{' '}
+								<a href={licenseRenewalUrl} rel='noopener noreferrer' target='_blank'>
 									ABAC capabilities without restriction.
 								</a>
 							</Trans>
