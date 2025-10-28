@@ -2,7 +2,8 @@ import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { canAccessEvent } from '../middlewares';
+import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
@@ -252,12 +253,74 @@ const GetStateResponseSchema = {
 
 const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
 
+const BackfillParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			pattern: '^![A-Za-z0-9_=\\/.+-]+:(.+)$',
+			description: 'Matrix room ID',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isBackfillParamsProps = ajv.compile(BackfillParamsSchema);
+
+const BackfillQuerySchema = {
+	type: 'object',
+	properties: {
+		limit: {
+			type: 'number',
+			minimum: 1,
+			maximum: 100,
+			description: 'Maximum number of events to retrieve',
+		},
+		v: {
+			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+			description: 'Event ID(s) to backfill from',
+		},
+	},
+	required: ['limit', 'v'],
+	additionalProperties: false,
+};
+
+const isBackfillQueryProps = ajv.compile<{
+	limit: number;
+	v: string | string[];
+}>(BackfillQuerySchema);
+
+const BackfillResponseSchema = {
+	type: 'object',
+	properties: {
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
+		pdus: {
+			type: 'array',
+			items: EventBaseSchema,
+			description: 'Events in reverse chronological order',
+		},
+	},
+	required: ['origin', 'origin_server_ts', 'pdus'],
+};
+
+const isBackfillResponseProps = ajv.compile(BackfillResponseSchema);
+
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 	const { event, federationAuth } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
+			.use(isAuthenticatedMiddleware(federationAuth))
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -304,7 +367,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 			)
 
 			// GET /_matrix/federation/v1/state_ids/{roomId}
-
 			.get(
 				'/v1/state_ids/:roomId',
 				{
@@ -313,6 +375,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateIdsResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -343,6 +406,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateResponseProps,
 					},
 				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -374,7 +438,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				canAccessEvent(federationAuth),
+				canAccessResourceMiddleware(federationAuth, 'event'),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {
@@ -395,6 +459,51 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						},
 						statusCode: 200,
 					};
+				},
+			)
+			// GET /_matrix/federation/v1/backfill/{roomId}
+			.get(
+				'/v1/backfill/:roomId',
+				{
+					params: isBackfillParamsProps,
+					query: isBackfillQueryProps,
+					response: {
+						200: isBackfillResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				canAccessResourceMiddleware(federationAuth, 'room'),
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const limit = Number(c.req.query('limit') || 100);
+					const eventIds = c.req.queries('v');
+					if (!eventIds?.length) {
+						return {
+							body: {
+								errcode: 'M_BAD_REQUEST',
+								error: 'Event ID must be provided in v query parameter',
+							},
+							statusCode: 400,
+						};
+					}
+
+					try {
+						const result = await event.getBackfillEvents(roomId, eventIds as EventID[], limit);
+
+						return {
+							body: result,
+							statusCode: 200,
+						};
+					} catch (error) {
+						return {
+							body: {
+								errcode: 'M_UNKNOWN',
+								error: 'Failed to get backfill events',
+							},
+							statusCode: 500,
+						};
+					}
 				},
 			)
 	);

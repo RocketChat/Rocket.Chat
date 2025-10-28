@@ -3,15 +3,18 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
 import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
+import { useOmnichannelEnabled } from '../../../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
+import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import GenericError from '../../../../GenericError';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
@@ -27,6 +30,7 @@ type OutboundMessageWizardProps = {
 
 const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastBarDispatch();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
@@ -34,6 +38,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	const templates = sender ? provider?.templates[sender] : [];
 	const upsellModal = useOutboundMessageUpsellModal();
 
+	const isOmnichannelEnabled = useOmnichannelEnabled();
 	const hasOmnichannelModule = useHasLicenseModule('livechat-enterprise');
 	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
 	const hasOutboundPermission = usePermission('outbound.send-messages');
@@ -63,11 +68,23 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 		],
 	});
 
-	useEffect(() => {
-		if (!isLoadingProviders && !isLoadingModule && (!hasOutboundModule || !hasProviders)) {
+	useEffect(
+		() => () => {
+			// Clear cached providers and metadata on unmount to avoid stale data
+			void queryClient.removeQueries({ queryKey: omnichannelQueryKeys.outboundProviders() });
+		},
+		[queryClient],
+	);
+
+	useLayoutEffect(() => {
+		if (isLoadingModule || isLoadingProviders) {
+			return;
+		}
+
+		if (!hasOmnichannelModule || !hasOutboundModule || !hasProviders) {
 			upsellModal.open();
 		}
-	}, [hasOutboundModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
+	}, [hasOmnichannelModule, hasOutboundModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
 
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
 		if (!hasOutboundModule) {
@@ -130,6 +147,10 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	const handleDirtyStep = useEffectEvent(() => {
 		wizardApi.resetNextSteps();
 	});
+
+	if (!isOmnichannelEnabled) {
+		return <OutboundMessageWizardErrorState title={t('error-not-authorized')} description={t('Omnichannel_is_not_enabled')} />;
+	}
 
 	if (!hasOutboundPermission) {
 		return (
