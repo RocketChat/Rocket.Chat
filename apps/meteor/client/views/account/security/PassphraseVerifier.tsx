@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { PasswordVerifierItem } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PassphraseVerifierItem } from './PassphraseVerifierItem';
 import { useVerifyPassphrase } from './useVerifyPassphrase';
 
 type PassphraseVerifierProps = {
@@ -11,17 +11,11 @@ type PassphraseVerifierProps = {
 	vertical?: boolean;
 };
 
-type PassphraseVerificationProps = {
-	name: string;
-	isValid: boolean;
-	limit?: number;
-}[];
-
 export const PassphraseVerifier = ({ passphrase, id, vertical }: PassphraseVerifierProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useId();
 
-	const passphraseVerifications: PassphraseVerificationProps = useVerifyPassphrase(passphrase || '');
+	const passphraseVerifications = useVerifyPassphrase(passphrase || '');
 
 	if (!passphraseVerifications?.length) {
 		return <span id={id} hidden></span>;
@@ -38,7 +32,7 @@ export const PassphraseVerifier = ({ passphrase, id, vertical }: PassphraseVerif
 				</Box>
 				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>
 					{passphraseVerifications.map(({ isValid, limit, name }) => (
-						<PassphraseVerifierItem
+						<PasswordVerifierItem
 							key={name}
 							text={t(`${name}-label`, { limit })}
 							isValid={isValid}
