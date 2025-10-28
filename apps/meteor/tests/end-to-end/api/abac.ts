@@ -1080,7 +1080,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 				roomWithAttr = (await createRoom({ type: 'p', name: `abac-type-room-with-attr-${Date.now()}` })).body.group._id;
 				await request
-					.post(`${v1}/abac/room/${roomWithAttr}/attributes/${attrKey}`)
+					.post(`${v1}/abac/rooms/${roomWithAttr}/attributes/${attrKey}`)
 					.set(credentials)
 					.send({ values: ['val1'] })
 					.expect(200);
@@ -1088,7 +1088,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				roomWithAttrAbacDisabled = (await createRoom({ type: 'p', name: `abac-type-room-with-attr-disabled-${Date.now()}` })).body.group
 					._id;
 				await request
-					.post(`${v1}/abac/room/${roomWithAttrAbacDisabled}/attributes/${attrKey}`)
+					.post(`${v1}/abac/rooms/${roomWithAttrAbacDisabled}/attributes/${attrKey}`)
 					.set(credentials)
 					.send({ values: ['val2'] })
 					.expect(200);
@@ -1170,7 +1170,7 @@ import { IS_EE } from '../../e2e/config/constants';
 					.expect(200);
 				mainRoomIdWithAttr = teamWithAttrRes.body.team.roomId;
 				await request
-					.post(`${v1}/abac/room/${mainRoomIdWithAttr}/attributes/${attrKeyTeam}`)
+					.post(`${v1}/abac/rooms/${mainRoomIdWithAttr}/attributes/${attrKeyTeam}`)
 					.set(credentials)
 					.send({ values: ['alpha'] })
 					.expect(200);
@@ -1182,7 +1182,7 @@ import { IS_EE } from '../../e2e/config/constants';
 					.expect(200);
 				mainRoomIdWithAttrAbacDisabled = teamWithAttrDisRes.body.team.roomId;
 				await request
-					.post(`${v1}/abac/room/${mainRoomIdWithAttrAbacDisabled}/attributes/${attrKeyTeam}`)
+					.post(`${v1}/abac/rooms/${mainRoomIdWithAttrAbacDisabled}/attributes/${attrKeyTeam}`)
 					.set(credentials)
 					.send({ values: ['beta'] })
 					.expect(200);
