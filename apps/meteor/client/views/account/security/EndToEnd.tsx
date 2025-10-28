@@ -7,6 +7,8 @@ import { useId, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { PassphraseVerifier } from './PassphraseVerifier';
+import { useValidatePassphrase } from './useVerifyPassphrase';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
 
@@ -40,7 +42,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	 */
 	const keysExist = Boolean(publicKey && privateKey);
 
-	const hasTypedPassword = Boolean(password?.trim().length);
+	const passwordIsValid = useValidatePassphrase(password);
 
 	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
 		try {
@@ -61,6 +63,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const passwordId = useId();
 	const e2ePasswordExplanationId = useId();
 	const passwordConfirmId = useId();
+	const passphraseVerifierId = useId();
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
@@ -94,6 +97,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 								)}
 							/>
 						</FieldRow>
+						{keysExist && <PassphraseVerifier passphrase={password} id={passphraseVerifierId} />}
 						{!keysExist && (
 							<FieldHint id={`${passwordId}-hint`}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
@@ -117,7 +121,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 							</FieldError>
 						)}
 					</Field>
-					{hasTypedPassword && (
+					{passwordIsValid && (
 						<Field>
 							<FieldLabel htmlFor={passwordConfirmId}>{t('Confirm_new_E2EE_password')}</FieldLabel>
 							<FieldRow>
@@ -149,7 +153,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				</FieldGroup>
 				<Button
 					primary
-					disabled={!(keysExist && isValid)}
+					disabled={!(keysExist && isValid && passwordIsValid)}
 					onClick={handleSubmit(saveNewPassword)}
 					mbs={12}
 					data-qa-type='e2e-encryption-save-password-button'
