@@ -74,6 +74,6 @@ export interface ICalendarNotification {
 	text: string;
 	payload: {
 		_id: ICalendarEvent['_id'];
-		tsUTC?: string;
+		startTimeUtc?: string;
 	};
 }
