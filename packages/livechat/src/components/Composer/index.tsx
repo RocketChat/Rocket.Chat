@@ -53,6 +53,7 @@ type ComposerProps = {
 	post?: ComponentChildren;
 	notifyEmojiSelect?: (cb: (emoji: string) => void) => void;
 	limitTextLength?: number;
+	inputLock: boolean;
 };
 
 type ComposerState = {
@@ -164,7 +165,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 	constructor(props: ComposerProps) {
 		super(props);
 		this.state = {
-			inputLock: false,
+			inputLock: this.props.inputLock || false,
 		};
 		this.value = this.props.value;
 		this.handleNotifyEmojiSelect = this.handleNotifyEmojiSelect.bind(this);
@@ -174,36 +175,47 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 		}
 	}
 
+	static getDerivedStateFromProps(nextProps: ComposerProps, prevState: ComposerState) {
+		if (nextProps.inputLock !== prevState.inputLock) {
+			return { inputLock: nextProps.inputLock };
+		}
+		return null;
+	}
+
 	// we only update composer if value length changed from 0 to 1 or 1 to 0
 	// everything else is managed by this.el
-	shouldComponentUpdate({ value: nextValue = '' }: ComposerProps) {
+	shouldComponentUpdate(nextProps: ComposerProps) {
 		const { value = '', limitTextLength } = this.props;
+		const { inputLock: nextInputLock } = nextProps;
+		const { inputLock: stateInputLock } = this.state;
 
-		const nextValueEmpty = !nextValue || nextValue.length === 0;
+		const nextValueEmpty = !nextProps.value || nextProps.value.length === 0;
 		const valueEmpty = !value || value.length === 0;
 
+		if (nextInputLock !== stateInputLock) {
+			return true;
+		}
 		if (nextValueEmpty !== valueEmpty) {
 			return true;
 		}
 
-		if (nextValue.length === limitTextLength || value.length === limitTextLength) {
+		if (nextProps.value?.length === limitTextLength || value.length === limitTextLength) {
 			return true;
 		}
 
 		return false;
 	}
 
-	componentDidUpdate() {
-		const { el } = this;
-		if (!el) {
-			return;
-		}
 
-		if (this.props.value !== el.innerHTML) {
+	componentDidUpdate(prevProps: ComposerProps) {
+		const { el } = this;
+		if (!el) return;
+
+		if (this.props.value !== prevProps.value) {
 			this.value = this.props.value ?? '';
 			el.innerHTML = this.value;
+			replaceCaret(el);
 		}
-		replaceCaret(el);
 	}
 
 	handleNotifyEmojiSelect(emoji: string) {
@@ -274,7 +286,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 				data-placeholder={placeholder}
 				data-qa='livechat-composer'
 				onInput={this.handleInput(onChange)}
-				onKeyPress={this.handleKeypress(onSubmit)}
+				onKeyPress={this.state.inputLock ? () => { } : this.handleKeypress(onSubmit)}
 				onPaste={this.handlePaste(onUpload)}
 				onDrop={this.handleDrop(onUpload)}
 				onClick={this.handleClick}

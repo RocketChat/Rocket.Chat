@@ -389,6 +389,7 @@ class Chat extends Component {
 							{t('chat_now')}
 						</Button>
 					) : (
+
 						<Composer
 							onUpload={onUpload}
 							onSubmit={this.handleSubmit}
@@ -398,6 +399,7 @@ class Chat extends Component {
 							notifyEmojiSelect={(click) => {
 								this.notifyEmojiSelect = click;
 							}}
+							inputLock={typingUsernames && typingUsernames.length ? true : false}
 							handleEmojiClick={this.handleEmojiClick}
 							pre={
 								<ComposerActions>
@@ -414,7 +416,7 @@ class Chat extends Component {
 										</ComposerAction>
 									)}
 									{text.length > 0 && (
-										<ComposerAction onClick={this.handleSendClick} disabled={typingUsernames && typingUsernames.length} >
+										<ComposerAction onClick={this.handleSendClick} >
 											<SendIcon width={20} height={20} />
 										</ComposerAction>
 									)}
