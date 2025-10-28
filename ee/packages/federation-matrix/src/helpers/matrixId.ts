@@ -21,9 +21,86 @@ function sanitizeForMatrixLocalpart(username: string): string {
 	return sanitized;
 }
 
+function validateServerNameFormat(serverName: string): boolean {
+	// Handle IPv6 addresses with brackets - they contain multiple colons
+	let domain: string;
+	let port: string | undefined;
+
+	if (serverName.startsWith('[')) {
+		// IPv6 format: [address] or [address]:port
+		const ipv6Match = serverName.match(/^(\[[0-9a-f:.]+\])(?::(\d+))?$/i);
+		if (!ipv6Match) {
+			return false;
+		}
+		domain = ipv6Match[1];
+		port = ipv6Match[2];
+	} else {
+		// Hostname or IPv4: split on last colon for port
+		const lastColonIndex = serverName.lastIndexOf(':');
+		if (lastColonIndex === -1) {
+			domain = serverName;
+		} else {
+			domain = serverName.substring(0, lastColonIndex);
+			port = serverName.substring(lastColonIndex + 1);
+		}
+	}
+
+	// validate domain (hostname, IPv4, or IPv6)
+	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
+	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
+
+	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
+		return false;
+	}
+
+	if (port !== undefined) {
+		const portNum = Number(port);
+		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 export function constructMatrixId(username: string, serverName: string): UserID {
 	if (!serverName) {
 		throw new Error('Server name cannot be empty');
+	}
+
+	const trimmed = serverName.trim();
+	if (trimmed !== serverName) {
+		throw new Error('Server name cannot contain leading or trailing whitespace');
+	}
+
+	if (/\s/.test(serverName)) {
+		throw new Error('Server name cannot contain spaces');
+	}
+
+	// Check for invalid port specifically to provide a better error message
+	let port: string | undefined;
+	if (serverName.startsWith('[')) {
+		const ipv6Match = serverName.match(/^(\[[0-9a-f:.]+\])(?::(\d+))?$/i);
+		if (ipv6Match) {
+			port = ipv6Match[2];
+		}
+	} else {
+		const lastColonIndex = serverName.lastIndexOf(':');
+		if (lastColonIndex !== -1) {
+			port = serverName.substring(lastColonIndex + 1);
+		}
+	}
+
+	if (port !== undefined) {
+		const portNum = Number(port);
+		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
+			throw new Error(`Invalid port in server name: ${port} (must be 1-65535)`);
+		}
+	}
+
+	if (!validateServerNameFormat(serverName)) {
+		throw new Error(`Invalid server name format: ${serverName}`);
 	}
 
 	const localpart = sanitizeForMatrixLocalpart(username);
@@ -43,25 +120,7 @@ export function validateFederatedUsername(mxid: string): mxid is UserID {
 	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
 	if (!localpartRegex.test(localpart)) return false;
 
-	const [domain, port] = domainAndPort.split(':');
-
-	// validate domain (hostname, IPv4, or IPv6)
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
+	return validateServerNameFormat(domainAndPort);
 }
 
 export function getUserMatrixId(user: Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>, serverName: string): UserID {

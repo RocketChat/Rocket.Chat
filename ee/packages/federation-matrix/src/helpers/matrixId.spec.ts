@@ -40,7 +40,6 @@ describe('Federation - Infrastructure - Matrix - matrixId helpers', () => {
 		});
 	});
 
-
 	describe('#constructMatrixId()', () => {
 		it('should construct valid Matrix ID', () => {
 			expect(constructMatrixId('alice', 'example.com')).toBe('@alice:example.com');
@@ -82,6 +81,46 @@ describe('Federation - Infrastructure - Matrix - matrixId helpers', () => {
 		it('should handle server names with ports', () => {
 			expect(constructMatrixId('alice', 'example.com:8448')).toBe('@alice:example.com:8448');
 		});
+
+		it('should validate server name format: valid hostnames', () => {
+			expect(constructMatrixId('alice', 'example.com')).toBe('@alice:example.com');
+			expect(constructMatrixId('alice', 'sub.domain.example.com')).toBe('@alice:sub.domain.example.com');
+			expect(constructMatrixId('alice', 'localhost')).toBe('@alice:localhost');
+		});
+
+		it('should validate server name format: valid IPv4 addresses', () => {
+			expect(constructMatrixId('alice', '192.168.1.1')).toBe('@alice:192.168.1.1');
+			expect(constructMatrixId('alice', '10.0.0.1')).toBe('@alice:10.0.0.1');
+		});
+
+		it('should validate server name format: valid IPv6 addresses', () => {
+			expect(constructMatrixId('alice', '[::1]')).toBe('@alice:[::1]');
+			expect(constructMatrixId('alice', '[2001:db8::1]')).toBe('@alice:[2001:db8::1]');
+		});
+
+		it('should validate server name format: valid ports', () => {
+			expect(constructMatrixId('alice', 'example.com:8448')).toBe('@alice:example.com:8448');
+			expect(constructMatrixId('alice', 'localhost:8008')).toBe('@alice:localhost:8008');
+			expect(constructMatrixId('alice', '192.168.1.1:8448')).toBe('@alice:192.168.1.1:8448');
+		});
+
+		it('should reject server name with spaces', () => {
+			expect(() => constructMatrixId('alice', 'example .com')).toThrow('Server name cannot contain spaces');
+			expect(() => constructMatrixId('alice', ' example.com')).toThrow('Server name cannot contain leading or trailing whitespace');
+			expect(() => constructMatrixId('alice', 'example.com ')).toThrow('Server name cannot contain leading or trailing whitespace');
+		});
+
+		it('should reject invalid server name formats', () => {
+			expect(() => constructMatrixId('alice', 'invalid..domain')).toThrow('Invalid server name format');
+			expect(() => constructMatrixId('alice', '-invalid.com')).toThrow('Invalid server name format');
+			expect(() => constructMatrixId('alice', 'invalid-.com')).toThrow('Invalid server name format');
+		});
+
+		it('should reject invalid ports', () => {
+			expect(() => constructMatrixId('alice', 'example.com:0')).toThrow('Invalid port in server name: 0 (must be 1-65535)');
+			expect(() => constructMatrixId('alice', 'example.com:99999')).toThrow('Invalid port in server name: 99999 (must be 1-65535)');
+			expect(() => constructMatrixId('alice', 'example.com:abc')).toThrow('Invalid port in server name: abc (must be 1-65535)');
+		});
 	});
 
 	describe('#getUserMatrixId()', () => {
@@ -114,9 +153,7 @@ describe('Federation - Infrastructure - Matrix - matrixId helpers', () => {
 				},
 			} as Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>;
 
-			expect(() => getUserMatrixId(user, mockServerName)).toThrow(
-				'Native federated user user2 is missing Matrix ID (mui)'
-			);
+			expect(() => getUserMatrixId(user, mockServerName)).toThrow('Native federated user user2 is missing Matrix ID (mui)');
 		});
 
 		it('should generate Matrix ID for local user without storing', () => {
@@ -144,9 +181,7 @@ describe('Federation - Infrastructure - Matrix - matrixId helpers', () => {
 				_id: 'user5',
 			} as Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>;
 
-			expect(() => getUserMatrixId(user, mockServerName)).toThrow(
-				'User user5 has no username, cannot generate Matrix ID'
-			);
+			expect(() => getUserMatrixId(user, mockServerName)).toThrow('User user5 has no username, cannot generate Matrix ID');
 		});
 
 		it('should return stored mui even if username changed (immutable)', () => {
