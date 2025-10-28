@@ -12,6 +12,7 @@ const AdminABACWarningModal = ({ onConfirm, onCancel }: AdminABACWarningModalPro
 	const { t } = useTranslation();
 	const router = useRouter();
 	const handleNavigate = () => {
+		onCancel();
 		router.navigate({
 			name: 'admin-ABAC',
 			params: {
