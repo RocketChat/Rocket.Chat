@@ -67,6 +67,9 @@ COPY ./packages/ui-kit/dist packages/ui-kit/dist
 COPY ./packages/http-router/package.json packages/http-router/package.json
 COPY ./packages/http-router/dist packages/http-router/dist
 
+COPY ./packages/abac/package.json packages/abac/package.json
+COPY ./packages/abac/dist packages/abac/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
