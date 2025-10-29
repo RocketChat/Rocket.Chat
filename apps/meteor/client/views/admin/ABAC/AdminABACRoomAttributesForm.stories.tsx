@@ -1,8 +1,6 @@
 import { Contextualbar } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ComponentProps } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AdminABACRoomAttributesForm, { type AdminABACRoomAttributesFormFormData } from './AdminABACRoomAttributesForm';
@@ -18,11 +16,11 @@ export default {
 	decorators: [mockAppRoot().buildStoryDecorator()],
 } satisfies Meta<typeof AdminABACRoomAttributesForm>;
 
-export const Default: StoryFn<ComponentProps<typeof AdminABACRoomAttributesForm>> = (args) => (
-	<AdminABACRoomAttributesForm onSave={action('onSave')} onCancel={action('onCancel')} description={args.description} />
-);
+const Template: StoryFn<typeof AdminABACRoomAttributesForm> = (args) => <AdminABACRoomAttributesForm {...args} />;
 
-Default.decorators = [
+export const NewAttribute = Template.bind({});
+
+NewAttribute.decorators = [
 	(fn) => {
 		const methods = useForm<AdminABACRoomAttributesFormFormData>({
 			defaultValues: {
@@ -43,9 +41,8 @@ Default.decorators = [
 	},
 ];
 
-export const WithLockedAttributes: StoryFn<ComponentProps<typeof AdminABACRoomAttributesForm>> = (args) => (
-	<AdminABACRoomAttributesForm onSave={action('onSave')} onCancel={action('onCancel')} description={args.description} />
-);
+export const WithLockedAttributes = Template.bind({});
+
 WithLockedAttributes.args = {
 	description: 'Attribute values cannot be edited, but can be added or deleted.',
 };
