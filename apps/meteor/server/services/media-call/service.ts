@@ -140,20 +140,20 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return 'transferred';
 		}
 
-		const hasError = call.hangupReason?.includes('error');
-		if (!call.acceptedAt) {
-			if (hasError) {
-				return 'failed';
-			}
-
-			return 'not-answered';
-		}
-
-		if (hasError) {
+		if (call.hangupReason?.includes('error')) {
 			if (!call.activatedAt) {
 				return 'failed';
 			}
+
 			return 'error';
+		}
+
+		if (!call.acceptedAt) {
+			return 'not-answered';
+		}
+
+		if (!call.activatedAt) {
+			return 'failed';
 		}
 
 		return 'ended';
