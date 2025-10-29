@@ -1418,6 +1418,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const accessAttrKey = `access_attr_${Date.now()}`;
 
 		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+
 			await request
 				.post(`${v1}/abac/attributes`)
 				.set(credentials)
