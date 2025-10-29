@@ -13,17 +13,13 @@ inputs:
     required: true
     description: 'Deno version'
     type: string
-  platform:
-    required: false
-    description: 'Platform'
-    default: 'alpine'
   arch:
     required: false
     description: 'Architecture'
     default: 'amd64'
-  build-containers:
+  service:
     required: false
-    description: 'Containers to build along with Rocket.Chat'
+    description: 'Container to build'
     type: string
   turbo-cache:
     required: false
@@ -45,12 +41,6 @@ runs:
   using: composite
 
   steps:
-    # - name: Install system dependencies
-    #   shell: bash
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y build-essential libpng-dev autoconf automake libtool
-
     - name: Login to GitHub Container Registry
       if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@v3
@@ -71,43 +61,19 @@ runs:
         tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
     - name: Restore meteor build
-      if: inputs.build-containers == 'rocketchat'
+      if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@v4
       with:
         name: build
         path: /tmp/build
 
     - name: Unpack meteor build
-      if: inputs.build-containers == 'rocketchat'
+      if: inputs.service == 'rocketchat'
       shell: bash
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
-
-    # - uses: rharkor/caching-for-turbo@v1.8
-    #   # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
-    #   if: inputs.turbo-cache == 'true'
-
-    # - name: Setup NodeJS
-    #   uses: ./.github/actions/setup-node
-    #   if: inputs.setup == 'true'
-    #   with:
-    #     node-version: ${{ inputs.node-version }}
-    #     deno-version: ${{ inputs.deno-version }}
-    #     cache-modules: true
-    #     install: true
-    #     NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
-
-    # - name: Restore turbo build
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: turbo-build
-    #     path: .turbo/cache
-
-    # - run: yarn build
-    #   if: inputs.setup == 'true'
-    #   shell: bash
 
     - name: Set up Docker
       uses: docker/setup-docker-action@v4
@@ -120,27 +86,13 @@ runs:
             }
           }
 
-    # - uses: docker/setup-qemu-action@v3
-    #   with:
-    #     platforms: arm64
-    #     # image: tonistiigi/binfmt:qemu-v10.0.4
-    #     image: tonistiigi/binfmt:qemu-v8.1.5
-
-    # - name: Config QEMU
-    #   shell: bash
-    #   run: echo "QEMU_CPU=max" >> $GITHUB_ENV
-
     - uses: docker/setup-buildx-action@v3
       with:
-        # driver-opts: |
-        #   image=moby/buildkit:v0.13.3
         buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage=4000
 
     - name: Build Docker images
       shell: bash
       run: |
-        args=(${{ inputs.build-containers }})
-
         export DENO_VERSION="${{ inputs.deno-version }}"
 
         if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
@@ -157,57 +109,22 @@ runs:
           --set *.cache-from=type=gha \
           --set *.cache-to=type=gha,mode=max \
           --metadata-file "/tmp/meta.json" \
-          "${args[@]}"
+          "${{ inputs.service }}"
 
-        # mkdir -p /tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}
-        # DIGEST=$(jq -r '.containerimage.digest' "/tmp/meta.json")
-        # # TODO Remove line below
-        # # IMAGE_NO_TAG=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image' | sed 's/:.*$//')
-        # IMAGE_NO_TAG=$(jq -r '.["image.name"] | if type=="array" then .[0] else . end' /tmp/meta.json | sed 's/:.*$//')
-        # echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}/digest.txt"
-
-    # - name: Publish Docker images to GitHub Container Registry
-    #   if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    #   shell: bash
-    #   run: |
-    #     args=(${{ inputs.build-containers }})
-
-    #     docker compose -f docker-compose-ci.yml push "${args[@]}"
-
-    - name: Save digest
-      shell: bash
-      run: |
-        mkdir -p /tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image')
-        IMAGE_NO_TAG=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r '.services["${{ inputs.build-containers }}"].image' | sed 's/:.*$//')
-
-        DIGEST=$(docker buildx imagetools inspect "$IMAGE" | awk '/^Digest:/ {print $2; exit}')
-        if [[ -z "$DIGEST" ]]; then
-          echo "::error::Not possible to get the digest of $IMAGE (tag was already sent to registry?)"
-          exit 1
-        fi
-        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.build-containers }}/${{ inputs.arch }}/digest.txt"
+        mkdir -p /tmp/digests/${{ inputs.service }}/${{ inputs.arch }}
+        DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+        IMAGE_NO_TAG=$(jq -r '.["${{ inputs.service }}"].["image.name"] | if type=="array" then .[0] else . end' /tmp/meta.json | sed 's/:.*$//')
+        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.service }}/${{ inputs.arch }}/digest.txt"
 
     - uses: actions/upload-artifact@v4
       if: inputs.publish-image == 'true'
       with:
-        name: digests-${{ inputs.build-containers }}-${{ inputs.arch }}
+        name: digests-${{ inputs.service }}-${{ inputs.arch }}
         path: /tmp/digests
         retention-days: 5
 
-    - name: Debug BuildKit container
-      if: failure()
-      shell: bash
-      run: |
-        docker ps -a --filter "name=buildx_buildkit" || true
-        ID=$(docker ps -a --filter "name=buildx_buildkit" --format "{{.ID}}" | head -n1)
-        if [ -n "$ID" ]; then
-          echo "Logs do BuildKit ($ID):"
-          docker logs --tail 200 "$ID" || true
-        fi
-
     - name: Clean up temporary files
-      if: inputs.build-containers == 'rocketchat'
+      if: inputs.service == 'rocketchat'
       shell: bash
       run: |
         sudo rm -rf /tmp/build

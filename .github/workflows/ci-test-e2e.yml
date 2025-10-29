@@ -77,7 +77,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '8.2' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Collect Workflow Telemetry
@@ -144,6 +144,7 @@ jobs:
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
           setup: false
+          service: 'rocketchat'
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)

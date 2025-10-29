@@ -283,9 +283,8 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          platform: 'alpine'
           arch: ${{ matrix.arch }}
-          build-containers: ${{ matrix.service }}
+          service: ${{ matrix.service }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build-gh-docker-coverage-publish:
@@ -298,6 +297,8 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: docker/login-action@v3
@@ -324,7 +325,8 @@ jobs:
       - name: Create and push multi-arch manifests
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         run: |
-          set -euo pipefail
+          # set -euo pipefail
+          set -o xtrace
           shopt -s nullglob
 
           for service_dir in /tmp/digests/*; do
@@ -351,19 +353,17 @@ jobs:
               fi
             done
 
-            echo "Digest for $service: ${refs[@]}"
+            echo "Digest for ${service}: ${refs[@]}"
 
-            if [[ "$service" == "rocketchat" ]]; then
-              docker buildx imagetools create \
-                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}" \
-                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}.alpine" \
-                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}.official" \
-                ${refs[@]}
-            else
-              docker buildx imagetools create \
-                --tag "ghcr.io/${LOWERCASE_REPOSITORY}/${service}:${DOCKER_TAG}" \
-                ${refs[@]}
-            fi
+            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
+
+            echo $IMAGE
+
+            docker buildx imagetools create \
+              --debug \
+              --tag "${IMAGE}" \
+              ${refs[@]}
           done
 
   build-gh-docker:
@@ -375,11 +375,6 @@ jobs:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: ['alpine']
-
     steps:
       - uses: actions/checkout@v4
 
@@ -389,20 +384,19 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          platform: 'alpine'
+          service: 'rocketchat'
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == needs.release-versions.outputs.official-platform
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} $IMAGE_NAME_BASE
+          docker tag ${IMAGE_NAME_BASE}.alpine $IMAGE_NAME_BASE
           docker push $IMAGE_NAME_BASE
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
+          docker tag ${IMAGE_NAME_BASE}.alpine ${IMAGE_NAME_BASE}.official
           docker push ${IMAGE_NAME_BASE}.official
 
   checks:
