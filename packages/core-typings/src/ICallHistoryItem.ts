@@ -40,7 +40,7 @@ export interface IInternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	rid?: IRoom['_id'];
 }
 
-// TODO: IExternalMediaCallHistoryItem
-// TODO: IVideoConfHistoryItem
+// TODO: IExternalMediaCallHistoryItem, planned for 8.0
+// TODO: IVideoConfHistoryItem, expected in the future but not yet on the roadmap
 
 export type CallHistoryItem = IInternalMediaCallHistoryItem;
