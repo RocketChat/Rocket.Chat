@@ -39,6 +39,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 export type WebRTCProcessorConfig = {
 	call: IClientMediaCall;
+	polite: boolean;
 	inputTrack: MediaStreamTrack | null;
 	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;

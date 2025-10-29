@@ -179,8 +179,33 @@ export class UserActorSignalProcessor {
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
-		// If the negotiation that triggered a request for renegotiation is not the latest negotiation, then a new one must already be happening and we can ignore this request.
-		if (negotiation?._id !== oldNegotiationId) {
+
+		// Negotiations requested by the caller must always be completed before any new negotiation may start
+		if (negotiation?.offerer === 'caller') {
+			// TODO: check if we need to queue this request instead of ignore it
+			if (!negotiation.answer) {
+				logger.debug({
+					msg: 'Ignoring renegotiation request due to a previous impolite negotiation',
+					requestedByRole: this.role,
+				});
+				return;
+			}
+
+			// If there's an impolite negotiation that has an answer but has not been reported as stable yet
+			if (!negotiation.stableTimestamp) {
+				// TODO: Make clients send signaling-state in the negotiation-needed signal
+				logger.warn({
+					msg: 'A renegotiation was requested before the last one was confirmed as stable',
+					method: 'UserActorSignalProcessor.processNegotiationNeeded',
+					requestedByRole: this.role,
+				});
+			}
+		}
+
+		const comingFromLatest = oldNegotiationId === negotiation?._id;
+
+		// If the negotiation that triggered a request for renegotiation is not the latest, then a new one must already be happening.
+		if (!comingFromLatest) {
 			return;
 		}
 
