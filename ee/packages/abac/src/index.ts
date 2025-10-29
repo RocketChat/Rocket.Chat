@@ -442,6 +442,43 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}));
 	}
 
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
+		if (!usernames.length || !attributes.length) {
+			return;
+		}
+
+		const nonComplianceConditions = this.buildNonCompliantConditions(attributes);
+		const nonCompliantUsersFromList = await Users.find(
+			{
+				username: { $in: usernames },
+				$or: nonComplianceConditions,
+			},
+			{ projection: { username: 1 } },
+		)
+			.map((u) => u.username as string)
+			.toArray();
+
+		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
+		const existingSet = new Set<string>(usernames);
+		for (const uname of usernames) {
+			if (!existingSet.has(uname)) {
+				nonCompliantSet.add(uname);
+			}
+		}
+		if (nonCompliantSet.size) {
+			// Note: open to suggestions, or if it's actually needed. My idea is to return the list of non compliant users, but our current errors dont' allow that
+			// Maybe we should just throw a generic error? idk. I may create a custom error just for this
+			const err = new Error('error-usernames-not-matching-abac-attributes');
+			(err as any).details = Array.from(nonCompliantSet);
+			throw err;
+		}
+
+		this.logger.debug({
+			msg: 'User list complied with ABAC attributes for room',
+			usernames,
+		});
+	}
+
 	protected async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
