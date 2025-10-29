@@ -122,7 +122,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			}),
 		]);
 
-		// TODO: If there's a `rid`, send a message in that room
+		// TODO: If there's a `rid`, send a message in that room - planned for 7.13
 	}
 
 	private getCallDuration(call: IMediaCall): number {
