@@ -4,6 +4,7 @@ import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
+import type { ReactNode } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AdminABACRoomAttributesForm, { type AdminABACRoomAttributesFormFormData } from './AdminABACRoomAttributesForm';
@@ -26,7 +27,7 @@ const FormProviderWrapper = ({
 	children,
 	defaultValues,
 }: {
-	children: React.ReactNode;
+	children: ReactNode;
 	defaultValues?: Partial<AdminABACRoomAttributesFormFormData>;
 }) => {
 	const methods = useForm<AdminABACRoomAttributesFormFormData>({
