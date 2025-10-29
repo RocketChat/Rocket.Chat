@@ -1,7 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -9,7 +10,20 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
+
+// NOTE: This manipulates the DB directly to add ABAC attributes to a user
+// The idea is to avoid having to go through LDAP to add info to the user
+let connection: MongoClient;
+const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
+	await connection.db().collection('users').updateOne(
+		{
+			// @ts-expect-error - collection types for _id
+			_id: userId,
+		},
+		{ $set: { abacAttributes } },
+	);
+};
 
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
@@ -28,6 +42,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		connection = await MongoClient.connect(URL_MONGODB);
+
 		await updatePermission('abac-management', ['admin']);
 		await updateSetting('ABAC_Enabled', true);
 
@@ -40,6 +56,9 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(async () => {
 		await deleteRoom({ type: 'p', roomId: testRoom._id });
 		await deleteUser(unauthorizedUser);
+		await updateSetting('ABAC_Enabled', false);
+
+		await connection.close();
 	});
 
 	const v1 = '/api/v1';
@@ -1233,6 +1252,162 @@ import { IS_EE } from '../../e2e/config/constants';
 					.expect((res) => {
 						expect(res.body.success).to.be.true;
 					});
+			});
+		});
+
+		describe('Invite links & ABAC management', () => {
+			const inviteAttrKey = `invite_attr_${Date.now()}`;
+			const validateAttrKey = `invite_val_attr_${Date.now()}`;
+			let managedRoomId: string;
+			let plainRoomId: string;
+			let plainRoomInviteToken: string;
+			const createdInviteIds: string[] = [];
+
+			before(async () => {
+				await updatePermission('create-invite-links', ['admin']);
+				await updateSetting('ABAC_Enabled', true);
+			});
+
+			it('should create an invite link for a private room without ABAC attributes when ABAC is enabled', async () => {
+				const plainRoom = (await createRoom({ type: 'p', name: `invite-plain-${Date.now()}` })).body.group;
+				plainRoomId = plainRoom._id;
+
+				await request
+					.post(`${v1}/findOrCreateInvite`)
+					.set(credentials)
+					.send({ rid: plainRoomId, days: 1, maxUses: 0 })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rid', plainRoomId);
+						expect(res.body).to.have.property('days', 1);
+						expect(res.body).to.have.property('maxUses', 0);
+						plainRoomInviteToken = res.body._id;
+						createdInviteIds.push(plainRoomInviteToken);
+					});
+			});
+
+			it('validateInviteToken should return valid=true for token from non-ABAC managed room', async () => {
+				await request
+					.post(`${v1}/validateInviteToken`)
+					.send({ token: plainRoomInviteToken })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('valid', true);
+					});
+			});
+
+			it('validateInviteToken should return valid=false for random invalid token', async () => {
+				await request
+					.post(`${v1}/validateInviteToken`)
+					.send({ token: 'invalid123' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('valid', false);
+					});
+			});
+
+			it('validateInviteToken should return valid=false after room becomes ABAC managed', async () => {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: validateAttrKey, values: ['one'] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
+
+				await request
+					.post(`${v1}/abac/rooms/${plainRoomId}/attributes/${validateAttrKey}`)
+					.set(credentials)
+					.send({ values: ['one'] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.post(`${v1}/validateInviteToken`)
+					.send({ token: plainRoomInviteToken })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('valid', false);
+					});
+			});
+
+			it('validateInviteToken should return valid=true again after disabling ABAC', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				await request
+					.post(`${v1}/validateInviteToken`)
+					.send({ token: plainRoomInviteToken })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('valid', true);
+					});
+
+				await updateSetting('ABAC_Enabled', true);
+			});
+
+			it('should fail creating an invite link for an ABAC managed room while ABAC is enabled', async () => {
+				const managedRoom = (await createRoom({ type: 'p', name: `invite-managed-${Date.now()}` })).body.group;
+				managedRoomId = managedRoom._id;
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: inviteAttrKey, values: ['one'] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
+
+				await request
+					.post(`${v1}/abac/rooms/${managedRoomId}/attributes/${inviteAttrKey}`)
+					.set(credentials)
+					.send({ values: ['one'] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.post(`${v1}/findOrCreateInvite`)
+					.set(credentials)
+					.send({ rid: managedRoomId, days: 1, maxUses: 0 })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-room');
+						expect(res.body).to.have.property('error').that.includes('Room is ABAC managed');
+					});
+			});
+
+			it('should allow creating an invite link for previously ABAC managed room after disabling ABAC', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				await request
+					.post(`${v1}/findOrCreateInvite`)
+					.set(credentials)
+					.send({ rid: managedRoomId, days: 1, maxUses: 0 })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rid', managedRoomId);
+						createdInviteIds.push(res.body._id);
+					});
+			});
+
+			after(async () => {
+				await Promise.all(createdInviteIds.map((id) => request.delete(`${v1}/removeInvite/${id}`).set(credentials)));
 			});
 		});
 	});
