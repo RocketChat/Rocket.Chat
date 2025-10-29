@@ -305,7 +305,7 @@ jobs:
 
             docker buildx imagetools create \
               --debug \
-              --annotation "index:org.opencontainers.image.description=${IMAGE}" \
+              --annotation "manifest-descriptor:org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               --tag "${IMAGE}" \
               ${refs[@]}
           done
