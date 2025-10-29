@@ -8,6 +8,16 @@ import { addUsersToRoomMethod, sanitizeUsername } from '../../lib/server/methods
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
 
+// Type guards for the error
+
+function isErrorWithDetails(error: unknown): error is Error & { details: string[] } {
+	return error instanceof Error && (error as any)?.details !== undefined;
+}
+
+function isStringError(error: unknown): error is { error: string } {
+	return (error as any)?.error !== undefined && typeof (error as any).error === 'string';
+}
+
 /*
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
@@ -73,30 +83,31 @@ slashCommands.add({
 						},
 						inviter,
 					);
-				} catch (e: any) {
-					if (e instanceof Error) {
-						const details = Array.isArray((e as any).details) ? (e as any).details.join(', ') : '';
+				} catch (e: unknown) {
+					if (isErrorWithDetails(e)) {
+						const details = Array.isArray(e.details) ? e.details.join(', ') : '';
 
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', ...{ details: `\`${details}\`` } }),
+							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', details: `\`${details}\`` }),
 						});
 						return;
 					}
 
-					const { error } = e;
-
-					if (error === 'error-federated-users-in-non-federated-rooms') {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
-						});
-					} else if (error === 'cant-invite-for-direct-room') {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
-						});
-					} else {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
-						});
+					if (isStringError(e)) {
+						const { error } = e;
+						if (error === 'error-federated-users-in-non-federated-rooms') {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+							});
+						} else if (error === 'cant-invite-for-direct-room') {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+							});
+						} else {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
+							});
+						}
 					}
 				}
 			}),
