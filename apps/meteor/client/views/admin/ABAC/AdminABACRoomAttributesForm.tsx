@@ -94,7 +94,6 @@ const AdminABACRoomAttributesForm = ({ onSave, onCancel, description }: AdminABA
 								disabled
 								aria-labelledby={valuesField}
 								error={errors.lockedAttributes?.[index]?.value?.message || ''}
-								id={field.id}
 								{...register(`lockedAttributes.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
 							/>
 							{index !== 0 && <IconButton aria-label={t('Remove')} icon='trash' onClick={() => removeLockedAttribute(index)} />}
@@ -105,7 +104,6 @@ const AdminABACRoomAttributesForm = ({ onSave, onCancel, description }: AdminABA
 							<TextInput
 								aria-labelledby={valuesField}
 								error={errors.attributeValues?.[index]?.value?.message || ''}
-								id={field.id}
 								{...register(`attributeValues.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
 							/>
 							{(index !== 0 || lockedAttributesFields.length > 0) && (
