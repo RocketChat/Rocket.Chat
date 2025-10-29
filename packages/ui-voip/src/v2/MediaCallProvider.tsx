@@ -217,6 +217,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 					value: user._id,
 					label,
 					identifier,
+					status: user.status,
 					avatarUrl: getAvatarPath({ username: user.username, etag: user.avatarETag }),
 				};
 			}) || []
