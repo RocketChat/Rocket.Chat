@@ -11,11 +11,11 @@ import { slashCommands } from '../../utils/server/slashCommand';
 // Type guards for the error
 
 function isErrorWithDetails(error: unknown): error is Error & { details: string[] } {
-	return error instanceof Error && (error as any)?.details !== undefined;
+	return error instanceof Error && Array.isArray((error as any).details);
 }
 
 function isStringError(error: unknown): error is { error: string } {
-	return (error as any)?.error !== undefined && typeof (error as any).error === 'string';
+	return typeof (error as any)?.error === 'string';
 }
 
 /*
