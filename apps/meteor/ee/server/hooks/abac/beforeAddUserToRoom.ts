@@ -7,9 +7,10 @@ import { settings } from '../../../../app/settings/server';
 beforeAddUserToRoom.patch(async (prev, users, room, actor) => {
 	await prev(users, room, actor);
 
+	const validUsers = users.filter(Boolean);
 	if (
 		!room?.abacAttributes?.length ||
-		!users.filter(Boolean).length ||
+		!validUsers.length ||
 		!License.hasModule('abac') ||
 		room.t !== 'p' ||
 		!settings.get('ABAC_Enabled')
@@ -17,5 +18,5 @@ beforeAddUserToRoom.patch(async (prev, users, room, actor) => {
 		return;
 	}
 
-	await Abac.checkUsernamesMatchAttributes(users as string[], room.abacAttributes);
+	await Abac.checkUsernamesMatchAttributes(validUsers as string[], room.abacAttributes);
 });

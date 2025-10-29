@@ -459,12 +459,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			.toArray();
 
 		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
-		const existingSet = new Set<string>(usernames);
-		for (const uname of usernames) {
-			if (!existingSet.has(uname)) {
-				nonCompliantSet.add(uname);
-			}
-		}
+
 		if (nonCompliantSet.size) {
 			// Note: open to suggestions, or if it's actually needed. My idea is to return the list of non compliant users, but our current errors dont' allow that
 			// Maybe we should just throw a generic error? idk. I may create a custom error just for this

@@ -75,8 +75,10 @@ slashCommands.add({
 					);
 				} catch (e: any) {
 					if (e instanceof Error) {
+						const details = Array.isArray((e as any).details) ? (e as any).details.join(', ') : '';
+
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', ...{ details: `\`${(e as any).details.join(', ')} \`` } }),
+							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', ...{ details: `\`${details}\`` } }),
 						});
 						return;
 					}
