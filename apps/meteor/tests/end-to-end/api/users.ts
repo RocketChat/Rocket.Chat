@@ -4474,18 +4474,7 @@ describe('[Users]', () => {
 		});
 
 		describe('[with permission]', () => {
-			let user: TestUser<IUser>;
-
-			before(async () => {
-				console.log('\n\ncreate user \n');
-				user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
-				console.log('user', user);
-				return updatePermission('view-outside-room', ['admin', 'user']);
-			});
-
-			after(async () => {
-				await deleteUser(user);
-			});
+			before(async () => updatePermission('view-outside-room', ['admin', 'user']));
 
 			it('should return an error when the required parameter "selector" is not provided', (done) => {
 				void request
@@ -4513,8 +4502,9 @@ describe('[Users]', () => {
 					.end(done);
 			});
 
-			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', (done) => {
-				void request
+			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
+				const user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
+				await request
 					.get(api('users.autocomplete'))
 					.query({ selector: JSON.stringify({ conditions: { freeSwitchExtension: '1234567890' } }) })
 					.set(credentials)
@@ -4524,8 +4514,9 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
 						expect(res.body.items[0]).to.have.property('freeSwitchExtension', '1234567890');
-					})
-					.end(done);
+					});
+
+				await deleteUser(user);
 			});
 
 			it('should filter results when using allowed operators', (done) => {
