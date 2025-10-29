@@ -177,38 +177,86 @@ export class UserActorSignalProcessor {
 	}
 
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
-
-		// Negotiations requested by the caller must always be completed before any new negotiation may start
-		if (negotiation?.offerer === 'caller') {
-			// TODO: check if we need to queue this request instead of ignore it
-			if (!negotiation.answer) {
-				logger.debug({
-					msg: 'Ignoring renegotiation request due to a previous impolite negotiation',
-					requestedByRole: this.role,
-				});
-				return;
-			}
-
-			// If there's an impolite negotiation that has an answer but has not been reported as stable yet
-			if (!negotiation.stableTimestamp) {
-				// TODO: Make clients send signaling-state in the negotiation-needed signal
-				logger.warn({
-					msg: 'A renegotiation was requested before the last one was confirmed as stable',
-					method: 'UserActorSignalProcessor.processNegotiationNeeded',
-					requestedByRole: this.role,
-				});
-			}
-		}
-
-		const comingFromLatest = oldNegotiationId === negotiation?._id;
-
-		// If the negotiation that triggered a request for renegotiation is not the latest, then a new one must already be happening.
-		if (!comingFromLatest) {
+		// Unsigned clients may not request negotiations
+		if (!this.signed) {
 			return;
 		}
 
+		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
+
+		// If the call doesn't even have an initial negotiation yet, the clients shouldn't be requesting new ones.
+		if (!negotiation) {
+			return;
+		}
+
+		// If we're stable, we can accept any request
+		if (negotiation.stableTimestamp) {
+			return this.startNewNegotiation();
+		}
+
+		const comingFromLatest = oldNegotiationId === negotiation._id;
+		const isRequestImpolite = this.role === 'caller';
+		const isLatestImpolite = negotiation.offerer === 'caller';
+
+		// If the request came from a client who was not yet aware of a newer renegotiation
+		if (!comingFromLatest) {
+			// If the client is polite, we can ignore their request in favor of the existing renegotiation
+			if (!isRequestImpolite) {
+				logger.debug({ msg: 'Ignoring outdated polite renegotiation request' });
+				return;
+			}
+
+			// If the latest negotiation is impolite and the impolite client is not aware of it yet
+			if (isLatestImpolite) {
+				// If we already received an offer in this situation then something is very wrong (signal delayed by some proxy, perhaps?)
+				if (negotiation.offer) {
+					logger.error({ msg: 'Invalid renegotiation request', requestedBy: this.role, isLatestImpolite });
+					return;
+				}
+
+				// Resend the offer request to the impolite client
+				// note: If we run into issues with fresh negotiations being sent multiple times we could add an age check here or something to ensure this doesn't get re-sent for a short interval
+				// But a debounce on requests form the client lib should be enough to prevent it in normal circumstances.
+				return this.requestWebRTCOffer({ negotiationId: negotiation._id });
+			}
+
+			// The state of polite negotiations is irrelevant for impolite requests, so we can start a new negotiation here.
+			return this.startNewNegotiation();
+		}
+
+		// The client is up-to-date and requested a renegotiation before the last one was reported stable
+
+		// If the request came from the same side as the last negotiation
+		if (this.role === negotiation.offerer) {
+			// If that negotiation had an answer, assume the client will be able to handle a renegotiation
+			if (negotiation.answer) {
+				return this.startNewNegotiation();
+			}
+
+			// If there's no answer, the client was in no position to request this negotiation
+			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
+			return;
+		}
+
+		// If the request is from the impolite client, it takes priority over the existing polite negotiation
+		if (isRequestImpolite) {
+			return this.startNewNegotiation();
+		}
+
+		// At this point, it's a polite request done while an impolite negotiation was not yet reported as stable
+
+		// If we know for sure the impolite negotiation is incomplete, reject the request
+		if (!negotiation.answer) {
+			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
+			return;
+		}
+
+		// If we don't know, trust the clients will be able to handle a renegotiation
+		return this.startNewNegotiation();
+	}
+
+	private async startNewNegotiation(): Promise<void> {
 		const negotiationId = await mediaCallDirector.startNewNegotiation(this.call, this.role);
 		if (negotiationId) {
 			await this.requestWebRTCOffer({ negotiationId });
