@@ -21,8 +21,10 @@ const PORT = process.env.PORT || 3034;
 
 	api.registerService(new Authorization());
 
-	// Same API as authz service but own core-services proxy
-	api.registerService(new AbacService());
+	if (!process.env.USE_EXTERNAL_ABAC_SERVICE) {
+		// Same API as authz service but own core-services proxy
+		api.registerService(new AbacService());
+	}
 
 	await api.start();
 
