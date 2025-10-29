@@ -196,7 +196,7 @@ jobs:
           include-hidden-files: true
 
   build:
-    name: 📦 Meteor Build - coverage
+    name: 📦 Meteor Build
     needs: [release-versions, packages-build]
     runs-on: ubuntu-24.04
 
@@ -215,37 +215,6 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' && github.ref != 'refs/heads/develop' }}
-
-  # build-prod:
-  #   name: 📦 Meteor Build - official
-  #   needs: [tests-done, release-versions, packages-build]
-  #   if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
-  #   runs-on: ubuntu-24.04
-
-  #   steps:
-  #     - name: Collect Workflow Telemetry
-  #       uses: catchpoint/workflow-telemetry-action@v2
-  #       with:
-  #         theme: dark
-  #         job_summary: true
-  #         comment_on_pr: false
-  #     - name: Github Info
-  #       run: |
-  #         echo "GITHUB_ACTION: $GITHUB_ACTION"
-  #         echo "GITHUB_ACTOR: $GITHUB_ACTOR"
-  #         echo "GITHUB_REF: $GITHUB_REF"
-  #         echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
-  #         echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
-  #         echo "github.event_name: ${{ github.event_name }}"
-  #         cat $GITHUB_EVENT_PATH
-
-  #     - uses: actions/checkout@v4
-
-  #     - uses: ./.github/actions/meteor-build
-  #       with:
-  #         node-version: ${{ needs.release-versions.outputs.node-version }}
-  #         deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #         coverage: false
 
   build-gh-docker:
     name: 🚢 Build Docker
@@ -311,17 +280,9 @@ jobs:
           path: /tmp/digests
           merge-multiple: true
 
-      # - name: Show digests
-      #   if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      #   run: |
-      #     find /tmp/digests -maxdepth 3 -type f -name 'digest.txt' -print
-      #     cat /tmp/digests/presence-service/amd64/digest.txt
-      #     cat /tmp/digests/presence-service/arm64/digest.txt
-
       - name: Create and push multi-arch manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
-          # set -euo pipefail
           set -o xtrace
           shopt -s nullglob
 
@@ -344,42 +305,10 @@ jobs:
 
             docker buildx imagetools create \
               --debug \
+              --annotation "index:org.opencontainers.image.description=${IMAGE}" \
               --tag "${IMAGE}" \
               ${refs[@]}
           done
-
-  # build-gh-docker:
-  #   name: 🚢 Build Docker Images for Production
-  #   needs: [build-prod, release-versions]
-  #   runs-on: ubuntu-24.04
-
-  #   env:
-  #     DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-  #     LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - uses: ./.github/actions/build-docker
-  #       with:
-  #         CR_USER: ${{ secrets.CR_USER }}
-  #         CR_PAT: ${{ secrets.CR_PAT }}
-  #         node-version: ${{ needs.release-versions.outputs.node-version }}
-  #         deno-version: ${{ needs.release-versions.outputs.deno-version }}
-  #         service: 'rocketchat'
-  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  #     - name: Rename official Docker tag to GitHub Container Registry
-  #       run: |
-  #         IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
-
-  #         echo "Push Docker image: ${IMAGE_NAME_BASE}"
-  #         docker tag ${IMAGE_NAME_BASE}.alpine $IMAGE_NAME_BASE
-  #         docker push $IMAGE_NAME_BASE
-
-  #         echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-  #         docker tag ${IMAGE_NAME_BASE}.alpine ${IMAGE_NAME_BASE}.official
-  #         docker push ${IMAGE_NAME_BASE}.official
 
   checks:
     needs: [release-versions, packages-build]

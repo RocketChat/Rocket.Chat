@@ -108,8 +108,13 @@ runs:
           --set *.platform=linux/${{ inputs.arch }} \
           --set *.cache-from=type=gha \
           --set *.cache-to=type=gha,mode=max \
+          --provenance=false \
+          --sbom=false \
           --metadata-file "/tmp/meta.json" \
           "${{ inputs.service }}"
+
+        echo "Contents of /tmp/meta.json:"
+        cat /tmp/meta.json
 
         mkdir -p /tmp/digests/${{ inputs.service }}/${{ inputs.arch }}
         DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
