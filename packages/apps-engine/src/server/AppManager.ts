@@ -329,7 +329,7 @@ export class AppManager {
 		for (const app of this.apps.values()) {
 			const status = await app.getStatus();
 			if (!AppStatusUtils.isDisabled(status) && AppStatusUtils.isEnabled(app.getPreviousStatus())) {
-				await this.enableApp(app, app.getPreviousStatus() === AppStatus.MANUALLY_ENABLED).catch(console.error);
+				await this.enableApp(app).catch(console.error);
 			} else if (!AppStatusUtils.isError(status)) {
 				this.listenerManager.lockEssentialEvents(app);
 				this.uiActionButtonManager.clearAppActionButtons(app.getID());
@@ -457,7 +457,7 @@ export class AppManager {
 			throw new Error(`Could not enable an App with the id of "${id}" as it doesn't exist.`);
 		}
 
-		const isSetup = await this.runStartUpProcess(storageItem, rl, true, false);
+		const isSetup = await this.runStartUpProcess(storageItem, rl, false);
 
 		return isSetup;
 	}
@@ -639,7 +639,7 @@ export class AppManager {
 		// Otherwise, we only initialize it.
 		if (enable) {
 			// Start up the app
-			await this.runStartUpProcess(created, app, false, false);
+			await this.runStartUpProcess(created, app, false);
 		} else {
 			await this.initializeApp(app);
 		}
@@ -816,7 +816,7 @@ export class AppManager {
 
 	public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
 		const app = await this.updateLocal(stored, appPackageOrInstance);
-		await this.runStartUpProcess(stored, app, false, true);
+		await this.runStartUpProcess(stored, app, true);
 	}
 
 	public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
@@ -971,18 +971,13 @@ export class AppManager {
 		}
 
 		if (!AppStatusUtils.isDisabled(await rl.getStatus()) && AppStatusUtils.isEnabled(rl.getPreviousStatus())) {
-			await this.enableApp(rl, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED, silenceStatus);
+			await this.enableApp(rl, silenceStatus);
 		}
 
 		return this.apps.get(item.id);
 	}
 
-	private async runStartUpProcess(
-		storageItem: IAppStorageItem,
-		app: ProxiedApp,
-		isManual: boolean,
-		silenceStatus: boolean,
-	): Promise<boolean> {
+	private async runStartUpProcess(storageItem: IAppStorageItem, app: ProxiedApp, silenceStatus: boolean): Promise<boolean> {
 		if ((await app.getStatus()) !== AppStatus.INITIALIZED) {
 			const isInitialized = await this.initializeApp(app, silenceStatus);
 			if (!isInitialized) {
@@ -995,7 +990,7 @@ export class AppManager {
 			return false;
 		}
 
-		return this.enableApp(app, isManual, silenceStatus);
+		return this.enableApp(app, silenceStatus);
 	}
 
 	private async installApp(app: ProxiedApp, user: IUser): Promise<boolean> {
@@ -1113,7 +1108,7 @@ export class AppManager {
 		return result;
 	}
 
-	private async enableApp(app: ProxiedApp, isManual: boolean, silenceStatus = false): Promise<boolean> {
+	private async enableApp(app: ProxiedApp, silenceStatus = false): Promise<boolean> {
 		let enable: boolean;
 		let status = AppStatus.ERROR_DISABLED;
 
@@ -1124,7 +1119,7 @@ export class AppManager {
 			enable = (await app.call(AppMethod.ONENABLE)) as boolean;
 
 			if (enable) {
-				status = isManual ? AppStatus.MANUALLY_ENABLED : AppStatus.AUTO_ENABLED;
+				status = AppStatus.MANUALLY_ENABLED;
 			} else {
 				status = AppStatus.DISABLED;
 				console.warn(`The App (${app.getID()}) disabled itself when being enabled. \nCheck the "onEnable" implementation for details.`);
