@@ -2682,7 +2682,7 @@
   "RetentionPolicyRoom_FilesOnly": "Beskær kun filer, hold meddelelser",
   "RetentionPolicyRoom_MaxAge": "Maksimal meddelelsesalder i dage (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Tilsidesæt global opbevaringspolitik",
-  "RetentionPolicyRoom_ReadTheDocs": "OBS! Justering af disse indstillinger uden den yderste omhyggelighed kan slette al meddelelseshistorik. Læs venligst dokumentationen før du aktiverer funktionen <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">her</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "OBS! Justering af disse indstillinger uden den yderste omhyggelighed kan slette al meddelelseshistorik. Læs venligst dokumentationen før du aktiverer funktionen <a href={{retentionPolicyUrl}}>her</a>.",
   "RetentionPolicy_Advanced_Precision": "Brug konfigurationen til avanceret opbevaringspolitik",
   "RetentionPolicy_Advanced_Precision_Cron": "Brug avanceret opbevaringspolitik vha. Cron",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Hvor ofte sletnings-timeren skal køre. Indstilling af dette til en mere præcis værdi gør kanaler med hurtige opbevarings-timere bedre, men kan koste ekstra procestid på store communities.",

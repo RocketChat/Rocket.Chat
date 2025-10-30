@@ -2153,7 +2153,7 @@
   "RetentionPolicyRoom_FilesOnly": "Yalnızca dosyaları buda, iletileri koru",
   "RetentionPolicyRoom_MaxAge": "Maksimum ileti yaşı gün olarak (varsayılan: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Genel saklama politikasını geçersiz kıl",
-  "RetentionPolicyRoom_ReadTheDocs": "Dikkat! Azami özen göstermeden bu ayarları yapmak tüm ileti geçmişini yok edebilir. Lütfen <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">buradan</a> özelliği açmadan önce belgelemeyi okuyun.",
+  "RetentionPolicyRoom_ReadTheDocs": "Dikkat! Azami özen göstermeden bu ayarları yapmak tüm ileti geçmişini yok edebilir. Lütfen <a href={{retentionPolicyUrl}}>buradan</a> özelliği açmadan önce belgelemeyi okuyun.",
   "RetentionPolicy_AppliesToChannels": "Kanallara uygulanır",
   "RetentionPolicy_AppliesToDMs": "Doğrudan iletilere uygulanır",
   "RetentionPolicy_AppliesToGroups": "Özel gruplara uygulanır",

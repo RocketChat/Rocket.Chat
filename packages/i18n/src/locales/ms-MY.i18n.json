@@ -1813,7 +1813,7 @@
   "RetentionPolicyRoom_FilesOnly": "Fail prune sahaja, simpan mesej",
   "RetentionPolicyRoom_MaxAge": "Umur mesej maksimum dalam hari (lalai: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Mengatasi dasar pengekalan global",
-  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>di sini</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Berhati-hati! Tweaking tetapan ini tanpa berhati-hati boleh memusnahkan semua sejarah mesej. Sila baca dokumentasi sebelum mengalihkan ciri pada <a href = {{retentionPolicyUrl}}>di sini</a>.",
   "RetentionPolicy_AppliesToChannels": "Terpakai kepada saluran",
   "RetentionPolicy_AppliesToDMs": "Terpakai untuk mengarahkan mesej",
   "RetentionPolicy_AppliesToGroups": "Terpakai kepada kumpulan swasta",

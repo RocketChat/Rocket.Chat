@@ -1810,7 +1810,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune numai fișierele, păstrează mesajele",
   "RetentionPolicyRoom_MaxAge": "Vârsta mesajului maxim în zile (implicit: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Depășiți politica de păstrare globală",
-  "RetentionPolicyRoom_ReadTheDocs": "Ai grija! Ajustarea acestor setări fără o atenție deosebită poate distruge tot istoricul mesajelor. Citiți documentația înainte de a activa caracteristica <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>aici</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Ai grija! Ajustarea acestor setări fără o atenție deosebită poate distruge tot istoricul mesajelor. Citiți documentația înainte de a activa caracteristica <a href = {{retentionPolicyUrl}}>aici</a>.",
   "RetentionPolicy_AppliesToChannels": "Se aplică la canale",
   "RetentionPolicy_AppliesToDMs": "Se aplică pentru mesaje directe",
   "RetentionPolicy_AppliesToGroups": "Se aplică grupurilor private",

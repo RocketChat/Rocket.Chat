@@ -1810,7 +1810,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune vetëm fotografi, mbani mesazhe",
   "RetentionPolicyRoom_MaxAge": "Mosha Maksimale e mesazhit në ditë (parazgjedhje: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Zvogloje politikën e mbajtjes globale",
-  "RetentionPolicyRoom_ReadTheDocs": "Kujdes! Rregullimi i këtyre cilësimeve pa kujdes maksimal mund të shkatërrojë të gjithë historinë e mesazhit. Ju lutemi lexoni dokumentacionin përpara se ta ktheni funksionin në <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>këtu</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Kujdes! Rregullimi i këtyre cilësimeve pa kujdes maksimal mund të shkatërrojë të gjithë historinë e mesazhit. Ju lutemi lexoni dokumentacionin përpara se ta ktheni funksionin në <a href = {{retentionPolicyUrl}}>këtu</a>.",
   "RetentionPolicy_AppliesToChannels": "Zbatohet tek kanalet",
   "RetentionPolicy_AppliesToDMs": "Zbatohet në mesazhet direkte",
   "RetentionPolicy_AppliesToGroups": "Zbatohet për grupe private",

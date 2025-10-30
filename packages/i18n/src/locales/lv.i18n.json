@@ -1826,7 +1826,7 @@
   "RetentionPolicyRoom_FilesOnly": "Apgriezt tikai failus, saglabāt ziņojumus",
   "RetentionPolicyRoom_MaxAge": "Maksimālais ziņu vecums dienās (pēc noklusējuma: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Pārlabot globālo saglabāšanas politiki",
-  "RetentionPolicyRoom_ReadTheDocs": "Uzmanies! Konfigurējot šos iestatījumus bezrūpīgi izdzēst visu ziņojumu vēsturi. Pirms funkcijas ieslēgšanas lūdzam izlasīt dokumentāciju <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">šeit</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Uzmanies! Konfigurējot šos iestatījumus bezrūpīgi izdzēst visu ziņojumu vēsturi. Pirms funkcijas ieslēgšanas lūdzam izlasīt dokumentāciju <a href={{retentionPolicyUrl}}>šeit</a>.",
   "RetentionPolicy_AppliesToChannels": "Attiecas uz kanāliem",
   "RetentionPolicy_AppliesToDMs": "Attiecas uz tiešajiem ziņojumiem",
   "RetentionPolicy_AppliesToGroups": "Attiecas uz privātām grupām",

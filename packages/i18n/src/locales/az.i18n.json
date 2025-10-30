@@ -1813,7 +1813,7 @@
   "RetentionPolicyRoom_FilesOnly": "Yalnız faylları daraltın, mesajları saxlayın",
   "RetentionPolicyRoom_MaxAge": "Günlərdə maksimum mesaj yaşı (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Qlobal saxlama siyasətini ləğv edin",
-  "RetentionPolicyRoom_ReadTheDocs": "Diqqətli ol! Bu parametrləri çox səmərəli istifadə etmədən tweaking bütün mesaj tarixini məhv edə bilər. Xüsusiyyətini <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'></a>burada buraxmadan əvvəl sənədləri oxuyun.",
+  "RetentionPolicyRoom_ReadTheDocs": "Diqqətli ol! Bu parametrləri çox səmərəli istifadə etmədən tweaking bütün mesaj tarixini məhv edə bilər. Xüsusiyyətini <a href={{retentionPolicyUrl}}></a>burada buraxmadan əvvəl sənədləri oxuyun.",
   "RetentionPolicy_AppliesToChannels": "Kanallara tətbiq edilir",
   "RetentionPolicy_AppliesToDMs": "Birbaşa mesajlar üçün tətbiq edilir",
   "RetentionPolicy_AppliesToGroups": "Şəxsi qruplara tətbiq edilir",

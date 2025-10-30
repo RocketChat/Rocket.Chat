@@ -3188,7 +3188,7 @@
   "RetentionPolicyRoom_FilesOnly": "Retirar solo archivos, mantener mensajes",
   "RetentionPolicyRoom_MaxAge": "Antigüedad máxima de mensaje en días (por defecto: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anular la política de retención global",
-  "RetentionPolicyRoom_ReadTheDocs": "¡Cuidado! Cambiar esta configuración sin precaución puede eliminar todo el historial de mensajes. Consulta <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">aquí</a> la documentación antes de activar la función.",
+  "RetentionPolicyRoom_ReadTheDocs": "¡Cuidado! Cambiar esta configuración sin precaución puede eliminar todo el historial de mensajes. Consulta <a href={{retentionPolicyUrl}}>aquí</a> la documentación antes de activar la función.",
   "RetentionPolicy_Advanced_Precision": "Usar la configuración avanzada de la política de retención",
   "RetentionPolicy_Advanced_Precision_Cron": "Usar CRON de política de retención avanzada",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Frecuencia con la que debe ejecutarse el temporizador de retirada definido por la expresión del trabajo CRON. Establecer esto en un valor más preciso hace que los canales con temporizadores de retención rápidos funcionen mejor, pero podría exigir potencia de procesamiento adicional en comunidades grandes.",

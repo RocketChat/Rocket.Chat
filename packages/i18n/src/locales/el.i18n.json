@@ -1815,7 +1815,7 @@
   "RetentionPolicyRoom_FilesOnly": "Κλαδέψτε αρχεία μόνο, κρατήστε τα μηνύματα",
   "RetentionPolicyRoom_MaxAge": "Μέγιστη ηλικία μηνύματος σε ημέρες (προεπιλογή: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Αντικατάσταση της πολιτικής καθολικής διατήρησης",
-  "RetentionPolicyRoom_ReadTheDocs": "Πρόσεχε! Η προσαρμογή αυτών των ρυθμίσεων χωρίς μεγάλη προσοχή μπορεί να καταστρέψει όλο το ιστορικό των μηνυμάτων. Διαβάστε την τεκμηρίωση πριν ενεργοποιήσετε τη λειτουργία στο <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>εδώ</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Πρόσεχε! Η προσαρμογή αυτών των ρυθμίσεων χωρίς μεγάλη προσοχή μπορεί να καταστρέψει όλο το ιστορικό των μηνυμάτων. Διαβάστε την τεκμηρίωση πριν ενεργοποιήσετε τη λειτουργία στο <a href = {{retentionPolicyUrl}}>εδώ</a>.",
   "RetentionPolicy_AppliesToChannels": "Ισχύει για κανάλια",
   "RetentionPolicy_AppliesToDMs": "Ισχύει για απευθείας μηνύματα",
   "RetentionPolicy_AppliesToGroups": "Ισχύει για ιδιωτικές ομάδες",

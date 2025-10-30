@@ -1806,7 +1806,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune ไฟล์เท่านั้นเก็บข้อความ",
   "RetentionPolicyRoom_MaxAge": "อายุข้อความสูงสุดเป็นวัน (ค่าเริ่มต้น: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "แทนที่นโยบายการเก็บรักษาข้อมูลทั่วโลก",
-  "RetentionPolicyRoom_ReadTheDocs": "ระวัง! การปรับแต่งการตั้งค่าเหล่านี้โดยไม่ได้รับการดูแลเป็นอย่างดีสามารถทำลายประวัติข้อความทั้งหมดได้ โปรดอ่านเอกสารก่อนที่จะเปิดคุณลักษณะนี้ใน <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>ที่นี่</a>",
+  "RetentionPolicyRoom_ReadTheDocs": "ระวัง! การปรับแต่งการตั้งค่าเหล่านี้โดยไม่ได้รับการดูแลเป็นอย่างดีสามารถทำลายประวัติข้อความทั้งหมดได้ โปรดอ่านเอกสารก่อนที่จะเปิดคุณลักษณะนี้ใน <a href = {{retentionPolicyUrl}}>ที่นี่</a>",
   "RetentionPolicy_AppliesToChannels": "ใช้กับช่อง",
   "RetentionPolicy_AppliesToDMs": "ใช้กับข้อความโดยตรง",
   "RetentionPolicy_AppliesToGroups": "ใช้กับกลุ่มส่วนตัว",

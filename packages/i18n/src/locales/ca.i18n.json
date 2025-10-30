@@ -3053,7 +3053,7 @@
   "RetentionPolicyRoom_FilesOnly": "Esborri només arxius, mantingui missatges",
   "RetentionPolicyRoom_MaxAge": "Antiguitat màxima de l'missatge en dies (per defecte: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anul·lar la política de retenció global",
-  "RetentionPolicyRoom_ReadTheDocs": "Compte! Ajustar aquestes configuracions sense tenir més cura pot destruir tot l'historial de missatges. Llegiu la documentació abans d'activar la funció <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\"> aquí </a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Compte! Ajustar aquestes configuracions sense tenir més cura pot destruir tot l'historial de missatges. Llegiu la documentació abans d'activar la funció <a href={{retentionPolicyUrl}}> aquí </a>.",
   "RetentionPolicy_Advanced_Precision": "Utilitza la configuració avançada de la política de retenció",
   "RetentionPolicy_Advanced_Precision_Cron": "Utilitzeu Cron de política de retenció avançada",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Amb quina freqüència ha de executar-se el temporitzador de poda definit per l'expressió de la feina cron. Establir això en un valor més precís fa que els canals amb temporitzadors de retenció ràpids funcionin millor, però podria costar potència de processament addicional en comunitats grans.",

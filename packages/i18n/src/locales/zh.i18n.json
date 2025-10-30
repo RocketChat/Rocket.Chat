@@ -2713,7 +2713,7 @@
   "RetentionPolicyRoom_FilesOnly": "仅修剪文件，保留消息",
   "RetentionPolicyRoom_MaxAge": "消息保持时限（以天为单位）（默认值：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "覆盖全局保留策略",
-  "RetentionPolicyRoom_ReadTheDocs": "小心！调整这些设置可能会破坏所有消息历史记录。请在<a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">此处</a>启用该功能之前阅读文档。",
+  "RetentionPolicyRoom_ReadTheDocs": "小心！调整这些设置可能会破坏所有消息历史记录。请在<a href={{retentionPolicyUrl}}>此处</a>启用该功能之前阅读文档。",
   "RetentionPolicy_Advanced_Precision": "使用高级保留策略配置",
   "RetentionPolicy_Advanced_Precision_Cron": "使用高级保留策略任务计划",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "使用 cron 任务表达式定义修剪定时器运行频度，将此设置为更精确的值会使具有快速保留计时器的频道更好地工作，但对大型社区可能会消耗额外的处理能力。",

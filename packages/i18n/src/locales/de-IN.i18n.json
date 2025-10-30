@@ -2056,7 +2056,7 @@
   "RetentionPolicyRoom_FilesOnly": "Bereinige nur Dateien, behalte Nachrichten",
   "RetentionPolicyRoom_MaxAge": "Maximales Nachrichtenalter in Tagen (Standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Globale Aufbewahrungsrichtlinie außer Kraft setzen",
-  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lies die Dokumentation, bevor Du das Feature unter <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>hier</a>aktivierst.",
+  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lies die Dokumentation, bevor Du das Feature unter <a href = {{retentionPolicyUrl}}>hier</a>aktivierst.",
   "RetentionPolicy_Description": "Löscht automatisch alte Nachrichten in Deiner Rocket.Chat-Instanz.",
   "RetentionPolicy_Enabled": "Aktiviert",
   "RetentionPolicy_ExcludePinned": "Pinned-Nachrichten ausschließen",

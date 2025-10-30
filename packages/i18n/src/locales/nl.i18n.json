@@ -3098,7 +3098,7 @@
   "RetentionPolicyRoom_FilesOnly": "Alleen bestanden snoeien, berichten bewaren",
   "RetentionPolicyRoom_MaxAge": "Maximale berichtleeftijd in dagen (standaard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Negeer het globale retentiebeleid",
-  "RetentionPolicyRoom_ReadTheDocs": "Kijk uit! Als u deze instellingen zonder de grootste zorg aanpast, kan dit alle berichthistorie vernietigen. Lees de documentatie voordat u de functie inschakelt <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">hier</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Kijk uit! Als u deze instellingen zonder de grootste zorg aanpast, kan dit alle berichthistorie vernietigen. Lees de documentatie voordat u de functie inschakelt <a href={{retentionPolicyUrl}}>hier</a>.",
   "RetentionPolicy_Advanced_Precision": "Configuratie van geavanceerde retentiebeleid gebruiken",
   "RetentionPolicy_Advanced_Precision_Cron": "Gebruik cron geavanceerde retentiebeleid",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Hoe vaak de prune-timer moet worden uitgevoerd, gedefinieerd door cron job expressie. Als u dit instelt op een nauwkeurigere waarde, werken kanalen met snelle retentietimers beter, maar kan dit extra verwerkingskracht kosten voor grote gemeenschappen.",

@@ -3103,7 +3103,7 @@
   "RetentionPolicyRoom_FilesOnly": "Élaguer uniquement les fichiers, conserver les messages",
   "RetentionPolicyRoom_MaxAge": "Âge maximal des messages en jours (par défaut : {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Ignorer la politique de rétention globale",
-  "RetentionPolicyRoom_ReadTheDocs": "Faites attention lors de l'ajustement de ces paramètres, car vous risquez de détruire tout l'historique des messages. Lisez la documentation avant d'activer la fonctionnalité <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">ici</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Faites attention lors de l'ajustement de ces paramètres, car vous risquez de détruire tout l'historique des messages. Lisez la documentation avant d'activer la fonctionnalité <a href={{retentionPolicyUrl}}>ici</a>.",
   "RetentionPolicy_Advanced_Precision": "Utiliser la configuration de la politique de rétention avancée",
   "RetentionPolicy_Advanced_Precision_Cron": "Utiliser cron pour la politique de rétention avancée",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Fréquence d'exécution du temporisateur d'élagage définie par l'expression de la tâche cron. Une valeur plus précise améliore le fonctionnement des canaux avec des temporisateurs de rétention rapides, mais le coût en termes de puissance de traitement peut être élevé pour les grandes communautés.",
