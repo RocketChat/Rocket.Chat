@@ -8468,6 +8468,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
   dependencies:
+    "@rocket.chat/abac": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
