@@ -31,7 +31,7 @@ function toCoarsePosition(src: GeolocationPosition, dp = COARSE_DP): Geolocation
 			heading: c.heading ?? null,
 			speed: c.speed ?? null,
 		} as GeolocationCoordinates,
-		timestamp: Date.now(),
+		timestamp: src.timestamp,
 		toJSON() {
 			return {
 				coords: this.coords,

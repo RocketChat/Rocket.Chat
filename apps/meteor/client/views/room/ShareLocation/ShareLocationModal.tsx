@@ -179,7 +179,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 			try {
 				const mapsLink = map.getMapsLink(latitude, longitude);
 
-				const locationMessage = `📍 **{t('Shared_Location')}**
+				const locationMessage = `📍 **${t('Shared_Location')}**
 🔗 **[${t('View_on_OpenStreetMap')}](${mapsLink})**
 📌 \`${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°\``;
 
@@ -211,8 +211,6 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 				{positionData && (
 					<>
 						<MapLibreMap lat={positionData.coords.latitude} lon={positionData.coords.longitude} zoom={17} height={360} />
-
-						{}
 					</>
 				)}
 			</GenericModal>

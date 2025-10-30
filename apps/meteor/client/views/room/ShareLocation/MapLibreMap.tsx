@@ -82,7 +82,10 @@ export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoo
 			trailRef.current = null;
 			trailCoordsRef.current = [];
 		};
-	}, [lat, lon, zoom]);
+	    map.on('error', (e) => {
+			console.error('MapLibre error:', e);
+		});
+	}, []);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -92,18 +95,35 @@ export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoo
 	}, [lat, lon]);
 
 	useEffect(() => {
-		const map = mapRef.current;
-		if (!map || !visible) return;
-		const t = setTimeout(() => map.resize(), 50);
-		return () => clearTimeout(t);
-	}, [visible]);
+        const map = mapRef.current;
+        if (!map || !visible) return;
+
+        let r1 = 0;
+        let r2 = 0;
+
+        // wait for visibility/layout to settle, then resize
+        r1 = requestAnimationFrame(() => {
+            r2 = requestAnimationFrame(() => {
+            map.resize();
+            });
+        });
+
+        return () => {
+            if (r1) cancelAnimationFrame(r1);
+            if (r2) cancelAnimationFrame(r2);
+        };
+    }, [visible]);
 
 	useEffect(() => {
 		if (!liveCoords || !mapRef.current || !markerRef.current) return;
 		const { lon: LON, lat: LAT } = liveCoords;
 
 		markerRef.current.setLngLat([LON, LAT]);
+		const maxTrailLength = 1000;
 		trailCoordsRef.current.push([LON, LAT]);
+		if (trailCoordsRef.current.length > maxTrailLength) {
+			trailCoordsRef.current.shift();
+		}
 
 		if (trailRef.current) {
 			const data: FeatureCollection<LineString> = {

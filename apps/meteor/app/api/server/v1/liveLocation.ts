@@ -4,10 +4,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
+import { Notifications } from '../../../notifications/server';
 import { API } from '../api';
 
 const MIN_INTERVAL_MS = 3000;
-const MAX_DURATION_SEC = 3600; // 1 hour, adjust as needed
+const MAX_DURATION_SEC = 3600;
+const DEFAULT_DURATION_SEC = 3600;
 
 const isValidCoords = (c?: { lat: number; lon: number }) =>
 	c &&
@@ -20,7 +22,6 @@ const isValidCoords = (c?: { lat: number; lon: number }) =>
 	c.lon >= -180 &&
 	c.lon <= 180;
 
-// Type definitions for API route contexts
 interface IAPIRouteContext {
 	bodyParams: {
 		rid?: string;
@@ -56,13 +57,11 @@ interface ILiveLocationAttachment {
 }
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Meteor {
 		user(): IUser | null;
 	}
 }
 
-// Start live location sharing
 API.v1.addRoute(
 	'liveLocation.start',
 	{ authRequired: true },
@@ -106,9 +105,9 @@ API.v1.addRoute(
 			const existing = await Messages.findOne({
 				rid,
 				'u._id': uid,
-				'attachments': {
+				attachments: {
 					$elemMatch: {
-						'type': 'live-location',
+						type: 'live-location',
 						'live.isActive': true,
 					},
 				},
@@ -119,7 +118,11 @@ API.v1.addRoute(
 			}
 
 			const now = new Date();
-			const expiresAt = durationSec ? new Date(now.getTime() + durationSec * 1000) : undefined;
+			const effectiveDuration =
+				typeof durationSec === 'number' && Number.isFinite(durationSec)
+					? Math.min(Math.max(1, Math.floor(durationSec)), MAX_DURATION_SEC)
+					: DEFAULT_DURATION_SEC;
+			const expiresAt = new Date(now.getTime() + effectiveDuration * 1000);
 			const user = await Meteor.users.findOneAsync(
 				{ _id: uid },
 				{
@@ -168,14 +171,28 @@ API.v1.addRoute(
 				}
 
 				return API.v1.success({ msgId: result.insertedId });
-			} catch (insertError) {
+			} catch (e: any) {
+				if (e?.code === 11000) {
+					const alreadyActive = await Messages.findOne({
+						rid,
+						'u._id': uid,
+						attachments: {
+							$elemMatch: {
+								type: 'live-location',
+								'live.isActive': true,
+							},
+						},
+					});
+					if (alreadyActive) {
+						return API.v1.success({ msgId: alreadyActive._id });
+					}
+				}
 				return API.v1.failure('Failed to create live location message');
 			}
 		},
 	},
 );
 
-// Update live location coordinates
 API.v1.addRoute(
 	'liveLocation.update',
 	{ authRequired: true },
@@ -210,12 +227,12 @@ API.v1.addRoute(
 			}
 
 			const msg = await Messages.findOne({
-				'_id': msgId,
+				_id: msgId,
 				rid,
 				'u._id': uid,
-				'attachments': {
+				attachments: {
 					$elemMatch: {
-						'type': 'live-location',
+						type: 'live-location',
 						'live.isActive': true,
 					},
 				},
@@ -265,12 +282,11 @@ API.v1.addRoute(
 	},
 );
 
-// Stop live location sharing
 API.v1.addRoute(
 	'liveLocation.stop',
 	{ authRequired: true },
 	{
-		async post(this: IAPIRouteContext) {
+		async post(this: any) {
 			const { rid, msgId, finalCoords } = this.bodyParams;
 
 			if (!rid || typeof rid !== 'string') {
@@ -304,25 +320,29 @@ API.v1.addRoute(
 				rid,
 				'u._id': uid,
 			};
+
 			const $set: Record<string, unknown> = {
 				'attachments.$[liveAtt].live.isActive': false,
 				'attachments.$[liveAtt].live.stoppedAt': new Date(),
 			};
+
 			if (finalCoords !== undefined) {
 				$set['attachments.$[liveAtt].live.coords'] = finalCoords;
 			}
+
 			const res = await Messages.updateOne(
 				selector,
 				{ $set },
 				{
 					arrayFilters: [
-					{
-						'liveAtt.type': 'live-location',
-						'liveAtt.live.isActive': true,
-					},
+						{
+							'liveAtt.type': 'live-location',
+							'liveAtt.live.isActive': true,
+						},
 					],
 				} as any,
 			);
+
 			const success = Boolean(res.modifiedCount);
 
 			if (success) {
@@ -332,6 +352,12 @@ API.v1.addRoute(
 						id: updatedMsg._id,
 						data: updatedMsg,
 					});
+
+					Notifications.streamRoom.emit(`${rid}/live-location-ended`, {
+						msgId,
+						ownerId: uid,
+						stoppedAt: new Date(),
+					});
 				}
 			}
 
@@ -340,7 +366,6 @@ API.v1.addRoute(
 	},
 );
 
-// Get live location data
 API.v1.addRoute(
 	'liveLocation.get',
 	{ authRequired: true },
