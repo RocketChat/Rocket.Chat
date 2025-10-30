@@ -9421,7 +9421,7 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hono: "npm:^4.6.19"
+    hono: "npm:^4.10.3"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -24044,6 +24044,13 @@ __metadata:
   dependencies:
     parse-passwd: "npm:^1.0.0"
   checksum: 10/18dd4db87052c6a2179d1813adea0c4bfcfa4f9996f0e226fefb29eb3d548e564350fa28ec46b0bf1fbc0a1d2d6922ceceb80093115ea45ff8842a4990139250
+  languageName: node
+  linkType: hard
+
+"hono@npm:^4.10.3":
+  version: 4.10.3
+  resolution: "hono@npm:4.10.3"
+  checksum: 10/0b5aa2296ac52ec9519108df1603388637e3df66e2fa9391281c8320a052bcae2d3a9b73123c8c69d90a35931840cdfbb9a5ef45a6d110436f76b925541a4c87
   languageName: node
   linkType: hard
 

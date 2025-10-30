@@ -366,7 +366,7 @@
 		"gravatar": "^1.8.2",
 		"he": "^1.2.0",
 		"highlight.js": "11.8.0",
-		"hono": "^4.6.19",
+		"hono": "^4.10.3",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
 		"i18next-http-backend": "^1.4.5",
