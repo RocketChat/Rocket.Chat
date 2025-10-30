@@ -31,7 +31,7 @@ jobs:
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
-      official-platform: 'alpine'
+      services: ${{ steps.var.outputs.services }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -68,6 +68,8 @@ jobs:
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
           echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
+
+          echo "services=['rocketchat','authorization-service','account-service','ddp-streamer-service','presence-service','stream-hub-service','queue-worker-service','omnichannel-transcript-service']" >> $GITHUB_OUTPUT
 
       - id: by-tag
         run: |
@@ -228,8 +230,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: ['rocketchat', 'authorization-service', 'account-service', 'ddp-streamer-service', 'presence-service', 'stream-hub-service', 'queue-worker-service', 'omnichannel-transcript-service']
         arch: ['amd64', 'arm64']
+        service: ${{ fromJson(needs.release-versions.outputs.services) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -556,9 +558,16 @@ jobs:
 
     strategy:
       matrix:
-        service: ['rocketchat', 'account', 'authorization', 'ddp-streamer', 'omnichannel-transcript', 'presence', 'queue-worker', 'stream-hub']
+        service: ${{ fromJson(needs.release-versions.outputs.services) }}
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docker-compose-ci.yml
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -575,44 +584,36 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          if [[ '${{ matrix.service }}' == 'rocketchat' ]]; then
-            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
-          else
-            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service"
-          fi
-
-          GH_IMAGE_NAME="ghcr.io/${IMAGE}:${{ needs.release-versions.outputs.gh-docker-tag }}"
+          # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+          GH_IMAGE_NAME=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
           echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
-          DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
-
-          echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
-          echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
+      # - name: Pull Docker image
+      #   run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
 
       - name: Publish Docker images
         run: |
+          set -euo pipefail
+
+          sudo apt-get update -y
+          sudo apt-get install -y skopeo
+
           if [[ '${{ matrix.service }}' == 'rocketchat' ]]; then
             IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
           else
-            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service"
+            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}"
           fi
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
-          PUBLISHED_TAGS=()
+          declare -a TAGS=()
 
-          # tag and push the specific tag version
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
-          docker push $IMAGE_NAME:$DOCKER_TAG
-
-          PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
+          # tag specific tag version
+          TAGS+=("$DOCKER_TAG")
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
@@ -621,34 +622,39 @@ jobs:
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
-                docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-                docker push $IMAGE_NAME:$RELEASE
-
-                PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
+                TAGS+=("$RELEASE")
               fi
             else
-              docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
-              docker push $IMAGE_NAME:$RELEASE
-
-              PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
+              TAGS+=("$RELEASE")
             fi
           fi
 
           # commit hash
-          TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+          COMMIT_SHA="sha-${GITHUB_SHA:0:7}"
+          echo "COMMIT_SHA: ${COMMIT_SHA}"
+          TAGS+=("${COMMIT_SHA}")
 
-          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
-          docker push $IMAGE_NAME:$TAG_SHA
+          echo "Tags: ${TAGS[*]}"
 
-          PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
+          # get first tag as primary
+          PRIMARY="${TAGS[0]}"
 
-          echo "::group::Published tags"
+          SRC="${{ steps.gh-docker.outputs.gh-image-name }}"
+          DEST_REPO="docker.io/${IMAGE_NAME}"
 
-          for TAG in ${PUBLISHED_TAGS[@]}; do
-            echo $TAG
-          done
+          # build --additional-tag for all other tags
+          EXTRA_ARGS=()
+          if (( ${#TAGS[@]} > 1 )); then
+            for t in "${TAGS[@]:1}"; do
+              EXTRA_ARGS+=( --additional-tag "${DEST_REPO}:${t}" )
+            done
+          fi
 
-          echo "::endgroup::"
+          echo "Copying $SRC to ${DEST_REPO}:${PRIMARY} with extras ${EXTRA_ARGS[*]}"
+          skopeo copy --all \
+            "docker://${SRC}" \
+            "docker://${DEST_REPO}:${PRIMARY}" \
+            "${EXTRA_ARGS[@]}"
 
   notify-services:
     name: 🚀 Notify external services
