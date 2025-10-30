@@ -43,10 +43,27 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-// Minimal mock for ServiceClass (we don't need its real behavior in unit scope)
-jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
-}));
+// Minimal mock for ServiceClass plus MeteorError and Room used by the service
+jest.mock('@rocket.chat/core-services', () => {
+	class MeteorError extends Error {
+		public isClientSafe = true;
+		public readonly errorType = 'Meteor.Error';
+		public constructor(
+			public readonly error: string | number,
+			public readonly reason?: string,
+			public readonly details?: any,
+		) {
+			super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
+		}
+	}
+	return {
+		ServiceClass: class {},
+		MeteorError,
+		Room: {
+			removeUserFromRoom: jest.fn(),
+		},
+	};
+});
 
 describe('AbacService (unit)', () => {
 	let service: AbacService;
@@ -877,7 +894,8 @@ describe('AbacService (unit)', () => {
 			}));
 
 			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any)).rejects.toMatchObject({
-				message: 'error-usernames-not-matching-abac-attributes',
+				error: 'error-usernames-not-matching-abac-attributes',
+				message: expect.stringContaining('[error-usernames-not-matching-abac-attributes]'),
 				details: expect.arrayContaining(['bob', 'charlie']),
 			});
 		});
