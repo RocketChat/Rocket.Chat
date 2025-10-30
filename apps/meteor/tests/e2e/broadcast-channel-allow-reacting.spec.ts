@@ -5,10 +5,9 @@ import { HomeChannel } from './page-objects';
 test.use({ storageState: Users.admin.state });
 
 test.describe('broadcast-reacting', () => {
-    let poHomeChannel: HomeChannel;
 
     test.beforeEach(async ({ page }) => {
-        poHomeChannel = new HomeChannel(page);
+        new HomeChannel(page);
         await page.goto('/home');
     });
 
