@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 export class Sidebar {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -84,5 +84,15 @@ export class Sidebar {
 
 	getItemUnreadBadge(item: Locator): Locator {
 		return item.getByRole('status', { name: 'unread' });
+	}
+}
+
+export class AdminSidebar extends Sidebar {
+	get btnClose(): Locator {
+		return this.page.getByRole('button', { name: 'Close' });
+	}
+
+	async close(): Promise<void> {
+		await this.btnClose.click();
 	}
 }

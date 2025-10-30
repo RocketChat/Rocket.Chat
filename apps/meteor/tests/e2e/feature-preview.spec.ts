@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
-import { AccountProfile, Admin, HomeChannel } from './page-objects';
+import { AccountProfile, AdminInfo, HomeChannel } from './page-objects';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -666,9 +666,9 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.openAdminPanel();
 			await expect(page).toHaveURL(/\/admin/);
 
-			const adminPage = new Admin(page);
+			const adminPage = new AdminInfo(page);
 
-			await adminPage.btnClose.click();
+			await adminPage.sidebar.btnClose.click();
 			await expect(page).toHaveURL(/\/home/);
 
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();

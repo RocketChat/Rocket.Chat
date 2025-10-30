@@ -1,14 +1,14 @@
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { AdminSettings } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('settings-int', () => {
-	let poAdmin: Admin;
+	let poAdminSettings: AdminSettings;
 
 	test.beforeEach(async ({ page }) => {
-		poAdmin = new Admin(page);
+		poAdminSettings = new AdminSettings(page);
 		await page.goto('/admin/settings/Message');
 
 		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Message');
@@ -18,7 +18,7 @@ test.describe.serial('settings-int', () => {
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').fill('');
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').blur();
 
-		await poAdmin.btnSaveSettings.click();
+		await poAdminSettings.btnSaveChanges.click();
 
 		await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
 	});
