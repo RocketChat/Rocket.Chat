@@ -1,6 +1,5 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button } from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -8,6 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { usePasswordPolicy } from './usePasswordPolicy';
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
+import { useChangeE2EPasswordMutation } from '../../hooks/useChangeE2EPasswordMutation';
 import { useE2EEState } from '../../room/hooks/useE2EEState';
 
 const PASSWORD_POLICY = Object.freeze({
@@ -22,8 +22,8 @@ const PASSWORD_POLICY = Object.freeze({
 
 export const ChangePassphrase = (): JSX.Element => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const verify = usePasswordPolicy(PASSWORD_POLICY);
+	const changeE2EEPasswordMutation = useChangeE2EPasswordMutation();
 
 	const {
 		handleSubmit,
@@ -47,16 +47,6 @@ export const ChangePassphrase = (): JSX.Element => {
 	const e2eeState = useE2EEState();
 	const keysExist = e2eeState === 'READY' || e2eeState === 'SAVE_PASSWORD';
 	const hasTypedPassword = password.trim().length > 0;
-
-	const saveNewPassword = async (data: { password: string; passwordConfirm: string }) => {
-		try {
-			await e2e.changePassword(data.password);
-			resetField('password');
-			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
 
 	const e2ePasswordExplanationId = useId();
 	const passwordId = useId();
@@ -84,7 +74,13 @@ export const ChangePassphrase = (): JSX.Element => {
 							<Controller
 								control={control}
 								name='password'
-								rules={{ required: t('Required_field', { field: t('New_E2EE_password') }) }}
+								rules={{
+									required: t('Required_field', { field: t('New_E2EE_password') }),
+									validate: (value: string) => {
+										const { valid } = verify(value);
+										return valid || t('Password_does_not_meet_requirements');
+									},
+								}}
 								render={({ field }) => (
 									<PasswordInput
 										{...field}
@@ -121,7 +117,7 @@ export const ChangePassphrase = (): JSX.Element => {
 							</FieldError>
 						)}
 					</Field>
-					{hasTypedPassword && (
+					{hasTypedPassword && valid && (
 						<Field>
 							<FieldLabel htmlFor={passwordConfirmId}>{t('Confirm_new_E2EE_password')}</FieldLabel>
 							<FieldRow>
@@ -154,7 +150,9 @@ export const ChangePassphrase = (): JSX.Element => {
 				<Button
 					primary
 					disabled={!(keysExist && isValid && valid)}
-					onClick={handleSubmit(saveNewPassword)}
+					onClick={handleSubmit(({ password }) => {
+						changeE2EEPasswordMutation.mutate(password, { onSuccess: () => resetField('password') });
+					})}
 					mbs={12}
 					data-qa-type='e2e-encryption-save-password-button'
 				>
