@@ -1,5 +1,7 @@
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { Admin, AdminSectionsHref } from './page-objects';
+import { HomeSidenav } from './page-objects/fragments';
+import { LoginPage } from './page-objects/login';
 import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
@@ -7,9 +9,38 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration-settings', () => {
 	let poAdmin: Admin;
+	let poHomeSidenav: HomeSidenav;
+	let poLoginPage: LoginPage;
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
+		poHomeSidenav = new HomeSidenav(page);
+		poLoginPage = new LoginPage(page);
+	});
+
+	test.describe('Settings Page', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/settings');
+		});
+
+		test('should display settings list', async ({ page }) => {
+			await test.step('should list settings on load', async () => {
+				await expect(page.getByText('No results found')).not.toBeVisible();
+			});
+
+			await test.step('should list settings after logout and login', async () => {
+				await poAdmin.btnClose.click();
+				await poHomeSidenav.logout();
+
+				await poLoginPage.loginByUserState(Users.admin);
+
+				await poHomeSidenav.openAdministrationByLabel('Workspace');
+				const settingsButton = await poAdmin.adminSectionButton(AdminSectionsHref.Settings);
+				await settingsButton.click();
+
+				await expect(page.getByText('No results found')).not.toBeVisible();
+			});
+		});
 	});
 
 	test.describe('General', () => {
