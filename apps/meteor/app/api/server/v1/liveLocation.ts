@@ -56,12 +56,6 @@ interface ILiveLocationAttachment {
 	};
 }
 
-declare module 'meteor/meteor' {
-	interface Meteor {
-		user(): IUser | null;
-	}
-}
-
 API.v1.addRoute(
 	'liveLocation.start',
 	{ authRequired: true },
@@ -105,9 +99,9 @@ API.v1.addRoute(
 			const existing = await Messages.findOne({
 				rid,
 				'u._id': uid,
-				attachments: {
+				'attachments': {
 					$elemMatch: {
-						type: 'live-location',
+						'type': 'live-location',
 						'live.isActive': true,
 					},
 				},
@@ -176,9 +170,9 @@ API.v1.addRoute(
 					const alreadyActive = await Messages.findOne({
 						rid,
 						'u._id': uid,
-						attachments: {
+						'attachments': {
 							$elemMatch: {
-								type: 'live-location',
+								'type': 'live-location',
 								'live.isActive': true,
 							},
 						},
@@ -227,12 +221,12 @@ API.v1.addRoute(
 			}
 
 			const msg = await Messages.findOne({
-				_id: msgId,
+				'_id': msgId,
 				rid,
 				'u._id': uid,
-				attachments: {
+				'attachments': {
 					$elemMatch: {
-						type: 'live-location',
+						'type': 'live-location',
 						'live.isActive': true,
 					},
 				},
@@ -250,7 +244,7 @@ API.v1.addRoute(
 
 			const updateTime = new Date();
 			const res = await Messages.updateOne(
-				{ _id: msgId, rid, 'u._id': uid },
+				{ '_id': msgId, rid, 'u._id': uid },
 				{
 					$set: {
 						'attachments.$[liveAtt].live.coords': coords,
@@ -316,7 +310,7 @@ API.v1.addRoute(
 			}
 
 			const selector = {
-				_id: msgId,
+				'_id': msgId,
 				rid,
 				'u._id': uid,
 			};
@@ -330,18 +324,14 @@ API.v1.addRoute(
 				$set['attachments.$[liveAtt].live.coords'] = finalCoords;
 			}
 
-			const res = await Messages.updateOne(
-				selector,
-				{ $set },
-				{
-					arrayFilters: [
-						{
-							'liveAtt.type': 'live-location',
-							'liveAtt.live.isActive': true,
-						},
-					],
-				} as any,
-			);
+			const res = await Messages.updateOne(selector, { $set }, {
+				arrayFilters: [
+					{
+						'liveAtt.type': 'live-location',
+						'liveAtt.live.isActive': true,
+					},
+				],
+			} as any);
 
 			const success = Boolean(res.modifiedCount);
 

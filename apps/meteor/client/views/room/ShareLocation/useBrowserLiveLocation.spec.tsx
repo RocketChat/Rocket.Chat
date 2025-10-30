@@ -19,8 +19,8 @@ function Harness({ throttleMs = 10000 }: { throttleMs?: number }) {
 describe('useBrowserLiveLocation', () => {
 	const originalGeo = global.navigator.geolocation;
 	afterEach(() => {
-        jest.useRealTimers();
-    });
+		jest.useRealTimers();
+	});
 
 	let watchSuccess: PositionCallback | null;
 	let _watchError: PositionErrorCallback | null;

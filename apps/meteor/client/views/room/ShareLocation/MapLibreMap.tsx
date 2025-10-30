@@ -49,6 +49,10 @@ export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoo
 
 		markerRef.current = new maplibregl.Marker({ color: '#1976d2' }).setLngLat([lon, lat]).addTo(map);
 
+		map.on('error', (e) => {
+			console.error('MapLibre error:', e);
+		});
+
 		map.on('load', () => {
 			map.addSource('trail', {
 				type: 'geojson',
@@ -82,11 +86,7 @@ export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoo
 			trailRef.current = null;
 			trailCoordsRef.current = [];
 		};
-	    map.on('error', (e) => {
-			console.error('MapLibre error:', e);
-		});
 	}, []);
-
 	useEffect(() => {
 		const map = mapRef.current;
 		if (!map) return;
@@ -95,24 +95,24 @@ export default function MapLibreMap({ lat, lon, zoom = 15, height = 360, liveCoo
 	}, [lat, lon]);
 
 	useEffect(() => {
-        const map = mapRef.current;
-        if (!map || !visible) return;
+		const map = mapRef.current;
+		if (!map || !visible) return;
 
-        let r1 = 0;
-        let r2 = 0;
+		let r1 = 0;
+		let r2 = 0;
 
-        // wait for visibility/layout to settle, then resize
-        r1 = requestAnimationFrame(() => {
-            r2 = requestAnimationFrame(() => {
-            map.resize();
-            });
-        });
+		// wait for visibility/layout to settle, then resize
+		r1 = requestAnimationFrame(() => {
+			r2 = requestAnimationFrame(() => {
+				map.resize();
+			});
+		});
 
-        return () => {
-            if (r1) cancelAnimationFrame(r1);
-            if (r2) cancelAnimationFrame(r2);
-        };
-    }, [visible]);
+		return () => {
+			if (r1) cancelAnimationFrame(r1);
+			if (r2) cancelAnimationFrame(r2);
+		};
+	}, [visible]);
 
 	useEffect(() => {
 		if (!liveCoords || !mapRef.current || !markerRef.current) return;

@@ -63,25 +63,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'pinnedBy._id': 1 }, sparse: true },
 			{ key: { 'starred._id': 1 }, sparse: true },
 
-			// live-location attachments
-			{ key: { 'attachments.0.type': 1, 'attachments.0.live.isActive': 1 } },
-			{ key: { 'rid': 1, 'u._id': 1, 'attachments.0.type': 1, 'attachments.0.live.isActive': 1 } },
-			{
-				key: { 'attachments.0.live.expiresAt': 1 },
-				expireAfterSeconds: 0,
-				partialFilterExpression: {
-					'attachments.0.type': 'live-location',
-					'attachments.0.live.expiresAt': { $type: 'date' },
+		// live-location attachments
+		{ key: { 'attachments.0.type': 1, 'attachments.0.live.isActive': 1 } },
+		{ key: { 'rid': 1, 'u._id': 1, 'attachments.0.type': 1, 'attachments.0.live.isActive': 1 } },
+		{
+			key: { rid: 1, 'u._id': 1, 'attachments.type': 1, 'attachments.live.isActive': 1 },
+			unique: true,
+			partialFilterExpression: {
+				'attachments': {
+					$elemMatch: {
+						'type': 'live-location',
+						'live.isActive': true,
+					},
 				},
-				name: 'liveLocation_expiresAt_TTL',
 			},
-			{
-				key: { 'attachments.0.live.lastUpdateAt': 1 },
-				partialFilterExpression: { 'attachments.0.type': 'live-location' },
-				name: 'liveLocation_lastUpdateAt_idx',
+			name: 'uniq_active_live_location_per_user_room',
+		},
+		{
+			key: { 'attachments.0.live.expiresAt': 1 },
+			expireAfterSeconds: 0,
+			partialFilterExpression: {
+				'attachments.0.type': 'live-location',
+				'attachments.0.live.expiresAt': { $type: 'date' },
 			},
-
-			// discussions
+			name: 'liveLocation_expiresAt_TTL',
+		},
+		{
+			key: { 'attachments.0.live.lastUpdateAt': 1 },
+			partialFilterExpression: { 'attachments.0.type': 'live-location' },
+			name: 'liveLocation_lastUpdateAt_idx',
+		},			// discussions
 			{ key: { drid: 1 }, sparse: true },
 
 			// threads
