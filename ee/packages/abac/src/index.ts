@@ -461,8 +461,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
 
 		if (nonCompliantSet.size) {
-			// Note: open to suggestions, or if it's actually needed. My idea is to return the list of non compliant users, but our current errors dont' allow that
-			// Maybe we should just throw a generic error? idk. I may create a custom error just for this
 			throw new MeteorError(
 				'error-usernames-not-matching-abac-attributes',
 				'Some usernames do not comply with the ABAC attributes for the room',
