@@ -47,7 +47,9 @@ jest.mock('@rocket.chat/models', () => ({
 jest.mock('@rocket.chat/core-services', () => {
 	class MeteorError extends Error {
 		public isClientSafe = true;
+
 		public readonly errorType = 'Meteor.Error';
+
 		public constructor(
 			public readonly error: string | number,
 			public readonly reason?: string,
