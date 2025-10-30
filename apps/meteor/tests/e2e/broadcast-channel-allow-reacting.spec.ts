@@ -1,6 +1,6 @@
+import { HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
 
 test.use({ storageState: Users.admin.state });
 
@@ -21,10 +21,12 @@ test.describe('broadcast-reacting', () => {
 		await page.getByRole('button', { name: 'Edit' }).click();
 		await page.getByRole('button', { name: 'Advanced settings' }).click();
 
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < 8; i++) {
 			await page.locator('body').press('ArrowDown');
 			await page.waitForTimeout(100);
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const allowReactingToggle = page.getByRole('checkbox', { name: 'Allow Reacting' });
 		const isVisible = await allowReactingToggle.isVisible();
@@ -44,10 +46,12 @@ test.describe('broadcast-reacting', () => {
 		await page.getByRole('button', { name: 'Edit' }).click();
 		await page.getByRole('button', { name: 'Advanced settings' }).click();
 
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < 8; i++) {
 			await page.locator('body').press('ArrowDown');
 			await page.waitForTimeout(100);
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const allowReactingToggle = page.getByRole('checkbox', { name: 'Allow Reacting' });
 		const isVisible = await allowReactingToggle.isVisible();
@@ -67,10 +71,12 @@ test.describe('broadcast-reacting', () => {
 		await page.getByRole('button', { name: 'Edit' }).click();
 		await page.getByRole('button', { name: 'Advanced settings' }).click();
 
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < 8; i++) {
 			await page.locator('body').press('ArrowDown');
 			await page.waitForTimeout(100);
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const allowReactingToggle = page.getByRole('checkbox', { name: 'Allow Reacting' });
 		const isVisible = await allowReactingToggle.isVisible();
