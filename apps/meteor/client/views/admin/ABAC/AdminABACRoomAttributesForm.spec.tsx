@@ -136,12 +136,13 @@ describe('AdminABACRoomAttributesForm', () => {
 		);
 
 		const trashButtons = screen.getAllByRole('button', { name: 'Remove' });
-		expect(trashButtons).toHaveLength(1);
+		expect(screen.getByDisplayValue('Value 1')).toBeInTheDocument();
+		expect(screen.getByDisplayValue('Value 2')).toBeInTheDocument();
 
 		await userEvent.click(trashButtons[0]);
 
-		const valueInputs = screen.getAllByLabelText('Values*');
-		expect(valueInputs).toHaveLength(1);
+		expect(screen.getByDisplayValue('Value 1')).toBeInTheDocument();
+		expect(screen.queryByDisplayValue('Value 2')).not.toBeInTheDocument();
 	});
 
 	it('should remove locked attribute when trash button is clicked', async () => {
@@ -158,7 +159,9 @@ describe('AdminABACRoomAttributesForm', () => {
 		);
 
 		const trashButtons = screen.queryAllByRole('button', { name: 'Remove' });
-		expect(trashButtons).toHaveLength(2);
+
+		expect(screen.getByDisplayValue('Locked Value 1')).toBeInTheDocument();
+		expect(screen.getByDisplayValue('Locked Value 2')).toBeInTheDocument();
 
 		await userEvent.click(trashButtons[0]);
 
