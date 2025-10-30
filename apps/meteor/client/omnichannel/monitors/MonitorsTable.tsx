@@ -31,6 +31,7 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
+import { links } from '../../lib/links';
 
 const MonitorsTable = () => {
 	const t = useTranslation();
@@ -164,7 +165,7 @@ const MonitorsTable = () => {
 					icon='shield-blank'
 					title={t('No_monitors_yet')}
 					description={t('No_monitors_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_monitors')}
 				/>
 			)}
