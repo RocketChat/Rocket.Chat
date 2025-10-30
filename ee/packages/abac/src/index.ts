@@ -170,9 +170,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -268,9 +272,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[]): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -317,7 +325,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes'>>(rid, 'p', { projection: { abacAttributes: 1 } });
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default'>>(rid, 'p', {
+			projection: { abacAttributes: 1, default: 1, teamDefault: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -332,6 +342,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
+		// if is the last attribute, just remove all
+		if (previous.length === 1) {
+			await Rooms.unsetAbacAttributesById(rid);
+			return;
+		}
+
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
 		this.logger.debug({
 			msg: 'Room ABAC attribute removed',
@@ -343,9 +359,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -372,9 +392,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain'>>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1 },
-		});
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
+			rid,
+			'p',
+			{
+				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
+			},
+		);
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
