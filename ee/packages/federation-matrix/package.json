@@ -46,7 +46,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"emojione": "^4.5.0",
 		"marked": "^16.1.2",
-		"mongodb": "6.16.0",
+		"mongodb": "6.10.0",
 		"pino": "^9.11.0",
 		"reflect-metadata": "^0.2.2",
 		"sanitize-html": "~2.17.0",
