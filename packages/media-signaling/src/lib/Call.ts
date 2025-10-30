@@ -137,10 +137,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private hasRemoteData: boolean;
 
-	private hasLocalDescription: boolean;
-
-	private hasRemoteDescription: boolean;
-
 	private initialized: boolean;
 
 	private acknowledged: boolean;
@@ -168,7 +164,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private currentNegotiationId: string | null;
 
+	private canChangeNegotiation = true;
+
 	private creationTimestamp: Date;
+
+	private anyNegotiationCompleted = false;
 
 	private pendingAnswerRequest: ServerMediaSignalRemoteSDP | null;
 
@@ -198,8 +198,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.initialized = false;
 		this.acknowledged = false;
 		this.contractState = 'proposed';
-		this.hasLocalDescription = false;
-		this.hasRemoteDescription = false;
 		this.serviceStates = new Map();
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
@@ -384,24 +382,6 @@ export class ClientMediaCall implements IClientMediaCall {
 					return 'accepting';
 				}
 				return 'pending';
-			case 'accepted':
-				if (this.hasLocalDescription && this.hasRemoteDescription) {
-					return 'has-answer';
-				}
-				if (this.hasLocalDescription !== this.hasRemoteDescription) {
-					return 'has-offer';
-				}
-
-				return 'accepted';
-			case 'renegotiating':
-				if (this.hasLocalDescription && this.hasRemoteDescription) {
-					return 'has-new-answer';
-				}
-				if (this.hasLocalDescription !== this.hasRemoteDescription) {
-					return 'has-new-offer';
-				}
-
-				return 'renegotiating';
 			default:
 				return this._state;
 		}
@@ -763,7 +743,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processOfferRequest(signal: ServerMediaSignalRequestOffer) {
-		if (this.hidden) {
+		if (this.hidden || this.isOver()) {
 			return;
 		}
 
@@ -783,33 +763,64 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		const iceRestart = this.currentNegotiationId !== negotiationId;
-		this.currentNegotiationId = negotiationId;
-		if (iceRestart) {
-			this.hasLocalDescription = false;
+		if (negotiationId === this.currentNegotiationId) {
+			this.config.logger?.debug('ClientMediaCall.processOfferRequest', 'this negotiation ID has already been processed.');
+			return;
 		}
-		this.hasRemoteDescription = false;
 
-		let offer: { sdp: RTCSessionDescriptionInit } | null = null;
-		try {
-			offer = await this.webrtcProcessor.createOffer({ iceRestart });
-		} catch (e) {
-			this.sendError({
-				errorType: 'service',
-				errorCode: 'failed-to-create-offer',
-				negotiationId,
-				critical: true,
-				errorDetails: serializeError(e),
-			});
-			throw e;
+		if (!this.canChangeNegotiation) {
+			// TODO:
+			return;
 		}
+
+		this.startNegotiation(negotiationId, this.role === 'callee');
+
+		try {
+			const earlyOffer = await this.webrtcProcessor.createOffer({});
+			if (!this.isCurrentNegotiation(negotiationId)) {
+				// TODO: notify server?
+				return;
+			}
+
+			await this.webrtcProcessor.setLocalDescription(earlyOffer);
+		} catch (e) {
+			if (this.isCurrentNegotiation(negotiationId)) {
+				// TODO: Maybe also notify errors from past negotiations?
+				this.sendError({
+					errorType: 'service',
+					errorCode: 'failed-to-create-offer',
+					negotiationId,
+					critical: true,
+					errorDetails: serializeError(e),
+				});
+				throw e;
+			}
+		}
+
+		if (!this.isCurrentNegotiation(negotiationId)) {
+			// TODO: notify server?
+			return;
+		}
+
+		await this.webrtcProcessor.waitForIceGathering();
+
+		if (!this.isCurrentNegotiation(negotiationId)) {
+			// TODO: notify server?
+			return;
+		}
+
+		const offer = this.webrtcProcessor.getLocalDescription();
 
 		if (!offer) {
 			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
 			return;
 		}
 
-		await this.deliverSdp({ ...offer, negotiationId });
+		await this.deliverSdp({ sdp: offer, negotiationId });
+	}
+
+	protected isCurrentNegotiation(negotiationId: string): boolean {
+		return !this.isOver() && negotiationId === this.currentNegotiationId;
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
@@ -837,13 +848,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requireWebRTC();
 		const { negotiationId } = signal;
 
-		const iceRestart = this.currentNegotiationId !== negotiationId;
-		if (iceRestart) {
-			this.hasLocalDescription = false;
-			this.hasRemoteDescription = false;
-			this.webrtcProcessor.startNewNegotiation();
+		if (negotiationId === this.currentNegotiationId) {
+			this.config.logger?.debug('ClientMediaCall.processOfferRequest', 'this negotiation ID has already been processed.');
+			return;
 		}
-		this.currentNegotiationId = negotiationId;
 
 		if (!this.hasInputTrack()) {
 			this.pendingAnswerRequest = signal;
@@ -851,14 +859,20 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		let answer: { sdp: RTCSessionDescriptionInit } | null = null;
+		if (!this.canChangeNegotiation) {
+			// TODO:
+			return;
+		}
+
+		this.startNegotiation(negotiationId, this.role === 'caller');
+
 		try {
-			answer = await this.webrtcProcessor.createAnswer(signal);
+			await this.webrtcProcessor.setRemoteDescription(signal.sdp);
 		} catch (e) {
 			this.config.logger?.error(e);
 			this.sendError({
 				errorType: 'service',
-				errorCode: 'failed-to-create-answer',
+				errorCode: 'failed-to-set-remote-offer',
 				negotiationId,
 				critical: true,
 				errorDetails: serializeError(e),
@@ -866,13 +880,63 @@ export class ClientMediaCall implements IClientMediaCall {
 			throw e;
 		}
 
+		if (!this.isCurrentNegotiation(negotiationId)) {
+			// TODO: notify server?
+			return;
+		}
+
+		try {
+			const earlyAnswer = await this.webrtcProcessor.createAnswer();
+			if (!this.isCurrentNegotiation(negotiationId)) {
+				// TODO: notify server?
+				return;
+			}
+
+			await this.webrtcProcessor.setLocalDescription(earlyAnswer);
+		} catch (e) {
+			if (this.isCurrentNegotiation(negotiationId)) {
+				// TODO: Maybe also notify errors from past negotiations?
+				this.sendError({
+					errorType: 'service',
+					errorCode: 'failed-to-create-answer',
+					negotiationId,
+					critical: true,
+					errorDetails: serializeError(e),
+				});
+				throw e;
+			}
+		}
+
+
+		if (!this.isCurrentNegotiation(negotiationId)) {
+			// TODO: notify server?
+			return;
+		}
+
+		await this.webrtcProcessor.waitForIceGathering();
+
+		if (!this.isCurrentNegotiation(negotiationId)) {
+			// TODO: notify server?
+			return;
+		}
+
+		const answer = this.webrtcProcessor.getLocalDescription();
+
 		if (!answer) {
 			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
 			return;
 		}
 
-		this.hasRemoteDescription = true;
-		await this.deliverSdp({ ...answer, negotiationId });
+		await this.deliverSdp({ sdp: answer, negotiationId });
+	}
+
+	protected startNegotiation(negotiationId: string, isPolite: boolean): void {
+		this.config.logger?.debug('ClientMediaCall.startNegotiation', negotiationId, isPolite);
+		this.currentNegotiationId = negotiationId;
+
+		// The first negotiation and any impolite negotiation must always be completed;
+		// Other polite negotiations can be aborted in favor of a new negotiation.
+		this.canChangeNegotiation = isPolite && this.anyNegotiationCompleted;
 	}
 
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
@@ -906,18 +970,20 @@ export class ClientMediaCall implements IClientMediaCall {
 			return this.processAnswerRequest(signal);
 		}
 
-		if (signal.negotiationId !== this.currentNegotiationId) {
-			this.config.logger?.error('Received an answer for an unexpected negotiation.');
+		if (signal.sdp.type !== 'answer') {
+			this.config.logger?.error('Unsupported sdp type.');
 			return;
 		}
 
-		await this.webrtcProcessor.setRemoteAnswer(signal);
-		this.hasRemoteDescription = true;
+		if (!this.isCurrentNegotiation(signal.negotiationId)) {
+			return;
+		}
+
+		await this.webrtcProcessor.setRemoteDescription(signal.sdp);
 	}
 
 	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit; negotiationId: string }) {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
-		this.hasLocalDescription = true;
 
 		if (!this.hidden) {
 			this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
@@ -1008,7 +1074,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.changeState('accepted');
 
 		this.addStateTimeout('accepted', TIMEOUT_TO_PROGRESS_SIGNALING);
-		this.addStateTimeout('has-offer', TIMEOUT_TO_PROGRESS_SIGNALING);
 	}
 
 	private flagAsEnded(reason: CallHangupReason): void {
@@ -1120,11 +1185,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private onWebRTCNegotiationNeeded(): void {
-		if (this._state !== 'active' || !this.currentNegotiationId) {
-			this.config.logger?.warn('WebRTCProcessor requested a renegotiation while in a state that should not trigger any.', {
-				state: this._state,
-				currentNegotiationId: this.currentNegotiationId,
-			});
+		// If the call doesn't have any negotiation yet, we can quietly ignore the event
+		if (!this.currentNegotiationId) {
 			return;
 		}
 
