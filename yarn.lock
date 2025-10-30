@@ -8016,7 +8016,7 @@ __metadata:
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -8047,7 +8047,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     human-interval: "npm:^2.0.1"
     moment-timezone: "npm:~0.5.48"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -8151,7 +8151,7 @@ __metadata:
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -8214,7 +8214,7 @@ __metadata:
     babel-jest: "npm:~30.2.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -8231,7 +8231,7 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/express": "npm:^4.17.23"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     npm-run-all: "npm:~4.1.5"
     prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
@@ -8251,7 +8251,7 @@ __metadata:
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -8333,7 +8333,7 @@ __metadata:
     jaeger-client: "npm:^3.19.0"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
@@ -8424,7 +8424,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     marked: "npm:^16.1.2"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     pino: "npm:^9.11.0"
     pino-pretty: "npm:^7.6.1"
     reflect-metadata: "npm:^0.2.2"
@@ -8774,7 +8774,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -9386,7 +9386,7 @@ __metadata:
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
@@ -9520,7 +9520,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9554,7 +9554,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   peerDependencies:
     mongodb: 6.10.0
@@ -9605,7 +9605,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     mem: "npm:^8.1.1"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9623,7 +9623,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9659,7 +9659,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     pino: "npm:^8.21.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -9700,7 +9700,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -9848,7 +9848,7 @@ __metadata:
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -9875,7 +9875,7 @@ __metadata:
     babel-jest: "npm:~30.2.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9916,7 +9916,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -9992,7 +9992,7 @@ __metadata:
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10102,7 +10102,7 @@ __metadata:
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
     polka: "npm:^0.5.2"
@@ -10327,7 +10327,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.0.0"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     react: "npm:~18.3.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -33862,7 +33862,7 @@ __metadata:
     jaeger-client: "npm:^3.19.0"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     npm-run-all: "npm:^4.1.5"
     pino: "npm:^8.21.0"
