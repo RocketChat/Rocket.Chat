@@ -10,7 +10,7 @@ test.describe('broadcast-reacting', () => {
 		await page.goto('/home');
 	});
 
-	test('normal channel', async ({ page }) => {
+	test('normal channel test', async ({ page }) => {
 		await page.getByRole('button', { name: 'Create new' }).click();
 		await page.getByTestId('dropdown').getByText('Channel').click();
 		await page.getByRole('textbox', { name: 'Name' }).fill('normalchannel');
