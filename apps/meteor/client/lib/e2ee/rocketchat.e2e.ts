@@ -1,7 +1,7 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -11,9 +11,9 @@ import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
 import * as Rsa from './crypto/rsa';
-import { generatePassphrase } from './helper';
 import { Keychain } from './keychain';
 import { createLogger } from './logger';
+import { generatePassphrase } from './passphrase';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
@@ -636,31 +636,6 @@ class E2E extends Emitter {
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
 		return decryptedMessageWithQuote;
-	}
-
-	async decryptPinnedMessage(message: IE2EEPinnedMessage) {
-		const span = log.span('decryptPinnedMessage');
-		const [pinnedMessage] = message.attachments;
-
-		if (!pinnedMessage) {
-			span.warn('No pinned message found');
-			return message;
-		}
-
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		if (!e2eRoom) {
-			span.warn('No e2eRoom found');
-			return message;
-		}
-
-		const data = await e2eRoom.decrypt(pinnedMessage.content);
-
-		// TODO(@cardoso): review backward compatibility
-		message.attachments[0].text = data.msg;
-
-		span.info('pinned message decrypted');
-		return message;
 	}
 
 	async decryptSubscription(subscription: SubscriptionWithRoom): Promise<void> {

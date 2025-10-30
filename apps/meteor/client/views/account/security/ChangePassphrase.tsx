@@ -87,6 +87,7 @@ export const ChangePassphrase = (): JSX.Element => {
 										id={passwordId}
 										error={errors.password?.message}
 										disabled={!keysExist}
+										autoComplete='new-password'
 										aria-describedby={`${e2ePasswordExplanationId} ${passwordId}-hint ${passwordId}-error`}
 										aria-invalid={errors.password ? 'true' : 'false'}
 									/>

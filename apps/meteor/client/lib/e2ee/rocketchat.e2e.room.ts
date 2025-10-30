@@ -8,6 +8,7 @@ import type {
 	AtLeast,
 	EncryptedMessageContent,
 	EncryptedContent,
+	IE2EEPinnedMessage,
 } from '@rocket.chat/core-typings';
 import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -721,6 +722,21 @@ export class E2ERoom extends Emitter {
 			span.set('error', error).error('Error decrypting message');
 			return { msg: t('E2E_Key_Error') };
 		}
+	}
+
+	async decryptPinnedMessage(message: IE2EEPinnedMessage): Promise<IE2EEPinnedMessage> {
+		const [pinnedMessage] = message.attachments;
+
+		if (!pinnedMessage) {
+			return message;
+		}
+
+		const data = await this.decrypt(pinnedMessage.content);
+
+		// TODO(@cardoso): review backward compatibility
+		message.attachments[0].text = data.msg;
+
+		return message;
 	}
 
 	private retrieveDecryptionKey(kid: string): Aes.Key | null {

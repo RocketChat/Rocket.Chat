@@ -1,24 +1,20 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { MutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../lib/e2ee/rocketchat.e2e';
+import { changePassword } from '../../lib/e2ee';
 
-export const useChangeE2EPasswordMutation = ({ options }: { options?: MutationOptions<void, string, string> } = {}) => {
+export const useChangeE2EPasswordMutation = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
-		mutationFn: async (newPassword: string) => {
-			await e2e.changePassword(newPassword);
-		},
+		mutationFn: changePassword,
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Encryption_key_saved_successfully') });
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
-		...options,
 	});
 };

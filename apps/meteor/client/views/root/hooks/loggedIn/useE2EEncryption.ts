@@ -3,7 +3,7 @@ import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.ch
 import { useEffect, useRef } from 'react';
 
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
-import { e2e } from '../../../../lib/e2ee';
+import { e2e, getRoomEncryptionInstance } from '../../../../lib/e2ee';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 import { Rooms } from '../../../../stores';
@@ -48,21 +48,21 @@ export const useE2EEncryption = () => {
 		}
 
 		const offClientMessageReceived = onClientMessageReceived.use(async (msg) => {
-			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
+			const e2eRoom = await getRoomEncryptionInstance(msg.rid);
 			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
 
 			if (isE2EEPinnedMessage(msg)) {
-				return e2e.decryptPinnedMessage(msg);
+				return e2eRoom.decryptPinnedMessage(msg);
 			}
 
-			return e2e.decryptMessage(msg);
+			return e2eRoom.decryptMessage(msg);
 		});
 
 		// Encrypt messages before sending
 		const offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message) => {
-			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
+			const e2eRoom = await getRoomEncryptionInstance(message.rid);
 
 			if (!e2eRoom) {
 				return message;
@@ -84,7 +84,8 @@ export const useE2EEncryption = () => {
 				});
 			});
 
-			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			if (subscription.encrypted) e2eRoom.resume();
+			else e2eRoom.pause();
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 
