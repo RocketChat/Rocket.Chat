@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, isMeteorError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -9,11 +9,6 @@ import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
 
 // Type guards for the error
-
-function isErrorWithDetails(error: unknown): error is Error & { details: string[] } {
-	return error instanceof Error && Array.isArray((error as any).details);
-}
-
 function isStringError(error: unknown): error is { error: string } {
 	return typeof (error as any)?.error === 'string';
 }
@@ -84,7 +79,7 @@ slashCommands.add({
 						inviter,
 					);
 				} catch (e: unknown) {
-					if (isErrorWithDetails(e)) {
+					if (isMeteorError(e)) {
 						const details = Array.isArray(e.details) ? e.details.join(', ') : '';
 
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {

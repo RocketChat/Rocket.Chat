@@ -1,4 +1,4 @@
-import { Room, ServiceClass } from '@rocket.chat/core-services';
+import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -463,9 +463,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (nonCompliantSet.size) {
 			// Note: open to suggestions, or if it's actually needed. My idea is to return the list of non compliant users, but our current errors dont' allow that
 			// Maybe we should just throw a generic error? idk. I may create a custom error just for this
-			const err = new Error('error-usernames-not-matching-abac-attributes');
-			(err as any).details = Array.from(nonCompliantSet);
-			throw err;
+			throw new MeteorError(
+				'error-usernames-not-matching-abac-attributes',
+				'Some usernames do not comply with the ABAC attributes for the room',
+				Array.from(nonCompliantSet),
+			);
 		}
 
 		this.logger.debug({
