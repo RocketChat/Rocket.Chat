@@ -15,7 +15,7 @@ export const useRequire2faSetup = () => {
 		}
 
 		const mandatoryRole = state.find((role) => !!role.mandatory2fa && user.roles?.includes(role._id));
-		console.log('mandatoryRole', mandatoryRole);
+
 		if (mandatoryRole === undefined) {
 			return false;
 		}
