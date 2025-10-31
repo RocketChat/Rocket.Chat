@@ -1,5 +1,17 @@
 # @rocket.chat/ui-client
 
+## 24.0.0
+
+### Patch Changes
+
+- ([#37154](https://github.com/RocketChat/Rocket.Chat/pull/37154)) Fixes a GUI crash happening in the admin user page when attempting to display an invalid custom field
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/ui-avatar@20.0.0
+  </details>
+
 ## 24.0.0-rc.4
 
 ### Patch Changes

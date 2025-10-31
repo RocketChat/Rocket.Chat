@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 7.12.0
+
+### Minor Changes
+
+- ([#37038](https://github.com/RocketChat/Rocket.Chat/pull/37038)) Introduce the `RangeSettingInput` component, providing a new visual input type for settings that accept a range of numeric values. This improves the user experience for adjusting range-based settings in the administration panel.
+
 ## 7.12.0-rc.4
 
 ## 7.12.0-rc.3

@@ -1,5 +1,22 @@
 # @rocket.chat/ui-voip
 
+## 14.0.0
+
+### Minor Changes
+
+- ([#37207](https://github.com/RocketChat/Rocket.Chat/pull/37207)) Adds call transfer requester information on call widget
+
+- ([#37074](https://github.com/RocketChat/Rocket.Chat/pull/37074)) Introduces audio feedback for the Voice Call Dialpad.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [085d6536d23fe5cc293fec2f1454eb7442e8c7f4, a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-client@24.0.0
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/ui-avatar@20.0.0
+  </details>
+
 ## 14.0.0-rc.4
 
 ### Patch Changes
