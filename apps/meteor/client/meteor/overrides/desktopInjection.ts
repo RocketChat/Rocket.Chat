@@ -1,5 +1,5 @@
-import { watch } from '../meteor/watch';
-import { PublicSettings } from '../stores';
+import { PublicSettings } from '../../stores';
+import { watch } from '../watch';
 
 if (window.RocketChatDesktop) {
 	// backport of rocketchat:user-presence for the desktop app
