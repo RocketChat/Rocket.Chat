@@ -282,7 +282,8 @@ jobs:
         include:
           # for rocketchat monolith and on develop branch builds we create a coverage image to run tests against it
           # and keep the baseline of the coverage for other PRs
-          - service: rocketchat
+          - arch: amd64
+            service: rocketchat
             type: coverage
 
     steps:
@@ -356,7 +357,11 @@ jobs:
             echo "Digest for ${service}: ${refs[@]}"
 
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-            IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
+            if [ "$service" == "rocketchat-cov" ]; then
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            else
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
+            fi
 
             echo $IMAGE
 
@@ -364,6 +369,7 @@ jobs:
               --debug \
               --annotation "manifest-descriptor:org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               --tag "${IMAGE}" \
+              --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
               ${refs[@]}
           done
 
