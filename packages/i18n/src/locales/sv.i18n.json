@@ -4333,7 +4333,7 @@
   "RetentionPolicyRoom_FilesOnly": "Gallra bara filer, behåll meddelanden",
   "RetentionPolicyRoom_MaxAge": "Maximal meddelandeålder i dagar (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Åsidosätt global lagringspolicy",
-  "RetentionPolicyRoom_ReadTheDocs": "Se upp! Att ändra dessa inställningar utan att veta vad man gör kan förstöra all meddelandehistorik. Läs dokumentationen innan du aktiverar funktionen <a href={{retentionPolicyUrl}}>här</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Se upp! Att ändra dessa inställningar utan att veta vad man gör kan förstöra all meddelandehistorik. Läs dokumentationen innan du aktiverar funktionen <a href=\"{{retentionPolicyUrl}}\">här</a>.",
   "RetentionPolicy_Advanced_Precision": "Använd inställningar för avancerad lagringspolicy",
   "RetentionPolicy_Advanced_Precision_Cron": "Använd cron för avancerad lagringspolicy",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Hur ofta gallringstimern ska köras anges av uttrycket för cron-jobb. Om du anger ett mer exakt värde för den fungerar kanaler med korta lagringstider bättre, men det kan kräva extra bearbetningskraft för större communityn.",

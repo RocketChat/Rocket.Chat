@@ -3077,7 +3077,7 @@
   "RetentionPolicyRoom_FilesOnly": "ファイルのみを整理し、メッセージは残す",
   "RetentionPolicyRoom_MaxAge": "メッセージ保持日数（デフォルト：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "グローバル保持ポリシーを上書き",
-  "RetentionPolicyRoom_ReadTheDocs": "ご注意ください！これらの設定を不用意に調整すると、すべてのメッセージ履歴が破棄されます。機能を有効にする前に<a href={{retentionPolicyUrl}}>こちら</a>のドキュメントを参照してください。",
+  "RetentionPolicyRoom_ReadTheDocs": "ご注意ください！これらの設定を不用意に調整すると、すべてのメッセージ履歴が破棄されます。機能を有効にする前に<a href=\"{{retentionPolicyUrl}}\">こちら</a>のドキュメントを参照してください。",
   "RetentionPolicy_Advanced_Precision": "高度な保持ポリシー設定の使用",
   "RetentionPolicy_Advanced_Precision_Cron": "高度な保持ポリシークロンの使用",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "整理タイマーの実行頻度はcronジョブ式で定義されます。これをより精密な値に設定すると、保持タイマーが高速なチャネルの動作が改善されますが、大規模コミュニティでは追加の処理能力が必要になる可能性があります。",

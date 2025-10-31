@@ -1804,7 +1804,7 @@
   "RetentionPolicyRoom_FilesOnly": "Pelên tenê Prune, peyamên xwe biparêzin",
   "RetentionPolicyRoom_MaxAge": "Di rojan de herî mezintirîn mesaj (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Siyaseta polîtîkaya cîhanî ya sererast bike",
-  "RetentionPolicyRoom_ReadTheDocs": "Şîyar bin! Tewaking these settings, bêyî tedawî ji bo her dîrokek dîrok hilweşînin. Ji kerema xwe ya taybetmendiyê li ser <a href = {{retentionPolicyUrl}}>li vir</A>binivîse belgeyan bixwînin.",
+  "RetentionPolicyRoom_ReadTheDocs": "Şîyar bin! Tewaking these settings, bêyî tedawî ji bo her dîrokek dîrok hilweşînin. Ji kerema xwe ya taybetmendiyê li ser <a href = \"{{retentionPolicyUrl}}\">li vir</A>binivîse belgeyan bixwînin.",
   "RetentionPolicy_AppliesToChannels": "Li ser kanalên xwe ye",
   "RetentionPolicy_AppliesToDMs": "Li peyamên yekser peyda dike",
   "RetentionPolicy_AppliesToGroups": "Li komên taybetî",

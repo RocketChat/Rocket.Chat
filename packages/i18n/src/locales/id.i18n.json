@@ -1808,7 +1808,7 @@
   "RetentionPolicyRoom_FilesOnly": "Pangkas file saja, simpan pesan",
   "RetentionPolicyRoom_MaxAge": "Umur pesan maksimum dalam hari (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Timpa kebijakan retensi global",
-  "RetentionPolicyRoom_ReadTheDocs": "Awas! Tweaking pengaturan ini tanpa hati-hati dapat menghancurkan semua riwayat pesan. Silakan baca dokumentasi sebelum mengaktifkan fitur pada <a href = {{retentionPolicyUrl}}>di sini</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Awas! Tweaking pengaturan ini tanpa hati-hati dapat menghancurkan semua riwayat pesan. Silakan baca dokumentasi sebelum mengaktifkan fitur pada <a href = \"{{retentionPolicyUrl}}\">di sini</a>.",
   "RetentionPolicy_AppliesToChannels": "Berlaku untuk saluran",
   "RetentionPolicy_AppliesToDMs": "Berlaku untuk mengarahkan pesan",
   "RetentionPolicy_AppliesToGroups": "Berlaku untuk grup pribadi",

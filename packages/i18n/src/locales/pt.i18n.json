@@ -2105,7 +2105,7 @@
   "RetentionPolicyRoom_FilesOnly": "Remover apenas arquivos, mantenha mensagens",
   "RetentionPolicyRoom_MaxAge": "Validade máxima da mensagem em dias (padrão: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Substituir política de retenção global",
-  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar estas configurações sem as devidas precauções, pode resultar na destruição de todo o histórico de mensagens. Leia a documentação antes de activar o recurso <a href={{retentionPolicyUrl}}>aqui</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Cuidado! Ajustar estas configurações sem as devidas precauções, pode resultar na destruição de todo o histórico de mensagens. Leia a documentação antes de activar o recurso <a href=\"{{retentionPolicyUrl}}\">aqui</a>.",
   "RetentionPolicy_AppliesToChannels": "Aplica-se a canais",
   "RetentionPolicy_AppliesToDMs": "Aplica-se a direccionar mensagens",
   "RetentionPolicy_AppliesToGroups": "Aplica-se a grupos privados",

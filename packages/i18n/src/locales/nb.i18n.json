@@ -4409,7 +4409,7 @@
   "RetentionPolicyRoom_FilesOnly": "Beskjær kun filer, behold meldinger",
   "RetentionPolicyRoom_MaxAge": "Maksimal meldingsalder i dager (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Overstyr globale retningslinjer for oppbevaring",
-  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <a href={{retentionPolicyUrl}}>her</a>her.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <a href=\"{{retentionPolicyUrl}}\">her</a>her.",
   "RetentionPolicy_Advanced_Precision": "Bruk avansert konfigurasjon av policy for oppbevaring",
   "RetentionPolicy_Advanced_Precision_Cron": "Bruk avansert cron for arkiveringspolicy",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Hvor ofte prune-timeren skal kjøre, definert av et cron-uttrykk. Å sette dette til en mer presis verdi gjør at kanaler med raske retention-timere fungerer bedre, men kan kreve mer prosessorkraft i store fellesskap.",

@@ -2090,7 +2090,7 @@
   "RetentionPolicyRoom_FilesOnly": "លុបឯកសារតែរក្សាសារ",
   "RetentionPolicyRoom_MaxAge": "អាយុសារអតិបរមាក្នុងថ្ងៃ (លំនាំដើម {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "បដិសេធគោលនយោបាយរក្សាពិភពលោក",
-  "RetentionPolicyRoom_ReadTheDocs": "ប្រយ័ត្ន! ការកំណត់លឿនពេក ដោយមិនបានយកចិត្តទុកដាក់អាចលប់ចោលគ្រប់ប្រវត្តិសារទាំងអស់។ សូមអានការណែនាំមុនពេលបើកដំណើរការមុខងារទាំងនេះ  <a href={{retentionPolicyUrl}}>នៅទីនេះ</a>។",
+  "RetentionPolicyRoom_ReadTheDocs": "ប្រយ័ត្ន! ការកំណត់លឿនពេក ដោយមិនបានយកចិត្តទុកដាក់អាចលប់ចោលគ្រប់ប្រវត្តិសារទាំងអស់។ សូមអានការណែនាំមុនពេលបើកដំណើរការមុខងារទាំងនេះ  <a href=\"{{retentionPolicyUrl}}\">នៅទីនេះ</a>។",
   "RetentionPolicy_AppliesToChannels": "អនុវត្តទៅឆានែល",
   "RetentionPolicy_AppliesToDMs": "អនុវត្តទៅសារដោយផ្ទាល់",
   "RetentionPolicy_AppliesToGroups": "អនុវត្តចំពោះក្រុមឯកជន",

@@ -3817,7 +3817,7 @@
   "RetentionPolicyRoom_FilesOnly": "केवल फाइलों की छँटाई करें, संदेश रखें",
   "RetentionPolicyRoom_MaxAge": "अधिकतम संदेश आयु दिनों में (डिफ़ॉल्ट: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "वैश्विक प्रतिधारण नीति को ओवरराइड करें",
-  "RetentionPolicyRoom_ReadTheDocs": "ध्यान रहें! अत्यधिक सावधानी के बिना इन सेटिंग्स में बदलाव करने से सभी संदेश इतिहास नष्ट हो सकते हैं। कृपया <a href={{retentionPolicyUrl}}>यहां</a> सुविधा चालू करने से पहले दस्तावेज़ पढ़ें।",
+  "RetentionPolicyRoom_ReadTheDocs": "ध्यान रहें! अत्यधिक सावधानी के बिना इन सेटिंग्स में बदलाव करने से सभी संदेश इतिहास नष्ट हो सकते हैं। कृपया <a href=\"{{retentionPolicyUrl}}\">यहां</a> सुविधा चालू करने से पहले दस्तावेज़ पढ़ें।",
   "RetentionPolicy_Advanced_Precision": "उन्नत अवधारण नीति कॉन्फ़िगरेशन का उपयोग करें",
   "RetentionPolicy_Advanced_Precision_Cron": "उन्नत अवधारण नीति क्रॉन का उपयोग करें",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "क्रॉन जॉब एक्सप्रेशन द्वारा परिभाषित प्रून टाइमर को कितनी बार चलाना चाहिए। इसे अधिक सटीक मान पर सेट करने से तेज़ रिटेंशन टाइमर वाले चैनल बेहतर काम करते हैं, लेकिन बड़े समुदायों पर अतिरिक्त प्रसंस्करण शक्ति खर्च हो सकती है।",

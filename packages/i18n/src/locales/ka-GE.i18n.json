@@ -2428,7 +2428,7 @@
   "RetentionPolicyRoom_ExcludePinned": "მიმაგრებული შეტყობინებების გამორიცხვა",
   "RetentionPolicyRoom_MaxAge": "შეტყობინების მაქსიმალური ასაკი დღეებში(დეფაულტი:{{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "გადახედეთ გლობალური შენახვის წესებს",
-  "RetentionPolicyRoom_ReadTheDocs": "ფრთხილად! ამ პარამეტრების შეცვლისას იყავით ძალიან ფრთხილად. არასწორმა მოქმედებამ შეიძლება შეტყობინებების ისტორიის სრული განადგურება გამოიწვიოს.<a href={{retentionPolicyUrl}}>აქ</a> რაიმის შეცვლამდე გაეცანით დოკუმენტაციას",
+  "RetentionPolicyRoom_ReadTheDocs": "ფრთხილად! ამ პარამეტრების შეცვლისას იყავით ძალიან ფრთხილად. არასწორმა მოქმედებამ შეიძლება შეტყობინებების ისტორიის სრული განადგურება გამოიწვიოს.<a href=\"{{retentionPolicyUrl}}\">აქ</a> რაიმის შეცვლამდე გაეცანით დოკუმენტაციას",
   "RetentionPolicy_AppliesToChannels": "ვრცელდება არხებზე",
   "RetentionPolicy_AppliesToDMs": "ვრცელდება პირდაპირ შეტყობინებებზე",
   "RetentionPolicy_AppliesToGroups": "ვრცელდება კერძო ჯგუფებზე",

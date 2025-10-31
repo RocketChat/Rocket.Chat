@@ -1838,7 +1838,7 @@
   "RetentionPolicyRoom_FilesOnly": "ໄຟລ໌ Prune ພຽງແຕ່ເກັບຂໍ້ຄວາມ",
   "RetentionPolicyRoom_MaxAge": "ອາຍຸສູງສຸດຂອງຂໍ້ຄວາມໃນມື້ (ໂດຍທົ່ວໄປແລ້ວ: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "ປະຕິບັດນະໂຍບາຍການຮັກສາລະດັບໂລກ",
-  "RetentionPolicyRoom_ReadTheDocs": "ລະ​ວັງ! ການປັບປຸງການຕັ້ງຄ່າເຫຼົ່ານີ້ໂດຍບໍ່ມີການດູແລສູງສຸດສາມາດທໍາລາຍປະຫວັດສາດຂໍ້ຄວາມທັງຫມົດໄດ້. ກະລຸນາອ່ານເອກະສານກ່ອນທີ່ຈະປ່ຽນຄຸນສົມບັດໃນ <a href = {{retentionPolicyUrl}}>ຢູ່ທີ່ນີ້</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "ລະ​ວັງ! ການປັບປຸງການຕັ້ງຄ່າເຫຼົ່ານີ້ໂດຍບໍ່ມີການດູແລສູງສຸດສາມາດທໍາລາຍປະຫວັດສາດຂໍ້ຄວາມທັງຫມົດໄດ້. ກະລຸນາອ່ານເອກະສານກ່ອນທີ່ຈະປ່ຽນຄຸນສົມບັດໃນ <a href = \"{{retentionPolicyUrl}}\">ຢູ່ທີ່ນີ້</a>.",
   "RetentionPolicy_AppliesToChannels": "ນໍາໃຊ້ກັບຊ່ອງທາງ",
   "RetentionPolicy_AppliesToDMs": "ໃຊ້ກັບຂໍ້ຄວາມໂດຍກົງ",
   "RetentionPolicy_AppliesToGroups": "ນໍາໃຊ້ກັບກຸ່ມເອກະຊົນ",

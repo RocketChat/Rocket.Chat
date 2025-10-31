@@ -3106,7 +3106,7 @@
   "RetentionPolicyRoom_FilesOnly": "تنقيح الملفات فقط، والاحتفاظ بالرسائل",
   "RetentionPolicyRoom_MaxAge": "الحد الأقصى لعمر الرسائل بالأيام (الافتراضي: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "تجاوز نهج الاستبقاء العام",
-  "RetentionPolicyRoom_ReadTheDocs": "احترس! يمكن أن يؤدي التغيير والتبديل في هذه الإعدادات دون أقصى قدر من العناية إلى تدمير كل محفوظات الرسائل. يرجى قراءة الوثائق قبل تشغيل الميزة <a href={{retentionPolicyUrl}}>هنا</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "احترس! يمكن أن يؤدي التغيير والتبديل في هذه الإعدادات دون أقصى قدر من العناية إلى تدمير كل محفوظات الرسائل. يرجى قراءة الوثائق قبل تشغيل الميزة <a href=\"{{retentionPolicyUrl}}\">هنا</a>.",
   "RetentionPolicy_Advanced_Precision": "استخدام تكوين نهج الاستبقاء المتقدم",
   "RetentionPolicy_Advanced_Precision_Cron": "استخدام Cron لنهج الاستبقاء المتقدم",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "عدد المرات التي يجب فيها تشغيل مؤقت التنقيح المحدد بواسطة تعبير وظيفة cron. يؤدي تعيين هذا إلى قيمة أكثر دقة إلى جعل القنوات ذات مؤقتات الاستبقاء السريعة تعمل بشكل أفضل، ولكنها قد تكلف قوة معالجة إضافية على المجتمعات الكبيرة.",

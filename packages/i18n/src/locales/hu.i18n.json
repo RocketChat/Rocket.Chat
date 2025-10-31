@@ -3365,7 +3365,7 @@
   "RetentionPolicyRoom_FilesOnly": "Csak fájlok törlése, üzenetek megtartása",
   "RetentionPolicyRoom_MaxAge": "Legnagyobb üzenetéletkor napokban (alapértelmezett: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Globális megőrzési házirend felülbírálása",
-  "RetentionPolicyRoom_ReadTheDocs": "Vigyázzon! Ha ezeket a beállításokat a lehető legnagyobb körültekintés nélkül állítgatja, az összes üzenetelőzményt megsemmisítheti. Olvassa el a <a href={{retentionPolicyUrl}}>dokumentációt</a>, mielőtt a funkciót bekapcsolja.",
+  "RetentionPolicyRoom_ReadTheDocs": "Vigyázzon! Ha ezeket a beállításokat a lehető legnagyobb körültekintés nélkül állítgatja, az összes üzenetelőzményt megsemmisítheti. Olvassa el a <a href=\"{{retentionPolicyUrl}}\">dokumentációt</a>, mielőtt a funkciót bekapcsolja.",
   "RetentionPolicy_Advanced_Precision": "Speciális megőrzési házirend beállítás használata",
   "RetentionPolicy_Advanced_Precision_Cron": "Speciális megőrzési házirend cron-feladat használata",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Milyen gyakran kell futnia a cron-feladat kifejezéssel meghatározott törlési időzítőnek. Ennek egy pontosabb értékre állítása a gyors visszatartási időzítőkkel rendelkező csatornákat jobban működővé teszi, de további feldolgozási teljesítménybe kerülhet nagy közösségeknél.",

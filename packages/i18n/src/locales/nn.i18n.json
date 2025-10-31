@@ -4161,7 +4161,7 @@
   "RetentionPolicyRoom_FilesOnly": "Bare beskjyll filer, hold beskjeder",
   "RetentionPolicyRoom_MaxAge": "Maksimal meldingsalder i dager (standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Overstyr global retensjonspolicy",
-  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <a href={{retentionPolicyUrl}}>her</a>her.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pass på! Å endre disse innstillingene uten ytterst forsiktighet kan ødelegge all meldingshistorikk. Les dokumentasjonen før du slår på funksjonen <a href=\"{{retentionPolicyUrl}}\">her</a>her.",
   "RetentionPolicy_AppliesToChannels": "Gjelder kanaler",
   "RetentionPolicy_AppliesToChannels_Description": "Inkluderer offentlige kanaler, diskusjoner og team.",
   "RetentionPolicy_AppliesToDMs": "Gjelder direkte meldinger",

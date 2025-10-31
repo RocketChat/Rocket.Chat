@@ -2274,7 +2274,7 @@
   "RetentionPolicyRoom_FilesOnly": "Збригайте лише файли, зберігайте повідомлення",
   "RetentionPolicyRoom_MaxAge": "Максимальний вік повідомлення в днях (за умовчанням: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Перевизначити глобальну політику збереження",
-  "RetentionPolicyRoom_ReadTheDocs": "Стережись! Зміна цих налаштувань без особливої обережності може знищити всю історію повідомлень. Будь ласка, прочитайте документацію  <a href={{retentionPolicyUrl}}>тут</a>, перш ніж включити функцію.",
+  "RetentionPolicyRoom_ReadTheDocs": "Стережись! Зміна цих налаштувань без особливої обережності може знищити всю історію повідомлень. Будь ласка, прочитайте документацію  <a href=\"{{retentionPolicyUrl}}\">тут</a>, перш ніж включити функцію.",
   "RetentionPolicy_AppliesToChannels": "Застосовується до каналів",
   "RetentionPolicy_AppliesToDMs": "Застосовується до прямих повідомлень",
   "RetentionPolicy_AppliesToGroups": "Застосовується до приватних груп",

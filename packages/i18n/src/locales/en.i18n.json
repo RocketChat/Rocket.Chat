@@ -4424,7 +4424,7 @@
   "RetentionPolicyRoom_FilesOnly": "Prune files only, keep messages",
   "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
-  "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href={{retentionPolicyUrl}}>here</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href=\"{{retentionPolicyUrl}}\">here</a>.",
   "RetentionPolicy_Advanced_Precision": "Use Advanced Retention Policy configuration",
   "RetentionPolicy_Advanced_Precision_Cron": "Use Advanced Retention Policy Cron",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "How often the prune timer should run defined by cron job expression. Setting this to a more precise value makes channels with fast retention timers work better, but might cost extra processing power on large communities.",
