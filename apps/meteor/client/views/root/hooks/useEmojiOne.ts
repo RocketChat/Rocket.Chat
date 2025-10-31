@@ -1,9 +1,9 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect, useLayoutEffect } from 'react';
 
-import { emoji } from '../../../emoji/client';
-import { getEmojiConfig } from '../../lib/getEmojiConfig';
-import { isSetNotNull } from '../../lib/isSetNotNull';
+import { emoji } from '../../../../app/emoji/client';
+import { getEmojiConfig } from '../../../../app/emoji-emojione/lib/getEmojiConfig';
+import { isSetNotNull } from '../../../../app/emoji-emojione/lib/isSetNotNull';
 
 const config = getEmojiConfig();
 
