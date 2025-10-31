@@ -16,15 +16,15 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get inputName(): Locator {
-		return this.root.locator('//label[text()="Name"]/following-sibling::span//input');
+		return this.root.getByRole('textbox', { name: 'Name' });
 	}
 
 	get inputUserName(): Locator {
-		return this.root.locator('//label[text()="Username"]/following-sibling::span//input');
+		return this.root.getByRole('textbox', { name: 'Username' });
 	}
 
 	get inputEmail(): Locator {
-		return this.root.locator('//label[text()="Email"]/following-sibling::span//input').first();
+		return this.root.getByRole('textbox', { name: 'Email' });
 	}
 
 	get inputSetManually(): Locator {
@@ -32,11 +32,11 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get inputPassword(): Locator {
-		return this.root.locator('input[placeholder="Password"]');
+		return this.root.getByRole('textbox', { name: 'Password' });
 	}
 
 	get inputConfirmPassword(): Locator {
-		return this.root.locator('input[placeholder="Confirm password"]');
+		return this.root.getByRole('textbox', { name: 'Confirm password' });
 	}
 
 	get joinDefaultChannels(): Locator {
@@ -48,7 +48,7 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get setupSmtpLink(): Locator {
-		return this.root.locator('role=link[name="Set up SMTP"]');
+		return this.root.getByRole('link', { name: 'Set up SMTP' });
 	}
 
 	getCustomField(fieldName: string): Locator {

@@ -12,18 +12,18 @@ export class AdminRooms extends Admin {
 	}
 
 	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder="Search rooms"]');
+		return this.page.getByPlaceholder('Search rooms');
 	}
 
 	getRoomRow(name?: string): Locator {
-		return this.page.locator('[role="link"]', { hasText: name });
+		return this.page.getByRole('link', { name });
 	}
 
 	get btnEdit(): Locator {
-		return this.page.locator('button >> text="Edit"');
+		return this.page.getByRole('button', { name: 'Edit' });
 	}
 
 	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
-		return this.page.locator(`div[role="button"]:has-text("${text}")`);
+		return this.page.getByRole('button', { name: text });
 	}
 }

@@ -16,10 +16,10 @@ export class UserInfoFlexTab extends FlexTab {
 	}
 
 	get btnMoreActions(): Locator {
-		return this.root.locator('role=button[name="More"]');
+		return this.root.getByRole('button', { name: 'More' });
 	}
 
 	get menuItemDeleteUser(): Locator {
-		return this.menu.root.locator('role=menuitem[name="Delete"]');
+		return this.menu.root.getByRole('menuitem', { name: 'Delete' });
 	}
 }
