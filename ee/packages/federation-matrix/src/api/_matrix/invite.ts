@@ -1,4 +1,4 @@
-import { FederationMatrix, Room } from '@rocket.chat/core-services';
+import { Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
 import { eventIdSchema, roomIdSchema, NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
@@ -256,10 +256,6 @@ async function joinRoom({
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
-
-	for await (const event of matrixRoom.getMemberJoinEvents()) {
-		await FederationMatrix.emitJoin(event.event, event.eventId);
-	}
 }
 
 async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {
