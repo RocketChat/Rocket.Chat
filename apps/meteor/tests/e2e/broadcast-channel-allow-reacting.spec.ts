@@ -6,7 +6,7 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('broadcast-reacting', () => {
 	let homeChannel: HomeChannel;
-	
+
 	test.beforeEach(async ({ page }) => {
 		homeChannel = new HomeChannel(page);
 		await page.goto('/home');
