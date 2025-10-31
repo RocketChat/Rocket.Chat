@@ -212,6 +212,15 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Create tar file of the checkout files
+        shell: bash
+        run: |
+          ls -la
+
+          tar -czf /tmp/RocketChat-build.tar.gz \
+            --exclude='.github' \
+            .
+
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
