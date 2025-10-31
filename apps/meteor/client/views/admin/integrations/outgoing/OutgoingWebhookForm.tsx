@@ -476,7 +476,27 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='retryCount'
 									control={control}
-									render={({ field }) => <TextInput id={retryCountField} {...field} aria-describedby={`${retryCountField}-hint`} />}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											id={retryCountField}
+											type='number'
+											min='0'
+											step='1'
+											// This 'onChange' is the new magic
+											onChange={(e) => {
+												// e.currentTarget.valueAsNumber gives us a real number (or NaN)
+												const value = e.currentTarget.valueAsNumber;
+
+												// If the field is empty (value=NaN), send 'undefined'
+												// Otherwise, send the number
+												field.onChange(isNaN(value) ? undefined : value);
+											}}
+											// This 'value' prop ensures the input is blank when the value is undefined
+											value={field.value ?? ''}
+											aria-describedby={`${retryCountField}-hint`}
+										/>
+									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${retryCountField}-hint`}>{t('Integration_Retry_Count_Description')}</FieldHint>
