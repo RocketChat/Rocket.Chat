@@ -206,7 +206,7 @@ const RoomMembers = ({
 								onClick={onClickInvite}
 								width='50%'
 								disabled={isABACRoom}
-								title={!isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
 								aria-label={t('Invite_Link')}
 							>
 								{t('Invite_Link')}
