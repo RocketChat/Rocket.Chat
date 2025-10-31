@@ -1,3 +1,5 @@
+import { wordlist } from './wordList';
+
 /**
  * Generates 12 uniformly random words from the word list.
  *
@@ -6,9 +8,7 @@
  *
  * @returns A space-separated passphrase.
  */
-export async function generatePassphrase() {
-	const { wordlist } = await import('./wordList');
-
+export function generatePassphrase() {
 	// Number of words in the passphrase
 	const WORD_COUNT = 12;
 	// We use 32-bit random numbers, so the maximum value is 2^32 - 1
