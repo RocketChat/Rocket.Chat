@@ -12,12 +12,6 @@ on:
       lowercase-repo:
         required: true
         type: string
-      rc-dockerfile:
-        required: true
-        type: string
-      rc-docker-tag:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -76,9 +70,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-24.04
-    env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -86,7 +77,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '8.2' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Collect Workflow Telemetry
@@ -153,6 +144,7 @@ jobs:
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
           setup: false
+          service: 'rocketchat'
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)

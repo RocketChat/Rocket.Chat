@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   rocketchat:
     volumes:
       - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
-      dockerfile: ${RC_DOCKERFILE}
+      dockerfile: ${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
       args:
         DENO_VERSION: ${DENO_VERSION}
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
       - DEBUG=${DEBUG}
