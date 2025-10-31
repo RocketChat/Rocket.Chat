@@ -1,11 +1,10 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { MutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../lib/e2ee/rocketchat.e2e';
 
-export const useChangeE2EPasswordMutation = ({ options }: { options?: MutationOptions<void, string, string> } = {}) => {
+export const useChangeE2EPasswordMutation = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -19,6 +18,5 @@ export const useChangeE2EPasswordMutation = ({ options }: { options?: MutationOp
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
-		...options,
 	});
 };
