@@ -1,12 +1,4 @@
-import type {
-	IMessage,
-	IRoom,
-	MessageAttachment,
-	ReadReceipt,
-	OtrSystemMessages,
-	MessageUrl,
-	IThreadMainMessage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ReadReceipt, OtrSystemMessages, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -817,132 +809,6 @@ const ChatGetDeletedMessagesSchema = {
 
 export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
-type ChatPostMessage =
-	| {
-			roomId: string | string[];
-			text?: string;
-			alias?: string;
-			emoji?: string;
-			avatar?: string;
-			attachments?: MessageAttachment[];
-			customFields?: IMessage['customFields'];
-	  }
-	| {
-			channel: string | string[];
-			text?: string;
-			alias?: string;
-			emoji?: string;
-			avatar?: string;
-			attachments?: MessageAttachment[];
-			customFields?: IMessage['customFields'];
-	  };
-
-const ChatPostMessageSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				tmid: {
-					type: 'string',
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-				parseUrls: {
-					type: 'boolean',
-				},
-			},
-			required: ['roomId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				channel: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-				parseUrls: {
-					type: 'boolean',
-				},
-			},
-			required: ['channel'],
-			additionalProperties: false,
-		},
-	],
-};
-
-export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
-
 type ChatGetURLPreview = {
 	roomId: IRoom['_id'];
 	url: string;
@@ -1088,13 +954,6 @@ export type ChatEndpoints = {
 					previous: string | null;
 				};
 			};
-		};
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
 		};
 	};
 	'/v1/chat.syncThreadMessages': {
