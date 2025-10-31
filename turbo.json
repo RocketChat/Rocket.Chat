@@ -18,18 +18,15 @@
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"lint": {
-			"dependsOn": ["build"],
 			"outputs": []
 		},
 		"translation-check": {
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {

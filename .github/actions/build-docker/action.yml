@@ -17,10 +17,6 @@ inputs:
     required: false
     description: 'Container to build'
     type: string
-  turbo-cache:
-    required: false
-    description: 'Enable turbo cache'
-    default: 'true'
   publish-image:
     required: false
     description: 'Publish image'

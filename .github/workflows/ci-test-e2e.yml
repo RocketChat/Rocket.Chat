@@ -125,13 +125,16 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
+      - name: Restore packages build
         uses: actions/download-artifact@v4
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
 
-      - run: yarn build
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
@@ -140,8 +143,6 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
-          # we already called the turbo cache at this point, so it should be false
-          turbo-cache: false
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
           setup: false
