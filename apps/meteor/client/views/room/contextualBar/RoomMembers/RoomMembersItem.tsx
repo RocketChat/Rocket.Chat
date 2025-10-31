@@ -63,7 +63,7 @@ const RoomMembersItem = ({
 				{showButton ? (
 					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
 				) : (
-					<IconButton tiny icon='kebab' aria-label={t('More')} />
+					<IconButton tiny icon='kebab' aria-hidden />
 				)}
 			</OptionMenu>
 		</Option>

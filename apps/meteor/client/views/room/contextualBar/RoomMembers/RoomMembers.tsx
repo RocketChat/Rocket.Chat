@@ -213,7 +213,7 @@ const RoomMembers = ({
 							</Button>
 						)}
 						{onClickAdd && (
-							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary aria-label={t('Add')}>
+							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
 								{t('Add')}
 							</Button>
 						)}
