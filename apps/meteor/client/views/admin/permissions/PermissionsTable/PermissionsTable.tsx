@@ -16,14 +16,16 @@ type PermissionsTableProps = {
 	permissions: IPermission[];
 	setFilter: (filter: string) => void;
 	total: number;
-	paginationProps: ReturnType<typeof usePagination>;
+	paginationData: ReturnType<typeof usePagination>;
 };
 
-const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationProps }: PermissionsTableProps) => {
+const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationData }: PermissionsTableProps) => {
 	const { t } = useTranslation();
 
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
+
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const tableCustomStyle = css`
 		// Makes the first column of the table sticky
@@ -77,9 +79,11 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationP
 					</GenericTable>
 					<Pagination
 						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
 						count={total}
-						onSetItemsPerPage={paginationProps?.setItemsPerPage}
-						onSetCurrent={paginationProps?.setCurrent}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>

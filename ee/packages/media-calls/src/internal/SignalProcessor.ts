@@ -14,6 +14,7 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
+import { getNewCallTransferredBy } from '../server/getNewCallTransferredBy';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -146,6 +147,8 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
+		const transferredBy = getNewCallTransferredBy(call);
+
 		if (isCaller) {
 			this.sendSignal(uid, {
 				callId: call._id,
@@ -160,6 +163,8 @@ export class GlobalSignalProcessor {
 					...call.callee,
 				},
 				...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
+				...(call.parentCallId && { replacingCallId: call.parentCallId }),
+				...(transferredBy && { transferredBy }),
 			});
 		}
 
@@ -176,6 +181,8 @@ export class GlobalSignalProcessor {
 				contact: {
 					...call.caller,
 				},
+				...(call.parentCallId && { replacingCallId: call.parentCallId }),
+				...(transferredBy && { transferredBy }),
 			});
 		}
 
@@ -271,6 +278,8 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
+		const transferredBy = getNewCallTransferredBy(call);
+
 		this.sendSignal(uid, {
 			callId: call._id,
 			type: 'new',
@@ -284,6 +293,8 @@ export class GlobalSignalProcessor {
 				...call.callee,
 			},
 			requestedCallId: signal.callId,
+			...(call.parentCallId && { replacingCallId: call.parentCallId }),
+			...(transferredBy && { transferredBy }),
 		});
 
 		return call;
