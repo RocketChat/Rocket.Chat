@@ -14,7 +14,6 @@ import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, MouseEvent } from 'react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
@@ -40,7 +39,6 @@ const RoomMembersItem = ({
 	useRealName,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
-	const { t } = useTranslation();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
