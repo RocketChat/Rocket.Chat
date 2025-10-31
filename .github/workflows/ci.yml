@@ -32,6 +32,7 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       services: ${{ steps.var.outputs.services }}
+      source-hash: ${{ steps.source.outputs.hash }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -47,12 +48,26 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            package.json
-            .tool-versions
-          sparse-checkout-cone-mode: false
-          ref: ${{ github.ref }}
+        # with:
+        #   sparse-checkout: |
+        #     package.json
+        #     .tool-versions
+        #   sparse-checkout-cone-mode: false
+        #   ref: ${{ github.ref }}
+
+      - id: source
+        run: |
+          ls -la
+
+          tar -czf /tmp/RocketChat-source.tar.gz \
+            --exclude='.github' \
+            .
+
+          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar.gz)
+
+          echo hash=${SOURCE_HASH}
+
+          echo hash=${SOURCE_HASH} >> $GITHUB_OUTPUT
 
       - id: var
         run: |
@@ -147,15 +162,30 @@ jobs:
     needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-24.04
     steps:
+      - name: Cache build
+        uses: actions/cache@v4
+        id: packages-cache-build
+        with:
+          path: /tmp/RocketChat-packages-build.tar.gz
+          key: ${{ runner.OS }}-rc-packages-build-${{ needs.release-versions.outputs.source-hash }}
+          restore-keys: |
+            ${{ runner.os }}-rc-packages-build-
+
+      - name: Debug cache-hit
+        run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
+
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           swap-size-gb: 4
 
       - uses: actions/checkout@v4
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
@@ -166,6 +196,7 @@ jobs:
 
       - name: Cache vite
         uses: actions/cache@v4
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
           key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
@@ -173,11 +204,14 @@ jobs:
             vite-local-cache-${{ runner.os }}-
 
       - uses: rharkor/caching-for-turbo@v1.8
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Build Rocket.Chat Packages
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: yarn build
 
       - name: Archive packages build output
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
           tar -czf /tmp/RocketChat-packages-build.tar.gz \
             $(git ls-files -oi --exclude-standard -- '*/dist/*' 'packages/apps-engine/*' ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*')
@@ -190,6 +224,7 @@ jobs:
           retention-days: 5
 
       - name: Store turbo build
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: turbo-build
@@ -216,6 +251,7 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          source-hash: ${{ needs.release-versions.outputs.source-hash }}
           coverage: ${{ github.event_name != 'release' && github.ref != 'refs/heads/develop' }}
 
   build-gh-docker:
