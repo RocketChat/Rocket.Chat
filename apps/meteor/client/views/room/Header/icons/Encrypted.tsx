@@ -17,8 +17,7 @@ const Encrypted = ({ room }: { room: IRoom }) => {
 			aria-hidden={false}
 			aria-live='polite'
 			role='img'
-			tabindex={0}
-			aria-label={t('Encrypted_channel', { roomName: room.name })}
+			aria-label={t('Encrypted')}
 		/>
 	) : null;
 };

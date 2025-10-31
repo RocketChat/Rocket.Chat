@@ -43,7 +43,7 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	return e2eEnabled && room?.encrypted ? (
 		<HeaderTitleButton {...buttonProps} mie={4}>
 			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1' aria-label={t('Encrypted_channel', { roomName: room.name })}>
+			<HeaderTitle is='h1' aria-label={t('Encrypted_channel_title', { roomName: room.name })}>
 				{room.name}
 			</HeaderTitle>
 		</HeaderTitleButton>
