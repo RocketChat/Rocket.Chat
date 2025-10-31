@@ -4,21 +4,16 @@ import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
 type SettingsProviderProps = {
 	children?: ReactNode;
-};
-
-const isPublicSettingsCollection = (
-	collection: typeof PublicSettingsCachedStore | typeof PrivateSettingsCachedStore,
-): collection is typeof PublicSettingsCachedStore => {
-	return collection === PublicSettingsCachedStore;
 };
 
 const SettingsProvider = ({ children }: SettingsProviderProps) => {
@@ -28,16 +23,12 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const isLoading = !cachedCollection.useReady();
 
-	useEffect(() => {
-		if (isPublicSettingsCollection(cachedCollection)) {
-			return;
-		}
-
-		cachedCollection.listen();
-	}, [cachedCollection]);
-
 	if (isLoading) {
 		throw (async () => {
+			if (cachedCollection instanceof PrivateCachedStore) {
+				cachedCollection.listen();
+			}
+
 			await cachedCollection.init();
 		})();
 	}
