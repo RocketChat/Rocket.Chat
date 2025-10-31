@@ -8,7 +8,7 @@ services:
       context: /tmp/build
       args:
         DENO_VERSION: ${DENO_VERSION}
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT}
     environment:
       - TEST_MODE=true
       - DEBUG=${DEBUG}

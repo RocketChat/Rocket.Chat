@@ -32,6 +32,10 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
+  type:
+    required: false
+    description: 'production or coverage'
+    default: 'production'
 
 runs:
   using: composite
@@ -60,7 +64,7 @@ runs:
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@v4
       with:
-        name: build
+        name: build-${{ inputs.type }}
         path: /tmp/build
 
     - name: Unpack meteor build

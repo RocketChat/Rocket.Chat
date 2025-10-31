@@ -63,7 +63,7 @@ jobs:
             --exclude='.github' \
             .
 
-          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar.gz)
+          SOURCE_HASH=$(sha256sum --quiet /tmp/RocketChat-source.tar.gz)
 
           echo hash=${SOURCE_HASH}
 
@@ -233,9 +233,14 @@ jobs:
           include-hidden-files: true
 
   build:
-    name: 📦 Meteor Build
+    name: 📦 Meteor Build (${{ matrix.type }})
     needs: [release-versions, packages-build]
     runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        type: ['production', 'coverage']
 
     steps:
       - name: Collect Workflow Telemetry
@@ -252,7 +257,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           source-hash: ${{ needs.release-versions.outputs.source-hash }}
-          coverage: ${{ github.event_name != 'release' && github.ref != 'refs/heads/develop' }}
+          type: ${{ matrix.type }}
 
   build-gh-docker:
     name: 🚢 Build Docker
@@ -267,6 +272,12 @@ jobs:
       fail-fast: false
       matrix:
         service: ${{ fromJson(needs.release-versions.outputs.services) }}
+        type: ['production']
+        include:
+          # for rocketchat monolith and on develop branch builds we create a coverage image to run tests against it
+          # and keep the baseline of the coverage for other PRs
+          - service: rocketchat
+            type: coverage
 
     steps:
       - uses: actions/checkout@v4
@@ -274,6 +285,8 @@ jobs:
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -281,6 +294,7 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           service: ${{ matrix.service }}
+          type: ${{ matrix.type }}
 
   checks:
     needs: [release-versions, packages-build]

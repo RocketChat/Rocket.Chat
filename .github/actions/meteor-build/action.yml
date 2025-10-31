@@ -1,10 +1,10 @@
 name: 'Meteor Build'
 
 inputs:
-  coverage:
+  type:
     required: false
-    description: 'Enable coverage'
-    type: boolean
+    description: 'production or coverage'
+    default: 'production'
   reset-meteor:
     required: false
     description: 'Reset Meteor'
@@ -133,7 +133,7 @@ runs:
       if: steps.cache-build.outputs.cache-hit != 'true'
       env:
         METEOR_PROFILE: 1000
-        BABEL_ENV: ${{ inputs.coverage == 'true' && 'coverage' || '' }}
+        BABEL_ENV: ${{ inputs.type }}
       run: |
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
@@ -158,7 +158,7 @@ runs:
     - name: Store build
       uses: actions/upload-artifact@v4
       with:
-        name: build
+        name: build-${{ inputs.type }}
         path: /tmp/Rocket.Chat.tar.gz
         overwrite: true
         include-hidden-files: true

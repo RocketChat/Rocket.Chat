@@ -66,6 +66,7 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  DOCKER_TAG_SUFFIX_ROCKETCHAT: '-cov'
 
 jobs:
   test:
