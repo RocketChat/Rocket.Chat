@@ -73,7 +73,7 @@ test.describe.serial('read-receipts', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.locator('role=menuitem[name="Read receipts"]').click();
 
-			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(2);
+			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(1);
 		});
 	});
 });

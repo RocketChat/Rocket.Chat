@@ -11,8 +11,10 @@ callbacks.add(
 			return message;
 		}
 
-		// mark message as read as well
 		await ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
+
+		// mark message as read by deactivated users
+		void ReadReceipt.markMessageAsReadByDeactivatedMembers(message, room);
 
 		return message;
 	},
