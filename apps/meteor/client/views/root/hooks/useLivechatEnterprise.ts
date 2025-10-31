@@ -1,11 +1,11 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useHasLicenseModule } from '../../../client/hooks/useHasLicenseModule';
-import { businessHourManager } from '../../livechat/client/views/app/business-hours/BusinessHours';
-import type { IBusinessHourBehavior } from '../../livechat/client/views/app/business-hours/IBusinessHourBehavior';
-import { SingleBusinessHourBehavior } from '../../livechat/client/views/app/business-hours/Single';
-import { MultipleBusinessHoursBehavior } from '../client/views/business-hours/Multiple';
+import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
+import type { IBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/Single';
+import { MultipleBusinessHoursBehavior } from '../../../../app/livechat-enterprise/client/views/business-hours/Multiple';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const businessHours: Record<string, IBusinessHourBehavior> = {
 	multiple: new MultipleBusinessHoursBehavior(),
