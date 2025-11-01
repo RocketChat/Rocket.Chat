@@ -80,6 +80,18 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				}
 
 				await Messages.removeByUserId(userId);
+
+				const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				for await (const room of roomsToUpdate) {
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+
+					if (newLastMessage) {
+						await Rooms.updateOne({ _id: room._id }, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne({ _id: room._id }, { $unset: { lastMessage: 1 } });
+					}
+				}
+
 				await ReadReceipts.removeByUserId(userId);
 
 				await ModerationReports.hideMessageReportsByUserId(
