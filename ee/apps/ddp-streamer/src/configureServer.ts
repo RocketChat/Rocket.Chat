@@ -139,6 +139,7 @@ server.methods({
 	},
 	// Copied from /app/livechat/server/methods/setUpConnection.js
 	'livechat:setUpConnection'(data = {}) {
+		console.warn('Warning: Method livechat:setUpConnection is deprecated and will be removed on v8.0.0');
 		const { token } = data;
 
 		if (typeof token !== 'string') {

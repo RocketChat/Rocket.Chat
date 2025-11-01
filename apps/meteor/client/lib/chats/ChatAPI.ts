@@ -106,7 +106,7 @@ export type UploadsAPI = {
 };
 
 export type ChatAPI = {
-	readonly uid: string | null;
+	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
 	readonly data: DataAPI;

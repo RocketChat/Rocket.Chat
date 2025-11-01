@@ -1,10 +1,9 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useOutboundMessageAccess } from '../../../../../components/Omnichannel/OutboundMessage/hooks';
 import type { OutboundMessageModalProps } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 
 type ContactInfoOutboundMessageButtonProps = {
 	title?: string;
@@ -15,11 +14,9 @@ type ContactInfoOutboundMessageButtonProps = {
 const ContactInfoOutboundMessageButton = ({ defaultValues, disabled, title }: ContactInfoOutboundMessageButtonProps) => {
 	const { t } = useTranslation();
 	const outboundMessageModal = useOutboundMessageModal();
+	const canSendOutboundMessage = useOutboundMessageAccess();
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise') === true;
-	const hasPermission = usePermission('outbound.send-messages');
-
-	if (!hasLicense || !hasPermission) {
+	if (!canSendOutboundMessage) {
 		return null;
 	}
 

@@ -88,8 +88,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	async saveMessageFromFederation({
 		fromId,
 		rid,
-		msg,
 		federation_event_id,
+		msg,
+		e2e_content,
 		file,
 		files,
 		attachments,
@@ -97,8 +98,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}: {
 		fromId: string;
 		rid: string;
-		msg: string;
 		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: 'm.megolm.v1.aes-sha2';
+			ciphertext: string;
+		};
 		file?: IMessage['file'];
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
@@ -115,6 +120,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			...(file && { file }),
 			...(files && { files }),
 			...(attachments && { attachments }),
+			...(e2e_content && {
+				t: 'e2e',
+				content: e2e_content,
+			}),
 		});
 	}
 

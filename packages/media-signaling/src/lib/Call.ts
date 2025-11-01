@@ -16,6 +16,7 @@ import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
+import { serializeError } from './utils/serializeError';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -78,6 +79,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._contact || {};
 	}
 
+	private _transferredBy: CallContact | null;
+
+	public get transferredBy(): CallContact | null {
+		return this._transferredBy;
+	}
+
 	private _service: CallService | null;
 
 	public get service(): CallService | null {
@@ -89,7 +96,15 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public get hidden(): boolean {
-		return this.ignored || this.contractState === 'ignored';
+		/**
+		 * A call is hidden if:
+		 * 1. It was flagged as ignored by the Session
+		 * 2. It is happening in a different session
+		 * 3. The call was started in some other session and we have not received its data yet
+		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
+		 */
+
+		return this.ignored || this.contractState === 'ignored' || !this.initialized;
 	}
 
 	public get muted(): boolean {
@@ -157,6 +172,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private pendingAnswerRequest: ServerMediaSignalRemoteSDP | null;
 
+	public get audioLevel(): number {
+		return this.webrtcProcessor?.audioLevel || 0;
+	}
+
+	public get localAudioLevel(): number {
+		return this.webrtcProcessor?.localAudioLevel || 0;
+	}
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -192,6 +215,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.oldClientState = 'none';
 		this._ignored = false;
 		this._contact = null;
+		this._transferredBy = null;
 		this._service = null;
 	}
 
@@ -255,6 +279,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 
+		this._transferredBy = signal.transferredBy || null;
 		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
@@ -266,6 +291,11 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 		}
 
+		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
+		if (this.isOver()) {
+			return;
+		}
+
 		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
 		if (this.ignored) {
 			return this.rejectAsUnavailable();
@@ -275,6 +305,12 @@ export class ClientMediaCall implements IClientMediaCall {
 			try {
 				this.prepareWebRtcProcessor();
 			} catch (e) {
+				this.sendError({
+					errorType: 'service',
+					errorCode: 'service-initialization-failed',
+					critical: true,
+					errorDetails: serializeError(e),
+				});
 				await this.rejectAsUnavailable();
 				throw e;
 			}
@@ -419,6 +455,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.hasRemoteData) {
+			// if the call is over, we no longer need to wait for its data
+			if (signal.type === 'notification' && signal.notification === 'hangup') {
+				this.changeState('hangup');
+				return;
+			}
+
 			this.config.logger?.debug('Remote data missing, adding signal to queue');
 			this.earlySignals.add(signal);
 			return;
@@ -486,6 +528,12 @@ export class ClientMediaCall implements IClientMediaCall {
 	public hangup(reason: CallHangupReason = 'normal'): void {
 		this.config.logger?.debug('ClientMediaCall.hangup', reason);
 		if (this.endedLocally || this._state === 'hangup') {
+			return;
+		}
+
+		// If the hangup was requested by the user but the call is not happening here, send an 'another-client' hangup request to the server and wait for the server to hangup the call
+		if (reason === 'normal' && this.contractState === 'ignored') {
+			this.config.transporter.hangup(this.callId, 'another-client');
 			return;
 		}
 
@@ -641,6 +689,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		});
 	}
 
+	public async getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null> {
+		return this.webrtcProcessor?.getStats(selector) ?? null;
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -725,7 +777,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const { negotiationId } = signal;
 
 		if (this.shouldIgnoreWebRTC()) {
-			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId, critical: true });
 			return;
 		}
 
@@ -742,12 +794,19 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			offer = await this.webrtcProcessor.createOffer({ iceRestart });
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer', negotiationId });
+			this.sendError({
+				errorType: 'service',
+				errorCode: 'failed-to-create-offer',
+				negotiationId,
+				critical: true,
+				errorDetails: serializeError(e),
+			});
 			throw e;
 		}
 
 		if (!offer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
+			return;
 		}
 
 		await this.deliverSdp({ ...offer, negotiationId });
@@ -797,12 +856,18 @@ export class ClientMediaCall implements IClientMediaCall {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
 			this.config.logger?.error(e);
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
+			this.sendError({
+				errorType: 'service',
+				errorCode: 'failed-to-create-answer',
+				negotiationId,
+				critical: true,
+				errorDetails: serializeError(e),
+			});
 			throw e;
 		}
 
 		if (!answer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId, critical: true });
 			return;
 		}
 
@@ -930,7 +995,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.acceptedLocally) {
-			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted' });
+			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted', critical: true });
 			this.config.logger?.error('Trying to activate a call that was not yet accepted locally.');
 			return;
 		}
@@ -1033,14 +1098,25 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
+	private onWebRTCInternalError({
+		critical,
+		error,
+		errorDetails,
+	}: {
+		critical: boolean;
+		error: string | Error;
+		errorDetails?: string;
+	}): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalError', critical, error);
 		const errorCode = typeof error === 'object' ? error.message : error;
-		this.sendError({ errorType: 'service', errorCode, ...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }) });
 
-		if (critical) {
-			this.hangup('service-error');
-		}
+		this.sendError({
+			errorType: 'service',
+			errorCode,
+			...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
+			...(errorDetails && { errorDetails }),
+			critical,
+		});
 	}
 
 	private onWebRTCNegotiationNeeded(): void {
@@ -1069,11 +1145,25 @@ export class ClientMediaCall implements IClientMediaCall {
 					break;
 				case 'failed':
 					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-failed',
+							critical: true,
+							negotiationId: this.currentNegotiationId || undefined,
+						});
+
 						this.hangup('service-error');
 					}
 					break;
 				case 'closed':
 					if (!this.isOver()) {
+						this.sendError({
+							errorType: 'service',
+							errorCode: 'connection-closed',
+							critical: true,
+							negotiationId: this.currentNegotiationId || undefined,
+						});
+
 						this.hangup('service-error');
 					}
 					break;
@@ -1143,7 +1233,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			this.prepareWebRtcProcessor();
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented' });
+			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented', critical: true, errorDetails: serializeError(e) });
 			throw e;
 		}
 	}
