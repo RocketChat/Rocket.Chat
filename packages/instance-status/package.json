@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.37",
+	"version": "0.1.41",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"prettier": "~3.3.3",
 		"typescript": "~5.9.3"
 	},

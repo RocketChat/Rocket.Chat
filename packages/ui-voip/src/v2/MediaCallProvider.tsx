@@ -21,6 +21,7 @@ import { useCallSounds } from './useCallSounds';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
+import { isValidTone, useTonePlayer } from './useTonePlayer';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
@@ -40,7 +41,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 
-	const { audioInput } = useSelectedDevices() || {};
+	const { audioInput, audioOutput } = useSelectedDevices() || {};
 
 	const requestDevice = useDevicePermissionPrompt2();
 
@@ -178,8 +179,13 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
 	};
 
+	const playTone = useTonePlayer(audioOutput?.id);
+
 	const onTone = (tone: string) => {
 		session.sendTone(tone);
+		if (isValidTone(tone)) {
+			playTone(tone);
+		}
 	};
 
 	const onEndCall = () => {
@@ -211,6 +217,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 					value: user._id,
 					label,
 					identifier,
+					status: user.status,
 					avatarUrl: getAvatarPath({ username: user.username, etag: user.avatarETag }),
 				};
 			}) || []
@@ -227,6 +234,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		muted: session.muted,
 		held: session.held,
 		peerInfo: session.peerInfo,
+		transferredBy: session.transferredBy,
 		hidden: session.hidden,
 		onMute,
 		onHold,

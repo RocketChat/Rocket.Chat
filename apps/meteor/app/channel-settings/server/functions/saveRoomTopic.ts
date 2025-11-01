@@ -1,4 +1,5 @@
 import { Message, Room } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -8,10 +9,7 @@ import { callbacks } from '../../../../lib/callbacks';
 export const saveRoomTopic = async (
 	rid: string,
 	roomTopic: string | undefined,
-	user: {
-		username: string;
-		_id: string;
-	},
+	user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 	sendMessage = true,
 ) => {
 	if (!Match.test(rid, String)) {

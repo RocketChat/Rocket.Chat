@@ -130,7 +130,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5\", \"6\", \"7\", \"8\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -247,54 +247,9 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: false
 
-  # TODO: this should go away once upstream builds are fixed
-  build-matrix-rust-bindings-for-alpine:
-    name: Builds matrix rust bindings against alpine
-    runs-on: ubuntu-24.04
-    steps:
-      - name: check cache for matrix-rust-sdk-crypto-nodejs
-        id: matrix-rust-sdk-crypto-nodejs
-        uses: actions/cache@v4
-        with:
-          path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
-          key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
-
-      - uses: actions/checkout@v4
-        with:
-          repository: matrix-org/matrix-rust-sdk-crypto-nodejs
-          ref: v0.2.0-beta.1 # https://github.com/element-hq/matrix-bot-sdk/blob/e72a4c498e00c6c339a791630c45d00a351f56a8/package.json#L58
-
-      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
-
-      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 22.16.0
-
-      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: '1.76'
-          target: x86_64-unknown-linux-musl
-
-      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        name: Install ziglang
-        uses: mlugg/setup-zig@v1
-        with:
-          version: 0.13.0
-
-      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        name: Build
-        run: |
-          npm install --ignore-scripts
-          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
-          mkdir -p /tmp/build
-          mv matrix-sdk-crypto.linux-x64-musl.node /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
-
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
+    needs: [build, release-versions]
     runs-on: ubuntu-24.04
 
     env:
@@ -322,11 +277,6 @@ jobs:
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Make sure matrix bindings load
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && matrix.platform == 'alpine' && github.actor != 'dependabot[bot]'
-        run: |
-          docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == needs.release-versions.outputs.official-platform && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
@@ -518,7 +468,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['7.0']"
+      mongodb-version: "['8.2']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -868,7 +818,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5\", \"6\", \"7\", \"8\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
