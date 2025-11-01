@@ -228,6 +228,13 @@ jobs:
           path: /tmp/RocketChat-packages-build.tar.gz
           retention-days: 5
 
+      - name: Upload livechat build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: livechat-build
+          path: /tmp/RocketChat-livechat-build.tar.gz
+          retention-days: 5
+
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@v4
