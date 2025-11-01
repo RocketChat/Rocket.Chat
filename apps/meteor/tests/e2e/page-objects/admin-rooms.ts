@@ -23,7 +23,7 @@ export class AdminRooms extends Admin {
 		return this.page.getByRole('button', { name: 'Edit' });
 	}
 
-	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
+	dropdownFilterRoomType(text = 'All rooms'): Locator {
 		return this.page.getByRole('button', { name: text });
 	}
 }

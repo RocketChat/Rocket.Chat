@@ -1,14 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { ConfirmDeleteModal } from './fragments/modal';
 
 export class AdminEmailInboxes extends Admin {
-	readonly deleteModal: ConfirmDeleteModal;
-
 	constructor(page: Page) {
 		super(page);
-		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
 	}
 
 	get btnNewEmailInbox(): Locator {

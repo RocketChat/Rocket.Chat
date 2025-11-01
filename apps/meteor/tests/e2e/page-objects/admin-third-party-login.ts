@@ -1,14 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { ConfirmDeleteModal } from './fragments/modal';
 
 export class AdminThirdPartyLogin extends Admin {
-	readonly deleteModal: ConfirmDeleteModal;
-
 	constructor(page: Page) {
 		super(page);
-		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
 	}
 
 	get btnNewApplication(): Locator {
@@ -45,7 +41,7 @@ export class AdminThirdPartyLogin extends Admin {
 
 	async deleteThirdPartyAppByName(name: string) {
 		await this.getThirdPartyAppByName(name).click();
-		await this.page.getByRole('button', { name: 'Delete', exact: true }).click();
+		await this.btnDelete.click();
 		await this.deleteModal.confirmDelete();
 	}
 }

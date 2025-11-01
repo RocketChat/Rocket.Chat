@@ -16,15 +16,15 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get inputName(): Locator {
-		return this.root.getByRole('textbox', { name: 'Name' });
+		return this.root.getByRole('textbox', { name: 'Name', exact: true });
 	}
 
 	get inputUserName(): Locator {
-		return this.root.getByRole('textbox', { name: 'Username' });
+		return this.root.getByRole('textbox', { name: 'Username', exact: true });
 	}
 
 	get inputEmail(): Locator {
-		return this.root.getByRole('textbox', { name: 'Email' });
+		return this.root.getByRole('textbox', { name: 'Email', exact: true });
 	}
 
 	get inputSetManually(): Locator {
@@ -32,11 +32,11 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	get inputPassword(): Locator {
-		return this.root.getByRole('textbox', { name: 'Password' });
+		return this.root.getByPlaceholder('Password', { exact: true });
 	}
 
 	get inputConfirmPassword(): Locator {
-		return this.root.getByRole('textbox', { name: 'Confirm password' });
+		return this.root.getByPlaceholder('Confirm password', { exact: true });
 	}
 
 	get joinDefaultChannels(): Locator {
@@ -52,6 +52,6 @@ export class EditUserFlexTab extends FlexTab {
 	}
 
 	getCustomField(fieldName: string): Locator {
-		return this.root.getByRole('textbox', { name: fieldName });
+		return this.root.getByRole('textbox', { name: fieldName, exact: true });
 	}
 }
