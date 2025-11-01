@@ -128,6 +128,28 @@ runs:
       working-directory: ./apps/meteor
       run: meteor reset
 
+    - name: Restore packages build
+      uses: actions/download-artifact@v4
+      with:
+        name: packages-build
+        path: /tmp
+
+    - name: Unpack packages build
+      shell: bash
+      run: |
+        tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
+    - name: Restore livechat build
+      uses: actions/download-artifact@v4
+      with:
+        name: livechat-build
+        path: /tmp
+
+    - name: Unpack livechat build
+      shell: bash
+      run: |
+        tar -xzf /tmp/RocketChat-livechat-build.tar.gz -C .
+
     - name: Build Rocket.Chat
       shell: bash
       if: steps.cache-build.outputs.cache-hit != 'true'
