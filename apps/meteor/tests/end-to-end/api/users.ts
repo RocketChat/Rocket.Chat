@@ -3347,6 +3347,126 @@ describe('[Users]', () => {
 				expect(roles[0].u).to.have.property('_id', credentials['X-User-Id']);
 			});
 		});
+
+		describe('lastMessage cleanup (Issue #36885)', () => {
+			let targetUser: TestUser<IUser>;
+			let room: IRoom;
+			let messageId: string;
+
+			beforeEach(async () => {
+				targetUser = await createUser();
+				const targetUserCredentials = await login(targetUser.username, password);
+
+				// Create a room
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+						members: [targetUser.username],
+					})
+				).body.channel;
+
+				// Send a message as the target user (will become lastMessage)
+				const messageResponse = await request
+					.post(api('chat.sendMessage'))
+					.set(targetUserCredentials)
+					.send({
+						message: {
+							rid: room._id,
+							msg: 'This is a test message from user to be deleted',
+						},
+					})
+					.expect(200);
+
+				messageId = messageResponse.body.message._id;
+			});
+
+			afterEach(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(targetUser)]));
+
+			it('should clean up lastMessage field when deleting user whose message was the last in room', async () => {
+				await updatePermission('delete-user', ['admin']);
+
+				// Verify the message is the lastMessage before deletion
+				const roomBeforeDelete = await request
+					.get(api('channels.info'))
+					.set(credentials)
+					.query({ roomId: room._id })
+					.expect(200);
+
+				expect(roomBeforeDelete.body.channel).to.have.property('lastMessage');
+				expect(roomBeforeDelete.body.channel.lastMessage).to.have.property('_id', messageId);
+				expect(roomBeforeDelete.body.channel.lastMessage.u).to.have.property('_id', targetUser._id);
+
+				// Delete the user
+				await request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+					})
+					.expect(200);
+
+				// Verify lastMessage is cleaned up
+				const roomAfterDelete = await request
+					.get(api('channels.info'))
+					.set(credentials)
+					.query({ roomId: room._id })
+					.expect(200);
+
+				// lastMessage should either be undefined or point to a different valid message
+				if (roomAfterDelete.body.channel.lastMessage) {
+					expect(roomAfterDelete.body.channel.lastMessage.u).to.not.have.property('_id', targetUser._id);
+				}
+			});
+
+			it('should update lastMessage to previous message when deleting user whose message was the last', async () => {
+				await updatePermission('delete-user', ['admin']);
+
+				// Send another message as admin user BEFORE the target user's message
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: room._id,
+							msg: 'Admin message before target user message',
+						},
+					})
+					.expect(200);
+
+				// Send the target user message (will be lastMessage)
+				const targetUserCredentials = await login(targetUser.username, password);
+				await request
+					.post(api('chat.sendMessage'))
+					.set(targetUserCredentials)
+					.send({
+						message: {
+							rid: room._id,
+							msg: 'Target user last message',
+						},
+					})
+					.expect(200);
+
+				// Delete the user
+				await request
+					.post(api('users.delete'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+					})
+					.expect(200);
+
+				// Verify lastMessage now points to admin's message
+				const roomAfterDelete = await request
+					.get(api('channels.info'))
+					.set(credentials)
+					.query({ roomId: room._id })
+					.expect(200);
+
+				expect(roomAfterDelete.body.channel).to.have.property('lastMessage');
+				expect(roomAfterDelete.body.channel.lastMessage.u).to.have.property('_id', credentials['X-User-Id']);
+			});
+		});
 	});
 
 	describe('Personal Access Tokens', () => {
