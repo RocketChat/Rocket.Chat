@@ -159,5 +159,5 @@ export const addUserToRoom = ({
 				id: 'id',
 				msg: 'method',
 			}),
-	});
+		});
 };
