@@ -51,6 +51,9 @@ slashCommands.add({
 				usernames = usernames.filter((username) => {
 					return !federatedUsernames.includes(username);
 				});
+				if (usernames.length === 0) {
+					return;
+				}
 			}
 		}
 
