@@ -46,9 +46,10 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'imageCropPreview',
-		i18n: 'Image_crop_preview',
-		description: 'Image_crop_preview_description',
+		i18n: 'Image_crop',
+		description: 'Image_crop_description',
 		group: 'Message',
+		imageUrl: 'images/featurePreview/image-crop.png',
 		value: false,
 		enabled: true,
 	},
