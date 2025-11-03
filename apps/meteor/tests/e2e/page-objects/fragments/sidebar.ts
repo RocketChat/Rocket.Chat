@@ -1,23 +1,30 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class Sidebar {
-	private readonly page: Page;
+import { expect } from '../../utils/test';
 
-	constructor(page: Page) {
-		this.page = page;
+export abstract class Sidebar {
+	constructor(protected root: Locator) {}
+
+	waitForDismissal() {
+		return expect(this.root).not.toBeVisible();
 	}
 
-	// New navigation locators
-	get sidebar(): Locator {
-		return this.page.getByRole('navigation', { name: 'Sidebar' });
+	waitForDisplay() {
+		return expect(this.root).toBeVisible();
+	}
+}
+
+export class RoomSidebar extends Sidebar {
+	constructor(protected page: Page) {
+		super(page.getByRole('navigation', { name: 'Sidebar' }));
 	}
 
 	get teamCollabFilters(): Locator {
-		return this.sidebar.getByRole('tablist', { name: 'Team collaboration filters' });
+		return this.root.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
 
 	get omnichannelFilters(): Locator {
-		return this.sidebar.getByRole('tablist', { name: 'Omnichannel filters' });
+		return this.root.getByRole('tablist', { name: 'Omnichannel filters' });
 	}
 
 	get allTeamCollabFilter(): Locator {
@@ -34,13 +41,13 @@ export class Sidebar {
 
 	// TODO: fix this filter, workaround due to virtuoso
 	get topChannelList(): Locator {
-		return this.sidebar.getByTestId('virtuoso-top-item-list');
+		return this.root.getByTestId('virtuoso-top-item-list');
 	}
 
 	get channelsList(): Locator {
 		// TODO: fix this filter, workaround due to virtuoso
 		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
-		return this.sidebar.getByTestId('virtuoso-item-list');
+		return this.root.getByTestId('virtuoso-item-list');
 	}
 
 	getSearchRoomByName(name: string) {
@@ -52,7 +59,7 @@ export class Sidebar {
 	}
 
 	get teamsCollapser(): Locator {
-		return this.sidebar.getByRole('region', { name: 'Collapse Teams' }).first();
+		return this.root.getByRole('region', { name: 'Collapse Teams' }).first();
 	}
 
 	get channelsCollapser(): Locator {
@@ -84,5 +91,21 @@ export class Sidebar {
 
 	getItemUnreadBadge(item: Locator): Locator {
 		return item.getByRole('status', { name: 'unread' });
+	}
+}
+
+export class AdminSidebar extends Sidebar {
+	constructor(page: Page) {
+		// TODO: This locator should be more specific
+		super(page.getByRole('navigation'));
+	}
+
+	get btnClose(): Locator {
+		return this.root.getByRole('button', { name: 'Close' });
+	}
+
+	async close(): Promise<void> {
+		await this.btnClose.click();
+		await this.waitForDismissal();
 	}
 }
