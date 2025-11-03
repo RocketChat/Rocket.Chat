@@ -1810,7 +1810,7 @@
   "RetentionPolicyRoom_FilesOnly": "கோப்புகளை மட்டும் ப்ரூனே செய்யுங்கள், செய்திகளை வைத்திருக்கவும்",
   "RetentionPolicyRoom_MaxAge": "நாட்களில் அதிகபட்ச செய்தி வயது (இயல்புநிலை: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "உலகளாவிய தக்க கொள்கையை மீறவும்",
-  "RetentionPolicyRoom_ReadTheDocs": "பாருங்கள்! மிகுந்த கவனிப்பு இல்லாமல் இந்த அமைப்புகள் முறுக்குவதை அனைத்து செய்தி வரலாற்றை அழிக்க முடியும். <a href = \"{{retentionPolicyUrl}}\"LL_HTML_END> இங்கே</a>அம்சத்தை மாற்றுவதற்கு முன் ஆவணம் படிக்கவும்.",
+  "RetentionPolicyRoom_ReadTheDocs": "பாருங்கள்! மிகுந்த கவனிப்பு இல்லாமல் இந்த அமைப்புகள் முறுக்குவதை அனைத்து செய்தி வரலாற்றை அழிக்க முடியும். <a href = \"{{retentionPolicyUrl}}\"> இங்கே</a>அம்சத்தை மாற்றுவதற்கு முன் ஆவணம் படிக்கவும்.",
   "RetentionPolicy_AppliesToChannels": "சேனல்களுக்கு பொருந்தும்",
   "RetentionPolicy_AppliesToDMs": "நேரடி செய்திகளுக்கு பொருந்தும்",
   "RetentionPolicy_AppliesToGroups": "தனியார் குழுக்களுக்கு பொருந்தும்",
