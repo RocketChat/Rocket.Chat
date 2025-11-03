@@ -198,9 +198,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.creationTimestamp = new Date();
-		// this.pendingAnswerRequest = null;
 
-		// this.currentNegotiationId = null;
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
 		this._role = 'callee';
@@ -1118,9 +1116,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		const polite = this.role !== 'caller';
-
-		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack, polite });
+		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));

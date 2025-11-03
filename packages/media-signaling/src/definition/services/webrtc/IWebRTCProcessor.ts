@@ -42,12 +42,10 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	localAudioLevel: number;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
-	isStable(): boolean;
 }
 
 export type WebRTCProcessorConfig = {
 	call: IClientMediaCall;
-	polite: boolean;
 	inputTrack: MediaStreamTrack | null;
 	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;

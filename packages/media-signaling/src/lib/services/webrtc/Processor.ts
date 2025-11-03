@@ -163,9 +163,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
-		// if (sdp.type !== 'offer') {
-		// 	throw new Error('invalid-webrtc-offer');
-		// }
 		if (!this.inputTrack) {
 			throw new Error('no-input-track');
 		}
