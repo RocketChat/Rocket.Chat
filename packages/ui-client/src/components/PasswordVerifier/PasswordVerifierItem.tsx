@@ -1,4 +1,4 @@
-import { Box, Icon, type IconProps } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ const variants = {
 		label: 'Error',
 		color: 'status-font-on-danger',
 	},
-} as const satisfies Record<string, IconProps>;
+} as const;
 
 type PasswordVerifierItemProps = PasswordPolicyValidation & {
 	vertical: boolean;
