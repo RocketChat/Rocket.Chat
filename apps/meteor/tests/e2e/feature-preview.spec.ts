@@ -122,15 +122,15 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
 			});
 
-			await test.step('should display home and directory inside a menu and sidebar toggler in tablet view', async () => {
+			await test.step('should display home and directory inside a menu', async () => {
 				await page.setViewportSize({ width: 1023, height: 767 });
 				await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
-				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
 
-			await test.step('should display voice and omnichannel items inside a menu in mobile view', async () => {
+			await test.step('should display voice and omnichannel items inside a menu and sidebar toggler in mobile view', async () => {
 				await page.setViewportSize({ width: 767, height: 510 });
 				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
 
 			await test.step('should hide everything else when navbar search is focused in mobile view', async () => {
