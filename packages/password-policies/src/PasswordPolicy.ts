@@ -20,9 +20,9 @@ type PasswordPolicyParametersEntry = {
 		: [PasswordPolicyName<K>];
 }[PasswordPolicyKey];
 
-type PasswordPolicyType = {
+type PasswordPolicyType<Entry = PasswordPolicyParametersEntry> = {
 	enabled: boolean;
-	policy: PasswordPolicyParametersEntry[];
+	policy: Entry[];
 };
 
 export type PasswordPolicyOptions = Partial<
@@ -246,7 +246,7 @@ export class PasswordPolicy {
 		return true;
 	}
 
-	getPasswordPolicy(): PasswordPolicyType {
+	getPasswordPolicy(): PasswordPolicyType<[name: string, params?: Record<string, number | boolean>]> {
 		const data: PasswordPolicyType = {
 			enabled: false,
 			policy: [],
