@@ -1,5 +1,6 @@
-import { Team } from '@rocket.chat/core-services';
+import { Abac, Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
@@ -102,6 +103,30 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static async syncAbacAttributes(): Promise<void> {
+		if (
+			!settings.get('LDAP_Enabled') ||
+			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
+			!License.hasModule('abac') ||
+			!settings.get('ABAC_Enabled')
+		) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.updateUserAbacAttributes(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
 	public static validateLDAPTeamsMappingChanges(json: string): void {
 		if (!json) {
 			return;
@@ -119,6 +144,32 @@ export class LDAPEEManager extends LDAPManager {
 		if (!validStructureMapping) {
 			throw new Error(
 				'Please verify your mapping for LDAP X RocketChat Teams. The structure is invalid, the structure should be an object like: {key: LdapTeam, value: [An array of rocket.chat teams]}',
+			);
+		}
+	}
+
+	public static validateLDAPABACAttributeMap(json: string): void {
+		if (!json) {
+			return;
+		}
+
+		const mappedAttributes = this.parseJson(json);
+
+		// attributes are { key: value } with key being the ldap attribute and value being the abac attribute in rocketchat
+		// both strings
+		// There's no need for the attribute to exist in rocketchat, we just add whatever the admin wants to map
+
+		if (!mappedAttributes || Object.keys(mappedAttributes).length === 0) {
+			return;
+		}
+
+		const validStructureMapping = Object.entries(mappedAttributes).every(
+			([key, value]) => typeof key === 'string' && typeof value === 'string',
+		);
+
+		if (!validStructureMapping) {
+			throw new Error(
+				'Please verify your mapping for LDAP X RocketChat ABAC Attributes. The structure is invalid, the structure should be an object like: {key: LdapAttribute, value: RocketChatAbacAttribute}',
 			);
 		}
 	}
@@ -662,6 +713,18 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			await LDAPManager.syncUserAvatar(user, ldapUser);
+		}
+	}
+
+	private static async updateUserAbacAttributes(ldap: LDAPConnection): Promise<void> {
+		const users = await Users.findLDAPUsers().toArray();
+		for await (const user of users) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
+			if (!ldapUser) {
+				continue;
+			}
+
+			await Abac.addSubjectAttributes(user, ldapUser, this.parseJson(settings.get('LDAP_ABAC_AttributeMap')));
 		}
 	}
 

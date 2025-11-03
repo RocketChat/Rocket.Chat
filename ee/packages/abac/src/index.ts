@@ -1,7 +1,7 @@
 import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -19,6 +19,50 @@ export class AbacService extends ServiceClass implements IAbacService {
 	constructor() {
 		super();
 		this.logger = new Logger('AbacService');
+	}
+
+	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
+		if (!user?._id) {
+			return;
+		}
+
+		const entries = Object.entries(map || {});
+
+		const finalAttributes: IAbacAttributeDefinition[] = entries
+			.map<IAbacAttributeDefinition | undefined>(([ldapKey, abacKey]) => {
+				if (!ldapKey || !abacKey) {
+					return;
+				}
+				const raw = ldapUser?.[ldapKey];
+				let values: string[] = [];
+				if (Array.isArray(raw)) {
+					values = raw.filter((v): v is string => typeof v === 'string' && v.length > 0);
+				} else if (typeof raw === 'string' && raw.length) {
+					values = [raw];
+				}
+				return values.length ? { key: abacKey, values } : undefined;
+			})
+			.filter((attr) => attr !== undefined);
+
+		if (!finalAttributes.length) {
+			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
+				await Users.updateOne({ _id: user._id }, { $unset: { abacAttributes: 1 } });
+				await this.onSubjectAttributesChanged(user, []);
+			}
+			return;
+		}
+
+		await Users.updateOne({ _id: user._id }, { $set: { abacAttributes: finalAttributes } });
+
+		if (this.didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
+			await this.onSubjectAttributesChanged(user, finalAttributes);
+		}
+
+		this.logger.debug({
+			msg: 'LDAP subject attributes synced to user',
+			userId: user._id,
+			finalAttributes,
+		});
 	}
 
 	async addAbacAttribute(attribute: IAbacAttributeDefinition): Promise<void> {
@@ -614,6 +658,29 @@ export class AbacService extends ServiceClass implements IAbacService {
 		// Set last time the decision was made
 		await Subscriptions.setAbacLastTimeCheckedByUserIdAndRoomId(user._id, room._id, new Date());
 		return true;
+	}
+
+	private didSubjectLoseAttributes(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
+		if (!previous.length) {
+			return false;
+		}
+		const nextMap = new Map(next.map((a) => [a.key, new Set(a.values)]));
+		for (const prevAttr of previous) {
+			const nextValues = nextMap.get(prevAttr.key);
+			if (!nextValues) {
+				return true;
+			}
+			for (const v of prevAttr.values) {
+				if (!nextValues.has(v)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	protected async onSubjectAttributesChanged(_user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
+		// no-op (hook point for when a user loses an ABAC attribute or value)
 	}
 }
 
