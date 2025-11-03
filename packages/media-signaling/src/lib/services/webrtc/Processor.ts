@@ -109,6 +109,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			const transceivers = this.getAudioTransceivers();
 
 			if (!transceivers.length) {
+				this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer.addEmptyTransceiver');
 				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
 				this.addedEmptyTransceiver = true;
 			}
@@ -118,6 +119,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			this.restartIce();
 		}
 
+		this.updateAudioDirectionForOffer();
 		const offer = await this.peer.createOffer();
 		if (this.lastSetLocalDescription && offer.sdp !== this.lastSetLocalDescription && !iceRestart) {
 			this.startNewNegotiation();
@@ -148,7 +150,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteStream.setEnabled(!held);
 
 		// TODO: request negotiation when the call is put on hold, but check signaling-state
-		// this.onNegotiationNeeded();
+		this.onNegotiationNeeded();
 	}
 
 	public stop(): void {
@@ -250,29 +252,55 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private updateAudioDirectionForAnswer(): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.updateAudioDirectionForAnswer', this.held);
-		// If the call is not on hold, we don't need to overwrite the direction
-		if (!this.held) {
-			return;
-		}
 
-		// const offerDirection = offer.match(/^a=(sendrecv|sendonly|recvonly|inactive)$/m)?.[1] || 'sendrecv';
-		// const answerDirection = this.getAudioDirectionForAnswer(offerDirection);
+		const offerDirection = this.peer.remoteDescription?.sdp.match(/^a=(sendrecv|sendonly|recvonly|inactive)$/m)?.[1] || 'sendrecv';
+		this.config.logger?.debug('offer direction was: ', offerDirection);
+
 		const transceivers = this.getAudioTransceivers();
 		for (const transceiver of transceivers) {
 			const oldDirection = transceiver.direction;
+			this.config.logger?.debug('audio transceiver current direction is: ', transceiver.currentDirection);
 
 			switch (transceiver.direction) {
 				case 'sendrecv':
-					transceiver.direction = 'sendonly';
+				case 'sendonly':
+					transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
 					break;
+				case 'inactive':
 				case 'recvonly':
-					transceiver.direction = 'inactive';
+					transceiver.direction = this.held ? 'inactive' : 'recvonly';
 					break;
 			}
 
-			this.config.logger?.debug('audo transceiver direction was: ', oldDirection);
+			this.config.logger?.debug('audio transceiver direction was: ', oldDirection);
 			if (transceiver.direction !== oldDirection) {
-				this.config.logger?.debug('audo transceiver direction changed to: ', transceiver.direction);
+				this.config.logger?.debug('audio transceiver direction changed to: ', transceiver.direction);
+			}
+		}
+	}
+
+	private updateAudioDirectionForOffer(): void {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.updateAudioDirectionForOffer', this.held);
+
+		const transceivers = this.getAudioTransceivers();
+		for (const transceiver of transceivers) {
+			const oldDirection = transceiver.direction;
+			this.config.logger?.debug('audio transceiver current direction is: ', transceiver.currentDirection);
+
+			switch (transceiver.direction) {
+				case 'sendonly':
+				case 'sendrecv':
+					transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
+					break;
+				case 'recvonly':
+				case 'inactive':
+					transceiver.direction = this.held ? 'inactive' : 'recvonly';
+					break;
+			}
+
+			this.config.logger?.debug('audio transceiver direction was: ', oldDirection);
+			if (transceiver.direction !== oldDirection) {
+				this.config.logger?.debug('audio transceiver direction changed to: ', transceiver.direction);
 			}
 		}
 	}
@@ -282,19 +310,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			.getTransceivers()
 			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
 	}
-
-	// private getAudioDirectionForAnswer(offerDirection: RTCRtpTransceiverDirection): RTCRtpTransceiverDirection {
-	// 	switch (offerDirection) {
-	// 		case 'sendrecv':
-	// 			return this.held ? 'sendonly' : 'sendrecv';
-	// 		case 'sendonly':
-	// 			return this.held ? 'inactive' : 'recvonly';
-	// 		case 'recvonly':
-	// 			return 'sendonly';
-	// 		default:
-	// 			return offerDirection;
-	// 	}
-	// }
 
 	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit }> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription');
