@@ -9,9 +9,11 @@ test.describe.serial('settings-int', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
+		const pageTitle = page.locator('[data-qa-type="PageHeader-title"]');
 		await page.goto('/admin/settings/Message');
 
-		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Message');
+		await pageTitle.waitFor();
+		await expect(pageTitle).toHaveText('Message');
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {
