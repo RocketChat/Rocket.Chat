@@ -82,7 +82,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						openSidePanel: () => setDisplaySidePanel(true),
 					},
 					size: {
-						sidebar: isTablet ? '280px' : defaultSidebarWidth,
+						sidebar: shouldToggle ? '280px' : defaultSidebarWidth,
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
