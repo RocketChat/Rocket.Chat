@@ -216,8 +216,6 @@ export class UserActorSignalProcessor {
 				}
 
 				// Resend the offer request to the impolite client
-				// note: If we run into issues with fresh negotiations being sent multiple times we could add an age check here or something to ensure this doesn't get re-sent for a short interval
-				// But a debounce on requests form the client lib should be enough to prevent it in normal circumstances.
 				return this.requestWebRTCOffer({ negotiationId: negotiation._id });
 			}
 
@@ -226,7 +224,6 @@ export class UserActorSignalProcessor {
 		}
 
 		// The client is up-to-date and requested a renegotiation before the last one was complete
-
 		// If the request came from the same side as the last negotiation, the client was in no position to request it
 		if (this.role === negotiation.offerer) {
 			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
