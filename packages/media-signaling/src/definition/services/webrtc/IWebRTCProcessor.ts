@@ -12,7 +12,11 @@ export type WebRTCInternalStateMap = {
 	iceUntrickler: 'waiting' | 'not-waiting' | 'timeout';
 };
 
-export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap>;
+export type WebRTCUniqueEvents = {
+	negotiationNeeded: void;
+};
+
+export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;
 
 export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateMap> {
 	emitter: Emitter<WebRTCProcessorEvents>;
@@ -24,10 +28,13 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	stop(): void;
 
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
-	startNewNegotiation(): void;
-	createOffer(params: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }>;
-	createAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }>;
-	setRemoteAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
+	createOffer(params: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit>;
+	createAnswer(): Promise<RTCSessionDescriptionInit>;
+
+	setLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
+	setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
+	waitForIceGathering(): Promise<void>;
+	getLocalDescription(): RTCSessionDescriptionInit | null;
 
 	getRemoteMediaStream(): MediaStream;
 
