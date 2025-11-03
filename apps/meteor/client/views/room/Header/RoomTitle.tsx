@@ -1,7 +1,6 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useButtonPattern, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
@@ -39,16 +38,9 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 
 	const buttonProps = useButtonPattern(handleOpenRoomInfo);
 	const { t } = useTranslation();
-	const e2eEnabled = useSetting('E2E_Enable');
-	return e2eEnabled && room?.encrypted ? (
-		<HeaderTitleButton {...buttonProps} mie={4}>
-			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1' aria-label={t('Encrypted_channel_title', { roomName: room.name })}>
-				{room.name}
-			</HeaderTitle>
-		</HeaderTitleButton>
-	) : (
-		<HeaderTitleButton {...buttonProps} mie={4}>
+
+	return (
+		<HeaderTitleButton aria-label={room.encrypted ? t('Encrypted_channel_title', { roomName: room.name }) : undefined}{...buttonProps} mie={4}>
 			<HeaderIconWithRoom room={room} />
 			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
