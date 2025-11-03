@@ -693,6 +693,140 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		describe('default email2fa auto opt in configuration', () => {
+			let user: IUser;
+
+			afterEach(async () => {
+				await deleteUser(user);
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			});
+
+			const dummyUser = {
+				email: 'email2fa_auto_opt_in@rocket.chat',
+				name: 'email2fa_auto_opt_in',
+				username: 'email2fa_auto_opt_in',
+				password,
+			};
+
+			it('should auto opt in new users for email2fa ', async () => {
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.services.email2fa.enabled', true);
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if email2fa is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if two factor authentication is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if email2fa is enabled but auto opt in is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', false);
+
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
