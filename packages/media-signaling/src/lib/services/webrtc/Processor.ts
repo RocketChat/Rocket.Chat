@@ -259,7 +259,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async waitForIceGathering(): Promise<void> {
-		if (this.stopped || this.peer.iceGatheringState !== 'gathering') {
+		if (this.stopped || this.peer.iceGatheringState === 'complete') {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering');
@@ -452,7 +452,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceGatheringStateChange', state);
 		if (state === 'gathering') {
-			this.startNewGathering();
+			this.iceCandidateCount = 0;
 		}
 
 		if (state === 'complete') {

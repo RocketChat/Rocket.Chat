@@ -1,45 +1,21 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { IWebRTCProcessor } from '../../../definition';
-
-type NegotiationEvents = {
-	'error': void;
-	'skipped': void;
-	'completed': void;
-	'local-sdp': { sdp: RTCSessionDescriptionInit };
-};
-
-type NegotiationData = {
-	negotiationId: string;
-	sequence: number;
-	isPolite: boolean;
-
-	remoteOffer: RTCSessionDescriptionInit | null;
-}
+import type { IMediaSignalLogger, IWebRTCProcessor, NegotiationData, NegotiationEvents } from '../../../definition';
 
 export class Negotiation {
-	public emitter: Emitter<NegotiationEvents>;
-
-	public get skipped() {
-		return this._skipped || this._aborted;
-	}
-
-	public get aborted() {
-		return this._aborted;
-	}
+	public readonly emitter: Emitter<NegotiationEvents>;
 
 	public get started() {
 		return this._startedProcessing;
 	}
 
-	/** Returns true when the whole process around the negotiation is complete */
-	public get completed() {
-		return this._completed;
+	/** Returns true when the negotiation will no longer process anything, no matter the reason */
+	public get ended() {
+		return this._ended;
 	}
 
-	/** Returns true when the negotiation signaling is stable */
-	public get hasAnswer() {
-		return this._hasAnswer;
+	public get isLocal(): boolean {
+		return !this.remoteOffer;
 	}
 
 	public readonly negotiationId: string;
@@ -52,23 +28,20 @@ export class Negotiation {
 
 	protected remoteOffer: RTCSessionDescriptionInit | null;
 
-	protected _skipped: boolean;
-
-	protected _aborted: boolean;
-
-	protected _completed: boolean;
+	protected _ended: boolean;
 
 	protected _startedProcessing: boolean;
 
-	protected _hasAnswer: boolean;
+	protected _failed: boolean;
 
-	constructor(negotiation: NegotiationData) {
-		this._skipped = false;
-		this._aborted = false;
+	constructor(
+		negotiation: NegotiationData,
+		protected readonly logger?: IMediaSignalLogger | null,
+	) {
 		this.webrtcProcessor = null;
 		this._startedProcessing = false;
-		this._completed = false;
-		this._hasAnswer = false;
+		this._ended = false;
+		this._failed = false;
 		this.negotiationId = negotiation.negotiationId;
 		this.sequence = negotiation.sequence;
 		this.isPolite = negotiation.isPolite;
@@ -77,43 +50,21 @@ export class Negotiation {
 		this.emitter = new Emitter();
 	}
 
-	/**
-	 * If the internal negotiation is still pending, abort all processing;
-	 * If the negotiation is complete but signaling isn't, continue with signaling.
-	 * */
-	public skip(): void {
-		if (this._skipped) {
+	public end(): void {
+		if (this._ended) {
 			return;
 		}
 
-		this._skipped = true;
-		if (!this._hasAnswer) {
-			this._aborted = true;
-		}
-
-		if (!this.complete) {
-			this.emitter.emit('skipped');
-		}
-	}
-
-	/**
-	 * Abort any and all processing in this negotiation
-	 * */
-	public abort(): void {
-		if (this._completed) {
-			return;
-		}
-
-		this._aborted = true;
-		this._skipped = true;
-
-		this.emitter.emit('skipped');
+		this.logger?.debug('Negotiation.end', this.negotiationId);
+		this._ended = true;
+		this.emitter.emit('ended');
 	}
 
 	public async process(webrtcProcessor: IWebRTCProcessor): Promise<void> {
 		if (this._startedProcessing) {
 			return;
 		}
+		this.logger?.debug('Negotiation.process', this.negotiationId);
 
 		this.setWebRTCProcessor(webrtcProcessor);
 		this._startedProcessing = true;
@@ -132,51 +83,56 @@ export class Negotiation {
 			return;
 		}
 
-		if (!this.remoteOffer || !this._startedProcessing) {
-			throw new Error('invalid-workflow');
-		}
+		this.logger?.debug('Negotiation.setRemoteAnswer', this.negotiationId);
 
-		if (sdp.type !== 'answer') {
-			throw new Error('invalid-sdp-type');
+		if (!this.isLocal || !this._startedProcessing || sdp.type !== 'answer') {
+			this.logger?.warn('Invalid negotiation workflow');
+			return;
 		}
 
 		await this.webrtcProcessor.setRemoteDescription(sdp);
-		this._hasAnswer = true;
-		this.complete();
+		// Local negotiations end when the remote description is available
+		this.end();
 	}
 
 	protected async setLocalDescription(this: WebRTCNegotiation, sdp: RTCSessionDescriptionInit): Promise<void> {
-		this.assertNegotiationIsNotAborted();
-		await this.webrtcProcessor.setLocalDescription(sdp);
-		if (sdp.type === 'answer') {
-			this._hasAnswer = true;
-		}
+		this.logger?.debug('Negotiation.setLocalDescription', this.negotiationId);
 
-		this.assertNegotiationIsNotAborted();
+		this.assertNegotiationIsActive();
+		await this.webrtcProcessor.setLocalDescription(sdp);
+
+		this.assertNegotiationIsActive();
 		await this.webrtcProcessor.waitForIceGathering();
 
-		this.assertNegotiationIsNotAborted();
+		this.assertNegotiationIsActive();
 		const localDescription = this.webrtcProcessor.getLocalDescription();
 		if (!localDescription) {
-			throw new Error('implementation-error');
+			this.fail('implementation-error');
+			return;
 		}
 
 		this.emitter.emit('local-sdp', { sdp: localDescription });
-		this.complete();
+
+		// Remote negotiations end when the local description is available
+		if (!this.isLocal) {
+			this.end();
+		}
 	}
 
 	protected setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor): asserts this is WebRTCNegotiation {
 		this.webrtcProcessor = webrtcProcessor;
 	}
 
-	protected assertNegotiationIsNotAborted(): void {
-		if (this.aborted) {
-			throw new Error('Aborted Negotiation');
+	protected assertNegotiationIsActive(): void {
+		if (this._ended) {
+			this.fail('skipped-negotiation');
+			throw new Error('Skipped Negotiation');
 		}
 	}
 
 	protected async createLocalOffer(this: WebRTCNegotiation): Promise<void> {
-		this.assertNegotiationIsNotAborted();
+		this.logger?.debug('Negotiation.createLocalOffer', this.negotiationId);
+		this.assertNegotiationIsActive();
 
 		const earlyOffer = await this.webrtcProcessor.createOffer({});
 
@@ -184,19 +140,25 @@ export class Negotiation {
 	}
 
 	protected async createLocalAnswer(this: WebRTCNegotiation, remoteOffer: RTCSessionDescriptionInit): Promise<void> {
-		this.assertNegotiationIsNotAborted();
+		this.logger?.debug('Negotiation.createLocalAnswer', this.negotiationId);
+		this.assertNegotiationIsActive();
 		await this.webrtcProcessor.setRemoteDescription(remoteOffer);
 
-		this.assertNegotiationIsNotAborted();
+		this.assertNegotiationIsActive();
 		const earlyAnswer = await this.webrtcProcessor.createAnswer();
 
-		this.assertNegotiationIsNotAborted();
+		this.assertNegotiationIsActive();
 		await this.setLocalDescription(earlyAnswer);
 	}
 
-	protected complete(): void {
-		this._completed = true;
-		this.emitter.emit('completed');
+	protected fail(errorCode: string): void {
+		if (this._failed || this._ended) {
+			return;
+		}
+
+		this.emitter.emit('error', { errorCode });
+
+		this._failed = true;
 	}
 }
 

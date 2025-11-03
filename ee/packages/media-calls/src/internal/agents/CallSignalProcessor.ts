@@ -190,8 +190,8 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		// If we're stable, we can accept any request
-		if (negotiation.stableTimestamp) {
+		// If the latest negotiation has an answer, we can accept any request
+		if (negotiation.answer) {
 			return this.startNewNegotiation();
 		}
 
@@ -207,9 +207,9 @@ export class UserActorSignalProcessor {
 				return;
 			}
 
-			// If the latest negotiation is impolite and the impolite client is not aware of it yet
+			// If the latest negotiation is impolite and the impolite client is not aware of it yet, this must be a duplicate request
 			if (isLatestImpolite) {
-				// If we already received an offer in this situation then something is very wrong (signal delayed by some proxy, perhaps?)
+				// If we already received an offer in this situation then something is very wrong (some proxy interfering with signals, perhaps?)
 				if (negotiation.offer) {
 					logger.error({ msg: 'Invalid renegotiation request', requestedBy: this.role, isLatestImpolite });
 					return;
@@ -225,16 +225,10 @@ export class UserActorSignalProcessor {
 			return this.startNewNegotiation();
 		}
 
-		// The client is up-to-date and requested a renegotiation before the last one was reported stable
+		// The client is up-to-date and requested a renegotiation before the last one was complete
 
-		// If the request came from the same side as the last negotiation
+		// If the request came from the same side as the last negotiation, the client was in no position to request it
 		if (this.role === negotiation.offerer) {
-			// If that negotiation had an answer, assume the client will be able to handle a renegotiation
-			if (negotiation.answer) {
-				return this.startNewNegotiation();
-			}
-
-			// If there's no answer, the client was in no position to request this negotiation
 			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
 			return;
 		}
@@ -244,16 +238,8 @@ export class UserActorSignalProcessor {
 			return this.startNewNegotiation();
 		}
 
-		// At this point, it's a polite request done while an impolite negotiation was not yet reported as stable
-
-		// If we know for sure the impolite negotiation is incomplete, reject the request
-		if (!negotiation.answer) {
-			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
-			return;
-		}
-
-		// If we don't know, trust the clients will be able to handle a renegotiation
-		return this.startNewNegotiation();
+		// It's a polite negotiation requested while an impolite one was not yet complete
+		logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
 	}
 
 	private async startNewNegotiation(): Promise<void> {
