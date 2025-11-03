@@ -305,29 +305,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private updateAudioDirectionForAnswer(): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.updateAudioDirectionForAnswer', this.held);
 
-		const offerDirection = this.peer.remoteDescription?.sdp.match(/^a=(sendrecv|sendonly|recvonly|inactive)$/m)?.[1] || 'sendrecv';
-		this.config.logger?.debug('offer direction was: ', offerDirection);
-
 		const transceivers = this.getAudioTransceivers();
+		// This works, but causes an immediate renegotiation due to difference between `direction` and `currentDirection`
+		// TODO: parse the offer to determine what was requested and assign the proper direction on the answer
 		for (const transceiver of transceivers) {
-			const oldDirection = transceiver.direction;
-			this.config.logger?.debug('audio transceiver current direction is: ', transceiver.currentDirection);
-
-			switch (transceiver.direction) {
-				case 'sendrecv':
-				case 'sendonly':
-					transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
-					break;
-				case 'inactive':
-				case 'recvonly':
-					transceiver.direction = this.held ? 'inactive' : 'recvonly';
-					break;
-			}
-
-			this.config.logger?.debug('audio transceiver direction was: ', oldDirection);
-			if (transceiver.direction !== oldDirection) {
-				this.config.logger?.debug('audio transceiver direction changed to: ', transceiver.direction);
-			}
+			transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
 		}
 	}
 
@@ -336,24 +318,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		const transceivers = this.getAudioTransceivers();
 		for (const transceiver of transceivers) {
-			const oldDirection = transceiver.direction;
-			this.config.logger?.debug('audio transceiver current direction is: ', transceiver.currentDirection);
-
-			switch (transceiver.direction) {
-				case 'sendonly':
-				case 'sendrecv':
-					transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
-					break;
-				case 'recvonly':
-				case 'inactive':
-					transceiver.direction = this.held ? 'inactive' : 'recvonly';
-					break;
-			}
-
-			this.config.logger?.debug('audio transceiver direction was: ', oldDirection);
-			if (transceiver.direction !== oldDirection) {
-				this.config.logger?.debug('audio transceiver direction changed to: ', transceiver.direction);
-			}
+			transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
 		}
 	}
 
