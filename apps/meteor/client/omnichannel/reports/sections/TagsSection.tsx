@@ -14,7 +14,7 @@ export const TagsSection = () => {
 				data={data}
 				direction='horizontal'
 				height={360}
-				margins={{ left: 90, top: 30, right: 0 }}
+				margins={{ left: 92, top: 30, right: 8 }}
 				axis={{
 					axisLeft: {
 						tickSize: 0,
