@@ -43,24 +43,12 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-// Minimal mock for ServiceClass plus MeteorError and Room used by the service
+// Partial mock for @rocket.chat/core-services: keep real MeteorError, override ServiceClass and Room
 jest.mock('@rocket.chat/core-services', () => {
-	class MeteorError extends Error {
-		public isClientSafe = true;
-
-		public readonly errorType = 'Meteor.Error';
-
-		public constructor(
-			public readonly error: string | number,
-			public readonly reason?: string,
-			public readonly details?: any,
-		) {
-			super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
-		}
-	}
+	const actual = jest.requireActual('@rocket.chat/core-services');
 	return {
+		...actual,
 		ServiceClass: class {},
-		MeteorError,
 		Room: {
 			removeUserFromRoom: jest.fn(),
 		},
