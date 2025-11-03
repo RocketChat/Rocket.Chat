@@ -90,7 +90,7 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { counts, titles } = useMemo(() => {
+	const { counts, titles, sortedMembers } = useMemo(() => {
 		const owners: RoomMemberUser[] = [];
 		const leaders: RoomMemberUser[] = [];
 		const moderators: RoomMemberUser[] = [];
@@ -131,7 +131,9 @@ const RoomMembers = ({
 			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
 		}
 
-		return { counts, titles };
+		const sortedMembers = [...owners, ...leaders, ...moderators, ...normalMembers];
+
+		return { counts, titles, sortedMembers };
 	}, [members]);
 
 	return (
