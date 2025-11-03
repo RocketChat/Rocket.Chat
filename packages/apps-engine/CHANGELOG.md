@@ -1,5 +1,25 @@
 # @rocket.chat/apps-engine
 
+## 1.57.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+### Patch Changes
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
+## 1.57.0-rc.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+### Patch Changes
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
 ## 1.56.0
 
 ### Minor Changes
