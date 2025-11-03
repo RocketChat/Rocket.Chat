@@ -15,6 +15,7 @@ import {
 	FieldGroup,
 	Select,
 	Accordion,
+	NumberInput,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
@@ -477,25 +478,7 @@ const OutgoingWebhookForm = () => {
 									name='retryCount'
 									control={control}
 									render={({ field }) => (
-										<TextInput
-											{...field}
-											id={retryCountField}
-											type='number'
-											min='0'
-											step='1'
-											// This 'onChange' is the new magic
-											onChange={(e) => {
-												// e.currentTarget.valueAsNumber gives us a real number (or NaN)
-												const value = e.currentTarget.valueAsNumber;
-
-												// If the field is empty (value=NaN), send 'undefined'
-												// Otherwise, send the number
-												field.onChange(isNaN(value) ? undefined : value);
-											}}
-											// This 'value' prop ensures the input is blank when the value is undefined
-											value={field.value ?? ''}
-											aria-describedby={`${retryCountField}-hint`}
-										/>
+										<NumberInput {...field} id={retryCountField} min='0' step='1' aria-describedby={`${retryCountField}-hint`} />
 									)}
 								/>
 							</FieldRow>

@@ -2,5 +2,5 @@
 '@rocket.chat/meteor': patch
 ---
 
-fix(integrations):Ensure RetryCount is sent as a number  
+Fixes issue that caused Outgoing Webhook Retry Count to not be a number
 
