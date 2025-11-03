@@ -102,7 +102,7 @@ export class AccountProfile {
 	}
 
 	get securityHeader(): Locator {
-		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
+		return this.page.getByRole('main').getByRole('heading', { level: 1, name: 'Security', exact: true });
 	}
 
 	get securityPasswordSection(): Locator {
