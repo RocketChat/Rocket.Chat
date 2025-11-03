@@ -191,7 +191,7 @@ const RoomMembers = ({
 									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										<RowComponent useRealName={useRealName} data={itemData} user={sortedMembers[index]} index={index} reload={reload} />
 									)}
 								/>
 							</VirtualizedScrollbars>
