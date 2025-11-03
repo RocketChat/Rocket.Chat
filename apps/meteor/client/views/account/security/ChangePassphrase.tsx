@@ -59,18 +59,26 @@ export const ChangePassphrase = (): JSX.Element => {
 		reset,
 		resetField,
 		control,
+		trigger,
 	} = useForm({
 		defaultValues,
 		mode: 'all',
 	});
 
-	const { passphrase } = watch();
+	const { passphrase, confirmationPassphrase } = watch();
 	const { validations, valid } = useValidatePassphrase(passphrase);
 	useEffect(() => {
 		if (!valid) {
 			resetField('confirmationPassphrase');
+			return;
 		}
-	}, [valid, resetField]);
+		if (confirmationPassphrase) {
+			const validateConfirmation = async () => {
+				await trigger('confirmationPassphrase');
+			};
+			void validateConfirmation();
+		}
+	}, [valid, confirmationPassphrase, resetField, trigger]);
 	const keysExist = useKeysExist();
 
 	const updatePassword = useChangeE2EPasswordMutation();

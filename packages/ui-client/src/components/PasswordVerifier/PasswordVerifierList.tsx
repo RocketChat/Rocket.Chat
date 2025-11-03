@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import { PasswordVerifierItem } from './PasswordVerifierItem';
 
-type PasswordVerifierListProps = {
+export type PasswordVerifierListProps = {
 	id?: string;
 	validations: PasswordPolicyValidation[];
 	vertical?: boolean;
 };
 
-export const PasswordVerifierList = ({ id, validations, vertical }: PasswordVerifierListProps) => {
+export const PasswordVerifierList = ({ id, validations, vertical = true }: PasswordVerifierListProps) => {
 	const { t } = useTranslation();
 	const uniqueId = useId();
 
@@ -28,9 +28,9 @@ export const PasswordVerifierList = ({ id, validations, vertical }: PasswordVeri
 				<Box mbe={8} fontScale='c2' id={uniqueId} aria-hidden>
 					{t('Password_must_have')}
 				</Box>
-				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>
+				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId} aria-live='polite'>
 					{validations.map((validation) => (
-						<PasswordVerifierItem key={validation.name} vertical={!!vertical} {...validation} />
+						<PasswordVerifierItem key={validation.name} vertical={vertical} {...validation} />
 					))}
 				</Box>
 			</Box>

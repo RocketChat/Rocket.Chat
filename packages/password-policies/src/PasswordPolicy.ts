@@ -25,10 +25,12 @@ type PasswordPolicyType = {
 	policy: PasswordPolicyParametersEntry[];
 };
 
-export type PasswordPolicyOptions = Partial<PasswordPolicyMap & {
-	enabled: boolean;
-	throwError: boolean;
-}>;
+export type PasswordPolicyOptions = Partial<
+	PasswordPolicyMap & {
+		enabled: boolean;
+		throwError: boolean;
+	}
+>;
 
 export type PasswordPolicyValidation = {
 	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number

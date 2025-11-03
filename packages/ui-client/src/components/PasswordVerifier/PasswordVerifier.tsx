@@ -1,11 +1,9 @@
 import { useVerifyPassword } from '@rocket.chat/ui-contexts';
 
-import { PasswordVerifierList } from './PasswordVerifierList';
+import { PasswordVerifierList, type PasswordVerifierListProps } from './PasswordVerifierList';
 
-type PasswordVerifierProps = {
-	password: string | undefined;
-	id?: string;
-	vertical?: boolean;
+export type PasswordVerifierProps = Pick<PasswordVerifierListProps, 'id' | 'vertical'> & {
+	password: string;
 };
 
 export const PasswordVerifier = ({ password, id, vertical }: PasswordVerifierProps) => {
