@@ -1,18 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
+import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PasswordVerifierItem } from './PasswordVerifierItem';
 
-type PasswordVerificationProps = {
-	name: string;
-	isValid: boolean;
-	limit?: number;
-}[];
-
 type PasswordVerifierListProps = {
 	id?: string;
-	validations: PasswordVerificationProps;
+	validations: PasswordPolicyValidation[];
 	vertical?: boolean;
 };
 
@@ -34,14 +29,8 @@ export const PasswordVerifierList = ({ id, validations, vertical }: PasswordVeri
 					{t('Password_must_have')}
 				</Box>
 				<Box display='flex' flexWrap='wrap' role='list' aria-labelledby={uniqueId}>
-					{validations.map(({ isValid, limit, name }) => (
-						<PasswordVerifierItem
-							key={name}
-							text={t(`${name}-label`, { limit })}
-							isValid={isValid}
-							aria-invalid={!isValid}
-							vertical={!!vertical}
-						/>
+					{validations.map((validation) => (
+						<PasswordVerifierItem key={validation.name} vertical={!!vertical} {...validation} />
 					))}
 				</Box>
 			</Box>

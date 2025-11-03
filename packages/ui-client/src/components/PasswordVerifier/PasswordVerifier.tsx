@@ -9,7 +9,6 @@ type PasswordVerifierProps = {
 };
 
 export const PasswordVerifier = ({ password, id, vertical }: PasswordVerifierProps) => {
-	const validations = useVerifyPassword(password || '');
-
+	const { validations } = useVerifyPassword(password || '');
 	return <PasswordVerifierList id={id} validations={validations} vertical={vertical} />;
 };

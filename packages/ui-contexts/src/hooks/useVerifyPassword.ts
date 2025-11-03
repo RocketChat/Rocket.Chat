@@ -1,10 +1,9 @@
-import type { PasswordPolicyValidation } from '@rocket.chat/password-policies';
 import { useMemo } from 'react';
 
-import { usePasswordPolicy } from './usePasswordPolicy';
+import { usePasswordPolicy, type UsePasswordPolicyReturn } from './usePasswordPolicy';
 import { useSetting } from './useSetting';
 
-export const useVerifyPassword = (password: string): PasswordPolicyValidation[] => {
+export const useVerifyPassword: UsePasswordPolicyReturn = (password) => {
 	const enabled = useSetting('Accounts_Password_Policy_Enabled', false);
 	const minLength = useSetting('Accounts_Password_Policy_MinLength', 7);
 	const maxLength = useSetting('Accounts_Password_Policy_MaxLength', -1);
@@ -28,5 +27,5 @@ export const useVerifyPassword = (password: string): PasswordPolicyValidation[] 
 		throwError: false,
 	});
 
-	return useMemo(() => validate(password || '').validations, [password, validate]);
+	return useMemo(() => validate(password || ''), [password, validate]);
 };

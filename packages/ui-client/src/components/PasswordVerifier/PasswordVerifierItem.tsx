@@ -1,43 +1,39 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
-import { AllHTMLAttributes, ComponentProps } from 'react';
+import { Box, Icon, type IconProps } from '@rocket.chat/fuselage';
+import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
-const variants: {
-	[key: string]: {
-		icon: ComponentProps<typeof Icon>['name'];
-		color: string;
-	};
-} = {
+const variants = {
 	success: {
-		icon: 'success-circle',
+		name: 'success-circle',
 		color: 'status-font-on-success',
 	},
 	error: {
-		icon: 'error-circle',
+		name: 'error-circle',
 		color: 'status-font-on-danger',
 	},
+} satisfies Record<string, IconProps>;
+
+type PasswordVerifierItemProps = PasswordPolicyValidation & {
+	vertical: boolean;
 };
 
-export const PasswordVerifierItem = ({
-	text,
-	isValid,
-	vertical,
-	...props
-}: { text: string; isValid: boolean; vertical: boolean } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
-	const { icon, color } = variants[isValid ? 'success' : 'error'];
+export const PasswordVerifierItem = (props: PasswordVerifierItemProps) => {
+	const { t } = useTranslation();
+	const { name, color } = variants[props.isValid ? 'success' : 'error'];
+	const label = t(`${props.name}-label`, 'limit' in props ? { limit: props.limit } : undefined);
 	return (
 		<Box
 			display='flex'
-			flexBasis={vertical ? '100%' : '50%'}
+			flexBasis={props.vertical ? '100%' : '50%'}
 			alignItems='center'
 			mbe={8}
 			fontScale='c1'
 			color={color}
 			role='listitem'
-			aria-label={text}
-			{...props}
+			aria-label={label}
 		>
-			<Icon name={icon} color={color} size='x16' mie={4} />
-			<span aria-hidden>{text}</span>
+			<Icon name={name} color={color} size='x16' mie={4} />
+			<span aria-hidden>{label}</span>
 		</Box>
 	);
 };

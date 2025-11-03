@@ -1,28 +1,40 @@
 import { PasswordPolicyError } from './PasswordPolicyError';
 
-export type PasswordPolicyOptions = {
-	enabled?: boolean | undefined;
-	minLength?: number | undefined;
-	maxLength?: number | undefined;
-	forbidRepeatingCharacters?: boolean | undefined;
-	forbidRepeatingCharactersCount?: number | undefined;
-	mustContainAtLeastOneLowercase?: boolean | undefined;
-	mustContainAtLeastOneUppercase?: boolean | undefined;
-	mustContainAtLeastOneNumber?: boolean | undefined;
-	mustContainAtLeastOneSpecialCharacter?: boolean | undefined;
-	throwError?: boolean | undefined;
+type PasswordPolicyMap = {
+	minLength: number;
+	maxLength: number;
+	forbidRepeatingCharacters: boolean;
+	forbidRepeatingCharactersCount: number;
+	mustContainAtLeastOneLowercase: boolean;
+	mustContainAtLeastOneUppercase: boolean;
+	mustContainAtLeastOneNumber: boolean;
+	mustContainAtLeastOneSpecialCharacter: boolean;
 };
+
+type PasswordPolicyKey = keyof PasswordPolicyMap;
+type PasswordPolicyName<K extends PasswordPolicyKey> = `get-password-policy-${K}`;
+
+type PasswordPolicyParametersEntry = {
+	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
+		? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
+		: [PasswordPolicyName<K>];
+}[PasswordPolicyKey];
 
 type PasswordPolicyType = {
 	enabled: boolean;
-	policy: [name: string, options?: Record<string, unknown>][];
+	policy: PasswordPolicyParametersEntry[];
 };
 
+export type PasswordPolicyOptions = Partial<PasswordPolicyMap & {
+	enabled: boolean;
+	throwError: boolean;
+}>;
+
 export type PasswordPolicyValidation = {
-	name: string;
-	isValid: boolean;
-	limit?: number;
-};
+	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
+		? { name: PasswordPolicyName<K>; limit: number }
+		: { name: PasswordPolicyName<K> };
+}[PasswordPolicyKey] & { isValid: boolean };
 
 export class PasswordPolicy {
 	private regex: {
