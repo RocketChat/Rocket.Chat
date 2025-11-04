@@ -286,6 +286,21 @@ jobs:
           yarn prepare
           yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          cd apps/meteor
+          mkdir -p allure-report
+          # Check if allure-results exists and has content
+          if [ -d "allure-result-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}" ] && [ "$(find allure-result-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }} -name "*.json" | wc -l)" -gt 0 ]; then
+            echo "📊 Generating Allure report from allure-results directory"
+            allure generate allure-result --clean -o allure-report
+          else
+            echo "⚠️ No Allure results found, creating empty report"
+            echo '{"uuid":"empty","name":"No tests executed","status":"skipped","start":'$(date +%s000)',"stop":'$(date +%s000)',"steps":[]}' > allure-result-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}/empty-result.json
+            allure generate allure-result --clean -o allure-report
+          fi
+
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v4
@@ -293,6 +308,54 @@ jobs:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
+
+      - name: Store allure result
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-result-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/allure-result-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Store API allure result
+        if: inputs.type == 'api' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-result-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/allure-result-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Store allure report
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/allure-report-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Store API allure report
+        if: inputs.type == 'api' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/allure-report-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Upload JUnit report as artifacts
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/junit-report-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}/.xml
+          if-no-files-found: ignore
+
+      - name: Upload JUnit report as artifacts
+        if: inputs.type == 'api' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/junit-report-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}/.xml
+          if-no-files-found: ignore
 
       - name: Show server logs if E2E test failed
         if: failure() && inputs.release == 'ee'
@@ -339,3 +402,53 @@ jobs:
           name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*
           include-hidden-files: true
+
+      - name: Publish Allure Report to GitHub Pages
+        if: github.event_name == 'pull_request' ||  github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/meteor/allure-report
+          destination_dir: allure-report/e2e-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment PR with Allure Report Link
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Allure Report')
+            );
+            const reportUrl = `https://${context.repo.owner}.github.io/${context.repo.repo}/allure-report/e2e-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}/`;
+            const commentBody = `## 📊 E2E Test Results
+            **Allure Report**: [View Report](${reportUrl})
+            **Test Run**: #${{ github.run_number }}
+            📥 **Download Reports**:
+            - [Allure Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)
+            - [Allure Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)
+            - [JUnit Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)
+            ---
+            *Reports are generated automatically for this PR*`;
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody,
+              });
+            }

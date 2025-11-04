@@ -486,10 +486,40 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  allure-report:
+    name: 📊 Generate Allure Report
+    runs-on: ubuntu-24.04
+    needs: [test-api, test-api-ee, test-ui, test-ui-ee, test-ui-ee-watcher]
+    if: always() && (needs.test-api.result != 'skipped' || needs.test-api-ee.result != 'skipped' || needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-result-*
+          merge-multiple: true
+          path: ./downloaded-artifacts
+
+      - name: Publish Allure Report to GitHub Pages
+        if: github.event_name == 'pull_request' ||  github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/meteor/allure-report
+          destination_dir: allure-report/e2e-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, allure-report]
     if: always()
     steps:
       - name: Test finish aggregation

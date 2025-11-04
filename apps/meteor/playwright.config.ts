@@ -22,6 +22,7 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
+		['allure-playwright'],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/rocketchat.ts',
 			{
