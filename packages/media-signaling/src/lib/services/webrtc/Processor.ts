@@ -105,16 +105,17 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.initializeLocalMediaStream();
 
 		if (!this.addedEmptyTransceiver) {
+			this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer.addEmptyTransceiver');
 			// If there's no audio transceivers yet, add a new one; since it's an offer, the track can be set later
-			const transceivers = this.peer
-				.getTransceivers()
-				.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+			const transceivers = this.getAudioTransceivers();
 
 			if (!transceivers.length) {
 				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
 				this.addedEmptyTransceiver = true;
 			}
 		}
+
+		this.updateAudioDirectionBeforeNegotiation();
 
 		if (iceRestart) {
 			this.restartIce();
@@ -182,14 +183,13 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		await this.initializeLocalMediaStream();
 
-		const transceivers = this.peer
-			.getTransceivers()
-			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+		const transceivers = this.getAudioTransceivers();
 
 		if (!transceivers.length) {
 			throw new Error('no-audio-transceiver');
 		}
 
+		this.updateAudioDirectionBeforeNegotiation();
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.startNewNegotiation();
 			await this.peer.setRemoteDescription(sdp);
@@ -199,6 +199,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.lastSetLocalDescription = answer.sdp || null;
 		await this.peer.setLocalDescription(answer);
+		this.updateAudioDirectionAfterNegotiation();
 
 		return this.getLocalDescription();
 	}
@@ -214,6 +215,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		await this.peer.setRemoteDescription(sdp);
+		this.updateAudioDirectionAfterNegotiation();
 	}
 
 	public getInternalState<K extends keyof WebRTCInternalStateMap>(stateName: K): ServiceStateValue<WebRTCInternalStateMap, K> {
@@ -299,6 +301,57 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// always wait a little extra to ensure all relevant events have been fired
 		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process any local stuff
 		await new Promise((resolve) => setTimeout(resolve, 30));
+	}
+
+	private updateAudioDirectionBeforeNegotiation(): void {
+		// Before the negotiation, we set the direction based on our own state only
+		// We'll tell the SDK that we want to send audio and, depending on the "on hold" state, also receive it
+		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+
+		const transceivers = this.getAudioTransceivers();
+		for (const transceiver of transceivers) {
+			if (transceiver.direction === 'stopped') {
+				continue;
+			}
+
+			if (transceiver.direction !== desiredDirection) {
+				this.config.logger?.debug(`Changing audio direction from ${transceiver.direction} to ${desiredDirection}`);
+			}
+
+			transceiver.direction = desiredDirection;
+		}
+	}
+
+	private updateAudioDirectionAfterNegotiation(): void {
+		// Before the negotiation started, we told the browser we wanted to send audio - but we don't care if actually send or not, it's up to the other side to determine if they want to receive.
+		// If the other side doesn't want to receive audio, the negotiation will result in a state where "direction" and "currentDirection" don't match
+		// But if the only difference is that we said we want to send audio and are not sending it, then we can change what we say we want to reflect the current state
+
+		// If we didn't do this, everything would still work, but the browser would trigger redundant renegotiations whenever the directions mismatch
+
+		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
+
+		const transceivers = this.getAudioTransceivers();
+		for (const transceiver of transceivers) {
+			if (transceiver.direction !== desiredDirection) {
+				continue;
+			}
+			if (!transceiver.currentDirection || ['stopped', desiredDirection].includes(transceiver.currentDirection)) {
+				continue;
+			}
+
+			if (transceiver.currentDirection === acceptableDirection) {
+				this.config.logger?.debug(`Changing audio direction from ${transceiver.direction} to match ${transceiver.currentDirection}.`);
+				transceiver.direction = transceiver.currentDirection;
+			}
+		}
+	}
+
+	private getAudioTransceivers(): RTCRtpTransceiver[] {
+		return this.peer
+			.getTransceivers()
+			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
 	}
 
 	private registerPeerEvents() {
