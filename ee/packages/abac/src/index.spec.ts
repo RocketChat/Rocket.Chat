@@ -14,6 +14,7 @@ const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
+const mockUsersFind = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -37,12 +38,22 @@ jest.mock('@rocket.chat/models', () => ({
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
 		find: (...args: any[]) => mockAbacFind(...args),
 	},
+	Users: {
+		find: (...args: any[]) => mockUsersFind(...args),
+	},
 }));
 
-// Minimal mock for ServiceClass (we don't need its real behavior in unit scope)
-jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
-}));
+// Partial mock for @rocket.chat/core-services: keep real MeteorError, override ServiceClass and Room
+jest.mock('@rocket.chat/core-services', () => {
+	const actual = jest.requireActual('@rocket.chat/core-services');
+	return {
+		...actual,
+		ServiceClass: class {},
+		Room: {
+			removeUserFromRoom: jest.fn(),
+		},
+	};
+});
 
 describe('AbacService (unit)', () => {
 	let service: AbacService;
@@ -813,6 +824,123 @@ describe('AbacService (unit)', () => {
 				await expect(service.addRoomAbacAttributeByKey('r1', 'dept', ['eng', 'sales'])).rejects.toThrow('error-invalid-attribute-values');
 				expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('checkUsernamesMatchAttributes', () => {
+		beforeEach(() => {
+			mockUsersFind.mockReset();
+		});
+
+		const attributes = [{ key: 'dept', values: ['eng'] }];
+
+		it('returns early (no query) when usernames array is empty', async () => {
+			await expect(service.checkUsernamesMatchAttributes([], attributes as any)).resolves.toBeUndefined();
+			expect(mockUsersFind).not.toHaveBeenCalled();
+		});
+
+		it('returns early (no query) when attributes array is empty', async () => {
+			await expect(service.checkUsernamesMatchAttributes(['alice'], [])).resolves.toBeUndefined();
+			expect(mockUsersFind).not.toHaveBeenCalled();
+		});
+
+		it('resolves when all provided usernames are compliant (query returns empty)', async () => {
+			const usernames = ['alice', 'bob'];
+			mockUsersFind.mockImplementationOnce(() => ({
+				map: () => ({
+					toArray: async () => [],
+				}),
+			}));
+
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any)).resolves.toBeUndefined();
+
+			expect(mockUsersFind).toHaveBeenCalledWith(
+				{
+					username: { $in: usernames },
+					$or: [
+						{
+							abacAttributes: {
+								$not: {
+									$elemMatch: {
+										key: 'dept',
+										values: { $all: ['eng'] },
+									},
+								},
+							},
+						},
+					],
+				},
+				{ projection: { username: 1 } },
+			);
+		});
+
+		it('rejects with error-usernames-not-matching-abac-attributes and details for non-compliant users', async () => {
+			const usernames = ['alice', 'bob', 'charlie'];
+			const nonCompliantDocs = [{ username: 'bob' }, { username: 'charlie' }];
+			mockUsersFind.mockImplementationOnce(() => ({
+				map: (fn: (u: any) => string) => ({
+					toArray: async () => nonCompliantDocs.map(fn),
+				}),
+			}));
+
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any)).rejects.toMatchObject({
+				error: 'error-usernames-not-matching-abac-attributes',
+				message: expect.stringContaining('[error-usernames-not-matching-abac-attributes]'),
+				details: expect.arrayContaining(['bob', 'charlie']),
+			});
+		});
+	});
+	describe('buildNonCompliantConditions (private)', () => {
+		it('returns empty array for empty attributes list', () => {
+			const result = (service as any).buildNonCompliantConditions([]);
+			expect(result).toEqual([]);
+		});
+
+		it('maps single attribute to $not $elemMatch query', () => {
+			const attrs = [{ key: 'dept', values: ['eng', 'sales'] }];
+			const result = (service as any).buildNonCompliantConditions(attrs);
+			expect(result).toEqual([
+				{
+					abacAttributes: {
+						$not: {
+							$elemMatch: {
+								key: 'dept',
+								values: { $all: ['eng', 'sales'] },
+							},
+						},
+					},
+				},
+			]);
+		});
+
+		it('maps multiple attributes preserving order', () => {
+			const attrs = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'region', values: ['emea', 'apac'] },
+			];
+			const result = (service as any).buildNonCompliantConditions(attrs);
+			expect(result).toEqual([
+				{
+					abacAttributes: {
+						$not: {
+							$elemMatch: {
+								key: 'dept',
+								values: { $all: ['eng'] },
+							},
+						},
+					},
+				},
+				{
+					abacAttributes: {
+						$not: {
+							$elemMatch: {
+								key: 'region',
+								values: { $all: ['emea', 'apac'] },
+							},
+						},
+					},
+				},
+			]);
 		});
 	});
 });

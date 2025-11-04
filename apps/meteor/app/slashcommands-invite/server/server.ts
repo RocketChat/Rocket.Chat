@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, isMeteorError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -7,6 +7,11 @@ import { i18n } from '../../../server/lib/i18n';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
+
+// Type guards for the error
+function isStringError(error: unknown): error is { error: string } {
+	return typeof (error as any)?.error === 'string';
+}
 
 /*
  * Invite is a named function that will replace /invite commands
@@ -73,23 +78,31 @@ slashCommands.add({
 						},
 						inviter,
 					);
-				} catch ({ error }: any) {
-					if (typeof error !== 'string') {
+				} catch (e: unknown) {
+					if (isMeteorError(e)) {
+						const details = Array.isArray(e.details) ? e.details.join(', ') : '';
+
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', details: `\`${details}\`` }),
+						});
 						return;
 					}
 
-					if (error === 'error-federated-users-in-non-federated-rooms') {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
-						});
-					} else if (error === 'cant-invite-for-direct-room') {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
-						});
-					} else {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
-						});
+					if (isStringError(e)) {
+						const { error } = e;
+						if (error === 'error-federated-users-in-non-federated-rooms') {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+							});
+						} else if (error === 'cant-invite-for-direct-room') {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+							});
+						} else {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t(error, { lng: settings.get('Language') || 'en' }),
+							});
+						}
 					}
 				}
 			}),
