@@ -1,4 +1,4 @@
-import { Room, ServiceClass } from '@rocket.chat/core-services';
+import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
 import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -440,6 +440,38 @@ export class AbacService extends ServiceClass implements IAbacService {
 				},
 			},
 		}));
+	}
+
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
+		if (!usernames.length || !attributes.length) {
+			return;
+		}
+
+		const nonComplianceConditions = this.buildNonCompliantConditions(attributes);
+		const nonCompliantUsersFromList = await Users.find(
+			{
+				username: { $in: usernames },
+				$or: nonComplianceConditions,
+			},
+			{ projection: { username: 1 } },
+		)
+			.map((u) => u.username as string)
+			.toArray();
+
+		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
+
+		if (nonCompliantSet.size) {
+			throw new MeteorError(
+				'error-usernames-not-matching-abac-attributes',
+				'Some usernames do not comply with the ABAC attributes for the room',
+				Array.from(nonCompliantSet),
+			);
+		}
+
+		this.logger.debug({
+			msg: 'User list complied with ABAC attributes for room',
+			usernames,
+		});
 	}
 
 	protected async onRoomAttributesChanged(
