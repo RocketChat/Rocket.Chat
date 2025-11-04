@@ -167,6 +167,7 @@ export class LDAPManager {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
 			skipUserCallbacks: false,
+			syncVoipExtension: Boolean(settings.get<string>('LDAP_Extension_Field')),
 		};
 	}
 
@@ -431,13 +432,11 @@ export class LDAPManager {
 
 	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
 		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
-		// Return undefined when extension syncing is disabled
 		if (!extensionAttribute) {
-			return undefined;
+			return;
 		}
 
-		// Return empty string when sync is enabled but the user has no extension
-		return getLdapString(ldapUser, extensionAttribute) || '';
+		return getLdapString(ldapUser, extensionAttribute);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {
