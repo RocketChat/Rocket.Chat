@@ -7,5 +7,7 @@ Meteor.startup(async () => {
 
 		await addSettings();
 		await createPermissions();
+
+		await import('../hooks/abac');
 	});
 });
