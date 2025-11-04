@@ -133,7 +133,7 @@ export const ChangePassphrase = (): JSX.Element => {
 										]
 											.filter(Boolean)
 											.join(' ')}
-										aria-invalid={!!errors.passphrase}
+										aria-invalid={errors.passphrase ? 'true' : 'false'}
 									/>
 								)}
 							/>
@@ -181,8 +181,8 @@ export const ChangePassphrase = (): JSX.Element => {
 											error={errors.confirmationPassphrase?.message}
 											flexGrow={1}
 											disabled={!keysExist || !valid}
-											aria-required={!passphrase}
-											aria-invalid={!!errors.confirmationPassphrase}
+											aria-required={passphrase ? 'true' : 'false'}
+											aria-invalid={errors.confirmationPassphrase ? 'true' : 'false'}
 											aria-describedby={errors.confirmationPassphrase ? confirmPassphraseErrorId : undefined}
 										/>
 									)}
