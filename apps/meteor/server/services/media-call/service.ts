@@ -92,7 +92,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		const rid = await this.getRoomIdForInternalCall(call).catch(() => undefined);
+		const rid = await this.getRoomIdForInternalCall(call).catch((error) => {
+			logger.error({ msg: 'Failed to determine room id for Internal Call', error });
+			return undefined;
+		});
 		const state = this.getCallHistoryItemState(call);
 		const duration = this.getCallDuration(call);
 
@@ -113,13 +116,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				uid: call.caller.id,
 				direction: 'outbound',
 				contactId: call.callee.id,
-			}),
+			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
 			CallHistory.insertOne({
 				...sharedData,
 				uid: call.callee.id,
 				direction: 'inbound',
 				contactId: call.caller.id,
-			}),
+			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
 		]);
 
 		// TODO: If there's a `rid`, send a message in that room - planned for 7.13
