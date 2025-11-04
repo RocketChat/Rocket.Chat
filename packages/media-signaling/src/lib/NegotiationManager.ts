@@ -106,15 +106,13 @@ export class NegotiationManager {
 			return;
 		}
 
-
 		try {
 			return this.currentNegotiation.setRemoteAnswer(remoteDescription);
 		} catch (e) {
-			console.error(e);
+			this.config.logger?.error(e);
 			this.currentNegotiation = null;
 			this.emitter.emit('error', { errorCode: 'failed-to-set-remote-answer', negotiationId });
 		}
-
 	}
 
 	public setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor) {
@@ -168,8 +166,6 @@ export class NegotiationManager {
 				}
 			}
 		}
-
-		this.negotiations.set(negotiation.negotiationId, negotiation);
 	}
 
 	protected getNextInQueue(): Negotiation | null {
@@ -179,7 +175,7 @@ export class NegotiationManager {
 				continue;
 			}
 
-			// Skip negotiations that can be fullfilled by some newer negotiation
+			// Skip negotiations that can be fulfilled by some newer negotiation
 			if (negotiation.sequence < this.highestImpoliteSequence) {
 				negotiation.end();
 				continue;
@@ -227,7 +223,7 @@ export class NegotiationManager {
 		try {
 			return negotiation.process(this.webrtcProcessor);
 		} catch (e) {
-			console.error(e);
+			this.config.logger?.error(e);
 			this.currentNegotiation = null;
 			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: negotiation.negotiationId });
 		}
