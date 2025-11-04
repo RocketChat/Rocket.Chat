@@ -139,7 +139,7 @@ export const ChangePassphrase = (): JSX.Element => {
 							/>
 						</FieldRow>
 						{errors.passphrase && (
-							<FieldError role='alert' id={passphraseErrorId} hidden aria-hidden={!errors.passphrase}>
+							<FieldError aria-live='assertive' id={passphraseErrorId}>
 								{errors.passphrase.message}
 							</FieldError>
 						)}

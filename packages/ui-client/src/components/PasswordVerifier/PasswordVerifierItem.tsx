@@ -1,31 +1,35 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, type IconProps } from '@rocket.chat/fuselage';
 import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import { useTranslation } from 'react-i18next';
-
-const variants = {
-	success: {
-		name: 'success-circle',
-		label: 'Success',
-		color: 'status-font-on-success',
-	},
-	error: {
-		name: 'error-circle',
-		label: 'Error',
-		color: 'status-font-on-danger',
-	},
-} as const;
+import { useTranslation, type UseTranslationResponse } from 'react-i18next';
 
 type PasswordVerifierItemProps = PasswordPolicyValidation & {
 	vertical: boolean;
 };
 
-export const PasswordVerifierItem = (props: PasswordVerifierItemProps) => {
+const getIconProps = (
+	isValid: boolean,
+	t: UseTranslationResponse<'translation', undefined>['t'],
+): Pick<Required<IconProps>, 'name' | 'aria-label' | 'color'> =>
+	isValid
+		? {
+				'name': 'success-circle',
+				'aria-label': t('Success'),
+				'color': 'status-font-on-success',
+			}
+		: {
+				'name': 'error-circle',
+				'aria-label': t('Error'),
+				'color': 'status-font-on-danger',
+			};
+
+export const PasswordVerifierItem = ({ isValid, ...props }: PasswordVerifierItemProps) => {
 	const { t } = useTranslation();
+	const icon = getIconProps(isValid, t);
 	const id = useId();
-	const icon = variants[props.isValid ? 'success' : 'error'];
-	const name = `${props.name}-label` as const;
-	const requirementText = t(name, 'limit' in props ? { limit: props.limit } : undefined);
+	const iconId = `${id}-icon`;
+	const textId = `${id}-text`;
+	const requirementText = t(`${props.name}-label` as const, 'limit' in props ? { limit: props.limit } : undefined);
 	return (
 		<Box
 			display='flex'
@@ -36,10 +40,10 @@ export const PasswordVerifierItem = (props: PasswordVerifierItemProps) => {
 			color={icon.color}
 			role='listitem'
 			aria-hidden='false'
-			aria-labelledby={`${id}-icon ${id}-text`}
+			aria-labelledby={`${iconId} ${textId}`}
 		>
-			<Icon id={`${id}-icon`} aria-label={t(icon.label)} aria-hidden='false' name={icon.name} color={icon.color} size='x16' mie={4} />
-			<span id={`${id}-text`}>{requirementText}</span>
+			<Icon id={iconId} aria-hidden='false' size='x16' mie={4} {...icon} />
+			<span id={textId}>{requirementText}</span>
 		</Box>
 	);
 };
