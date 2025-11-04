@@ -1,11 +1,13 @@
 import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import type { InsertionModel } from '@rocket.chat/model-typings';
+import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
+import { createDirectMessage } from '../../methods/createDirectMessage';
 
 const logger = new Logger('media-call service');
 
@@ -16,6 +18,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
+		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
@@ -60,6 +63,126 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (error) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', error });
 		}
+	}
+
+	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
+		logger.info({ msg: 'saving media call to history', callId });
+
+		const call = await MediaCalls.findOneById(callId);
+		if (!call) {
+			logger.warn({ msg: 'Attempt to save an invalid call to history', callId });
+			return;
+		}
+		if (!call.ended) {
+			logger.warn({ msg: 'Attempt to save a pending call to history', callId });
+			return;
+		}
+
+		// TODO: save external media calls to history
+		if (call.uids.length !== 2) {
+			return;
+		}
+
+		return this.saveInternalCallToHistory(call);
+	}
+
+	private async saveInternalCallToHistory(call: IMediaCall): Promise<void> {
+		if (call.caller.type !== 'user' || call.callee.type !== 'user') {
+			logger.warn({ msg: 'Attempt to save an internal call history with a call that is not internal', callId: call._id });
+			return;
+		}
+
+		const rid = await this.getRoomIdForInternalCall(call).catch((error) => {
+			logger.error({ msg: 'Failed to determine room id for Internal Call', error });
+			return undefined;
+		});
+		const state = this.getCallHistoryItemState(call);
+		const duration = this.getCallDuration(call);
+
+		const sharedData: Omit<InsertionModel<IInternalMediaCallHistoryItem>, 'uid' | 'direction' | 'contactId'> = {
+			ts: call.createdAt,
+			callId: call._id,
+			state,
+			type: 'media-call',
+			duration,
+			endedAt: call.endedAt || new Date(),
+			external: false,
+			...(rid && { rid }),
+		};
+
+		await Promise.allSettled([
+			CallHistory.insertOne({
+				...sharedData,
+				uid: call.caller.id,
+				direction: 'outbound',
+				contactId: call.callee.id,
+			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
+			CallHistory.insertOne({
+				...sharedData,
+				uid: call.callee.id,
+				direction: 'inbound',
+				contactId: call.caller.id,
+			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
+		]);
+
+		// TODO: If there's a `rid`, send a message in that room - planned for 7.13
+	}
+
+	private getCallDuration(call: IMediaCall): number {
+		const { activatedAt, endedAt = new Date() } = call;
+		if (!activatedAt) {
+			return 0;
+		}
+
+		const diff = endedAt.valueOf() - activatedAt.valueOf();
+		return Math.floor(diff / 1000);
+	}
+
+	private getCallHistoryItemState(call: IMediaCall): CallHistoryItemState {
+		if (call.transferredBy) {
+			return 'transferred';
+		}
+
+		if (call.hangupReason?.includes('error')) {
+			if (!call.activatedAt) {
+				return 'failed';
+			}
+
+			return 'error';
+		}
+
+		if (!call.acceptedAt) {
+			return 'not-answered';
+		}
+
+		if (!call.activatedAt) {
+			return 'failed';
+		}
+
+		return 'ended';
+	}
+
+	private async getRoomIdForInternalCall(call: IMediaCall): Promise<IRoom['_id']> {
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(call.uids, { projection: { _id: 1 } });
+		if (room) {
+			return room._id;
+		}
+
+		const requesterId = call.createdBy.type === 'user' && call.createdBy.id;
+		const callerId = call.caller.type === 'user' && call.caller.id;
+
+		const dmCreatorId = requesterId || callerId || call.uids[0];
+
+		const usernames = (await Users.findByIds(call.uids, { projection: { username: 1 } }).toArray())
+			.map(({ username }) => username)
+			.filter((username) => username);
+
+		if (usernames.length !== 2) {
+			throw new Error('Invalid usernames for DM.');
+		}
+
+		const newRoom = await createDirectMessage(usernames, dmCreatorId, true);
+		return newRoom.rid;
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {

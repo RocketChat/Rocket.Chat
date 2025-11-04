@@ -3,7 +3,7 @@ import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { getCastDirector } from './injection';
+import { getCastDirector, getMediaCallServer } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
@@ -368,7 +368,13 @@ class MediaCallDirector {
 			});
 			throw error;
 		});
-		return Boolean(result.modifiedCount);
+
+		const ended = Boolean(result.modifiedCount);
+		if (ended) {
+			getMediaCallServer().updateCallHistory({ callId });
+		}
+
+		return ended;
 	}
 
 	public async hangupCallByIdAndNotifyAgents(
