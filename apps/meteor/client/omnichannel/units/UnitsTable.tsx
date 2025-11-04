@@ -17,6 +17,7 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
+import { links } from '../../lib/links';
 
 const UnitsTable = () => {
 	const { t } = useTranslation();
@@ -87,7 +88,7 @@ const UnitsTable = () => {
 					icon='business'
 					title={t('No_units_yet')}
 					description={t('No_units_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_unit')}
 					linkText={t('Learn_more_about_units')}
