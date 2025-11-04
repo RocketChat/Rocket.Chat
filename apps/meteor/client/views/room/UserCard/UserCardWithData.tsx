@@ -90,8 +90,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick }]: [string, UserInfoAction]): ReactElement => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} />
+		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]): ReactElement => (
+			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

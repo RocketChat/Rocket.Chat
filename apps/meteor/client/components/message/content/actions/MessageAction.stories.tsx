@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import MessageAction from './MessageAction';
 
 export default {
-	title: 'components/message/content/actions/MessageAction',
 	component: MessageAction,
 	args: {
 		runAction: (_action: string) => action(_action),

@@ -26,7 +26,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['5.0', '7.0']"
+        default: "['5.0', '8.2']"
         required: false
         type: string
       release:
@@ -77,8 +77,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
+      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -86,7 +86,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '8.2' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -116,7 +116,8 @@ jobs:
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@1.12.0
         with:
-          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-image: mongodb/mongodb-community-server
+          mongodb-version: ${{ matrix.mongodb-version }}-ubi8
           mongodb-replica-set: rs0
 
       - uses: actions/checkout@v4

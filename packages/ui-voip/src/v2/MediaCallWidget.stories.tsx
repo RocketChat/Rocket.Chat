@@ -40,7 +40,7 @@ export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () 
 	const { onToggleWidget, onCall, state } = useMediaCallContext();
 	return (
 		<>
-			<Button onClick={onToggleWidget} disabled={state !== 'new' && state !== 'closed'} mie={8}>
+			<Button onClick={() => onToggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
 				Toggle widget
 			</Button>
 			<Button onClick={() => onCall()} disabled={state !== 'closed'}>
@@ -63,9 +63,23 @@ export const IncomingCall: Story = {
 	},
 };
 
-export const Calling: Story = {
+export const IncomingCallTransfer: Story = {
+	args: {
+		state: 'ringing',
+		transferredBy: 'Jason',
+	},
+};
+
+export const OutgoingCall: Story = {
 	args: {
 		state: 'calling',
+	},
+};
+
+export const OutgoingCallTransfer: Story = {
+	args: {
+		state: 'calling',
+		transferredBy: 'Joy',
 	},
 };
 

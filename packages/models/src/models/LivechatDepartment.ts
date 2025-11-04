@@ -226,7 +226,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult> {
-		return this.updateOne({ _id }, { $set: { parentId: null, ancestors: null } });
+		return this.updateOne({ _id }, { $unset: { parentId: 1, ancestors: 1 } });
 	}
 
 	async createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO & { type?: string }): Promise<ILivechatDepartment> {

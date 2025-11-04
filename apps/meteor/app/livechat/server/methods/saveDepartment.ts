@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { saveDepartment } from '../lib/departmentsLib';
 
 declare module '@rocket.chat/ddp-client' {
@@ -37,6 +38,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents, departmentUnit) {
+		methodDeprecationLogger.method('livechat:saveDepartment', '8.0.0', '/v1/livechat/department');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
