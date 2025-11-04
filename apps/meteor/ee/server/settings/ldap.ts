@@ -92,25 +92,6 @@ export function addSettings(): Promise<void> {
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_Avatars', value: true }],
 						invalidValue: '0 0 * * *',
 					});
-
-					await this.add('LDAP_Background_Sync_ABAC_Attributes', false, {
-						type: 'boolean',
-						enableQuery,
-						invalidValue: false,
-					});
-
-					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
-						type: 'string',
-						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
-						invalidValue: '0 0 * * *',
-					});
-
-					await this.add('LDAP_ABAC_AttributeMap', '{}', {
-						type: 'code',
-						multiline: true,
-						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
-						invalidValue: '{}',
-					});
 				});
 
 				await this.section('LDAP_DataSync_Advanced', async function () {
@@ -299,6 +280,27 @@ export function addSettings(): Promise<void> {
 						type: 'string',
 						enableQuery: enableQueryTeams,
 						invalidValue: '',
+					});
+				});
+
+				await this.section('LDAP_DataSync_ABAC', async function () {
+					await this.add('LDAP_Background_Sync_ABAC_Attributes', false, {
+						type: 'boolean',
+						enableQuery,
+						invalidValue: false,
+					});
+
+					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
+						type: 'string',
+						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
+						invalidValue: '0 0 * * *',
+					});
+
+					await this.add('LDAP_ABAC_AttributeMap', '{}', {
+						type: 'code',
+						multiline: true,
+						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
+						invalidValue: '{}',
 					});
 				});
 			},
