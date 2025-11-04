@@ -23,8 +23,6 @@ export class NegotiationManager {
 
 	protected webrtcProcessor: IWebRTCProcessor | null;
 
-	protected inputTrackAvailable: boolean;
-
 	/** id of the newest negotiation that has reached the processing state */
 	protected highestNegotiationId: string | null;
 
@@ -41,7 +39,6 @@ export class NegotiationManager {
 		this.highestImpoliteSequence = 0;
 		this.highestSequence = 0;
 		this.webrtcProcessor = null;
-		this.inputTrackAvailable = false;
 		this.highestNegotiationId = null;
 		this.highestKnownNegotiationId = null;
 
@@ -250,7 +247,7 @@ export class NegotiationManager {
 	}
 
 	protected isFulfillingNegotiationQueued(): boolean {
-		// If we're a polite client, then any queued negotiation is enough to fulfil our negotiation needs
+		// If we're a polite client, then any queued negotiation is enough to fulfill our negotiation needs
 		if (this.isPoliteClient()) {
 			return this.highestSequence > this.highestProcessedSequence;
 		}
