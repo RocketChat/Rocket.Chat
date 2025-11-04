@@ -1,12 +1,11 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
 
 import { ChangePassphrase } from './ChangePassphrase';
 import { ResetPassphrase } from './ResetPassphrase';
 
-const EndToEnd = (props: ComponentPropsWithoutRef<typeof Box>): JSX.Element => {
+const EndToEnd = (): JSX.Element => {
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
+		<Box display='flex' flexDirection='column' alignItems='flex-start'>
 			<ChangePassphrase />
 			<Divider mb={36} width='full' />
 			<ResetPassphrase />

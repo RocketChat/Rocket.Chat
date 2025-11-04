@@ -7,7 +7,7 @@ export const ResetPassphrase = (): JSX.Element => {
 	const { t } = useTranslation();
 	const resetE2EPassword = useResetE2EPasswordMutation();
 	return (
-		<Box>
+		<>
 			<Box is='h4' fontScale='h4' mbe={12}>
 				{t('Reset_E2EE_password')}
 			</Box>
@@ -17,6 +17,6 @@ export const ResetPassphrase = (): JSX.Element => {
 			<Button onClick={() => resetE2EPassword.mutate()} data-qa-type='e2e-encryption-reset-key-button'>
 				{t('Reset_E2EE_password')}
 			</Button>
-		</Box>
+		</>
 	);
 };

@@ -47,10 +47,14 @@ export const ChangePassphrase = (): JSX.Element => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const passphraseId = useId();
-	const confirmPassphraseId = useId();
-	const passphraseVerifierId = useId();
-	const e2ePasswordExplanationId = useId();
+	const uniqueId = useId();
+	const passphraseId = `passphrase-${uniqueId}`;
+	const passphraseHintId = `${passphraseId}-hint`;
+	const passphraseErrorId = `${passphraseId}-error`;
+	const confirmPassphraseId = `confirm-passphrase-${uniqueId}`;
+	const confirmPassphraseErrorId = `${confirmPassphraseId}-error`;
+	const passphraseVerifierId = `verifier-${uniqueId}`;
+	const e2ePasswordExplanationId = `explanation-${uniqueId}`;
 
 	const {
 		watch,
@@ -102,7 +106,7 @@ export const ChangePassphrase = (): JSX.Element => {
 				dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Encryption_Password_Explanation')) }}
 			/>
 			<Box mbs={36} w='full'>
-				<Box is='h4' fontScale='h4' mbe={12}>
+				<Box is='h3' fontScale='h4' mbe={12}>
 					{t('Change_E2EE_password')}
 				</Box>
 				<FieldGroup w='full'>
@@ -114,7 +118,7 @@ export const ChangePassphrase = (): JSX.Element => {
 								name='passphrase'
 								rules={{
 									required: t('Required_field', { field: t('New_E2EE_password') }),
-									validate: () => (valid ? true : t('Password_does_not_meet_requirements')),
+									validate: () => (valid ? true : t('Password_must_meet_the_complexity_requirements')),
 								}}
 								render={({ field }) => (
 									<PasswordInput
@@ -122,14 +126,27 @@ export const ChangePassphrase = (): JSX.Element => {
 										id={passphraseId}
 										error={errors.passphrase?.message}
 										disabled={!keysExist}
-										aria-describedby={`${e2ePasswordExplanationId} ${passphraseId}-hint ${passphraseId}-error`}
-										aria-invalid={errors.passphrase ? 'true' : 'false'}
+										aria-describedby={[
+											e2ePasswordExplanationId,
+											keysExist ? passphraseVerifierId : passphraseHintId,
+											errors.passphrase && passphraseErrorId,
+										]
+											.filter(Boolean)
+											.join(' ')}
+										aria-invalid={!!errors.passphrase}
 									/>
 								)}
 							/>
 						</FieldRow>
-						{!keysExist && (
-							<FieldHint id={`${passphraseId}-hint`}>
+						{errors.passphrase && (
+							<FieldError role='alert' id={passphraseErrorId} hidden aria-hidden={!errors.passphrase}>
+								{errors.passphrase.message}
+							</FieldError>
+						)}
+						{keysExist ? (
+							<PasswordVerifierList id={passphraseVerifierId} validations={validations} />
+						) : (
+							<FieldHint id={passphraseHintId}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
 									To set a new password, first
 									<Box
@@ -145,7 +162,6 @@ export const ChangePassphrase = (): JSX.Element => {
 								</Trans>
 							</FieldHint>
 						)}
-						{keysExist && <PasswordVerifierList id={passphraseVerifierId} validations={validations} />}
 					</Field>
 					{valid && (
 						<Field>
@@ -165,15 +181,15 @@ export const ChangePassphrase = (): JSX.Element => {
 											error={errors.confirmationPassphrase?.message}
 											flexGrow={1}
 											disabled={!keysExist || !valid}
-											aria-required={passphrase !== '' ? 'true' : 'false'}
-											aria-invalid={errors.confirmationPassphrase ? 'true' : 'false'}
-											aria-describedby={errors.confirmationPassphrase ? `${confirmPassphraseId}-error` : undefined}
+											aria-required={!passphrase}
+											aria-invalid={!!errors.confirmationPassphrase}
+											aria-describedby={errors.confirmationPassphrase ? confirmPassphraseErrorId : undefined}
 										/>
 									)}
 								/>
 							</FieldRow>
 							{errors.confirmationPassphrase && (
-								<FieldError aria-live='assertive' id={`${confirmPassphraseId}-error`}>
+								<FieldError aria-live='assertive' id={confirmPassphraseErrorId} role='alert'>
 									{errors.confirmationPassphrase.message}
 								</FieldError>
 							)}
