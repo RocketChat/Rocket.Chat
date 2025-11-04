@@ -35,6 +35,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	localAudioLevel: number;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isRemoteHeld(): boolean;
 }
 
 export type WebRTCProcessorConfig = {

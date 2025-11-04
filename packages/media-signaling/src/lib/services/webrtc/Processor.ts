@@ -242,6 +242,33 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.peer.getStats(selector);
 	}
 
+	public isRemoteHeld(): boolean {
+		if (this.stopped) {
+			return false;
+		}
+
+		if (['closed', 'failed', 'new'].includes(this.peer.connectionState)) {
+			return false;
+		}
+
+		let anyTransceiverNotSending = false;
+		const transceivers = this.getAudioTransceivers();
+
+		for (const transceiver of transceivers) {
+			if (!transceiver.currentDirection || transceiver.currentDirection === 'stopped') {
+				continue;
+			}
+
+			if (transceiver.currentDirection.includes('send')) {
+				return false;
+			}
+
+			anyTransceiverNotSending = true;
+		}
+
+		return anyTransceiverNotSending;
+	}
+
 	private changeInternalState(stateName: keyof WebRTCInternalStateMap): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.changeInternalState', stateName);
 		this.emitter.emit('internalStateChange', stateName);
@@ -299,6 +326,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// always wait a little extra to ensure all relevant events have been fired
 		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process any local stuff
 		await new Promise((resolve) => setTimeout(resolve, 30));
+	}
+
+	private getAudioTransceivers(): RTCRtpTransceiver[] {
+		return this.peer
+			.getTransceivers()
+			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
 	}
 
 	private registerPeerEvents() {
