@@ -22,7 +22,7 @@ const PASSPHRASE_POLICY = Object.freeze({
 
 const useKeysExist = () => {
 	const state = useE2EEState();
-	return state === 'READY' || state === 'ENTER_PASSWORD';
+	return state === 'READY' || state === 'SAVE_PASSWORD';
 };
 
 const useValidatePassphrase = (passphrase: string) => {
