@@ -105,7 +105,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	public static async syncAbacAttributes(): Promise<void> {
 		if (
-			!settings.get('LDAP_Enabled') ||
+			!settings.get('LDAP_Enable') ||
 			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
 			!License.hasModule('abac') ||
 			!settings.get('ABAC_Enabled')
