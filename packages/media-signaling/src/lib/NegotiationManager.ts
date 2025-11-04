@@ -43,7 +43,7 @@ export class NegotiationManager {
 		this.webrtcProcessor = null;
 		this.inputTrackAvailable = false;
 		this.highestNegotiationId = null;
-		this.highestKnownNegotiationId = '';
+		this.highestKnownNegotiationId = null;
 
 		this.emitter = new Emitter();
 	}
@@ -250,7 +250,7 @@ export class NegotiationManager {
 	}
 
 	protected isFulfillingNegotiationQueued(): boolean {
-		// If we're a polite client, then any queued negotiation is enough to fullfil our negotiation needs
+		// If we're a polite client, then any queued negotiation is enough to fulfil our negotiation needs
 		if (this.isPoliteClient()) {
 			return this.highestSequence > this.highestProcessedSequence;
 		}
@@ -280,7 +280,7 @@ export class NegotiationManager {
 	}
 
 	protected onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error; errorDetails?: string }): void {
-		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalError', critical, error);
+		this.config.logger?.debug('NegotiationManager.onWebRTCInternalError', critical, error);
 		const errorCode = typeof error === 'object' ? error.message : error;
 
 		const negotiationId = this.currentNegotiationId;
