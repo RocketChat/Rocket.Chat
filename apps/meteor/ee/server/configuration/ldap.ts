@@ -64,7 +64,7 @@ Meteor.startup(async () => {
 			'LDAP_AbacSync',
 			'LDAP_Background_Sync_ABAC_Attributes',
 			'LDAP_Background_Sync_ABAC_Attributes_Interval',
-			() => LDAPEE.syncABACAttributes(),
+			() => LDAPEE.syncAbacAttributes(),
 		);
 
 		settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);

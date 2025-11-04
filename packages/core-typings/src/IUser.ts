@@ -1,4 +1,4 @@
-import { IAbacAttributeDefinition } from './IAbacAttribute';
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';

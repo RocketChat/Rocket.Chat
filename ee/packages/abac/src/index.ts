@@ -28,21 +28,32 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const entries = Object.entries(map || {});
 
+		const extractAttribute = (ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
+			if (!ldapKey || !abacKey) {
+				return;
+			}
+			const raw = ldapUser?.[ldapKey];
+			if (!raw) {
+				return;
+			}
+			const valuesSet = new Set<string>();
+			if (Array.isArray(raw)) {
+				for (const v of raw) {
+					if (typeof v === 'string' && v.length) {
+						valuesSet.add(v);
+					}
+				}
+			} else if (typeof raw === 'string' && raw.length) {
+				valuesSet.add(raw);
+			}
+			if (!valuesSet.size) {
+				return;
+			}
+			return { key: abacKey, values: Array.from(valuesSet) };
+		};
 		const finalAttributes: IAbacAttributeDefinition[] = entries
-			.map<IAbacAttributeDefinition | undefined>(([ldapKey, abacKey]) => {
-				if (!ldapKey || !abacKey) {
-					return;
-				}
-				const raw = ldapUser?.[ldapKey];
-				let values: string[] = [];
-				if (Array.isArray(raw)) {
-					values = raw.filter((v): v is string => typeof v === 'string' && v.length > 0);
-				} else if (typeof raw === 'string' && raw.length) {
-					values = [raw];
-				}
-				return values.length ? { key: abacKey, values } : undefined;
-			})
-			.filter((attr) => attr !== undefined);
+			.map(([ldapKey, abacKey]) => extractAttribute(ldapKey, abacKey))
+			.filter((attr): attr is IAbacAttributeDefinition => !!attr);
 
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {

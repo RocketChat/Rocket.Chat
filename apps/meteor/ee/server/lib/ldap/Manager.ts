@@ -717,6 +717,12 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateUserAbacAttributes(ldap: LDAPConnection): Promise<void> {
+		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+		if (!mapping) {
+			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
+			return;
+		}
+
 		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -724,7 +730,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			await Abac.addSubjectAttributes(user, ldapUser, this.parseJson(settings.get('LDAP_ABAC_AttributeMap')));
+			await Abac.addSubjectAttributes(user, ldapUser, mapping);
 		}
 	}
 
