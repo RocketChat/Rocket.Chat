@@ -110,3 +110,10 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+/* Fix for omnichannel transfer comment text wrapping */
+.rcx-message-system__body {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
