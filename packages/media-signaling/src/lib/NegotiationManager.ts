@@ -106,7 +106,15 @@ export class NegotiationManager {
 			return;
 		}
 
-		return this.currentNegotiation.setRemoteAnswer(remoteDescription);
+
+		try {
+			return this.currentNegotiation.setRemoteAnswer(remoteDescription);
+		} catch (e) {
+			console.error(e);
+			this.currentNegotiation = null;
+			this.emitter.emit('error', { errorCode: 'failed-to-set-remote-answer', negotiationId });
+		}
+
 	}
 
 	public setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor) {
@@ -132,12 +140,7 @@ export class NegotiationManager {
 			return;
 		}
 
-		try {
-			await this.processNegotiation(nextNegotiation);
-		} catch (e) {
-			console.error(e);
-			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: nextNegotiation.negotiationId });
-		}
+		await this.processNegotiation(nextNegotiation);
 	}
 
 	protected isPoliteClient(): boolean {
@@ -221,7 +224,13 @@ export class NegotiationManager {
 			this.emitter.emit('local-sdp', { sdp, negotiationId: negotiation.negotiationId });
 		});
 
-		return negotiation.process(this.webrtcProcessor);
+		try {
+			return negotiation.process(this.webrtcProcessor);
+		} catch (e) {
+			console.error(e);
+			this.currentNegotiation = null;
+			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: negotiation.negotiationId });
+		}
 	}
 
 	protected isConfigured(): this is WebRTCNegotiationManager {
