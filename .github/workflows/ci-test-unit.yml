@@ -58,17 +58,6 @@ jobs:
         run: |
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
-      - name: Restore livechat build
-        uses: actions/download-artifact@v4
-        with:
-          name: livechat-build
-          path: /tmp
-
-      - name: Unpack livechat build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-livechat-build.tar.gz -C .
-
       - name: Unit Test
         run: yarn testunit
 
