@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
+import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -20,6 +21,8 @@ export class HomeChannel {
 
 	readonly roomToolbar: RoomToolbar;
 
+	readonly voiceCalls: VoiceCalls;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
@@ -29,6 +32,7 @@ export class HomeChannel {
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
+		this.voiceCalls = new VoiceCalls(page);
 	}
 
 	goto() {
