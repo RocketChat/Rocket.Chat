@@ -15,7 +15,6 @@ import './hooks/afterUserActions';
 import './hooks/afterAgentRemoved';
 import './hooks/afterSaveOmnichannelMessage';
 import './methods/getAnalyticsChartData';
-import './methods/getRoutingConfig';
 import './methods/removeAllClosedRooms';
 import './methods/removeCustomField';
 import './methods/removeRoom';
