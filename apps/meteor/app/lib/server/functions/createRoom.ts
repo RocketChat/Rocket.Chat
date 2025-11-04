@@ -3,6 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -13,6 +14,7 @@ import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../..
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -162,6 +164,12 @@ export const createRoom = async <T extends RoomType>(
 		// options,
 	});
 
+	if (isRoomNativeFederated(extraData) && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
+			method: 'createRoom',
+		});
+	}
+
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
 	}
@@ -254,8 +262,6 @@ export const createRoom = async <T extends RoomType>(
 	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
 		Object.assign(roomProps, eventResult);
 	}
-
-	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
 
 	await beforeCreateRoomCallback.run({
 		owner,

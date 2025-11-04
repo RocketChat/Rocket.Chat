@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { Authorization, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
 import { eventIdSchema, roomIdSchema, NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
@@ -9,6 +9,8 @@ import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+
+const logger = new Logger('federation-matrix:invite');
 
 const EventBaseSchema = {
 	type: 'object',
@@ -139,8 +141,14 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	try {
 		await fn();
 	} catch (e) {
+		// don't retry on authorization/validation errors - they won't succeed on retry
+		if (e instanceof NotAllowedError) {
+			logger.error('Authorization error, not retrying:', e);
+			return;
+		}
+
 		const delay = Math.min(625, delaySec ** 2);
-		console.error(`error occurred, retrying in ${delay}s`, e);
+		logger.error(`error occurred, retrying in ${delay}s`, e);
 		setTimeout(() => {
 			runWithBackoff(fn, delay);
 		}, delay * 1000);
@@ -157,6 +165,12 @@ async function joinRoom({
 	// from the response we get the event
 	if (!inviteEvent.stateKey) {
 		throw new Error('join event has missing state key, unable to determine user to join');
+	}
+
+	// check federation permission before joining
+	if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		logger.info(`User ${inviteEvent.event.state_key} denied access to federated room ${inviteEvent.roomId} due to lack of permission`);
+		throw new NotAllowedError('Not authorized to access federation');
 	}
 
 	// backoff needed for this call, can fail
