@@ -1,3 +1,5 @@
+import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+
 import { AbacService } from './index';
 
 const mockFindOneByIdAndType = jest.fn();
@@ -61,6 +63,145 @@ describe('AbacService (unit)', () => {
 	beforeEach(() => {
 		service = new AbacService();
 		jest.clearAllMocks();
+	});
+
+	describe('didSubjectLoseAttributes', () => {
+		const call = (previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) =>
+			(service as any).didSubjectLoseAttributes(previous, next) as boolean;
+
+		it('returns false if previous is empty (no attributes to lose)', () => {
+			expect(call([], [])).toBe(false);
+			expect(call([], [{ key: 'dept', values: ['engineering'] }])).toBe(false);
+		});
+
+		it('returns false if all previous attributes and values are preserved', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false if previous values are a subset of next values (nothing lost)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true if an entire previous attribute key is missing in next', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true if any previous value is missing from corresponding next attribute', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true if multiple attributes exist and one loses a value', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true when next is empty but previous had attributes (all lost)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, [])).toBe(true);
+		});
+
+		it('returns true if one attribute key remains but all its values are lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true on first detected loss even if multiple losses exist', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'region', values: ['us', 'eu'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: [] },
+				{ key: 'region', values: ['us'] },
+			];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('does not mutate input arrays (pure function)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const prevClone = JSON.parse(JSON.stringify(prev));
+			const nextClone = JSON.parse(JSON.stringify(next));
+			expect(call(prev, next)).toBe(false);
+			expect(prev).toEqual(prevClone);
+			expect(next).toEqual(nextClone);
+		});
+
+		it('returns false if ordering of values changes but values remain (order-insensitive)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['qa', 'engineering'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true if previous attribute key replaced with a different key only', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'role', values: ['admin'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns false when next adds a new attribute without removing previous ones', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when attribute keys are reordered but unchanged', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'role', values: ['admin'] },
+				{ key: 'dept', values: ['engineering'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when duplicate values are present but no unique value is lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when previous attribute has an empty values array (nothing to lose)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true when duplicate previous values include one that is lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
 	});
 
 	describe('addAbacAttribute', () => {
