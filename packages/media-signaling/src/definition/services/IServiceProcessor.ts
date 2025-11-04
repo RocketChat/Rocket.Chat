@@ -18,7 +18,7 @@ export type ServiceProcessorEvents<ServiceStateMap extends DefaultServiceStateMa
 
 export interface IServiceProcessor<
 	ServiceStateMap extends DefaultServiceStateMap = DefaultServiceStateMap,
-	ServiceUniqueEvents = Record<string, never>,
+	ServiceUniqueEvents = Record<never, never>,
 > {
 	emitter: Emitter<ServiceProcessorEvents<ServiceStateMap> & ServiceUniqueEvents>;
 

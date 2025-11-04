@@ -18,7 +18,7 @@ export type WebRTCUniqueEvents = {
 
 export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;
 
-export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateMap> {
+export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateMap, WebRTCUniqueEvents> {
 	emitter: Emitter<WebRTCProcessorEvents>;
 
 	muted: boolean;
