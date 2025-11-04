@@ -19,6 +19,7 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
+import { links } from '../../lib/links';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();
@@ -108,7 +109,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					description={t('No_SLA_policies_yet_description')}
 					buttonTitle={t('Create_SLA_policy')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_SLA_policies')}
 				/>
 			)}
