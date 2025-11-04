@@ -12,6 +12,7 @@ import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/li
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 /**
@@ -57,7 +58,10 @@ export const addUserToRoom = async (
 	}
 
 	try {
-		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: (inviter && (await Users.findOneById(inviter._id))) || undefined }, room);
+		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
+		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
+		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

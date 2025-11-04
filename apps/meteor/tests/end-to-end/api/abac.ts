@@ -1411,4 +1411,76 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 		});
 	});
+
+	describe('Room access (invite, addition)', () => {
+		let roomWithoutAttr: IRoom;
+		let roomWithAttr: IRoom;
+		const accessAttrKey = `access_attr_${Date.now()}`;
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: accessAttrKey, values: ['v1'] })
+				.expect(200);
+
+			// We have to add them directly cause otherwise the abac engine would kick the user from the room after the attribute is added
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
+
+			// Create two private rooms: one will stay without attributes, the other will get the attribute
+			roomWithoutAttr = (await createRoom({ type: 'p', name: `abac-access-noattr-${Date.now()}` })).body.group;
+			roomWithAttr = (await createRoom({ type: 'p', name: `abac-access-withattr-${Date.now()}` })).body.group;
+
+			// Assign the attribute to the second room
+			await request
+				.post(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`)
+				.set(credentials)
+				.send({ values: ['v1'] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: roomWithoutAttr._id });
+			await deleteRoom({ type: 'p', roomId: roomWithAttr._id });
+		});
+
+		it('INVITE: user without attributes invited to room without attributes succeeds', async () => {
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithoutAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('INVITE: user without attributes invited to room with attributes should fail', async () => {
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.includes('error-usernames-not-matching-abac-attributes');
+				});
+		});
+
+		it('INVITE: after room loses attributes user without attributes can be invited', async () => {
+			await request.delete(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`).set(credentials).expect(200);
+
+			// Try inviting again - should now succeed
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: roomWithAttr._id, usernames: [unauthorizedUser.username] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
 });

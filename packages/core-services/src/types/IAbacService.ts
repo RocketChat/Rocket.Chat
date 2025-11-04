@@ -17,4 +17,5 @@ export interface IAbacService {
 	removeRoomAbacAttribute(rid: string, key: string): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[]): Promise<void>;
+	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void>;
 }
