@@ -59,7 +59,7 @@ jobs:
         run: |
           ls -la
 
-          tar -czf /tmp/RocketChat-source.tar.gz \
+          tar -cf /tmp/RocketChat-source.tar \
             --sort=name \
             --owner=0 --group=0 \
             --mtime='1970-01-01' \
@@ -67,7 +67,7 @@ jobs:
             --exclude='.git' \
             .
 
-          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar.gz | awk '{ print $1 }')
+          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v3
 
           echo hash=${SOURCE_HASH}
 
@@ -172,10 +172,9 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-            /tmp/RocketChat-livechat-build.tar.gz
-          key: ${{ runner.OS }}-packages-and-livechat-build-${{ needs.release-versions.outputs.source-hash }}
+          key: ${{ runner.OS }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
           restore-keys: |
-            ${{ runner.os }}-packages-and-livechat-build-
+            ${{ runner.os }}-packages-build-
 
       - name: Debug cache-hit
         run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
@@ -220,26 +219,13 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
           tar -czf /tmp/RocketChat-packages-build.tar.gz \
-            $(git ls-files -oi --exclude-standard -- '*/dist/*' 'packages/apps-engine/*' ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude)packages/livechat/*')
-            
-      - name: Archive livechat build output
-        if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        run: |
-          tar -czf /tmp/RocketChat-livechat-build.tar.gz \
-            $(git ls-files -oi --exclude-standard -- 'packages/livechat/*' ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.turbo/*')
+            $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
         uses: actions/upload-artifact@v4
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
-          retention-days: 5
-
-      - name: Upload livechat build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: livechat-build
-          path: /tmp/RocketChat-livechat-build.tar.gz
           retention-days: 5
 
       - name: Store turbo build
