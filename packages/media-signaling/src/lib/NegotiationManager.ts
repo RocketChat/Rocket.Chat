@@ -23,8 +23,6 @@ export class NegotiationManager {
 
 	protected webrtcProcessor: IWebRTCProcessor | null;
 
-	protected inputTrackAvailable: boolean;
-
 	/** id of the newest negotiation that has reached the processing state */
 	protected highestNegotiationId: string | null;
 
@@ -41,9 +39,8 @@ export class NegotiationManager {
 		this.highestImpoliteSequence = 0;
 		this.highestSequence = 0;
 		this.webrtcProcessor = null;
-		this.inputTrackAvailable = false;
 		this.highestNegotiationId = null;
-		this.highestKnownNegotiationId = '';
+		this.highestKnownNegotiationId = null;
 
 		this.emitter = new Emitter();
 	}
@@ -106,15 +103,13 @@ export class NegotiationManager {
 			return;
 		}
 
-
 		try {
 			return this.currentNegotiation.setRemoteAnswer(remoteDescription);
 		} catch (e) {
-			console.error(e);
+			this.config.logger?.error(e);
 			this.currentNegotiation = null;
 			this.emitter.emit('error', { errorCode: 'failed-to-set-remote-answer', negotiationId });
 		}
-
 	}
 
 	public setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor) {
@@ -168,8 +163,6 @@ export class NegotiationManager {
 				}
 			}
 		}
-
-		this.negotiations.set(negotiation.negotiationId, negotiation);
 	}
 
 	protected getNextInQueue(): Negotiation | null {
@@ -179,7 +172,7 @@ export class NegotiationManager {
 				continue;
 			}
 
-			// Skip negotiations that can be fullfilled by some newer negotiation
+			// Skip negotiations that can be fulfilled by some newer negotiation
 			if (negotiation.sequence < this.highestImpoliteSequence) {
 				negotiation.end();
 				continue;
@@ -227,7 +220,7 @@ export class NegotiationManager {
 		try {
 			return negotiation.process(this.webrtcProcessor);
 		} catch (e) {
-			console.error(e);
+			this.config.logger?.error(e);
 			this.currentNegotiation = null;
 			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: negotiation.negotiationId });
 		}
@@ -254,7 +247,7 @@ export class NegotiationManager {
 	}
 
 	protected isFulfillingNegotiationQueued(): boolean {
-		// If we're a polite client, then any queued negotiation is enough to fullfil our negotiation needs
+		// If we're a polite client, then any queued negotiation is enough to fulfill our negotiation needs
 		if (this.isPoliteClient()) {
 			return this.highestSequence > this.highestProcessedSequence;
 		}
@@ -284,7 +277,7 @@ export class NegotiationManager {
 	}
 
 	protected onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error; errorDetails?: string }): void {
-		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalError', critical, error);
+		this.config.logger?.debug('NegotiationManager.onWebRTCInternalError', critical, error);
 		const errorCode = typeof error === 'object' ? error.message : error;
 
 		const negotiationId = this.currentNegotiationId;
