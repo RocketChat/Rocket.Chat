@@ -170,7 +170,7 @@ async function joinRoom({
 	// check federation permission before joining
 	if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
 		logger.info(`User ${inviteEvent.event.state_key} denied access to federated room ${inviteEvent.roomId} due to lack of permission`);
-		throw new NotAllowedError('Not authorized to access federation');
+		throw new NotAllowedError('error-not-authorized-federation');
 	}
 
 	// backoff needed for this call, can fail

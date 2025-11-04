@@ -164,7 +164,8 @@ export const createRoom = async <T extends RoomType>(
 		// options,
 	});
 
-	if (isRoomNativeFederated(extraData) && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+	const shouldBeHandledByFederation = isRoomNativeFederated(extraData);
+	if (shouldBeHandledByFederation && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});
