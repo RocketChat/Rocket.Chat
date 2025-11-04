@@ -89,7 +89,7 @@ test.describe('export-messages', () => {
 		await poHomeChannel.content.getMessageByText(testMessage).click();
 		await exportMessagesTab.send();
 
-		poToastMessage.waitForDisplay({
+		await poToastMessage.waitForDisplay({
 			type: 'error',
 			message: 'You must select one or more users or provide one or more email addresses, separated by commas',
 		});
@@ -105,7 +105,7 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
 		await exportMessagesTab.send();
 
-		poToastMessage.waitForDisplay({
+		await poToastMessage.waitForDisplay({
 			type: 'error',
 			message: 'You haven`t selected any messages',
 		});

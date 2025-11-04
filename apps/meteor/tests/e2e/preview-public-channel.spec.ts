@@ -70,7 +70,7 @@ test.describe('Preview public channel', () => {
 		test.skip(!IS_EE, 'Premium Only');
 		test.use({ storageState: Users.userNotAllowedByApp.state });
 
-		test.beforeAll(({ page }) => {
+		test.beforeEach(({ page }) => {
 			poToastMessage = new ToastMessages(page);
 		});
 
@@ -83,7 +83,7 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.btnJoinRoom.click();
 
-			poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
+			await poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
 		});
 
 		test('should prevent user from join the room without preview permission', async ({ api }) => {
@@ -95,7 +95,7 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.content.btnJoinChannel.click();
 
-			poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
+			await poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
 		});
 	});
 });

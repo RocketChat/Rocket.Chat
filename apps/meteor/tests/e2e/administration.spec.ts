@@ -167,7 +167,7 @@ test.describe.parallel('administration', () => {
 				await expect(page.getByRole('dialog').getByRole('button', { name: 'Delete' })).toBeVisible();
 
 				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
-				poToastMessage.waitForDisplay();
+				await poToastMessage.waitForDisplay();
 				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
 			});
 
@@ -177,7 +177,7 @@ test.describe.parallel('administration', () => {
 
 				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
 
-				poToastMessage.waitForDisplay();
+				await poToastMessage.waitForDisplay();
 				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
 			});
 		});

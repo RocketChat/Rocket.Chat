@@ -1,5 +1,7 @@
 import type { Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
+
 export class ToastMessages {
 	constructor(private readonly page: Page) {}
 
