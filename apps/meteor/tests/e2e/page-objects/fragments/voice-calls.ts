@@ -55,15 +55,15 @@ export class VoiceCalls {
 	}
 
 	get btnOpenDialpad(): Locator {
-		return this.page.getByRole('button', { name: 'Dialpad', exact: true });
+		return this.page.getByRole('button', { name: /Dialpad/i });
 	}
 
 	get btnMute(): Locator {
-		return this.page.getByRole('button', { name: 'Mute', exact: true });
+		return this.page.getByRole('button', { name: /Mute/i });
 	}
 
 	get btnHold(): Locator {
-		return this.page.getByRole('button', { name: 'Hold', exact: true });
+		return this.page.getByRole('button', { name: /Hold|Resume/i });
 	}
 
 	get btnTransfer(): Locator {
