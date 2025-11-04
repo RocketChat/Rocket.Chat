@@ -54,7 +54,7 @@ export const startFederationService = async (): Promise<void> => {
 		}
 	});
 
-	setupFederationMatrix();
+	await setupFederationMatrix();
 
 	settings.watchMultiple(
 		[
