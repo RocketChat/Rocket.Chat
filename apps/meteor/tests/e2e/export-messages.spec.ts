@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { ToastMessages, ExportMessagesTab } from './page-objects/fragments';
+import { ExportMessagesTab } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -12,7 +12,6 @@ const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
 
 test.describe('export-messages', () => {
 	let poHomeChannel: HomeChannel;
-	let poToastMessage: ToastMessages;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -21,7 +20,6 @@ test.describe('export-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poToastMessage = new ToastMessages(page);
 
 		await page.goto('/home');
 	});
@@ -89,10 +87,11 @@ test.describe('export-messages', () => {
 		await poHomeChannel.content.getMessageByText(testMessage).click();
 		await exportMessagesTab.send();
 
-		await poToastMessage.waitForDisplay({
-			type: 'error',
-			message: 'You must select one or more users or provide one or more email addresses, separated by commas',
-		});
+		await expect(
+			page.locator('[role="alert"]', {
+				hasText: 'You must select one or more users or provide one or more email addresses, separated by commas',
+			}),
+		).toBeVisible();
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
@@ -105,10 +104,11 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
 		await exportMessagesTab.send();
 
-		await poToastMessage.waitForDisplay({
-			type: 'error',
-			message: 'You haven`t selected any messages',
-		});
+		await expect(
+			page.locator('[role="alert"]', {
+				hasText: `You haven't selected any messages`,
+			}),
+		).toBeVisible();
 	});
 
 	test('should be able to send messages after closing export messages', async () => {
@@ -138,7 +138,7 @@ test.describe('export-messages', () => {
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 
 		await poHomeChannel.content.getMessageByText(message1).click();
 
@@ -166,7 +166,7 @@ test.describe('export-messages', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 		await poHomeChannel.content.getMessageByText(message1).click();
 
 		await expect(exportMessagesTab.getMessageCheckbox(message1)).toBeChecked();

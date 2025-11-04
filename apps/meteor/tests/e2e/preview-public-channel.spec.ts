@@ -2,7 +2,6 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { Directory } from './page-objects/directory';
-import { ToastMessages } from './page-objects/fragments';
 import { createDirectMessage, createTargetChannel, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
@@ -65,16 +64,10 @@ test.describe('Preview public channel', () => {
 	});
 
 	test.describe('App', () => {
-		let poToastMessage: ToastMessages;
-
 		test.skip(!IS_EE, 'Premium Only');
 		test.use({ storageState: Users.userNotAllowedByApp.state });
 
-		test.beforeEach(({ page }) => {
-			poToastMessage = new ToastMessages(page);
-		});
-
-		test('should prevent user from join the room', async ({ api }) => {
+		test('should prevent user from join the room', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 			await poHomeChannel.sidenav.openDirectory();
 			await poDirectory.openChannel(targetChannel);
@@ -83,10 +76,14 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.btnJoinRoom.click();
 
-			await poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
+			await expect(
+				page.locator('[role="alert"]', {
+					hasText: 'TEST OF NOT ALLOWED USER',
+				}),
+			).toBeVisible();
 		});
 
-		test('should prevent user from join the room without preview permission', async ({ api }) => {
+		test('should prevent user from join the room without preview permission', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
 			await poHomeChannel.sidenav.openDirectory();
@@ -95,7 +92,11 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.content.btnJoinChannel.click();
 
-			await poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
+			await expect(
+				page.locator('[role="alert"]', {
+					hasText: 'TEST OF NOT ALLOWED USER',
+				}),
+			).toBeVisible();
 		});
 	});
 });

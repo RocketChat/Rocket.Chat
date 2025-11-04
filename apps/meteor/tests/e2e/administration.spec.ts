@@ -117,9 +117,11 @@ test.describe.parallel('administration', () => {
 			let user: IUser;
 			let poToastMessage: ToastMessages;
 
-			test.beforeEach(async ({ api, page }) => {
+			test.beforeEach(({ page }) => {
 				poToastMessage = new ToastMessages(page);
+			});
 
+			test.beforeAll(async ({ api }) => {
 				const createUserResponse = await api.post('/users.create', {
 					email: faker.internet.email(),
 					name: faker.person.fullName(),
