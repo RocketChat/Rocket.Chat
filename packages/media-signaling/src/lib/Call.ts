@@ -125,6 +125,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor.held;
 	}
 
+	private _remoteHeld: boolean;
+
+	public get remoteHeld(): boolean {
+		return this._remoteHeld;
+	}
+
 	/** indicates the call is past the "dialing" stage and not yet over */
 	public get busy(): boolean {
 		return !this.isPendingAcceptance() && !this.isOver();
@@ -208,6 +214,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._contact = null;
 		this._transferredBy = null;
 		this._service = null;
+		this._remoteHeld = false;
 
 		this.negotiationManager = new NegotiationManager(this, { logger: config.logger });
 	}
@@ -987,6 +994,20 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateTimeoutHandlers.clear();
 	}
 
+	private updateRemoteHeld(): void {
+		if (!this.webrtcProcessor) {
+			return;
+		}
+
+		const isRemoteHeld = this.webrtcProcessor.isRemoteHeld();
+		if (isRemoteHeld === this._remoteHeld) {
+			return;
+		}
+
+		this._remoteHeld = isRemoteHeld;
+		this.emitter.emit('trackStateChange');
+	}
+
 	private onWebRTCInternalStateChange(stateName: keyof WebRTCInternalStateMap): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCInternalStateChange');
 		if (!this.webrtcProcessor) {
@@ -1006,6 +1027,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			this.requestStateReport();
 		}
+
+		this.updateRemoteHeld();
 	}
 
 	private onNegotiationNeeded(oldNegotiationId: string): void {
