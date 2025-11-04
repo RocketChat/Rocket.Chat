@@ -1,5 +1,23 @@
 import type { FrameLocator, Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
+export class Authenticated {
+	protected readonly root: Locator;
+
+	constructor(protected page: Page) {
+		this.root = this.page.locator('#main-content');
+	}
+
+	waitForDisplay() {
+		return expect(this.root).toBeVisible();
+	}
+
+	waitForDismissal() {
+		return expect(this.root).not.toBeVisible();
+	}
+}
+
 export class Registration {
 	private readonly page: Page;
 

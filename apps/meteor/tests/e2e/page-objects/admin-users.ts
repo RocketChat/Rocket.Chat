@@ -1,17 +1,20 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { UserInfoFlexTab, EditUserFlexTab } from './fragments';
+import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
 
 	readonly userInfo: UserInfoFlexTab;
 
+	readonly userRowMenu: MenuMoreActions;
+
 	constructor(page: Page) {
 		super(page);
 		this.editUser = new EditUserFlexTab(page);
 		this.userInfo = new UserInfoFlexTab(page);
+		this.userRowMenu = new MenuMoreActions(page);
 	}
 
 	get btnNewUser(): Locator {
@@ -38,11 +41,11 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('menuitem', { name: 'Activate' });
 	}
 
-	get menuItemMakeAdmin(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Make Admin' });
+	private get menuItemMakeAdmin(): Locator {
+		return this.userRowMenu.root.getByRole('menuitem', { name: 'Make Admin' });
 	}
 
-	get menuItemRemoveAdmin(): Locator {
+	private get menuItemRemoveAdmin(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Remove Admin' });
 	}
 
@@ -54,8 +57,18 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('tab', { name });
 	}
 
-	async openUserActionMenu(username: string): Promise<void> {
+	private async openUserActionMenu(username: string): Promise<void> {
 		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
+	}
+
+	async makeUserAdmin(username: string) {
+		await this.openUserActionMenu(username);
+		await this.menuItemMakeAdmin.click();
+	}
+
+	async removeUserAdmin(username: string) {
+		await this.openUserActionMenu(username);
+		await this.menuItemRemoveAdmin.click();
 	}
 
 	async deleteUser(username: string): Promise<void> {

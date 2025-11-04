@@ -1,7 +1,8 @@
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Utils } from './page-objects';
+import { HomeChannel } from './page-objects';
 import { Directory } from './page-objects/directory';
+import { ToastMessages } from './page-objects/fragments';
 import { createDirectMessage, createTargetChannel, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
@@ -10,14 +11,12 @@ test.use({ storageState: Users.admin.state });
 test.describe('Preview public channel', () => {
 	let poHomeChannel: HomeChannel;
 	let poDirectory: Directory;
-	let poUtils: Utils;
 	let targetChannel: string;
 	let targetChannelMessage: string;
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poDirectory = new Directory(page);
-		poUtils = new Utils(page);
 
 		await page.goto('/home');
 	});
@@ -66,8 +65,14 @@ test.describe('Preview public channel', () => {
 	});
 
 	test.describe('App', () => {
+		let poToastMessage: ToastMessages;
+
 		test.skip(!IS_EE, 'Premium Only');
 		test.use({ storageState: Users.userNotAllowedByApp.state });
+
+		test.beforeAll(({ page }) => {
+			poToastMessage = new ToastMessages(page);
+		});
 
 		test('should prevent user from join the room', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
@@ -78,7 +83,7 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.btnJoinRoom.click();
 
-			await expect(poUtils.getAlertByText('TEST OF NOT ALLOWED USER')).toBeVisible();
+			poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
 		});
 
 		test('should prevent user from join the room without preview permission', async ({ api }) => {
@@ -90,7 +95,7 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.content.btnJoinChannel.click();
 
-			await expect(poUtils.getAlertByText('TEST OF NOT ALLOWED USER')).toBeVisible();
+			poToastMessage.waitForDisplay({ type: 'error', message: 'TEST OF NOT ALLOWED USER' });
 		});
 	});
 });

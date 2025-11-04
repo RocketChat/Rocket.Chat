@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Utils } from './page-objects';
-import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
+import { HomeChannel } from './page-objects';
+import { ToastMessages, ExportMessagesTab } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -12,7 +12,7 @@ const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
 
 test.describe('export-messages', () => {
 	let poHomeChannel: HomeChannel;
-	let poUtils: Utils;
+	let poToastMessage: ToastMessages;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -21,7 +21,7 @@ test.describe('export-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poUtils = new Utils(page);
+		poToastMessage = new ToastMessages(page);
 
 		await page.goto('/home');
 	});
@@ -89,9 +89,10 @@ test.describe('export-messages', () => {
 		await poHomeChannel.content.getMessageByText(testMessage).click();
 		await exportMessagesTab.send();
 
-		await expect(
-			poUtils.getAlertByText('You must select one or more users or provide one or more email addresses, separated by commas'),
-		).toBeVisible();
+		poToastMessage.waitForDisplay({
+			type: 'error',
+			message: 'You must select one or more users or provide one or more email addresses, separated by commas',
+		});
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
@@ -104,7 +105,10 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
 		await exportMessagesTab.send();
 
-		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
+		poToastMessage.waitForDisplay({
+			type: 'error',
+			message: 'You haven`t selected any messages',
+		});
 	});
 
 	test('should be able to send messages after closing export messages', async () => {

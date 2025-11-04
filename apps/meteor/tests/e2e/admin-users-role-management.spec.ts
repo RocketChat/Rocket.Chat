@@ -39,8 +39,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('make a user admin', async () => {
-				await admin.openUserActionMenu(userWithoutAdminAccess.data.username);
-				await admin.menuItemMakeAdmin.click();
+				await admin.makeUserAdmin(userWithoutAdminAccess.data.username);
 				await expect(poToastBar.alert).toBeVisible();
 				await expect(poToastBar.alert).toHaveText('User is now an admin');
 			});
@@ -60,8 +59,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('remove admin role', async () => {
-				await admin.openUserActionMenu(userWithAdminAccess.data.username);
-				await admin.menuItemRemoveAdmin.click();
+				await admin.removeUserAdmin(userWithAdminAccess.data.username);
 				await expect(poToastBar.alert).toBeVisible();
 				await expect(poToastBar.alert).toHaveText('User is no longer an admin');
 			});
