@@ -20,6 +20,7 @@ import { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { links } from '../../../lib/links';
 
 type WebhooksPageProps = {
 	settings: Record<string, SettingValue>;
@@ -50,7 +51,7 @@ const reduceSendOptions = (options: Record<string, SettingValue>) =>
 		return acc;
 	}, []);
 
-const INTEGRATION_URL = 'https://docs.rocket.chat/use-rocket.chat/omnichannel/webhooks';
+const INTEGRATION_URL = links.webhooks;
 
 const getInitialValues = ({
 	Livechat_webhookUrl,
