@@ -119,7 +119,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			}
 		}
 
-		this.updateAudioDirectionForOffer();
+		this.updateAudioDirectionBeforeNegotiation();
 
 		if (iceRestart) {
 			this.restartIce();
@@ -145,9 +145,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this._held = held;
 		this.localStream.setEnabled(!held && !this._muted);
 		this.remoteStream.setEnabled(!held);
-
-		// TODO: request negotiation when the call is put on hold, but check signaling-state
-		this.onNegotiationNeeded();
 	}
 
 	public stop(): void {
@@ -179,8 +176,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			throw new Error('no-audio-transceiver');
 		}
 
-		this.updateAudioDirectionForAnswer();
-
 		return this.peer.createAnswer();
 	}
 
@@ -197,6 +192,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		await this.peer.setLocalDescription(sdp);
+
+		if (sdp.type === 'answer') {
+			this.updateAudioDirectionAfterNegotiation();
+		}
 	}
 
 	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
@@ -211,7 +210,15 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			throw new Error('unsupported-description-type');
 		}
 
+		if (sdp.type === 'offer') {
+			this.updateAudioDirectionBeforeNegotiation();
+		}
+
 		await this.peer.setRemoteDescription(sdp);
+
+		if (sdp.type === 'answer') {
+			this.updateAudioDirectionAfterNegotiation();
+		}
 	}
 
 	public getInternalState<K extends keyof WebRTCInternalStateMap>(stateName: K): ServiceStateValue<WebRTCInternalStateMap, K> {
@@ -302,23 +309,48 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.emitter.emit('internalStateChange', stateName);
 	}
 
-	private updateAudioDirectionForAnswer(): void {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.updateAudioDirectionForAnswer', this.held);
+	private updateAudioDirectionBeforeNegotiation(): void {
+		// Before the negotiation, we set the direction based on our own state only
+		// We'll tell the SDK that we want to send audio and, depending on the "on hold" state, also receive it
+		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
 
 		const transceivers = this.getAudioTransceivers();
-		// This works, but causes an immediate renegotiation due to difference between `direction` and `currentDirection`
-		// TODO: parse the offer to determine what was requested and assign the proper direction on the answer
 		for (const transceiver of transceivers) {
-			transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
+			if (transceiver.direction === 'stopped') {
+				continue;
+			}
+
+			if (transceiver.direction !== desiredDirection) {
+				this.config.logger?.debug(`Changing audio direction from ${transceiver.direction} to ${desiredDirection}`);
+			}
+
+			transceiver.direction = desiredDirection;
 		}
 	}
 
-	private updateAudioDirectionForOffer(): void {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.updateAudioDirectionForOffer', this.held);
+	private updateAudioDirectionAfterNegotiation(): void {
+		// Before the negotiation started, we told the browser we wanted to send audio - but we don't care if actually send or not, it's up to the other side to determine if they want to receive.
+		// If the other side doesn't want to receive audio, the negotiation will result in a state where "direction" and "currentDirection" don't match
+		// But if the only difference is that we said we want to send audio and are not sending it, then we can change what we say we want to reflect the current state
+
+		// If we didn't do this, everything would still work, but the browser would trigger redundant renegotiations whenever the directions mismatch
+
+		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
 
 		const transceivers = this.getAudioTransceivers();
 		for (const transceiver of transceivers) {
-			transceiver.direction = this.held ? 'sendonly' : 'sendrecv';
+			if (transceiver.direction !== desiredDirection) {
+				continue;
+			}
+			if (!transceiver.currentDirection || ['stopped', desiredDirection].includes(transceiver.currentDirection)) {
+				continue;
+			}
+
+			if (transceiver.currentDirection === acceptableDirection) {
+				this.config.logger?.debug(`Changing audio direction from ${transceiver.direction} to match ${transceiver.currentDirection}.`);
+				transceiver.direction = transceiver.currentDirection;
+			}
 		}
 	}
 
