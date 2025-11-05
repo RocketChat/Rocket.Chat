@@ -117,7 +117,6 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			reload={refetch}
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
-			// @ts-expect-error to be implemented in ABAC Feature branch
 			isABACRoom={Boolean(room?.abacAttributes)}
 		/>
 	);
