@@ -21,7 +21,6 @@ import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
 import './methods/setUpConnection';
 import './methods/takeInquiry';
-import './methods/returnAsInquiry';
 import './methods/sendTranscript';
 import './lib/QueueManager';
 import './lib/RoutingManager';
