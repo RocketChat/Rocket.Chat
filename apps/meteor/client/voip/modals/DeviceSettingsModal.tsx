@@ -28,6 +28,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../contexts/CallContext';
+import { links } from '../../lib/links';
 import { isSetSinkIdAvailable } from '../../providers/DeviceProvider/lib/isSetSinkIdAvailable';
 
 type FieldValues = {
@@ -80,7 +81,7 @@ const DeviceSettingsModal = (): ReactElement => {
 				{!setSinkIdAvailable && (
 					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
-						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
+						<Box is='a' href={links.desktopAppDownload} target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
 						</Box>
 					</Box>
