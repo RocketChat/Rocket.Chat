@@ -503,7 +503,7 @@ jobs:
       - name: Restore build
         uses: actions/download-artifact@v6
         with:
-          name: build
+          name: build-production
           path: /tmp/build
 
       - name: Publish assets
