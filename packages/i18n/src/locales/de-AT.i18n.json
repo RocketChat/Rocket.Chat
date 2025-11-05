@@ -1813,7 +1813,7 @@
   "RetentionPolicyRoom_FilesOnly": "Bereinigen Sie nur Dateien, behalten Sie Nachrichten",
   "RetentionPolicyRoom_MaxAge": "Maximales Nachrichtenalter in Tagen (Standard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Globale Aufbewahrungsrichtlinie außer Kraft setzen",
-  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>hier</a>aktivieren.",
+  "RetentionPolicyRoom_ReadTheDocs": "Achtung! Das Anpassen dieser Einstellungen ohne große Sorgfalt kann den gesamten Nachrichtenverlauf zerstören. Bitte lesen Sie die Dokumentation, bevor Sie das Feature unter <a href = \"{{retentionPolicyUrl}}\">hier</a>aktivieren.",
   "RetentionPolicy_AppliesToChannels": "Gilt für Kanäle",
   "RetentionPolicy_AppliesToDMs": "Gilt für direkte Nachrichten",
   "RetentionPolicy_AppliesToGroups": "Gilt für private Gruppen",
