@@ -355,6 +355,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			text: event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
 			payload: {
 				_id: event._id,
+				startTimeUtc: event.startTime.toISOString(),
 			},
 		});
 	}

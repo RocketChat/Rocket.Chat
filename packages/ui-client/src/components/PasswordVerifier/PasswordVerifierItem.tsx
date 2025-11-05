@@ -1,43 +1,49 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
-import { AllHTMLAttributes, ComponentProps } from 'react';
+import { Box, Icon, type IconProps } from '@rocket.chat/fuselage';
+import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
+import { useTranslation, type UseTranslationResponse } from 'react-i18next';
 
-const variants: {
-	[key: string]: {
-		icon: ComponentProps<typeof Icon>['name'];
-		color: string;
-	};
-} = {
-	success: {
-		icon: 'success-circle',
-		color: 'status-font-on-success',
-	},
-	error: {
-		icon: 'error-circle',
-		color: 'status-font-on-danger',
-	},
+type PasswordVerifierItemProps = PasswordPolicyValidation & {
+	vertical: boolean;
 };
 
-export const PasswordVerifierItem = ({
-	text,
-	isValid,
-	vertical,
-	...props
-}: { text: string; isValid: boolean; vertical: boolean } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>) => {
-	const { icon, color } = variants[isValid ? 'success' : 'error'];
+const getIconProps = (
+	isValid: boolean,
+	t: UseTranslationResponse<'translation', undefined>['t'],
+): Pick<Required<IconProps>, 'name' | 'aria-label' | 'color'> =>
+	isValid
+		? {
+				'name': 'success-circle',
+				'aria-label': t('Success'),
+				'color': 'status-font-on-success',
+			}
+		: {
+				'name': 'error-circle',
+				'aria-label': t('Error'),
+				'color': 'status-font-on-danger',
+			};
+
+export const PasswordVerifierItem = ({ isValid, ...props }: PasswordVerifierItemProps) => {
+	const { t } = useTranslation();
+	const icon = getIconProps(isValid, t);
+	const id = useId();
+	const iconId = `${id}-icon`;
+	const textId = `${id}-text`;
+	const requirementText = t(`${props.name}-label` as const, 'limit' in props ? { limit: props.limit } : undefined);
 	return (
 		<Box
 			display='flex'
-			flexBasis={vertical ? '100%' : '50%'}
+			flexBasis={props.vertical ? '100%' : '50%'}
 			alignItems='center'
 			mbe={8}
 			fontScale='c1'
-			color={color}
+			color={icon.color}
 			role='listitem'
-			aria-label={text}
-			{...props}
+			aria-hidden='false'
+			aria-labelledby={`${iconId} ${textId}`}
 		>
-			<Icon name={icon} color={color} size='x16' mie={4} />
-			<span aria-hidden>{text}</span>
+			<Icon id={iconId} aria-hidden='false' size='x16' mie={4} {...icon} />
+			<span id={textId}>{requirementText}</span>
 		</Box>
 	);
 };

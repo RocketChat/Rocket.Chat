@@ -20,6 +20,7 @@ import {
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import { links } from '../../lib/links';
 
 type Scope = 'global' | 'department' | 'user';
 
@@ -141,7 +142,7 @@ const CannedResponsesTable = () => {
 					description={t('No_Canned_Responses_Yet-description')}
 					buttonTitle={t('Create_canned_response')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_canned_responses')}
 				/>
 			)}
