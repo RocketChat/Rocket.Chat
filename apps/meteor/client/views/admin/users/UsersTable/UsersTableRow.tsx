@@ -89,7 +89,7 @@ const UsersTableRow = ({
 	const isActive = user.active;
 	const isFederatedUser = !!user.federated;
 
-	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onReload);
+	const changeAdminStatusAction = useChangeAdminStatusAction(username, isAdmin, onReload);
 	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
 	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
