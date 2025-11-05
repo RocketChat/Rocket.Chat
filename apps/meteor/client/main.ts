@@ -1,9 +1,9 @@
+import './meteor/overrides';
+import './meteor/startup';
 import './serviceWorker';
-import './startup/accounts';
-import './startup/fakeUserPresence';
 
 import('@rocket.chat/fuselage-polyfills')
-	.then(() => import('./meteorOverrides'))
+	.then(() => import('./meteor/login'))
 	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => import('./startup'))

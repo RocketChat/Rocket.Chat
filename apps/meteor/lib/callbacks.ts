@@ -1,3 +1,4 @@
+import type { ICreateRoomOptions } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	IRoom,
@@ -10,7 +11,6 @@ import type {
 	VideoConference,
 	OEmbedMeta,
 	OEmbedUrlContent,
-	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
 	ILivechatTagRecord,
@@ -40,15 +40,15 @@ interface EventLikeCallbackSignatures {
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
 	'afterDeactivateUser': (user: IUser) => void;
-	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
+	'afterDeleteMessage': (message: IMessage, params: { room: IRoom; user: IUser }) => void;
 	'workspaceLicenseChanged': (license: string) => void;
 	'workspaceLicenseRemoved': () => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
-	'afterSaveMessage': (message: IMessage, params: { room: IRoom; uid?: string; roomUpdater?: Updater<IRoom> }) => void;
+	'afterRoomNameChange': (params: { room: IRoom; name: string; oldName: string; user: IUser }) => void;
+	'afterSaveMessage': (message: IMessage, params: { room: IRoom; user: IUser; roomUpdater?: Updater<IRoom> }) => void;
 	'afterOmnichannelSaveMessage': (message: IMessage, constant: { room: IOmnichannelRoom; roomUpdater: Updater<IOmnichannelRoom> }) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -63,22 +63,27 @@ interface EventLikeCallbackSignatures {
 		user: AtLeast<IUser, '_id' | 'federated' | 'roles'>;
 		inviter: AtLeast<IUser, '_id' | 'username'>;
 	}) => void;
-	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id']; mrid?: string }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
-	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
-	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.afterCreateFederatedRoom': (
+		room: IRoom,
+		second: {
+			owner: IUser;
+			originalMemberList: string[];
+			options?: ICreateRoomOptions;
+		},
+	) => void;
+	'beforeCreateDirectRoom': (members: string[], room: IRoom) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
-	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;
+	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,
-		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
+		params: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage; room: IRoom },
 	) => void;
-	'federation.beforeAddUserToARoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
-	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
@@ -198,6 +203,10 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
+	'afterRoomTopicChange': (
+		params: undefined,
+		{ room, topic, user }: { room: IRoom; topic: string; user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'> },
+	) => void;
 };
 
 export type Hook =
@@ -205,7 +214,6 @@ export type Hook =
 	| keyof ChainedCallbackSignatures
 	| 'afterProcessOAuthUser'
 	| 'afterRoomArchived'
-	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateNewOAuthUser'
 	| 'beforeActivateUser'

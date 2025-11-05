@@ -1,6 +1,6 @@
 import type { AppAccessorManager } from '.';
 import { AppMethod } from '../../definition/metadata';
-import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
+import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundCommunication';
 import type { ProxiedApp } from '../ProxiedApp';
 import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { AppLogStorage } from '../storage';
@@ -32,7 +32,7 @@ export class OutboundMessageProvider {
 		const provider = `${this.provider.name}-${this.provider.type}`;
 
 		try {
-			const result = await this.app.getDenoRuntime().sendRequest({
+			const result = await this.app.getRuntimeController().sendRequest({
 				method: `outboundCommunication:${provider}:${method}`,
 				params: runContextArgs,
 			});
@@ -44,5 +44,9 @@ export class OutboundMessageProvider {
 			}
 			throw new AppOutboundProcessError(e.message, method);
 		}
+	}
+
+	public setRegistered(registered: boolean): void {
+		this.isRegistered = registered;
 	}
 }

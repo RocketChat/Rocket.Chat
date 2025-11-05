@@ -2838,30 +2838,23 @@ describe('LIVECHAT - rooms', () => {
 			});
 			it('should throw an error if a valid custom field fails the check', async () => {
 				await request
-					.post(methodCall('livechat:saveCustomField'))
+					.post(api('livechat/custom-fields.save'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'livechat:saveCustomField',
-							params: [
-								null,
-								{
-									field: 'intfield',
-									label: 'intfield',
-									scope: 'room',
-									visibility: 'visible',
-									regexp: '\\d+',
-									searchable: true,
-									type: 'input',
-									required: false,
-									defaultValue: '0',
-									options: '',
-									public: false,
-								},
-							],
-							id: 'id',
-							msg: 'method',
-						}),
+						customFieldId: null,
+						customFieldData: {
+							field: 'intfield',
+							label: 'intfield',
+							scope: 'room',
+							visibility: 'visible',
+							regexp: '\\d+',
+							searchable: true,
+							type: 'input',
+							required: false,
+							defaultValue: '0',
+							options: '',
+							public: false,
+						},
 					})
 					.expect(200);
 

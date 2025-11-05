@@ -1,5 +1,180 @@
 # @rocket.chat/ui-avatar
 
+## 20.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0
+  </details>
+
+## 20.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.4
+  </details>
+
+## 20.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.3
+  </details>
+
+## 20.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.2
+  </details>
+
+## 20.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.1
+  </details>
+
+## 20.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.0
+  </details>
+
+## 19.0.0
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0
+  </details>
+
+## 19.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.7
+  </details>
+
+## 19.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.6
+  </details>
+
+## 19.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.5
+  </details>
+
+## 19.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  </details>
+
+## 19.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  </details>
+
+## 19.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  </details>
+
+## 19.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.1
+  </details>
+
+## 19.0.0-rc.0
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+
+  </details>
+
+## 18.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
+## 18.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@22.0.1
+
+  </details>
+
+## 18.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0
+  </details>
+
+## 18.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0-rc.6
+  </details>
+
 ## 18.0.0-rc.5
 
 ### Patch Changes

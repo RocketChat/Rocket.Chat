@@ -1,6 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
@@ -24,6 +25,21 @@ const renderModal = (modalElement: ReactElement) => {
 
 	return { setModal };
 };
+
+describe('renders', () => {
+	it('should render a modal without crashing', async () => {
+		renderModal(<GenericModal title='Modal' />);
+
+		expect(await screen.findByRole('dialog', { name: 'Modal' })).toMatchSnapshot();
+	});
+
+	it('should have no accessibility violations when rendered', async () => {
+		renderModal(<GenericModal title='Modal' />);
+
+		const results = await axe(screen.getByRole('dialog', { name: 'Modal' }));
+		expect(results).toHaveNoViolations();
+	});
+});
 
 describe('callbacks', () => {
 	it('should call onClose callback when dismissed', async () => {

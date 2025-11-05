@@ -7,9 +7,10 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
+	federatedRoomId?: string;
 }
 
 export interface ICreateRoomExtraData extends Record<string, string | boolean> {
@@ -45,10 +46,7 @@ export interface IRoomService {
 	saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
-		user: {
-			username: string;
-			_id: string;
-		},
+		user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
@@ -57,4 +55,6 @@ export interface IRoomService {
 	beforeUserRemoved(room: IRoom): Promise<void>;
 	beforeNameChange(room: IRoom): Promise<void>;
 	beforeTopicChange(room: IRoom): Promise<void>;
+	saveRoomName(roomId: string, userId: string, name: string): Promise<void>;
+	addUserRoleRoomScoped(fromUserId: string, userId: string, roomId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
 }

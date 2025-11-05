@@ -54,7 +54,7 @@ export class MentionsServer extends MentionsParser {
 		const userMentions = [];
 
 		for await (const m of mentions) {
-			const mention = m.trim().substr(1);
+			const mention = m.includes(':') ? m.trim() : m.trim().substring(1);
 			if (mention !== 'all' && mention !== 'here') {
 				userMentions.push(mention);
 				continue;
@@ -79,7 +79,7 @@ export class MentionsServer extends MentionsParser {
 			isE2EEMessage(message) && e2eMentions?.e2eChannelMentions && e2eMentions?.e2eChannelMentions.length > 0
 				? e2eMentions?.e2eChannelMentions
 				: this.getChannelMentions(msg);
-		return this.getChannels(channels.map((c) => c.trim().substr(1)));
+		return this.getChannels(channels.map((c) => c.trim().substring(1)));
 	}
 
 	async execute(message: IMessage) {

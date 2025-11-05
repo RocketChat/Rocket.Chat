@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.0.2-rc.5",
+	"version": "0.0.6",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -9,8 +9,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
-		"typescript": "~5.9.2"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -31,6 +31,6 @@
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",
-		"mongodb": "6.10.0"
+		"mongodb": "6.16.0"
 	}
 }

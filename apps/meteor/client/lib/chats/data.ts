@@ -1,4 +1,5 @@
 import {
+	isEncryptedMessageContent,
 	isOTRAckMessage,
 	isOTRMessage,
 	type IEditedMessage,
@@ -6,15 +7,16 @@ import {
 	type IRoom,
 	type ISubscription,
 } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
-import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { settings } from '../settings';
+import { getUserId } from '../user';
 import { prependReplies } from '../utils/prependReplies';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
@@ -77,14 +79,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
-		const editOwn = message?.u && message.u._id === Meteor.userId();
+		const editAllowed = (settings.peek('Message_AllowEditing') as boolean | undefined) ?? false;
+		const editOwn = message?.u && message.u._id === getUserId();
 
 		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
@@ -96,7 +98,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findPreviousOwnMessage = async (message?: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return undefined;
@@ -134,7 +136,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findNextOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return undefined;
@@ -175,11 +177,27 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
 	};
 
-	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
-		sdk.call('updateMessage', message, previewUrls);
+	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
+		const params = isEncryptedMessageContent(message)
+			? {
+					msgId: message._id,
+					roomId: message.rid,
+					content: message.content,
+					e2eMentions: message.e2eMentions,
+				}
+			: {
+					previewUrls,
+					msgId: message._id,
+					roomId: message.rid,
+					customFields: message.customFields,
+					text: message.msg,
+				};
+
+		await sdk.rest.post('/v1/chat.update', params);
+	};
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return false;
@@ -194,20 +212,20 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return true;
 		}
 
-		const deletionEnabled = settings.get('Message_AllowDeleting') as boolean | undefined;
+		const deletionEnabled = settings.peek('Message_AllowDeleting') as boolean | undefined;
 		if (!deletionEnabled) {
 			return false;
 		}
 
 		const deleteAnyAllowed = hasPermission('delete-message', rid);
 		const deleteOwnAllowed = hasPermission('delete-own-message');
-		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
+		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === getUserId());
 
 		if (!deleteAllowed) {
 			return false;
 		}
 
-		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
