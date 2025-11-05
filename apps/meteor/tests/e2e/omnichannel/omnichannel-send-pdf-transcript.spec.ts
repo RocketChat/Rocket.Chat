@@ -45,7 +45,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
 			await new Promise((resolve) => setTimeout(resolve, 5000));
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be not able send transcript as PDF', async () => {
@@ -61,7 +61,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		// Exported PDF can be downloaded from rocket.cat room
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
 			await page.waitForTimeout(3000);
-			await agent.poHomeChannel.sidenav.openChat('rocket.cat');
+			await agent.poHomeChannel.navbar.openChat('rocket.cat');
 			await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
 		});
 

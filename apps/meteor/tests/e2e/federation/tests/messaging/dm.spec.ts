@@ -91,8 +91,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A');
@@ -103,8 +103,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server B');
@@ -254,8 +254,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendMessage('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
 
@@ -271,8 +271,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.sendMessage('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
 
@@ -288,8 +288,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendAudioRecordedMessage();
 
@@ -308,8 +308,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.sendAudioRecordedMessage();
 
@@ -328,8 +328,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await page.reload();
 				await pageForServer2.reload();
 
@@ -350,8 +350,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await page.reload();
 				await pageForServer2.reload();
 
@@ -372,8 +372,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -386,8 +386,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -400,8 +400,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -421,8 +421,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -442,8 +442,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -456,8 +456,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -470,8 +470,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
 				await poFederationChannelServer1.content.messagePopUpItems
@@ -508,9 +508,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.content.sendMessage('hello');
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
 				await poFederationChannelServer2.content.messagePopUpItems
@@ -547,8 +547,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer1.content.sendMessage(
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A, @all, @${usernameWithDomainFromServer2}`,
 				);
@@ -586,11 +586,11 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					constants.RC_SERVER_2.matrixServerName,
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				const message = `Message for quote - ${Date.now()}`;
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter(message);
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer1.content.quoteMessage('this is a quote message');
 
 				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
@@ -621,11 +621,11 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					constants.RC_SERVER_2.matrixServerName,
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				const message = `Message for quote - ${Date.now()}`;
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter(message);
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServerUser2.content.quoteMessage('this is a quote message');
 
 				await expect(poFederationChannelServerUser2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
@@ -657,9 +657,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
 
@@ -702,9 +702,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.reactToMessage('slight_smile');
 
@@ -746,9 +746,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
 				await poFederationChannelServer1.content.reactToMessage('grin');
@@ -832,9 +832,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer2.content.reactToMessage('slight_smile');
 				await poFederationChannelServer2.content.reactToMessage('grin');
@@ -918,9 +918,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -958,9 +958,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server B');
 
@@ -998,9 +998,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
 				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
@@ -1037,9 +1037,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
 				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
@@ -1079,9 +1079,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -1121,9 +1121,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1163,9 +1163,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -1201,9 +1201,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1239,9 +1239,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1276,9 +1276,9 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				);
 				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.content.sendMessage('message');
-				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServerUser2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1295,7 +1295,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to see the file list sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 
 				await expect(poFederationChannelServer1.roomToolbar.btnFiles).toBeVisible();
 			});
@@ -1303,7 +1303,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to see the file list sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await expect(poFederationChannelServer2.roomToolbar.btnFiles).toBeVisible();
 			});
@@ -1311,7 +1311,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to see all the starred messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemStarredMessages).toBeVisible();
@@ -1320,7 +1320,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to see all the starred messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemStarredMessages).toBeVisible();
@@ -1329,7 +1329,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to not to see the pinned messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
@@ -1338,7 +1338,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to not to see the pinned messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
@@ -1347,7 +1347,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to not be able to prune messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemPruneMessages).not.toBeVisible();
@@ -1356,7 +1356,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			test('expect to not be able to prune messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemPruneMessages).not.toBeVisible();

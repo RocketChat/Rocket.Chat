@@ -103,7 +103,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 						insetBlock={0}
 						border='none'
 					>
-						<ContextualbarHeader expanded={expanded}>
+						<ContextualbarHeader>
 							<ContextualbarBack onClick={handleGoBack} />
 							{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 								(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||

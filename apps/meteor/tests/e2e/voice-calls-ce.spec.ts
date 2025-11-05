@@ -19,7 +19,7 @@ test.describe('Voice Calls - Community Edition', () => {
 
 	test('should see upsell modal when clicked on DM > voice call button', async () => {
 		await test.step('should open direct message with user2', async () => {
-			await poHomeChannel.sidenav.openChat('user2');
+			await poHomeChannel.navbar.openChat('user2');
 			await expect(poHomeChannel.content.inputMessage).toBeVisible();
 		});
 
@@ -31,7 +31,7 @@ test.describe('Voice Calls - Community Edition', () => {
 
 	test('should see upsell modal when clicked on user info > voice call button', async () => {
 		await test.step('should open direct message with user2', async () => {
-			await poHomeChannel.sidenav.openChat('user2');
+			await poHomeChannel.navbar.openChat('user2');
 			await expect(poHomeChannel.content.inputMessage).toBeVisible();
 		});
 

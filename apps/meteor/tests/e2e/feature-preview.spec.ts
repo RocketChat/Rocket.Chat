@@ -100,12 +100,6 @@ test.describe.serial('feature preview', () => {
 			await expect(newNavigationCheckbox).not.toBeChecked();
 		});
 
-		test('should be rendering new UI with "Enhanced navigation"', async ({ page }) => {
-			await page.goto('/account/feature-preview');
-
-			await expect(poHomeChannel.navbar.navbar).toBeVisible();
-		});
-
 		test('should render global header navigation', async ({ page }) => {
 			await page.goto('/home');
 

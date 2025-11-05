@@ -1,4 +1,3 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
@@ -6,11 +5,9 @@ import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
-import Header from './Header';
-import { HeaderV2 } from './HeaderV2';
+import Header from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
-import RoomBody from './body/RoomBody';
-import RoomBodyV2 from './body/RoomBodyV2';
+import RoomBody from './body/RoomBodyV2';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -43,34 +40,8 @@ const Room = (): ReactElement => {
 									? t('Conversation_with__roomName__', { roomName: room.name })
 									: t('Channel__roomName__', { roomName: room.name })
 							}
-							header={
-								<>
-									<FeaturePreview feature='newNavigation'>
-										<FeaturePreviewOn>
-											<HeaderV2 room={room} />
-										</FeaturePreviewOn>
-										<FeaturePreviewOff>
-											<Header room={room} />
-										</FeaturePreviewOff>
-									</FeaturePreview>
-								</>
-							}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
-								)
-							}
+							header={<Header room={room} />}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

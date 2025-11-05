@@ -75,7 +75,7 @@ test.describe.parallel('Federation - CE version', () => {
 			fullUsernameFromServer2,
 		]);
 
-		await poFederationChannelServer2.sidenav.openChat(channelName);
+		await poFederationChannelServer2.navbar.openChat(channelName);
 		await poFederationChannelServer2.roomToolbar.openMembersTab();
 		await poFederationChannelServer2.tabs.members.showAllUsers();
 

@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Palette } from '@rocket.chat/fuselage';
+import { HeaderTag } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import { HeaderTag } from '../Header';
 
 type ABACHeaderTagProps = {
 	room: IRoom;
