@@ -1579,6 +1579,65 @@ describe('LIVECHAT - visitors', () => {
 			});
 		});
 
+		describe('when phone regex is broken', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_phone_regex', '(');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting(
+					'Livechat_lead_phone_regex',
+					'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+				);
+			});
+
+			it('should capture email', async () => {
+				await sendMessage(room._id, 'Now my email is this@isok.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 55667799', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+
+				expect(visitor.visitorEmails).to.be.an('array');
+				expect(visitor.visitorEmails).to.have.lengthOf(6);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails).to.include('this@isok.com');
+
+				expect(visitor.phone).to.have.lengthOf(4);
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones || []).to.not.include('55667788');
+			});
+		});
+
+		describe('when email regex is broken', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_email_regex', '(');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b');
+			});
+
+			it('should capture email', async () => {
+				await sendMessage(room._id, 'Now my email is this@shalnotpass.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 98765432', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+
+				expect(visitor.visitorEmails).to.have.lengthOf(6);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails || []).to.not.include('this@shalnotpass.com');
+
+				expect(visitor.phone).to.be.an('array');
+				expect(visitor.phone).to.have.lengthOf(5);
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones).to.include('98765432');
+			});
+		});
+
 		describe('when the visitor has emails & phones already', () => {
 			let newVisitor: ILivechatVisitor;
 			let newRoom: IOmnichannelRoom;
