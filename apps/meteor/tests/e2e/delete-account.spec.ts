@@ -105,6 +105,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('verify user is redirected to login page', async () => {
+			await poRegistration.waitForDisplay();
 			await expect(poRegistration.btnLogin).toBeVisible();
 			userToDelete.markAsDeleted();
 		});
