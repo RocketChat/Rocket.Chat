@@ -251,6 +251,33 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.peer.getStats(selector);
 	}
 
+	public isRemoteHeld(): boolean {
+		if (this.stopped) {
+			return false;
+		}
+
+		if (['closed', 'failed', 'new'].includes(this.peer.connectionState)) {
+			return false;
+		}
+
+		let anyTransceiverNotSending = false;
+		const transceivers = this.getAudioTransceivers();
+
+		for (const transceiver of transceivers) {
+			if (!transceiver.currentDirection || transceiver.currentDirection === 'stopped') {
+				continue;
+			}
+
+			if (transceiver.currentDirection.includes('send')) {
+				return false;
+			}
+
+			anyTransceiverNotSending = true;
+		}
+
+		return anyTransceiverNotSending;
+	}
+
 	public isStable(): boolean {
 		if (this.stopped) {
 			return false;
