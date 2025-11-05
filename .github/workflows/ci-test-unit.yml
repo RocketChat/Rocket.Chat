@@ -47,11 +47,17 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
+      - name: Restore packages build
         uses: actions/download-artifact@v4
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
       - name: Unit Test
         run: yarn testunit
 
