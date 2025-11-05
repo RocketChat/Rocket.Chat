@@ -3,6 +3,8 @@ import type { Locator, Page } from '@playwright/test';
 import { Admin } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 
+type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
+
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
 
@@ -18,11 +20,11 @@ export class AdminUsers extends Admin {
 	}
 
 	get btnNewUser(): Locator {
-		return this.page.locator('role=button[name="New user"]');
+		return this.page.getByRole('button', { name: 'New user', exact: true });
 	}
 
 	get btnInvite(): Locator {
-		return this.page.locator('role=button[name="Invite"]');
+		return this.page.getByRole('button', { name: 'Invite', exact: true });
 	}
 
 	get inputSearchUsers(): Locator {
@@ -31,22 +33,6 @@ export class AdminUsers extends Admin {
 
 	get btnMoreActionsMenu(): Locator {
 		return this.page.getByRole('button', { name: 'More actions' });
-	}
-
-	get menuItemDeactivated(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Deactivate' });
-	}
-
-	get menuItemActivate(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Activate' });
-	}
-
-	private get menuItemMakeAdmin(): Locator {
-		return this.userRowMenu.root.getByRole('menuitem', { name: 'Make Admin' });
-	}
-
-	private get menuItemRemoveAdmin(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Remove Admin' });
 	}
 
 	getUserRowByUsername(username: string): Locator {
@@ -61,14 +47,9 @@ export class AdminUsers extends Admin {
 		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
 	}
 
-	async makeUserAdmin(username: string) {
+	async dispatchUserAction(username: string, action: UserActions) {
 		await this.openUserActionMenu(username);
-		await this.menuItemMakeAdmin.click();
-	}
-
-	async removeUserAdmin(username: string) {
-		await this.openUserActionMenu(username);
-		await this.menuItemRemoveAdmin.click();
+		await this.userRowMenu.root.getByRole('menuitem', { name: action }).click();
 	}
 
 	async deleteUser(username: string): Promise<void> {
