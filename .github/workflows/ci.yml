@@ -332,7 +332,7 @@ jobs:
 
       - name: Download digests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           pattern: digests-*
           path: /tmp/digests
