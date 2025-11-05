@@ -78,6 +78,8 @@ export interface IClientMediaCall {
 	held: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
+	/* if the other side has put the call on hold */
+	remoteHeld: boolean;
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
