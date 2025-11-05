@@ -384,29 +384,38 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		const updatePipeline: Document[] = [];
+		// const updatePipeline: Document[] = [];
 
-		if (saveEmail.length) {
-			updatePipeline.push({
-				$set: {
-					visitorEmails: {
-						$setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail],
-					},
-				},
-			});
-		}
+		// if (saveEmail.length) {
+		// 	updatePipeline.push({
+		// 		$set: {
+		// 			visitorEmails: {
+		// 				$setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail],
+		// 			},
+		// 		},
+		// 	});
+		// }
 
-		if (savePhone.length) {
-			updatePipeline.push({
-				$set: {
-					phone: {
-						$setUnion: [{ $ifNull: ['$phone', []] }, savePhone],
-					},
-				},
-			});
-		}
+		// if (savePhone.length) {
+		// 	updatePipeline.push({
+		// 		$set: {
+		// 			phone: {
+		// 				$setUnion: [{ $ifNull: ['$phone', []] }, savePhone],
+		// 			},
+		// 		},
+		// 	});
+		// }
 
-		return this.updateOne({ _id }, updatePipeline);
+		// return this.updateOne({ _id }, updatePipeline);
+
+		const update: UpdateFilter<ILivechatVisitor> = {
+			$addToSet: {
+				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+				...(savePhone.length && { phone: { $each: savePhone } }),
+			},
+		};
+
+		return this.updateOne({ _id }, update);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
