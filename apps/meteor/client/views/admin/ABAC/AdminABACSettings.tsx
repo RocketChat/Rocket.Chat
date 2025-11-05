@@ -3,6 +3,7 @@ import { Trans } from 'react-i18next';
 
 import AdminABACSettingToggle from './AdminABACSettingToggle';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { links } from '../../../lib/links';
 
 const AdminABACSettings = () => {
 	const hasABAC = useHasLicenseModule('abac');
@@ -13,10 +14,9 @@ const AdminABACSettings = () => {
 					<AdminABACSettingToggle hasABAC={hasABAC} />
 
 					<Callout>
-						{/* TODO: get documentation URL */}
 						<Trans i18nKey='ABAC_Enabled_callout'>
 							User attributes are synchronized via LDAP
-							<a href='https://rocket.chat' rel='noopener noreferrer' target='_blank'>
+							<a href={links.go.abacLDAPDocs} rel='noopener noreferrer' target='_blank'>
 								Learn more
 							</a>
 						</Trans>
