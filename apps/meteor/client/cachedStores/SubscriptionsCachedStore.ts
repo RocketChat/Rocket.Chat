@@ -1,9 +1,10 @@
-import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { Rooms, Subscriptions } from '../stores';
+import { isOptimized } from './config';
 
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
 	constructor() {
@@ -14,8 +15,16 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		});
 	}
 
+	/**
+	 * Lower performance implementation that scans all rooms to find the one with the matching ID.
+	 * See {@link SubscriptionCachedStoreOptimized} for the improved version.
+	 */
+	protected getRoomById(rid: ISubscription['rid']): IRoom | undefined {
+		return Rooms.use.getState().find((r) => r._id === rid);
+	}
+
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = Rooms.use.getState().find((r) => r._id === subscription.rid);
+		const room = this.getRoomById(subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
@@ -90,6 +99,17 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 	}
 }
 
-const instance = new SubscriptionsCachedStore();
+/**
+ * Optimization: use O(1) map access instead of linear scan over all rooms.
+ * Rooms store implements get(_id) via DocumentMapStore; previously we called find which looped all records.
+ * For large room lists (thousands), replacing find with get reduces per-subscription mapping cost.
+ */
+class SubscriptionCachedStoreOptimized extends SubscriptionsCachedStore {
+	protected override getRoomById(rid: ISubscription['rid']): IRoom | undefined {
+		return Rooms.use.getState().get(rid);
+	}
+}
+
+const instance = isOptimized ? new SubscriptionCachedStoreOptimized() : new SubscriptionsCachedStore();
 
 export { instance as SubscriptionsCachedStore };
