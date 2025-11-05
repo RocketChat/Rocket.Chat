@@ -19,10 +19,11 @@ import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { links } from '../../../../lib/links';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
-const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
-const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
+const SUPPORT_EXTERNAL_LINK = links.go.versionSupport;
+const RELEASES_EXTERNAL_LINK = links.go.updateProduct;
 
 type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;

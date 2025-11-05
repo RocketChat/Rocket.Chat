@@ -47,6 +47,7 @@ import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
@@ -521,7 +522,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
+													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>
