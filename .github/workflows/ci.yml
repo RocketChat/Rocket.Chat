@@ -401,7 +401,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
