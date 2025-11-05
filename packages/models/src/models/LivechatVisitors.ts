@@ -384,14 +384,16 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		const update: UpdateFilter<ILivechatVisitor> = {
-			$addToSet: {
-				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
-				...(savePhone.length && { phone: { $each: savePhone } }),
+		// the only reason we're using $setUnion here instead of $addToSet is because
+		// old visitors might have `visitorEmails` or `phone` as `null` which would cause $addToSet to fail
+		return this.updateOne({ _id }, [
+			{
+				$set: {
+					...(saveEmail.length && { visitorEmails: { $setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail] } }),
+					...(savePhone.length && { phone: { $setUnion: [{ $ifNull: ['$phone', []] }, savePhone] } }),
+				},
 			},
-		};
-
-		return this.updateOne({ _id }, update);
+		]);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
