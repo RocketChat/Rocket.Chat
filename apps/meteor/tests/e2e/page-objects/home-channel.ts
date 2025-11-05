@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
 
@@ -11,7 +11,7 @@ export class HomeChannel {
 
 	readonly sidenav: HomeSidenav;
 
-	readonly sidebar: Sidebar;
+	readonly sidebar: RoomSidebar;
 
 	readonly sidepanel: Sidepanel;
 
@@ -27,7 +27,7 @@ export class HomeChannel {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
-		this.sidebar = new Sidebar(page);
+		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);

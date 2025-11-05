@@ -438,9 +438,9 @@ export class HomeContent {
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	get threadMessageList(): Locator {
@@ -574,6 +574,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
+		await expect(this.btnModalConfirmDelete).toBeDisabled();
 	}
 
 	get btnClearSelection() {
