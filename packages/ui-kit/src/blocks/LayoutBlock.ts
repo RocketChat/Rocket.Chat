@@ -9,6 +9,7 @@ import type { InputBlock } from './layout/InputBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
+import type { SectionedPreviewBlock } from './layout/SectionedPreviewBlock';
 
 export type LayoutBlock =
 	| PreviewBlock
@@ -21,4 +22,5 @@ export type LayoutBlock =
 	| SectionBlock
 	| VideoConferenceBlock
 	| CalloutBlock
-	| ExperimentalTabNavigationBlock;
+	| ExperimentalTabNavigationBlock
+	| SectionedPreviewBlock;
