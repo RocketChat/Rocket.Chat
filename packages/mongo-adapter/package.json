@@ -19,7 +19,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
