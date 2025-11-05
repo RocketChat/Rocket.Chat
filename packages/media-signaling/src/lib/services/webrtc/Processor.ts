@@ -145,6 +145,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this._held = held;
 		this.localStream.setEnabled(!held && !this._muted);
 		this.remoteStream.setEnabled(!held);
+
+		this.updateAudioDirectionWithoutNegotiation();
 	}
 
 	public stop(): void {
@@ -385,6 +387,28 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.peer
 			.getTransceivers()
 			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+	}
+
+	private updateAudioDirectionWithoutNegotiation(): void {
+		// If the signaling state is not stable, then a negotiation is already happening and the audio direction will be updated by them
+		if (this.peer.signalingState !== 'stable') {
+			return;
+		}
+
+		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
+
+		const transceivers = this.getAudioTransceivers();
+		for (const transceiver of transceivers) {
+			// If the last direction we requested still matches our current requirements, then we don't need to change our request
+			if ([desiredDirection, acceptableDirection, 'stopped'].includes(transceiver.direction)) {
+				continue;
+			}
+
+			// If the current state of the call doesn't match what we are requesting here, the browser will trigger the negotiation-needed event for us
+			this.config.logger?.debug(`Changing desired audio direction from ${transceiver.direction} to ${desiredDirection}.`);
+			transceiver.direction = desiredDirection;
+		}
 	}
 
 	private registerPeerEvents() {
