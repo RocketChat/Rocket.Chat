@@ -549,6 +549,10 @@ jobs:
       matrix:
         service: ${{ fromJson(needs.release-versions.outputs.services) }}
 
+    env:
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+
     steps:
       - uses: actions/checkout@v5
         with:
