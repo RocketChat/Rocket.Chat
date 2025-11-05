@@ -4,6 +4,7 @@ import { Registration, HomeChannel } from './page-objects';
 import { EditStatusModal } from './page-objects/fragments/edit-status-modal';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
+import { links } from '../../client/lib/links';
 
 test.describe.serial('Presence', () => {
 	let poRegistration: Registration;
@@ -106,7 +107,7 @@ test.describe.serial('Presence', () => {
 						endTime: new Date(new Date().getTime() + 1000 * 60 * 3).toISOString(),
 						subject: 'Test appointment',
 						description: 'Test appointment description',
-						meetingUrl: 'https://rocket.chat/',
+						meetingUrl: links.rocketChat,
 					})
 				).status(),
 			).toBe(200);
@@ -136,7 +137,7 @@ test.describe.serial('Presence', () => {
 				endTime: new Date(new Date().getTime() + 1000 * 60 * 3).toISOString(),
 				subject: 'Test appointment',
 				description: 'Test appointment description',
-				meetingUrl: 'https://rocket.chat/',
+				meetingUrl: links.rocketChat,
 			});
 
 			expect(apiResponse.status()).toBe(200);
@@ -160,7 +161,7 @@ test.describe.serial('Presence', () => {
 				endTime: new Date(new Date().getTime() + 1000 * 60 * 55).toISOString(),
 				subject: 'Test appointment',
 				description: 'Test appointment description',
-				meetingUrl: 'https://rocket.chat/',
+				meetingUrl: links.rocketChat,
 			});
 
 			expect(apiResponse.status()).toBe(200);
@@ -174,7 +175,7 @@ test.describe.serial('Presence', () => {
 						startTime: new Date(new Date().getTime() + 1000 * 60 * 2).toISOString(),
 						subject: 'Test appointment updated',
 						description: 'Test appointment description updated',
-						meetingUrl: 'https://rocket.chat/updated',
+						meetingUrl: links.rocketChatUpdated,
 					})
 				).status(),
 			).toBe(200);

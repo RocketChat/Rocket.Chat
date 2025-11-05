@@ -19,6 +19,7 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
+import { links } from '../../../../lib/links';
 
 function ContactTable() {
 	const { t } = useTranslation();
@@ -117,7 +118,7 @@ function ContactTable() {
 					description={t('No_contacts_yet_description')}
 					buttonTitle={t('New_contact')}
 					buttonAction={onButtonNewClick}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}

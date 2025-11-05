@@ -39,7 +39,6 @@ const RoomMembersItem = ({
 	useRealName,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
-
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
@@ -62,7 +61,7 @@ const RoomMembersItem = ({
 				{showButton ? (
 					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
 				) : (
-					<IconButton tiny icon='kebab' />
+					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} />
 				)}
 			</OptionMenu>
 		</Option>

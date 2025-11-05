@@ -2,7 +2,7 @@ import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,
-	ReadReceipt,
+	IReadReceiptWithUser,
 	OtrSystemMessages,
 	MessageUrl,
 	IThreadMainMessage,
@@ -488,17 +488,47 @@ const ChatUpdateSchema = {
 				},
 				content: {
 					type: 'object',
-					properties: {
-						algorithm: {
-							type: 'string',
-							enum: ['rc.v1.aes-sha2'],
-						},
-						ciphertext: {
-							type: 'string',
-						},
+					discriminator: {
+						propertyName: 'algorithm',
 					},
-					required: ['algorithm', 'ciphertext'],
-					additionalProperties: false,
+					oneOf: [
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v1.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+									minLength: 1,
+								},
+							},
+							required: ['algorithm', 'ciphertext'],
+							additionalProperties: false,
+						},
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v2.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+									minLength: 1,
+								},
+								iv: {
+									type: 'string',
+									minLength: 1,
+								},
+								kid: {
+									type: 'string',
+									minLength: 1,
+								},
+							},
+							required: ['algorithm', 'ciphertext', 'iv', 'kid'],
+							additionalProperties: false,
+						},
+					],
 				},
 				e2eMentions: {
 					type: 'object',
@@ -1022,7 +1052,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {
-		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
+		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {

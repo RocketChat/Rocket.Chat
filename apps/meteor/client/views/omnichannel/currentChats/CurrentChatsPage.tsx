@@ -28,6 +28,7 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
+import { links } from '../../../lib/links';
 import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
@@ -335,7 +336,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							icon='discussion'
 							title={t('No_chats_yet')}
 							description={t('No_chats_yet_description')}
-							linkHref='https://go.rocket.chat/i/omnichannel-docs'
+							linkHref={links.go.omnichannelDocs}
 							linkText={t('Learn_more_about_current_chats')}
 						/>
 					)}

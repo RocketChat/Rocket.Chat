@@ -135,6 +135,30 @@ export type MessageMention = {
 
 export interface IMessageCustomFields {}
 
+interface IEncryptedContent {
+	algorithm: string;
+	ciphertext: string;
+}
+
+interface IEncryptedContentV1 extends IEncryptedContent {
+	algorithm: 'rc.v1.aes-sha2';
+	ciphertext: string;
+}
+
+interface IEncryptedContentV2 extends IEncryptedContent {
+	algorithm: 'rc.v2.aes-sha2';
+	ciphertext: string;
+	iv: string; // Initialization Vector
+	kid: string; // ID of the key used to encrypt the message
+}
+
+interface IEncryptedContentFederation extends IEncryptedContent {
+	algorithm: 'm.megolm.v1.aes-sha2';
+	ciphertext: string;
+}
+
+export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
@@ -232,26 +256,30 @@ export interface IMessage extends IRocketChatRecord {
 
 	customFields?: IMessageCustomFields;
 
-	content?: {
-		algorithm: string; // 'rc.v1.aes-sha2'
-		ciphertext: string; // Encrypted subset JSON of IMessage
-	};
+	content?: EncryptedContent;
 }
 
-export type EncryptedMessageContent = {
-	content: {
-		algorithm: 'rc.v1.aes-sha2';
-		ciphertext: string;
-	};
-};
+export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;
 
-export const isEncryptedMessageContent = (content: unknown): content is EncryptedMessageContent =>
-	typeof content === 'object' &&
-	content !== null &&
-	'content' in content &&
-	typeof (content as any).content === 'object' &&
-	(content as any).content?.algorithm === 'rc.v1.aes-sha2';
-
+export function isEncryptedMessageContent(value: unknown): value is EncryptedMessageContent {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'content' in value &&
+		typeof value.content === 'object' &&
+		value.content !== null &&
+		'algorithm' in value.content &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' || value.content.algorithm === 'rc.v2.aes-sha2') &&
+		'ciphertext' in value.content &&
+		typeof value.content.ciphertext === 'string' &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' ||
+			(value.content.algorithm === 'rc.v2.aes-sha2' &&
+				'iv' in value.content &&
+				typeof value.content.iv === 'string' &&
+				'kid' in value.content &&
+				typeof value.content.kid === 'string'))
+	);
+}
 export interface ISystemMessage extends IMessage {
 	t: MessageTypesValues;
 }
@@ -404,10 +432,12 @@ export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'vo
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
 	e2e: 'pending' | 'done';
+	content: EncryptedContent;
 };
 
 export type IE2EEPinnedMessage = IMessage & {
 	t: 'message_pinned_e2e';
+	attachments: [MessageAttachment & { content: EncryptedContent }];
 };
 
 export interface IOTRMessage extends IMessage {

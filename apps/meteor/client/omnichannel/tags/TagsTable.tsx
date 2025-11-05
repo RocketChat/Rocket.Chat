@@ -18,6 +18,7 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
+import { links } from '../../lib/links';
 
 const TagsTable = () => {
 	const t = useTranslation();
@@ -94,7 +95,7 @@ const TagsTable = () => {
 					description={t('No_tags_yet_description')}
 					buttonTitle={t('Create_tag')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_tags')}
 				/>
 			)}

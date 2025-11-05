@@ -19,6 +19,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { links } from '../../../../lib/links';
 
 const DEPARTMENTS_ENDPOINTS = {
 	department: '/v1/livechat/department',
@@ -114,7 +115,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 					description={t('No_departments_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_department')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_departments')}
 				/>
 			)}

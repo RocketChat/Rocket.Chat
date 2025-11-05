@@ -1,15 +1,15 @@
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { AdminSettings } from './page-objects';
 import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration-settings', () => {
-	let poAdmin: Admin;
+	let poAdminSettings: AdminSettings;
 
 	test.beforeEach(async ({ page }) => {
-		poAdmin = new Admin(page);
+		poAdminSettings = new AdminSettings(page);
 	});
 
 	test.describe('General', () => {
@@ -24,14 +24,14 @@ test.describe.parallel('administration-settings', () => {
 		});
 
 		test('should be able to reset a setting after a change', async () => {
-			await poAdmin.inputSiteURL.fill('any_text');
-			await poAdmin.btnResetSiteURL.click();
+			await poAdminSettings.inputSiteURL.fill('any_text');
+			await poAdminSettings.btnResetSiteURL.click();
 
-			await expect(poAdmin.inputSiteURL).toHaveValue(inputSiteURLSetting);
+			await expect(poAdminSettings.inputSiteURL).toHaveValue(inputSiteURLSetting);
 		});
 
 		test('should be able to go back to the settings page', async ({ page }) => {
-			await poAdmin.btnBack.click();
+			await poAdminSettings.btnBack.click();
 
 			await expect(page).toHaveURL('/admin/settings');
 		});
@@ -45,7 +45,7 @@ test.describe.parallel('administration-settings', () => {
 		test.afterAll(async ({ api }) => setSettingValueById(api, 'theme-custom-css', ''));
 
 		test('should display the code mirror correctly', async ({ page, api }) => {
-			await poAdmin.getAccordionBtnByName('Custom CSS').click();
+			await poAdminSettings.getAccordionBtnByName('Custom CSS').click();
 
 			await test.step('should render only one code mirror element', async () => {
 				const codeMirrorParent = page.getByRole('code');
@@ -53,9 +53,9 @@ test.describe.parallel('administration-settings', () => {
 			});
 
 			await test.step('should display full screen properly', async () => {
-				await poAdmin.btnFullScreen.click();
+				await poAdminSettings.btnFullScreen.click();
 				await expect(page.getByRole('code')).toHaveCSS('width', '920px');
-				await poAdmin.btnExitFullScreen.click();
+				await poAdminSettings.btnExitFullScreen.click();
 			});
 
 			await test.step('should reflect updated value when valueProp changes after server update', async () => {

@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useState } from 'react';
 
 import MediaCallContext from './MediaCallContext';
@@ -21,6 +22,7 @@ const MediaCallProviderMock = ({
 		avatarUrl,
 		username: 'john.doe',
 		callerId: '1234567890',
+		status: UserStatus.ONLINE,
 	});
 	const [widgetState, setWidgetState] = useState<State>(state);
 	const [muted, setMuted] = useState(false);

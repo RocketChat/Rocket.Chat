@@ -1,3 +1,5 @@
+export * from './edit-user-flextab';
+export * from './user-info-flextab';
 export * from './home-content';
 export * from './home-omnichannel-content';
 export * from './home-flextab';

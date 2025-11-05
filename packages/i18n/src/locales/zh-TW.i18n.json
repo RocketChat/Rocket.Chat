@@ -3008,7 +3008,7 @@
   "RetentionPolicyRoom_FilesOnly": "僅修剪檔案，保留訊息",
   "RetentionPolicyRoom_MaxAge": "最大訊息年齡（以天為單位）（預設值：{{max}}）",
   "RetentionPolicyRoom_OverrideGlobal": "覆蓋全域保留策略",
-  "RetentionPolicyRoom_ReadTheDocs": "小心！不注意的調整這些設定可能會破壞所有歷史訊息記錄。在此處打開<a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">上的功能</a>之前，請先閱讀相關文件。",
+  "RetentionPolicyRoom_ReadTheDocs": "小心！不注意的調整這些設定可能會破壞所有歷史訊息記錄。在此處打開<a href=\"{{retentionPolicyUrl}}\">上的功能</a>之前，請先閱讀相關文件。",
   "RetentionPolicy_Advanced_Precision": "使用進階保留策略設置",
   "RetentionPolicy_Advanced_Precision_Cron": "使用進階保留政策計劃",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "cron 工作表示法定義了修剪計時器應執行的頻率。將此值設置為更精確的值可使具有快速保留計時器的頻道做的更好，但可能會給大型社群帶來更重的處理能力。",

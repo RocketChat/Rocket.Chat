@@ -1,5 +1,6 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
-import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo } from 'react';
 
 import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
@@ -62,8 +63,8 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 const reducer = (
 	reducerState: SessionInfo,
 	action: {
-		type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset' | 'mute' | 'hold';
-		payload?: Partial<SessionInfo>;
+		type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'status_updated' | 'reset' | 'mute' | 'hold';
+		payload?: Partial<SessionInfo> & { status?: UserStatus };
 	},
 ): SessionInfo => {
 	if (action.type === 'mute') {
@@ -299,8 +300,15 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		};
 	}, [instance]);
 
+	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
+
+	const peerInfo = useMemo(() => {
+		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
+	}, [mediaSession.peerInfo, status]);
+
 	return {
 		...mediaSession,
+		peerInfo,
 		...cbs,
-	};
+	} as MediaSession;
 };

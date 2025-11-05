@@ -1807,7 +1807,7 @@
   "RetentionPolicyRoom_FilesOnly": "Samo poševne datoteke, obdržite sporočila",
   "RetentionPolicyRoom_MaxAge": "Najvišja starost sporočil v dneh (privzeto: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Prekoračiti globalno politiko zadrževanja",
-  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Te nastavitve lahko premikate brez skrbi, lahko uničijo vse zgodovine sporočil. Prosimo, preberite dokumentacijo, preden vklopite funkcijo v <a href = 'https://rocket.chat/docs/administratorguide/retention-policies/'>tukaj</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Te nastavitve lahko premikate brez skrbi, lahko uničijo vse zgodovine sporočil. Prosimo, preberite dokumentacijo, preden vklopite funkcijo v <a href=\"{{retentionPolicyUrl}}\">tukaj</a>.",
   "RetentionPolicy_AppliesToChannels": "Velja za kanale",
   "RetentionPolicy_AppliesToDMs": "Velja za neposredna sporočila",
   "RetentionPolicy_AppliesToGroups": "Velja za zasebne skupine",

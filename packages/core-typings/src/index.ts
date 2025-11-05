@@ -65,7 +65,7 @@ export * from './IAvatar';
 export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
-export * from './ReadReceipt';
+export * from './IReadReceipt';
 export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';

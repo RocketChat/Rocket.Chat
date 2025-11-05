@@ -1810,7 +1810,7 @@
   "RetentionPolicyRoom_FilesOnly": "Senpaga dosieroj nur, konservu mesaĝojn",
   "RetentionPolicyRoom_MaxAge": "Maksimuma mesaĝo en tagoj (defaŭlte: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anstataŭigi tutmondan retencan politikon",
-  "RetentionPolicyRoom_ReadTheDocs": "Atentu! Taksado de ĉi tiuj agordoj sen plej granda zorgo povas detrui ĉiujn mesaĝajn historiojn. Bonvolu legi la dokumentadon antaŭ igi la funkcion en <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>ĉi tie</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Atentu! Taksado de ĉi tiuj agordoj sen plej granda zorgo povas detrui ĉiujn mesaĝajn historiojn. Bonvolu legi la dokumentadon antaŭ igi la funkcion en <a href = \"{{retentionPolicyUrl}}\">ĉi tie</a>.",
   "RetentionPolicy_AppliesToChannels": "Aplikas al kanaloj",
   "RetentionPolicy_AppliesToDMs": "Aplikas direkti mesaĝojn",
   "RetentionPolicy_AppliesToGroups": "Aplikas al privataj grupoj",

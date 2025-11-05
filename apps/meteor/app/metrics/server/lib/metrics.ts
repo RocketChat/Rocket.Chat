@@ -199,6 +199,12 @@ export const metrics = {
 		name: 'rocketchat_apps_failed',
 		help: 'total apps that failed to load',
 	}),
+	appBridgeMethods: new client.Summary({
+		name: 'rocketchat_apps_bridge_methods',
+		help: 'summary of app bridge method calls count and time',
+		labelNames: ['bridge', 'method', 'app_id'],
+		percentiles,
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({

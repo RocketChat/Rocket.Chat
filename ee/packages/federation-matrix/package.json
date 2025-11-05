@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
 		"@babel/cli": "~7.28.3",
@@ -46,7 +46,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"emojione": "^4.5.0",
 		"marked": "^16.1.2",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"pino": "^9.11.0",
 		"reflect-metadata": "^0.2.2",
 		"sanitize-html": "~2.17.0",

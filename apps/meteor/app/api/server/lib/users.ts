@@ -28,6 +28,7 @@ export async function findUsersToAutocomplete({
 			nickname: 1,
 			status: 1,
 			avatarETag: 1,
+			freeSwitchExtension: 1,
 		},
 		sort: {
 			username: 1,

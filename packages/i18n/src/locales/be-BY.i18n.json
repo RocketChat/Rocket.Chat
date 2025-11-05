@@ -1831,7 +1831,7 @@
   "RetentionPolicyRoom_FilesOnly": "толькі Выдаляць файлы, захоўваць паведамленні",
   "RetentionPolicyRoom_MaxAge": "Максімальны ўзрост паведамленні ў днях (па змаўчанні: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Перавызначыць глабальную палітыку захоўвання",
-  "RetentionPolicyRoom_ReadTheDocs": "Асцярожна! Падладка гэтых параметраў без асаблівай дбайнасці можа знішчыць усю гісторыю паведамленняў. Калі ласка, прачытайце дакументацыю перш чым уключыць функцыю на <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">тут</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Асцярожна! Падладка гэтых параметраў без асаблівай дбайнасці можа знішчыць усю гісторыю паведамленняў. Калі ласка, прачытайце дакументацыю перш чым уключыць функцыю на <a href=\"{{retentionPolicyUrl}}\">тут</a>.",
   "RetentionPolicy_AppliesToChannels": "Ставіцца да каналах",
   "RetentionPolicy_AppliesToDMs": "Ўжываецца для накіравання паведамленняў",
   "RetentionPolicy_AppliesToGroups": "Ставіцца да прыватных групам",

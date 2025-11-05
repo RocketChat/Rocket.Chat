@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "23.0.0",
+	"version": "24.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -19,7 +19,7 @@
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"react": "~18.3.1",
 		"typescript": "~5.9.3"
 	},
