@@ -36,7 +36,6 @@ import './methods/saveSetting';
 import './methods/saveSettings';
 import './methods/sendMessage';
 import './methods/sendSMTPTestEmail';
-import './methods/setAdminStatus';
 import './methods/setEmail';
 import './methods/setRealName';
 import './methods/unarchiveRoom';
