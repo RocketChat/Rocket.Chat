@@ -12,6 +12,7 @@ import type {
 	CallService,
 	CallHangupReason,
 	CallActorType,
+	CallFlag,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
@@ -181,6 +182,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor?.localAudioLevel || 0;
 	}
 
+	private _flags: CallFlag[];
+
+	public get flags(): CallFlag[] {
+		return this._flags;
+	}
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -215,6 +222,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._transferredBy = null;
 		this._service = null;
 		this._remoteHeld = false;
+		this._flags = [];
 
 		this.negotiationManager = new NegotiationManager(this, { logger: config.logger });
 	}
@@ -278,6 +286,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.hasRemoteData = true;
 		this._service = signal.service;
 		this._role = signal.role;
+		this._flags = signal.flags || [];
 
 		this._transferredBy = signal.transferredBy || null;
 		this.changeContact(signal.contact);

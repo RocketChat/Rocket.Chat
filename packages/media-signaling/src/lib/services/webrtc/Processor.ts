@@ -6,6 +6,8 @@ import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, W
 import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
+const DATA_CHANNEL_LABEL = 'rocket.chat';
+
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
 
@@ -59,6 +61,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this._localAudioLevel;
 	}
 
+	private _dataChannel: RTCDataChannel | null;
+
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
@@ -67,6 +71,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this._audioLevel = 0;
 		this._localAudioLevel = 0;
 		this._audioLevelTracker = null;
+		this._dataChannel = null;
 
 		this.peer = new RTCPeerConnection(config.rtc);
 
@@ -119,6 +124,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			}
 		}
 
+		this.createDataChannel();
 		this.updateAudioDirectionBeforeNegotiation();
 
 		if (iceRestart) {
@@ -387,6 +393,38 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
 	}
 
+	private createDataChannel(): void {
+		if (this._dataChannel || !this.config.call.flags.includes('create-data-channel')) {
+			return;
+		}
+
+		this.config.logger?.debug('MediaCallWebRTCProcessor.createDataChannel');
+		const channel = this.peer.createDataChannel(DATA_CHANNEL_LABEL);
+		this.initializeDataChannel(channel);
+	}
+
+	private initializeDataChannel(channel: RTCDataChannel): void {
+		if (channel.label !== DATA_CHANNEL_LABEL) {
+			this.config.logger?.warn('Unexpected Data Channel', channel.label);
+			return;
+		}
+
+		if (this._dataChannel) {
+			this.config.logger?.warn('Duplicated Data Channel', channel.label);
+			return;
+		}
+
+		channel.onopen = (_event) => {
+			this.config.logger?.debug('Data Channel Open', channel.label);
+		};
+
+		channel.onmessage = (event) => {
+			this.config.logger?.debug('Data Channel Message', event.data);
+		};
+
+		this._dataChannel = channel;
+	}
+
 	private registerPeerEvents() {
 		const { peer } = this;
 
@@ -398,6 +436,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		peer.onnegotiationneeded = () => this.onNegotiationNeeded();
 		peer.onicegatheringstatechange = () => this.onIceGatheringStateChange();
 		peer.onsignalingstatechange = () => this.onSignalingStateChange();
+		peer.ondatachannel = (event) => this.onDataChannel(event);
 	}
 
 	private unregisterPeerEvents() {
@@ -557,6 +596,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceGatheringComplete');
 
 		this.clearIceGatheringWaiters();
+	}
+
+	private onDataChannel(event: RTCDataChannelEvent) {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.onDataChannel');
+		this.initializeDataChannel(event.channel);
 	}
 
 	private clearIceGatheringData(iceGatheringData: PromiseWaiterData, error?: Error) {
