@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.0.2",
+	"version": "0.0.6",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -31,6 +31,6 @@
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",
-		"mongodb": "6.10.0"
+		"mongodb": "6.16.0"
 	}
 }

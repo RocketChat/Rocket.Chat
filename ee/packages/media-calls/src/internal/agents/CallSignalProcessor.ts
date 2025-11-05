@@ -86,6 +86,7 @@ export class UserActorSignalProcessor {
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
 		// 3. the call has not been accepted yet and the signal came from a valid session from the callee
+		// 4. It's a hangup request with reason = 'another-client' and the request came from any valid client of either user
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
@@ -96,7 +97,7 @@ export class UserActorSignalProcessor {
 			case 'local-state':
 				return this.reviewLocalState(signal);
 			case 'error':
-				return this.processError(signal.errorType, signal.errorCode);
+				return this.processError(signal);
 			case 'negotiation-needed':
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
 			case 'transfer':
@@ -135,19 +136,44 @@ export class UserActorSignalProcessor {
 		}
 	}
 
-	private async processError(errorType: ClientMediaSignalError['errorType'], errorCode?: string): Promise<void> {
+	private async processError(signal: ClientMediaSignalError): Promise<void> {
 		if (!this.signed) {
 			return;
 		}
 
-		switch (errorType) {
-			case 'signaling':
-				return this.onSignalingError(errorCode);
-			case 'service':
-				return this.onServiceError(errorCode);
-			default:
-				return this.onUnexpectedError(errorCode);
+		const { errorType = 'other', errorCode, critical = false, negotiationId, errorDetails } = signal;
+		logger.error({
+			msg: 'Client reported an error',
+			errorType,
+			errorCode,
+			critical,
+			errorDetails,
+			negotiationId,
+			callId: this.callId,
+			role: this.role,
+			state: this.call.state,
+		});
+
+		let hangupReason: CallHangupReason = 'error';
+		if (errorType === 'service') {
+			hangupReason = 'service-error';
+
+			// Do not hangup on service errors after the call is already active;
+			// if the error happened on a renegotiation, then the service may still be able to rollback to a valid state
+			if (this.isPastNegotiation()) {
+				return;
+			}
 		}
+
+		if (!critical) {
+			return;
+		}
+
+		if (errorType === 'signaling') {
+			hangupReason = 'signaling-error';
+		}
+
+		await mediaCallDirector.hangup(this.call, this.agent, hangupReason);
 	}
 
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
@@ -272,30 +298,5 @@ export class UserActorSignalProcessor {
 
 			await this.clientIsActive();
 		}
-	}
-
-	private async onSignalingError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await mediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
-	}
-
-	private async onServiceError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a service error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		if (this.isPastNegotiation()) {
-			return;
-		}
-
-		await mediaCallDirector.hangup(this.call, this.agent, 'service-error');
-	}
-
-	private async onUnexpectedError(errorMessage?: string): Promise<void> {
-		logger.error({
-			msg: 'Client reported an unexpected error',
-			errorMessage,
-			callId: this.callId,
-			role: this.role,
-			state: this.call.state,
-		});
-		await mediaCallDirector.hangup(this.call, this.agent, 'error');
 	}
 }

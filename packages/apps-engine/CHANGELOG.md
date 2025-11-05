@@ -1,5 +1,59 @@
 # @rocket.chat/apps-engine
 
+## 1.57.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+### Patch Changes
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
+## 1.57.0-rc.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+### Patch Changes
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
+## 1.56.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+### Patch Changes
+
+- ([#36967](https://github.com/RocketChat/Rocket.Chat/pull/36967)) Fixes an issue where apps that import node native modules with the optional `node:` specifier would fail to construct
+
+- ([#36855](https://github.com/RocketChat/Rocket.Chat/pull/36855)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#36943](https://github.com/RocketChat/Rocket.Chat/pull/36943)) Fixes an issue where an object reference leak would cause invalid data to be stored in the database during app installation
+
+## 1.56.0-rc.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+### Patch Changes
+
+- ([#36967](https://github.com/RocketChat/Rocket.Chat/pull/36967)) Fixes an issue where apps that import node native modules with the optional `node:` specifier would fail to construct
+
+- ([#36855](https://github.com/RocketChat/Rocket.Chat/pull/36855)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#36943](https://github.com/RocketChat/Rocket.Chat/pull/36943)) Fixes an issue where an object reference leak would cause invalid data to be stored in the database during app installation
+
+## 1.55.1
+
+### Patch Changes
+
+- ([#37028](https://github.com/RocketChat/Rocket.Chat/pull/37028) by [@dionisio-bot](https://github.com/dionisio-bot)) Changes a strict behavior on reporting slash commands provided by apps
+
 ## 1.55.0
 
 ### Minor Changes

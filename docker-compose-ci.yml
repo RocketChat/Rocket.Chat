@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   rocketchat:
     volumes:
       - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
-      dockerfile: ${RC_DOCKERFILE}
+      dockerfile: ${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
       args:
         DENO_VERSION: ${DENO_VERSION}
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT}
     environment:
       - TEST_MODE=true
       - DEBUG=${DEBUG}
@@ -24,6 +22,8 @@ services:
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
       - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
+      - Federation_Service_Enabled=true
+      - 'Federation_Service_Domain=rc.host'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:

@@ -299,6 +299,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
+	get btnVoiceCall(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
+	}
+
 	get btnRecordAudio(): Locator {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}
@@ -316,15 +320,15 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+		return this.page.getByRole('button', { name: 'User Info' });
+	}
+
+	get btnContactInfoVoiceCall(): Locator {
+		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
 	get btnContactEdit(): Locator {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
-	}
-
-	get inputModalClosingComment(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
 	}
 
 	get btnSendTranscript(): Locator {
@@ -337,10 +341,6 @@ export class HomeContent {
 
 	get btnSendTranscriptAsPDF(): Locator {
 		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
-	}
-
-	get btnCannedResponses(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
 	}
 
 	get btnNewCannedResponse(): Locator {
@@ -438,9 +438,9 @@ export class HomeContent {
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	get threadMessageList(): Locator {
@@ -466,10 +466,6 @@ export class HomeContent {
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
 		return this.page.locator('button.rcx-button--primary >> text="Resume"');
-	}
-
-	get btnOnHold(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
 	get primaryRoomActionsToolbar(): Locator {
@@ -578,6 +574,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
+		await expect(this.btnModalConfirmDelete).toBeDisabled();
 	}
 
 	get btnClearSelection() {
