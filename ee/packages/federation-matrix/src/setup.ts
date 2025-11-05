@@ -1,13 +1,15 @@
 import { License } from '@rocket.chat/core-services';
 import { Emitter } from '@rocket.chat/emitter';
 import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
-import { ConfigService, createFederationContainer } from '@rocket.chat/federation-sdk';
+import { ConfigService, createFederationContainer, getAllServices } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 
 import { registerEvents } from './events';
 
 const logger = new Logger('FederationSetup');
+
+let containerInitialized = false;
 
 function validateDomain(domain: string): boolean {
 	const value = domain.trim();
@@ -40,6 +42,11 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 	const settingEnabled = (await Settings.getValueById<boolean>('Federation_Service_Enabled')) || false;
 	const serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
 
+	const serviceEnabled = (await License.hasModule('federation')) && settingEnabled && validateDomain(serverName);
+	if (!serviceEnabled) {
+		return false;
+	}
+
 	const processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 	const processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	const signingKey = (await Settings.getValueById<string>('Federation_Service_Matrix_Signing_Key')) || '';
@@ -52,7 +59,7 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 	const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
 	const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
 
-	const config = new ConfigService({
+	const configValues = {
 		instanceId,
 		serverName,
 		keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
@@ -89,26 +96,29 @@ export async function setupFederationMatrix(instanceId: string): Promise<boolean
 			allowedEncryptedRooms,
 			allowedNonPrivateRooms,
 		},
-	});
+	};
 
-	const eventHandler = new Emitter<HomeserverEventSignatures>();
+	if (!containerInitialized) {
+		const config = new ConfigService(configValues);
+		const eventHandler = new Emitter<HomeserverEventSignatures>();
 
-	await createFederationContainer(
-		{
-			emitter: eventHandler,
-		},
-		config,
-	);
+		await createFederationContainer(
+			{
+				emitter: eventHandler,
+			},
+			config,
+		);
 
-	const serviceEnabled = (await License.hasModule('federation')) && settingEnabled && validateDomain(serverName);
-	if (!serviceEnabled) {
-		return false;
+		registerEvents(eventHandler, serverName, {
+			typing: processEDUTyping,
+			presence: processEDUPresence,
+		});
+
+		containerInitialized = true;
+	} else {
+		const services = getAllServices();
+		services.config.updateConfig(configValues);
 	}
-
-	registerEvents(eventHandler, serverName, {
-		typing: processEDUTyping,
-		presence: processEDUPresence,
-	});
 
 	return true;
 }
