@@ -158,15 +158,10 @@ const abacEndpoints = API.v1
 				400: GenericErrorSchema,
 				403: validateUnauthorizedErrorResponse,
 			},
-			license: ['abac'],
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
 			const { key, values } = this.queryParams;
-
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
 
 			return API.v1.success(
 				await Abac.listAbacAttributes({
@@ -239,13 +234,10 @@ const abacEndpoints = API.v1
 				400: GenericErrorSchema,
 				403: validateUnauthorizedErrorResponse,
 			},
-			license: ['abac'],
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
+
 			const result = await Abac.getAbacAttributeById(_id);
 			return API.v1.success(result);
 		},
@@ -262,13 +254,10 @@ const abacEndpoints = API.v1
 				400: GenericErrorSchema,
 				403: validateUnauthorizedErrorResponse,
 			},
-			license: ['abac'],
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
+
 			await Abac.deleteAbacAttributeById(_id);
 			return API.v1.success();
 		},
@@ -285,13 +274,10 @@ const abacEndpoints = API.v1
 				400: GenericErrorSchema,
 				403: validateUnauthorizedErrorResponse,
 			},
-			license: ['abac'],
 		},
 		async function action() {
 			const { key } = this.urlParams;
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
+
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
 		},
