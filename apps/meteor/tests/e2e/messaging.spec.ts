@@ -192,7 +192,7 @@ test.describe('Messaging', () => {
 				}
 
 				await editPromise;
-				await poHomeChannel.toastMessage.waitForDisplay({ type: 'error' });
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
 	});
