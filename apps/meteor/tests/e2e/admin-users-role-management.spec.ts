@@ -1,6 +1,5 @@
 import { Users } from './fixtures/userStates';
 import { AdminUsers } from './page-objects';
-import { ToastBar } from './page-objects/toastBar';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
@@ -8,7 +7,6 @@ import { createTestUser } from './utils/user-helpers';
 let userWithoutAdminAccess: ITestUser;
 let userWithAdminAccess: ITestUser;
 let admin: AdminUsers;
-let poToastBar: ToastBar;
 
 test.describe('Admin > Users Role Management', () => {
 	test.beforeAll('Create test users', async ({ api }) => {
@@ -26,7 +24,6 @@ test.describe('Admin > Users Role Management', () => {
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {
 			admin = new AdminUsers(page);
-			poToastBar = new ToastBar(page);
 			await page.goto('/admin/users');
 		});
 
@@ -41,8 +38,7 @@ test.describe('Admin > Users Role Management', () => {
 
 			await test.step('make a user admin', async () => {
 				await admin.dispatchUserAction(userWithoutAdminAccess.data.username, 'Make Admin');
-				await expect(poToastBar.alert).toBeVisible();
-				await expect(poToastBar.alert).toHaveText('User is now an admin');
+				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is now an admin' });
 			});
 
 			await test.step('verify user is admin', async () => {
@@ -61,8 +57,7 @@ test.describe('Admin > Users Role Management', () => {
 
 			await test.step('remove admin role', async () => {
 				await admin.dispatchUserAction(userWithAdminAccess.data.username, 'Remove Admin');
-				await expect(poToastBar.alert).toBeVisible();
-				await expect(poToastBar.alert).toHaveText('User is no longer an admin');
+				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is no longer an admin' });
 			});
 
 			await test.step('verify user role as admin is removed', async () => {

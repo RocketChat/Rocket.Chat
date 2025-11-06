@@ -10,7 +10,7 @@ export class ToastMessages {
 		error: this.page.locator('.rcx-toastbar--error'),
 	};
 
-	async dismissToast(type: 'success') {
+	async dismissToast(type: 'success' | 'error' = 'success') {
 		await this.toastByType[type].locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 		await this.page.mouse.move(0, 0);
 	}

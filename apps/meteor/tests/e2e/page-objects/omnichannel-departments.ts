@@ -1,15 +1,19 @@
 import type { Page, Locator } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelSidenav, ToastMessages } from './fragments';
 
 export class OmnichannelDepartments {
 	private readonly page: Page;
 
 	readonly sidenav: OmnichannelSidenav;
 
+	// TODO: This will be inherited from a BasePage Object
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get inputSearch() {
@@ -123,14 +127,6 @@ export class OmnichannelDepartments {
 
 	get btnUpgradeDepartmentsModalClose() {
 		return this.page.locator('[data-qa="modal-close"]');
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get btnCloseToastSuccess(): Locator {
-		return this.toastSuccess.locator('button');
 	}
 
 	get inputUnit(): Locator {
