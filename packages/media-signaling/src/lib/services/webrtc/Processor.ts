@@ -7,6 +7,7 @@ import type { ServiceStateValue } from '../../../definition/services/IServicePro
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
+type P2PCommand = 'mute' | 'unmute' | 'end';
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
@@ -62,6 +63,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private _dataChannel: RTCDataChannel | null;
+
+	private _remoteMute = false;
+
+	private _dataChannelEnded = false;
 
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
@@ -141,6 +146,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this._muted = muted;
 		this.localStream.setEnabled(!muted && !this._held);
+		this.updateMuteForRemote();
 	}
 
 	public setHeld(held: boolean): void {
@@ -157,6 +163,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public stop(): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.stop');
+		this.sendP2PCommand('end');
 
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
@@ -282,6 +289,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		return anyTransceiverNotSending;
+	}
+
+	public isRemoteMute(): boolean {
+		return this._remoteMute;
 	}
 
 	public isStable(): boolean {
@@ -418,7 +429,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private createDataChannel(): void {
-		if (this._dataChannel || !this.config.call.flags.includes('create-data-channel')) {
+		if (this._dataChannel || this._dataChannelEnded || !this.config.call.flags.includes('create-data-channel')) {
 			return;
 		}
 
@@ -433,20 +444,102 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		if (this._dataChannel) {
-			this.config.logger?.warn('Duplicated Data Channel', channel.label);
-			return;
-		}
-
 		channel.onopen = (_event) => {
 			this.config.logger?.debug('Data Channel Open', channel.label);
+			if (!this._dataChannel || this._dataChannel.readyState !== 'open') {
+				this._dataChannel = channel;
+			}
+
+			this.updateMuteForRemote();
+		};
+		channel.onclose = (_event) => {
+			this.config.logger?.debug('Data Channel Closed', channel.label);
+			if (this._dataChannel === channel) {
+				this._dataChannel = null;
+
+				if (this.config.call.state !== 'hangup') {
+					this.createDataChannel();
+				}
+			}
 		};
 
 		channel.onmessage = (event) => {
+			if (typeof event.data !== 'string') {
+				this.config.logger?.debug('Invalid Data Channel Message');
+				return;
+			}
+
 			this.config.logger?.debug('Data Channel Message', event.data);
+			const command = this.getCommandFromDataChannelMessage(event.data);
+			if (command) {
+				this.onP2PCommand(command);
+			}
 		};
 
-		this._dataChannel = channel;
+		if (!this._dataChannel) {
+			this._dataChannel = channel;
+		}
+	}
+
+	private sendP2PCommand(command: P2PCommand): boolean {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.sendP2PCommand', command);
+		if (!this._dataChannel) {
+			return false;
+		}
+
+		if (this._dataChannel.readyState !== 'open') {
+			return false;
+		}
+
+		const jsonCommand = JSON.stringify({ command });
+		this._dataChannel.send(jsonCommand);
+		return true;
+	}
+
+	private isValidCommand(command: string): command is P2PCommand {
+		return ['mute', 'unmute', 'end'].includes(command);
+	}
+
+	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
+		try {
+			const obj = JSON.parse(message);
+			if (obj.command && this.isValidCommand(obj.command)) {
+				return obj.command;
+			}
+		} catch {
+			this.config.logger?.debug('Failed to parse Data Channel Command');
+		}
+
+		return null;
+	}
+
+	private onP2PCommand(command: P2PCommand): void {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.onP2PCommand', command);
+		switch (command) {
+			case 'mute':
+				this.setRemoteMute(true);
+				break;
+			case 'unmute':
+				this.setRemoteMute(false);
+				break;
+			case 'end':
+				this._dataChannelEnded = true;
+				break;
+		}
+	}
+
+	private setRemoteMute(muted: boolean): void {
+		if (muted === this._remoteMute) {
+			return;
+		}
+
+		this._remoteMute = muted;
+		this.emitter.emit('internalStateChange', 'remoteMute');
+	}
+
+	private updateMuteForRemote(): void {
+		const command: P2PCommand = this._muted ? 'mute' : 'unmute';
+		this.sendP2PCommand(command);
 	}
 
 	private registerPeerEvents() {

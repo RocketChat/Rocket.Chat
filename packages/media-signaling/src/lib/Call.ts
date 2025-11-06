@@ -132,6 +132,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._remoteHeld;
 	}
 
+	private _remoteMute: boolean;
+
+	public get remoteMute(): boolean {
+		return this._remoteMute;
+	}
+
 	/** indicates the call is past the "dialing" stage and not yet over */
 	public get busy(): boolean {
 		return !this.isPendingAcceptance() && !this.isOver();
@@ -222,6 +228,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._transferredBy = null;
 		this._service = null;
 		this._remoteHeld = false;
+		this._remoteMute = false;
 		this._flags = [];
 
 		this.negotiationManager = new NegotiationManager(this, { logger: config.logger });
@@ -1003,17 +1010,20 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateTimeoutHandlers.clear();
 	}
 
-	private updateRemoteHeld(): void {
+	private updateRemoteStates(): void {
 		if (!this.webrtcProcessor) {
 			return;
 		}
 
 		const isRemoteHeld = this.webrtcProcessor.isRemoteHeld();
-		if (isRemoteHeld === this._remoteHeld) {
+		const isRemoteMute = this.webrtcProcessor.isRemoteMute();
+
+		if (isRemoteHeld === this._remoteHeld && isRemoteMute === this._remoteMute) {
 			return;
 		}
 
 		this._remoteHeld = isRemoteHeld;
+		this._remoteMute = isRemoteMute;
 		this.emitter.emit('trackStateChange');
 	}
 
@@ -1024,7 +1034,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 		const stateValue = this.webrtcProcessor.getInternalState(stateName);
 
-		if (this.serviceStates.get(stateName) !== stateValue) {
+		if (typeof stateValue === 'string' && this.serviceStates.get(stateName) !== stateValue) {
 			this.config.logger?.debug(stateName, stateValue);
 			this.serviceStates.set(stateName, stateValue);
 
@@ -1037,7 +1047,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.requestStateReport();
 		}
 
-		this.updateRemoteHeld();
+		this.updateRemoteStates();
 	}
 
 	private onNegotiationNeeded(oldNegotiationId: string): void {
