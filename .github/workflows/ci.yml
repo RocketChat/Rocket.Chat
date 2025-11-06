@@ -267,21 +267,23 @@ jobs:
   build-gh-docker:
     name: 🚢 Build Docker
     needs: [build, release-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}-${{ matrix.arch }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
+        arch: ['amd64', 'arm64']
         service: ${{ fromJson(needs.release-versions.outputs.services) }}
         type: ['production']
         include:
           # for rocketchat monolith and on develop branch builds we create a coverage image to run tests against it
           # and keep the baseline of the coverage for other PRs
-          - service: rocketchat
+          - arch: amd64
+            service: rocketchat
             type: coverage
 
     steps:
@@ -298,8 +300,78 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          arch: ${{ matrix.arch }}
           service: ${{ matrix.service }}
           type: ${{ matrix.type }}
+
+  build-gh-docker-publish:
+    name: 🚢 Publish Docker Images (ghcr.io)
+    needs: [build-gh-docker, release-versions]
+    runs-on: ubuntu-24.04
+
+    env:
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+
+    steps:
+      - uses: actions/checkout@v4
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        with:
+          sparse-checkout: |
+            docker-compose-ci.yml
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
+
+      - name: Login to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Download digests
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: actions/download-artifact@v6
+        with:
+          pattern: digests-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Create and push multi-arch manifests
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        run: |
+          set -o xtrace
+          shopt -s nullglob
+
+          for service_dir in /tmp/digests/*; do
+            [[ -d "$service_dir" ]] || continue
+            service="$(basename "$service_dir")"
+            echo "Creating manifest for $service"
+
+            mapfile -t refs < <(
+              find "$service_dir" -type f -name 'digest.txt' -print0 \
+                | xargs -0 -I{} sh -c "tr -d '\r' < '{}' | sed '/^[[:space:]]*$/d'"
+            )
+
+            echo "Digest for ${service}: ${refs[@]}"
+
+            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            if [ "$service" == "rocketchat-cov" ]; then
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            else
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
+            fi
+
+            echo $IMAGE
+
+            docker buildx imagetools create \
+              --debug \
+              --annotation "manifest-descriptor:org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              --tag "${IMAGE}" \
+              --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
+              ${refs[@]}
+          done
 
   checks:
     needs: [release-versions, packages-build]
@@ -335,7 +407,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -351,7 +423,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -376,7 +448,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -395,7 +467,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -422,7 +494,7 @@ jobs:
 
   test-ui-ee-watcher:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -490,7 +562,7 @@ jobs:
     name: 🚀 Publish build assets
     runs-on: ubuntu-24.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [build-gh-docker, release-versions]
+    needs: [build-gh-docker-publish, release-versions]
 
     steps:
       - uses: actions/checkout@v5
@@ -587,8 +659,13 @@ jobs:
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
 
-      - name: Publish Docker image
+      - name: Publish Docker images
         run: |
+          set -euo pipefail
+
+          sudo apt-get update -y
+          sudo apt-get install -y skopeo
+
           if [[ '${{ matrix.service }}' == 'rocketchat' ]]; then
             IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
           else
@@ -624,17 +701,25 @@ jobs:
 
           echo "Tags: ${TAGS[*]}"
 
+          # get first tag as primary
+          PRIMARY="${TAGS[0]}"
+
           SRC="${{ steps.gh-docker.outputs.gh-image-name }}"
           DEST_REPO="docker.io/${IMAGE_NAME}"
 
-          if (( ${#TAGS[@]} > 0 )); then
-            for t in "${TAGS[@]:0}"; do
-              echo "Copying $SRC to ${DEST_REPO}:${t}"
-              docker tag $SRC "${DEST_REPO}:${t}"
+          # build --additional-tag for all other tags
+          EXTRA_ARGS=()
+          if (( ${#TAGS[@]} > 1 )); then
+            for t in "${TAGS[@]:1}"; do
+              EXTRA_ARGS+=( --additional-tag "${DEST_REPO}:${t}" )
             done
           fi
 
-          docker push --all-tags $DEST_REPO
+          echo "Copying $SRC to ${DEST_REPO}:${PRIMARY} with extras ${EXTRA_ARGS[*]}"
+          skopeo copy --all \
+            "docker://${SRC}" \
+            "docker://${DEST_REPO}:${PRIMARY}" \
+            "${EXTRA_ARGS[@]}"
 
   notify-services:
     name: 🚀 Notify external services

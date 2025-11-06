@@ -14,6 +14,7 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
 	const getMonitorsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/monitors', { unitId });
 	const getDepartmentsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/departments', { unitId });
+	const editUnit = useEndpoint('POST', '/v1/livechat/units/:id', { id: unitId });
 	const removeUnit = useRemoveUnit(unitId);
 
 	const {
@@ -61,8 +62,9 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 			unitData={unitData}
 			unitMonitors={unitMonitors?.monitors}
 			unitDepartments={unitDepartments?.departments}
-			onClose={onClose}
+			onUpdate={editUnit}
 			onDelete={removeUnit}
+			onClose={onClose}
 		/>
 	);
 };
