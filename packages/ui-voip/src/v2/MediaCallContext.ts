@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ type InternalPeerInfo = {
 	username?: string;
 	avatarUrl?: string;
 	callerId?: string;
+	status?: UserStatus;
 };
 
 type ExternalPeerInfo = {
@@ -191,6 +193,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 				userId: localInfo.value,
 				displayName: localInfo.label,
 				avatarUrl: localInfo.avatarUrl,
+				status: localInfo.status as UserStatus,
 			});
 		},
 		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,
