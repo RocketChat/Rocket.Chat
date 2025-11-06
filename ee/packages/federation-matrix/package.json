@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
 		"@babel/cli": "~7.28.3",
@@ -38,7 +38,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "^0.31.25",
-		"@rocket.chat/federation-sdk": "0.2.0",
+		"@rocket.chat/federation-sdk": "0.3.0",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
@@ -46,8 +46,8 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"emojione": "^4.5.0",
 		"marked": "^16.1.2",
-		"mongodb": "6.10.0",
-		"pino": "^9.11.0",
+		"mongodb": "6.16.0",
+		"pino": "^8.21.0",
 		"reflect-metadata": "^0.2.2",
 		"sanitize-html": "~2.17.0",
 		"tsyringe": "^4.10.0",

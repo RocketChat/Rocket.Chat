@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { APIRequestContext, Page } from '@playwright/test';
+import type { APIRequestContext } from '@playwright/test';
 
 import { BASE_API_URL } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
@@ -16,18 +16,6 @@ const settingsList = [
 ];
 
 preserveSettings(settingsList);
-
-const encryptLegacyMessage = async (page: Page, rid: string, messageText: string) => {
-	return page.evaluate(
-		async ({ rid, msg }: { rid: string; msg: string }) => {
-			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
-			const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
-			const e2eRoom = await e2e.getInstanceByRoomId(rid);
-			return e2eRoom.encrypt({ _id: 'id', msg });
-		},
-		{ rid, msg: messageText },
-	);
-};
 
 const sendEncryptedMessage = async (request: APIRequestContext, rid: string, encryptedMsg: string) => {
 	return request.post(`${BASE_API_URL}/chat.sendMessage`, {
@@ -80,11 +68,25 @@ test.describe('E2EE Legacy Format', () => {
 		const rid = (await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room')) || '';
 		expect(rid).toBeTruthy();
 
-		const encryptedMessage = await encryptLegacyMessage(page, rid, 'Old format message');
+		const kid = '32c9e7917b78';
+		const encryptedKey =
+			'ibtLAKG9zcQ/NTp+86nVelUjewPbPNW+EC+eagVPVVlbxvWNXkgltrBQB4gDao1Fp6fHUibQB3dirJ4rzy7CViww0o4QjAwPPQMIxZ9DLJhjKnu6bkkOp6Z0/a9g/8Wf/cvP9/bp7tUt7Et4XMmJwIe5iyJZ35lsyduLc8V+YyK8sJiGf4BRagJoBr8xEBgqBWqg6Vwn3qtbbiTs65PqErbaUmSM3Hn6tfkcS6ukLG/DbptW1B9U66IX3fQesj50zWZiJyvxOoxDeHRH9UEStyv9SP8nrFjEKM3TDiakBeDxja6LoN8l3CjP9K/5eg25YqANZAQjlwaCaeTTHndTgQ==';
+		const encryptedMessage =
+			'3JpM8aOVludqIRzx+DOqjEU9Mj3NUWb+/GLRl7sdkvTtCMChH1LBjMjJJvVJ6Rlw4dI8BYFftZWiCOiR7TPwriCoSPiZ7dY5C4H2q8MVSdR95ZiyG7eWQ5j5/rxzAYsSWDA9LkumW8JBb+WQ1hD9JMfQd4IXtlFMnaDgEhZhe/s=';
 
-		await sendEncryptedMessage(request, rid, encryptedMessage);
+		await page.evaluate(
+			async ({ rid, kid, encryptedKey }) => {
+				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
+				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+				const room = await e2e.getInstanceByRoomId(rid);
+				await room?.importGroupKey(kid + encryptedKey);
+			},
+			{ rid, kid, encryptedKey },
+		);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
+		await sendEncryptedMessage(request, rid, kid + encryptedMessage);
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 });
