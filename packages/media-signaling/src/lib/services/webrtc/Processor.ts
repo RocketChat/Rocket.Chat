@@ -575,6 +575,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			peer.onnegotiationneeded = null as any;
 			peer.onicegatheringstatechange = null as any;
 			peer.onsignalingstatechange = null as any;
+			peer.ondatachannel = null as any;
 		} catch {
 			// suppress exceptions here
 		}
