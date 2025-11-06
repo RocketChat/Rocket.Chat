@@ -114,3 +114,6 @@ export const Conditional = createStory(payloads.conditional);
 
 export const Preview = createStory(payloads.preview);
 export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUrl);
+
+export const SectionedPreview = createStory(payloads.sectionedPreview);
+export const SectionedPreviewMultiple = createStory(payloads.sectionedPreviewMultiple);
