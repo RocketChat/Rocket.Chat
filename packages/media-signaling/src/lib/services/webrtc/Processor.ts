@@ -251,6 +251,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 					return 'timeout';
 				}
 				return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
+			case 'remoteMute':
+				return this._remoteMute;
 		}
 	}
 
