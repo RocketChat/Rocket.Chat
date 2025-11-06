@@ -22,7 +22,7 @@ import type { IRuntimeController } from '../IRuntimeController';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
-const inspect = (value: any) => utilInspect(value, { depth: 5 });
+const inspect = (value: any) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
 export const ALLOWED_ACCESSOR_METHODS = [
 	'getConfigurationExtend',
@@ -124,7 +124,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		super();
 
 		this.debug = baseDebug.extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger(this.debug);
+		this.messenger = new ProcessMessenger();
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
