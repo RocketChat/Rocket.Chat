@@ -15,6 +15,7 @@ export type LayoutContextValue = {
 		overlayed: boolean;
 		setOverlayed: (value: boolean) => void;
 		isCollapsed: boolean;
+		shouldToggle: boolean;
 		toggle: () => void;
 		collapse: () => void;
 		expand: () => void;
@@ -56,6 +57,7 @@ export const LayoutContext = createContext<LayoutContextValue>({
 		overlayed: false,
 		setOverlayed: () => undefined,
 		isCollapsed: false,
+		shouldToggle: false,
 		toggle: () => undefined,
 		collapse: () => undefined,
 		expand: () => undefined,
