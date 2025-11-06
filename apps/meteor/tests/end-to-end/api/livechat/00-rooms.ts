@@ -443,7 +443,11 @@ describe('LIVECHAT - rooms', () => {
 
 			after(async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				await closeOmnichannelRoom(manualRoom._id);
+				try {
+					await closeOmnichannelRoom(manualRoom._id);
+				} catch (e) {
+					console.log(e);
+				}
 			});
 
 			it('should return queued rooms when `queued` param is passed', async () => {

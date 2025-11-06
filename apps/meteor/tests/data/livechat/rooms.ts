@@ -419,7 +419,12 @@ export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Pro
 		.post(api('livechat/room.closeByUser'))
 		.set(credentials)
 		.send({ rid: roomId, ...(tags && { tags }), comment: faker.lorem.sentence() })
-		.expect(200);
+		.expect(200)
+		.expect((response) => {
+			if (!response.body.success) {
+				console.log(response.body);
+			}
+		});
 };
 
 export const bulkCreateLivechatRooms = async (
