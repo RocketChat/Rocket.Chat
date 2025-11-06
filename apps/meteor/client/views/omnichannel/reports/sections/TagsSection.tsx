@@ -6,8 +6,7 @@ import { ellipsis } from '../utils/ellipsis';
 
 export const TagsSection = () => {
 	const { data, ...config } = useTagsSection();
-	const { ref, contentBoxSize: { inlineSize: cardWidth = 200 } = {} } = useResizeObserver<HTMLElement>();
-	const width = cardWidth * 0.9;
+	const { ref } = useResizeObserver<HTMLElement>();
 
 	return (
 		<ReportCard ref={ref} {...config}>
@@ -15,8 +14,7 @@ export const TagsSection = () => {
 				data={data}
 				direction='horizontal'
 				height={360}
-				maxWidth={width}
-				margins={{ left: 40, top: 40, right: 20 }}
+				margins={{ left: 92, top: 30, right: 8 }}
 				axis={{
 					axisLeft: {
 						tickSize: 0,
