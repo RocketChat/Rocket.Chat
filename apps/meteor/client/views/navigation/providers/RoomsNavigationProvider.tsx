@@ -14,11 +14,11 @@ import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '
 import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 
-import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
-import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import { RoomManager } from '../../../lib/RoomManager';
 import { Rooms } from '../../../stores';
+import { useOmnichannelEnabled } from '../../omnichannel/hooks/useOmnichannelEnabled';
+import { useQueuedInquiries } from '../../omnichannel/hooks/useQueuedInquiries';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
 import {
 	RoomsNavigationContext,

@@ -21,7 +21,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import Tags from '../../../components/Omnichannel/Tags';
+import Tags from '../../../views/omnichannel/components/Tags';
 
 type WrapUpCallPayload = {
 	comment: string;
