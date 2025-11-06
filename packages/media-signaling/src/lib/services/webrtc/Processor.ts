@@ -163,7 +163,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public stop(): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.stop');
-		this.sendP2PCommand('end');
+		this.endDataChannel();
 
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
@@ -436,6 +436,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createDataChannel');
 		const channel = this.peer.createDataChannel(DATA_CHANNEL_LABEL);
 		this.initializeDataChannel(channel);
+	}
+
+	private endDataChannel(): void {
+		this._dataChannelEnded = true;
+		this.sendP2PCommand('end');
 	}
 
 	private initializeDataChannel(channel: RTCDataChannel): void {
