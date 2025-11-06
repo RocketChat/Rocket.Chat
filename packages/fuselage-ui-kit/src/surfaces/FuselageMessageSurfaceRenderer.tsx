@@ -7,7 +7,7 @@ import { AppIdProvider } from '../contexts/AppIdContext';
 
 export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'video_conf']);
+		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'video_conf', 'sectioned_preview']);
 	}
 
 	plain_text = renderTextObject;
