@@ -7,7 +7,7 @@ import { BlockProps } from '../utils/BlockProps';
 type IconElementProps = BlockProps<UiKit.IconElement>;
 
 const IconElement = ({ block }: IconElementProps): ReactElement => (
-	<Icon name={block.icon} color={block.variant === 'default' ? 'default' : 'danger'} />
+	<Icon size={20} name={block.icon} color={block.variant === 'default' ? 'default' : 'danger'} />
 );
 
 export default IconElement;

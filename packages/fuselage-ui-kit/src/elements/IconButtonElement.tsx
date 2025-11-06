@@ -10,22 +10,25 @@ type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
 const IconButtonElement = ({ block, context }: IconButtonElementProps): ReactElement => {
 	const [{ loading }, action] = useUiKitState(block, context);
 
+	const { url, value, label, icon } = block;
+	const { icon: iconName, variant } = icon;
+
 	const handleClick: MouseEventHandler = (e) => {
 		action({ target: e.currentTarget });
 	};
 
-	if (loading) {
-		return <></>;
-		// return <Throbber />;
+	if (url) {
+		return <IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} label={label} />;
 	}
 
 	return (
 		<IconButton
-			icon={block.icon.icon}
-			color={block.icon.variant === 'default' ? 'default' : 'danger'}
-			label={block.label}
-			// url={block.url}
-			value={block.value}
+			icon={iconName}
+			color={variant === 'default' ? 'default' : 'danger'}
+			small
+			label={label}
+			disabled={loading}
+			value={value}
 			onClick={handleClick}
 		/>
 	);
