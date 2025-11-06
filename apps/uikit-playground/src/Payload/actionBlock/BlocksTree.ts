@@ -52,6 +52,7 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
+import { sectionedPreviewPlain, sectionedPreviewMultipleSections } from './sectionedPreview';
 import { disabled, plain, selected } from '../tabNavigation';
 import { actionWithToggleSwitch } from '../action/toggleSwitch';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -228,6 +229,19 @@ const BlocksTree: Item = [
       {
         label: 'image and URL',
         payload: previewWithImageAndUrl,
+      },
+    ],
+  },
+  {
+    label: 'sectioned preview',
+    branches: [
+      {
+        label: 'plain',
+        payload: sectionedPreviewPlain,
+      },
+      {
+        label: 'multiple sections',
+        payload: sectionedPreviewMultipleSections,
       },
     ],
   },
