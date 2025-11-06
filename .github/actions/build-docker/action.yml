@@ -13,6 +13,10 @@ inputs:
     required: true
     description: 'Deno version'
     type: string
+  arch:
+    required: false
+    description: 'Architecture'
+    default: 'amd64'
   service:
     required: false
     description: 'Container to build'
@@ -46,7 +50,7 @@ runs:
         password: ${{ inputs.CR_PAT }}
 
     - name: Restore packages build
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: packages-build
         path: /tmp
@@ -58,7 +62,7 @@ runs:
 
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
         name: build-${{ inputs.type }}
         path: /tmp/build
@@ -71,26 +75,64 @@ runs:
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
+    - name: Set up Docker
+      uses: docker/setup-docker-action@v4
+      with:
+        daemon-config: |
+          {
+            "debug": true,
+            "features": {
+              "containerd-snapshotter": true
+            }
+          }
+
+    - uses: docker/setup-buildx-action@v3
+      with:
+        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage=4000
+
     - name: Build Docker images
       shell: bash
       run: |
+        set -o xtrace
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        docker compose -f docker-compose-ci.yml build ${{ inputs.service }}
-
-    - name: Publish Docker images to GitHub Container Registry
-      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      shell: bash
-      run: |
-        set -o xtrace
+        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+          LOAD_OR_PUSH="--push"
+        else
+          LOAD_OR_PUSH="--load"
+        fi
 
         # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
         IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+
+        docker buildx bake \
+          -f docker-compose-ci.yml \
+          ${LOAD_OR_PUSH} \
+          --allow=fs.read=/tmp/build \
+          --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}" \
+          --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          --set *.platform=linux/${{ inputs.arch }} \
+          --set *.cache-from=type=gha \
+          --set *.cache-to=type=gha,mode=max \
+          --provenance=false \
+          --sbom=false \
+          --metadata-file "/tmp/meta.json" \
+          "${{ inputs.service }}"
+
+        echo "Contents of /tmp/meta.json:"
+        cat /tmp/meta.json
+
+        mkdir -p /tmp/digests/${{ inputs.service }}${{ inputs.type == 'coverage' && '-cov' || '' }}/${{ inputs.arch }}
+        DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
         IMAGE_NO_TAG=$(echo "$IMAGE"  | sed 's/:.*$//')
+        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.service }}${{ inputs.type == 'coverage' && '-cov' || '' }}/${{ inputs.arch }}/digest.txt"
 
-        docker tag ${IMAGE} ${IMAGE}-gha-run-${{ github.run_id }}
-
-        docker push --all-tags ${IMAGE_NO_TAG}
+    - uses: actions/upload-artifact@v4
+      if: inputs.publish-image == 'true'
+      with:
+        name: digests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/digests
+        retention-days: 5
 
     - name: Clean up temporary files
       if: inputs.service == 'rocketchat'
