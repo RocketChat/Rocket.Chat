@@ -1,3 +1,4 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
@@ -17,16 +18,18 @@ export const LivechatEnterprise = {
 		});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
 				method: 'livechat:addMonitor',
 			});
 		}
 
-		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
-			return user;
+		if (!(await addUserRolesAsync(user._id, ['livechat-monitor']))) {
+			throw new MeteorError('error-adding-monitor-role', 'Error adding monitor role', {
+				method: 'livechat:addMonitor',
+			});
 		}
 
-		return false;
+		return user;
 	},
 
 	async removeMonitor(username: string) {

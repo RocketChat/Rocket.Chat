@@ -77,20 +77,9 @@ const livechatMonitorsEndpoints = API.v1.post(
 	async function action() {
 		const { username } = this.bodyParams;
 
-		try {
-			const result = await LivechatEnterprise.addMonitor(username);
-			if (!result) {
-				return API.v1.failure('error-adding-monitor');
-			}
+		const result = await LivechatEnterprise.addMonitor(username);
 
-			return API.v1.success(result);
-		} catch (error: unknown) {
-			if (error instanceof Meteor.Error) {
-				return API.v1.failure(error.reason);
-			}
-
-			return API.v1.failure('error-adding-monitor');
-		}
+		return API.v1.success(result);
 	},
 );
 
