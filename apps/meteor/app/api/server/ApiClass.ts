@@ -80,18 +80,18 @@ type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
 		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
 			? (
-					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
+					...args: [ExtractValidation<TRoute['query']>] extends [never]
 						? [params?: never]
-						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
-				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
+						: [params: ExtractValidation<TRoute['query']>]
+				) => ExtractValidation<TRoute['response'][200]>
 			: K2 extends 'POST'
 				? (
-						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+						params: ExtractValidation<TRoute['body']>,
 					) => ExtractValidation<
-						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
-							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
-							: 201 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
-								? Extract<TRoute, { path: K; method: K2 }>['response'][201]
+						200 extends keyof TRoute['response']
+							? TRoute['response'][200]
+							: 201 extends keyof TRoute['response']
+								? TRoute['response'][201]
 								: never
 					>
 				: never;
@@ -679,10 +679,6 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: 'POST';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
 		| Prettify<
 				{
 					method: 'POST';
