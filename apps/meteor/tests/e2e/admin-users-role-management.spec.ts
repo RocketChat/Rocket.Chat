@@ -36,11 +36,11 @@ test.describe('Admin > Users Role Management', () => {
 			await test.step('should be visible in the All tab', async () => {
 				await admin.getTabByName().click();
 				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toBeVisible();
+				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toHaveCount(1);
 			});
 
 			await test.step('make a user admin', async () => {
-				await admin.openUserActionMenu(userWithoutAdminAccess.data.username);
-				await admin.menuItemMakeAdmin.click();
+				await admin.dispatchUserAction(userWithoutAdminAccess.data.username, 'Make Admin');
 				await expect(poToastBar.alert).toBeVisible();
 				await expect(poToastBar.alert).toHaveText('User is now an admin');
 			});
@@ -60,8 +60,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('remove admin role', async () => {
-				await admin.openUserActionMenu(userWithAdminAccess.data.username);
-				await admin.menuItemRemoveAdmin.click();
+				await admin.dispatchUserAction(userWithAdminAccess.data.username, 'Remove Admin');
 				await expect(poToastBar.alert).toBeVisible();
 				await expect(poToastBar.alert).toHaveText('User is no longer an admin');
 			});
