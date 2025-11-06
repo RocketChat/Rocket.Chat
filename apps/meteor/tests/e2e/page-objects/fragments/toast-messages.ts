@@ -15,15 +15,13 @@ export class ToastMessages {
 		await this.page.mouse.move(0, 0);
 	}
 
-	private getAlertByText(text: string) {
-		return this.page.locator('[role="alert"]', {
-			hasText: text,
-		});
-	}
-
 	waitForDisplay({ type, message }: { type: 'success' | 'error'; message?: string } = { type: 'success' }) {
 		if (message) {
-			return expect(this.toastByType[type].and(this.getAlertByText(message))).toBeVisible();
+			return expect(
+				this.toastByType[type].locator('[role="alert"]', {
+					hasText: message,
+				}),
+			).toBeVisible();
 		}
 
 		return expect(this.toastByType[type]).toBeVisible();
