@@ -4,7 +4,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { Rooms, Subscriptions } from '../stores';
-import { isOptimized } from './config';
 
 class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	constructor() {
@@ -15,7 +14,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 		});
 	}
 
-	protected merge(room: IRoom, sub: SubscriptionWithRoom): SubscriptionWithRoom {
+	private merge(room: IRoom, sub: SubscriptionWithRoom): SubscriptionWithRoom {
 		return {
 			...sub,
 			encrypted: room.encrypted,
@@ -89,14 +88,6 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 
 		if (action === 'removed') return;
 
-		this.handleChanged(room);
-	}
-
-	/**
-	 * Lower performance implementation that rebuilds the entire subscriptions Map on each room change.
-	 * See {@link RoomsCachedStoreOptimized} for the improved version.
-	 */
-	protected handleChanged(room: IRoom): void {
 		Subscriptions.use.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
@@ -106,7 +97,10 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	protected override handleSyncEvent(action: 'removed' | 'changed', room: IRoom): void {
 		if (action === 'removed') return;
 
-		this.handleChanged(room);
+		Subscriptions.use.getState().update(
+			(record) => record.rid === room._id,
+			(sub) => this.merge(room, sub),
+		);
 	}
 
 	protected deserializeFromCache(record: unknown) {
@@ -120,21 +114,6 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	}
 }
 
-/**
- * Previous implementation rebuilt the entire subscriptions Map for every room change.
- * For large channel lists this is expensive and triggered on each message (room lm/lastMessage changes).
- * We now perform a targeted lookup and store only the merged subscription, causing just one Map copy.
- */
-class RoomsCachedStoreOptimized extends RoomsCachedStore {
-	protected override handleChanged(room: IRoom): void {
-		const state = Subscriptions.use.getState();
-		const existing = state.find((record) => record.rid === room._id);
-		if (existing) {
-			state.store(this.merge(room, existing));
-		}
-	}
-}
-
-const instance = isOptimized ? new RoomsCachedStoreOptimized() : new RoomsCachedStore();
+const instance = new RoomsCachedStore();
 
 export { instance as RoomsCachedStore };
