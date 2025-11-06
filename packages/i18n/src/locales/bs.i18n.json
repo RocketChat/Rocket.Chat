@@ -1806,7 +1806,7 @@
   "RetentionPolicyRoom_FilesOnly": "Spusti samo datoteke, zadržite poruke",
   "RetentionPolicyRoom_MaxAge": "Maksimalna dob poruka u danima (zadana vrijednost: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Poništi globalno zadržavanje pravila",
-  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Ugađanje ovih postavki bez veće pažnje može uništiti sve povijesti poruka. Pročitajte dokumentaciju prije nego što uključite značajku <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>ovdje</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Pazi! Ugađanje ovih postavki bez veće pažnje može uništiti sve povijesti poruka. Pročitajte dokumentaciju prije nego što uključite značajku <a href=\"{{retentionPolicyUrl}}\">ovdje</a>.",
   "RetentionPolicy_AppliesToChannels": "Odnosi se na kanale",
   "RetentionPolicy_AppliesToDMs": "Odnosi se na izravne poruke",
   "RetentionPolicy_AppliesToGroups": "Odnosi se na privatne grupe",

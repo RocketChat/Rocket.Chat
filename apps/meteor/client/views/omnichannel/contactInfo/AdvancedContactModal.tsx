@@ -7,6 +7,7 @@ import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { links } from '../../../lib/links';
 
 type AdvancedContactModalProps = {
 	onCancel: () => void;
@@ -41,7 +42,7 @@ const AdvancedContactModal = ({ onCancel }: AdvancedContactModalProps) => {
 			description={t('Advanced_contact_profile_description')}
 			img={getURL('images/single-contact-id-upsell.png')}
 			onClose={onCancel}
-			onCancel={shouldShowUpsell ? onCancel : () => openExternalLink('https://go.rocket.chat/i/omnichannel-docs')}
+			onCancel={shouldShowUpsell ? onCancel : () => openExternalLink(links.go.omnichannelDocs)}
 			cancelText={!shouldShowUpsell ? t('Learn_more') : undefined}
 			onConfirm={shouldShowUpsell ? handleUpsellClick : undefined}
 			annotation={!shouldShowUpsell && !isAdmin ? t('Ask_enable_advanced_contact_profile') : undefined}

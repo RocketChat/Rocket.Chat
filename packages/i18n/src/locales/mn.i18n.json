@@ -1810,7 +1810,7 @@
   "RetentionPolicyRoom_FilesOnly": "Зөвхөн файлын файлууд, мессежүүдийг хадгал",
   "RetentionPolicyRoom_MaxAge": "Өдрийн хамгийн их зурвасын нас (анхдагч: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Дэлхий дахинд хадгалах бодлогыг хүчингүй болгох",
-  "RetentionPolicyRoom_ReadTheDocs": "Болгоомжтой! Эдгээр тохиргоог сайтар тохироогүйн улмаас бүх зурвасын түүхийг устгаж чадна. Энэ функцыг <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>энд</a>дээрээс асаахаасаа өмнө баримтыг уншина уу.",
+  "RetentionPolicyRoom_ReadTheDocs": "Болгоомжтой! Эдгээр тохиргоог сайтар тохироогүйн улмаас бүх зурвасын түүхийг устгаж чадна. Энэ функцыг <a href = \"{{retentionPolicyUrl}}\">энд</a>дээрээс асаахаасаа өмнө баримтыг уншина уу.",
   "RetentionPolicy_AppliesToChannels": "Суваг ашиглах",
   "RetentionPolicy_AppliesToDMs": "Мессежийг ашиглахад ашигладаг",
   "RetentionPolicy_AppliesToGroups": "Хувийн бүлгүүдэд хэрэглэнэ",
