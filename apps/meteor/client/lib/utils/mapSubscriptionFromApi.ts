@@ -7,6 +7,7 @@ export const mapSubscriptionFromApi = ({
 	_updatedAt,
 	oldRoomKeys,
 	suggestedOldRoomKeys,
+	abacLastTimeChecked,
 	...subscription
 }: Serialized<ISubscription>): ISubscription => ({
 	...subscription,
