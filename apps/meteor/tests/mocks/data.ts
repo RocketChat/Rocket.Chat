@@ -233,6 +233,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'custom-roles',
 		'accessibility-certification',
 		'outbound-messaging',
+		'abac',
 	]),
 	externalModules: [],
 	preventedActions: {
