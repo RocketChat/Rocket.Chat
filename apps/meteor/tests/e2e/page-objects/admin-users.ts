@@ -1,25 +1,30 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { UserInfoFlexTab, EditUserFlexTab } from './fragments';
+import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
+
+type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
 
 	readonly userInfo: UserInfoFlexTab;
 
+	readonly userRowMenu: MenuMoreActions;
+
 	constructor(page: Page) {
 		super(page);
 		this.editUser = new EditUserFlexTab(page);
 		this.userInfo = new UserInfoFlexTab(page);
+		this.userRowMenu = new MenuMoreActions(page);
 	}
 
 	get btnNewUser(): Locator {
-		return this.page.locator('role=button[name="New user"]');
+		return this.page.getByRole('button', { name: 'New user', exact: true });
 	}
 
 	get btnInvite(): Locator {
-		return this.page.locator('role=button[name="Invite"]');
+		return this.page.getByRole('button', { name: 'Invite', exact: true });
 	}
 
 	get inputSearchUsers(): Locator {
@@ -30,22 +35,6 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('button', { name: 'More actions' });
 	}
 
-	get menuItemDeactivated(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Deactivate' });
-	}
-
-	get menuItemActivate(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Activate' });
-	}
-
-	get menuItemMakeAdmin(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Make Admin' });
-	}
-
-	get menuItemRemoveAdmin(): Locator {
-		return this.page.getByRole('menuitem', { name: 'Remove Admin' });
-	}
-
 	getUserRowByUsername(username: string): Locator {
 		return this.page.locator('tr', { hasText: username });
 	}
@@ -54,8 +43,13 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('tab', { name });
 	}
 
-	async openUserActionMenu(username: string): Promise<void> {
+	private async openUserActionMenu(username: string): Promise<void> {
 		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
+	}
+
+	async dispatchUserAction(username: string, action: UserActions) {
+		await this.openUserActionMenu(username);
+		await this.userRowMenu.root.getByRole('menuitem', { name: action }).click();
 	}
 
 	async deleteUser(username: string): Promise<void> {

@@ -11,7 +11,7 @@ jobs:
   deploy-preview:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Setup NodeJS

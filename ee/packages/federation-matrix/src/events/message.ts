@@ -1,7 +1,14 @@
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { FileMessageType, MessageType, FileMessageContent, HomeserverEventSignatures, EventID } from '@rocket.chat/federation-sdk';
+import {
+	type FileMessageType,
+	type MessageType,
+	type FileMessageContent,
+	type HomeserverEventSignatures,
+	type EventID,
+	federationSDK,
+} from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
@@ -111,7 +118,7 @@ async function handleMediaMessage(
 	};
 }
 
-export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
+export function message(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
 			const { content } = data;
@@ -133,6 +140,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			if (!room) {
 				throw new Error(`No mapped room found for room_id: ${data.room_id}`);
 			}
+
+			const serverName = federationSDK.getConfig('serverName');
 
 			const relation = content['m.relates_to'];
 
