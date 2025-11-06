@@ -1,11 +1,12 @@
 import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
-import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 
@@ -125,7 +126,42 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
 		]);
 
-		// TODO: If there's a `rid`, send a message in that room - planned for 7.13
+		if (rid) {
+			return this.sendHistoryMessage(call, rid);
+		}
+	}
+
+	private async sendHistoryMessage(call: IMediaCall, rid: IRoom['_id']): Promise<void> {
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			return;
+		}
+		const userId = call.createdBy.type === 'user' ? call.createdBy.id : call.caller.id;
+
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			return;
+		}
+
+		// TODO: Adjust message type and blocks to match what should be used for voice calls.
+		// Use `call._id` to keep a reference to the call
+		const record = {
+			t: 'videoconf',
+			msg: '',
+			groupable: false,
+			blocks: [
+				{
+					type: 'section',
+					appId: 'media-call-core',
+					text: {
+						type: 'mrkdwn',
+						text: `Voice Call`,
+					},
+				},
+			],
+		} satisfies Partial<IMessage>;
+
+		await sendMessage(user, record, room, false);
 	}
 
 	private getCallDuration(call: IMediaCall): number {
