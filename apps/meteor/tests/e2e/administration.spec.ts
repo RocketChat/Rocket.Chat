@@ -3,19 +3,15 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Utils, AdminUsers, AdminRoles, AdminRooms, AdminThirdPartyLogin, AdminIntegrations } from './page-objects';
+import { AdminUsers, AdminRoles, AdminRooms, AdminThirdPartyLogin, AdminIntegrations } from './page-objects';
+import { ToastMessages } from './page-objects/fragments';
 import { createTargetChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
-	let poUtils: Utils;
 	let targetChannel: string;
-
-	test.beforeEach(async ({ page }) => {
-		poUtils = new Utils(page);
-	});
 
 	test.describe('Workspace', () => {
 		test.beforeEach(async ({ page }) => {
@@ -119,6 +115,11 @@ test.describe.parallel('administration', () => {
 			const emptyChannelName = faker.string.uuid();
 			let ownerUser: IUser;
 			let user: IUser;
+			let poToastMessage: ToastMessages;
+
+			test.beforeEach(({ page }) => {
+				poToastMessage = new ToastMessages(page);
+			});
 
 			test.beforeAll(async ({ api }) => {
 				const createUserResponse = await api.post('/users.create', {
@@ -168,7 +169,7 @@ test.describe.parallel('administration', () => {
 				await expect(page.getByRole('dialog').getByRole('button', { name: 'Delete' })).toBeVisible();
 
 				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
-				await expect(poUtils.toastBarSuccess).toBeVisible();
+				await poToastMessage.waitForDisplay();
 				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
 			});
 
@@ -177,7 +178,8 @@ test.describe.parallel('administration', () => {
 				await expect(page.getByRole('dialog', { name: 'Are you sure?' })).toBeVisible();
 
 				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
-				await expect(poUtils.toastBarSuccess).toBeVisible();
+
+				await poToastMessage.waitForDisplay();
 				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
 			});
 		});
