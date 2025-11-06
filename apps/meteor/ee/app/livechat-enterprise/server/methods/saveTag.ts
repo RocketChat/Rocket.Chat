@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveTag'(_id, tagData, tagDepartments) {
-		methodDeprecationLogger.method('livechat:removeUnit', '8.0.0', 'POST /v1/livechat/tags.save');
+		methodDeprecationLogger.method('livechat:saveTag', '8.0.0', 'POST /v1/livechat/tags.save');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-tags'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTags' });
