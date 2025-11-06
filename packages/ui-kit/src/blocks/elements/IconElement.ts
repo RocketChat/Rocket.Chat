@@ -1,4 +1,4 @@
-type AvailableIcons = 'phone-off' | 'phone-issue' | 'clock' | 'arrow-forward';
+type AvailableIcons = 'phone-off' | 'phone-issue' | 'clock' | 'arrow-forward' | 'info';
 
 export type IconElement = {
 	type: 'icon';
