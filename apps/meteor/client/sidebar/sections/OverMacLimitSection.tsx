@@ -1,13 +1,14 @@
 import { Icon, SidebarBanner } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { links } from '../../lib/links';
 
 export const OverMacLimitSection = (): ReactElement => {
 	const { t } = useTranslation();
 
-	const handleClick = () => {
-		window.open('https://rocket.chat/pricing', '_blank');
-	};
+	const handleClick = useEffectEvent(() => window.open(links.go.pricing));
 
 	return (
 		<SidebarBanner

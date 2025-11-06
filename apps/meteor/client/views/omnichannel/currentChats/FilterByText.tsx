@@ -7,11 +7,11 @@ import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
+import AutoCompleteAgent from '../components/AutoCompleteAgent';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
 type FilterByTextTypeProps = {
 	setFilter: Dispatch<SetStateAction<Record<string, any>>>;

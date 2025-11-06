@@ -28,6 +28,8 @@ export const createUser = <TUser extends IUser>(
 			.post(api('users.create'))
 			.set(credentials)
 			.send({ email, name: username, username, password, ...userData })
+			// if we don't expect 200, there's never an error, even in the case of a failure result
+			.expect(200)
 			.end((err, res) => {
 				if (err) {
 					return reject(err);

@@ -17,8 +17,9 @@ import {
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { links } from '../../../../../lib/links';
 import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
+import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
 const ChatsTable = () => {
@@ -83,7 +84,7 @@ const ChatsTable = () => {
 					icon='message'
 					title={t('No_chats_yet')}
 					description={t('No_chats_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_conversations')}
 				/>
 			)}

@@ -2,8 +2,8 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import { useOutboundMessageAccess } from '../../../../components/Omnichannel/OutboundMessage/hooks';
-import { useOutboundMessageModal } from '../../../../components/Omnichannel/OutboundMessage/modals';
+import { useOutboundMessageAccess } from '../../../../views/omnichannel/components/outboundMessage/hooks';
+import { useOutboundMessageModal } from '../../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';

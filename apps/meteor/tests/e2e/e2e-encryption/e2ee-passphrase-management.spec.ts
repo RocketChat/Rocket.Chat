@@ -121,7 +121,14 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
 			const sidenav = new HomeSidenav(page);
 
-			const newPassword = faker.string.uuid();
+			const newPassword = faker.internet.password({
+				length: 30,
+				prefix:
+					faker.string.alpha({ casing: 'lower' }) +
+					faker.string.alpha({ casing: 'upper' }) +
+					faker.string.numeric() +
+					faker.string.symbol(),
+			});
 
 			await setupE2EEPassword(page);
 

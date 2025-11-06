@@ -37,7 +37,7 @@ test.describe('embedded-layout', () => {
 
 			await page.goto(embeddedLayoutURL(page.url()));
 			await expect(poHomeChannel.roomHeaderToolbar).not.toBeVisible();
-			await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+			await poHomeChannel.sidebar.waitForDismissal();
 		});
 
 		test.describe('should show room header toolbar when show top navbar setting is enabled', () => {

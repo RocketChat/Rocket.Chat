@@ -31,3 +31,18 @@ export abstract class Modal {
 		await this.waitForDismissal();
 	}
 }
+
+export class ConfirmDeleteModal extends Modal {
+	constructor(root: Locator) {
+		super(root);
+	}
+
+	private btnDelete() {
+		return this.root.getByRole('button', { name: 'Delete' });
+	}
+
+	async confirmDelete() {
+		await this.btnDelete().click();
+		await this.waitForDismissal();
+	}
+}

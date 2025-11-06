@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
 	OmnichannelSortingDisclaimer,
 	useOmnichannelSortingDisclaimer,
-} from '../../../components/Omnichannel/OmnichannelSortingDisclaimer';
+} from '../../../views/omnichannel/components/OmnichannelSortingDisclaimer';
 
 export const useSortModeItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();

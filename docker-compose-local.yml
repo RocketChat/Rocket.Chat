@@ -4,9 +4,9 @@ services:
   rocketchat:
     platform: linux/amd64
     build:
-      dockerfile: ${RC_DOCKERFILE}
+      dockerfile: apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
       - EXIT_UNHANDLEDPROMISEREJECTION=true

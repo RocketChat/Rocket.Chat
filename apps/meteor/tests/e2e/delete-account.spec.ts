@@ -1,5 +1,5 @@
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { AccountProfile, Registration, Utils } from './page-objects';
+import { AccountProfile, Registration, Authenticated } from './page-objects';
 import { ToastBar } from './page-objects/toastBar';
 import { test, expect } from './utils/test';
 import { createTestUser, type ITestUser } from './utils/user-helpers';
@@ -8,7 +8,7 @@ test.describe('Delete Own Account', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
 	let poToastBar: ToastBar;
-	let poUtils: Utils;
+	let poAuth: Authenticated;
 	let userToDelete: ITestUser;
 	let userWithInvalidPassword: ITestUser;
 	let userWithoutPermissions: ITestUser;
@@ -25,7 +25,7 @@ test.describe('Delete Own Account', () => {
 		poAccountProfile = new AccountProfile(page);
 		poRegistration = new Registration(page);
 		poToastBar = new ToastBar(page);
-		poUtils = new Utils(page);
+		poAuth = new Authenticated(page);
 		await page.goto('/home');
 	});
 
@@ -43,7 +43,7 @@ test.describe('Delete Own Account', () => {
 			await poRegistration.username.fill(userWithInvalidPassword.data.username);
 			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
-			await expect(poUtils.mainContent).toBeVisible();
+			await poAuth.waitForDisplay();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
@@ -81,7 +81,7 @@ test.describe('Delete Own Account', () => {
 			await poRegistration.username.fill(userToDelete.data.username);
 			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
-			await expect(poUtils.mainContent).toBeVisible();
+			await poAuth.waitForDisplay();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
@@ -105,6 +105,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('verify user is redirected to login page', async () => {
+			await poRegistration.waitForDisplay();
 			await expect(poRegistration.btnLogin).toBeVisible();
 			userToDelete.markAsDeleted();
 		});
@@ -121,7 +122,7 @@ test.describe('Delete Own Account', () => {
 				await poRegistration.username.fill(userWithoutPermissions.data.username);
 				await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 				await poRegistration.btnLogin.click();
-				await expect(poUtils.mainContent).toBeVisible();
+				await poAuth.waitForDisplay();
 			});
 
 			await test.step('navigate to profile and locate Delete My Account button', async () => {

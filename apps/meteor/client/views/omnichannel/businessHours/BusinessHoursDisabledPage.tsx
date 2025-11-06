@@ -3,6 +3,7 @@ import { useRole, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { links } from '../../../lib/links';
 
 const BusinessHoursDisabledPage = () => {
 	const { t } = useTranslation();
@@ -23,7 +24,7 @@ const BusinessHoursDisabledPage = () => {
 								<StatesAction onClick={() => router.navigate('/admin/settings/Omnichannel')}>{t('Enable_business_hours')}</StatesAction>
 							</StatesActions>
 						)}
-						<StatesLink target='_blank' href='https://go.rocket.chat/i/omnichannel-docs'>
+						<StatesLink target='_blank' href={links.go.omnichannelDocs}>
 							{t('Learn_more_about_business_hours')}
 						</StatesLink>
 					</States>

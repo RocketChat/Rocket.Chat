@@ -1,15 +1,16 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
-export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProcessTypes: { typing: boolean; presence: boolean }) => {
+export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
-		if (!eduProcessTypes.typing) {
+		const config = federationSDK.getConfig('edu');
+		if (!config.processTyping) {
 			return;
 		}
 
@@ -31,7 +32,8 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 	});
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
-		if (!eduProcessTypes.presence) {
+		const config = federationSDK.getConfig('edu');
+		if (!config.processPresence) {
 			return;
 		}
 

@@ -8,7 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
-import useOutboundProvidersList from '../../../../../components/Omnichannel/OutboundMessage/hooks/useOutboundProvidersList';
+import useOutboundProvidersList from '../../../components/outboundMessage/hooks/useOutboundProvidersList';
 
 type ContactInfoChannelsProps = {
 	contact: Pick<ILivechatContact, '_id' | 'unknown'>;

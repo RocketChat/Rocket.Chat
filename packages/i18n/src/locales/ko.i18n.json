@@ -2657,7 +2657,7 @@
   "RetentionPolicyRoom_FilesOnly": "파일만 정리하고 메시지는 보존합니다.",
   "RetentionPolicyRoom_MaxAge": "최대 메시지 수명 (일수) (기본값 : {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "전역 보존 정책 재정의",
-  "RetentionPolicyRoom_ReadTheDocs": "주의하세요! 모든 메시지 기록이 삭제 될 수 있습니다. 기능을 사용하기 전에  <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">이곳</a>에서 설명서를 읽으십시오.",
+  "RetentionPolicyRoom_ReadTheDocs": "주의하세요! 모든 메시지 기록이 삭제 될 수 있습니다. 기능을 사용하기 전에  <a href=\"{{retentionPolicyUrl}}\">이곳</a>에서 설명서를 읽으십시오.",
   "RetentionPolicy_AppliesToChannels": "채널에 적용",
   "RetentionPolicy_AppliesToDMs": "개인 대화방에 적용",
   "RetentionPolicy_AppliesToGroups": "비공개 그룹에 적용",
