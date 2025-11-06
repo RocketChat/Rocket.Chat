@@ -167,12 +167,6 @@ async function joinRoom({
 		throw new Error('join event has missing state key, unable to determine user to join');
 	}
 
-	// check federation permission before joining
-	if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
-		logger.info(`User ${inviteEvent.event.state_key} denied access to federated room ${inviteEvent.roomId} due to lack of permission`);
-		throw new NotAllowedError('error-not-authorized-federation');
-	}
-
 	// backoff needed for this call, can fail
 	await federationSDK.joinUser(inviteEvent, inviteEvent.event.state_key);
 
@@ -358,6 +352,19 @@ export const getMatrixInviteRoutes = () => {
 
 			if (!ourUser) {
 				throw new Error('user not found not processing invite');
+			}
+
+			// check federation permission before processing the invite
+			if (!(await Authorization.hasPermission(ourUser._id, 'access-federation'))) {
+				logger.info(`User ${userToCheck} denied federation access, rejecting invite to room ${roomId}`);
+
+				return {
+					body: {
+						errcode: 'M_FORBIDDEN',
+						error: 'User does not have permission to access federation',
+					},
+					statusCode: 403,
+				};
 			}
 
 			try {
