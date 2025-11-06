@@ -3575,7 +3575,7 @@
   "RetentionPolicyRoom_FilesOnly": "Karsi vain tiedostot, pidä viestit",
   "RetentionPolicyRoom_MaxAge": "Viestin maksimi-ikä päivinä (oletus: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Ohita yleinen säilytyskäytäntö",
-  "RetentionPolicyRoom_ReadTheDocs": "Ole varovainen! Näiden asetusten muuttaminen huolettomasti voi poistaa koko viestihistorian. Tutustu oppaisiin <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">täällä</a>, ennen kuin otat ominaisuuden käyttöön.",
+  "RetentionPolicyRoom_ReadTheDocs": "Ole varovainen! Näiden asetusten muuttaminen huolettomasti voi poistaa koko viestihistorian. Tutustu oppaisiin <a href=\"{{retentionPolicyUrl}}\">täällä</a>, ennen kuin otat ominaisuuden käyttöön.",
   "RetentionPolicy_Advanced_Precision": "Käytä laajennettua säilytyskäytäntöä",
   "RetentionPolicy_Advanced_Precision_Cron": "Käytä laajennetun säilytyskäytännön Cron -käytäntöä",
   "RetentionPolicy_Advanced_Precision_Cron_Description": "Kuinka usein karsinta-ajastimen tulisi toimia, määritellään cron-työn lausekkeella. Jos tämä asetetaan tarkempaan arvoon, kanavat, joissa on nopeat säilytysajastimet, toimivat paremmin, mutta se saattaa vaatia ylimääräistä laskentatehoa suurissa yhteisöissä.",

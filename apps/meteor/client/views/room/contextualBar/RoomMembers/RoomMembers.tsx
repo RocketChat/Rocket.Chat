@@ -44,13 +44,14 @@ type RoomMembersProps = {
 	loadMoreItems: () => void;
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
+	isABACRoom?: boolean;
 };
 
 const RoomMembers = ({
 	loading,
 	members = [],
 	text,
-	type,
+	type = 'online',
 	setText,
 	setType,
 	onClickClose,
@@ -65,6 +66,7 @@ const RoomMembers = ({
 	isTeam,
 	isDirect,
 	reload,
+	isABACRoom = false,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
@@ -199,7 +201,14 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
-							<Button icon='link' onClick={onClickInvite} width='50%'>
+							<Button
+								icon='link'
+								onClick={onClickInvite}
+								width='50%'
+								disabled={isABACRoom}
+								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+								aria-label={t('Invite_Link')}
+							>
 								{t('Invite_Link')}
 							</Button>
 						)}

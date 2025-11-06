@@ -1,4 +1,4 @@
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -32,9 +32,7 @@ const ServerKeyResponseSchema = {
 
 const isServerKeyResponseProps = ajv.compile(ServerKeyResponseSchema);
 
-export const getKeyServerRoutes = (services: HomeserverServices) => {
-	const { server } = services;
-
+export const getKeyServerRoutes = () => {
 	return new Router('/key').get(
 		'/v2/server',
 		{
@@ -45,7 +43,7 @@ export const getKeyServerRoutes = (services: HomeserverServices) => {
 			license: ['federation'],
 		},
 		async () => {
-			const response = await server.getSignedServerKey();
+			const response = await federationSDK.getSignedServerKey();
 
 			return {
 				body: response,
