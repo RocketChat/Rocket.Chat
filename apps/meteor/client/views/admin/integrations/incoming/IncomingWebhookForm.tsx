@@ -35,7 +35,10 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const validateAvatarUrl = (value: string) => {
 		if (!value) return true;
 		try {
-			new URL(value);
+			const url = new URL(value);
+			if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+				return t('The_URL_is_invalid', { url: value });
+			}
 			return true;
 		} catch (error) {
 			return t('The_URL_is_invalid', { url: value });
@@ -256,7 +259,6 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							</FieldRow>
 							<FieldHint id={`${aliasField}-hint`}>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</FieldHint>
 						</Field>
-						
 
 						<Field>
 							<FieldLabel htmlFor={avatarField}>{t('Avatar_URL')}</FieldLabel>
