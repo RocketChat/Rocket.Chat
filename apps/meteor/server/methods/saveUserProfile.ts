@@ -100,7 +100,7 @@ async function saveUserProfile(
 		await Users.setBio(user._id, settings.bio.trim());
 	}
 
-	if (user && (settings.nickname || settings.bio === '')) {
+	if (user && (settings.nickname || settings.nickname === '')) {
 		if (typeof settings.nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
