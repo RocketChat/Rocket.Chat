@@ -1,7 +1,8 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import type { OverlayTriggerAria } from 'react-aria';
+import { VisuallyHidden } from 'react-aria';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import type { OverlayTriggerState } from 'react-stately';
@@ -36,6 +37,13 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 
 	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
 
+	const [announcementText, setAnnouncementText] = useState('');
+	useEffect(() => {
+		if (items?.length !== undefined) {
+			setAnnouncementText(t('Search_results', { count: items.length }));
+		}
+	}, [items?.length, t]);
+
 	return (
 		<Tile
 			ref={containerRef}
@@ -55,10 +63,19 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} tabIndex={-1} onKeyDown={handleKeyDown}>
-					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
+					{items.length === 0 && !isLoading && (
+						<NavBarSearchNoResults>
+							<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+								{announcementText}
+							</VisuallyHidden>
+						</NavBarSearchNoResults>
+					)}
 					{items.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
 							{filterText ? t('Results') : t('Recent')}
+							<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+								{announcementText}
+							</VisuallyHidden>
 						</Box>
 					)}
 					{items.map((item) => (
