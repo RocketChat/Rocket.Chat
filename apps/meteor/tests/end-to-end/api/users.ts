@@ -2906,25 +2906,15 @@ describe('[Users]', () => {
 		});
 
 		it('should be able to erase bio and nickname', async () => {
-			// await updateSetting('Accounts_AllowPasswordChange', false);
-			await request
-				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
-				.send({
-					data: {
-						bio: `edited-bio-test`,
-						nickname: `edited-nickname-test`,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
+			const user = await createUser({
+				bio: `edited-bio-test`,
+				nickname: `edited-nickname-test`,
+			});
+			const userCredentials = await login(user.username, password);
 
 			await request
 				.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
 					data: {
 						bio: '',
