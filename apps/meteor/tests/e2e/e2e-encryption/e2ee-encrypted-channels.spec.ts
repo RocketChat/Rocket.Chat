@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { E2EEMessageActions, EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
+import { DisableRoomEncryptionModal, E2EEMessageActions, EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
 import { PinnedMessagesTab } from '../page-objects/fragments/pinned-messages-tab';
 import { StarredMessagesTab } from '../page-objects/fragments/starred-messages-tab';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -23,6 +23,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	let encryptedRoomPage: EncryptedRoomPage;
 	let e2eeMessageActions: E2EEMessageActions;
 	let enableEncryptionModal: EnableRoomEncryptionModal;
+	let disableEncryptionModal: DisableRoomEncryptionModal;
 	let pinnedMessagesTab: PinnedMessagesTab;
 	let starredMessagesTab: StarredMessagesTab;
 
@@ -41,6 +42,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		encryptedRoomPage = new EncryptedRoomPage(page);
 		e2eeMessageActions = new E2EEMessageActions(page);
 		enableEncryptionModal = new EnableRoomEncryptionModal(page);
+		disableEncryptionModal = new DisableRoomEncryptionModal(page);
 		pinnedMessagesTab = new PinnedMessagesTab(page);
 		starredMessagesTab = new StarredMessagesTab(page);
 		await page.goto('/home');
@@ -64,9 +66,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Disable encryption' }).click();
-		await poHomeChannel.dismissToast();
+		await disableEncryptionModal.disable();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
@@ -77,9 +77,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await poHomeChannel.dismissToast();
+		await enableEncryptionModal.enable();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
@@ -102,8 +100,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is the thread main message.');
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in thread"]').click();
+		await poHomeChannel.content.openReplyInThread();
 
 		await expect(page).toHaveURL(/.*thread/);
 
@@ -238,8 +235,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click();
+		await enableEncryptionModal.enable();
 		await page.waitForTimeout(1000);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 

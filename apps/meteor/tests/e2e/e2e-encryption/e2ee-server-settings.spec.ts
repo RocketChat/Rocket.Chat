@@ -51,9 +51,9 @@ test.describe('E2EE Server Settings', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
-		await page.locator('[name="msg"]').type('/');
+		await poHomeChannel.content.inputMessage.pressSequentially('/');
 		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
-		await page.locator('[name="msg"]').clear();
+		await poHomeChannel.content.inputMessage.clear();
 
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
 		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
@@ -95,7 +95,7 @@ test.describe('E2EE Server Settings', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
-			await page.locator('[name="msg"]').pressSequentially('/');
+			await poHomeChannel.content.inputMessage.pressSequentially('/');
 			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
 		});
 	});
