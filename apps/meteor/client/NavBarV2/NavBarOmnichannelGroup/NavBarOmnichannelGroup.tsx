@@ -7,7 +7,7 @@ import NavBarItemOmnichannelContact from './NavBarItemOmnichannelContact';
 import NavBarItemOmnichannelLivechatToggle from './NavBarItemOmnichannelLivechatToggle';
 import NavBarItemOmnichannelQueue from './NavBarItemOmnichannelQueue';
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
 const NavBarOmnichannelGroup = () => {
 	const { t } = useTranslation();
