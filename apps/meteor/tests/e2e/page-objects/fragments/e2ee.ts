@@ -1,9 +1,11 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { LoginPage } from '../login';
+import { HomeSidenav } from './home-sidenav';
 import { Modal } from './modal';
 import { ToastMessages } from './toast-messages';
+import { resolvePrivateRoomId } from '../../utils/resolve-room-id';
 import { expect } from '../../utils/test';
-import { LoginPage } from '../login';
 
 abstract class E2EEBanner {
 	constructor(protected root: Locator) {}
@@ -150,5 +152,32 @@ export class DisableRoomEncryptionModal extends Modal {
 		await this.disableButton.click();
 		await this.waitForDismissal();
 		await this.toastMessages.dismissToast('success');
+	}
+}
+export class CreateE2EEChannel {
+	private readonly page: Page;
+
+	private readonly sidenav: HomeSidenav;
+
+	constructor(page: Page) {
+		this.page = page;
+		this.sidenav = new HomeSidenav(page);
+	}
+
+	async create(name: string): Promise<string> {
+		await this.sidenav.createEncryptedChannel(name);
+		const id = await resolvePrivateRoomId(this.page, name);
+		await expect(id, `Failed to resolve roomId for ${name}`).toBeTruthy();
+		return id || '';
+	}
+
+	async storeChannel(name: string, id: string, createdChannels: { name: string; id?: string | null }[]): Promise<void> {
+		createdChannels.push({ name, id });
+	}
+
+	async createAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
+		const id = await this.create(name);
+		await this.storeChannel(name, id, createdChannels);
+		return id;
 	}
 }

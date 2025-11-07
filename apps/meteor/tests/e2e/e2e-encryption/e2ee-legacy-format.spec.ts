@@ -4,6 +4,8 @@ import type { APIRequestContext } from '@playwright/test';
 import { BASE_API_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -33,7 +35,9 @@ const sendEncryptedMessage = async (request: APIRequestContext, rid: string, enc
 };
 
 test.describe('E2EE Legacy Format', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -47,13 +51,18 @@ test.describe('E2EE Legacy Format', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
