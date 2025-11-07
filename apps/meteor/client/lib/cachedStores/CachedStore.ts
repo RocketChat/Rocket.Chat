@@ -13,7 +13,6 @@ import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { watch } from '../../meteor/watch';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
@@ -359,10 +358,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
-
-	watchReady() {
-		return watch(this.useReady, (ready) => ready);
-	}
 
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);
