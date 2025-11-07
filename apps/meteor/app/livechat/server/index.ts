@@ -19,7 +19,6 @@ import './methods/saveDepartment';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
 import './methods/takeInquiry';
-import './methods/sendTranscript';
 import './lib/QueueManager';
 import './lib/RoutingManager';
 import './lib/routing/External';
