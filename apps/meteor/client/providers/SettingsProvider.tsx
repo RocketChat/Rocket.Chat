@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
@@ -24,6 +25,10 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	if (isLoading) {
 		throw (async () => {
+			if (cachedCollection instanceof PrivateCachedStore) {
+				cachedCollection.listen();
+			}
+
 			await cachedCollection.init();
 		})();
 	}

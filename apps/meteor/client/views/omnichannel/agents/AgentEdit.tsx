@@ -8,7 +8,6 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -19,6 +18,7 @@ import {
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type AgentEditFormData = {
 	name: string | undefined;
