@@ -19,7 +19,7 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.method('livechat:saveTag', '8.0.0', 'POST /v1/livechat/tags.save');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-tags'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTags' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTag' });
 		}
 
 		check(_id, Match.Maybe(String));
