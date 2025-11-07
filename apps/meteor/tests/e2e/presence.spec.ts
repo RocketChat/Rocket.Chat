@@ -54,7 +54,6 @@ test.describe.serial('Presence', () => {
 				await user1Channel.sidenav.btnUserProfileMenu.click();
 				await user1Channel.sidenav.getUserProfileMenuOption('Custom Status').click();
 				await user1Modal.changeStatusMessage('new status');
-
 				await user1Page.close();
 			});
 
@@ -63,6 +62,23 @@ test.describe.serial('Presence', () => {
 
 				await expect(poHomeChannel.content.channelHeader).toContainText('new status');
 			});
+		});
+
+		test('should be able to erase custom status', async ({ page }) => {
+			const editStatusModal = new EditStatusModal(page);
+
+			await poHomeChannel.sidenav.btnUserProfileMenu.click();
+			await poHomeChannel.sidenav.getUserProfileMenuOption('Custom Status').click();
+			await editStatusModal.changeStatusMessage('new status');
+
+			await poHomeChannel.sidenav.btnUserProfileMenu.click();
+			await expect(poHomeChannel.sidenav.userProfileMenu).toContainText('new status');
+
+			await poHomeChannel.sidenav.getUserProfileMenuOption('Custom Status').click();
+			await editStatusModal.changeStatusMessage('');
+
+			await poHomeChannel.sidenav.btnUserProfileMenu.click();
+			await expect(poHomeChannel.sidenav.userProfileMenu).not.toContainText('new status');
 		});
 	});
 
