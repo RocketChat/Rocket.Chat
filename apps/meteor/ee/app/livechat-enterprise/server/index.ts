@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
 import './methods/removeMonitor';
-import './methods/removeTag';
 import './methods/saveTag';
 import './methods/removeUnit';
 import './methods/saveUnit';
