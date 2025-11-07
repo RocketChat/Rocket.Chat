@@ -7,12 +7,14 @@ import { setupE2EEPassword } from './setupE2EEPassword';
 import { AccountSecurityPage } from '../page-objects/account-security';
 import { HomeSidenav } from '../page-objects/fragments';
 import {
+	CreateE2EEChannel,
 	E2EEKeyDecodeFailureBanner,
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
 	ResetE2EEPasswordModal,
 } from '../page-objects/fragments/e2ee';
 import { LoginPage } from '../page-objects/login';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -183,8 +185,10 @@ test.use({ storageState: Users.admin.state });
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
+	let createE2EEChannel: CreateE2EEChannel;
 	let e2eePassword: string;
 
 	preserveSettings(roomSetupSettingsList);
@@ -192,6 +196,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -201,6 +206,10 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 	test.afterEach(async ({ api }) => {
 		await api.recreateContext();
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {
@@ -220,7 +229,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -262,7 +271,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -304,7 +313,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 

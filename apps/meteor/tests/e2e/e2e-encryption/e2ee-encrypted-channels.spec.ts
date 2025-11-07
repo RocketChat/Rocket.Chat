@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -15,7 +17,9 @@ const settingsList = [
 preserveSettings(settingsList);
 
 test.describe('E2EE Encrypted Channels', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -29,13 +33,18 @@ test.describe('E2EE Encrypted Channels', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -77,7 +86,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -109,7 +118,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -138,9 +147,11 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
+		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
-
 		await poHomeChannel.dismissToast();
+
+		await createE2EEChannel.resolveAndStore(channelName, createdChannels);
 
 		await poHomeChannel.tabs.kebab.click();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
@@ -163,7 +174,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel and mention user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -181,7 +192,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -203,7 +214,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -236,8 +247,13 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.btnCreate.click();
 		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.content.waitForChannel();
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 		await poHomeChannel.dismissToast();
+
+		// Track channel for cleanup
+		await createE2EEChannel.resolveAndStore(channelName, createdChannels);
 
 		// Send Unencrypted Messages
 		await poHomeChannel.content.sendMessage('first unencrypted message');
@@ -277,7 +293,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -332,7 +348,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		const originalMessage = 'This is the original encrypted message';
 		const editedMessage = 'This is the edited encrypted message';
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -357,7 +373,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		const editedMessage = 'This is the edited encrypted message with a mention to @user1 and #general';
 		const displayedMessage = 'This is the edited encrypted message with a mention to user1 and general';
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await createE2EEChannel.createAndStore(channelName, createdChannels);
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 

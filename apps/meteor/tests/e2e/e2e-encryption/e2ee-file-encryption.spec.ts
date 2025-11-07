@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
+import { deleteRoom } from '../utils/create-target-channel';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -16,7 +18,9 @@ const settingsList = [
 const originalSettings = preserveSettings(settingsList);
 
 test.describe('E2EE File Encryption', () => {
+	const createdChannels: { name: string; id?: string | null }[] = [];
 	let poHomeChannel: HomeChannel;
+	let createE2EEChannel: CreateE2EEChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -29,12 +33,14 @@ test.describe('E2EE File Encryption', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await Promise.all(createdChannels.map(({ id }) => (id ? deleteRoom(api, id) : Promise.resolve())));
 		await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: '' });
 		await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		createE2EEChannel = new CreateE2EEChannel(page);
 		await page.goto('/home');
 	});
 
@@ -42,7 +48,7 @@ test.describe('E2EE File Encryption', () => {
 		await test.step('create an encrypted channel', async () => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -77,7 +83,7 @@ test.describe('E2EE File Encryption', () => {
 		await test.step('create an encrypted room', async () => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -141,7 +147,7 @@ test.describe('E2EE File Encryption', () => {
 			await test.step('create an encrypted channel', async () => {
 				const channelName = faker.string.uuid();
 
-				await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+				await createE2EEChannel.createAndStore(channelName, createdChannels);
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
 
