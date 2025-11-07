@@ -1,5 +1,53 @@
 # @rocket.chat/meteor
 
+## 7.11.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37435](https://github.com/RocketChat/Rocket.Chat/pull/37435) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- ([#37441](https://github.com/RocketChat/Rocket.Chat/pull/37441) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
+- <details><summary>Updated dependencies [558c5592a5486e0f1e57b63b0348cb5f9669b60d, c7ba5bacb95478e755646a4f41033282cf413bf7]:</summary>
+
+  - @rocket.chat/models@1.7.1
+  - @rocket.chat/apps-engine@1.56.1
+  - @rocket.chat/federation-matrix@0.0.3
+  - @rocket.chat/media-calls@0.0.3
+  - @rocket.chat/omni-core-ee@0.0.6
+  - @rocket.chat/omnichannel-services@0.3.38
+  - @rocket.chat/presence@0.2.41
+  - @rocket.chat/core-services@0.10.4
+  - @rocket.chat/cron@0.1.41
+  - @rocket.chat/instance-status@0.1.41
+  - @rocket.chat/omni-core@0.0.6
+  - @rocket.chat/apps@0.5.20
+  - @rocket.chat/core-typings@7.11.1
+  - @rocket.chat/fuselage-ui-kit@23.0.1
+  - @rocket.chat/rest-typings@7.11.1
+  - @rocket.chat/network-broker@0.2.20
+  - @rocket.chat/license@1.1.1
+  - @rocket.chat/pdf-worker@0.3.20
+  - @rocket.chat/api-client@0.2.41
+  - @rocket.chat/freeswitch@1.2.28
+  - @rocket.chat/gazzodown@23.0.1
+  - @rocket.chat/http-router@7.9.8
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1
+  - @rocket.chat/ui-avatar@19.0.1
+  - @rocket.chat/ui-client@23.0.1
+  - @rocket.chat/ui-contexts@23.0.1
+  - @rocket.chat/web-ui-registration@23.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@23.0.1
+  - @rocket.chat/ui-voip@13.0.1
+  </details>
+
 ## 7.11.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.56.1
+
+### Patch Changes
+
+- ([#37441](https://github.com/RocketChat/Rocket.Chat/pull/37441) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
 ## 1.56.0
 
 ### Minor Changes
