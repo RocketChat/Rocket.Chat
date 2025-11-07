@@ -1,5 +1,14 @@
 # @rocket.chat/ui-avatar
 
+## 18.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.4
+  </details>
+
 ## 18.0.3
 
 ### Patch Changes
