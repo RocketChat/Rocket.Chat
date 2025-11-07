@@ -66,6 +66,14 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
+	getUserMention(username: string): Locator {
+		return this.page.getByRole('button', { name: username });
+	}
+
+	getChannelMention(channelName: string): Locator {
+		return this.page.getByRole('button', { name: channelName });
+	}
+
 	get encryptedRoomHeaderIcon(): Locator {
 		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}

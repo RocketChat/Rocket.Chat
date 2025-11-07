@@ -5,6 +5,7 @@ import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountProfile, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { AccountSecurityPage } from '../page-objects/account-security';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
 import {
 	E2EEKeyDecodeFailureBanner,
@@ -185,6 +186,7 @@ const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
+	let encryptedRoomPage: EncryptedRoomPage;
 	let e2eePassword: string;
 
 	preserveSettings(roomSetupSettingsList);
@@ -192,6 +194,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poHomeChannel = new HomeChannel(page);
+		encryptedRoomPage = new EncryptedRoomPage(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -248,7 +251,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 	});
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
@@ -294,7 +297,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
@@ -313,7 +316,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
 		await poHomeChannel.sidenav.btnUserProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
