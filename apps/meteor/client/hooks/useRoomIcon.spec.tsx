@@ -76,7 +76,6 @@ const expectedResults = {
 describe('useRoomIcon', () => {
 	it('should return the correct icon for each room', () => {
 		Object.entries(mockRooms).forEach(([key, room]) => {
-			// @ts-expect-error TODO: Implement ABAC attributes in rooms
 			const result = useRoomIcon(room);
 			expect(result).toEqual(expectedResults[key as keyof typeof expectedResults]);
 		});

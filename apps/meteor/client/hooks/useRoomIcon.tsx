@@ -6,9 +6,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const useRoomIcon = (
-	// @ts-expect-error TODO: Implement ABAC attributes in rooms
-	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'abacAttributes'>,
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
 ): ComponentProps<typeof Icon> | ReactElement | null => {
+	// @ts-expect-error TODO: Implement ABAC attributes in rooms
 	if (room.abacAttributes) {
 		if (room.teamMain) {
 			return { name: 'team-shield' };
