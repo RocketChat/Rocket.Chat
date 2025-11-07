@@ -288,12 +288,14 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						enableQuery,
 						invalidValue: false,
+						modules: ['abac', 'ldap-enterprise'],
 					});
 
 					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
 						type: 'string',
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '0 0 * * *',
+						modules: ['abac', 'ldap-enterprise'],
 					});
 
 					await this.add('LDAP_ABAC_AttributeMap', '{}', {
@@ -301,6 +303,7 @@ export function addSettings(): Promise<void> {
 						multiline: true,
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '{}',
+						modules: ['abac', 'ldap-enterprise'],
 					});
 				});
 			},
