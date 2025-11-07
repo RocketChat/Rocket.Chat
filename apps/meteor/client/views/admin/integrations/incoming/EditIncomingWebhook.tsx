@@ -14,8 +14,7 @@ import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
 
-//
-// import { useErrorHandler } from '../../import/useErrorHandler';
+
 
 export type EditIncomingWebhookFormData = {
 	enabled: boolean;
@@ -78,7 +77,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 		avatar?: { message?: string };
 		emoji?: { message?: string };
 	}) => {
-		// This will check for your two new bug messages and pop-up a toast
+		
 		if (errors.avatar && errors.avatar.message) {
 			handleError(errors.avatar.message);
 		} else if (errors.emoji && errors.emoji.message) {

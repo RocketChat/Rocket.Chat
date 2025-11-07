@@ -32,26 +32,26 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
-	//
+	
 
-		const validateAvatarUrl = (value: string) => {
-		if (!value) return true; // Not required, so empty is fine
+	const validateAvatarUrl = (value: string) => {
+		if (!value) return true; 
 		try {
-			new URL(value); // Use the built-in URL constructor
+			new URL(value);
 			return true;
 		} catch (error) {
-			// If it fails, return the error message for the parent to catch
+			
 			return t('The_URL_is_invalid', { url: value });
 		}
 	};
 
 	const validateEmoji = (value: string) => {
-		if (!value) return true; // Not required, so empty is fine
-		// Check if it's in :emoji: format
+		if (!value) return true; 
+		
 		if (/^:.+:$/.test(value)) {
 			return true;
 		}
-		// If not, return an error for the parent to catch
+		
 		return t('Invalid_emoji_format_Must_be_in_colon_format', { example: ':ghost:' });
 	};
 
@@ -264,35 +264,23 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 						<Field>
 							<FieldLabel htmlFor={avatarField}>{t('Avatar_URL')}</FieldLabel>
 							<FieldRow>
-								{/* <Controller
+							
+								<Controller
 									name='avatar'
 									control={control}
-									render={({ field }) => (
+									
+									rules={{ validate: validateAvatarUrl }}
+									render={({ field, fieldState }) => (
 										<TextInput
 											id={avatarField}
 											{...field}
 											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
 											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											
+											aria-invalid={Boolean(fieldState.error)}
 										/>
 									)}
-								/> */}
-
-								<Controller
-				name='avatar'
-				control={control}
-                // --- ADD THIS RULES PROP ---
-				rules={{ validate: validateAvatarUrl }}
-				render={({ field, fieldState }) => (
-					<TextInput
-						id={avatarField}
-						{...field}
-						aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-						addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
-                        // This line links the error state for accessibility
-                        aria-invalid={Boolean(fieldState.error)}
-					/>
-				)}
-			/>
+								/>
 							</FieldRow>
 							<FieldHint id={`${avatarField}-hint-1`}>{t('You_can_change_a_different_avatar_too')}</FieldHint>
 							<FieldHint id={`${avatarField}-hint-2`}>{t('Should_be_a_URL_of_an_image')}</FieldHint>
@@ -300,34 +288,23 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 						<Field>
 							<FieldLabel htmlFor={emojiField}>{t('Emoji')}</FieldLabel>
 							<FieldRow>
-								{/* <Controller
+								
+								<Controller
 									name='emoji'
 									control={control}
-									render={({ field }) => (
+								
+									rules={{ validate: validateEmoji }}
+									render={({ field, fieldState }) => (
 										<TextInput
 											id={emojiField}
 											{...field}
 											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
 											addon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											
+											aria-invalid={Boolean(fieldState.error)}
 										/>
 									)}
-								/> */}
-								<Controller
-				name='emoji'
-				control={control}
-                // --- ADD THIS RULES PROP ---
-				rules={{ validate: validateEmoji }}
-				render={({ field, fieldState }) => (
-					<TextInput
-						id={emojiField}
-						{...field}
-						aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
-						addon={<Icon name='emoji' size='x20' alignSelf='center' />}
-                        // This line links the error state for accessibility
-                        aria-invalid={Boolean(fieldState.error)}
-					/>
-				)}
-			/>
+								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
 							<FieldHint
