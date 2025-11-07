@@ -1,5 +1,5 @@
 import type { Badge } from './badge';
-import { drawBadge } from './badge';
+import { FaviconProcessor } from './favicon';
 
 const getFavicons = () => {
 	const favicons = Array.from(document.head.getElementsByTagName('link')).filter((link) =>
@@ -20,56 +20,22 @@ const getFavicons = () => {
 	return favicons;
 };
 
-const fetchFaviconImage = async (url: string | undefined) => {
-	const img = new Image();
-
-	if (url) {
-		img.crossOrigin = 'anonymous';
-		img.src = url;
-	} else {
-		img.src = '';
-		img.width = 32;
-		img.height = 32;
-	}
-
-	return new Promise<HTMLImageElement>((resolve, reject) => {
-		img.onload = () => {
-			resolve(img);
-		};
-		img.onerror = () => {
-			reject(new Error('Failed to load image'));
-		};
+const getFaviconsWithSize = () => {
+	const favicons = getFavicons();
+	return favicons.map((favicon) => {
+		const size = getFaviconSize(favicon);
+		return [favicon, ...size] as const;
 	});
 };
 
-const renderAndUpdate = ({
-	badge,
-	canvas,
-	favicons,
-	context,
-	img,
-}: {
-	badge: Badge;
-	canvas: HTMLCanvasElement;
-	favicons: HTMLLinkElement[];
-	context: CanvasRenderingContext2D;
-	img: HTMLImageElement;
-}) => {
-	context.scale(canvas.width, canvas.height);
+const getFaviconSize = (favicon: HTMLLinkElement): [number, number] => {
+	const sizes = favicon.getAttribute('sizes');
 
-	context.clearRect(0, 0, 1, 1);
-
-	context.drawImage(img, 0, 0, 1, 1);
-
-	drawBadge(badge, context);
-
-	context.setTransform(1, 0, 0, 1, 0, 0);
-
-	const url = canvas.toDataURL('image/png');
-
-	for (const icon of favicons) {
-		icon.setAttribute('href', url);
+	if (!sizes || sizes === 'any') {
+		return [32, 32];
 	}
+
+	return sizes?.split(/x/i).filter(Boolean).map(Number) as [number, number];
 };
 
 export const manageFavicon = () => {
@@ -80,22 +46,26 @@ export const manageFavicon = () => {
 	};
 
 	const init = async () => {
-		const favicons = getFavicons();
-		const lastFavicon = favicons[favicons.length - 1];
-		const faviconURL = lastFavicon.getAttribute('href') ?? undefined;
-		const img = await fetchFaviconImage(faviconURL);
-		const canvas = document.createElement('canvas');
-		canvas.width = img.width > 0 ? img.width : 32;
-		canvas.height = img.height > 0 ? img.height : 32;
+		const favicons = getFaviconsWithSize();
+		const [lastFavicon] = favicons[favicons.length - 1];
 
-		const context = canvas.getContext('2d');
+		const faviconProcessor = new FaviconProcessor(lastFavicon);
 
-		if (!context) {
-			throw new Error('Failed to create canvas context');
+		try {
+			await faviconProcessor.init();
+		} catch (e) {
+			console.warn('Unable to initialize favicon processor', e);
 		}
 
 		updateOrCollect = (badge) => {
-			renderAndUpdate({ badge, canvas, favicons, context, img });
+			try {
+				for (const [favicon, width, height] of favicons) {
+					const url = faviconProcessor.toDataURL(badge, width, height);
+					favicon.setAttribute('href', url);
+				}
+			} catch (e) {
+				console.warn('Unable to update favicon with unread badge', e);
+			}
 		};
 
 		if (pendingBadge) {
