@@ -77,8 +77,6 @@
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "En ny eier vil automatisk bli tildelt disse <bold>{{count}}</bold>-rommene:<br/> {{rooms}}.",
   "A_secure_and_highly_private_self-managed_solution_for_conference_calls": "En sikker og privat selvstyrt løsning for konferansesamtaler.",
   "A_workspace_admin_needs_to_install_and_configure_a_conference_call_app": "En arbeidsområdeadministrator må installere og konfigurere en konferansesamtale-app.",
-  "ABAC_header_tag_title": "Bare brukere som overholder kravene, har tilgang til attributtbaserte rom med tilgangskontroll.",
-  "ABAC_header_tag": "ABAC",
   "Accept": "Aksepter",
   "Accept_Call": "Godta anrop",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Aksepter innkommende livechat selv om det ikke er noen online",
