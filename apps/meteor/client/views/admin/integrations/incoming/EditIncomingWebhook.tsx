@@ -5,11 +5,17 @@ import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rock
 import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { useErrorHandler } from '../../import/useErrorHandler';
+
+
 import IncomingWebhookForm from './IncomingWebhookForm';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
+
+//
+// import { useErrorHandler } from '../../import/useErrorHandler';
 
 export type EditIncomingWebhookFormData = {
 	enabled: boolean;
@@ -51,6 +57,8 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 	const setModal = useSetModal();
 	const tab = useRouteParameter('type');
 
+	const handleError = useErrorHandler();
+
 	const deleteIntegration = useDeleteIntegration(INCOMING_TYPE);
 	const updateIntegration = useUpdateIntegration(INCOMING_TYPE);
 	const createIntegration = useCreateIntegration(INCOMING_TYPE);
@@ -63,6 +71,21 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 		formState: { isDirty },
 	} = methods;
 
+
+
+		//
+		const handleInvalid = (errors: {
+		avatar?: { message?: string };
+		emoji?: { message?: string };
+	}) => {
+		// This will check for your two new bug messages and pop-up a toast
+		if (errors.avatar && errors.avatar.message) {
+			handleError(errors.avatar.message);
+		} else if (errors.emoji && errors.emoji.message) {
+			handleError(errors.emoji.message);
+		}
+	};
+		//
 	const handleDeleteIntegration = useCallback(() => {
 		const onDelete = async () => {
 			if (!webhookData?._id) {
@@ -113,7 +136,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 					</TabsItem>
 				</Tabs>
 			)}
-			<PageScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
+			<PageScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave,handleInvalid)}>
 				<FormProvider {...methods}>
 					<IncomingWebhookForm webhookData={webhookData} />
 				</FormProvider>
