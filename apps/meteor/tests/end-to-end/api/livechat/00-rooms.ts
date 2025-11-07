@@ -19,7 +19,7 @@ import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
-import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import type { OnlineAgent } from '../../../data/livechat/department';
@@ -52,7 +52,7 @@ import {
 import { saveTags } from '../../../data/livechat/tags';
 import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
+import { sleep } from '../../../data/livechat/utils';
 import {
 	restorePermissionToRoles,
 	addPermissions,
@@ -3627,163 +3627,6 @@ describe('LIVECHAT - rooms', () => {
 					.delete(api(`livechat/transcript/${room._id}`))
 					.set(credentials)
 					.expect(200);
-			});
-		});
-	});
-
-	describe('livechat:sendTranscript', () => {
-		describe('with no permission', () => {
-			before(async () => {
-				await updatePermission('send-omnichannel-chat-transcript', []);
-			});
-			after(async () => {
-				await updatePermission('send-omnichannel-chat-transcript', ['admin']);
-			});
-			it('should fail if user doesnt have send-omnichannel-chat-transcript permission', async () => {
-				const { body } = await request
-					.post(methodCall('livechat:sendTranscript'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: '1091',
-							method: 'livechat:sendTranscript',
-							params: ['test', 'test', 'test', 'test'],
-						}),
-					})
-					.expect(200);
-
-				const result = parseMethodResponse(body);
-				expect(body.success).to.be.true;
-				expect(result).to.have.property('error').that.is.an('object').that.has.property('error', 'error-not-allowed');
-			});
-		});
-		it('should fail if not all params are provided', async () => {
-			const { body } = await request
-				.post(methodCall('livechat:sendTranscript'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '1091',
-						method: 'livechat:sendTranscript',
-						params: [],
-					}),
-				})
-				.expect(200);
-
-			const result = parseMethodResponse(body);
-			expect(body.success).to.be.true;
-			expect(result).to.have.property('error').that.is.an('object').that.has.property('errorType', 'Match.Error');
-		});
-		it('should fail if token is invalid', async () => {
-			const { body } = await request
-				.post(methodCall('livechat:sendTranscript'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '1091',
-						method: 'livechat:sendTranscript',
-						params: ['invalid-token', 'test', 'test', 'test'],
-					}),
-				})
-				.expect(200);
-
-			const result = parseMethodResponse(body);
-			expect(body.success).to.be.true;
-			expect(result).to.have.property('error').that.is.an('object');
-		});
-		it('should fail if roomId is invalid', async () => {
-			const visitor = await createVisitor();
-			const { body } = await request
-				.post(methodCall('livechat:sendTranscript'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '1091',
-						method: 'livechat:sendTranscript',
-						params: [visitor.token, 'invalid-room-id', 'test', 'test'],
-					}),
-				})
-				.expect(200);
-
-			const result = parseMethodResponse(body);
-			expect(body.success).to.be.true;
-			expect(result).to.have.property('error').that.is.an('object');
-			await deleteVisitor(visitor.token);
-		});
-		describe('with rooms', () => {
-			let visitor1: ILivechatVisitor;
-			let visitor2: ILivechatVisitor;
-			let room: IOmnichannelRoom;
-			before(async () => {
-				visitor1 = await createVisitor();
-				visitor2 = await createVisitor();
-				room = await createLivechatRoom(visitor1.token);
-			});
-			after(async () => {
-				await deleteVisitor(visitor1.token);
-				await deleteVisitor(visitor2.token);
-				await closeOmnichannelRoom(room._id);
-			});
-
-			it('should fail if token is from another conversation', async () => {
-				const { body } = await request
-					.post(methodCall('livechat:sendTranscript'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: '1091',
-							method: 'livechat:sendTranscript',
-							params: [visitor2.token, room._id, 'test', 'test'],
-						}),
-					})
-					.expect(200);
-
-				const result = parseMethodResponse(body);
-				expect(body.success).to.be.true;
-				expect(result).to.have.property('error').that.is.an('object');
-			});
-
-			it('should fail if email provided is invalid', async () => {
-				const { body } = await request
-					.post(methodCall('livechat:sendTranscript'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: '1091',
-							method: 'livechat:sendTranscript',
-							params: [visitor1.token, room._id, 'invalid-email', 'test'],
-						}),
-					})
-					.expect(200);
-
-				const result = parseMethodResponse(body);
-				expect(body.success).to.be.true;
-				expect(result).to.have.property('error').that.is.an('object');
-			});
-
-			it('should work if all params are good', async () => {
-				const { body } = await request
-					.post(methodCall('livechat:sendTranscript'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							msg: 'method',
-							id: '1091',
-							method: 'livechat:sendTranscript',
-							params: [visitor1.token, room._id, 'test@test', 'test'],
-						}),
-					})
-					.expect(200);
-
-				const result = parseMethodResponse(body);
-				expect(body.success).to.be.true;
-				expect(result).to.have.property('result', true);
 			});
 		});
 	});
