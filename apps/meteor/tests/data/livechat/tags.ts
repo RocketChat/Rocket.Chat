@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 
-import { credentials, methodCall, request } from '../api-data';
+import { api, credentials, methodCall, request } from '../api-data';
 import type { DummyResponse } from './utils';
 
 export const saveTags = (departments: string[] = []): Promise<ILivechatTag> => {
@@ -29,21 +29,14 @@ export const saveTags = (departments: string[] = []): Promise<ILivechatTag> => {
 export const removeTag = (id: string): Promise<boolean> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(methodCall(`livechat:removeTag`))
+			.post(api('livechat/tags.delete'))
 			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:removeTag',
-					params: [id],
-					id: '101',
-					msg: 'method',
-				}),
-			})
+			.send({ id })
 			.end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(JSON.parse(res.body.message).result);
+				resolve(JSON.parse(res.body.success).result);
 			});
 	});
 };
