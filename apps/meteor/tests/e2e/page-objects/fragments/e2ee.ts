@@ -180,4 +180,11 @@ export class CreateE2EEChannel {
 		await this.storeChannel(name, id, createdChannels);
 		return id;
 	}
+
+	async resolveAndStore(name: string, createdChannels: { name: string; id?: string | null }[]): Promise<string> {
+		const id = await resolvePrivateRoomId(this.page, name);
+		await expect(id, `Failed to resolve roomId for ${name}`).toBeTruthy();
+		await this.storeChannel(name, id || '', createdChannels);
+		return id || '';
+	}
 }
