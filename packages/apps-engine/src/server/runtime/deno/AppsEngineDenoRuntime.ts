@@ -22,7 +22,7 @@ import type { IRuntimeController } from '../IRuntimeController';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
-const inspect = (value: any) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
+const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
 export const ALLOWED_ACCESSOR_METHODS = [
 	'getConfigurationExtend',
