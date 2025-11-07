@@ -12,7 +12,7 @@ const AttachmentText = (props: AttachmentTextProps) => (
 		color='default'
 		style={{
 			whiteSpace: 'pre-wrap',
-			wordBreak: 'break-word',
+			wordBreak: 'normal',
 			overflowWrap: 'anywhere',
 		}}
 		{...props}
