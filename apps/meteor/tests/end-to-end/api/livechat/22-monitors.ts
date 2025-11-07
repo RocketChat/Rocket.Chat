@@ -100,14 +100,14 @@ type TestUser = { user: IUser; credentials: Credentials };
 				.expect(400);
 
 			expect(body.success).to.be.false;
-			expect(body).to.have.property('error').to.be.equal('Invalid user');
+			expect(body).to.have.property('error').to.be.equal('Invalid user [error-invalid-user]');
 		});
 
 		it('should fail when trying to create a monitor with an empty username', async () => {
 			const { body } = await request.post(api('livechat/monitors.save')).set(credentials).send({ username: '' }).expect(400);
 
 			expect(body.success).to.be.false;
-			expect(body).to.have.property('error').to.be.equal('Invalid user');
+			expect(body).to.have.property('error').to.be.equal('Invalid user [error-invalid-user]');
 		});
 
 		it('should remove a monitor', async () => {
