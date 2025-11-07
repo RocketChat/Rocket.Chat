@@ -589,7 +589,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return !!userSub;
 		}
 
-		const userDoc = await Users.findOne(
+		const isUserCompliant = await Users.findOne(
 			{
 				_id: user._id,
 				$and: this.buildCompliantConditions(room.abacAttributes),
@@ -597,7 +597,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 			{ projection: { _id: 1 } },
 		);
 
-		if (!userDoc) {
+		if (!isUserCompliant) {
+			const fullUser = await Users.findOneById(user._id);
+			if (!fullUser) {
+				return false;
+			}
+
+			// When a user is not compliant, remove them from the room automatically
+			await Room.removeUserFromRoom(room._id, fullUser, {
+				skipAppPreEvents: true,
+				customSystemMessage: 'abac-removed-user-from-room' as const,
+			});
 			return false;
 		}
 

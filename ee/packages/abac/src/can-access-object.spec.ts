@@ -6,6 +6,8 @@ const mockSettingsGetValueById = jest.fn();
 const mockSubscriptionsFindOneByRoomIdAndUserId = jest.fn();
 const mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId = jest.fn();
 const mockUsersFindOne = jest.fn();
+const mockUsersFindOneById = jest.fn();
+const mockRoomRemoveUserFromRoom = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Settings: {
@@ -17,11 +19,15 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		findOne: (...args: any[]) => mockUsersFindOne(...args),
+		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 	},
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {},
+	Room: {
+		removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+	},
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {
@@ -95,16 +101,18 @@ describe('AbacService.canAccessObject (unit)', () => {
 			expect(mockUsersFindOne).not.toHaveBeenCalled();
 		});
 
-		it('returns false when user subscription exists but user document not compliant', async () => {
+		it('returns false for non-compliant subscription and removes user from room when full user exists', async () => {
 			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({
 				_id: 'SUB',
 				abacLastTimeChecked: undefined,
 			});
 			mockUsersFindOne.mockResolvedValue(null); // non-compliant
+			mockUsersFindOneById.mockResolvedValue({ _id: baseUser._id, username: baseUser.username }); // full user for removal
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 			expect(result).toBe(false);
 
+			// Compliance evaluation query assertions
 			expect(mockUsersFindOne).toHaveBeenCalledTimes(1);
 			const [query, options] = mockUsersFindOne.mock.calls[0];
 			expect(query._id).toBe(baseUser._id);
@@ -116,6 +124,16 @@ describe('AbacService.canAccessObject (unit)', () => {
 			});
 			expect(options).toEqual({ projection: { _id: 1 } });
 
+			// Removal path assertions
+			expect(mockUsersFindOneById).toHaveBeenCalledWith(baseUser._id);
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledWith(
+				baseRoom._id,
+				{ _id: baseUser._id, username: baseUser.username },
+				{
+					skipAppPreEvents: true,
+					customSystemMessage: 'abac-removed-user-from-room',
+				},
+			);
 			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
 		});
 
@@ -200,10 +218,13 @@ describe('AbacService.canAccessObject (unit)', () => {
 				abacLastTimeChecked: expired,
 			});
 			mockUsersFindOne.mockResolvedValue(null); // not compliant
+			mockUsersFindOneById.mockResolvedValue(null); // user not found path (no removal)
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 			expect(result).toBe(false);
 			expect(mockUsersFindOne).toHaveBeenCalled();
+			expect(mockUsersFindOneById).toHaveBeenCalledWith(baseUser._id);
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
 			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
 		});
 	});

@@ -1572,8 +1572,25 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('ACCESS: user gets access when their attributes match room attributes again', async () => {
+		it('ACCESS: user is removed from the room when the access check fails', async () => {
+			const roomInfoRes = await request
+				.get(`${v1}/rooms.membersOrderedByRole`)
+				.set(credentials)
+				.query({ roomId: cacheRoom._id })
+				.expect(200);
+			const { members } = roomInfoRes.body;
+
+			expect(members.find((m: IUser) => m.username === cacheUser.username)).to.be.undefined;
+		});
+
+		it('ACCESS: user can be re invited to the room and access history', async () => {
 			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: cacheRoom._id, usernames: [cacheUser.username] })
+				.expect(200);
+
 			await request
 				.get(`/api/v1/groups.history`)
 				.set(cacheUserCreds)
@@ -1584,10 +1601,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		// Since we're adding the attributes directly to the user (and removing) the subscription is kept
-		// In real life, when new ldap attributes are added/removed, the user would lose subscriptions
-		// And would need to be added to the room again
-		it('ACCESS: recovers access once room attributes are removed', async () => {
+		it('ACCESS: keeps access once room attributes are removed', async () => {
 			await request.delete(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`).set(credentials).expect(200);
 
 			await request
