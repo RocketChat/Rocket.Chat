@@ -5,7 +5,7 @@ import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rock
 import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { useErrorHandler } from '../../import/useErrorHandler';
+
 
 
 import IncomingWebhookForm from './IncomingWebhookForm';
@@ -56,7 +56,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 	const setModal = useSetModal();
 	const tab = useRouteParameter('type');
 
-	const handleError = useErrorHandler();
+	
 
 	const deleteIntegration = useDeleteIntegration(INCOMING_TYPE);
 	const updateIntegration = useUpdateIntegration(INCOMING_TYPE);
@@ -72,19 +72,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 
 
 
-		//
-		const handleInvalid = (errors: {
-		avatar?: { message?: string };
-		emoji?: { message?: string };
-	}) => {
 		
-		if (errors.avatar && errors.avatar.message) {
-			handleError(errors.avatar.message);
-		} else if (errors.emoji && errors.emoji.message) {
-			handleError(errors.emoji.message);
-		}
-	};
-		//
 	const handleDeleteIntegration = useCallback(() => {
 		const onDelete = async () => {
 			if (!webhookData?._id) {
@@ -135,7 +123,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 					</TabsItem>
 				</Tabs>
 			)}
-			<PageScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave,handleInvalid)}>
+			<PageScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				<FormProvider {...methods}>
 					<IncomingWebhookForm webhookData={webhookData} />
 				</FormProvider>
