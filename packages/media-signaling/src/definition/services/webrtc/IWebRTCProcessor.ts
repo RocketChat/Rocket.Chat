@@ -10,6 +10,7 @@ export type WebRTCInternalStateMap = {
 	iceConnection: RTCIceConnectionState;
 	iceGathering: RTCIceGatheringState;
 	iceUntrickler: 'waiting' | 'not-waiting' | 'timeout';
+	remoteMute: boolean;
 };
 
 export type WebRTCUniqueEvents = {
@@ -43,6 +44,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isRemoteHeld(): boolean;
+	isRemoteMute(): boolean;
 }
 
 export type WebRTCProcessorConfig = {
