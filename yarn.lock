@@ -4793,13 +4793,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@juggle/resize-observer@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@juggle/resize-observer@npm:3.4.0"
-  checksum: 10/73d1d00ee9132fb6f0aea0531940a6b93603e935590bd450fc6285a328d906102eeeb95dea77b2edac0e779031a9708aa8c82502bd298ee4dd26e7dff48f397a
-  languageName: node
-  linkType: hard
-
 "@kaciras/deasync@npm:^1.1.0":
   version: 1.1.0
   resolution: "@kaciras/deasync@npm:1.1.0"
@@ -8636,20 +8629,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-polyfills@npm:~0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.25"
-  dependencies:
-    "@juggle/resize-observer": "npm:^3.4.0"
-    clipboard-polyfill: "npm:^3.0.3"
-    element-closest-polyfill: "npm:^1.0.6"
-    focus-visible: "npm:^5.2.0"
-    focus-within-polyfill: "npm:^5.2.1"
-    new-event-polyfill: "npm:^1.0.1"
-  checksum: 10/e7d42870155d5fbd09536debbaeaa3f788c97854a018e18523c2bfec71bebdaa9594636afe47b8b2347c2cac74a83fcc1f0815478623ad0afa85fc0015254980
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/fuselage-toastbar@npm:~0.35.1":
   version: 0.35.1
   resolution: "@rocket.chat/fuselage-toastbar@npm:0.35.1"
@@ -9250,7 +9229,6 @@ __metadata:
     "@rocket.chat/fuselage": "npm:~0.68.1"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
     "@rocket.chat/fuselage-toastbar": "npm:~0.35.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
@@ -18070,13 +18048,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clipboard-polyfill@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "clipboard-polyfill@npm:3.0.3"
-  checksum: 10/852f136ef4bb2ce31683c5e1f8f08b49fc2e86145ebb0f10e7a45b59750324c4af1fba7c4e9ed0e156130399da84dbdfbdf813d8ef46332334757faca46ee0e9
-  languageName: node
-  linkType: hard
-
 "cliui@npm:^6.0.0":
   version: 6.0.0
   resolution: "cliui@npm:6.0.0"
@@ -20328,13 +20299,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-closest-polyfill@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "element-closest-polyfill@npm:1.0.6"
-  checksum: 10/f47d6fec1a2962e35b4dd63fa6cc7d3bad7abb270305345ff98ffa0a997f844589ee9e57c268a3277295dce74dcd70775e059dc1475323b4655b7e3d2f9534c3
-  languageName: node
-  linkType: hard
-
 "elliptic@npm:^6.5.3, elliptic@npm:^6.5.5":
   version: 6.6.0
   resolution: "elliptic@npm:6.6.0"
@@ -22326,20 +22290,6 @@ __metadata:
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 10/7b8376061d5be6e0d3658bbab8bde587647f68797cf6bfeae9dea0e5137d9f27547ab92aaff3512dd9d1299086a6d61be98e9d48a56d17531b634f77faadbc49
-  languageName: node
-  linkType: hard
-
-"focus-visible@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "focus-visible@npm:5.2.0"
-  checksum: 10/11f686d68dbd4a0efb6714f037a4611411ffb8db4369784fcd6ba7f6cc386a42a5fa08211f6feb14ad3660719b451d0621f95058ea49963a59cf204ced38c4bc
-  languageName: node
-  linkType: hard
-
-"focus-within-polyfill@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "focus-within-polyfill@npm:5.2.1"
-  checksum: 10/fe7ce8715791b7778134e23a01ece66e52078b0a88285322b97079b345fe5ee30376680e07914721a23d1abcfd03e947931e69c561a27a50c642cbaa403a34fd
   languageName: node
   linkType: hard
 
@@ -28569,13 +28519,6 @@ __metadata:
   version: 4.0.0
   resolution: "nested-property@npm:4.0.0"
   checksum: 10/5653a67d68e19ed045d571b44f1a84ee07f8fd03f314e5876783d17e600d8799c51ff3f6e93892427ab011b81f885300126f231f2d6c7bb192234e6d97bbe245
-  languageName: node
-  linkType: hard
-
-"new-event-polyfill@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "new-event-polyfill@npm:1.0.1"
-  checksum: 10/4c58d2b0505132b2b75d47d82e6ce4f11839f9fa13f89c22bc9cbfe6a60e18df6046b86da5bc8699dae3077beb3a9e503e76bc56a797b76379db07b44bb6952c
   languageName: node
   linkType: hard
 
