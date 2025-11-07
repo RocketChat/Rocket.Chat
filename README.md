@@ -39,13 +39,13 @@ Rocket.Chat provides endless possibilities. Here’s an overview of the features
 
 We support different methods of deployment for different needs. Choose your method:
 
-- Are you deploying Rocket.Chat on your own servers? You can deploy using one of the recommended methods: Docker, Podman, or Kubernetes. Refer to the [Deployment Guide](https://docs.rocket.chat/docs/deploy-rocketchat) for details. Before you deploy, make sure to check the [system requirements](https://docs.rocket.chat/docs/system-requirements) to deploy a workspace successfully.
+- Are you deploying Rocket.Chat on your own servers? You can deploy using one of the recommended methods: Docker, Podman, or Kubernetes. Refer to the [Deployment Guide](https://docs.rocket.chat/docs/deploy-rocketchat) for details. Before you deploy, make sure to check the [system requirements](https://docs.rocket.chat/docs/system-requirements) to deploy a workspace successfully. Alternatively, deploy Rocket.Chat using [Launchpad](https://docs.rocket.chat/docs/deploy-with-launchpad) for a quick and straightforward Kubernetes setup where you don't have to manage each dependency.
 
 - Do you need to run the workspace on an isolated network? Set up an [air-gapped workspace](https://docs.rocket.chat/docs/rocketchat-air-gapped-deployment) to use Rocket.Chat without internet access, suitable for high-security or regulated environments.
 
 - Looking for a custom cloud-hosted solution without handling infrastructure? Check out our premium, dedicated [cloud hosting options](https://docs.rocket.chat/docs/rocketchat-cloud-hosting-service-level-agreement-sla) that adapt to your needs.
 
-- Interested in decentralized communication? Deploy a [federated workspace](https://docs.rocket.chat/docs/rocketchat-federation) to securely communicate and share resources across a federated network.
+- Interested in decentralized communication? Enable [federation](https://docs.rocket.chat/docs/rocketchat-native-federation) to securely communicate and share resources across a federated network.
 
 # 📱 Desktop and mobile apps
 
@@ -67,6 +67,14 @@ Refer to the [Installation guide](https://docs.rocket.chat/docs/desktop-mobile-a
 - [Developer documentation](https://developer.rocket.chat/docs/rocketchat-developer)
 - [API documentation](https://developer.rocket.chat/apidocs)
 - [YouTube Rocket.Chat Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB)
+
+# 🛡️ Trust and compliance
+
+The architecture of Rocket.Chat is designed to protect sensitive data, enforce rigorous compliance, and ensure secure, reliable communications for governments, defense, and critical infrastructure organizations operating in high-stakes environments.
+
+- **[Trust Center](https://trust.rocket.chat/)**: The Trust Center provides a comprehensive view of how we protect data and maintain transparency. You will find details on our security practices, privacy commitments, compliance certifications, and governance policies.
+
+- **[Compliance Center](https://docs.rocket.chat/docs/compliance-center)**: Explore the Compliance Center for additional information on how we commit to providing modern collaboration while protecting sensitive data.
 
 # 🛠️ Additional resources for developers
 
