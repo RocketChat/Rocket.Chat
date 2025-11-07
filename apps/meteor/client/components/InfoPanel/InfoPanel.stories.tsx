@@ -16,7 +16,6 @@ import RetentionPolicyCallout from './RetentionPolicyCallout';
 import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
-	title: 'Info Panel/InfoPanel',
 	component: InfoPanel,
 	subcomponents: {
 		InfoPanelAction: InfoPanelAction as ComponentType<any>,
@@ -39,7 +38,6 @@ export const Default: StoryFn<typeof InfoPanel> = () => (
 		<InfoPanelSection>
 			<InfoPanelTitle title='rocketchat-frontend-team' icon='hashtag' />
 		</InfoPanelSection>
-
 		<InfoPanelSection>
 			<InfoPanelField>
 				<InfoPanelLabel>Description</InfoPanelLabel>
@@ -56,7 +54,7 @@ export const Default: StoryFn<typeof InfoPanel> = () => (
 				</InfoPanelText>
 			</InfoPanelField>
 			<InfoPanelField>
-				<InfoPanelLabel>Topic</InfoPanelLabel>
+				<InfoPanelLabel title='This is helpful information about the label'>Topic</InfoPanelLabel>
 				<InfoPanelText>
 					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit
 					libero
@@ -68,4 +66,3 @@ export const Default: StoryFn<typeof InfoPanel> = () => (
 		</InfoPanelSection>
 	</InfoPanel>
 );
-Default.storyName = 'InfoPanel';

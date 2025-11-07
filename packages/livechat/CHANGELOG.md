@@ -1,5 +1,158 @@
 # @rocket.chat/livechat Change Log
 
+## 1.23.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0
+  </details>
+
+## 1.23.12-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0-rc.4
+  </details>
+
+## 1.23.12-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0-rc.3
+  </details>
+
+## 1.23.12-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0-rc.2
+  </details>
+
+## 1.23.12-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0-rc.1
+  </details>
+
+## 1.23.12-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.0-rc.0
+  </details>
+
+## 1.23.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d76a5578ed0e14fae2a041c0e09d565b28630d76, b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0
+  </details>
+
+## 1.23.11-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.7
+  </details>
+
+## 1.23.11-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.6
+  </details>
+
+## 1.23.10-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.5
+  </details>
+
+## 1.23.10-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.4
+  </details>
+
+## 1.23.10-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.3
+  </details>
+
+## 1.23.10-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@23.0.0-rc.2
+  </details>
+
+## 1.23.10-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.1
+  </details>
+
+## 1.23.10-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d76a5578ed0e14fae2a041c0e09d565b28630d76, b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
+
+  - @rocket.chat/gazzodown@23.0.0-rc.0
+
+  </details>
+
+## 1.23.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@22.0.2
+  </details>
+
+## 1.23.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/gazzodown@22.0.1
+
+  </details>
+
 ## 1.23.8
 
 ### Patch Changes

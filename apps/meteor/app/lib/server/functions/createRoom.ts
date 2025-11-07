@@ -53,6 +53,7 @@ async function createUsersSubscriptions({
 		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
 
 		if (insertedId) {
+			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
 			await notifyOnRoomChanged(room, 'inserted');
 		}
 
@@ -67,6 +68,7 @@ async function createUsersSubscriptions({
 
 	const membersCursor = Users.findUsersByUsernames(members);
 
+	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
 		try {
 			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
@@ -130,7 +132,25 @@ export const createRoom = async <T extends RoomType>(
 		rid: string;
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
+
+	const hasFederatedMembers = members.some((member) => {
+		if (typeof member === 'string') {
+			return member.includes(':') && member.includes('@');
+		}
+		return member.username?.includes(':') && member.username?.includes('@');
+	});
+
+	const extraData = {
+		...optionalExtraData,
+		...((hasFederatedMembers || optionalExtraData.federated) && {
+			federated: true,
+			federation: {
+				version: 1,
+				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
+			},
+		}),
+	};
 
 	await prepareCreateRoomCallback.run({
 		type,
@@ -264,6 +284,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+
 	if (shouldBeHandledByFederation) {
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}

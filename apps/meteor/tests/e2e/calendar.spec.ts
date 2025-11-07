@@ -2,6 +2,7 @@ import type { CalendarEventImportProps } from '@rocket.chat/rest-typings';
 
 import { Users } from './fixtures/userStates';
 import { test, expect, type BaseTest } from './utils/test';
+import { links } from '../../client/lib/links';
 
 test.use({ storageState: Users.admin.state });
 
@@ -52,7 +53,7 @@ async function importCalendarEvent(api: BaseTest['api'], { now = Date.now(), sta
 		endTime: endTime.toISOString(),
 		subject: 'Test appointment',
 		description: 'Test appointment description',
-		meetingUrl: 'https://rocket.chat/',
+		meetingUrl: links.rocketChat,
 		busy: true,
 		externalId: `test-${start}-${end}-${now}`,
 	} satisfies CalendarEventImportProps);

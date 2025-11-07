@@ -20,6 +20,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { links } from '../../../lib/links';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 // TODO: Missing error state
@@ -96,7 +97,7 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}
