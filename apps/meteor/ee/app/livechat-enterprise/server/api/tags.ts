@@ -87,17 +87,9 @@ const livechatTagsEndpoints = API.v1
 		async function action() {
 			const { _id, tagData, tagDepartments } = this.bodyParams;
 
-			try {
-				const result = await LivechatEnterprise.saveTag(_id, tagData, tagDepartments);
+			const result = await LivechatEnterprise.saveTag(_id, tagData, tagDepartments);
 
-				return API.v1.success(result);
-			} catch (error) {
-				if (error instanceof Meteor.Error) {
-					return API.v1.failure(error.reason);
-				}
-
-				return API.v1.failure('error-saving-tag');
-			}
+			return API.v1.success(result);
 		},
 	)
 	.post(
