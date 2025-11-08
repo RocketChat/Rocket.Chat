@@ -160,7 +160,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await flextab.kebab.click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
