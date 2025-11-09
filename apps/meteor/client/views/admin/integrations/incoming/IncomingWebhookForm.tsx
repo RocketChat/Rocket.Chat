@@ -49,10 +49,14 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		if (!value) return true;
 
 		if (/^:.+:$/.test(value)) {
-			return true;
-		}
+		return true;
+	}
 
-		return t('Invalid_emoji_format_Must_be_in_colon_format', { example: ':ghost:' });
+	if ([...value.trim()].length === 1 && /\p{Extended_Pictographic}/u.test(value)) {
+		return true;
+	}
+
+	return t('Invalid_emoji_format_Must_be_in_colon_format', { example: ':ghost:' });
 	};
 
 	const {

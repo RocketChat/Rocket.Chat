@@ -71,9 +71,7 @@ type EditOutgoingWebhookProps = {
 
 const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 	const t = useTranslation();
-	//
-	const handleError = useErrorHandler();
-	//
+	
 	const setModal = useSetModal();
 	const router = useRouter();
 
