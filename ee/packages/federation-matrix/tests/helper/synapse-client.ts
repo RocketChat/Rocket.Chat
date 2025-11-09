@@ -264,6 +264,142 @@ export class SynapseClient {
 	}
 
 	/**
+	 * Sends a text message to a room.
+	 *
+	 * Sends a plain text message to the specified room using the Matrix JS SDK.
+	 * The room is identified by its display name, which is common in federation
+	 * testing scenarios.
+	 *
+	 * @param roomName - The display name of the room to send the message to
+	 * @param message - The text message content to send
+	 * @returns Promise resolving to the Matrix event ID of the sent message
+	 * @throws Error if client is not initialized or room is not found
+	 */
+	async sendTextMessage(roomName: string, message: string): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const room = this.getRoom(roomName);
+		const response = await this.matrixClient.sendTextMessage(room.roomId, message);
+		return response.event_id;
+	}
+
+	/**
+	 * Sends an HTML-formatted message to a room.
+	 *
+	 * Sends a message with HTML formatting to the specified room using the Matrix JS SDK.
+	 * This allows sending formatted text (bold, italic, underline) that will be properly
+	 * rendered in Element and other Matrix clients that support HTML formatting.
+	 *
+	 * @param roomName - The display name of the room to send the message to
+	 * @param body - The plain text version of the message (required by Matrix spec)
+	 * @param formattedBody - The HTML-formatted version of the message
+	 * @returns Promise resolving to the Matrix event ID of the sent message
+	 * @throws Error if client is not initialized or room is not found
+	 */
+	async sendHtmlMessage(roomName: string, body: string, formattedBody: string): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const room = this.getRoom(roomName);
+		const content: any = {
+			msgtype: 'm.text',
+			body,
+			format: 'org.matrix.custom.html',
+			formatted_body: formattedBody,
+		};
+		const response = await this.matrixClient.sendMessage(room.roomId, content);
+		return response.event_id;
+	}
+
+	/**
+	 * Retrieves all text messages from a room's timeline.
+	 *
+	 * Gets all text message events from the room's timeline, which is essential
+	 * for verifying message synchronization in federation testing. Filters out
+	 * non-message events and returns only text messages.
+	 *
+	 * @param roomName - The display name of the room
+	 * @returns Array of text message events from the room's timeline
+	 * @throws Error if client is not initialized or room is not found
+	 */
+	getRoomMessages(roomName: string): Array<{ content: { body: string }; event_id: string; sender: string }> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const room = this.getRoom(roomName);
+		const { timeline } = room;
+		const messages: Array<{ content: { body: string }; event_id: string; sender: string }> = [];
+
+		for (const event of timeline) {
+			if (event.getType() === 'm.room.message') {
+				const content = event.getContent();
+				if (content.msgtype === 'm.text' || content.msgtype === 'm.notice') {
+					messages.push({
+						content: {
+							body: content.body || '',
+						},
+						event_id: event.getId() || '',
+						sender: event.getSender() || '',
+					});
+				}
+			}
+		}
+
+		return messages;
+	}
+
+	/**
+	 * Finds a message in a room's timeline by content.
+	 *
+	 * Searches for a message in the room's timeline that matches the specified
+	 * content text. Useful for verifying that messages appear correctly on
+	 * the remote side in federation tests.
+	 *
+	 * @param roomName - The display name of the room to search
+	 * @param messageText - The message text to find
+	 * @param options - Retry configuration options
+	 * @param options.maxRetries - Maximum number of retry attempts (default: 5)
+	 * @param options.delay - Delay between retries in milliseconds (default: 1000)
+	 * @param options.initialDelay - Initial delay before first attempt in milliseconds (default: 2000)
+	 * @returns The message event if found, null otherwise
+	 */
+	async findMessageInRoom(
+		roomName: string,
+		messageText: string,
+		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
+	): Promise<{ content: { body: string }; event_id: string; sender: string } | null> {
+		const { maxRetries = 5, delay = 1000, initialDelay = 2000 } = options;
+
+		if (initialDelay > 0) {
+			await wait(initialDelay);
+		}
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const messages = this.getRoomMessages(roomName);
+				const message = messages.find((msg) => msg.content.body === messageText);
+
+				if (message) {
+					return message;
+				}
+
+				if (attempt < maxRetries) {
+					await wait(delay);
+				}
+			} catch (error) {
+				console.warn(`Attempt ${attempt} to find message in room failed:`, error);
+
+				if (attempt < maxRetries) {
+					await wait(delay);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Closes the Matrix client connection and cleans up resources.
 	 *
 	 * Properly shuts down the Matrix client, clears all data stores,

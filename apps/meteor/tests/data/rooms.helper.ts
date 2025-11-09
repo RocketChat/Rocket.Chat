@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, IMessage } from '@rocket.chat/core-typings';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
 import { api, credentials, methodCall, request } from './api-data';
@@ -355,4 +355,72 @@ export const getGroupHistory = (roomId: IRoom['_id'], config?: IRequestConfig) =
 				resolve(req.body);
 			});
 	});
+};
+
+/**
+ * Loads message history for a room using the loadHistory method call.
+ *
+ * Fetches message history via the DDP method call endpoint, which returns
+ * messages with markdown parsing metadata (md attribute). This is useful
+ * for testing message rendering and markdown parsing, including emoji handling.
+ *
+ * @param rid - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @param end - Optional end date to load messages before this timestamp
+ * @param limit - Optional limit for number of messages to return (default: 20)
+ * @param ls - Optional last seen timestamp for unread calculation
+ * @param showThreadMessages - Optional flag to include thread messages (default: true)
+ * @returns Promise resolving to message history with structure: { messages, firstUnread?, unreadNotLoaded? }
+ */
+export const loadHistory = async (
+	rid: IRoom['_id'],
+	config?: IRequestConfig,
+	end?: Date,
+	limit?: number,
+	ls?: string | Date,
+	showThreadMessages?: boolean,
+) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	const params: any[] = [rid];
+	if (end !== undefined) {
+		params.push(end);
+	}
+	if (limit !== undefined) {
+		params.push(limit);
+	}
+	if (ls !== undefined) {
+		params.push(ls);
+	}
+	if (showThreadMessages !== undefined) {
+		params.push(showThreadMessages);
+	}
+
+	const response = await requestInstance
+		.post(methodCall('loadHistory'))
+		.set(credentialsInstance)
+		.send({
+			message: JSON.stringify({
+				method: 'loadHistory',
+				params,
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+
+	if (!response.body.success) {
+		throw new Error(`loadHistory failed: ${JSON.stringify(response.body)}`);
+	}
+
+	const data = JSON.parse(response.body.message);
+	if (data.error) {
+		throw new Error(`loadHistory method error: ${JSON.stringify(data.error)}`);
+	}
+
+	return data.result as {
+		messages: IMessage[];
+		firstUnread?: IMessage;
+		unreadNotLoaded?: number;
+	};
 };
