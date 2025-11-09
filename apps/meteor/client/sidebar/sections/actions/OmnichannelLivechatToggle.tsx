@@ -4,7 +4,7 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelAgentAvailable } from '../../../hooks/omnichannel/useOmnichannelAgentAvailable';
+import { useOmnichannelAgentAvailable } from '../../../views/omnichannel/hooks/useOmnichannelAgentAvailable';
 
 export const OmnichannelLivechatToggle = (props: Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>): ReactElement => {
 	const { t } = useTranslation();

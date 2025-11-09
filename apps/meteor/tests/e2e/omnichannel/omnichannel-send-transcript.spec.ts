@@ -49,7 +49,7 @@ test.describe('omnichannel-transcript', () => {
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await agent.poHomeChannel.content.btnSendTranscriptToEmail.click();
 			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.toastMessage.waitForDisplay();
 		});
 
 		await test.step('Expect to be not able send transcript as PDF', async () => {
