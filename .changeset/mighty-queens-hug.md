@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fix(Integration):Incoming webhook form Emoji validation
+fix(integrations): Add validation for Incoming Webhook Emoji field format
