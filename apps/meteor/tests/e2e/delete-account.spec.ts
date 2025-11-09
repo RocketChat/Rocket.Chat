@@ -1,13 +1,11 @@
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { AccountProfile, Registration, Authenticated } from './page-objects';
-import { ToastBar } from './page-objects/toastBar';
 import { test, expect } from './utils/test';
 import { createTestUser, type ITestUser } from './utils/user-helpers';
 
 test.describe('Delete Own Account', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
-	let poToastBar: ToastBar;
 	let poAuth: Authenticated;
 	let userToDelete: ITestUser;
 	let userWithInvalidPassword: ITestUser;
@@ -24,7 +22,6 @@ test.describe('Delete Own Account', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poRegistration = new Registration(page);
-		poToastBar = new ToastBar(page);
 		poAuth = new Authenticated(page);
 		await page.goto('/home');
 	});
@@ -67,8 +64,7 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('verify error message appears', async () => {
-			await expect(poToastBar.alert).toBeVisible();
-			await expect(poToastBar.alert).toHaveText('Invalid password [error-invalid-password]');
+			await poAccountProfile.toastMessage.waitForDisplay({ type: 'error', message: 'Invalid password [error-invalid-password]' });
 		});
 
 		await test.step('verify user is still on the profile page', async () => {
