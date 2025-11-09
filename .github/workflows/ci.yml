@@ -588,7 +588,7 @@ jobs:
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
-    needs: [checks, build-gh-docker, packages-build, release-versions]
+    needs: [checks, build-gh-docker-publish, packages-build, release-versions]
     runs-on: ubuntu-24.04
 
     steps:
