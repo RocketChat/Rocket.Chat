@@ -1,5 +1,7 @@
-import { Button } from '@rocket.chat/fuselage';
-import { useCallback, useEffect, useState } from 'react';
+import { useToolbar } from '@react-aria/toolbar';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, MessageToolbar, MessageToolbarItem, MessageToolbarWrapper } from '@rocket.chat/fuselage';
+import { useCallback, useEffect, useRef, useState } from 'react';
 // import { useTranslation } from 'react-i18next';
 import type { RefObject, ReactElement } from 'react';
 
@@ -10,16 +12,6 @@ const PULSE_ANIMATION_STYLE = `
   100% { background-color: var(--pulse-color-start); }
 }
 
-@keyframes aiPopupAnimate {
-	from {
-		opacity: 0;
-		transform: translate(-50%, -90%) scale(0.95);
-	}
-	to {
-		opacity: 1;
-		transform: translate(-50%, -110%) scale(1);
-	}
-}
 .ai-enhancement-transform {
   user-select: none;
   animation: aiBackgroundPulse 1.5s ease-in-out infinite;
@@ -123,32 +115,6 @@ const PULSE_ANIMATION_STYLE = `
 }
 .ai-suggestion-actions .reject:hover {
 	background-color: #ff4d4f;
-}
-
-.ai-enhancement-popup {
-  display: flex;
-  gap: 0;
-  background: var(--rc-color-surface, #fff);
-  border: 1px solid var(--rc-color-border-light, #ccc);
-  border-radius: 3px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  transform: translate(-50%, -110%);
-  animation: aiPopupAnimate 0.25s ease-out;
-  padding: 1px;
-}
-.ai-enhancement-popup button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.6rem;
-  border-radius: 2px;
-  color: var(--rc-color-font-default, #1f2329);
-  line-height: 1;
-  padding: 2px;
-}
-.ai-enhancement-popup button:hover {
-  background: var(--rc-color-primary-light, #e8f0fe);
 }`;
 
 let styleElement: HTMLStyleElement | null = null;
@@ -167,6 +133,8 @@ type PopupState = { x: number; y: number } | null;
 type AIAction = 'summary' | 'emoji' | 'translation';
 
 export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactElement | null => {
+	const toolbarRef = useRef(null);
+	const { toolbarProps } = useToolbar({}, toolbarRef);
 	// const { t } = useTranslation();
 	const [popup, setPopup] = useState<PopupState>(null);
 
@@ -323,15 +291,27 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 		return null;
 	}
 
+	const popupPosition = css`
+		top: ${popup.y}px;
+		left: ${popup.x}px;
+		position: fixed;
+		z-index: 9999;
+	`;
+
 	return (
-		<div
-			className='ai-enhancement-popup'
-			style={{ position: 'fixed', top: popup.y, left: popup.x }}
-			onMouseDown={(e) => e.preventDefault()} // Prevent focus loss.
-		>
-			<Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip='AI summarize' />
-			<Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip='AI emojify' />
-			<Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip='AI translate' />
-		</div>
+		<Box className={popupPosition} onMouseDown={(e) => e.preventDefault()}>
+			<MessageToolbarWrapper visible={true}>
+				<MessageToolbar ref={toolbarRef} {...toolbarProps}>
+					<MessageToolbarItem id='ai-enhancement-summary' onClick={() => runAIAction('summary')} icon='keyboard' title='AI summarize' />
+					<MessageToolbarItem id='ai-enhancement-emoji' onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip='AI emojify' />
+					<MessageToolbarItem
+						id='ai-enhancement-translation'
+						onClick={() => runAIAction('translation')}
+						icon='language'
+						title='AI translate'
+					/>
+				</MessageToolbar>
+			</MessageToolbarWrapper>
+		</Box>
 	);
 };
