@@ -522,12 +522,12 @@ jobs:
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
-    needs: [checks, build-gh-docker-coverage, packages-build, release-versions]
+    needs: [checks, build-gh-docker-publish, packages-build, release-versions]
     runs-on: ubuntu-24.04
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
@@ -535,18 +535,18 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
-      
+
       - uses: rharkor/caching-for-turbo@v1.8
-      
+
       - name: Restore turbo build
         uses: actions/download-artifact@v4
         with:
           name: turbo-build
           path: .turbo/cache
-      
+
       - name: Build packages
         run: yarn build
-      
+
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         uses: docker/login-action@v3
@@ -554,19 +554,18 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
-      
+
       - name: Configure /etc/hosts for federation services
         run: |
           sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
           sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
-      
+
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
-      
 
   tests-done:
     name: ✅ Tests Done
