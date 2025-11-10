@@ -101,7 +101,7 @@ describe('LIVECHAT - rooms', () => {
 					expect(res.body).to.have.a.property('app');
 					expect(res.body.app).to.have.a.property('id');
 					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+					expect(res.body.app).to.have.a.property('status').and.to.be.equal('manually_enabled');
 
 					appId = res.body.app.id;
 				});
