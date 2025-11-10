@@ -316,7 +316,7 @@ jobs:
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
           # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ (matrix.type == 'coverage' && github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -324,6 +324,48 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
+
+      - name: Image ${{ matrix.service[1] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[1] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[1] }}
+          type: ${{ matrix.type }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[2] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[2] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[2] }}
+          type: ${{ matrix.type }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[3] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[3] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[3] }}
+          type: ${{ matrix.type }}
+          setup-docker: false
 
       - name: Image ${{ matrix.service[1] || '"skipped"' }}
         uses: ./.github/actions/build-docker
