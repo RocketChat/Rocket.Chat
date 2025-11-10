@@ -2624,10 +2624,10 @@ describe('LIVECHAT - rooms', () => {
 				room = await createLivechatRoom(visitor.token);
 			});
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor._id);
+
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 			it('should not allow users to update room info without serving the chat or having "save-others-livechat-room-info" permission', async () => {
 				await request
