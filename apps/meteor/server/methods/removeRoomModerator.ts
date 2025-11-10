@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 
 declare module '@rocket.chat/ddp-client' {
@@ -22,7 +23,7 @@ export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['
 	check(rid, String);
 	check(userId, String);
 
-	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1 } });
+	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'removeRoomModerator',
@@ -56,6 +57,8 @@ export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['
 			method: 'removeRoomModerator',
 		});
 	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'user' });
 
 	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'moderator');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.filter((r) => r !== 'moderator') || []);

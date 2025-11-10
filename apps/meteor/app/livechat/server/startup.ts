@@ -1,7 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
+import { validateEmail, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -18,8 +20,51 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import './roomAccessValidator.internalService';
+import { ContactMerger, type FieldAndValue } from './lib/contacts/ContactMerger';
 
 const logger = new Logger('LivechatStartup');
+
+// TODO this patch is temporary because `ContactMerger` still a lot of dependencies, so it is not suitable to be moved to omni-core package
+// TODO add tests covering the ContactMerger usage
+registerGuest.patch(async (originalFn, newData, options) => {
+	const visitor = await originalFn(newData, options);
+	if (!visitor) {
+		return null;
+	}
+
+	const { name, phone, email, username } = newData;
+
+	const validatedEmail =
+		email &&
+		wrapExceptions(() => {
+			const trimmedEmail = email.trim().toLowerCase();
+			validateEmail(trimmedEmail);
+			return trimmedEmail;
+		}).suppress();
+
+	const fields = [
+		{ type: 'name', value: name },
+		{ type: 'phone', value: phone?.number },
+		{ type: 'email', value: validatedEmail },
+		{ type: 'username', value: username || visitor.username },
+	].filter((field) => Boolean(field.value)) as FieldAndValue[];
+
+	if (!fields.length) {
+		return null;
+	}
+
+	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
+	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+	for await (const contact of contacts) {
+		await ContactMerger.mergeFieldsIntoContact({
+			fields,
+			contact,
+			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
+		});
+	}
+
+	return visitor;
+});
 
 Meteor.startup(async () => {
 	roomCoordinator.setRoomFind('l', async (id) => maybeMigrateLivechatRoom(await LivechatRooms.findOneById(id)));

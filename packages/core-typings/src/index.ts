@@ -65,7 +65,7 @@ export * from './IAvatar';
 export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
-export * from './ReadReceipt';
+export * from './IReadReceipt';
 export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
@@ -75,7 +75,7 @@ export * from './IOembed';
 export * from './IEmailInbox';
 export * from './ILoginServiceConfiguration';
 export * from './ISocketConnection';
-export * from './IMethodThisType';
+export * from './IMethodConnection';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
@@ -84,8 +84,6 @@ export * from './IOAuthAccessToken';
 export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
-
-// export * from './IMethodConnection';
 
 export * from './ldap';
 // TODO: move to separated package
@@ -148,5 +146,6 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+export * from './mediaCalls';
 
 export { schemas } from './Ajv';

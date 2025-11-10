@@ -12,6 +12,17 @@ export type AppLogsFilterFormData = {
 };
 
 export const useAppLogsFilterForm = () =>
-	useForm<AppLogsFilterFormData>({ defaultValues: { severity: 'all', instance: 'all', timeFilter: 'all' } });
+	useForm<AppLogsFilterFormData>({
+		defaultValues: {
+			severity: 'all',
+			instance: 'all',
+			timeFilter: 'all',
+			event: 'all',
+			startDate: '',
+			endDate: '',
+			startTime: '',
+			endTime: '',
+		},
+	});
 
 export const useAppLogsFilterFormContext = () => useFormContext<AppLogsFilterFormData>();

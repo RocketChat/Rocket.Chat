@@ -15,31 +15,19 @@ exports[`renders AppLogsItem without crashing 1`] = `
           <label
             class="rcx-box rcx-box--full rcx-label"
             for="eventFilter"
+            id="eventFilterLabel"
           >
             Event
           </label>
-          <label
-            class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          <div
+            aria-busy="true"
+            aria-labelledby="eventFilterLabel"
+            class="rcx-box rcx-box--full rcx-skeleton__input"
           >
-            <input
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
-              id="eventFilter"
-              name="event"
-              size="1"
-              type="text"
-              value=""
-            />
             <span
-              class="rcx-box rcx-box--full rcx-input-box__addon"
-            >
-              <i
-                aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1bepdyv"
-              >
-                
-              </i>
-            </span>
-          </label>
+              class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+            />
+          </div>
         </div>
         <button
           class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-qv9v2f"

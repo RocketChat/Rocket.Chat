@@ -11,6 +11,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -32,13 +33,7 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 	return message;
 };
 
-export async function setReaction(
-	room: Pick<IRoom, '_id' | 'muted' | 'unmuted' | 'reactWhenReadOnly' | 'ro' | 'lastMessage' | 'federated'>,
-	user: IUser,
-	message: IMessage,
-	reaction: string,
-	userAlreadyReacted?: boolean,
-) {
+export async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, userAlreadyReacted?: boolean) {
 	await Message.beforeReacted(message, room);
 
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
@@ -70,7 +65,7 @@ export async function setReaction(
 				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			}
 		}
-		void callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact: false, oldMessage });
+		void callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact: false, oldMessage, room });
 
 		isReacted = false;
 	} else {
@@ -88,7 +83,7 @@ export async function setReaction(
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 
-		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
+		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true, room });
 
 		isReacted = true;
 	}
@@ -138,9 +133,7 @@ export async function executeSetReaction(
 		return;
 	}
 
-	const room = await Rooms.findOneById<
-		Pick<IRoom, '_id' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
-	>(message.rid, { projection: { _id: 1, ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
+	const room = await Rooms.findOneById(message.rid);
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
@@ -161,6 +154,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId, shouldReact) {
+		methodDeprecationLogger.method('setReaction', '8.0.0', '/v1/chat.react');
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });

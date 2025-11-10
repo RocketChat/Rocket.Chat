@@ -9,6 +9,12 @@ type RouterContextMockProps = {
 	children: ReactNode;
 };
 
+// Ensure Meteor settings are defined
+window.__meteor_runtime_config__ = {
+	ROOT_URL: 'http://localhost:3000',
+	ROOT_URL_PATH_PREFIX: '',
+};
+
 const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement => {
 	const parent = useContext(RouterContext);
 

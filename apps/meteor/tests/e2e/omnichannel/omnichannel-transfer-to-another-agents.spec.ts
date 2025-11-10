@@ -72,7 +72,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 		await test.step('expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
 			await agentB.poHomeOmnichannel.sidenav.switchStatus('offline');
 
-			await agentA.poHomeOmnichannel.content.btnForwardChat.click();
+			await agentA.poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputFowardUser.click();
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputFowardUser.type('user2');
 			await expect(agentA.page.locator('text=Empty')).toBeVisible();
@@ -84,11 +84,11 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 			await agentB.poHomeOmnichannel.sidenav.switchStatus('online');
 
 			await agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(visitor.name).click();
-			await agentA.poHomeOmnichannel.content.btnForwardChat.click();
+			await agentA.poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
 			await agentA.poHomeOmnichannel.content.forwardChatModal.selectUser('user2');
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputComment.type('any_comment');
 			await agentA.poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-			await expect(agentA.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await agentA.poHomeOmnichannel.toastMessage.waitForDisplay();
 		});
 
 		await test.step('expect to have 1 omnichannel assigned to agent 2', async () => {

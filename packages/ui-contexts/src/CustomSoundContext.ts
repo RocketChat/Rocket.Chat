@@ -30,10 +30,11 @@ export type CustomSoundContextValue = {
 	};
 	notificationSounds: {
 		playNewRoom: () => void;
+		playNewRoomLoop: () => void;
 		playNewMessage: () => void;
-		playNewMessageLoop: () => void;
 		stopNewRoom: () => void;
 		stopNewMessage: () => void;
+		playNewMessageCustom: (soundId: ICustomSound['_id']) => void;
 	};
 	list: ICustomSound[];
 };
@@ -59,10 +60,11 @@ export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	},
 	notificationSounds: {
 		playNewRoom: () => undefined,
+		playNewRoomLoop: () => undefined,
 		playNewMessage: () => undefined,
-		playNewMessageLoop: () => undefined,
 		stopNewRoom: () => undefined,
 		stopNewMessage: () => undefined,
+		playNewMessageCustom: () => undefined,
 	},
 	list: [],
 });

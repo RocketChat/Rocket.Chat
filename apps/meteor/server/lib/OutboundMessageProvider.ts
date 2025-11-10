@@ -2,15 +2,8 @@ import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundComunication';
-import type { ValidOutboundProvider, IOutboundProvider } from '@rocket.chat/core-typings';
-
-interface IOutboundMessageProvider {
-	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void;
-	registerEmailProvider(provider: IOutboundEmailMessageProvider): void;
-	getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[];
-	unregisterProvider(appId: string, providerType: string): void;
-}
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
+import type { ValidOutboundProvider, IOutboundProvider, IOutboundMessageProvider } from '@rocket.chat/core-typings';
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {
 	private readonly outboundMessageProviders: Map<ValidOutboundProvider, IOutboundMessageProviders[]>;
@@ -20,6 +13,17 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 			['phone', []],
 			['email', []],
 		]);
+	}
+
+	public findOneByProviderId(providerId: string) {
+		for (const providers of this.outboundMessageProviders.values()) {
+			for (const provider of providers) {
+				if (provider.appId === providerId) {
+					return provider;
+				}
+			}
+		}
+		return undefined;
 	}
 
 	public registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void {
@@ -36,6 +40,7 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 				providerId: provider.appId,
 				providerName: provider.name,
 				providerType: provider.type,
+				...(provider.documentationUrl && { documentationUrl: provider.documentationUrl }),
 				...(provider.supportsTemplates && { supportsTemplates: provider.supportsTemplates }),
 			}));
 		}

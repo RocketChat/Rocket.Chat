@@ -1,10 +1,12 @@
 import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { create } from 'zustand';
 
+export type LivechatInquiryLocalRecord = ILivechatInquiryRecord & { alert?: boolean };
+
 export const useLivechatInquiryStore = create<{
-	records: (ILivechatInquiryRecord & { alert?: boolean })[];
-	add: (record: ILivechatInquiryRecord & { alert?: boolean }) => void;
-	merge: (record: ILivechatInquiryRecord & { alert?: boolean }) => void;
+	records: LivechatInquiryLocalRecord[];
+	add: (record: LivechatInquiryLocalRecord) => void;
+	merge: (record: LivechatInquiryLocalRecord) => void;
 	discard: (id: ILivechatInquiryRecord['_id']) => void;
 	discardForRoom: (rid: IRoom['_id']) => void;
 	discardAll: () => void;
