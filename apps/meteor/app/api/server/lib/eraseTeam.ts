@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message, MeteorError, Team } from '@rocket.chat/core-services';
+import { MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
@@ -58,8 +58,8 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
  */
 export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []) => {
 	const deletedRooms = new Set<string>();
-	await eraseTeamShared('rocket.cat', team, roomsToRemove, async (rid, user) => {
-		const isDeleted = await eraseRoomLooseValidation(rid, user);
+	await eraseTeamShared('rocket.cat', team, roomsToRemove, async (rid) => {
+		const isDeleted = await eraseRoomLooseValidation(rid);
 		if (isDeleted) {
 			deletedRooms.add(rid);
 		}
@@ -67,10 +67,7 @@ export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRe
 	return Array.from(deletedRooms);
 };
 
-export async function eraseRoomLooseValidation(
-	rid: string,
-	userIdOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>,
-): Promise<boolean> {
+export async function eraseRoomLooseValidation(rid: string): Promise<boolean> {
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
@@ -81,8 +78,6 @@ export async function eraseRoomLooseValidation(
 		return false;
 	}
 
-	const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { roomId: 1 } }));
-
 	if (Apps.self?.isLoaded()) {
 		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPreRoomDeletePrevent, room);
 		if (prevent) {
@@ -91,16 +86,6 @@ export async function eraseRoomLooseValidation(
 	}
 
 	await deleteRoom(rid);
-
-	if (team) {
-		const user =
-			typeof userIdOrUser === 'string'
-				? await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userIdOrUser, { projection: { username: 1, name: 1 } })
-				: userIdOrUser;
-		if (user) {
-			await Message.saveSystemMessage('user-deleted-room-from-team', team.roomId, room.name || '', user);
-		}
-	}
 
 	if (Apps.self?.isLoaded()) {
 		void Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPostRoomDeleted, room);
