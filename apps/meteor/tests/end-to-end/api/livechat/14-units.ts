@@ -2,8 +2,8 @@ import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
-import { deleteDepartment, getDepartmentById, createDepartmentWithMethod } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { deleteDepartment, getDepartmentById } from '../../../data/livechat/department';
 import { createDepartment, updateDepartment } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit, deleteUnit, getUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
