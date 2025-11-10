@@ -17,9 +17,9 @@ services:
       - TEST_MODE=true
       - DEBUG=${DEBUG}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
-      - 'MONGO_URL=${MONGO_URL}'
-      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL}'
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
       - 'COVERAGE_DIR=${COVERAGE_DIR}'
@@ -28,16 +28,22 @@ services:
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      - HEAP_USAGE_PERCENT=99
     depends_on:
       - traefik
+      - mongo
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
       traefik.http.middlewares.test-retry.retry.attempts: 4
+    healthcheck:
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/livez || exit 1
 
   authorization-service:
     platform: linux/amd64
@@ -50,11 +56,10 @@ services:
           - linux/arm64
       args:
         SERVICE: authorization-service
-        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
-      - 'MONGO_URL=${MONGO_URL}'
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -74,8 +79,8 @@ services:
         SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -96,8 +101,8 @@ services:
         DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -117,8 +122,8 @@ services:
         SERVICE: ddp-streamer
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -144,8 +149,8 @@ services:
         SERVICE: stream-hub-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
       - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
     extra_hosts:
@@ -166,8 +171,8 @@ services:
         SERVICE: queue-worker
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -188,8 +193,8 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -198,6 +203,32 @@ services:
 
   nats:
     image: nats:2.6-alpine
+
+  mongo:
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.2}-ubi8
+    container_name: mongo
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
+      MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
+      MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
+    entrypoint: |
+      bash -c
+        "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
+          sleep 2;
+          until mongosh --eval \"db.adminCommand('ping')\"; do 
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME at $$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER...\";
+          mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
+          echo '=====> Initiating ReplSet done...';
+        wait"
+
+  httpbin:
+    image: kong/httpbin
 
   traefik:
     image: traefik:v3.1
