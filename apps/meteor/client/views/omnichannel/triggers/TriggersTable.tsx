@@ -15,6 +15,7 @@ import {
 	GenericTableLoadingRow,
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { links } from '../../../lib/links';
 
 const TriggersTable = () => {
 	const t = useTranslation();
@@ -64,7 +65,7 @@ const TriggersTable = () => {
 					description={t('No_triggers_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_trigger')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_triggers')}
 				/>
 			)}

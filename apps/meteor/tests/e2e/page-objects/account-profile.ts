@@ -1,14 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Account } from './account';
 import { AccountSidenav } from './fragments/account-sidenav';
 
-export class AccountProfile {
-	private readonly page: Page;
-
+export class AccountProfile extends Account {
 	readonly sidenav: AccountSidenav;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.sidenav = new AccountSidenav(page);
 	}
 

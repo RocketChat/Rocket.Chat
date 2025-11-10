@@ -4,9 +4,9 @@ import type { DragEvent, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { useDropTarget } from './useDropTarget';
-import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 

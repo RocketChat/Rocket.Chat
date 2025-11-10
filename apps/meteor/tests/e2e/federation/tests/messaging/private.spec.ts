@@ -813,7 +813,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.deleteLastMessage();
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 				await expect(poFederationChannelServer1.content.lastUserMessage).not.toBeVisible();
 				await expect(poFederationChannelServer2.content.lastUserMessage).not.toBeVisible();
@@ -835,7 +835,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.deleteLastMessage();
-				await expect(poFederationChannelServer2.toastSuccess).toBeVisible();
+				await poFederationChannelServer2.toastMessage.waitForDisplay();
 
 				await expect(poFederationChannelServer1.content.lastUserMessage).not.toBeVisible();
 				await expect(poFederationChannelServer2.content.lastUserMessage).not.toBeVisible();
@@ -905,9 +905,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.starLastMessage();
-				await expect(
-					poFederationChannelServer1.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
-				).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay({ type: 'success', message: 'Message has been starred' });
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
@@ -928,9 +926,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.starLastMessage();
-				await expect(
-					poFederationChannelServer2.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
-				).toBeVisible();
+				await poFederationChannelServer2.toastMessage.waitForDisplay({ type: 'success', message: 'Message has been starred' });
 
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
