@@ -25,7 +25,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	);
 };
 
-(IS_EE ? describe.only : describe.skip)('[ABAC] (Enterprise Only)', function () {
+(IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let testRoom: IRoom;
