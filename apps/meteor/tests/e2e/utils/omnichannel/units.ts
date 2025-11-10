@@ -12,7 +12,7 @@ type CreateUnitParams = {
 
 const removeUnit = async (api: BaseTest['api'], id: string) =>
 	api.post('/method.call/omnichannel:removeUnit', {
-		message: JSON.stringify({ msg: 'method', id: '35', method: api.delete(`/v1/livechat/unit/${id}`), params: [id] }),
+		message: JSON.stringify({ msg: 'method', id: '35', method: 'livechat:removeUnit', params: [id] }),
 	});
 
 export const createOrUpdateUnit = async (
