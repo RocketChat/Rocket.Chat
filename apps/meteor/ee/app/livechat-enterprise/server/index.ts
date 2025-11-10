@@ -6,7 +6,6 @@ import './methods/addMonitor';
 import './methods/removeMonitor';
 import './methods/saveTag';
 import './methods/removeUnit';
-import './methods/saveUnit';
 import './methods/removeBusinessHour';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
