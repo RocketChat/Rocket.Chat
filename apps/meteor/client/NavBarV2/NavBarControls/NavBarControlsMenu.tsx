@@ -12,11 +12,15 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	callItem?: GenericMenuItemProps;
 };
 
-const NavBarControlsMenu = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsMenu = ({ omnichannelItems, isPressed, callItem, ...props }: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const sections = [
+		{
+			title: t('Voice_Call'),
+			items: callItem ? [callItem] : [],
+		},
 		{
 			title: t('Omnichannel'),
 			items: showOmnichannel ? omnichannelItems : [],

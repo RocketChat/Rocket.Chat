@@ -707,19 +707,20 @@ jobs:
           SRC="${{ steps.gh-docker.outputs.gh-image-name }}"
           DEST_REPO="docker.io/${IMAGE_NAME}"
 
-          # build --additional-tag for all other tags
-          EXTRA_ARGS=()
-          if (( ${#TAGS[@]} > 1 )); then
-            for t in "${TAGS[@]:1}"; do
-              EXTRA_ARGS+=( --additional-tag "${DEST_REPO}:${t}" )
-            done
-          fi
-
-          echo "Copying $SRC to ${DEST_REPO}:${PRIMARY} with extras ${EXTRA_ARGS[*]}"
+          echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"
           skopeo copy --all \
             "docker://${SRC}" \
-            "docker://${DEST_REPO}:${PRIMARY}" \
-            "${EXTRA_ARGS[@]}"
+            "docker://${DEST_REPO}:${PRIMARY}"
+
+          # copy additional tags
+          if (( ${#TAGS[@]} > 1 )); then
+            for t in "${TAGS[@]:1}"; do
+              echo "Copying $SRC to ${DEST_REPO}:${t}"
+              skopeo copy --all \
+                "docker://${SRC}" \
+                "docker://${DEST_REPO}:${t}"
+            done
+          fi
 
   notify-services:
     name: 🚀 Notify external services
