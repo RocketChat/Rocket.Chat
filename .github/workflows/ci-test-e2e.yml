@@ -20,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['5.0', '8.2']"
+        default: "['8.2']"
         required: false
         type: string
       release:
@@ -40,6 +40,9 @@ on:
         type: number
       type:
         required: true
+        type: string
+      coverage:
+        required: false
         type: string
       db-watcher-disabled:
         default: 'true'
@@ -66,13 +69,14 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
-  DOCKER_TAG_SUFFIX_ROCKETCHAT: '-cov'
 
 jobs:
   test:
     runs-on: ubuntu-24.04
 
     env:
+      # if building for production on develop branch or release, add suffix for coverage images
+      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
 
     strategy:
@@ -138,12 +142,9 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
-          node-version: ${{ inputs.node-version }}
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
-          setup: false
           service: 'rocketchat'
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
@@ -155,7 +156,7 @@ jobs:
           docker compose -f docker-compose-ci.yml up -d httpbin
 
       - name: Prepare code coverage directory
-        if: inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version
         run: |
           mkdir -p /tmp/coverage
           chmod 777 /tmp/coverage
@@ -215,7 +216,7 @@ jobs:
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
-          E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -254,12 +255,12 @@ jobs:
         run: docker compose -f docker-compose-ci.yml logs mongo
 
       - name: Extract e2e:ee:coverage
-        if: inputs.type == 'ui' && inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
         working-directory: ./apps/meteor
         run: yarn test:e2e:nyc
 
       - uses: codecov/codecov-action@v3
-        if: inputs.type == 'ui' && inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
         with:
           directory: ./apps/meteor
           flags: e2e
@@ -267,7 +268,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - uses: codecov/codecov-action@v3
-        if: inputs.type == 'api' && inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'api'
         with:
           directory: /tmp/coverage
           working-directory: .
@@ -276,7 +277,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Store e2e-api-ee-coverage
-        if: inputs.type == 'api' && inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'api'
         uses: actions/upload-artifact@v4
         with:
           name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
@@ -284,7 +285,7 @@ jobs:
           include-hidden-files: true
 
       - name: Store e2e-ee-coverage
-        if: inputs.type == 'ui' && inputs.release == 'ee'
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
         uses: actions/upload-artifact@v4
         with:
           name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
