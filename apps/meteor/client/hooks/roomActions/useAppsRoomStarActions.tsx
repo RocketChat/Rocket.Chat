@@ -24,7 +24,6 @@ export const useAppsRoomStarActions = () => {
 		if (!result.data) {
 			return undefined;
 		}
-
 		const filteredActions = result.data.filter(applyButtonFilters);
 
 		if (filteredActions.length === 0) {
@@ -37,9 +36,10 @@ export const useAppsRoomStarActions = () => {
 			icon: 'stars',
 			groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 			featured: true,
+			order: 3,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
-					button={<HeaderToolbarAction />}
+					button={<HeaderToolbarAction icon={icon} />}
 					key={id}
 					title={title}
 					disabled={disabled}

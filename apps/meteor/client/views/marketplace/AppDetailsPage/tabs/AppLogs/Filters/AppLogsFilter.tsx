@@ -3,6 +3,7 @@ import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import AppsLogsFilterOptions from './AppLogsFilterOptions';
 import CompactFilterOptions from './CompactFilterOptions';
 import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
@@ -15,12 +16,13 @@ import { ExportLogsModal } from './ExportLogsModal';
 type AppsLogsFilterProps = {
 	appId: string;
 	expandAll: () => void;
+	collapseAll: () => void;
 	refetchLogs: () => void;
 	isLoading: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -44,8 +46,13 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 	const refreshLogs = () => {
 		refetchLogs();
 	};
+
+	const onExportConfirm = (url: string) => {
+		window.open(url, '_blank', 'noopener noreferrer');
+	};
+
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
 	};
 
 	const compactMode = useCompactMode();
@@ -91,11 +98,6 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 				</Box>
 			)}
 			{!compactMode && (
-				<Button alignSelf='flex-end' icon='arrow-expand' secondary mie={10} onClick={() => openAllLogs()}>
-					{t('Expand_all')}
-				</Button>
-			)}
-			{!compactMode && (
 				<IconButton
 					title={isLoading ? t('Loading') : t('Refresh_logs')}
 					alignSelf='flex-end'
@@ -124,8 +126,15 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 					{t('Filters')}
 				</Button>
 			)}
+			{!compactMode && <AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />}
 			{compactMode && (
-				<CompactFilterOptions isLoading={isLoading} onExportLogs={openExportModal} onExpandAll={openAllLogs} onRefreshLogs={refreshLogs} />
+				<CompactFilterOptions
+					isLoading={isLoading}
+					onExportLogs={openExportModal}
+					onExpandAll={openAllLogs}
+					onCollapseAll={collapseAll}
+					onRefreshLogs={refreshLogs}
+				/>
 			)}
 		</Box>
 	);

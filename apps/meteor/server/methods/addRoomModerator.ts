@@ -9,8 +9,9 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
-import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
+import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -23,7 +24,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 	check(rid, String);
 	check(userId, String);
 
-	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1 } });
+	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'addRoomModerator',
@@ -38,7 +39,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		});
 	}
 
-	if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
+	if (isFederated && !isFederationEnabled()) {
 		throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 	}
 
@@ -63,6 +64,8 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 			method: 'addRoomModerator',
 		});
 	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'moderator' });
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');
 	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['moderator']) || ['moderator']);

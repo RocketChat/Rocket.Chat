@@ -6,7 +6,6 @@ import RoomMembers from './RoomMembers';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomMembers',
 	component: RoomMembers,
 	parameters: {
 		layout: 'fullscreen',
@@ -47,4 +46,28 @@ Loading.args = {
 	setType: action('setType'),
 	loadMoreItems: action('loadMoreItems'),
 	reload: action('reload'),
+};
+
+export const WithABACRoom = Template.bind({});
+WithABACRoom.args = {
+	loading: false,
+	members: [
+		{
+			_id: 'rocket.cat',
+			username: 'rocket.cat',
+			status: UserStatus.ONLINE,
+			name: 'Rocket.Cat',
+		},
+	],
+	text: 'filter',
+	type: 'online',
+	setText: action('Lorem Ipsum'),
+	setType: action('online'),
+	total: 123,
+	loadMoreItems: action('loadMoreItems'),
+	rid: '!roomId',
+	isTeam: false,
+	isDirect: false,
+	reload: action('reload'),
+	isABACRoom: true,
 };

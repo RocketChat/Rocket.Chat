@@ -26,12 +26,13 @@ import {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from './managers';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 import { AppRuntimeManager } from './managers/AppRuntimeManager';
 import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
 import type { IMarketplaceInfo } from './marketplace';
 import { defaultPermissions } from './permissions/AppPermissions';
-import type { DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import { EmptyRuntime } from './runtime/EmptyRuntime';
 import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
@@ -57,6 +58,8 @@ export interface IAppManagerDeps {
 
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
+	keepSlashcommands?: boolean;
+	keepOutboundCommunicationProviders?: boolean;
 }
 
 export class AppManager {
@@ -96,6 +99,8 @@ export class AppManager {
 	private readonly uiActionButtonManager: UIActionButtonManager;
 
 	private readonly videoConfProviderManager: AppVideoConfProviderManager;
+
+	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
 
 	private readonly signatureManager: AppSignatureManager;
 
@@ -147,6 +152,7 @@ export class AppManager {
 		this.schedulerManager = new AppSchedulerManager(this);
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
+		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -196,6 +202,10 @@ export class AppManager {
 
 	public getVideoConfProviderManager(): AppVideoConfProviderManager {
 		return this.videoConfProviderManager;
+	}
+
+	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
+		return this.outboundCommunicationProviderManager;
 	}
 
 	public getLicenseManager(): AppLicenseManager {
@@ -268,12 +278,7 @@ export class AppManager {
 				console.warn(`Error while compiling the App "${item.info.name} (${item.id})":`);
 				console.error(e);
 
-				const prl = new ProxiedApp(this, item, {
-					// Maybe we should have an "EmptyRuntime" class for this?
-					getStatus() {
-						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
-					},
-				} as unknown as DenoRuntimeSubprocessController);
+				const prl = new ProxiedApp(this, item, new EmptyRuntime(item.id));
 
 				this.apps.set(item.id, prl);
 			}
@@ -351,7 +356,7 @@ export class AppManager {
 
 			this.listenerManager.releaseEssentialEvents(app);
 
-			app.getDenoRuntime().stopApp();
+			app.getRuntimeController().stopApp();
 		}
 
 		// Remove all the apps from the system now that we have unloaded everything
@@ -458,7 +463,7 @@ export class AppManager {
 			storageItem.status = await rl.getStatus();
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return isSetup;
@@ -479,7 +484,11 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true });
+		await this.purgeAppConfig(app, {
+			keepScheduledJobs: true,
+			keepSlashcommands: true,
+			keepOutboundCommunicationProviders: true,
+		});
 
 		await app.setStatus(status, silent);
 
@@ -491,7 +500,7 @@ export class AppManager {
 		storageItem.status = await app.getStatus();
 		// This is async, but we don't care since it only updates in the database
 		// and it should not mutate any properties we care about
-		await this.appMetadataStorage.update(storageItem).catch();
+		await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 
 		return true;
 	}
@@ -510,13 +519,13 @@ export class AppManager {
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
-		await app.validateLicense().catch();
+		await app.validateLicense().catch(() => {});
 
 		storageItem.migrated = true;
 		storageItem.signature = await this.getSignatureManager().signApp(storageItem);
-		// This is async, but we don't care since it only updates in the database
-		// and it should not mutate any properties we care about
-		const stored = await this.appMetadataStorage.update(storageItem).catch();
+
+		const { marketplaceInfo, signature, migrated, _id } = storageItem;
+		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument({ marketplaceInfo, signature, migrated, _id });
 
 		await this.updateLocal(stored, app);
 		await this.bridges
@@ -580,13 +589,19 @@ export class AppManager {
 			return aff;
 		}
 
-		// Now that is has all been compiled, let's get the
-		// the App instance from the source.
-		const app = await this.getCompiler().toSandBox(this, descriptor, result);
+		let app: ProxiedApp;
+
+		try {
+			app = await this.getCompiler().toSandBox(this, descriptor, result);
+		} catch (error) {
+			await Promise.all(undoSteps.map((undoer) => undoer()));
+
+			throw error;
+		}
 
 		undoSteps.push(() =>
 			this.getRuntime()
-				.stopRuntime(app.getDenoRuntime())
+				.stopRuntime(app.getRuntimeController())
 				.catch(() => {}),
 		);
 
@@ -684,7 +699,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(app.getDenoRuntime())
+			.stopRuntime(app.getRuntimeController())
 			.catch(() => {});
 
 		this.apps.delete(app.getID());
@@ -738,11 +753,13 @@ export class AppManager {
 		}
 
 		descriptor.signature = await this.signatureManager.signApp(descriptor);
-		const stored = await this.appMetadataStorage.update(descriptor);
+		const stored = await this.appMetadataStorage.updatePartialAndReturnDocument(descriptor, {
+			unsetPermissionsGranted: typeof permissionsGranted === 'undefined',
+		});
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(this.apps.get(old.id).getDenoRuntime())
+			.stopRuntime(this.apps.get(old.id).getRuntimeController())
 			.catch(() => {});
 
 		const app = await this.getCompiler().toSandBox(this, descriptor, result);
@@ -796,7 +813,7 @@ export class AppManager {
 
 				// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 				await this.getRuntime()
-					.stopRuntime(this.apps.get(stored.id).getDenoRuntime())
+					.stopRuntime(this.apps.get(stored.id).getRuntimeController())
 					.catch(() => {});
 
 				return this.getCompiler().toSandBox(this, stored, parseResult);
@@ -807,6 +824,7 @@ export class AppManager {
 			}
 		})();
 
+		// We don't keep slashcommands here as the update could potentially not provide the same list
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 		this.apps.set(app.getID(), app);
@@ -891,10 +909,15 @@ export class AppManager {
 				}
 
 				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
+				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
 
-				return this.appMetadataStorage.update(appStorageItem);
+				return this.appMetadataStorage.updatePartialAndReturnDocument({
+					_id: appStorageItem._id,
+					marketplaceInfo: appStorageItem.marketplaceInfo,
+					signature: appStorageItem.signature,
+				});
 			}),
-		).catch();
+		).catch(() => {});
 
 		const queue = [] as Array<Promise<void>>;
 
@@ -915,7 +938,7 @@ export class AppManager {
 							return;
 						}
 
-						await this.purgeAppConfig(app);
+						await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 						return app.setStatus(AppStatus.INVALID_LICENSE_DISABLED);
 					})
@@ -928,7 +951,7 @@ export class AppManager {
 						const storageItem = app.getStorageItem();
 						storageItem.status = status;
 
-						return this.appMetadataStorage.update(storageItem).catch(console.error) as Promise<void>;
+						return this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(console.error) as Promise<void>;
 					}),
 			),
 		);
@@ -1031,6 +1054,8 @@ export class AppManager {
 			await app.call(AppMethod.INITIALIZE);
 			await app.setStatus(AppStatus.INITIALIZED, silenceStatus);
 
+			await this.commandManager.registerCommands(app.getID());
+
 			result = true;
 		} catch (e) {
 			let status = AppStatus.ERROR_DISABLED;
@@ -1057,7 +1082,7 @@ export class AppManager {
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
 			storageItem.status = await app.getStatus();
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		return result;
@@ -1067,14 +1092,21 @@ export class AppManager {
 		if (!opts.keepScheduledJobs) {
 			await this.schedulerManager.cleanUp(app.getID());
 		}
+
+		if (!opts.keepSlashcommands) {
+			await this.commandManager.unregisterCommands(app.getID());
+		}
+
 		this.listenerManager.unregisterListeners(app);
 		this.listenerManager.lockEssentialEvents(app);
-		await this.commandManager.unregisterCommands(app.getID());
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
+			keepReferences: opts.keepOutboundCommunicationProviders,
+		});
 	}
 
 	/**
@@ -1142,21 +1174,25 @@ export class AppManager {
 		}
 
 		if (enable) {
-			await this.commandManager.registerCommands(app.getID());
 			this.externalComponentManager.registerExternalComponents(app.getID());
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
 			this.listenerManager.releaseEssentialEvents(app);
 			this.videoConfProviderManager.registerProviders(app.getID());
+			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app);
+			await this.purgeAppConfig(app, {
+				keepScheduledJobs: true,
+				keepSlashcommands: true,
+				keepOutboundCommunicationProviders: true,
+			});
 		}
 
 		if (saveToDb) {
 			storageItem.status = status;
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
-			await this.appMetadataStorage.update(storageItem).catch();
+			await this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(() => {});
 		}
 
 		await app.setStatus(status, silenceStatus);

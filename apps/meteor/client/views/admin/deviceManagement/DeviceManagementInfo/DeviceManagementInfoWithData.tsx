@@ -2,7 +2,6 @@ import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementInfo from './DeviceManagementInfo';
@@ -25,7 +24,7 @@ const convertSessionFromAPI = ({
 	...rest,
 });
 
-const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload: () => void }): ReactElement => {
+const DeviceInfoWithData = ({ deviceId }: { deviceId: string }) => {
 	const { t } = useTranslation();
 
 	const getSessionInfo = useEndpoint('GET', '/v1/sessions/info.admin');
@@ -59,7 +58,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		);
 	}
 
-	return <DeviceManagementInfo {...convertSessionFromAPI(data)} onReload={onReload} />;
+	return <DeviceManagementInfo {...convertSessionFromAPI(data)} />;
 };
 
 export default DeviceInfoWithData;

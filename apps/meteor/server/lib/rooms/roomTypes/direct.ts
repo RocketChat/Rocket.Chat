@@ -1,5 +1,5 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
-import { getUserDisplayName, isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,8 +7,7 @@ import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
-import { Federation } from '../../../services/federation/Federation';
-import { buildNotificationDetails } from '../buildNotificationDetails';
+import { isFederationEnabled } from '../../../services/federation/utils';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -24,7 +23,10 @@ const getCurrentUserId = (): string | undefined => {
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
 		if (isRoomFederated(_room)) {
-			return Federation.isRoomSettingAllowed(_room, setting);
+			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
@@ -43,9 +45,12 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async allowMemberAction(room, action, userId) {
+	async allowMemberAction(room, action, _userId) {
 		if (isRoomFederated(room)) {
-			return Federation.actionAllowed(room, action, userId);
+			if (isRoomNativeFederated(room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -92,19 +97,24 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	async getNotificationDetails(room, sender, notificationMessage, userId, language) {
+	async getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
-		const displayRoomName = await this.roomName(room, userId);
-		const senderDisplayName = getUserDisplayName(sender.name, sender.username, useRealName);
 
-		return buildNotificationDetails({
-			expectedNotificationMessage: notificationMessage,
-			room,
-			sender,
-			expectedTitle: this.isGroupChat(room) ? displayRoomName : senderDisplayName,
-			language,
-			senderNameExpectedInMessage: this.isGroupChat(room),
-		});
+		const displayRoomName = await this.roomName(room, userId);
+
+		if (this.isGroupChat(room)) {
+			return {
+				title: displayRoomName,
+				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
+				name: room.name || displayRoomName,
+			};
+		}
+
+		return {
+			title: (useRealName && sender.name) || sender.username,
+			text: notificationMessage,
+			name: room.name || displayRoomName,
+		};
 	},
 
 	includeInDashboard() {

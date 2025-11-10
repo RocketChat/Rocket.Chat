@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
-import { getUserPreference } from '../../../../app/utils/client';
 import { getUnreadRoomType } from '../../../../lib/rooms/roomTypes/unread';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -11,9 +8,5 @@ roomCoordinator.add(
 		...UnreadRoomType,
 		label: 'Unread',
 	},
-	{
-		condition(): boolean {
-			return getUserPreference(Meteor.userId(), 'sidebarShowUnread') as boolean;
-		},
-	},
+	{},
 );

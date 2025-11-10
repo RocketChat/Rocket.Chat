@@ -1,15 +1,19 @@
 import type { Page, Locator } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelSidenav, ToastMessages } from './fragments';
 
 export class OmnichannelDepartments {
 	private readonly page: Page;
 
 	readonly sidenav: OmnichannelSidenav;
 
+	// TODO: This will be inherited from a BasePage Object
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get inputSearch() {
@@ -69,10 +73,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('role=button[name="Back"]');
 	}
 
-	get allDepartmentsTab() {
-		return this.page.locator('[role="tab"]:first-child');
-	}
-
 	get archivedDepartmentsTab() {
 		return this.page.locator('[role="tab"]:nth-child(2)');
 	}
@@ -121,32 +121,12 @@ export class OmnichannelDepartments {
 		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
 	}
 
-	get btnModalCancelDelete() {
-		return this.modalConfirmDelete.locator('role=button[name="Cancel"]');
-	}
-
 	get upgradeDepartmentsModal() {
 		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
 	}
 
 	get btnUpgradeDepartmentsModalClose() {
 		return this.page.locator('[data-qa="modal-close"]');
-	}
-
-	get btnUpgradeDepartmentsModalTalkToSales() {
-		return this.page.locator('[data-qa-id="talk-to-sales"]');
-	}
-
-	get btnUpgradeDepartmentsModalUpgrade() {
-		return this.page.locator('[data-qa-id="upgrade-now"]');
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get btnCloseToastSuccess(): Locator {
-		return this.toastSuccess.locator('button');
 	}
 
 	get inputUnit(): Locator {

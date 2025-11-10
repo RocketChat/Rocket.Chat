@@ -1,4 +1,5 @@
-import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser, ILivechatAgent, IOutboundProvider } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -29,6 +30,12 @@ export const rolesQueryKeys = {
 export const omnichannelQueryKeys = {
 	all: ['omnichannel'] as const,
 	department: (id: string) => [...omnichannelQueryKeys.all, 'department', id] as const,
+	agents: (query?: PaginatedRequest) =>
+		!query ? ([...omnichannelQueryKeys.all, 'agents'] as const) : ([...omnichannelQueryKeys.all, 'agents', query] as const),
+	agent: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agents(), uid] as const,
+	agentDepartments: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agent(uid), 'departments'] as const,
+	managers: (query?: PaginatedRequest) =>
+		!query ? ([...omnichannelQueryKeys.all, 'managers'] as const) : ([...omnichannelQueryKeys.all, 'managers', query] as const),
 	extensions: (
 		params:
 			| {
@@ -66,6 +73,14 @@ export const omnichannelQueryKeys = {
 		productivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
 			[...omnichannelQueryKeys.analytics.all(departmentId), 'productivity-totals', dateRange] as const,
 	},
+	contacts: (query?: { filter: string; limit?: number }) =>
+		!query ? [...omnichannelQueryKeys.all, 'contacts'] : ([...omnichannelQueryKeys.all, 'contacts', query] as const),
+	contact: (contactId?: string) => [...omnichannelQueryKeys.contacts(), contactId] as const,
+	outboundProviders: (filter?: { type: IOutboundProvider['providerType'] }) =>
+		!filter
+			? ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers'] as const)
+			: ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers', filter] as const),
+	outboundProviderMetadata: (providerId: string) => [...omnichannelQueryKeys.outboundProviders(), providerId] as const,
 };
 
 export const deviceManagementQueryKeys = {
@@ -97,6 +112,8 @@ export const usersQueryKeys = {
 export const teamsQueryKeys = {
 	all: ['teams'] as const,
 	team: (teamId: ITeam['_id']) => [...teamsQueryKeys.all, teamId] as const,
+	teamInfo: (teamId: ITeam['_id']) => [...teamsQueryKeys.team(teamId), 'info'] as const,
 	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
+	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
 };

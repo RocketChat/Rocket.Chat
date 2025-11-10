@@ -8,7 +8,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { ExportLogsModal } from './ExportLogsModal';
 
 export default {
-	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/ExportLogsModal',
 	component: ExportLogsModal,
 	args: {
 		onClose: action('onClose'),
@@ -18,6 +17,7 @@ export default {
 			startDate: '',
 			endDate: '',
 		},
+		onConfirm: () => action('onConfirm'),
 	},
 	decorators: [
 		mockAppRoot().buildStoryDecorator(),

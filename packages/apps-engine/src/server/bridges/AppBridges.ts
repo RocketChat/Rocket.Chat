@@ -6,6 +6,7 @@ import type { CommandBridge } from './CommandBridge';
 import type { ContactBridge } from './ContactBridge';
 import type { EmailBridge } from './EmailBridge';
 import type { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
+import type { ExperimentalBridge } from './ExperimentalBridge';
 import type { HttpBridge } from './HttpBridge';
 import type { IInternalBridge } from './IInternalBridge';
 import type { IInternalFederationBridge } from './IInternalFederationBridge';
@@ -14,6 +15,7 @@ import type { LivechatBridge } from './LivechatBridge';
 import type { MessageBridge } from './MessageBridge';
 import type { ModerationBridge } from './ModerationBridge';
 import type { OAuthAppsBridge } from './OAuthAppsBridge';
+import type { OutboundMessageBridge } from './OutboundMessagesBridge';
 import type { PersistenceBridge } from './PersistenceBridge';
 import type { RoleBridge } from './RoleBridge';
 import type { RoomBridge } from './RoomBridge';
@@ -41,6 +43,7 @@ export type Bridge =
 	| IInternalBridge
 	| ServerSettingBridge
 	| EmailBridge
+	| ExperimentalBridge
 	| UploadBridge
 	| UserBridge
 	| UiInteractionBridge
@@ -48,7 +51,8 @@ export type Bridge =
 	| VideoConferenceBridge
 	| OAuthAppsBridge
 	| ModerationBridge
-	| RoleBridge;
+	| RoleBridge
+	| OutboundMessageBridge;
 
 export abstract class AppBridges {
 	public abstract getCommandBridge(): CommandBridge;
@@ -102,4 +106,8 @@ export abstract class AppBridges {
 	public abstract getThreadBridge(): ThreadBridge;
 
 	public abstract getRoleBridge(): RoleBridge;
+
+	public abstract getOutboundMessageBridge(): OutboundMessageBridge;
+
+	public abstract getExperimentalBridge(): ExperimentalBridge;
 }

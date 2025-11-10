@@ -8,7 +8,6 @@ import { AppLogsFilter } from './AppLogsFilter';
 import { useAppLogsFilterForm } from '../useAppLogsFilterForm';
 
 export default {
-	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/AppLogsFilter',
 	component: AppLogsFilter,
 	args: {},
 	decorators: [
@@ -35,5 +34,11 @@ export default {
 } satisfies Meta<typeof AppLogsFilter>;
 
 export const Default = () => (
-	<AppLogsFilter appId='app-id' expandAll={action('expandAll')} refetchLogs={action('refetchLogs')} isLoading={false} />
+	<AppLogsFilter
+		appId='app-id'
+		expandAll={action('expandAll')}
+		collapseAll={action('collapseAll')}
+		refetchLogs={action('refetchLogs')}
+		isLoading={false}
+	/>
 );

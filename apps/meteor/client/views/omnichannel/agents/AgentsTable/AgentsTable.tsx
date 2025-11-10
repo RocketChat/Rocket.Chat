@@ -17,6 +17,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { links } from '../../../../lib/links';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
@@ -34,7 +35,7 @@ const AgentsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
+	const { data, isSuccess, isLoading } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -71,7 +72,7 @@ const AgentsTable = () => {
 
 	return (
 		<>
-			<AddAgent reload={refetch} />
+			<AddAgent />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
@@ -89,7 +90,7 @@ const AgentsTable = () => {
 					icon='headset'
 					title={t('No_agents_yet')}
 					description={t('No_agents_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_agents')}
 				/>
 			)}

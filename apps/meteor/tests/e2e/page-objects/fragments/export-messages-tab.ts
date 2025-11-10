@@ -1,10 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class ExportMessagesTab {
-	private readonly root: Locator;
+import { FlexTab } from './flextab';
 
+export class ExportMessagesTab extends FlexTab {
 	constructor(page: Page) {
-		this.root = page.getByRole('dialog', { name: 'Export Messages' });
+		super(page.getByRole('dialog', { name: 'Export Messages' }));
 	}
 
 	async exposeMethods() {
@@ -53,6 +53,10 @@ export class ExportMessagesTab {
 		await this.toAdditionalEmailsInput.fill(email);
 	}
 
+	getMessageCheckbox(messageText: string): Locator {
+		return this.root.page().getByRole('listitem').filter({ hasText: messageText }).getByRole('checkbox');
+	}
+
 	get method() {
 		return this.root.getByTestId('export-messages-method');
 	}
@@ -71,5 +75,9 @@ export class ExportMessagesTab {
 
 	get sendButton() {
 		return this.root.getByRole('button', { name: 'Send', exact: true });
+	}
+
+	get clearSelectionButton() {
+		return this.root.page().getByRole('button', { name: 'Clear selection' });
 	}
 }

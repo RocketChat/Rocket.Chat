@@ -1,3 +1,5 @@
+export * from './edit-user-flextab';
+export * from './user-info-flextab';
 export * from './home-content';
 export * from './home-omnichannel-content';
 export * from './home-flextab';
@@ -8,3 +10,7 @@ export * from './navbar';
 export * from './sidebar';
 export * from './sidepanel';
 export * from './report-message-modal';
+export * from './toast-messages';
+export * from './export-messages-tab';
+export * from './menu';
+export * from './toolbar';

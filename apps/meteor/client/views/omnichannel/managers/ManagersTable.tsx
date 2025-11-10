@@ -20,6 +20,8 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { links } from '../../../lib/links';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 // TODO: Missing error state
 const ManagersTable = () => {
@@ -45,9 +47,8 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery({
-		queryKey: ['omnichannel', 'managers', 'livechat-manager', query],
-
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: omnichannelQueryKeys.managers(query),
 		queryFn: async () => getManagers(query),
 	});
 
@@ -79,7 +80,7 @@ const ManagersTable = () => {
 
 	return (
 		<>
-			<AddManager reload={refetch} />
+			<AddManager />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
@@ -96,7 +97,7 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}
@@ -126,7 +127,7 @@ const ManagersTable = () => {
 										<Box mi={4} />
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
-									<RemoveManagerButton _id={user._id} reload={refetch} />
+									<RemoveManagerButton _id={user._id} />
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

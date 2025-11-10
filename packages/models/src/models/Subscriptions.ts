@@ -1147,15 +1147,19 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	 * @param {IRole['_id'][]} roles the list of roles
 	 * @param {any} options
 	 */
-	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		roles = ([] as string[]).concat(roles);
+	findByRoomIdAndRoles: ISubscriptionsModel['findByRoomIdAndRoles'] = (
+		roomId: string,
+		roles: string[],
+		options?: FindOptions<ISubscription>,
+	) => {
+		const rolesArray = ([] as string[]).concat(roles);
 		const query = {
 			rid: roomId,
-			roles: { $in: roles },
+			roles: { $in: rolesArray },
 		};
 
 		return this.find(query, options);
-	}
+	};
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);
@@ -2051,5 +2055,34 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }> {
+		return this.col.aggregate<{ _id: IRoom['_id']; externalRoomId: string }>([
+			{
+				$match: {
+					'u._id': userId,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{
+				$match: {
+					'room.federated': true,
+				},
+			},
+			{
+				$project: {
+					_id: '$rid',
+					externalRoomId: { $arrayElemAt: ['$room.federation.mrid', 0] },
+				},
+			},
+		]);
 	}
 }

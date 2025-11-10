@@ -21,6 +21,7 @@ import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/
 import { useId } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
+import { links } from '../../../../../../lib/links';
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
 
 type Props = {
@@ -110,8 +111,8 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<FieldRow justifyContent='initial'>
 							<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
 								<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
-									I agree with <ExternalLink to='https://rocket.chat/terms'>Terms and Conditions</ExternalLink> and{' '}
-									<ExternalLink to='https://rocket.chat/privacy'>Privacy Policy</ExternalLink>
+									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
+									<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
 								</Trans>
 							</FieldLabel>
 							<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
