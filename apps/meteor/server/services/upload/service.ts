@@ -16,6 +16,7 @@ import { canDeleteMessageAsync } from '../../../app/authorization/server/functio
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../../lib/i18n';
@@ -206,5 +207,9 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		writeStream.on('error', cleanup);
 
 		return resolver.promise;
+	}
+
+	async setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void> {
+		return setUserAvatar(user, buffer, contentType, service);
 	}
 }

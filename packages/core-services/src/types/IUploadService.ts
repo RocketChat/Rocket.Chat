@@ -39,4 +39,5 @@ export interface IUploadService {
 		imageResizeOpts?: { width: number; height: number };
 	}): Promise<Stream.Readable>;
 	uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: Omit<IUploadDetails, 'size'> }): Promise<IUpload>;
+	setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, Upload } from '@rocket.chat/core-services';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
@@ -34,20 +34,18 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string): Promise<voi
 		}
 
 		// detect content type from buffer (basic image type detection)
-		// let contentType = 'image/png';
-		// if (buffer[0] === 0xff && buffer[1] === 0xd8) {
-		// 	contentType = 'image/jpeg';
-		// } else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
-		// 	contentType = 'image/png';
-		// } else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
-		// 	contentType = 'image/gif';
-		// } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
-		// 	contentType = 'image/webp';
-		// }
+		let contentType = 'image/png';
+		if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+			contentType = 'image/jpeg';
+		} else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+			contentType = 'image/png';
+		} else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+			contentType = 'image/gif';
+		} else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+			contentType = 'image/webp';
+		}
 
-		// TODO export setUserAvatar from core-services
-		// await setUserAvatar(user, buffer, contentType, 'rest');
-		logger.debug(`Successfully set avatar for user ${user.username}`);
+		await Upload.setUserAvatar(user, buffer, contentType, 'rest');
 	} catch (error) {
 		logger.error({ err: error, user: user.username, msg: `Error downloading/setting avatar for user` });
 	}
