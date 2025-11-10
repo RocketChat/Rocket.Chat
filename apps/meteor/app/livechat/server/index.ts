@@ -17,7 +17,6 @@ import './hooks/afterSaveOmnichannelMessage';
 import './methods/saveDepartment';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
-import './methods/takeInquiry';
 import './lib/QueueManager';
 import './lib/RoutingManager';
 import './lib/routing/External';
