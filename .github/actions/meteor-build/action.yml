@@ -82,7 +82,7 @@ runs:
       uses: actions/cache@v3
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
-        path: ~/.meteor
+        path: .meteor
         key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
         restore-keys: |
           meteor-cache-${{ runner.os }}-
