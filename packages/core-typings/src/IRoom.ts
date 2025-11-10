@@ -25,7 +25,7 @@ export interface IRoom extends IRocketChatRecord {
 	fname?: string;
 	msgs: number;
 	default?: boolean;
-	broadcast?: true;
+	broadcast?: boolean;
 	featured?: true;
 	announcement?: string;
 	joinCodeRequired?: boolean;
@@ -87,7 +87,6 @@ export interface IRoom extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
-
 	/**
 	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
 	 */

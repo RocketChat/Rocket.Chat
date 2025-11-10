@@ -30,7 +30,7 @@ export interface ISubscription extends IRocketChatRecord {
 	userMentions: number;
 	groupMentions: number;
 
-	broadcast?: true;
+	broadcast?: boolean;
 	tunread?: Array<string>;
 	tunreadGroup?: Array<string>;
 	tunreadUser?: Array<string>;
