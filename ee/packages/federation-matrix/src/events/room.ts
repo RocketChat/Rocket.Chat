@@ -1,7 +1,9 @@
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
+
+import { getUsernameServername } from '../FederationMatrix';
 
 export function room(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.room.name', async (data) => {
@@ -12,7 +14,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
+		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
@@ -28,12 +30,17 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
-		if (!localUserId) {
+		const localUser = await Users.findOneByUsername(userId, { projection: { _id: 1, federation: 1, federated: 1 } });
+		if (!localUser) {
 			throw new Error('mapped user not found');
 		}
 
-		await Room.saveRoomTopic(localRoomId._id, topic, { _id: localUserId._id, username: userId });
+		await Room.saveRoomTopic(localRoomId._id, topic, {
+			_id: localUser._id,
+			username: userId,
+			federation: localUser.federation,
+			federated: localUser.federated,
+		});
 	});
 
 	emitter.on('homeserver.matrix.room.role', async (data) => {
@@ -44,12 +51,26 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 			throw new Error('mapped room not found');
 		}
 
-		const localUserId = await Users.findOne({ 'federation.mui': userId }, { projection: { _id: 1 } });
+		const serverName = federationSDK.getConfig('serverName');
+
+		const [allegedUsernameLocal, , allegedUserLocalIsLocal] = getUsernameServername(userId, serverName);
+		const localUserId = allegedUserLocalIsLocal && (await Users.findOneByUsername(allegedUsernameLocal, { projection: { _id: 1 } }));
+
+		if (!allegedUserLocalIsLocal) {
+			return;
+		}
+
 		if (!localUserId) {
 			throw new Error('mapped user not found');
 		}
 
-		const localSenderId = await Users.findOne({ 'federation.mui': senderId }, { projection: { _id: 1 } });
+		const [senderUsername, , senderIsLocal] = getUsernameServername(senderId, serverName);
+
+		if (senderIsLocal) {
+			return;
+		}
+
+		const localSenderId = await Users.findOneByUsername(senderUsername, { projection: { _id: 1 } });
 		if (!localSenderId) {
 			throw new Error('mapped user not found');
 		}

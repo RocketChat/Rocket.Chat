@@ -13,7 +13,7 @@ import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { watch } from '../../meteor/watch';
+import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
@@ -74,7 +74,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
 		if (this.eventType === 'notify-user') {
-			return `${Meteor.userId()}/${this.name}-changed`;
+			return `${getUserId()}/${this.name}-changed`;
 		}
 		return `${this.name}-changed`;
 	}
@@ -358,10 +358,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
-
-	watchReady() {
-		return watch(this.useReady, (ready) => ready);
-	}
 
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);

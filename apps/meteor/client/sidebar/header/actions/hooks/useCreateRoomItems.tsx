@@ -1,8 +1,9 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import { useOutboundMessageModal } from '../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
+import { useOutboundMessageAccess } from '../../../../views/omnichannel/components/outboundMessage/hooks';
+import { useOutboundMessageModal } from '../../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';
@@ -21,7 +22,7 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
-	const canSendOutboundMessage = usePermission('outbound.send-messages');
+	const canSendOutboundMessage = useOutboundMessageAccess();
 
 	const createChannel = useCreateRoomModal(CreateChannelWithData);
 	const createTeam = useCreateRoomModal(CreateTeam);

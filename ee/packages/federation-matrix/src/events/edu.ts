@@ -1,15 +1,16 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
-export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProcessTypes: { typing: boolean; presence: boolean }) => {
+export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
-		if (!eduProcessTypes.typing) {
+		const config = federationSDK.getConfig('edu');
+		if (!config.processTyping) {
 			return;
 		}
 
@@ -20,14 +21,8 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 				return;
 			}
 
-			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
-			if (!matrixUser?.username) {
-				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
-				return;
-			}
-
 			void api.broadcast('user.activity', {
-				user: matrixUser.username,
+				user: data.user_id,
 				isTyping: data.typing,
 				roomId: matrixRoom._id,
 			});
@@ -37,12 +32,13 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>, eduProce
 	});
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
-		if (!eduProcessTypes.presence) {
+		const config = federationSDK.getConfig('edu');
+		if (!config.processPresence) {
 			return;
 		}
 
 		try {
-			const matrixUser = await Users.findOne({ 'federation.mui': data.user_id });
+			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
 				logger.debug(`No federated user found for Matrix user_id: ${data.user_id}`);
 				return;

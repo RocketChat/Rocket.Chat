@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -45,7 +45,7 @@ const sortUsers = (field: string, direction: 'asc' | 'desc'): Record<string, Sor
 };
 
 const getChannelsAndGroups = async (
-	user: IUser & { __rooms?: IRoom['_id'][] },
+	user: AtLeast<IUser, '_id' | '__rooms'>,
 	canViewAnon: boolean,
 	searchTerm: string,
 	sort: Record<string, number>,
@@ -119,7 +119,7 @@ const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 });
 
 const getTeams = async (
-	user: IUser,
+	user: AtLeast<IUser, '_id' | '__rooms'>,
 	searchTerm: string,
 	sort: Record<string, number>,
 	pagination: {
@@ -247,7 +247,7 @@ const findUsers = async ({
 };
 
 const getUsers = async (
-	user: IUser | undefined,
+	user: AtLeast<IUser, '_id' | '__rooms'> | undefined,
 	text: string,
 	workspace: string,
 	sort: Record<string, SortDirection>,
@@ -299,7 +299,7 @@ export const browseChannelsMethod = async (
 		offset = 0,
 		limit = 10,
 	}: BrowseChannelsParams,
-	user: IUser | undefined | null,
+	user: AtLeast<IUser, '_id' | '__rooms'> | undefined | null,
 ) => {
 	const searchTerm = trim(escapeRegExp(text));
 

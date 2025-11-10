@@ -1,27 +1,25 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useVoipState } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
-	voipItems: GenericMenuItemProps[];
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
+	callItem?: GenericMenuItemProps;
 };
 
-const NavBarControlsMenu = ({ voipItems, omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsMenu = ({ omnichannelItems, isPressed, callItem, ...props }: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
-	const { isEnabled: showVoip } = useVoipState();
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const sections = [
 		{
 			title: t('Voice_Call'),
-			items: showVoip ? voipItems : [],
+			items: callItem ? [callItem] : [],
 		},
 		{
 			title: t('Omnichannel'),

@@ -4,9 +4,9 @@ services:
   rocketchat:
     platform: linux/amd64
     build:
-      dockerfile: ${RC_DOCKERFILE}
+      dockerfile: apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
       - EXIT_UNHANDLEDPROMISEREJECTION=true
@@ -146,17 +146,26 @@ services:
       - nats
 
   mongo:
-    image: docker.io/bitnami/mongodb:7.0
+    image: mongodb/mongodb-community-server:8.2-ubi8
     restart: on-failure
+    ports:
+      - 27017:27017
     environment:
-      MONGODB_REPLICA_SET_MODE: primary
       MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
       MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
       MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
-      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: ${MONGODB_INITIAL_PRIMARY_PORT_NUMBER:-27017}
-      MONGODB_ADVERTISED_HOSTNAME: ${MONGODB_ADVERTISED_HOSTNAME:-mongo}
-      MONGODB_ENABLE_JOURNAL: ${MONGODB_ENABLE_JOURNAL:-true}
-      ALLOW_EMPTY_PASSWORD: ${ALLOW_EMPTY_PASSWORD:-yes}
+    entrypoint: |
+      bash -c
+        "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
+          sleep 2;
+          until mongosh --eval \"db.adminCommand('ping')\"; do 
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME at $$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER...\";
+          mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
+          echo '=====> Initiating ReplSet done...';
+        wait"
 
   nats:
     image: nats:2.6-alpine

@@ -1,5 +1,5 @@
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 
 import { edus } from './edu';
 import { member } from './member';
@@ -8,15 +8,11 @@ import { ping } from './ping';
 import { reaction } from './reaction';
 import { room } from './room';
 
-export function registerEvents(
-	emitter: Emitter<HomeserverEventSignatures>,
-	serverName: string,
-	eduProcessTypes: { typing: boolean; presence: boolean },
-) {
+export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	ping(emitter);
-	message(emitter, serverName);
+	message(emitter);
 	reaction(emitter);
 	member(emitter);
-	edus(emitter, eduProcessTypes);
+	edus(emitter);
 	room(emitter);
 }

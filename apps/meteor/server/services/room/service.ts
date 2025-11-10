@@ -88,10 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
-		user: {
-			username: string;
-			_id: string;
-		},
+		user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 		sendMessage = true,
 	): Promise<void> {
 		await saveRoomTopic(roomId, roomTopic, user, sendMessage);
@@ -115,6 +112,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		if (!(await Authorization.canAccessRoom(room, user))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+		}
+
+		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {

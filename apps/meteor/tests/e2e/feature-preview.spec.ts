@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
-import { AccountProfile, Admin, HomeChannel } from './page-objects';
+import { AccountProfile, AdminInfo, HomeChannel } from './page-objects';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -122,15 +122,15 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
 			});
 
-			await test.step('should display home and directory inside a menu and sidebar toggler in tablet view', async () => {
+			await test.step('should display home and directory inside a menu', async () => {
 				await page.setViewportSize({ width: 1023, height: 767 });
 				await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
-				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
 
-			await test.step('should display voice and omnichannel items inside a menu in mobile view', async () => {
+			await test.step('should display voice and omnichannel items inside a menu and sidebar toggler in mobile view', async () => {
 				await page.setViewportSize({ width: 767, height: 510 });
 				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
 
 			await test.step('should hide everything else when navbar search is focused in mobile view', async () => {
@@ -345,7 +345,7 @@ test.describe.serial('feature preview', () => {
 			await page.goto(`/group/${sidepanelTeam}`);
 			await poHomeChannel.content.waitForChannel();
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnCreateNew.click();
 			await poHomeChannel.sidenav.inputChannelName.fill(targetChannelNameInTeam);
 			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
@@ -381,7 +381,7 @@ test.describe.serial('feature preview', () => {
 		test('should show channel in sidepanel after adding existing one', async ({ page }) => {
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
 			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
 			await expect(async () => {
@@ -403,7 +403,7 @@ test.describe.serial('feature preview', () => {
 
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
 			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
 			await expect(async () => {
@@ -508,7 +508,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidebar.allTeamCollabFilter.click();
 			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.roomToolbar.openRoomInfo();
 			await poHomeChannel.tabs.room.btnMore.click();
 			await poHomeChannel.tabs.room.getMoreOption('Delete').click();
 			await poHomeChannel.tabs.room.confirmDeleteDiscussion();
@@ -666,9 +666,9 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.openAdminPanel();
 			await expect(page).toHaveURL(/\/admin/);
 
-			const adminPage = new Admin(page);
+			const adminPage = new AdminInfo(page);
 
-			await adminPage.btnClose.click();
+			await adminPage.sidebar.btnClose.click();
 			await expect(page).toHaveURL(/\/home/);
 
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
@@ -683,7 +683,7 @@ test.describe.serial('feature preview', () => {
 			test('should show button to toggle sidebar/sidepanel', async ({ page }) => {
 				await page.goto('/home');
 
-				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+				await poHomeChannel.sidebar.waitForDismissal();
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 				await expect(poHomeChannel.navbar.btnSidebarToggler()).toBeVisible();
 			});
@@ -692,11 +692,11 @@ test.describe.serial('feature preview', () => {
 				await page.goto('/home');
 
 				await poHomeChannel.navbar.btnSidebarToggler().click();
-				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+				await poHomeChannel.sidebar.waitForDismissal();
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 
 				await poHomeChannel.navbar.btnSidebarToggler(true).click();
-				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+				await poHomeChannel.sidebar.waitForDismissal();
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 			});
 
@@ -708,7 +708,7 @@ test.describe.serial('feature preview', () => {
 
 				await poHomeChannel.sidepanel.sidepanelBackButton.click();
 
-				await expect(poHomeChannel.sidebar.sidebar).toBeVisible();
+				await poHomeChannel.sidebar.waitForDisplay();
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
@@ -726,7 +726,7 @@ test.describe.serial('feature preview', () => {
 				await page.click('main', { force: true });
 
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
-				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+				await poHomeChannel.sidebar.waitForDismissal();
 			});
 
 			test('should close nav region when opening a room', async ({ page }) => {
@@ -740,7 +740,7 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel);
 
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
-				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+				await poHomeChannel.sidebar.waitForDismissal();
 			});
 		});
 	});
@@ -877,7 +877,7 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.sidenav.waitForHome();
 
-			await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+			await poHomeChannel.sidebar.waitForDismissal();
 			await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 			await poHomeChannel.navbar.btnSidebarToggler().click();
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();

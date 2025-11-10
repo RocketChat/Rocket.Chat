@@ -1,7 +1,14 @@
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { FileMessageType, MessageType, FileMessageContent, HomeserverEventSignatures, EventID } from '@rocket.chat/federation-sdk';
+import {
+	type FileMessageType,
+	type MessageType,
+	type FileMessageContent,
+	type HomeserverEventSignatures,
+	type EventID,
+	federationSDK,
+} from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
@@ -31,13 +38,13 @@ async function handleMediaMessage(
 	room: IRoom,
 	matrixRoomId: string,
 	eventId: EventID,
-	tmid?: string,
+	thread?: { tmid: string; tshow: boolean },
 ): Promise<{
 	fromId: string;
 	rid: string;
 	msg: string;
 	federation_event_id: string;
-	tmid?: string;
+	thread?: { tmid: string; tshow: boolean };
 	attachments: [FileAttachmentProps];
 }> {
 	const mimeType = fileInfo?.mimetype;
@@ -106,12 +113,12 @@ async function handleMediaMessage(
 		rid: room._id,
 		msg: '',
 		federation_event_id: eventId,
-		tmid,
+		thread,
 		attachments: [attachment],
 	};
 }
 
-export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
+export function message(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
 			const { content } = data;
@@ -124,7 +131,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			}
 
 			// at this point we know for sure the user already exists
-			const user = await Users.findOne({ 'federation.mui': data.sender });
+			const user = await Users.findOneByUsername(data.sender);
 			if (!user) {
 				throw new Error(`User not found for sender: ${data.sender}`);
 			}
@@ -133,6 +140,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			if (!room) {
 				throw new Error(`No mapped room found for room_id: ${data.room_id}`);
 			}
+
+			const serverName = federationSDK.getConfig('serverName');
 
 			const relation = content['m.relates_to'];
 
@@ -167,13 +176,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					return;
 				}
 
-				if (quoteMessageEventId && room.name) {
-					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(
-						room.t as string,
-						room._id,
-						room.name,
-						originalMessage._id,
-					);
+				if (quoteMessageEventId) {
+					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
 					const formatted = await toInternalQuoteMessageFormat({
 						messageToReplyToUrl,
 						formattedMessage: data.content.formatted_body || '',
@@ -209,13 +213,13 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			if (quoteMessageEventId && room.name) {
+			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
 					logger.error('Original message not found for quote:', quoteMessageEventId);
 					return;
 				}
-				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, room.name, originalMessage._id);
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
 				const formatted = await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
 					formattedMessage: data.content.formatted_body || '',
@@ -244,7 +248,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					room,
 					data.room_id,
 					data.event_id,
-					thread?.tmid,
+					thread,
 				);
 				await Message.saveMessageFromFederation(result);
 			} else {
@@ -267,6 +271,120 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 		}
 	});
 
+	emitter.on('homeserver.matrix.encrypted', async (data) => {
+		try {
+			if (!data.content.ciphertext) {
+				logger.debug('No message content found in event');
+				return;
+			}
+
+			// at this point we know for sure the user already exists
+			const user = await Users.findOneByUsername(data.sender);
+			if (!user) {
+				throw new Error(`User not found for sender: ${data.sender}`);
+			}
+
+			const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
+			if (!room) {
+				throw new Error(`No mapped room found for room_id: ${data.room_id}`);
+			}
+
+			const relation = data.content['m.relates_to'];
+
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			const hasRelation = relation && 'rel_type' in relation;
+
+			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
+
+			const threadRootEventId = isThreadMessage && relation.event_id;
+
+			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
+			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
+
+			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
+
+			const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
+
+			const isEditedMessage = hasRelation && relation.rel_type === 'm.replace';
+			if (isEditedMessage && relation.event_id) {
+				logger.debug('Received edited message from Matrix, updating existing message');
+				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
+				if (!originalMessage) {
+					logger.error('Original message not found for edit:', relation.event_id);
+					return;
+				}
+				if (originalMessage.federation?.eventId !== relation.event_id) {
+					return;
+				}
+				if (originalMessage.content?.ciphertext === data.content.ciphertext) {
+					logger.debug('No changes in message content, skipping update');
+					return;
+				}
+
+				if (quoteMessageEventId) {
+					await Message.updateMessage(
+						{
+							...originalMessage,
+							content: {
+								algorithm: data.content.algorithm,
+								ciphertext: data.content.ciphertext,
+							},
+						},
+						user,
+						originalMessage,
+					);
+					return;
+				}
+
+				await Message.updateMessage(
+					{
+						...originalMessage,
+						content: {
+							algorithm: data.content.algorithm,
+							ciphertext: data.content.ciphertext,
+						},
+					},
+					user,
+					originalMessage,
+				);
+				return;
+			}
+
+			if (quoteMessageEventId) {
+				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
+				if (!originalMessage) {
+					logger.error('Original message not found for quote:', quoteMessageEventId);
+					return;
+				}
+				await Message.saveMessageFromFederation({
+					fromId: user._id,
+					rid: room._id,
+					e2e_content: {
+						algorithm: data.content.algorithm,
+						ciphertext: data.content.ciphertext,
+					},
+					federation_event_id: data.event_id,
+					thread,
+				});
+				return;
+			}
+
+			await Message.saveMessageFromFederation({
+				fromId: user._id,
+				rid: room._id,
+				e2e_content: {
+					algorithm: data.content.algorithm,
+					ciphertext: data.content.ciphertext,
+				},
+				federation_event_id: data.event_id,
+				thread,
+			});
+		} catch (error) {
+			logger.error(error, 'Error processing Matrix message:');
+		}
+	});
+
 	emitter.on('homeserver.matrix.redaction', async (data) => {
 		try {
 			const redactedEventId = data.redacts;
@@ -276,7 +394,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			}
 
 			const messageEvent = await FederationMatrix.getEventById(redactedEventId);
-			if (!messageEvent || messageEvent.type !== 'm.room.message') {
+			if (!messageEvent || messageEvent.event.type !== 'm.room.message') {
 				logger.debug(`Event ${redactedEventId} is not a message event`);
 				return;
 			}
