@@ -2,10 +2,11 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
@@ -24,10 +25,10 @@ const wordBreak = css`
 `;
 
 const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const reasonForReportId = useId();
 	const {
-		register,
+		control,
 		formState: { errors },
 		handleSubmit,
 	} = useForm<ReportMessageModalsFields>({
@@ -55,8 +56,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
 			variant='danger'
-			title={t('Report_Message')}
-			onClose={onClose}
+			title={t('Report_message')}
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
@@ -68,20 +68,24 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
 					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 					<FieldRow>
-						<TextAreaInput
-							id={reasonForReportId}
-							rows={3}
-							width='full'
-							mbe={4}
-							aria-required='true'
-							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
-							{...register('description', {
-								required: t('Required_field', { field: t('Reason_for_report') }),
-							})}
+						<Controller
+							rules={{ required: t('Required_field', { field: t('Report_reason') }) }}
+							name='description'
+							control={control}
+							render={({ field }) => (
+								<TextAreaInput
+									{...field}
+									id={reasonForReportId}
+									rows={3}
+									aria-required='true'
+									aria-invalid={!!errors.description}
+									aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
+								/>
+							)}
 						/>
 					</FieldRow>
 					{errors.description && (
-						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
+						<FieldError role='alert' id={`${reasonForReportId}-error`}>
 							{errors.description.message}
 						</FieldError>
 					)}
