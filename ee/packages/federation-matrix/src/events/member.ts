@@ -1,12 +1,10 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, Upload } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-// @ts-ignore setUserAvatar is not exported from core-services YET
-// import { setUserAvatar } from '../../../../../apps/meteor/app/lib/server/functions/setUserAvatar';
 import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -33,20 +31,18 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string): Promise<voi
 		}
 
 		// detect content type from buffer (basic image type detection)
-		// let contentType = 'image/png';
-		// if (buffer[0] === 0xff && buffer[1] === 0xd8) {
-		// 	contentType = 'image/jpeg';
-		// } else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
-		// 	contentType = 'image/png';
-		// } else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
-		// 	contentType = 'image/gif';
-		// } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
-		// 	contentType = 'image/webp';
-		// }
+		let contentType = 'image/png';
+		if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+			contentType = 'image/jpeg';
+		} else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+			contentType = 'image/png';
+		} else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+			contentType = 'image/gif';
+		} else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+			contentType = 'image/webp';
+		}
 
-		// TODO export setUserAvatar from core-services
-		// await setUserAvatar(user, buffer, contentType, 'rest');
-		logger.debug(`Successfully set avatar for user ${user.username}`);
+		await Upload.setUserAvatar(user, buffer, contentType, 'rest');
 	} catch (error) {
 		logger.error(`Error downloading/setting avatar for user ${user.username}:`, error);
 	}
@@ -114,18 +110,19 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 		throw new Error('Invalid sender format, missing server name');
 	}
 
-	const existingUser = await Users.findOneByUsername(data.event.state_key);
+	const stateKey = data.state_key || (data.event as any)?.state_key;
+	const existingUser = await Users.findOneByUsername(stateKey);
 	const oldAvatarUrl = existingUser?.federation?.avatarUrl;
 	const newAvatarUrl = data.content.avatar_url;
 
 	const insertedId = await createOrUpdateFederatedUser({
-		username: data.event.state_key,
+		username: stateKey,
 		origin: serverName,
-		name: data.content.displayname || (data.state_key as `@${string}:${string}`),
+		name: data.content.displayname || (stateKey as `@${string}:${string}`),
 		avatarUrl: newAvatarUrl,
 	});
 
-	const user = await Users.findOneById(insertedId);
+	const user = await Users.findOneById(insertedId, { projection: { _id: 1, username: 1, federation: 1 } });
 
 	if (!user) {
 		console.warn(`User with ID ${insertedId} not found after insertion`);
