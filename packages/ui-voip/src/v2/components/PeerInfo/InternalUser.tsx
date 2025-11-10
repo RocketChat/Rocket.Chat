@@ -1,14 +1,25 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Avatar, Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 
+import { Slot } from '../../useInfoSlots';
+
 type InternalUserProps = {
 	displayName: string;
 	status?: UserStatus;
 	avatarUrl?: string;
 	callerId?: string | number;
+	slots?: Slot[];
 };
 
-const InternalUser = ({ displayName, avatarUrl, callerId, status }: InternalUserProps) => {
+const getRemoteStatusText = (slots?: Slot[]) => {
+	if (!slots?.length) {
+		return undefined;
+	}
+	return slots.map((slot) => slot.text).join(', ');
+};
+
+const InternalUser = ({ displayName, avatarUrl, callerId, status, slots }: InternalUserProps) => {
+	const remoteStatusText = getRemoteStatusText(slots);
 	return (
 		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
 			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}</Box>
@@ -20,6 +31,7 @@ const InternalUser = ({ displayName, avatarUrl, callerId, status }: InternalUser
 				{callerId && (
 					<Box fontScale='c1' color='secondary-info'>
 						{callerId}
+						{remoteStatusText ? ` - ${remoteStatusText}` : undefined}
 					</Box>
 				)}
 			</Box>
