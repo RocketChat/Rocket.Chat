@@ -15,6 +15,13 @@ export function addSettings(): void {
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Enabled_Description',
 				});
+				await this.add('ABAC_ShowAttributesInRooms', false, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC',
+					enableQuery: { _id: 'ABAC_Enabled', value: true },
+				});
 			},
 		);
 	});
