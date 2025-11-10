@@ -63,19 +63,13 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} tabIndex={-1} onKeyDown={handleKeyDown}>
-					{items.length === 0 && !isLoading && (
-						<NavBarSearchNoResults>
-							<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
-								{announcementText}
-							</VisuallyHidden>
-						</NavBarSearchNoResults>
-					)}
+					<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+						{announcementText}
+					</VisuallyHidden>
+					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
 							{filterText ? t('Results') : t('Recent')}
-							<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
-								{announcementText}
-							</VisuallyHidden>
 						</Box>
 					)}
 					{items.map((item) => (
