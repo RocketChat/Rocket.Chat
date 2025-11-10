@@ -13,6 +13,8 @@ const defaultSessionInfo: SessionInfo = {
 	transferredBy: undefined,
 	muted: false,
 	held: false,
+	remoteMuted: false,
+	remoteHeld: false,
 	startedAt: new Date(),
 	hidden: false,
 };
