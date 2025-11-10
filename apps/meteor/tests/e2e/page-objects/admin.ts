@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminSidebar } from './fragments';
+import { AdminSidebar, ToastMessages } from './fragments';
 import { ConfirmDeleteModal } from './fragments/modal';
 
 export enum AdminSectionsHref {
@@ -29,9 +29,12 @@ export abstract class Admin {
 
 	readonly deleteModal: ConfirmDeleteModal;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(protected page: Page) {
 		this.sidebar = new AdminSidebar(page);
 		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnAdd(): Locator {

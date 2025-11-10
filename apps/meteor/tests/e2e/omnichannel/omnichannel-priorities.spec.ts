@@ -77,7 +77,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.managePriority.btnSave.click();
 
 				await Promise.all([
-					poOmnichannelPriorities.btnCloseToastSuccess.click(),
+					poOmnichannelPriorities.toastMessage.dismissToast(),
 					expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible(),
@@ -97,7 +97,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 
 				await expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled();
 				await poOmnichannelPriorities.managePriority.btnSave.click();
-				await poOmnichannelPriorities.btnCloseToastSuccess.click();
+				await poOmnichannelPriorities.toastMessage.dismissToast();
 				await expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible();
 				await expect(poOmnichannelPriorities.btnReset).not.toBeEnabled();
 			});
@@ -111,7 +111,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 					expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled(),
 				]);
 				await poOmnichannelPriorities.managePriority.btnSave.click();
-				await poOmnichannelPriorities.btnCloseToastSuccess.click();
+				await poOmnichannelPriorities.toastMessage.dismissToast();
 				await Promise.all([
 					expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
@@ -123,7 +123,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.btnResetConfirm.click();
 
 				await Promise.all([
-					expect(poOmnichannelPriorities.toastSuccess).toBeVisible(),
+					await poOmnichannelPriorities.toastMessage.waitForDisplay(),
 					expect(poOmnichannelPriorities.btnReset).not.toBeEnabled(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible(),
