@@ -1,10 +1,10 @@
 import { parse } from 'query-string';
 
+import App from './App';
 import ConnectionStatusProvider from '../../providers/ConnectionStatusProvider';
 import SDKProvider from '../../providers/SDKProvider';
 import ServerProvider from '../../providers/ServerProvider';
 import { Provider as StoreProvider, Consumer as StoreConsumer } from '../../store';
-import App from './App';
 
 export const host =
 	window.SERVER_URL ?? parse(window.location.search).serverUrl ?? (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null);

@@ -14,7 +14,7 @@ const VoipPopupHeader = ({ children, hideSettings, onClose }: VoipPopupHeaderPro
 	const { t } = useTranslation();
 
 	return (
-		<Box is='header' p={12} pbe={4} display='flex' alignItems='center' justifyContent='space-between'>
+		<Box is='header' pi={12} pbe={4} display='flex' alignItems='center' justifyContent='space-between'>
 			{children && (
 				<Box is='h3' id='voipPopupTitle' color='titles-labels' fontScale='p2' fontWeight='700'>
 					{children}

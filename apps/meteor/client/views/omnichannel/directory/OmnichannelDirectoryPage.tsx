@@ -8,7 +8,6 @@ import CallTab from './calls/CallTab';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import ChatsProvider from './providers/ChatsProvider';
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DEFAULT_TAB = 'chats';
@@ -58,11 +57,7 @@ const OmnichannelDirectoryPage = () => {
 						{tab === 'calls' && <CallTab />}
 					</PageContent>
 				</Page>
-				{context && (
-					<ContextualbarDialog>
-						<ContextualBarRouter />
-					</ContextualbarDialog>
-				)}
+				{context && <ContextualBarRouter />}
 			</Page>
 		</ChatsProvider>
 	);

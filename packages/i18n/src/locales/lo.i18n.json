@@ -46,9 +46,9 @@
   "API_Upper_Count_Limit_Description": "ຈໍານວນການບັນທຶກທີ່ສູງສຸດຂອງ API REST ຄວນຈະກັບຄືນມາ (ເມື່ອບໍ່ຈໍາກັດ)?",
   "API_User_Limit": "ຈໍາກັດຜູ້ໃຊ້ສໍາລັບການເພີ່ມຜູ້ຊົມໃຊ້ທັງຫມົດເພື່ອໃຫ້ເປັນຊ່ອງ",
   "API_Wordpress_URL": "URL WordPress",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃຫ້ກັບ <span style=\"font-weight: bold;\">{{count}}</span> rooms.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃນ <span style=\"font-weight: bold;\">{{roomName}}</span> room.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃນ <span style=\"font-weight: bold;\">{{count}}</span> rooms:<br/> {{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃຫ້ກັບ <bold>{{count}}</bold> rooms.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃນ <bold>{{roomName}}</bold> room.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "ເຈົ້າຂອງຫ້ອງໃໝ່ຈະຖືກກໍານົດໂດຍອັດຕະໂນມັດໃນ <bold>{{count}}</bold> rooms:<br/> {{rooms}}.",
   "Accept": "ຍອມຮັບ",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "ຍອມຮັບຄຳຂໍ omnichannel ຂາເຂົ້າ ເຖິງແມ່ນວ່າຈະບໍ່ມີຕົວແທນອອນໄລ",
   "Accept_new_livechats_when_agent_is_idle": "ຍອມຮັບຄໍາຂໍ omnichannel ໃໝ່ເມື່ອຕົວແທນບໍ່ໄດ້ເຮັດວຽກ",
@@ -2792,7 +2792,7 @@
   "your_message": "ຂໍ້​ຄວາມ​ຂອງ​ເຈົ້າ",
   "your_message_optional": "ຂໍ້ຄວາມຂອງທ່ານ (ທາງເລືອກ)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ: <br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ: <br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ບໍ່ມີອີກຕໍ່ໄປ {{role}} by {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} ໄດ້ກຳນົດໄວ້ {{role}} by {{user_by}}"
 }

@@ -18,33 +18,26 @@ const GameCenter = (): ReactElement => {
 
 	const result = useExternalComponentsQuery();
 
-	const handleClose = useEffectEvent((e: MouseEvent) => {
-		preventSyntheticEvent(e);
-		closeTab();
-	});
+	const handleClose = useEffectEvent(() => closeTab());
 
 	const handleBack = useEffectEvent((e: MouseEvent) => {
 		setOpenedGame(undefined);
 		preventSyntheticEvent(e);
 	});
 
-	return (
-		<>
-			{!openedGame && (
-				<GameCenterList
-					data-testid='game-center-list'
-					handleClose={handleClose}
-					handleOpenGame={setOpenedGame}
-					games={result.data}
-					isLoading={result.isPending}
-				/>
-			)}
+	if (!openedGame) {
+		return (
+			<GameCenterList
+				data-testid='game-center-list'
+				handleClose={handleClose}
+				handleOpenGame={setOpenedGame}
+				games={result.data}
+				isLoading={result.isPending}
+			/>
+		);
+	}
 
-			{openedGame && (
-				<GameCenterContainer data-testid='game-center-container' handleBack={handleBack} handleClose={handleClose} game={openedGame} />
-			)}
-		</>
-	);
+	return <GameCenterContainer data-testid='game-center-container' handleBack={handleBack} handleClose={handleClose} game={openedGame} />;
 };
 
 export default GameCenter;

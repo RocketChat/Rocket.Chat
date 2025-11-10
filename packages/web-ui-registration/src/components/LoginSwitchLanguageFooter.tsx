@@ -60,13 +60,20 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => (
-				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
-						Change to <strong>{suggestion.ogName}</strong>
-					</Trans>
-				</Button>
-			))}
+			{suggestions.map((suggestion) => {
+				// If suggestion is "Default", skip it
+				if (!suggestion.key) {
+					return;
+				}
+
+				return (
+					<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
+							Change to <strong>{suggestion.ogName}</strong>
+						</Trans>
+					</Button>
+				);
+			})}
 		</HorizontalWizardLayoutCaption>
 	);
 };

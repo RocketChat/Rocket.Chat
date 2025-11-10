@@ -63,9 +63,9 @@
   "API_Upper_Count_Limit_Description": "Яка максимальна кількість записів, які повинен повернути REST API (якщо без обмежень)?",
   "API_User_Limit": "Ліміт користувача для додавання всіх користувачів до каналу",
   "API_Wordpress_URL": "WordPress URL",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Новий власник буде призначений автоматично до <span style=\"font-weight: bold;\">{{count}}</span> кімнат.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Новий власник буде призначений автоматично до кімнати <span style=\"font-weight: bold;\">{{roomName}}</span>.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Для наступних кімнат кількістю <span style=\"font-weight: bold;\">{{count}}</span> буде автоматично призначено нового власника:<br/> {{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Новий власник буде призначений автоматично до <bold>{{count}}</bold> кімнат.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Новий власник буде призначений автоматично до кімнати <bold>{{roomName}}</bold>.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Для наступних кімнат кількістю <bold>{{count}}</bold> буде автоматично призначено нового власника:<br/> {{rooms}}.",
   "Accept": "Погоджуюсь",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Приймати запити із livechat, навіть коли немає підключених співробітників",
   "Accept_new_livechats_when_agent_is_idle": "Приймати нові запити livechat, коли представник не активний ",
@@ -3356,7 +3356,7 @@
   "your_message": "Ваше повідомлення",
   "your_message_optional": "ваше повідомлення (необов'язково)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} порожні кімнати буде видалено автоматично.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} порожні кімнати будуть видалені автоматично: <br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> порожні кімнати будуть видалені автоматично: <br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} більше не {{role}}, за рішенням {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} був встановлений {{role}} за рішенням {{user_by}}"
 }

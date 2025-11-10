@@ -14,6 +14,7 @@ import { IListenerBridge } from './IListenerBridge';
 import { LivechatBridge } from './LivechatBridge';
 import { MessageBridge } from './MessageBridge';
 import { ModerationBridge } from './ModerationBridge';
+import { OutboundMessageBridge } from './OutboundMessagesBridge';
 import { PersistenceBridge } from './PersistenceBridge';
 import { RoleBridge } from './RoleBridge';
 import { RoomBridge } from './RoomBridge';
@@ -25,30 +26,31 @@ import { UserBridge } from './UserBridge';
 import { VideoConferenceBridge } from './VideoConferenceBridge';
 
 export {
-    CloudWorkspaceBridge,
-    ContactBridge,
-    EnvironmentalVariableBridge,
-    HttpBridge,
-    IHttpBridgeRequestInfo,
-    IListenerBridge,
-    LivechatBridge,
-    MessageBridge,
-    PersistenceBridge,
-    AppActivationBridge,
-    AppDetailChangesBridge,
-    CommandBridge,
-    ApiBridge,
-    RoomBridge,
-    IInternalBridge,
-    ServerSettingBridge,
-    UserBridge,
-    UploadBridge,
-    EmailBridge,
-    UiInteractionBridge,
-    SchedulerBridge,
-    AppBridges,
-    VideoConferenceBridge,
-    IInternalFederationBridge,
-    ModerationBridge,
-    RoleBridge,
+	CloudWorkspaceBridge,
+	ContactBridge,
+	EnvironmentalVariableBridge,
+	HttpBridge,
+	IHttpBridgeRequestInfo,
+	IListenerBridge,
+	LivechatBridge,
+	MessageBridge,
+	PersistenceBridge,
+	AppActivationBridge,
+	AppDetailChangesBridge,
+	CommandBridge,
+	ApiBridge,
+	RoomBridge,
+	IInternalBridge,
+	ServerSettingBridge,
+	UserBridge,
+	UploadBridge,
+	EmailBridge,
+	UiInteractionBridge,
+	SchedulerBridge,
+	AppBridges,
+	VideoConferenceBridge,
+	IInternalFederationBridge,
+	ModerationBridge,
+	RoleBridge,
+	OutboundMessageBridge,
 };

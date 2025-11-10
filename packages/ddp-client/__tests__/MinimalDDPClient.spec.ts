@@ -16,13 +16,13 @@ describe('ping/pong mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'ping',
 		});
 
-		expect(senderCallback).toBeCalledTimes(1);
-		expect(senderCallback).toBeCalledWith({
+		expect(senderCallback).toHaveBeenCalledTimes(1);
+		expect(senderCallback).toHaveBeenCalledWith({
 			msg: 'pong',
 		});
 	});
@@ -43,14 +43,14 @@ describe('ping/pong mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'ping',
 			id: '123',
 		});
 
-		expect(senderCallback).toBeCalledTimes(1);
-		expect(senderCallback).toBeCalledWith({
+		expect(senderCallback).toHaveBeenCalledTimes(1);
+		expect(senderCallback).toHaveBeenCalledWith({
 			msg: 'pong',
 			id: '123',
 		});
@@ -69,8 +69,8 @@ describe('ping/pong mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'pong',
 		});
 	});
@@ -93,8 +93,8 @@ describe('subscription mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'ready',
 			subs: [id],
 		});
@@ -116,8 +116,8 @@ describe('subscription mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'nosub',
 			id,
 		});
@@ -151,14 +151,14 @@ describe('subscription mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'ready',
 			subs: [id],
 		});
 
-		expect(nosubCallback).toBeCalledTimes(1);
-		expect(nosubCallback).toBeCalledWith({
+		expect(nosubCallback).toHaveBeenCalledTimes(1);
+		expect(nosubCallback).toHaveBeenCalledWith({
 			msg: 'nosub',
 			id,
 		});
@@ -195,14 +195,14 @@ describe('subscription added/changed/removed mechanism', () => {
 			}),
 		);
 
-		expect(readyCallback).toBeCalledTimes(1);
-		expect(readyCallback).toBeCalledWith({
+		expect(readyCallback).toHaveBeenCalledTimes(1);
+		expect(readyCallback).toHaveBeenCalledWith({
 			msg: 'ready',
 			subs: [id],
 		});
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'added',
 			collection: 'test',
 			id,
@@ -241,14 +241,14 @@ describe('subscription added/changed/removed mechanism', () => {
 			}),
 		);
 
-		expect(readyCallback).toBeCalledTimes(1);
-		expect(readyCallback).toBeCalledWith({
+		expect(readyCallback).toHaveBeenCalledTimes(1);
+		expect(readyCallback).toHaveBeenCalledWith({
 			msg: 'ready',
 			subs: [id],
 		});
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'changed',
 			collection: 'test',
 			id,
@@ -284,14 +284,14 @@ describe('subscription added/changed/removed mechanism', () => {
 			}),
 		);
 
-		expect(readyCallback).toBeCalledTimes(1);
-		expect(readyCallback).toBeCalledWith({
+		expect(readyCallback).toHaveBeenCalledTimes(1);
+		expect(readyCallback).toHaveBeenCalledWith({
 			msg: 'ready',
 			subs: [id],
 		});
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'removed',
 			collection: 'test',
 			id,
@@ -326,10 +326,10 @@ describe('subscription updated mechanism', () => {
 			}),
 		);
 
-		expect(readyCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledTimes(0);
-		expect(updatedCallback).toBeCalledTimes(1);
-		expect(updatedCallback).toBeCalledWith({
+		expect(readyCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledTimes(0);
+		expect(updatedCallback).toHaveBeenCalledTimes(1);
+		expect(updatedCallback).toHaveBeenCalledWith({
 			msg: 'updated',
 			methods: [id],
 		});
@@ -354,8 +354,8 @@ describe('method mechanism', () => {
 			}),
 		);
 
-		expect(handlerCallback).toBeCalledTimes(1);
-		expect(handlerCallback).toBeCalledWith({
+		expect(handlerCallback).toHaveBeenCalledTimes(1);
+		expect(handlerCallback).toHaveBeenCalledWith({
 			msg: 'result',
 			params: [],
 			id,

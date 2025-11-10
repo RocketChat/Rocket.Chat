@@ -23,6 +23,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
+	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
 		department?: string;
@@ -35,7 +36,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
-	changeDepartmentIdByRoomId(rid: string, department: string): Promise<void>;
+	changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult>;
 	getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined>;
 	updateVisitorStatus(token: string, status: ILivechatInquiryRecord['v']['status']): Promise<UpdateResult>;
 	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): Promise<UpdateResult>;

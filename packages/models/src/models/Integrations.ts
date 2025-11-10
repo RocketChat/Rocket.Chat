@@ -1,6 +1,6 @@
 import type { IIntegration, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
+import type { Collection, Db, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -56,5 +56,13 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 
 	findByChannels(channels: IIntegration['channel']): FindCursor<IIntegration> {
 		return this.find({ channel: { $in: channels } });
+	}
+
+	findOneByIdAndToken<P extends IIntegration = IIntegration>(
+		id: IIntegration['_id'],
+		token: string,
+		options?: FindOptions<P>,
+	): Promise<P | null> {
+		return this.findOne<P>({ _id: id, token }, options);
 	}
 }

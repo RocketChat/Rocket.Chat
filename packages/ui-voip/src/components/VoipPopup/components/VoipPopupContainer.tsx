@@ -1,7 +1,10 @@
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
+import { forwardRef } from 'react';
 import { FocusScope } from 'react-aria';
+
+import VoipPopupDragHandle from './VoipPopupDragHandle';
 
 export type PositionOffsets = Partial<{
 	top: number;
@@ -12,15 +15,12 @@ export type PositionOffsets = Partial<{
 
 type ContainerProps = {
 	children: ReactNode;
-	secondary?: boolean;
 	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
 	['data-testid']: string;
 };
 
-const Container = styled(
-	'article',
-	({ secondary: _secondary, position: _position, ...props }: Pick<ContainerProps, 'secondary' | 'position'>) => props,
-)`
+const Container = styled('article', ({ position: _position, ...props }: Pick<ContainerProps, 'position'>) => props)`
 	position: fixed;
 	top: ${(p) => (p.position?.top !== undefined ? `${p.position.top}px` : 'initial')};
 	right: ${(p) => (p.position?.right !== undefined ? `${p.position.right}px` : 'initial')};
@@ -32,18 +32,25 @@ const Container = styled(
 	min-height: 128px;
 	border-radius: 4px;
 	border: 1px solid ${Palette.stroke['stroke-dark'].toString()};
-	box-shadow: 0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
+	box-shadow:
+		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
-	background-color: ${(p) => (p.secondary ? Palette.surface['surface-neutral'].toString() : Palette.surface['surface-light'].toString())};
+	background-color: ${Palette.surface['surface-tint'].toString()};
 	z-index: 100;
 `;
 
-const VoipPopupContainer = ({ children, secondary = false, position = { top: 0, left: 0 }, ...props }: ContainerProps) => (
-	<FocusScope autoFocus restoreFocus>
-		<Container aria-labelledby='voipPopupTitle' secondary={secondary} position={position} {...props}>
-			{children}
-		</Container>
-	</FocusScope>
-);
+const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(function VoipPopupContainer(
+	{ children, position = { top: 0, left: 0 }, dragHandleRef, ...props },
+	ref,
+) {
+	return (
+		<FocusScope autoFocus restoreFocus>
+			<Container ref={ref} aria-labelledby='voipPopupTitle' position={position} {...props}>
+				<VoipPopupDragHandle ref={dragHandleRef} />
+				{children}
+			</Container>
+		</FocusScope>
+	);
+});
 
 export default VoipPopupContainer;

@@ -21,7 +21,11 @@ const UserMenuHeader = ({ user }: { user: IUser }) => {
 			<Box mis={4} display='flex' overflow='hidden' flexDirection='column' fontScale='p2' mb='neg-x4' flexGrow={1} flexShrink={1}>
 				<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 					<Margins inline={4}>
-						<UserStatus status={presenceDisabled ? 'disabled' : user.status} />
+						<UserStatus
+							role='status'
+							aria-label={presenceDisabled ? t('user_status_disabled') : t(user?.status ?? 'offline')}
+							status={presenceDisabled ? 'disabled' : user.status}
+						/>
 						<Box is='span' withTruncatedText display='inline-block' fontWeight='700'>
 							{displayName}
 						</Box>

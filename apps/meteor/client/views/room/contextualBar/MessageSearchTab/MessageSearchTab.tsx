@@ -12,6 +12,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarIcon,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -25,7 +26,7 @@ const MessageSearchTab = () => {
 	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='magnifier' />
 				<ContextualbarTitle>{t('Search_Messages')}</ContextualbarTitle>
@@ -44,7 +45,7 @@ const MessageSearchTab = () => {
 					</Callout>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

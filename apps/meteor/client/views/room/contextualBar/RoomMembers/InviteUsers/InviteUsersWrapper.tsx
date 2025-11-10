@@ -7,6 +7,7 @@ import {
 	ContextualbarBack,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 
 type InviteUsersWrapperProps = {
@@ -19,14 +20,14 @@ const InviteUsersWrapper = ({ children, onClickBack, onClose }: InviteUsersWrapp
 	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarBack onClick={onClickBack} />
 				<ContextualbarTitle>{t('Invite_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>{children}</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

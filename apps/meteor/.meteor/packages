@@ -13,13 +13,13 @@ rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base@3.1.0
+accounts-base@3.1.1
 accounts-facebook@1.3.4
 accounts-github@1.5.1
 accounts-google@1.4.1
 accounts-meteor-developer@1.5.1
 accounts-oauth@1.4.6
-accounts-password@3.1.0
+accounts-password@3.2.0
 accounts-twitter@1.5.2
 
 google-oauth@1.4.5
@@ -33,9 +33,9 @@ email@3.1.2
 
 meteor-base@1.5.2
 ddp-common@1.4.4
-webapp@2.0.6
+webapp@2.0.7
 
-mongo@2.1.1
+mongo@2.1.2
 
 reload@1.3.2
 service-configuration@1.3.5
@@ -57,16 +57,15 @@ tracker@1.3.4
 reactive-dict@1.3.2
 reactive-var@1.0.13
 
-babel-compiler@7.11.3
+babel-compiler@7.12.0
 standard-minifier-css@1.9.3
 dynamic-import@0.7.4
-ecmascript@0.16.10
-typescript@5.6.3
+ecmascript@0.16.11
+typescript@5.6.4
 
-autoupdate@2.0.0
+autoupdate@2.0.1
 
 # photoswipe
 
 zodern:types
 zodern:standard-minifier-js
-ostrio:flow-router-extra

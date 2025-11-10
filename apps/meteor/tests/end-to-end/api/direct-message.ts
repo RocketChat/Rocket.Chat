@@ -455,6 +455,21 @@ describe('[Direct Messages]', () => {
 					});
 			});
 		});
+
+		describe('with deactived users', async () => {
+			before(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: false }));
+			after(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: true }));
+			it('should not include deactivated users in members count', async () => {
+				// Deactivate the second user
+
+				const res = await request.get(api('im.counters')).set(credentials).query({ roomId: directMessage._id });
+
+				expect(res.status).to.equal(200);
+				expect(res.body.success).to.be.true;
+				// Only  admin remain active
+				expect(res.body.members).to.equal(1);
+			});
+		});
 	});
 
 	describe('[/im.files]', async () => {

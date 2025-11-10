@@ -9,62 +9,28 @@ const settingStub = {
 	get: sinon.stub(),
 };
 
-const callbackStub = {
-	add: sinon.stub(),
-	remove: sinon.stub(),
-	priority: { HIGH: 'high' },
-};
-
 const queueMonitorStub = {
 	scheduleInquiry: sinon.stub(),
 };
 
-const { afterInquiryQueued } = proxyquire
+const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire
 	.noCallThru()
 	.load('../../../../../../app/livechat-enterprise/server/hooks/afterInquiryQueued.ts', {
 		'../../../../../app/settings/server': {
 			settings: settingStub,
 		},
-		'../../../../../lib/callbacks': {
-			callbacks: callbackStub,
-		},
 		'../lib/QueueInactivityMonitor': {
 			OmnichannelQueueInactivityMonitor: queueMonitorStub,
 		},
-		'../lib/logger': {
-			cbLogger: { debug: sinon.stub() },
+		'../../../../../app/livechat/server/lib/hooks': {
+			afterInquiryQueued: { patch: sinon.stub() },
 		},
 	});
 
 describe('hooks/afterInquiryQueued', () => {
 	beforeEach(() => {
-		callbackStub.add.resetHistory();
-		callbackStub.remove.resetHistory();
 		queueMonitorStub.scheduleInquiry.resetHistory();
 		settingStub.get.resetHistory();
-	});
-
-	it('should call settings.watch at first', () => {
-		expect(settingStub.watch.callCount).to.be.equal(1);
-	});
-
-	it('should call the callback on settings.watch with proper values', () => {
-		const func = settingStub.watch.getCall(0).args[1];
-
-		func(1);
-		expect(callbackStub.add.callCount).to.be.equal(1);
-
-		func(2);
-		expect(callbackStub.add.callCount).to.be.equal(2);
-
-		func(0);
-		expect(callbackStub.remove.callCount).to.be.equal(1);
-
-		func(-1);
-		expect(callbackStub.remove.callCount).to.be.equal(2);
-
-		func(3);
-		expect(callbackStub.add.callCount).to.be.equal(3);
 	});
 
 	it('should return undefined if no inquiry is passed, or if inquiry doesnt have valid properties', async () => {

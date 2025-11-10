@@ -9,11 +9,21 @@ exports[`renders ErrorCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-b22cw8"
       data-testid="vc-popup-dialer"
     >
+      <div
+        class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-1m5zddh"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-dpa92h"
+        >
+          
+        </i>
+      </div>
       <header
-        class="rcx-box rcx-box--full rcx-css-1bact0x"
+        class="rcx-box rcx-box--full rcx-css-1wuhp4j"
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-6rm93"
@@ -410,11 +420,21 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-b22cw8"
       data-testid="vc-popup-dialer"
     >
+      <div
+        class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-1m5zddh"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-dpa92h"
+        >
+          
+        </i>
+      </div>
       <header
-        class="rcx-box rcx-box--full rcx-css-1bact0x"
+        class="rcx-box rcx-box--full rcx-css-1wuhp4j"
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-6rm93"
@@ -811,11 +831,21 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-b22cw8"
       data-testid="vc-popup-dialer"
     >
+      <div
+        class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-1m5zddh"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-dpa92h"
+        >
+          
+        </i>
+      </div>
       <header
-        class="rcx-box rcx-box--full rcx-css-1bact0x"
+        class="rcx-box rcx-box--full rcx-css-1wuhp4j"
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-6rm93"
@@ -1212,11 +1242,21 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-b22cw8"
       data-testid="vc-popup-dialer"
     >
+      <div
+        class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-1m5zddh"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-dpa92h"
+        >
+          
+        </i>
+      </div>
       <header
-        class="rcx-box rcx-box--full rcx-css-1bact0x"
+        class="rcx-box rcx-box--full rcx-css-1wuhp4j"
       >
         <h3
           class="rcx-box rcx-box--full rcx-css-6rm93"

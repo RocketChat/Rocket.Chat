@@ -907,7 +907,32 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const res = await request
 				.post(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
-				.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
+				// UI sends agent name as well. API doens't use it, but keeping here for avoid Breaking Changes
+				.send({ upsert: [{ agentId: agent._id, username: agent.username, name: agent.name }], remove: [] })
+				.expect(200);
+			expect(res.body).to.have.property('success', true);
+		});
+		it('should successfully remove an agent from a department', async () => {
+			const [dep, agent] = await Promise.all([createDepartment(), createAgent()]);
+			const res = await request
+				.post(api(`livechat/department/${dep._id}/agents`))
+				.set(credentials)
+				// UI sends the whole agent object, but API only needs agentId and username
+				.send({
+					remove: [
+						{
+							agentId: agent._id,
+							username: agent.username,
+							name: agent.name,
+							count: 0,
+							order: 0,
+							departmentId: 'afdsfads',
+							_id: 'afsdfadsfaf',
+							_updatedAt: new Date(),
+						},
+					],
+					upsert: [],
+				})
 				.expect(200);
 			expect(res.body).to.have.property('success', true);
 			await deleteDepartment(dep._id);

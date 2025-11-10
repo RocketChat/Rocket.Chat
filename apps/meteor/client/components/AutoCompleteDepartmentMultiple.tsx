@@ -5,53 +5,63 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-type AutoCompleteDepartmentMultipleProps = {
+type AutoCompleteDepartmentMultipleProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'options' | 'renderItem' | 'setFilter' | 'filter' | 'placeholder' | 'endReached'
+> & {
 	value?: PaginatedMultiSelectOption[];
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
 	enabled?: boolean;
 	withCheckbox?: boolean;
-} & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
+	excludeId?: string;
+	unitId?: string;
+};
 
 const AutoCompleteDepartmentMultiple = ({
 	value = [],
 	onlyMyDepartments = false,
 	showArchived = false,
 	enabled = false,
-	withCheckbox = true,
+	withCheckbox = false,
+	excludeId,
+	unitId,
 	onChange = () => undefined,
+	...props
 }: AutoCompleteDepartmentMultipleProps) => {
 	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: true }), enabled }),
-			[debouncedDepartmentsFilter, enabled, onlyMyDepartments, showArchived],
-		),
-	);
+	const { data: departmentsItems, fetchNextPage } = useDepartmentsList({
+		filter: debouncedDepartmentsFilter,
+		excludeId,
+		onlyMyDepartments,
+		showArchived,
+		enabled,
+		unitId,
+	});
 
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
+	const selectedValues = useMemo(() => new Set(value.map((item) => item.value)), [value]);
 
 	const departmentOptions = useMemo(() => {
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value)) || [];
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
-	const renderItem = ({ label, ...props }: ComponentProps<typeof Option>): ReactElement => {
+	const renderItem = ({ label, value, ...props }: ComponentProps<typeof Option>): ReactElement => {
 		if (withCheckbox) {
-			<CheckOption
-				{...props}
-				label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-				selected={value.some((item) => item.value === props.value)}
-			/>;
+			return (
+				<CheckOption
+					{...props}
+					label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
+					selected={value ? selectedValues.has(value) : false}
+				/>
+			);
 		}
 
 		return <Option {...props} label={label} />;
@@ -60,6 +70,7 @@ const AutoCompleteDepartmentMultiple = ({
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
+			{...props}
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
@@ -70,16 +81,7 @@ const AutoCompleteDepartmentMultiple = ({
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			renderItem={renderItem}
-			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING
-					? () => undefined
-					: (start?: number) => {
-							if (start === undefined) {
-								return;
-							}
-							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
-						}
-			}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };

@@ -1,10 +1,10 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
+import { GenericModalSkeleton } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 import BaseConvertToChannelModal from './BaseConvertToChannelModal';
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import { teamsQueryKeys } from '../../../../../lib/queryKeys';
 
 type ConvertToChannelModalProps = {
 	onClose: () => void;
@@ -15,15 +15,17 @@ type ConvertToChannelModalProps = {
 };
 
 const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }: ConvertToChannelModalProps) => {
-	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', {
-		params: useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
+	const listRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
+	const { isPending, data } = useQuery({
+		queryKey: teamsQueryKeys.roomsOfUser(teamId, userId, { canUserDelete: true }),
+		queryFn: () => listRoomsOfUser({ teamId, userId, canUserDelete: 'true' }),
 	});
 
-	if (phase === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <GenericModalSkeleton />;
 	}
 
-	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
+	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms} />;
 };
 
 export default ConvertToChannelModal;

@@ -27,7 +27,7 @@ export interface ISMSProviderConstructor {
 
 export interface ISMSProvider {
 	parse(data: unknown): ServiceData;
-	validateRequest(request: Request): Promise<boolean>;
+	validateRequest(request: Request, requestBody: unknown): Promise<boolean>;
 
 	sendBatch?(from: string, to: string[], message: string): Promise<SMSProviderResult>;
 	response(): SMSProviderResponse;

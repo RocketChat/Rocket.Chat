@@ -24,14 +24,18 @@ export const useOTRMessaging = (uid: string) => {
 		};
 
 		const handleBeforeSendMessage = async (
-			message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+			message: AtLeast<IMessage, '_id' | 'rid' | 'msg'> & { isEditing?: boolean },
 		): Promise<AtLeast<IMessage, '_id' | 'rid' | 'msg'>> => {
 			if (!uid) {
 				return message;
 			}
 
-			const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
+			if (message.isEditing) {
+				return (({ isEditing: _isEditing, ...rest }) => rest)(message);
+			}
 
+			delete message.isEditing;
+			const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
 			if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
 				const msg = await otrRoom.encrypt(message);
 				return { ...message, msg, t: 'otr' };

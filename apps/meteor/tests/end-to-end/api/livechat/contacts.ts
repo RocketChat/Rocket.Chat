@@ -708,6 +708,79 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe('[POST] omnichannel/contacts.conflicts', () => {
+		let token: string;
+		let contactId: string;
+
+		before(async () => {
+			const visitor = await createVisitor();
+			token = visitor.token;
+
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: visitor.name,
+					emails: [visitor.visitorEmails?.[0].address],
+					phones: [visitor.phone?.[0].phoneNumber],
+				});
+			contactId = body.contactId;
+
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			await createCustomField({
+				field: 'cf1',
+				label: 'Custom Field 1',
+				scope: 'visitor',
+				visibility: 'public',
+				type: 'input',
+				required: true,
+				regexp: '^[0-9]+$',
+				searchable: true,
+				public: true,
+			});
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('update-livechat-contact');
+			await deleteCustomField('cf1');
+		});
+
+		it('should resolve the contact custom field conflict', async () => {
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token, key: 'cf1', value: '123', overwrite: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token, key: 'cf1', value: '456', overwrite: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const res = await request
+				.post(api('omnichannel/contacts.conflicts'))
+				.set(credentials)
+				.send({
+					contactId,
+					customFields: {
+						cf1: '123',
+					},
+				});
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result');
+
+			expect(res.body.result).to.have.property('customFields');
+			expect(res.body.result.customFields).to.have.property('cf1', '123');
+		});
+	});
+
 	describe('Contact Rooms', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 

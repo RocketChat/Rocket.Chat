@@ -6,42 +6,42 @@ import { RoomType } from '../../definition/rooms';
 import type { IRoom } from '../../definition/rooms/IRoom';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
-    public kind: RocketChatAssociationModel.DISCUSSION;
+	public kind: RocketChatAssociationModel.DISCUSSION;
 
-    private reply: string;
+	private reply: string;
 
-    private parentMessage: IMessage;
+	private parentMessage: IMessage;
 
-    constructor(data?: Partial<IRoom>) {
-        super(data);
-        this.kind = RocketChatAssociationModel.DISCUSSION;
-        this.room.type = RoomType.PRIVATE_GROUP;
-    }
+	constructor(data?: Partial<IRoom>) {
+		super(data);
+		this.kind = RocketChatAssociationModel.DISCUSSION;
+		this.room.type = RoomType.PRIVATE_GROUP;
+	}
 
-    public setParentRoom(parentRoom: IRoom): IDiscussionBuilder {
-        this.room.parentRoom = parentRoom;
-        return this;
-    }
+	public setParentRoom(parentRoom: IRoom): IDiscussionBuilder {
+		this.room.parentRoom = parentRoom;
+		return this;
+	}
 
-    public getParentRoom(): IRoom {
-        return this.room.parentRoom;
-    }
+	public getParentRoom(): IRoom {
+		return this.room.parentRoom;
+	}
 
-    public setReply(reply: string): IDiscussionBuilder {
-        this.reply = reply;
-        return this;
-    }
+	public setReply(reply: string): IDiscussionBuilder {
+		this.reply = reply;
+		return this;
+	}
 
-    public getReply(): string {
-        return this.reply;
-    }
+	public getReply(): string {
+		return this.reply;
+	}
 
-    public setParentMessage(parentMessage: IMessage): IDiscussionBuilder {
-        this.parentMessage = parentMessage;
-        return this;
-    }
+	public setParentMessage(parentMessage: IMessage): IDiscussionBuilder {
+		this.parentMessage = parentMessage;
+		return this;
+	}
 
-    public getParentMessage(): IMessage {
-        return this.parentMessage;
-    }
+	public getParentMessage(): IMessage {
+		return this.parentMessage;
+	}
 }

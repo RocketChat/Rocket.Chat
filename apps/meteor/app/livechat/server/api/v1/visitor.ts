@@ -1,13 +1,13 @@
-import type { IRoom, ILivechatCustomField } from '@rocket.chat/core-typings';
-import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms, LivechatContacts } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { updateContactsCustomFields, validateRequiredCustomFields } from '../../lib/custom-fields';
-import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
+import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
+import { registerGuest, notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
@@ -82,66 +82,17 @@ API.v1.addRoute(
 				),
 			);
 
-			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-				const errors: string[] = [];
-				const keys = customFields.map((field) => field.key);
-
-				const livechatCustomFields = await LivechatCustomField.findByScope(
-					'visitor',
-					{ projection: { _id: 1, required: 1 } },
-					false,
-				).toArray();
-				validateRequiredCustomFields(keys, livechatCustomFields);
-
-				const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
-				const processedKeys = await Promise.all(
-					matchingCustomFields.map(async (field: ILivechatCustomField) => {
-						const customField = customFields.find((f) => f.key === field._id);
-						if (!customField) {
-							return;
-						}
-
-						const { key, value, overwrite } = customField;
-						// TODO: Change this to Bulk update
-						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-							errors.push(key);
-						}
-
-						// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
-						const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-						if (contacts.length > 0) {
-							await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
-						}
-
-						return key;
-					}),
-				);
-
-				if (processedKeys.length !== keys.length) {
-					livechatLogger.warn({
-						msg: 'Some custom fields were not processed',
-						visitorId: visitor._id,
-						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
-					});
-				}
-
-				if (errors.length > 0) {
-					livechatLogger.error({
-						msg: 'Error updating custom fields',
-						visitorId: visitor._id,
-						errors,
-					});
-					throw new Error('error-updating-custom-fields');
-				}
-
-				return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
+			if (!Array.isArray(customFields) || !customFields.length) {
+				return API.v1.success({ visitor });
 			}
 
-			if (!visitor) {
-				throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor');
+			const result = await setMultipleVisitorCustomFields(visitor, customFields);
+
+			if (!result) {
+				return API.v1.success({ visitor });
 			}
 
-			return API.v1.success({ visitor });
+			return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 		},
 	},
 );
@@ -190,18 +141,19 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
-		const { _id, token } = visitor;
-		const result = await removeGuest({ _id, token });
-		if (!result.modifiedCount) {
+		const { _id } = visitor;
+		try {
+			await removeContactsByVisitorId({ _id });
+			return API.v1.success({
+				visitor: {
+					_id,
+					ts: new Date().toISOString(),
+				},
+			});
+		} catch (e) {
+			livechatLogger.error(e);
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
-
-		return API.v1.success({
-			visitor: {
-				_id,
-				ts: new Date().toISOString(),
-			},
-		});
 	},
 });
 

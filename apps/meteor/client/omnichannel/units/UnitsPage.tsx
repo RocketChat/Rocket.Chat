@@ -1,4 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 
 import UnitEdit from './UnitEdit';
@@ -13,6 +14,8 @@ const UnitsPage = () => {
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/units'));
 
 	return (
 		<Page flexDirection='row'>
@@ -29,9 +32,9 @@ const UnitsPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
-					{context === 'edit' && id && <UnitEditWithData unitId={id} />}
-					{context === 'new' && <UnitEdit />}
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					{context === 'edit' && id && <UnitEditWithData unitId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <UnitEdit onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

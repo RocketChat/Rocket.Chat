@@ -1,10 +1,11 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ExportMessagesTab } from './export-messages-tab';
 import { HomeFlextabChannels } from './home-flextab-channels';
-import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabOtr } from './home-flextab-otr';
+import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -20,7 +21,9 @@ export class HomeFlextab {
 
 	readonly otr: HomeFlextabOtr;
 
-	readonly exportMessages: HomeFlextabExportMessages;
+	readonly exportMessages: ExportMessagesTab;
+
+	readonly pruneMessages: HomeFlextabPruneMessages;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -29,7 +32,12 @@ export class HomeFlextab {
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 		this.otr = new HomeFlextabOtr(page);
-		this.exportMessages = new HomeFlextabExportMessages(page);
+		this.exportMessages = new ExportMessagesTab(page);
+		this.pruneMessages = new HomeFlextabPruneMessages(page);
+	}
+
+	get toolbarPrimaryActions(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
 	}
 
 	get btnTabMembers(): Locator {
@@ -49,7 +57,7 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('role=button[name="Options"]');
+		return this.toolbarPrimaryActions.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
@@ -58,6 +66,10 @@ export class HomeFlextab {
 
 	get btnExportMessages(): Locator {
 		return this.page.locator('role=menuitem[name="Export messages"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
 	}
 
 	get btnE2EERoomSetupDisableE2E(): Locator {

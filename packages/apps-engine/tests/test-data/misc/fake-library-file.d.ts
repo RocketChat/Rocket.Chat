@@ -1,5 +1,5 @@
 export declare class FakeLibraryClass {
-    startWork(): boolean;
+	startWork(): boolean;
 
-    stopWorking(): boolean;
+	stopWorking(): boolean;
 }

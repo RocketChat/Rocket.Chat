@@ -18,6 +18,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
@@ -132,7 +133,7 @@ const RoomMembers = ({
 	}, [members]);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
 				<ContextualbarIcon name='members' />
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
@@ -210,7 +211,7 @@ const RoomMembers = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

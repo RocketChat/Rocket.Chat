@@ -29,12 +29,13 @@ import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
+import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
 import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
@@ -140,6 +141,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const allowReceiveForwardOffline = useId();
 	const unitFieldId = useId();
 	const agentsLabelId = useId();
+	const departmentsAllowedToForwardFieldId = useId();
 
 	return (
 		<Page flexDirection='row'>
@@ -322,18 +324,29 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</Field>
 
 								<Field>
-									<Controller
-										control={control}
-										name='departmentsAllowedToForward'
-										render={({ field: { value, onChange } }) => (
-											<DepartmentForwarding
-												departmentId={id ?? ''}
-												value={value}
-												handler={onChange}
-												label='List_of_departments_for_forward'
+									<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
+									<FieldRow>
+										<Box w='100%'>
+											<Controller
+												control={control}
+												name='departmentsAllowedToForward'
+												render={({ field: { value, onChange } }) => (
+													<AutoCompleteDepartmentMultiple
+														id={departmentsAllowedToForwardFieldId}
+														withCheckbox
+														showArchived
+														excludeId={id ?? ''}
+														value={value}
+														maxWidth='100%'
+														w='100%'
+														flexGrow={1}
+														onChange={onChange}
+													/>
+												)}
 											/>
-										)}
-									/>
+										</Box>
+									</FieldRow>
+									<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 								</Field>
 
 								<Field>
@@ -345,7 +358,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											<AutoCompleteDepartment
 												id={fallbackForwardDepartmentField}
 												haveNone
-												excludeDepartmentId={department?._id}
+												excludeId={department?._id}
 												value={value}
 												onChange={onChange}
 												onlyMyDepartments
@@ -379,7 +392,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 													onChange={onChange}
 													onLoadItems={(list) => {
 														// NOTE: list.itemCount > 1 to account for the "None" option
-														setUnitRequired(!canManageUnits && list.itemCount > 1);
+														setUnitRequired(!canManageUnits && list.length > 1);
 													}}
 												/>
 											)}

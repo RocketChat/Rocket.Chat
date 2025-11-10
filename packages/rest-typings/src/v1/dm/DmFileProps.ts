@@ -5,61 +5,48 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 const ajv = new Ajv({ coerceTypes: true });
 
 export type DmFileProps = PaginatedRequest<
-	(
-		| {
-				roomId: string;
-		  }
-		| {
-				username: string;
-		  }
-	) & { fields?: string }
+	({ roomId: string; username?: string } | { roomId?: string; username: string }) & { name?: string; typeGroup?: string; query?: string }
 >;
 
-export const isDmFileProps = ajv.compile<DmFileProps>({
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-				},
-				query: {
-					type: 'string',
-				},
-				sort: {
-					type: 'string',
-				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
-			},
-			required: ['roomId'],
-			additionalProperties: false,
+const dmFilesListPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
 		},
-		{
-			type: 'object',
-			properties: {
-				username: {
-					type: 'string',
-				},
-				query: {
-					type: 'string',
-				},
-				sort: {
-					type: 'string',
-				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
-			},
-			required: ['username'],
-			additionalProperties: false,
+		username: {
+			type: 'string',
+			nullable: true,
 		},
-	],
-});
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		typeGroup: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	oneOf: [{ required: ['roomId'] }, { required: ['username'] }],
+	required: [],
+	additionalProperties: false,
+};
+
+export const isDmFileProps = ajv.compile<DmFileProps>(dmFilesListPropsSchema);

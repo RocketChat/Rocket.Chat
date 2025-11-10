@@ -2,9 +2,9 @@ import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
+import Surface from './Surface';
 import { accessoryImage } from '../../../../.storybook/helpers';
 import { PopoverContainer } from '../../Popover';
-import Surface from './Surface';
 
 export default {
 	title: 'UiKit/Message/Section block',

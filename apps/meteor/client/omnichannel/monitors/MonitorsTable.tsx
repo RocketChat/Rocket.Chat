@@ -13,13 +13,12 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAutoComplete } from '@rocket.chat/ui-client';
+import { UserAutoComplete, GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
-import GenericModal from '../../components/GenericModal';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
 	GenericTable,

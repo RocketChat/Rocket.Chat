@@ -17,6 +17,7 @@ import type {
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
@@ -216,6 +217,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		typeException: ISubscription['t'],
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
+
+	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptions<P> = FindOptions<P>>(
+		roomId: string,
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
+
 	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	findByRoomIdAndUserIds(
 		roomId: ISubscription['rid'],

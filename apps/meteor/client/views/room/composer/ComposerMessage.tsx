@@ -2,11 +2,10 @@ import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useMemo, useSyncExternalStore } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
@@ -84,9 +83,11 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
-	const publicationReady = useReactiveValue(
-		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
-	);
+	const { subscribe, getSnapshotValue } = useMemo(() => {
+		return LegacyRoomManager.listenRoomPropsByRid(room._id, 'streamActive');
+	}, [room._id]);
+
+	const publicationReady = useSyncExternalStore(subscribe, getSnapshotValue);
 
 	if (!publicationReady) {
 		return <ComposerSkeleton />;

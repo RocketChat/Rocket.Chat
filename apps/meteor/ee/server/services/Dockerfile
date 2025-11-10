@@ -15,6 +15,7 @@ COPY ./.yarn/patches .yarn/patches
 COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
 COPY ./packages/eslint-config packages/eslint-config
+COPY ./packages/tsconfig packages/tsconfig
 COPY ./packages/rest-typings packages/rest-typings
 COPY ./packages/model-typings packages/model-typings
 COPY ./packages/models packages/models
@@ -23,12 +24,10 @@ COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
 
 RUN yarn install
 
-COPY ./tsconfig.base.json .
-
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:22.14.0-alpine3.20
+FROM node:22.16.0-alpine3.20
 
 ARG SERVICE
 

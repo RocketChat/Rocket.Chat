@@ -9,6 +9,7 @@ import {
 	useEndpoint,
 	useTranslation,
 	useSetting,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId, useState, useCallback } from 'react';
@@ -26,6 +27,7 @@ const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -119,7 +121,7 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<Box mb={12}>
-						<ButtonGroup stretch>
+						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>

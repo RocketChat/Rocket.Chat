@@ -109,6 +109,22 @@ const updateIframeData = (data: Partial<StoreState['iframe']>) => {
 };
 
 const api = {
+	syncState(data: Partial<StoreState>) {
+		if (!data || typeof data !== 'object') {
+			return;
+		}
+
+		void evaluateChangesAndLoadConfigByFields(async () => {
+			const { user } = store.state;
+
+			if (user && data.token && user.token !== data.token) {
+				await createOrUpdateGuest({ token: data.token });
+			}
+
+			store.setState(data);
+		});
+	},
+
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
 		const { _id: rid } = room || {};

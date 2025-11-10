@@ -37,5 +37,17 @@ $config = array(
 			'email' => 'samluser4@example.com',
 			'role' => 'saml-role',
 		),
+		'samlusernoname:password' => array(
+			'uid' => array('5'),
+			'cn' => 'Saml User No Username',
+			'eduPersonAffiliation' => array('group2'),
+			'email' => 'samlusernoname@example.com',
+		),
+		'samlusernoname2:password' => array(
+			'uid' => array('6'),
+			'cn' => 'Saml User No Username 2',
+			'eduPersonAffiliation' => array('group2'),
+			'email' => 'samlusernoname2@example.com',
+		),
 	),
 );

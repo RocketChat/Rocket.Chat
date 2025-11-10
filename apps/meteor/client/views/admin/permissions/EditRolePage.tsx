@@ -1,6 +1,7 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -8,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoleForm from './RoleForm';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
 
 export type EditRolePageFormData = {
 	roleId: string;

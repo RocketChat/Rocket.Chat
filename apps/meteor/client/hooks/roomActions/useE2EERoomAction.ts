@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { imperativeModal } from '@rocket.chat/ui-client';
+import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,8 +9,6 @@ import { E2EEState } from '../../../app/e2e/client/E2EEState';
 import { E2ERoomState } from '../../../app/e2e/client/E2ERoomState';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
-import { imperativeModal } from '../../lib/imperativeModal';
-import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useE2EERoomState } from '../../views/room/hooks/useE2EERoomState';
@@ -31,6 +30,7 @@ export const useE2EERoomAction = () => {
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
 	const federated = isRoomFederated(room);
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { otrState } = useOTR();
 
 	const isE2EERoomNotReady = () => {

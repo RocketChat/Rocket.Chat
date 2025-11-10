@@ -76,6 +76,11 @@
 	--page-loading-background-dark: var(--rcx-color-surface-tint, #1f2329);
 	--loading-bounce-color-light: var(--rcx-color-font-default, #2f343d);
 	--loading-bounce-color-dark: var(--rcx-color-font-default, #e4e7ea);
+
+	/*
+	* Scrollbar
+	*/
+	--custom-scrollbar-color: var(--rcx-color-stroke-dark, #6C737A);
 }
 
 .rcx-sidebar {

@@ -1,13 +1,8 @@
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, Serialized } from '@rocket.chat/core-typings';
 
 import { useRoomInfoEndpoint } from '../../../../hooks/useRoomInfoEndpoint';
 
-export const useOmnichannelRoomInfo = (roomId: string) => {
-	const { data: roomData, ...props } = useRoomInfoEndpoint(roomId);
-	const room = roomData?.room as unknown as Serialized<IOmnichannelRoom>;
-
-	return {
-		data: room,
-		...props,
-	};
-};
+export const useOmnichannelRoomInfo = (rid: IRoom['_id']) =>
+	useRoomInfoEndpoint(rid, {
+		select: (data) => (data.room as Serialized<IOmnichannelRoom>) ?? null,
+	});

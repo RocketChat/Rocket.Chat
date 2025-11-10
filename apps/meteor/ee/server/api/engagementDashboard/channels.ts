@@ -58,7 +58,7 @@ API.v1.addRoute(
 
 			if (hideRoomsWithNoActivity === undefined) {
 				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.route,
+					this.route,
 					'hideRoomsWithNoActivity',
 					'7.0.0',
 					this.response,

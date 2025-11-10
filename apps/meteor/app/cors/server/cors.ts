@@ -1,4 +1,3 @@
-import { createHash } from 'crypto';
 import type http from 'http';
 import type { UrlWithParsedQuery } from 'url';
 import url from 'url';
@@ -9,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
+import { getWebAppHash } from '../../../server/configuration/configureBoilerplate';
 import { settings } from '../../settings/server';
 
 // Taken from 'connect' types
@@ -128,18 +128,9 @@ WebAppInternals.staticFilesMiddleware = function (
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
 	if (path === '/meteor_runtime_config.js') {
-		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
-			meteorRuntimeConfigHash?: string;
-			meteorRuntimeConfig: string;
-		};
+		const hash = getWebAppHash(arch);
 
-		if (!program?.meteorRuntimeConfigHash) {
-			program.meteorRuntimeConfigHash = createHash('sha1')
-				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
-				.digest('hex');
-		}
-
-		if (program.meteorRuntimeConfigHash !== url.query.hash) {
+		if (!hash || hash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}

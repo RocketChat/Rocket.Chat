@@ -36,7 +36,7 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	});
 
 	test.beforeEach(async ({ api }) => {

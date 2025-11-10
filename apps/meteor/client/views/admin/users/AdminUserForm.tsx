@@ -12,7 +12,6 @@ import {
 	ToggleSwitch,
 	Icon,
 	FieldGroup,
-	ContextualbarFooter,
 	Button,
 	Callout,
 	Skeleton,
@@ -40,9 +39,9 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
@@ -122,7 +121,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
-	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
+	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
 

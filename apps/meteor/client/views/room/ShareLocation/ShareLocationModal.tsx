@@ -1,11 +1,11 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
-import GenericModal from '../../../components/GenericModal';
 import MapView from '../../../components/message/content/location/MapView';
 
 type ShareLocationModalProps = {

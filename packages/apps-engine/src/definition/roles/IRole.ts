@@ -1,8 +1,8 @@
 export interface IRole {
-    description: string;
-    mandatory2fa?: boolean;
-    name: string;
-    protected: boolean;
-    scope: 'Users' | 'Subscriptions';
-    id: string;
+	description: string;
+	mandatory2fa?: boolean;
+	name: string;
+	protected: boolean;
+	scope: 'Users' | 'Subscriptions';
+	id: string;
 }

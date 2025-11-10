@@ -80,7 +80,10 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Message_with_attachment');
+		await waitFor(() => {
+			expect(result.current).toBe('Message_with_attachment');
+		});
+
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 });

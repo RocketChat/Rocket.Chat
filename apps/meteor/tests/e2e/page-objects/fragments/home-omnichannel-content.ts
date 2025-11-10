@@ -84,4 +84,11 @@ export class HomeOmnichannelContent extends HomeContent {
 		await this.closeChatModal.inputComment.fill('any_comment');
 		await this.closeChatModal.btnConfirm.click();
 	}
+
+	async useCannedResponse(cannedResponseName: string): Promise<void> {
+		await this.inputMessage.pressSequentially('!');
+		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
+		await this.inputMessage.pressSequentially(cannedResponseName);
+		await this.page.keyboard.press('Enter');
+	}
 }

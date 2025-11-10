@@ -162,7 +162,7 @@ export class Voxtelesys implements ISMSProvider {
 		};
 	}
 
-	async validateRequest(_request: Request): Promise<boolean> {
+	async validateRequest(_request: Request, _requestBody: unknown): Promise<boolean> {
 		return true;
 	}
 

@@ -19,7 +19,7 @@ test.describe.serial('access-security-page', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		await page.goto('/account/security');
-		await page.waitForSelector('.main-content');
+		await page.waitForSelector('#main-content');
 	});
 
 	test.afterAll(async ({ api }) =>
@@ -33,7 +33,7 @@ test.describe.serial('access-security-page', () => {
 	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
 		const securityTab = poAccountProfile.sidenav.linkSecurity;
 		await expect(securityTab).not.toBeVisible();
-		const mainContent = page.locator('.main-content').getByText('You are not authorized to view this page.').first();
+		const mainContent = page.locator('#main-content').getByText('You are not authorized to view this page.').first();
 		await expect(mainContent).toBeVisible();
 	});
 
