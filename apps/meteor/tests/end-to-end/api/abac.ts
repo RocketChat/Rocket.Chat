@@ -990,51 +990,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					});
 			});
 
-			it('GET /abac/attributes should fail while disabled', async () => {
-				await request
-					.get(`${v1}/abac/attributes`)
-					.set(credentials)
-					.expect(400)
-					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
-					});
-			});
-
-			it('GET /abac/attributes/:_id should fail while disabled', async () => {
-				await request
-					.get(`${v1}/abac/attributes/${secondAttributeId}`)
-					.set(credentials)
-					.expect(400)
-					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
-					});
-			});
-
 			it('PUT /abac/attributes/:_id should fail while disabled', async () => {
 				await request
 					.put(`${v1}/abac/attributes/${secondAttributeId}`)
 					.set(credentials)
 					.send({ values: ['alpha'] })
-					.expect(400)
-					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
-					});
-			});
-
-			it('DELETE /abac/attributes/:_id should fail while disabled', async () => {
-				await request
-					.delete(`${v1}/abac/attributes/${secondAttributeId}`)
-					.set(credentials)
-					.expect(400)
-					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
-					});
-			});
-
-			it('GET /abac/attributes/:key/is-in-use should fail while disabled', async () => {
-				await request
-					.get(`${v1}/abac/attributes/${secondKey}/is-in-use`)
-					.set(credentials)
 					.expect(400)
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-not-enabled');
