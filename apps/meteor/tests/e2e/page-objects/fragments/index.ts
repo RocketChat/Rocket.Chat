@@ -13,3 +13,4 @@ export * from './report-message-modal';
 export * from './toast-messages';
 export * from './export-messages-tab';
 export * from './menu';
+export * from './toolbar';

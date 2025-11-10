@@ -78,7 +78,7 @@ test.describe('Admin users custom fields', () => {
 
 		await test.step('should save user custom fields', async () => {
 			await poAdmin.editUser.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.dismissToast();
 			await poAdmin.editUser.close();
 		});
 
@@ -115,7 +115,7 @@ test.describe('Admin users custom fields', () => {
 
 		await test.step('should save and verify partial update', async () => {
 			await poAdmin.editUser.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.dismissToast();
 
 			await poAdmin.editUser.close();
 			await poAdmin.getUserRowByUsername(updateTestUser.data.username).click();
