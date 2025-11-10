@@ -4,6 +4,7 @@ import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
 type eraseRoomFnType = (rid: string, userIdOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
@@ -85,7 +86,12 @@ export async function eraseRoomLooseValidation(rid: string): Promise<boolean> {
 		}
 	}
 
-	await deleteRoom(rid);
+	try {
+		await deleteRoom(rid);
+	} catch (e) {
+		SystemLogger.error(e);
+		return false;
+	}
 
 	if (Apps.self?.isLoaded()) {
 		void Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPostRoomDeleted, room);
