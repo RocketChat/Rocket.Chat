@@ -16,7 +16,7 @@ export const eraseTeamShared = async (
 	eraseRoomFn: eraseRoomFnType,
 ) => {
 	const rooms: string[] = roomsToRemove.length
-		? (await Team.getMatchingTeamRooms(team._id, roomsToRemove)).filter((t) => t !== team.roomId)
+		? (await Team.getMatchingTeamRooms(team._id, roomsToRemove)).filter((roomId) => roomId !== team.roomId)
 		: [];
 
 	const user =
