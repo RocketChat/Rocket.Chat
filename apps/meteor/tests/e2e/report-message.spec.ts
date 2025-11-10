@@ -79,9 +79,7 @@ test.describe.serial('report message', () => {
 
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
-
-			await reportModal.btnSubmitReport.click();
-			await expect(reportModal.reportDescriptionError).toBeVisible();
+			await reportModal.submitReport();
 		});
 	});
 
@@ -98,10 +96,7 @@ test.describe.serial('report message', () => {
 
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
-
-			await expect(reportModal.modalTitle).toBeVisible();
-			await reportModal.btnCancelReport.click();
-			await expect(reportModal.modalTitle).not.toBeVisible();
+			await reportModal.cancelReport();
 		});
 	});
 
@@ -116,18 +111,13 @@ test.describe.serial('report message', () => {
 		});
 
 		await test.step('report message as the other user', async () => {
+			reportDescription = faker.lorem.sentence();
+
 			const adminHomeChannel = new HomeChannel(adminPage);
 			await adminHomeChannel.sidenav.openChat(targetChannel);
-
 			await adminHomeChannel.content.openLastMessageMenu();
 			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
-
-			reportDescription = faker.lorem.sentence();
-			await reportModal.inputReportDescription.fill(reportDescription);
-
-			await reportModal.btnSubmitReport.click();
-
-			await expect(adminPage.getByText('Report has been sent')).toBeVisible();
+			await reportModal.submitReport(reportDescription);
 		});
 
 		await test.step('verify report in moderation console', async () => {
