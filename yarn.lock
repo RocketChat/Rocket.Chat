@@ -9778,7 +9778,6 @@ __metadata:
     "@types/react": "npm:~18.3.24"
     "@types/react-dom": "npm:~18.3.7"
     buffer: "npm:~6.0.3"
-    emoji-assets: "npm:^7.0.1"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
@@ -20180,13 +20179,6 @@ __metadata:
   version: 0.13.1
   resolution: "emittery@npm:0.13.1"
   checksum: 10/fbe214171d878b924eedf1757badf58a5dce071cd1fa7f620fa841a0901a80d6da47ff05929d53163105e621ce11a71b9d8acb1148ffe1745e045145f6e69521
-  languageName: node
-  linkType: hard
-
-"emoji-assets@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "emoji-assets@npm:7.0.1"
-  checksum: 10/5fd1eae9f88f8de6eb6790c90a6c6d9f84f61b10a6c0e35cef197684435da9169f598e12c91716a69154e52c7cf5614a64ccdafd66082e4e4586df0ec7a67e0f
   languageName: node
   linkType: hard
 
