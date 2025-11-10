@@ -441,7 +441,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
@@ -464,6 +464,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -486,7 +487,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -514,16 +515,58 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-summary:
+    name: 📊 Generate Test Summary
+    runs-on: ubuntu-24.04
+    needs: [test-api, test-api-ee, test-ui, test-ui-ee, test-ui-ee-watcher]
+    if: always() && (needs.test-api.result != 'skipped' || needs.test-api-ee.result != 'skipped' || needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Download all test summaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-summary-*
+          merge-multiple: true
+
+      - name: Merge test summaries
+        run: node .github/scripts/merge-test-summaries.js
+
+      - name: Verify merged summary
+        if: always()
+        run: |
+          if [ -f "merged-test-summary.md" ]; then
+            echo "✅ Merged summary file created successfully"
+            echo "📄 File content:"
+            cat merged-test-summary.md
+          else
+            echo "❌ Merged summary file not found!"
+            exit 1
+          fi
+
+      - name: Upload merged summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-test-summary
+          path: merged-test-summary.md
+          if-no-files-found: warn
+
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-summary]
     if: always()
     steps:
       - name: Test finish aggregation

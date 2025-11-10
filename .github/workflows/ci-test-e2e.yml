@@ -52,6 +52,8 @@ on:
         required: true
       QASE_API_TOKEN:
         required: false
+      QASE_TESTOPS_API_TOKEN:
+        required: false
       REPORTER_ROCKETCHAT_URL:
         required: false
       REPORTER_ROCKETCHAT_API_KEY:
@@ -230,9 +232,15 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcovonly'
+          GITHUB_SUMMARY_PATH: test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          QASE_MODE: testops
+          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_TESTOPS_API_TOKEN }}
+          QASE_TESTOPS_PROJECT: RC
+          QASE_ROOT_SUITE: 'Rocket.Chat API Automation'
+          CI: true
         run: |
           for i in $(seq 1 2); do
-            npm run testapi && s=0 && break || s=$?
+            npm run testapi 2>&1 | tee api-test-output.log && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
@@ -251,6 +259,14 @@ jobs:
             done;
           done;
           docker compose -f ../../docker-compose-ci.yml stop
+
+          # Parse API test output to generate summary
+          if [ -f "api-test-output.log" ]; then
+            echo "📊 Parsing API test output for summary generation..."
+            node reporters/parse-mocha-output.js api-test-output.log "$GITHUB_SUMMARY_PATH" || echo "⚠️ Summary parsing failed, continuing..."
+          else
+            echo "⚠️ No API test output log found, skipping summary generation"
+          fi
 
           ls -l $COVERAGE_DIR
           exit $s
@@ -271,8 +287,10 @@ jobs:
           REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
           REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
-          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_TESTOPS_API_TOKEN }}
+          QASE_TESTOPS_PROJECT: RC
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          GITHUB_SUMMARY_PATH: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
@@ -287,6 +305,22 @@ jobs:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
+
+      - name: Store test summary
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Store API test summary
+        if: inputs.type == 'api' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
 
       - name: Show server logs if E2E test failed
         if: failure() && inputs.release == 'ee'

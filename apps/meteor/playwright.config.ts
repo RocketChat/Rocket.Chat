@@ -22,6 +22,13 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
+		// GitHub Summary Reporter - always enabled in CI
+		process.env.CI && [
+			'./reporters/github-summary.ts',
+			{
+				outputPath: process.env.GITHUB_SUMMARY_PATH,
+			},
+		],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/rocketchat.ts',
 			{
@@ -50,10 +57,10 @@ export default {
 		[
 			'playwright-qase-reporter',
 			{
-				apiToken: `${process.env.QASE_API_TOKEN}`,
+				apiToken: `${process.env.QASE_TESTOPS_API_TOKEN}`,
 				rootSuiteTitle: 'Rocket.chat automation',
 				projectCode: 'RC',
-				runComplete: true,
+				runComplete: false,
 				basePath: 'https://api.qase.io/v1',
 				logging: true,
 				uploadAttachments: false,

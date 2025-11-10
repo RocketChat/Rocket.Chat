@@ -1,0 +1,6 @@
+{
+    "reporterEnabled": "spec, ./reporters/github-summary-mocha.js, mocha-qase-reporter",
+    "reportersGithubSummaryMochaJsReporterOptions": {
+        "output": "test-summary-mocha-api.json"
+    }
+}
