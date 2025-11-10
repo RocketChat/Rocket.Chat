@@ -103,7 +103,7 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 	}
 
 	// first, check if this is a displayname change for an existing user
-	const [existingUsername] = getUsernameServername(data.state_key, services.config.serverName);
+	const [existingUsername] = getUsernameServername(data.state_key, federationSDK.getConfig('serverName'));
 	const existingUser = await Users.findOneByUsername(existingUsername);
 
 	const newDisplayName = data.content.displayname;
