@@ -9,8 +9,49 @@ import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
+import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:member');
+
+async function downloadAndSetAvatar(user: IUser, avatarUrl: string): Promise<void> {
+	try {
+		if (!avatarUrl || !avatarUrl.startsWith('mxc://')) {
+			return;
+		}
+
+		logger.debug(`Downloading avatar for user ${user.username}: ${avatarUrl}`);
+
+		const parsed = MatrixMediaService.parseMXCUri(avatarUrl);
+		if (!parsed) {
+			logger.warn(`Invalid MXC URI: ${avatarUrl}`);
+			return;
+		}
+
+		const buffer = await federationSDK.downloadFromRemoteServer(parsed.serverName, parsed.mediaId);
+		if (!buffer) {
+			logger.warn(`Failed to download avatar from ${avatarUrl}`);
+			return;
+		}
+
+		// detect content type from buffer (basic image type detection)
+		// let contentType = 'image/png';
+		// if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+		// 	contentType = 'image/jpeg';
+		// } else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+		// 	contentType = 'image/png';
+		// } else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+		// 	contentType = 'image/gif';
+		// } else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+		// 	contentType = 'image/webp';
+		// }
+
+		// TODO export setUserAvatar from core-services
+		// await setUserAvatar(user, buffer, contentType, 'rest');
+		logger.debug(`Successfully set avatar for user ${user.username}`);
+	} catch (error) {
+		logger.error({ err: error, user: user.username, msg: `Error downloading/setting avatar for user` });
+	}
+}
 
 async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 	try {
@@ -136,6 +177,11 @@ async function handleInvite({
 	const inviteeUser = await getOrCreateFederatedUser(userId);
 	if (!inviteeUser) {
 		throw new Error(`Failed to get or create invitee user: ${userId}`);
+	}
+
+	if (content.avatar_url && inviteeUser?.federation?.avatarUrl !== content.avatar_url) {
+		logger.debug(`Avatar changed for ${inviteeUser.username}: ${inviteeUser?.federation?.avatarUrl} -> ${content.avatar_url}`);
+		void downloadAndSetAvatar(inviteeUser, content.avatar_url);
 	}
 
 	const strippedState = unsigned.invite_room_state;

@@ -117,6 +117,57 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+
+		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
+			if (!username || username.includes(':')) {
+				return;
+			}
+
+			const localUser = await Users.findOneByUsername(username, {
+				projection: { _id: 1, username: 1, name: 1, federated: 1, federation: 1 },
+			});
+
+			if (!localUser || !localUser.username) {
+				return;
+			}
+
+			if (isUserNativeFederated(localUser)) {
+				this.logger.warn(`Skipping avatar update for federated user ${username} (remote user)`);
+				return;
+			}
+
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
+
+			if (roomsUserIsMemberOf.length === 0) {
+				this.logger.debug(`User ${username} is not in any federated rooms, skipping avatar update`);
+				return;
+			}
+
+			this.logger.info(`Sending avatar update for ${username} to ${roomsUserIsMemberOf.length} federated rooms`);
+
+			const matrixUserId = `@${localUser.username}:${this.serverName}`;
+			// Use avatarETag from event (which has the NEW value) instead of querying DB
+			const avatarUrl = avatarETag
+				? `mxc://${this.serverName}/avatar${avatarETag}`
+				: `mxc://${this.serverName}/avatar${localUser.username}`;
+
+			// TODO add user avatar update events to a fanout queue
+			for await (const { externalRoomId } of roomsUserIsMemberOf) {
+				if (!externalRoomId) {
+					continue;
+				}
+
+				try {
+					await federationSDK.updateUserProfile(externalRoomId, matrixUserId, {
+						displayname: localUser.name || localUser.username,
+						avatar_url: avatarUrl,
+					});
+					this.logger.debug(`Sent avatar update for ${username} to room ${externalRoomId}`);
+				} catch (error) {
+					this.logger.error(`Failed to send avatar update for ${username} to room ${externalRoomId}:`, error);
+				}
+			}
+		});
 	}
 
 	override async started(): Promise<void> {
