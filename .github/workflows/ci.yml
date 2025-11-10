@@ -316,7 +316,7 @@ jobs:
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
           # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ (matrix.type == 'coverage' && github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -329,7 +329,8 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[1] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          # add suffix for the extra images with coverage if building for production
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -343,7 +344,8 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[2] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          # add suffix for the extra images with coverage if building for production
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -357,7 +359,8 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[3] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          # add suffix for the extra images with coverage if building for production
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
