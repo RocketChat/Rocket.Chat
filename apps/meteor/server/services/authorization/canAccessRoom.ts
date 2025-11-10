@@ -72,11 +72,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 				return false;
 			}
 
-			if (canViewJoined) {
-				return true;
-			}
-
-			return canViewT;
+			return canViewJoined || canViewT;
 		}
 
 		return (canViewJoined || canViewT) && Abac.canAccessObject(room, user, AbacAccessOperation.READ, AbacObjectType.ROOM);
