@@ -5,7 +5,8 @@ export type FeaturesAvailable =
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
-	| 'sidepanelNavigation';
+	| 'secondarySidebar'
+	| 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -61,16 +62,26 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		enabled: true,
 	},
 	{
-		name: 'sidepanelNavigation',
-		i18n: 'Sidepanel_navigation',
-		description: 'Sidepanel_navigation_description',
+		name: 'secondarySidebar',
+		i18n: 'Filters_and_secondary_sidebar',
+		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
+		imageUrl: 'images/featurePreview/secondary-sidebar.png',
 		value: false,
 		enabled: true,
 		enableQuery: {
 			name: 'newNavigation',
 			value: true,
 		},
+	},
+	{
+		name: 'expandableMessageComposer',
+		i18n: 'Expandable_message_composer',
+		description: 'Expandable_message_composer_description',
+		imageUrl: 'images/featurePreview/expandable-composer.png',
+		group: 'Message',
+		value: false,
+		enabled: true,
 	},
 ];
 

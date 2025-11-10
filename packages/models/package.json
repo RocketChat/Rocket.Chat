@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "1.5.12",
+	"version": "1.7.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -8,15 +8,15 @@
 		"@types/jest": "~30.0.0",
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
-		"typescript": "~5.8.3"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"dependencies": {
 		"@rocket.chat/model-typings": "workspace:~",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
-		"@rocket.chat/string-helpers": "^0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
 		"date-fns": "~4.1.0",
 		"node-rsa": "^1.1.1"

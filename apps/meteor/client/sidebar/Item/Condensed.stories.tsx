@@ -7,7 +7,6 @@ import Condensed from './Condensed';
 import * as Status from '../../components/UserStatus';
 
 export default {
-	title: 'Sidebar/Condensed',
 	component: Condensed,
 	args: {
 		clickable: true,

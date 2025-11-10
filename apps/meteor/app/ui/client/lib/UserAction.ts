@@ -1,10 +1,10 @@
 import type { IExtras, IRoomActivity, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
-import { Meteor } from 'meteor/meteor';
 
+import { settings } from '../../../../client/lib/settings';
+import { getUser, getUserId } from '../../../../client/lib/user';
 import { Users } from '../../../../client/stores';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;
@@ -32,7 +32,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	if (settings.get('UI_Use_Real_Name')) {
+	if (settings.peek('UI_Use_Real_Name')) {
 		return user.name;
 	}
 	return user.username;
@@ -40,12 +40,12 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 
 const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
-	sdk.publish('notify-room', [`${rid}/${USER_ACTIVITY}`, shownName(Meteor.user() as unknown as IUser), [...activities], extras]);
+	sdk.publish('notify-room', [`${rid}/${USER_ACTIVITY}`, shownName(getUser()), [...activities], extras]);
 }, 500);
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
 	rid = extras?.tmid || rid;
-	const roomActivities = performingUsers.get(rid) || {};
+	const roomActivities = { ...performingUsers.get(rid) };
 
 	for (const [, activity] of Object.entries(USER_ACTIVITIES)) {
 		roomActivities[activity] = roomActivities[activity] || new Map();
@@ -74,7 +74,7 @@ export const UserAction = new (class {
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const uid = Meteor.userId();
+			const uid = getUserId();
 			const user = uid ? Users.state.get(uid) : undefined;
 
 			if (username === shownName(user)) {

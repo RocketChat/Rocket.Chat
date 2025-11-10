@@ -5,7 +5,6 @@ import type { ComponentProps } from 'react';
 import ThreadMessagePreviewBody from './ThreadMessagePreviewBody';
 
 export default {
-	title: 'Components/ThreadMessagePreviewBody',
 	component: ThreadMessagePreviewBody,
 	parameters: {
 		layout: 'fullscreen',

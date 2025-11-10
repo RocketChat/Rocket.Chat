@@ -27,8 +27,8 @@ const NavBarPagesGroup = () => {
 				</>
 			)}
 			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
-			<NavBarItemCreateNew />
 			{!isMobile && <NavBarItemSort />}
+			<NavBarItemCreateNew />
 		</NavBarGroup>
 	);
 };

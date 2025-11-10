@@ -9,9 +9,9 @@ import {
 	useTranslation,
 	usePermission,
 	useEndpoint,
+	useUserId,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { useMemo } from 'react';
 
@@ -53,6 +53,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
 	const {
+		_id: roomId,
 		ts,
 		tags,
 		closedAt,
@@ -74,7 +75,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
 	const hasGlobalEditRoomPermission = usePermission('save-others-livechat-room-info');
-	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
+	const hasLocalEditRoomPermission = servedBy?._id === useUserId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
 
@@ -121,15 +122,17 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Tags')}</InfoPanelLabel>
+							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
 							<InfoPanelText>
-								{tags.map((tag) => (
-									<Box key={tag} mie={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
-										</Tag>
-									</Box>
-								))}
+								<ul aria-labelledby={`${roomId}-tags`}>
+									{tags.map((tag) => (
+										<Box is='li' key={tag} mie={4} display='inline'>
+											<Tag style={{ display: 'inline' }} disabled>
+												{tag}
+											</Tag>
+										</Box>
+									))}
+								</ul>
 							</InfoPanelText>
 						</InfoPanelField>
 					)}
@@ -190,7 +193,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='pencil' onClick={onEditClick} data-qa-id='room-info-edit'>
+					<Button icon='pencil' onClick={onEditClick}>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>

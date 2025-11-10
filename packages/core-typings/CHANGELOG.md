@@ -1,5 +1,95 @@
 # @rocket.chat/core-typings
 
+## 7.12.0
+
+### Minor Changes
+
+- ([#37038](https://github.com/RocketChat/Rocket.Chat/pull/37038)) Introduce the `RangeSettingInput` component, providing a new visual input type for settings that accept a range of numeric values. This improves the user experience for adjusting range-based settings in the administration panel.
+
+## 7.12.0-rc.4
+
+## 7.12.0-rc.3
+
+## 7.12.0-rc.2
+
+## 7.12.0-rc.1
+
+## 7.12.0-rc.0
+
+### Minor Changes
+
+- ([#37038](https://github.com/RocketChat/Rocket.Chat/pull/37038)) Introduce the `RangeSettingInput` component, providing a new visual input type for settings that accept a range of numeric values. This improves the user experience for adjusting range-based settings in the administration panel.
+
+## 7.11.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+## 7.11.0-rc.7
+
+## 7.11.0-rc.6
+
+## 7.11.0-rc.5
+
+## 7.11.0-rc.4
+
+## 7.11.0-rc.3
+
+## 7.11.0-rc.2
+
+## 7.11.0-rc.1
+
+## 7.11.0-rc.0
+
+### Minor Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+## 7.10.2
+
+## 7.10.1
+
+## 7.10.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+## 7.10.0-rc.6
+
+## 7.10.0-rc.5
+
+## 7.10.0-rc.4
+
+## 7.10.0-rc.3
+
+## 7.10.0-rc.2
+
+## 7.10.0-rc.1
+
+## 7.10.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+## 7.9.3
+
+## 7.9.2
+
+## 7.9.1
+
 ## 7.9.0
 
 ### Minor Changes

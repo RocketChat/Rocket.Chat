@@ -116,11 +116,10 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this message was edited');
 	});
 
-	test('expect message is deleted', async ({ page }) => {
+	test('should delete message ', async () => {
 		await poHomeChannel.content.sendMessage('Message to delete');
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Delete"]').click();
-		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
+		await poHomeChannel.content.deleteLastMessage();
+
 		await expect(poHomeChannel.content.lastUserMessage.locator('[data-qa-type="message-body"]:has-text("Message to delete")')).toHaveCount(
 			0,
 		);
@@ -161,7 +160,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await flextab.kebab.click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');

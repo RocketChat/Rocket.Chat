@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/client';
+import { settings } from './settings';
 
 const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = window.screenX ?? window.screenLeft;
@@ -26,7 +26,7 @@ const openCenteredPopup = (url: string, width: number, height: number) => {
 };
 
 const getPopupUrl = (credentialToken: string): string => {
-	const loginUrl = settings.get<string | undefined>('CAS_login_url');
+	const loginUrl = settings.peek<string | undefined>('CAS_login_url');
 
 	if (!loginUrl) {
 		throw new Error('CAS_login_url not set');
@@ -52,8 +52,8 @@ const waitForPopupClose = (popup: Window) => {
 };
 
 export const openCASLoginPopup = async (credentialToken: string) => {
-	const popupWidth = settings.get<number>('CAS_popup_width') || 800;
-	const popupHeight = settings.get<number>('CAS_popup_height') || 600;
+	const popupWidth = settings.peek<number>('CAS_popup_width') || 800;
+	const popupHeight = settings.peek<number>('CAS_popup_height') || 600;
 
 	const popupUrl = getPopupUrl(credentialToken);
 	const popup = openCenteredPopup(popupUrl, popupWidth, popupHeight);
