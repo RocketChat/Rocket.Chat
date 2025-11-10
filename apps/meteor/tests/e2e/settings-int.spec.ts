@@ -21,7 +21,6 @@ test.describe.serial('settings-int', () => {
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').blur();
 
 		await poAdminSettings.btnSaveChanges.click();
-
-		await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+		await poAdminSettings.toastMessage.waitForDisplay({ type: 'error' });
 	});
 });
