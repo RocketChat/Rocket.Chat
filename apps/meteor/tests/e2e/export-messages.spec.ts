@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Utils } from './page-objects';
-import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
+import { HomeChannel } from './page-objects';
+import { ExportMessagesTab } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -12,7 +12,6 @@ const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
 
 test.describe('export-messages', () => {
 	let poHomeChannel: HomeChannel;
-	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -21,7 +20,6 @@ test.describe('export-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poUtils = new Utils(page);
 
 		await page.goto('/home');
 	});
@@ -90,7 +88,9 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.send();
 
 		await expect(
-			poUtils.getAlertByText('You must select one or more users or provide one or more email addresses, separated by commas'),
+			page.locator('[role="alert"]', {
+				hasText: 'You must select one or more users or provide one or more email addresses, separated by commas',
+			}),
 		).toBeVisible();
 	});
 
@@ -104,7 +104,11 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
 		await exportMessagesTab.send();
 
-		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
+		await expect(
+			page.locator('[role="alert"]', {
+				hasText: `You haven't selected any messages`,
+			}),
+		).toBeVisible();
 	});
 
 	test('should be able to send messages after closing export messages', async () => {
@@ -134,7 +138,7 @@ test.describe('export-messages', () => {
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 
 		await poHomeChannel.content.getMessageByText(message1).click();
 
@@ -145,9 +149,7 @@ test.describe('export-messages', () => {
 		await expect(exportMessagesTab.sendButton).toBeEnabled();
 	});
 
-	// TODO: Fix this test - the test is failing because when selecting the message, the import messages tab becomes not visible
-	// and the message is not selected.
-	test.fail('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
+	test('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
 		await api.post('/users.setPreferences', {
 			userId: 'rocketchat.internal.admin.test',
 			data: { hideFlexTab: true },
@@ -164,7 +166,7 @@ test.describe('export-messages', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 		await poHomeChannel.content.getMessageByText(message1).click();
 
 		await expect(exportMessagesTab.getMessageCheckbox(message1)).toBeChecked();

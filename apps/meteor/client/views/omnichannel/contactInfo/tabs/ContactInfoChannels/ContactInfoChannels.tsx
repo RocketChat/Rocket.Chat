@@ -8,18 +8,23 @@ import { Virtuoso } from 'react-virtuoso';
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
+import useOutboundProvidersList from '../../../components/outboundMessage/hooks/useOutboundProvidersList';
 
 type ContactInfoChannelsProps = {
-	contactId: ILivechatContact['_id'];
+	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 };
 
-const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
+const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	const { t } = useTranslation();
 
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
 	const { data, isError, isPending } = useQuery({
-		queryKey: ['getContactChannels', contactId],
-		queryFn: () => getContactChannels({ contactId }),
+		queryKey: ['getContactChannels', contact._id],
+		queryFn: () => getContactChannels({ contactId: contact._id }),
+	});
+
+	const { data: providers = [] } = useOutboundProvidersList({
+		select: (data) => data.providers.map((provider) => provider.providerId),
 	});
 
 	if (isPending) {
@@ -59,7 +64,14 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 								totalCount={data.channels.length}
 								overscan={25}
 								data={data?.channels}
-								itemContent={(index, data) => <ContactInfoChannelsItem key={index} {...data} />}
+								itemContent={(index, data) => (
+									<ContactInfoChannelsItem
+										key={index}
+										{...data}
+										contact={contact}
+										canSendOutboundMessage={data.details.id ? providers.includes(data.details.id) : false}
+									/>
+								)}
 							/>
 						</VirtualizedScrollbars>
 					</Box>

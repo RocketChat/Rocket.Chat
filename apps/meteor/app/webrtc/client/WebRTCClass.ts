@@ -2,13 +2,13 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
+import { settings } from '../../../client/lib/settings';
+import { getUserId } from '../../../client/lib/user';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Subscriptions, Users } from '../../../client/stores';
-import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
@@ -265,7 +265,7 @@ class WebRTCClass {
 		};
 		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
-		let servers = settings.get<string>('WebRTC_Servers');
+		let servers = settings.peek<string>('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 
@@ -1035,31 +1035,28 @@ const WebRTC = new (class {
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.get('WebRTC_Enable_Direct');
+					enabled = settings.peek('WebRTC_Enable_Direct') ?? false;
 					break;
 				case 'p':
-					enabled = settings.get('WebRTC_Enable_Private');
+					enabled = settings.peek('WebRTC_Enable_Private') ?? false;
 					break;
 				case 'c':
-					enabled = settings.get('WebRTC_Enable_Channel');
+					enabled = settings.peek('WebRTC_Enable_Channel') ?? false;
 					break;
 				case 'l':
-					enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+					enabled = settings.peek<string>('Omnichannel_call_provider') === 'WebRTC';
 			}
 		} else {
-			enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+			enabled = settings.peek<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && settings.get('WebRTC_Enabled');
+		enabled = enabled && (settings.peek('WebRTC_Enabled') ?? false);
 		if (enabled === false) {
 			return;
 		}
 		if (this.instancesByRoomId[rid] == null) {
-			let uid = Meteor.userId()!;
-			let autoAccept = false;
-			if (visitorId) {
-				uid = visitorId;
-				autoAccept = true;
-			}
+			const uid = visitorId ?? getUserId();
+			if (!uid) return undefined;
+			const autoAccept = !!visitorId;
 			this.instancesByRoomId[rid] = new WebRTCClass(uid, rid, autoAccept);
 		}
 		return this.instancesByRoomId[rid];

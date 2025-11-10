@@ -107,6 +107,10 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{
+		_id: 'delete-livechat-contact',
+		roles: ['livechat-manager', 'admin'],
+	},
+	{
 		_id: 'view-livechat-contact-history',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
@@ -224,6 +228,10 @@ export const permissions = [
 	// Allow viewing details of an extension
 	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
 
+	// New Media calls permissions
+	{ _id: 'allow-internal-voice-calls', roles: ['admin', 'user'] },
+	{ _id: 'allow-external-voice-calls', roles: ['admin', 'user'] },
+
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'manage-apps', roles: ['admin'] },
 	{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
@@ -236,6 +244,7 @@ export const permissions = [
 	{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
 	{ _id: 'send-mail', roles: ['admin'] },
 	{ _id: 'view-federation-data', roles: ['admin'] },
+	{ _id: 'access-federation', roles: ['admin', 'user'] },
 	{ _id: 'add-all-to-room', roles: ['admin'] },
 	{ _id: 'get-server-info', roles: ['admin'] },
 	{ _id: 'register-on-cloud', roles: ['admin'] },

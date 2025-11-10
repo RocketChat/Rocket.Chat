@@ -2,13 +2,12 @@ import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } 
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -19,6 +18,7 @@ import {
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type AgentEditFormData = {
 	name: string | undefined;
@@ -79,17 +79,17 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 		formState: { isDirty },
 	} = methods;
 
-	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
+	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
 	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
-			await saveAgentInfo(
-				agentData._id,
-				data,
-				departments.map((dep) => dep.value),
-			);
+			await saveAgentInfo({
+				agentId: agentData._id,
+				agentData: data,
+				agentDepartments: departments.map((dep) => dep.value),
+			});
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
 

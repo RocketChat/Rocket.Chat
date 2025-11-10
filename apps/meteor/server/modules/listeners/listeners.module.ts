@@ -5,6 +5,7 @@ import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
@@ -144,6 +145,10 @@ export class ListenersModule {
 			},
 		);
 
+		service.onEvent('user.media-signal', ({ userId, signal }: { userId: string; signal: ServerMediaSignal }) => {
+			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
+		});
+
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
 			(notifications.notifyRoom as any)(rid, callId);
@@ -178,6 +183,10 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
+		});
+
+		service.onEvent('user.activity', ({ isTyping, roomId, user }) => {
+			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
 		});
 
 		service.onEvent('watch.messages', async ({ message }) => {

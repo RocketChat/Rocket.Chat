@@ -3,7 +3,6 @@ import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
-import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useUserTeamsQuery } from '../../../room/hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
@@ -31,19 +30,9 @@ export const useParentTeamData = (teamId?: ITeam['_id']) => {
 	const isTeamPublic = teamInfo?.type === TEAM_TYPE.PUBLIC;
 	const shouldDisplayTeam = isTeamPublic || userBelongsToTeam;
 
-	const redirectToMainRoom = (): void => {
-		const rid = teamInfo?.roomId;
-		if (!rid) {
-			return;
-		}
-
-		goToRoomById(rid);
-	};
-
 	return {
 		teamName: teamInfo?.name,
 		isLoading: userTeamsLoading || teamInfoLoading,
-		redirectToMainRoom,
 		teamInfoError,
 		shouldDisplayTeam,
 		isTeamPublic,

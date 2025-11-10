@@ -31,7 +31,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
-	takeInquiry(inquiryId: string): Promise<void>;
+	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
 	queueInquiry(inquiryId: string, lastMessage?: IMessage, defaultAgent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;

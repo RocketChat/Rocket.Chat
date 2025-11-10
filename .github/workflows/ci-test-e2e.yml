@@ -12,12 +12,6 @@ on:
       lowercase-repo:
         required: true
         type: string
-      rc-dockerfile:
-        required: true
-        type: string
-      rc-docker-tag:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -26,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['5.0', '7.0']"
+        default: "['5.0', '8.2']"
         required: false
         type: string
       release:
@@ -72,13 +66,11 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  DOCKER_TAG_SUFFIX_ROCKETCHAT: '-cov'
 
 jobs:
   test:
     runs-on: ubuntu-24.04
-    env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -86,7 +78,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Collect Workflow Telemetry
@@ -116,10 +108,11 @@ jobs:
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@1.12.0
         with:
-          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-image: mongodb/mongodb-community-server
+          mongodb-version: ${{ matrix.mongodb-version }}-ubi8
           mongodb-replica-set: rs0
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -132,13 +125,16 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
+      - name: Restore packages build
+        uses: actions/download-artifact@v6
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
 
-      - run: yarn build
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
@@ -147,11 +143,10 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
-          # we already called the turbo cache at this point, so it should be false
-          turbo-cache: false
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
           setup: false
+          service: 'rocketchat'
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)

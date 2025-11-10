@@ -55,11 +55,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		});
 
 		await test.step('Expect chat to be closed', async () => {
-			await agent.poHomeChannel.content.btnCloseChat.click();
-			await agent.poHomeChannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeChannel.transcript.checkboxPDF.click();
-			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.quickActionsRoomToolbar.closeChat({ downloadPDF: true });
 		});
 
 		// Exported PDF can be downloaded from rocket.cat room
@@ -80,7 +76,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'false');
 			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.toastMessage.waitForDisplay();
 		});
 	});
 });

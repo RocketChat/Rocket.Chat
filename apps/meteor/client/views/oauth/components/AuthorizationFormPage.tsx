@@ -8,7 +8,6 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
-import { queueMicrotask } from '../../../lib/utils/queueMicrotask';
 
 type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;

@@ -1,6 +1,12 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'quickReactions' | 'enable-timestamp-message-parser' | 'contextualbarResizable' | 'newNavigation';
+export type FeaturesAvailable =
+	| 'quickReactions'
+	| 'enable-timestamp-message-parser'
+	| 'contextualbarResizable'
+	| 'newNavigation'
+	| 'secondarySidebar'
+	| 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -48,10 +54,32 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'newNavigation',
-		i18n: 'Enhanced_navigation',
-		description: 'Enhanced_navigation_description',
+		i18n: 'New_navigation',
+		description: 'New_navigation_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/enhanced-navigation.png',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'secondarySidebar',
+		i18n: 'Filters_and_secondary_sidebar',
+		description: 'Filters_and_secondary_sidebar_description',
+		group: 'Navigation',
+		imageUrl: 'images/featurePreview/secondary-sidebar.png',
+		value: false,
+		enabled: true,
+		enableQuery: {
+			name: 'newNavigation',
+			value: true,
+		},
+	},
+	{
+		name: 'expandableMessageComposer',
+		i18n: 'Expandable_message_composer',
+		description: 'Expandable_message_composer_description',
+		imageUrl: 'images/featurePreview/expandable-composer.png',
+		group: 'Message',
 		value: false,
 		enabled: true,
 	},

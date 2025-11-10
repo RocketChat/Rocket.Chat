@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import RoomAnnouncement from '.';
 
 export default {
-	title: 'Room/RoomAnnouncement',
 	component: RoomAnnouncement,
 } satisfies Meta<typeof RoomAnnouncement>;
 
