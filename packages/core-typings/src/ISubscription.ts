@@ -72,6 +72,8 @@ export interface ISubscription extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 	oldRoomKeys?: OldKey[];
 	suggestedOldRoomKeys?: OldKey[];
+
+	abacLastTimeChecked?: Date;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

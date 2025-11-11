@@ -21,6 +21,13 @@ export function addSettings(): void {
 					invalidValue: false,
 					section: 'ABAC',
 					enableQuery: { _id: 'ABAC_Enabled', value: true },
+        });
+				await this.add('Abac_Cache_Decision_Time_Seconds', 300, {
+					type: 'int',
+					public: true,
+					section: 'ABAC',
+					invalidValue: 0,
+          enableQuery: { _id: 'ABAC_Enabled', value: true },
 				});
 			},
 		);
