@@ -1,29 +1,48 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class ReportMessageModal {
-	private readonly page: Page;
+import { Modal } from './modal';
+import { ToastMessages } from './toast-messages';
+import { expect } from '../../utils/test';
+
+export class ReportMessageModal extends Modal {
+	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page.getByRole('dialog', { name: 'Report message' }));
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get inputReportDescription(): Locator {
-		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Why do you want to report?' });
+		return this.root.getByRole('textbox', { name: 'Report reason' });
 	}
 
-	get btnSubmitReport(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Report!' });
+	private get btnSubmitReport(): Locator {
+		return this.root.getByRole('button', { name: 'Report' });
 	}
 
-	get btnCancelReport(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Cancel' });
+	private get btnCancelReport(): Locator {
+		return this.root.getByRole('button', { name: 'Cancel' });
 	}
 
-	get reportDescriptionError(): Locator {
-		return this.page.getByRole('dialog').getByText('You need to write something!');
+	private get alertInputDescription(): Locator {
+		return this.root.getByRole('alert');
 	}
 
-	get modalTitle(): Locator {
-		return this.page.getByRole('dialog').getByText('Report this message?');
+	async cancelReport(): Promise<void> {
+		await this.btnCancelReport.click();
+		await this.waitForDismissal();
+	}
+
+	async submitReport(description?: string): Promise<void> {
+		if (!description) {
+			await this.btnSubmitReport.click();
+			await expect(this.alertInputDescription).toBeVisible();
+			return;
+		}
+
+		await this.inputReportDescription.fill(description);
+		await this.btnSubmitReport.click();
+		await this.waitForDismissal();
+		await this.toastMessage.waitForDisplay({ type: 'success', message: 'Report has been sent' });
 	}
 }
