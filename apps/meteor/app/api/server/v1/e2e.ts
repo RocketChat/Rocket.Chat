@@ -5,7 +5,6 @@ import {
 	validateBadRequestErrorResponse,
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
 	isE2EFetchUsersWaitingForGroupKeyProps,
 	isE2EResetRoomKeyProps,
@@ -20,7 +19,6 @@ import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../../e2e/server/methods/getUsersOfRoomWithoutKey';
 import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
-import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
 import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -157,59 +155,6 @@ API.v1.addRoute(
 				private_key,
 				force,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-/**
- * @openapi
- *  /api/v1/e2e.updateGroupKey:
- *    post:
- *      description: Updates the end-to-end encryption key for a user on a room
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the user ID, the room ID, and the key
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                uid:
- *                  type: string
- *                rid:
- *                  type: string
- *                key:
- *                  type: string
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'e2e.updateGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eUpdateGroupKeyParamsPOST,
-		deprecation: {
-			version: '8.0.0',
-		},
-	},
-	{
-		async post() {
-			const { uid, rid, key } = this.bodyParams;
-
-			await updateGroupKey(rid, uid, key, this.userId);
 
 			return API.v1.success();
 		},

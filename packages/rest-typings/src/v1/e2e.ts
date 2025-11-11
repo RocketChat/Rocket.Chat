@@ -157,9 +157,6 @@ export type E2eEndpoints = {
 			users: Pick<IUser, '_id' | 'e2e'>[];
 		};
 	};
-	'/v1/e2e.updateGroupKey': {
-		POST: (params: E2eUpdateGroupKeyProps) => void;
-	};
 	'/v1/e2e.acceptSuggestedGroupKey': {
 		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;
 	};
