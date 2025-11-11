@@ -142,6 +142,7 @@ export const createDepartmentWithAnOfflineAgent = async ({
 		allowReceiveForwardOffline,
 		fallbackForwardDepartment,
 		departmentsAllowedToForward,
+		name: Random.id(),
 	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
@@ -176,6 +177,7 @@ export const createDepartmentWithAnAwayAgent = async ({
 		allowReceiveForwardOffline,
 		fallbackForwardDepartment,
 		departmentsAllowedToForward,
+		name: Random.id(),
 	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
