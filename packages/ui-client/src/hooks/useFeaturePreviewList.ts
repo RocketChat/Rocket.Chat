@@ -6,7 +6,8 @@ export type FeaturesAvailable =
 	| 'contextualbarResizable'
 	| 'newNavigation'
 	| 'secondarySidebar'
-	| 'expandableMessageComposer';
+	| 'expandableMessageComposer'
+	| 'imageCropPreview';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -40,6 +41,15 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Enable_timestamp_description',
 		group: 'Message',
 		imageUrl: 'images/featurePreview/timestamp.png',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'imageCropPreview',
+		i18n: 'Image_crop',
+		description: 'Image_crop_description',
+		group: 'Message',
+		imageUrl: 'images/featurePreview/image-crop.png',
 		value: false,
 		enabled: true,
 	},

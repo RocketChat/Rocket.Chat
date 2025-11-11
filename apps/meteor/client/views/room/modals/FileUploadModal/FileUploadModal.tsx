@@ -16,17 +16,19 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId } from 'react';
+import { memo, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import CropFilePreview from './CropFilePreview';
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, description: string | undefined, file: File) => void;
 	file: File;
 	fileName: string;
 	fileDescription?: string;
@@ -43,6 +45,8 @@ const FileUploadModal = ({
 	invalidContentType,
 	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
+	const [currentFile, setCurrentFile] = useState<File>(file);
+	const [isCropping, setIsCropping] = useState(false);
 	const {
 		register,
 		handleSubmit,
@@ -53,6 +57,7 @@ const FileUploadModal = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
 	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
+	const enablePreview = useFeaturePreview('imageCropPreview');
 
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
@@ -67,7 +72,7 @@ const FileUploadModal = ({
 			});
 		}
 
-		onSubmit(name, description);
+		onSubmit(name, description, currentFile);
 	};
 
 	useEffect(() => {
@@ -100,6 +105,27 @@ const FileUploadModal = ({
 
 	const descriptionRef = useMergedRefs(ref, autoFocusRef);
 
+	if (isCropping) {
+		return (
+			<Modal>
+				<ModalHeader>
+					<ModalTitle>{t('Crop_Image')}</ModalTitle>
+					<ModalClose onClick={() => setIsCropping(false)} />
+				</ModalHeader>
+				<ModalContent>
+					<CropFilePreview
+						file={currentFile}
+						onFileChange={(newFile) => {
+							setCurrentFile(newFile);
+							setIsCropping(false);
+						}}
+						onCancel={() => setIsCropping(false)}
+					/>
+				</ModalContent>
+			</Modal>
+		);
+	}
+
 	return (
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
@@ -114,8 +140,13 @@ const FileUploadModal = ({
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
+						<FilePreview file={currentFile} />
 					</Box>
+					{enablePreview && currentFile.type.startsWith('image/') && (
+						<Button small onClick={() => setIsCropping(true)} mb={16}>
+							{t('Crop')}
+						</Button>
+					)}
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
