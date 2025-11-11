@@ -135,7 +135,7 @@ const AccessibilityPage = () => {
 						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<VisuallyHidden>
-									<Box is='legend'>{t('Adjustable_layout')}</Box>
+									<legend>{t('Adjustable_layout')}</legend>
 								</VisuallyHidden>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
