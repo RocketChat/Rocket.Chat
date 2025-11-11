@@ -144,7 +144,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
 				<VisuallyHidden>
-					<Box is='legend'>{t('Profile_details')}</Box>
+					<legend>{t('Profile_details')}</legend>
 				</VisuallyHidden>
 				<Field>
 					<Controller
