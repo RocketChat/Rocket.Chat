@@ -1,8 +1,9 @@
 import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { IAbacService } from '@rocket.chat/core-services';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast } from '@rocket.chat/core-typings';
+import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, AbacAttributes, Users } from '@rocket.chat/models';
+import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
@@ -442,6 +443,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}));
 	}
 
+	private buildCompliantConditions(attributes: IAbacAttributeDefinition[]) {
+		return attributes.map(({ key, values }) => ({
+			abacAttributes: {
+				$elemMatch: {
+					key,
+					values: { $all: values },
+				},
+			},
+		}));
+	}
+
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
@@ -536,6 +548,72 @@ export class AbacService extends ServiceClass implements IAbacService {
 				err,
 			});
 		}
+	}
+
+	async canAccessObject(
+		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+		user: Pick<IUser, '_id'>,
+		action: AbacAccessOperation,
+		objectType: AbacObjectType,
+	) {
+		// We may need this flex for phase 2, but for now only ROOM/READ is supported
+		if (objectType !== AbacObjectType.ROOM) {
+			throw new Error('error-abac-unsupported-object-type');
+		}
+
+		if (action !== AbacAccessOperation.READ) {
+			throw new Error('error-abac-unsupported-operation');
+		}
+
+		if (!user?._id || !room?.abacAttributes?.length) {
+			return false;
+		}
+
+		const decisionCacheTimeout = (await Settings.getValueById('Abac_Cache_Decision_Time_Seconds')) as number;
+		const userSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { abacLastTimeChecked: 1 } });
+		if (!userSub) {
+			return false;
+		}
+
+		// Cases:
+		// 1) Never checked before -> check now
+		// 2) Checked before, but cache expired -> check now
+		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
+		// 4) Cache disabled (0) -> always check
+		if (
+			decisionCacheTimeout > 0 &&
+			userSub.abacLastTimeChecked &&
+			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
+		) {
+			this.logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
+			return !!userSub;
+		}
+
+		const isUserCompliant = await Users.findOne(
+			{
+				_id: user._id,
+				$and: this.buildCompliantConditions(room.abacAttributes),
+			},
+			{ projection: { _id: 1 } },
+		);
+
+		if (!isUserCompliant) {
+			const fullUser = await Users.findOneById(user._id);
+			if (!fullUser) {
+				return false;
+			}
+
+			// When a user is not compliant, remove them from the room automatically
+			await Room.removeUserFromRoom(room._id, fullUser, {
+				skipAppPreEvents: true,
+				customSystemMessage: 'abac-removed-user-from-room' as const,
+			});
+			return false;
+		}
+
+		// Set last time the decision was made
+		await Subscriptions.setAbacLastTimeCheckedByUserIdAndRoomId(user._id, room._id, new Date());
+		return true;
 	}
 }
 
