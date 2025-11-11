@@ -329,8 +329,7 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[1] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -344,8 +343,7 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[2] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -359,8 +357,7 @@ jobs:
         uses: ./.github/actions/build-docker
         if: matrix.service[3] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
-          # add suffix for the extra images with coverage if building for production
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -587,6 +584,60 @@ jobs:
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+
+  report-coverage:
+    name: 📊 Report Coverage
+    runs-on: ubuntu-24.04
+    needs: [release-versions, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+
+      - name: Restore coverage folder
+        uses: actions/download-artifact@v6
+        with:
+          pattern: coverage-*
+          path: /tmp/coverage
+          merge-multiple: true
+
+      - name: Generate lcov report
+        run: |
+          set -o xtrace
+
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/api --temp-dir=/tmp/coverage/api
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
+
+      - name: Store coverage-reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-coverage
+          path: /tmp/coverage_report
+          include-hidden-files: true
+
+      - name: Report API coverage
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          files: /tmp/coverage_report/api/lcov.info
+          working-directory: .
+          flags: e2e-api
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Report UI coverage
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          files: /tmp/coverage_report/ui/lcov.info
+          working-directory: .
+          flags: e2e
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   tests-done:
     name: ✅ Tests Done
