@@ -43,14 +43,14 @@ Meteor.startup(() => {
 
 	settings.watch<boolean>('Assets_SvgFavicon_Enable', (value) => {
 		const standardFavicons = `
-			<link rel="icon" sizes="16x16" type="image/png" href=${getURL('assets/favicon_16.png')} />
-			<link rel="icon" sizes="32x32" type="image/png" href=${getURL('assets/favicon_32.png')} />`;
+			<link rel="icon" sizes="16x16" type="image/png" data-href-fallback="${getURL('images/logo/favicon_16.png')}" href="${getURL('assets/favicon_16.png')}" />
+			<link rel="icon" sizes="32x32" type="image/png" data-href-fallback="${getURL('images/logo/favicon_32.png')}" href="${getURL('assets/favicon_32.png')}" />`;
 
 		if (value) {
 			injectIntoHead(
 				'Assets_SvgFavicon_Enable',
 				`${standardFavicons}
-				<link rel="icon" sizes="any" type="image/svg+xml" href=${getURL('assets/favicon.svg')} />`,
+				<link rel="icon" sizes="any" type="image/svg+xml" data-href-fallback="${getURL('images/logo/icon.svg')}" href="${getURL('assets/favicon.svg')}" />`,
 			);
 		} else {
 			injectIntoHead('Assets_SvgFavicon_Enable', standardFavicons);
