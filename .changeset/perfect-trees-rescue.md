@@ -10,4 +10,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Bump Node version to 20.21.1
+Bump Node version to 22.21.1
