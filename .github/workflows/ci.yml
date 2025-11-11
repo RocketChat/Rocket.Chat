@@ -622,7 +622,6 @@ jobs:
       - name: Report API coverage
         uses: codecov/codecov-action@v3
         with:
-          fail_ci_if_error: true
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
           flags: e2e-api
@@ -632,7 +631,6 @@ jobs:
       - name: Report UI coverage
         uses: codecov/codecov-action@v3
         with:
-          fail_ci_if_error: true
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
           flags: e2e
