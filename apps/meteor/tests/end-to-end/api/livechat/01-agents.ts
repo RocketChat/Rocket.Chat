@@ -530,8 +530,8 @@ describe('LIVECHAT - Agents', () => {
 			room = await createLivechatRoom(visitor.token);
 		});
 		after(async () => {
-			await deleteVisitor(visitor.token);
 			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.next/invalid-token`)).expect(400);
@@ -539,21 +539,22 @@ describe('LIVECHAT - Agents', () => {
 		it('should return success when visitor with token has an open room', async () => {
 			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(200);
 		});
-		describe('with manual selection', () => {
-			before(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-			});
-			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-			});
-			it('should fail if theres no open room for visitor and algo is manual selection', async () => {
-				const visitor = await createVisitor();
-
-				await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
-			});
-		});
 
 		// TODO: test cases when algo is Auto_Selection
+	});
+
+	describe('livechat/agent.next/:token - with manual selection', () => {
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		});
+		after(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+		});
+		it('should fail if theres no open room for visitor and algo is manual selection', async () => {
+			const visitor = await createVisitor();
+
+			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
+		});
 	});
 
 	describe('livechat/agent.status', () => {

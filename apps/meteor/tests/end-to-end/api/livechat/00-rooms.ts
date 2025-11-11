@@ -101,7 +101,7 @@ describe('LIVECHAT - rooms', () => {
 					expect(res.body).to.have.a.property('app');
 					expect(res.body.app).to.have.a.property('id');
 					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+					expect(res.body.app).to.have.a.property('status').and.to.be.equal('manually_enabled');
 
 					appId = res.body.app.id;
 				});
@@ -442,8 +442,8 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await closeOmnichannelRoom(manualRoom._id);
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 
 			it('should return queued rooms when `queued` param is passed', async () => {
@@ -2624,10 +2624,10 @@ describe('LIVECHAT - rooms', () => {
 				room = await createLivechatRoom(visitor.token);
 			});
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-
 				await deleteVisitor(visitor._id);
 				await closeOmnichannelRoom(room._id);
+
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 			it('should not allow users to update room info without serving the chat or having "save-others-livechat-room-info" permission', async () => {
 				await request
