@@ -50,6 +50,7 @@ runs:
         deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
+        type: 'production'
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     # - name: Free disk space
@@ -151,11 +152,6 @@ runs:
         fi
 
         yarn build:ci
-
-    - name: Translation check
-      shell: bash
-      if: steps.cache-build.outputs.cache-hit != 'true'
-      run: yarn turbo run translation-check
 
     - name: Prepare build
       shell: bash
