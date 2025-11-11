@@ -9,6 +9,7 @@ import {
 	useSetModal,
 	useSelectedDevices,
 	useToastMessageDispatch,
+	useSetting,
 } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -18,7 +19,7 @@ import MediaCallContext, { PeerInfo } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
 import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';
-import { useMediaSession } from './useMediaSession';
+import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { isValidTone, useTonePlayer } from './useTonePlayer';
@@ -44,6 +45,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const { audioInput, audioOutput } = useSelectedDevices() || {};
 
 	const requestDevice = useDevicePermissionPrompt2();
+
+	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
 
 	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
 	// But we're only using the changeDevice method from the session
@@ -202,10 +205,22 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const getAutocompleteOptions = async (filter: string) => {
 		const peerUsername = session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined;
+		const peerExtension = session.peerInfo ? getExtensionFromPeerInfo(session.peerInfo) : undefined;
+
+		const conditions =
+			peerExtension || forceSIPRouting
+				? {
+						$and: [
+							forceSIPRouting && { freeSwitchExtension: { $exists: true } },
+							peerExtension && { freeSwitchExtension: { $ne: peerExtension } },
+						].filter(Boolean),
+					}
+				: undefined;
+
 		const exceptions = [user?.username, peerUsername].filter(Boolean);
 
 		const { items } = await usersAutoCompleteEndpoint({
-			selector: JSON.stringify({ term: filter, exceptions }),
+			selector: JSON.stringify({ term: filter, exceptions, ...(conditions && { conditions }) }),
 		});
 		return (
 			items.map((user) => {
