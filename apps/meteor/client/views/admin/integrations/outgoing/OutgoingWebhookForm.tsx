@@ -77,8 +77,8 @@ const OutgoingWebhookForm = () => {
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.channel ?? false, [event]);
-    const showTriggerWords = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.triggerWords ?? false, [event]);
-    const showTargetRoom = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.targetRoom ?? false, [event]);
+	const showTriggerWords = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.triggerWords ?? false, [event]);
+	const showTargetRoom = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.targetRoom ?? false, [event]);
 
 	const additionalFields = useMemo(
 		() => ({
@@ -248,32 +248,31 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='urls'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('URLs') }),
-									validate: (value: string) => {
-                                        const urls = value
-                                            .split('\n')
-                                            .map((url) => url.trim())
-                                            .filter((url) => url.length > 0);
+									rules={{
+										validate: (value: string) => {
+											const urls = value
+												.split('\n')
+												.map((url) => url.trim())
+												.filter((url) => url.length > 0);
 
-                                        if (urls.length === 0) {
-                                            return t('error-the-field-is-required', { field: t('URLs') });
-                                        }
+											if (urls.length === 0) {
+												return t('error-the-field-is-required', { field: t('URLs') });
+											}
 
-                                        for (const url of urls) {
-                                            try {
-                                                const parsed = new URL(url);
-                                                // Only allow http and https
-                                                if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-                                                    return t('error-invalid-url-in-list', { url });
-                                                }
-                                            } catch {
-                                                return t('error-invalid-url-in-list', { url });
-                                            }
-                                        }
-                                        return true;
-                                    
-									}
-								}}
+											for (const url of urls) {
+												try {
+													const parsed = new URL(url);
+													// Only allow http and https
+													if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+														return t('error-invalid-url-in-list', { url });
+													}
+												} catch {
+													return t('error-invalid-url-in-list', { url });
+												}
+											}
+											return true;
+										},
+									}}
 									render={({ field }) => (
 										<TextAreaInput
 											id={urlsField}
