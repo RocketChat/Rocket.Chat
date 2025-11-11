@@ -1443,4 +1443,135 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 	});
+
+	describe('Room access (after subscribed)', () => {
+		let cacheRoom: IRoom;
+		const cacheAttrKey = `access_cache_attr_${Date.now()}`;
+		let cacheUser: IUser;
+		let cacheUserCreds: Credentials;
+		const ttlSeconds = 5;
+
+		before(async function () {
+			this.timeout(10000);
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: cacheAttrKey, values: ['on'] })
+				.expect(200);
+
+			cacheRoom = (await createRoom({ type: 'p', name: `abac-cache-room-${Date.now()}` })).body.group;
+
+			cacheUser = await createUser();
+			cacheUserCreds = await login(cacheUser.username, password);
+			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
+
+			await request
+				.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
+				.set(credentials)
+				.send({ values: ['on'] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: cacheRoom._id, usernames: [cacheUser.username] })
+				.expect(200);
+
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', ttlSeconds);
+
+			await request
+				.post(`${v1}/chat.sendMessage`)
+				.set(credentials)
+				.send({ message: { rid: cacheRoom._id, msg: 'Seed message for cache access test' } })
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: cacheRoom._id });
+			await deleteUser(cacheUser);
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 300);
+		});
+
+		it('ACCESS: user can retrieve messages after subscription (initial compliant)', async () => {
+			await request
+				.get(`/api/v1/groups.history`)
+				.set(cacheUserCreds)
+				.query({ roomId: cacheRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').that.is.an('array');
+				});
+		});
+
+		it('ACCESS: user retains access within cache after losing attributes', async () => {
+			await addAbacAttributesToUserDirectly(cacheUser._id, []);
+
+			await request
+				.get(`/api/v1/groups.history`)
+				.set(cacheUserCreds)
+				.query({ roomId: cacheRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('ACCESS: user loses access after cache expiry', async () => {
+			await updateSetting('Abac_Cache_Decision_Time_Seconds', 0);
+
+			await request
+				.get(`${v1}/groups.history`)
+				.set(cacheUserCreds)
+				.query({ roomId: cacheRoom._id })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('ACCESS: user is removed from the room when the access check fails', async () => {
+			const roomInfoRes = await request
+				.get(`${v1}/rooms.membersOrderedByRole`)
+				.set(credentials)
+				.query({ roomId: cacheRoom._id })
+				.expect(200);
+			const { members } = roomInfoRes.body;
+
+			expect(members.find((m: IUser) => m.username === cacheUser.username)).to.be.undefined;
+		});
+
+		it('ACCESS: user can be re invited to the room and access history', async () => {
+			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await request
+				.post(`${v1}/groups.invite`)
+				.set(credentials)
+				.send({ roomId: cacheRoom._id, usernames: [cacheUser.username] })
+				.expect(200);
+
+			await request
+				.get(`/api/v1/groups.history`)
+				.set(cacheUserCreds)
+				.query({ roomId: cacheRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('ACCESS: keeps access once room attributes are removed', async () => {
+			await request.delete(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`).set(credentials).expect(200);
+
+			await request
+				.get(`${v1}/groups.history`)
+				.set(cacheUserCreds)
+				.query({ roomId: cacheRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
 });
