@@ -1,12 +1,15 @@
 import { faker } from '@faker-js/faker';
 
 import { setupE2EEPassword } from './setupE2EEPassword';
+import { BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { HomeSidenav } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
+import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
+import { sendMessageFromUser } from '../utils/sendMessage';
 import { test, expect } from '../utils/test';
 
 const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
@@ -143,5 +146,59 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
 		await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
+	});
+
+	test.describe('E2EE Quotes', () => {
+		let targetRoomId: string;
+		let targetChannelName: string;
+
+		test.afterAll(async ({ api }) => {
+			await deleteRoom(api, targetRoomId);
+			await deleteChannel(api, targetChannelName);
+		});
+
+		test('expect to not crash and not show quote message for a message_link which is not accessible to the user', async ({
+			page,
+			request,
+			api,
+		}) => {
+			const encryptedRoomPage = new EncryptedRoomPage(page);
+			const sidenav = new HomeSidenav(page);
+			targetChannelName = faker.string.uuid();
+
+			await sidenav.createEncryptedChannel(targetChannelName);
+
+			await expect(page).toHaveURL(`/group/${targetChannelName}`);
+			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
+
+			await encryptedRoomPage.sendMessage('First encrypted message.');
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.body).toHaveText('First encrypted message.');
+
+			// create a private group for user2
+			const { group: user1Channel } = await createTargetGroupAndReturnFullRoom(api, {
+				excludeSelf: true,
+				members: [Users.user2.data._id],
+			});
+			targetRoomId = user1Channel._id;
+
+			// send a message to the private group, which is not accessible to the main user
+			const sentMessage = (await sendMessageFromUser(request, Users.user2, targetRoomId, 'This is a test message.')).message;
+
+			const messageLink = `${BASE_URL}/group/${user1Channel.name}?msg=${sentMessage._id}`;
+
+			await encryptedRoomPage.sendMessage(`This is a message with message link - ${messageLink}`);
+
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.body).toContainText(`This is a message with message link - ${messageLink}`);
+			await expect(encryptedRoomPage.lastNthMessage(1).body).toContainText('First encrypted message.');
+
+			await page.reload();
+
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.body).toContainText(`This is a message with message link - ${messageLink}`);
+			await expect(encryptedRoomPage.lastNthMessage(1).body).toContainText('First encrypted message.');
+		});
 	});
 });

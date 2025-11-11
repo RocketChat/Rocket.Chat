@@ -5,9 +5,9 @@
 	"devDependencies": {
 		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
-		"ts-jest": "~29.4.0",
-		"typescript": "~5.9.2"
+		"jest": "~30.2.0",
+		"ts-jest": "~29.4.4",
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

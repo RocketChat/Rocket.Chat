@@ -8,5 +8,5 @@
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"files": ["./src/FederationMatrix.ts"]
+	"files": ["./src/index.ts"]
 }

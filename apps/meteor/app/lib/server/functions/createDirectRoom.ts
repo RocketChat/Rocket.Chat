@@ -71,9 +71,7 @@ export async function createDirectRoom(
 
 	await callbacks.run('beforeCreateDirectRoom', membersUsernames, roomExtraData);
 
-	const roomMembers: IUser[] = await Users.findUsersByUsernames(membersUsernames, {
-		projection: { _id: 1, name: 1, username: 1, settings: 1, customFields: 1 },
-	}).toArray();
+	const roomMembers = await Users.findUsersByUsernames(membersUsernames).toArray();
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 

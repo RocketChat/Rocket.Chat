@@ -4,6 +4,7 @@ import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import { t } from '../../../../app/utils/lib/i18n';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
+import { getUser } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
@@ -25,7 +26,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${Meteor.user()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),

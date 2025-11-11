@@ -96,10 +96,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 
 		await test.step('should close the conversation', async () => {
 			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
-			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });

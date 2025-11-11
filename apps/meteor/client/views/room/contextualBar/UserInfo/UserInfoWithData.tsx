@@ -65,6 +65,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -72,6 +73,9 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
+			/**
+			 * TODO: We shouldn't use UserCard components outside UserCard
+			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
@@ -84,6 +88,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 

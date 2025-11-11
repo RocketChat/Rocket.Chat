@@ -9,6 +9,8 @@ import ReactionTooltip from './ReactionTooltip';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { MessageListContext } from '../../list/MessageListContext';
 
+const normalizeUsernames = (names: string[]) => names.map((name) => (name.startsWith('@') ? name.slice(1) : name));
+
 // TODO: replace it with proper usage of i18next plurals
 type ReactionProps = {
 	hasReacted: (name: string) => boolean;
@@ -47,7 +49,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...pro
 					openTooltip(
 						<ReactionTooltip
 							emojiName={name}
-							usernames={names}
+							usernames={normalizeUsernames(names)}
 							mine={mine}
 							messageId={messageId}
 							showRealName={showRealName}

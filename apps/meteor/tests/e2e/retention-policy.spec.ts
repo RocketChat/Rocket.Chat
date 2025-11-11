@@ -50,7 +50,7 @@ test.describe.serial('retention-policy', () => {
 
 		test('should not show prune section on edit channel', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.roomToolbar.openRoomInfo();
 			await poHomeChannel.tabs.room.btnEdit.click();
 
 			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
@@ -85,7 +85,7 @@ test.describe.serial('retention-policy', () => {
 
 		test('should show prune section in edit channel', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.roomToolbar.openRoomInfo();
 			await poHomeChannel.tabs.room.btnEdit.click();
 
 			await expect(poHomeChannel.tabs.room.pruneAccordion).toBeVisible();
@@ -97,7 +97,7 @@ test.describe.serial('retention-policy', () => {
 				const { page } = await createAuxContext(browser, Users.user1);
 				auxContext = { page, poHomeChannel: new HomeChannel(page) };
 				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
+				await auxContext.poHomeChannel.roomToolbar.openRoomInfo();
 				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
 			});
 			test.afterEach(async () => {
@@ -127,7 +127,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.sidenav.openChat(targetChannel);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await expect(poHomeChannel.tabs.room.checkboxPruneMessages).toBeChecked();
@@ -137,7 +137,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.sidenav.openChat(targetTeam);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openTeamInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await expect(poHomeChannel.tabs.room.checkboxPruneMessages).toBeChecked();
@@ -147,7 +147,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.sidenav.openChat(targetGroup);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await expect(poHomeChannel.tabs.room.checkboxPruneMessages).toBeChecked();
@@ -169,7 +169,7 @@ test.describe.serial('retention-policy', () => {
 
 			test.beforeEach(async () => {
 				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 			});
@@ -184,9 +184,9 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 				await poHomeChannel.tabs.room.inputRetentionMaxAge.fill('365');
 				await poHomeChannel.tabs.room.btnSave.click();
-				await poHomeChannel.dismissToast();
+				await poHomeChannel.toastMessage.dismissToast();
 
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 
@@ -201,9 +201,9 @@ test.describe.serial('retention-policy', () => {
 			test('should override ignore threads default value', async () => {
 				await poHomeChannel.tabs.room.checkboxIgnoreThreads.click();
 				await poHomeChannel.tabs.room.btnSave.click();
-				await poHomeChannel.dismissToast();
+				await poHomeChannel.toastMessage.dismissToast();
 
-				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 

@@ -30,6 +30,7 @@ import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
+import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
@@ -97,15 +98,13 @@ const AccessibilityPage = () => {
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
 						<ul aria-labelledby={linkListId}>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-statement'>{t('Accessibility_statement')}</ExternalLink>
+								<ExternalLink to={links.go.accessibilityStatement}>{t('Accessibility_statement')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
+								<ExternalLink to={links.go.glossary}>{t('Glossary_of_simplified_terms')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-and-appearance'>
-									{t('Accessibility_feature_documentation')}
-								</ExternalLink>
+								<ExternalLink to={links.go.accessibilityAndAppearance}>{t('Accessibility_feature_documentation')}</ExternalLink>
 							</li>
 						</ul>
 					</Box>

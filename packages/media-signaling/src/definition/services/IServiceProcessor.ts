@@ -13,7 +13,7 @@ export type ServiceStateValue<ServiceStateMap extends DefaultServiceStateMap, K 
 
 export type ServiceProcessorEvents<ServiceStateMap extends DefaultServiceStateMap> = {
 	internalStateChange: keyof ServiceStateMap;
-	internalError: { critical: boolean; error: string | Error };
+	internalError: { critical: boolean; error: string | Error; errorDetails?: string };
 	negotiationNeeded: void;
 };
 

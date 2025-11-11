@@ -23,8 +23,8 @@ export const useAppsRoomActions = () => {
 			result.data?.filter(applyButtonFilters).map(
 				(action): RoomToolboxActionConfig => ({
 					id: action.actionId,
-					icon: undefined,
 					variant: action.variant,
+					icon: undefined as unknown as RoomToolboxActionConfig['icon'],
 					order: 300,
 					title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],

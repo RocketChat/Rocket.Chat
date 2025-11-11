@@ -1807,7 +1807,7 @@
   "RetentionPolicyRoom_FilesOnly": "Gwahardd ffeiliau yn unig, cadwch negeseuon",
   "RetentionPolicyRoom_MaxAge": "Oedran uchafswm neges mewn dyddiau (diofyn: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Anwybyddu'r polisi cadw byd-eang",
-  "RetentionPolicyRoom_ReadTheDocs": "Gwyliwch allan! Gall tweaking y lleoliadau hyn heb ofal eithaf ddinistrio holl hanes negeseuon. Darllenwch y ddogfennaeth cyn troi'r nodwedd ar <a href = 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>yma</a>.",
+  "RetentionPolicyRoom_ReadTheDocs": "Gwyliwch allan! Gall tweaking y lleoliadau hyn heb ofal eithaf ddinistrio holl hanes negeseuon. Darllenwch y ddogfennaeth cyn troi'r nodwedd ar <a href = \"{{retentionPolicyUrl}}\">yma</a>.",
   "RetentionPolicy_AppliesToChannels": "Yn berthnasol i sianeli",
   "RetentionPolicy_AppliesToDMs": "Mae'n berthnasol i negeseuon uniongyrchol",
   "RetentionPolicy_AppliesToGroups": "Yn berthnasol i grwpiau preifat",

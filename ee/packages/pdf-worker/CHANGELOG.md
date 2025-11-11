@@ -1,5 +1,156 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.20
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
+
+  - @rocket.chat/core-typings@7.12.0
+  </details>
+
+## 0.3.20-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.4
+  </details>
+
+## 0.3.20-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.3
+  </details>
+
+## 0.3.20-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.2
+  </details>
+
+## 0.3.20-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.1
+  </details>
+
+## 0.3.20-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.0
+  </details>
+
+## 0.3.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
+
+  - @rocket.chat/core-typings@7.11.0
+  </details>
+
+## 0.3.19-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.7
+  </details>
+
+## 0.3.19-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.6
+  </details>
+
+## 0.3.18-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.5
+  </details>
+
+## 0.3.18-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.4
+  </details>
+
+## 0.3.18-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.3
+  </details>
+
+## 0.3.18-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.11.0-rc.2
+  </details>
+
+## 0.3.18-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.1
+  </details>
+
+## 0.3.18-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  </details>
+
+## 0.3.18
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  </details>
+
+## 0.3.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.1
+  </details>
+
 ## 0.3.16
 
 ### Patch Changes

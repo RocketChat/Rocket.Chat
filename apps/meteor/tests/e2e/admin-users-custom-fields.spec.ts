@@ -1,5 +1,5 @@
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Admin } from './page-objects';
+import { AdminUsers, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 import { createTestUser, type ITestUser } from './utils/user-helpers';
 
@@ -10,7 +10,7 @@ const adminCustomFieldUpdated1 = 'updated_admin1';
 
 test.describe('Admin users custom fields', () => {
 	let poHomeChannel: HomeChannel;
-	let poAdmin: Admin;
+	let poAdmin: AdminUsers;
 	let addTestUser: ITestUser;
 	let updateTestUser: ITestUser;
 
@@ -55,7 +55,7 @@ test.describe('Admin users custom fields', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poAdmin = new Admin(page);
+		poAdmin = new AdminUsers(page);
 		await page.goto('/admin/users');
 	});
 
@@ -68,26 +68,26 @@ test.describe('Admin users custom fields', () => {
 		});
 
 		await test.step('should navigate to edit user form', async () => {
-			await poAdmin.btnEdit.click();
+			await poAdmin.userInfo.btnEdit.click();
 		});
 
 		await test.step('should fill custom fields for user', async () => {
-			await poAdmin.tabs.users.getCustomField('customFieldText1').fill(adminCustomFieldValue1);
-			await poAdmin.tabs.users.getCustomField('customFieldText2').fill(adminCustomFieldValue2);
+			await poAdmin.editUser.getCustomField('customFieldText1').fill(adminCustomFieldValue1);
+			await poAdmin.editUser.getCustomField('customFieldText2').fill(adminCustomFieldValue2);
 		});
 
 		await test.step('should save user custom fields', async () => {
-			await poAdmin.tabs.users.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poAdmin.editUser.btnSaveUser.click();
+			await poHomeChannel.toastMessage.dismissToast();
+			await poAdmin.editUser.close();
 		});
 
 		await test.step('should verify custom fields were saved', async () => {
-			await poAdmin.tabs.users.btnContextualbarClose.click();
 			await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
-			await poAdmin.btnEdit.click();
+			await poAdmin.userInfo.btnEdit.click();
 
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldValue1);
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.editUser.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldValue1);
+			await expect(poAdmin.editUser.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 		});
 	});
 
@@ -100,29 +100,64 @@ test.describe('Admin users custom fields', () => {
 		});
 
 		await test.step('should navigate to edit user form', async () => {
-			await poAdmin.btnEdit.click();
+			await poAdmin.userInfo.btnEdit.click();
 		});
 
 		await test.step('should verify existing values and update one custom field', async () => {
-			await poAdmin.tabs.users.inputName.waitFor();
+			await poAdmin.editUser.inputName.waitFor();
 
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(customFieldInitial1);
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.editUser.getCustomField('customFieldText1')).toHaveValue(customFieldInitial1);
+			await expect(poAdmin.editUser.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 
-			await poAdmin.tabs.users.getCustomField('customFieldText1').clear();
-			await poAdmin.tabs.users.getCustomField('customFieldText1').fill(adminCustomFieldUpdated1);
+			await poAdmin.editUser.getCustomField('customFieldText1').clear();
+			await poAdmin.editUser.getCustomField('customFieldText1').fill(adminCustomFieldUpdated1);
 		});
 
 		await test.step('should save and verify partial update', async () => {
-			await poAdmin.tabs.users.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poAdmin.editUser.btnSaveUser.click();
+			await poHomeChannel.toastMessage.dismissToast();
 
-			await poAdmin.tabs.users.btnContextualbarClose.click();
+			await poAdmin.editUser.close();
 			await poAdmin.getUserRowByUsername(updateTestUser.data.username).click();
-			await poAdmin.btnEdit.click();
+			await poAdmin.userInfo.btnEdit.click();
 
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldUpdated1);
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.editUser.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldUpdated1);
+			await expect(poAdmin.editUser.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
+		});
+	});
+
+	test.describe('with invalid custom field type', () => {
+		test.beforeAll(async ({ api }) => {
+			await api.post('/settings/Accounts_CustomFields', {
+				value: JSON.stringify({
+					customFieldText1: {
+						type: 'invalid_type',
+						required: false,
+					},
+					customFieldText2: {
+						type: 'text',
+						required: false,
+					},
+				}),
+			});
+		});
+
+		test('should not render fields with invalid custom field type', async () => {
+			await test.step('should find and click on add test user', async () => {
+				await poAdmin.inputSearchUsers.fill(addTestUser.data.username);
+
+				await expect(poAdmin.getUserRowByUsername(addTestUser.data.username)).toBeVisible();
+				await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
+			});
+
+			await test.step('should navigate to edit user form', async () => {
+				await poAdmin.userInfo.btnEdit.click();
+			});
+
+			await test.step('should verify custom field is not rendered', async () => {
+				await expect(poAdmin.editUser.getCustomField('customFieldText1')).not.toBeVisible();
+				await expect(poAdmin.editUser.getCustomField('customFieldText2')).toBeVisible();
+			});
 		});
 	});
 });

@@ -57,10 +57,7 @@ test.describe('Omnichannel chat history', () => {
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
-			await agent.poHomeOmnichannel.content.btnCloseChat.click();
-			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await agent.poHomeOmnichannel.quickActionsRoomToolbar.closeChat();
 		});
 
 		await test.step('Expect send a message as a visitor again to reopen chat', async () => {

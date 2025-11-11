@@ -2,7 +2,7 @@ import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundComunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
 import type { ValidOutboundProvider, IOutboundProvider, IOutboundMessageProvider } from '@rocket.chat/core-typings';
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {

@@ -1812,7 +1812,7 @@
   "RetentionPolicyRoom_FilesOnly": "Snoei slegs lêers, hou boodskappe",
   "RetentionPolicyRoom_MaxAge": "Maksimum boodskap ouderdom in dae (standaard: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Hersien globale retensiebeleid",
-  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <a href=\"https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies\">hier</a>verander.",
+  "RetentionPolicyRoom_ReadTheDocs": "Passop! As jy hierdie instellings sonder omhulsel aanpas, kan al die boodskapgeskiedenis vernietig word. Lees asseblief die dokumentasie voordat u die kenmerk op <a href=\"{{retentionPolicyUrl}}\">hier</a>verander.",
   "RetentionPolicy_AppliesToChannels": "Van toepassing op kanale",
   "RetentionPolicy_AppliesToDMs": "Van toepassing op direkte boodskappe",
   "RetentionPolicy_AppliesToGroups": "Van toepassing op privaat groepe",

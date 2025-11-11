@@ -1,9 +1,10 @@
 import { Room } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+
+import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
 
 const logger = new Logger('federation-matrix:member');
 
@@ -14,8 +15,11 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 		return;
 	}
 
+	const serverName = federationSDK.getConfig('serverName');
+
+	const [affectedUsername] = getUsernameServername(data.state_key, serverName);
 	// state_key is the user affected by the membership change
-	const affectedUser = await Users.findOne({ 'federation.mui': data.state_key });
+	const affectedUser = await Users.findOneByUsername(affectedUsername);
 	if (!affectedUser) {
 		logger.error(`No Rocket.Chat user found for bridged user: ${data.state_key}`);
 		return;
@@ -28,7 +32,9 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 		logger.info(`User ${affectedUser.username} left room ${room._id} via Matrix federation`);
 	} else {
 		// Kick - find who kicked
-		const kickerUser = await Users.findOne({ 'federation.mui': data.sender });
+
+		const [kickerUsername] = getUsernameServername(data.sender, serverName);
+		const kickerUser = await Users.findOneByUsername(kickerUsername);
 
 		await Room.removeUserFromRoom(room._id, affectedUser, {
 			byUser: kickerUser || { _id: 'matrix.federation', username: 'Matrix User' },
@@ -46,37 +52,32 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 		return;
 	}
 
-	const internalUsername = data.sender;
-	const localUser = await Users.findOneByUsername(internalUsername);
+	const [username, serverName, isLocal] = getUsernameServername(data.sender, federationSDK.getConfig('serverName'));
+
+	// for local users we must to remove the @ and the server domain
+	const localUser = isLocal && (await Users.findOneByUsername(username));
+
 	if (localUser) {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, localUser._id);
+		if (subscription) {
+			return;
+		}
 		await Room.addUserToRoom(room._id, localUser);
 		return;
 	}
 
-	const [, serverName] = data.sender.split(':');
 	if (!serverName) {
 		throw new Error('Invalid sender format, missing server name');
 	}
 
-	const { insertedId } = await Users.insertOne({
-		username: internalUsername,
-		type: 'user',
-		status: UserStatus.OFFLINE,
-		active: true,
-		roles: ['user'],
-		name: data.content.displayname || internalUsername,
-		requirePasswordChange: false,
-		createdAt: new Date(),
-		_updatedAt: new Date(),
-		federated: true,
-		federation: {
-			version: 1,
-			mui: data.sender,
-			origin: serverName,
-		},
+	const insertedId = await createOrUpdateFederatedUser({
+		username: data.event.state_key,
+		origin: serverName,
+		name: data.content.displayname || (data.state_key as `@${string}:${string}`),
 	});
 
 	const user = await Users.findOneById(insertedId);
+
 	if (!user) {
 		console.warn(`User with ID ${insertedId} not found after insertion`);
 		return;

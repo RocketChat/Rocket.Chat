@@ -1,11 +1,11 @@
-import { FederationMatrix } from '@rocket.chat/core-services';
-import { isEditedMessage, isUserNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
+import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
-import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
@@ -57,42 +57,24 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, { room, user }) => {
+	async (message: IMessage, { room }) => {
 		if (!message.federation?.eventId) {
 			return;
 		}
 
-		// removing messages from external users is not allowed
-		// TODO should we make it work for external users?
-		if (user.federated) {
-			return;
-		}
-
-		if (!isUserNativeFederated(user)) {
-			return;
-		}
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.deleteMessage(room.federation.mrid, message, user.federation.mui);
+			await FederationMatrix.deleteMessage(room.federation.mrid, message);
 		}
 	},
 	callbacks.priority.MEDIUM,
 	'native-federation-after-delete-message',
 );
 
-callbacks.add(
-	'federation.onAddUsersToRoom',
-	async ({ invitees, inviter }, room) => {
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.inviteUsersToRoom(
-				room,
-				invitees.map((invitee) => (typeof invitee === 'string' ? invitee : invitee.username)).filter((v) => v != null),
-				inviter,
-			);
-		}
-	},
-	callbacks.priority.MEDIUM,
-	'native-federation-on-add-users-to-room ',
-);
+beforeAddUsersToRoom.add(async ({ usernames }, room) => {
+	if (FederationActions.shouldPerformFederationAction(room)) {
+		await FederationMatrix.ensureFederatedUsersExistLocally(usernames);
+	}
+});
 
 beforeAddUserToRoom.add(
 	async ({ user, inviter }, room) => {
@@ -101,6 +83,9 @@ beforeAddUserToRoom.add(
 		}
 
 		if (FederationActions.shouldPerformFederationAction(room)) {
+			if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+			}
 			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
 		}
 	},
@@ -139,9 +124,9 @@ callbacks.add(
 );
 
 afterLeaveRoomCallback.add(
-	async (user: IUser, room: IRoom): Promise<void> => {
+	async ({ user, kicker }, room: IRoom): Promise<void> => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.leaveRoom(room._id, user);
+			await FederationMatrix.leaveRoom(room._id, user, kicker);
 		}
 	},
 	callbacks.priority.HIGH,

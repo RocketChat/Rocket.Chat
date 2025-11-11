@@ -1,6 +1,6 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Avatar, Palette, IconButton, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, Message, Box, Palette, IconButton, ButtonGroup, AvatarStack } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
@@ -90,7 +90,7 @@ const VideoConfListItem = ({
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
 							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
-								<Avatar.Stack>
+								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
 											user.username &&
@@ -104,7 +104,7 @@ const VideoConfListItem = ({
 												/>
 											),
 									)}
-								</Avatar.Stack>
+								</AvatarStack>
 								<Box mis={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })

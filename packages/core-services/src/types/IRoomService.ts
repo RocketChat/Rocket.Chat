@@ -46,10 +46,7 @@ export interface IRoomService {
 	saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
-		user: {
-			username: string;
-			_id: string;
-		},
+		user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 		sendMessage?: boolean,
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;

@@ -13,6 +13,7 @@ import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
+import ABACHeaderTag from '../../../components/ABAC/ABACHeaderTag';
 import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 
@@ -50,6 +51,7 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderPro
 					<Favorite room={room} />
 					{room.prid && <ParentRoomWithData room={room} />}
 					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
+					<ABACHeaderTag room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
