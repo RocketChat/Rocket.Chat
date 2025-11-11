@@ -392,6 +392,7 @@
 		"lodash.escape": "^4.0.1",
 		"lodash.get": "^4.4.2",
 		"mailparser": "~3.7.4",
+		"maplibre-gl": "^4.7.1",
 		"marked": "^4.3.0",
 		"mem": "^8.1.1",
 		"meteor-node-stubs": "~1.2.24",

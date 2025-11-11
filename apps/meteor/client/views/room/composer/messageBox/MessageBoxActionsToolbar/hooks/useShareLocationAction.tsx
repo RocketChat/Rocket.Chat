@@ -16,11 +16,10 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 
 	const isMapViewEnabled = useSetting('MapView_Enabled') === true;
 	const isGeolocationCurrentPositionSupported = Boolean(navigator.geolocation?.getCurrentPosition);
-	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
-	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length;
+	// OSM-based map preview does not require a Google Maps API key
+	const canGetGeolocation = isMapViewEnabled && isGeolocationCurrentPositionSupported;
 
 	const handleShareLocation = () => setModal(<ShareLocationModal rid={room._id} tmid={tmid} onClose={() => setModal(null)} />);
-
 	const allowGeolocation = room && canGetGeolocation && !isRoomFederated(room);
 
 	return {

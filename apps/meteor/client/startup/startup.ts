@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import 'highlight.js/styles/github.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
