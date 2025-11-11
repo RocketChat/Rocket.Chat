@@ -143,6 +143,13 @@ export const createRoom = async <T extends RoomType>(
 		return member.username?.includes(':') && member.username?.includes('@');
 	});
 
+	// Prevent adding federated users to rooms that are not marked as federated explicitly
+	if (hasFederatedMembers && optionalExtraData.federated !== true) {
+		throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
+			method: 'createRoom',
+		});
+	}
+
 	const extraData = {
 		...optionalExtraData,
 		...((hasFederatedMembers || optionalExtraData.federated) && {
