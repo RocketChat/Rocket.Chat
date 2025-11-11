@@ -6231,6 +6231,7 @@
   "error-invalid-token": "Invalid token",
   "error-invalid-triggerWords": "Invalid triggerWords",
   "error-invalid-urls": "Invalid URLs",
+  "error-invalid-url-in-list": "Invalid URL in list: {{url}}",
   "error-invalid-user": "Invalid user",
   "error-invalid-username": "Invalid username",
   "error-invalid-value": "Invalid value",
