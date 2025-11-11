@@ -18,14 +18,15 @@ const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 }))();
 
 export const createDepartment = async (
-	departmentData: Partial<ILivechatDepartment> = NewDepartmentData,
+	departmentData?: Partial<ILivechatDepartment>,
 	agents?: { agentId: string; count?: string; order?: string }[],
 ): Promise<ILivechatDepartment> => {
+	const department = { ...NewDepartmentData, ...departmentData };
 	const response = await request
 		.post(api('livechat/department'))
 		.set(credentials)
 		.send({
-			department: departmentData,
+			department,
 			...(agents && { agents }),
 		})
 		.expect(200);
@@ -142,7 +143,6 @@ export const createDepartmentWithAnOfflineAgent = async ({
 		allowReceiveForwardOffline,
 		fallbackForwardDepartment,
 		departmentsAllowedToForward,
-		name: Random.id(),
 	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
@@ -177,7 +177,6 @@ export const createDepartmentWithAnAwayAgent = async ({
 		allowReceiveForwardOffline,
 		fallbackForwardDepartment,
 		departmentsAllowedToForward,
-		name: Random.id(),
 	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
