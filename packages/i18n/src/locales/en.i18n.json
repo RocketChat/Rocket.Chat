@@ -23,6 +23,8 @@
   "ABAC_Warning_Modal_Title": "Deactivate ABAC",
   "ABAC_Warning_Modal_Confirm_Text": "Deactivate ABAC",
   "ABAC_Warning_Modal_Content": "You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access control, it must be removed from ABAC management in <1>ABAC > Rooms</1>.",
+  "ABAC_ShowAttributesInRooms": "Show ABAC attributes in rooms",
+  "ABAC_ShowAttributesInRooms_Description": "Display the ABAC attributes assigned to the room in the contextual bar",
   "abac-management": "Manage ABAC configuration",
   "abac_removed_user_from_the_room": "was removed by ABAC",
   "AI_Actions": "AI actions",
