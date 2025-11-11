@@ -149,5 +149,6 @@ export * from './themes';
 export * from './mediaCalls';
 export * from './ICallHistoryItem';
 export * from './IAbacAttribute';
+export * from './Abac';
 
 export { schemas } from './Ajv';
