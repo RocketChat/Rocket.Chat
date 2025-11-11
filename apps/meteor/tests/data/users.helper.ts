@@ -62,7 +62,6 @@ export const createUser = <TUser extends IUser>(
 		const email = userData.email || `${username}@rocket.chat`;
 		const requestInstance = config?.request || request;
 		const credentialsInstance = config?.credentials || credentials;
-
 		void requestInstance
 			.post(api('users.create'))
 			.set(credentialsInstance)

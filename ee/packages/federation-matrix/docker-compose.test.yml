@@ -1,0 +1,216 @@
+networks:
+  hs1-net:
+  rc1-net:
+  element-net:
+
+services:
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    profiles:
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
+    command:
+      - "--api.insecure=true"
+      # - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker-compose/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./docker-compose/traefik/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro
+      - ./docker-compose/traefik/certs:/etc/traefik/certs:ro
+      # - ./traefik-logs:/logs # Mount a volume for logs
+    networks:
+      # Defines and isolate one network per service to prevent inter service communication which
+      # would not happen in real life. The name clashing between the host and service in the same
+      # network (like rc1 service provided as rc1 host) is causing a bug on home server address 
+      # resolution which tries to communicate with the container directly some times and which does
+      # not provide SSL neither the correct exposed ports.
+      hs1-net:
+        aliases: [hs1, rc1, rc.host]
+      rc1-net:
+        aliases: [hs1, rc1, rc.host]
+      element-net:
+        aliases: [hs1, rc1, rc.host, element]
+
+# HomeServer 1 (synapse)
+  hs1:
+    image: matrixdotorg/synapse:latest
+    container_name: hs1
+    profiles:
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
+    entrypoint: |
+      sh -c
+      "update-ca-certificates && 
+      mkdir -p /data/media_store && 
+      chown -R 991:991 /data && 
+      /start.py &
+      until curl -sf http://localhost:8008/_matrix/client/versions; do
+        echo '=====> Waiting for Synapse...';
+        sleep 2;
+      done;
+      echo '';
+      echo '=====> Running register_new_matrix_user...';
+      register_new_matrix_user -u admin -p admin --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
+      register_new_matrix_user -u alice -p alice --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
+      register_new_matrix_user -u bob -p bob --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
+      register_new_matrix_user -u cleiton -p cleiton --admin http://localhost:8008 -c /data/homeserver.yaml | sed 's/^/=======> /';
+      echo '=====> Finished register_new_matrix_user.';
+      wait"
+    volumes:
+      - ./docker-compose/hs1/homeserver.yaml:/data/homeserver.yaml
+      - ./docker-compose/hs1/hs1.log.config:/data/hs1.log.config
+      - ./docker-compose/hs1/hs1.signing.key:/data/hs1.signing.key
+      - ./docker-compose/traefik/certs/ca:/usr/local/share/ca-certificates
+    networks:
+      - hs1-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hs1.rule=Host(`hs1`)"
+      - "traefik.http.routers.hs1.entrypoints=websecure"
+      - "traefik.http.routers.hs1.tls=true"
+      - "traefik.http.services.hs1.loadbalancer.server.port=8008"
+
+# Rocket.Chat rc1 (local build)
+  rc1-local:
+    build:
+      context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
+      dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
+    image: rocket.chat:local-test
+    container_name: rc1
+    profiles:
+      - test-local
+      - element-local
+    environment:
+      ROOT_URL: https://rc1
+      PORT: 3000
+      MONGO_URL: mongodb://mongo:27017/rc1?replicaSet=rs0
+      NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/rootCA.pem
+      LOG_LEVEL: debug
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC1}
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      OVERWRITE_SETTING_Federation_Service_Enabled: true
+      OVERWRITE_SETTING_Federation_Service_Domain: rc1
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
+      ADMIN_USERNAME: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: admin@admin.com
+      TEST_MODE: true
+    volumes:
+      - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
+    networks:
+      - rc1-net
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rc1.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1.entrypoints=websecure"
+      - "traefik.http.routers.rc1.tls=true"
+      - "traefik.http.services.rc1.loadbalancer.server.port=3000"
+      # HTTPS Redirect
+      - "traefik.http.middlewares.rc1.redirectscheme.scheme=https"
+      - "traefik.http.routers.rc1-http.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1-http.middlewares=rc1"
+
+# Rocket.Chat rc1 (pre-built image)
+  rc1-prebuilt:
+    image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
+    container_name: rc1
+    profiles:
+      - test-prebuilt
+      - element-prebuilt
+    environment:
+      ROOT_URL: https://rc1
+      PORT: 3000
+      MONGO_URL: mongodb://mongo:27017/rc1?replicaSet=rs0
+      NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/rootCA.pem
+      LOG_LEVEL: debug
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC1}
+      OVERWRITE_SETTING_Show_Setup_Wizard: completed
+      OVERWRITE_SETTING_Federation_Service_Enabled: true
+      OVERWRITE_SETTING_Federation_Service_Domain: rc1
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
+      OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
+      ADMIN_USERNAME: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: admin@admin.com
+      TEST_MODE: true
+    volumes:
+      - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
+    networks:
+      - rc1-net
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rc1.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1.entrypoints=websecure"
+      - "traefik.http.routers.rc1.tls=true"
+      - "traefik.http.services.rc1.loadbalancer.server.port=3000"
+      # HTTPS Redirect
+      - "traefik.http.middlewares.rc1.redirectscheme.scheme=https"
+      - "traefik.http.routers.rc1-http.rule=Host(`rc1`)"
+      - "traefik.http.routers.rc1-http.middlewares=rc1"
+
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    profiles:
+      - test-local
+      - test-prebuilt
+      - element-local
+      - element-prebuilt
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    entrypoint: |
+      bash -c
+        "mongod --replSet rs0 --bind_ip_all &
+          sleep 2;
+          until mongosh --eval \"db.adminCommand('ping')\"; do 
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          echo '=====> Initiating ReplSet...';
+          mongosh --eval \"rs.initiate({_id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }]})\";
+          echo '=====> Initiating ReplSet done...';
+        wait"
+    networks:
+      - rc1-net
+  
+  element:
+    image: vectorim/element-web
+    container_name: element
+    profiles:
+      - element-local
+      - element-prebuilt
+    # ports:
+    #   - "8080:80"
+    volumes:
+      - ./docker-compose/element/config.json:/app/config.json
+    networks:
+      - element-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.element.rule=Host(`element`)"
+      - "traefik.http.routers.element.entrypoints=websecure"
+      - "traefik.http.routers.element.tls=true"
+      - "traefik.http.services.element.loadbalancer.server.port=80"
+      # HTTPS Redirect
+      - "traefik.http.middlewares.element.redirectscheme.scheme=https"
+      - "traefik.http.routers.element-http.rule=Host(`element`)"
+      - "traefik.http.routers.element-http.middlewares=element"
