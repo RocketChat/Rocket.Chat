@@ -1,9 +1,9 @@
-self.addEventListener('install', function(event) {
-    event.waitUntil(self.skipWaiting()); // Activate worker immediately
+self.addEventListener('install', function (event) {
+	event.waitUntil(self.skipWaiting()); // Activate worker immediately
 });
 
-self.addEventListener('activate', function(event) {
-    event.waitUntil(self.clients.claim()); // Become available to all pages
+self.addEventListener('activate', function (event) {
+	event.waitUntil(self.clients.claim()); // Become available to all pages
 });
 
 function base64Decode(string) {
@@ -30,17 +30,39 @@ const decrypt = async (key, iv, file) => {
 };
 
 const getUrlParams = (url) => {
-	const urlObj = new URL(url, location.origin);
-
-	const k = base64DecodeString(urlObj.searchParams.get('key'));
-
-	urlObj.searchParams.delete('key');
-
-	const { key, iv, name, type } = JSON.parse(k);
-
-	const newUrl = urlObj.href.replace('/file-decrypt/', '/');
-
-	return { key, iv, url: newUrl, name, type };
+	try {
+		const urlObj = new URL(url, location.origin);
+		const keyParam = urlObj.searchParams.get('key');
+		if (!keyParam) {
+			console.error('[SW decrypt] Missing key param');
+			return null;
+		}
+		let decoded;
+		try {
+			decoded = base64DecodeString(keyParam);
+		} catch (e) {
+			console.error('[SW decrypt] Failed base64 decode key param', e);
+			return null;
+		}
+		urlObj.searchParams.delete('key');
+		let parsed;
+		try {
+			parsed = JSON.parse(decoded);
+		} catch (e) {
+			console.error('[SW decrypt] Failed JSON parse key payload', e);
+			return null;
+		}
+		const { key, iv, name, type } = parsed;
+		if (!key || !iv) {
+			console.error('[SW decrypt] Missing key or iv in payload');
+			return null;
+		}
+		const newUrl = urlObj.href.replace('/file-decrypt/', '/');
+		return { key, iv, url: newUrl, name, type };
+	} catch (e) {
+		console.error('[SW decrypt] Unexpected error extracting params', e);
+		return null;
+	}
 };
 
 self.addEventListener('fetch', (event) => {
@@ -48,84 +70,116 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	try {
-		const { url, key, iv, name, type } = getUrlParams(event.request.url);
+	const params = getUrlParams(event.request.url);
+	if (!params) {
+		// If params invalid, let network fail naturally (or we could return a 400)
+		return;
+	}
+	const { url, key, iv, name, type } = params;
 
-		const requestToFetch = new Request(url, {
-			...event.request,
-			mode: 'cors',
-		});
+	const requestToFetch = new Request(url, {
+		...event.request,
+		mode: 'cors',
+		// ensure GET (some browsers may revalidate differently)
+		method: 'GET',
+	});
 
-		event.respondWith(
-			caches.match(requestToFetch).then((response) => {
-				if (response) {
-					return response;
+	event.respondWith(
+		(async () => {
+			try {
+				const cached = await caches.match(requestToFetch);
+				if (cached) {
+					return cached;
 				}
 
-				return fetch(requestToFetch)
-					.then(async (res) => {
-						const file = await res.arrayBuffer();
-
-						if (res.status !== 200 || file.byteLength === 0) {
-							console.error('Failed to fetch file', { req: requestToFetch, res });
-							return res;
-						}
-
-						const result = await decrypt(key, iv, file);
-
-						const newHeaders = new Headers(res.headers);
-						newHeaders.set('Content-Disposition', 'inline; filename="'+name+'"');
-						newHeaders.set('Content-Type', type);
-
-						const response = new Response(result, {
-							status: res.status,
-							statusText: res.statusText,
-							headers: newHeaders,
-						});
-
-						await caches.open('v1').then((cache) => {
-							cache.put(requestToFetch, response.clone());
-						});
-
-						return response;
-					})
-					.catch((error) => {
-						console.error('Fetching failed:', error);
-
-						throw error;
-					});
-			}),
-		);
-	} catch (error) {
-		console.error(error);
-		throw error;
-	}
+				const res = await fetch(requestToFetch);
+				if (!res.ok) {
+					console.error('[SW decrypt] Upstream fetch failed', res.status, res.statusText);
+					return res; // propagate original error response
+				}
+				let file;
+				try {
+					file = await res.arrayBuffer();
+				} catch (e) {
+					console.error('[SW decrypt] Failed reading body (CORS?)', e);
+					return res;
+				}
+				if (!file || file.byteLength === 0) {
+					console.error('[SW decrypt] Empty file body');
+					return res;
+				}
+				let result;
+				try {
+					result = await decrypt(key, iv, file);
+				} catch (e) {
+					console.error('[SW decrypt] Decrypt failed', e);
+					return res; // fallback to encrypted file (may still download)
+				}
+				if (!result) {
+					console.error('[SW decrypt] Decrypt produced empty result');
+					return res;
+				}
+				const newHeaders = new Headers(res.headers);
+				if (name) {
+					newHeaders.set('Content-Disposition', 'inline; filename="' + name + '"');
+				}
+				if (type) {
+					newHeaders.set('Content-Type', type);
+				}
+				const decryptedResponse = new Response(result, {
+					status: res.status,
+					statusText: res.statusText,
+					headers: newHeaders,
+				});
+				try {
+					const cache = await caches.open('v1');
+					await cache.put(requestToFetch, decryptedResponse.clone());
+				} catch (e) {
+					console.error('[SW decrypt] Failed caching decrypted file', e);
+				}
+				return decryptedResponse;
+			} catch (error) {
+				console.error('[SW decrypt] Fetch handler unexpected error', error);
+				// Return generic error response to avoid unhandled promise rejection
+				return new Response('', { status: 502 });
+			}
+		})(),
+	);
 });
 
 self.addEventListener('message', async (event) => {
 	if (event.data.type !== 'attachment-download') {
 		return;
 	}
-
-	const requestToFetch = new Request(event.data.url);
-
-	const { url, key, iv } = getUrlParams(event.data.url);
-	const res = (await caches.match(requestToFetch)) ?? (await fetch(url));
-
-	const file = await res.arrayBuffer();
-	const result = await decrypt(key, iv, file);
-	event.source
-		.postMessage({
+	const params = getUrlParams(event.data.url);
+	if (!params) {
+		console.error('[SW decrypt] Invalid params on message download');
+		return;
+	}
+	const { url, key, iv } = params;
+	try {
+		const requestToFetch = new Request(event.data.url);
+		const res = (await caches.match(requestToFetch)) ?? (await fetch(url));
+		let file;
+		try {
+			file = await res.arrayBuffer();
+		} catch (e) {
+			console.error('[SW decrypt] Failed reading message body', e);
+			return;
+		}
+		let result;
+		try {
+			result = await decrypt(key, iv, file);
+		} catch (e) {
+			console.error('[SW decrypt] Decrypt failed on message', e);
+			return;
+		}
+		event.source.postMessage({
 			id: event.data.id,
 			type: 'attachment-download-result',
 			result,
 		});
-		// .catch((error) => {
-		// 	console.error('Posting message failed:', error);
-		// 	event.source.postMessage({
-		// 		id: event.data.id,
-		// 		type: 'attachment-download-result',
-		// 		error,
-		// 	});
-		// });
+	} catch (error) {
+		console.error('[SW decrypt] Attachment download unexpected error', error);
+	}
 });
