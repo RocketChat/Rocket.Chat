@@ -36,7 +36,7 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
 				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
 					<UserAvatar size='x20' username={value} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' mis={4} verticalAlign='middle'>
 						{label}
 					</Box>
 				</Chip>
