@@ -220,7 +220,7 @@ jobs:
             $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -228,7 +228,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: turbo-build
           path: .turbo/cache
