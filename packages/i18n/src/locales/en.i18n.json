@@ -14,6 +14,8 @@
   "ABAC": "Attribute Based Access Control",
   "ABAC_Enabled": "Enable Attribute Based Access Control (ABAC)",
   "ABAC_Enabled_Description": "Controls access to rooms based on user and room attributes.",
+  "Abac_Cache_Decision_Time_Seconds": "ABAC Cache Decision Time (seconds)",
+  "Abac_Cache_Decision_Time_Seconds_Description": "Time in seconds to cache access control decisions. Setting this value to 0 will disable caching.",
   "ABAC_Enabled_callout": "User attributes are synchronized via LDAP. <1>Learn more</1>",
   "ABAC_Learn_More": "Learn about ABAC",
   "ABAC_automatically_disabled_callout": "ABAC automatically disabled",
