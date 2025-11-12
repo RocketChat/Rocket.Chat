@@ -1,30 +1,30 @@
 services:
   rocketchat:
     volumes:
-      - /tmp/coverage:/tmp/coverage
-    platform: linux/amd64
+      - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
     build:
-      dockerfile: ${GITHUB_WORKSPACE}/apps/meteor/.docker/Dockerfile.alpine
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
       args:
-        DENO_VERSION: ${DENO_VERSION}
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT}
+        DENO_VERSION: ${DENO_VERSION:-}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
       - TEST_MODE=true
-      - DEBUG=${DEBUG}
+      - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
-      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
-      - 'COVERAGE_DIR=${COVERAGE_DIR}'
-      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
+      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE:-}'
+      - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
+      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
+      - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
+      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
@@ -46,7 +46,6 @@ services:
       test: wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/livez || exit 1
 
   authorization-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
       context: .
@@ -67,7 +66,6 @@ services:
       - nats
 
   account-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/account-service/Dockerfile
       context: .
@@ -88,7 +86,6 @@ services:
       - nats
 
   presence-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
       context: .
@@ -98,7 +95,6 @@ services:
           - linux/arm64
       args:
         SERVICE: presence-service
-        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
@@ -110,7 +106,6 @@ services:
       - nats
 
   ddp-streamer-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
       context: .
@@ -137,7 +132,6 @@ services:
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
 
   stream-hub-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/stream-hub-service/Dockerfile
       context: .
@@ -152,14 +146,13 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
+      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
 
   queue-worker-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/queue-worker/Dockerfile
       context: .
@@ -180,7 +173,6 @@ services:
       - nats
 
   omnichannel-transcript-service:
-    platform: linux/amd64
     build:
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
       context: .
