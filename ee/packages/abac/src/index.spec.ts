@@ -1,3 +1,5 @@
+import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+
 import { AbacService } from './index';
 
 const mockFindOneByIdAndType = jest.fn();
@@ -15,6 +17,7 @@ const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUsersFind = jest.fn();
+const mockUsersUpdateOne = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -40,6 +43,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
 }));
 
@@ -61,6 +65,311 @@ describe('AbacService (unit)', () => {
 	beforeEach(() => {
 		service = new AbacService();
 		jest.clearAllMocks();
+	});
+
+	describe('addSubjectAttributes (merging behavior)', () => {
+		const getUpdatedAttributesFromCall = () => {
+			const call = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$set?.abacAttributes);
+			return call?.[1].$set.abacAttributes as any[] | undefined;
+		};
+
+		it('merges values from multiple LDAP keys mapping to the same ABAC key', async () => {
+			const user = { _id: 'u1' } as any;
+			const ldapUser = {
+				memberOf: ['eng', 'sales'],
+				department: ['sales', 'support'],
+			} as any;
+
+			const map = {
+				memberOf: 'dept',
+				department: 'dept',
+			};
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			expect(mockUsersUpdateOne).toHaveBeenCalledTimes(1);
+			const final = getUpdatedAttributesFromCall();
+			expect(final).toBeDefined();
+			expect(final).toHaveLength(1);
+			expect(final?.[0].key).toBe('dept');
+			expect(final?.[0].values).toEqual(['eng', 'sales', 'support']);
+		});
+
+		it('deduplicates values across different LDAP keys and within arrays', async () => {
+			const user = { _id: 'u2' } as any;
+			const ldapUser = {
+				group: ['alpha', 'beta', 'alpha'],
+				team: ['beta', 'gamma'],
+				role: 'gamma',
+			} as any;
+
+			const map = {
+				group: 'combined',
+				team: 'combined',
+				role: 'combined',
+			};
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			const final = getUpdatedAttributesFromCall();
+			expect(final?.[0].values).toEqual(['alpha', 'beta', 'gamma']);
+		});
+
+		it('unsets abacAttributes when no LDAP values are found and user previously had attributes', async () => {
+			const user = {
+				_id: 'u3',
+				abacAttributes: [{ key: 'dept', values: ['eng'] }],
+			} as any;
+			const ldapUser = {
+				other: ['x'],
+			} as any;
+
+			const map = {
+				memberOf: 'dept',
+			};
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
+			expect(unsetCall).toBeDefined();
+		});
+
+		it('does nothing when no LDAP values are found and user had no previous attributes', async () => {
+			const user = { _id: 'u4' } as any;
+			const ldapUser = {} as any;
+			const map = { missing: 'dept' };
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			expect(mockUsersUpdateOne).not.toHaveBeenCalled();
+		});
+
+		it('calls onSubjectAttributesChanged when user loses an attribute value', async () => {
+			const user = {
+				_id: 'u5',
+				abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }],
+			} as any;
+			const ldapUser = {
+				memberOf: ['eng'],
+			} as any;
+			const map = { memberOf: 'dept' };
+
+			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy.mock.calls[0][1]).toEqual([{ key: 'dept', values: ['eng'] }]);
+		});
+
+		it('does not call onSubjectAttributesChanged when only gaining new values', async () => {
+			const user = {
+				_id: 'u6',
+				abacAttributes: [{ key: 'dept', values: ['eng'] }],
+			} as any;
+			const ldapUser = {
+				memberOf: ['eng', 'qa'],
+			} as any;
+			const map = { memberOf: 'dept' };
+
+			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('calls onSubjectAttributesChanged when an entire attribute key is lost', async () => {
+			const user = {
+				_id: 'u7',
+				abacAttributes: [
+					{ key: 'dept', values: ['eng'] },
+					{ key: 'region', values: ['emea'] },
+				],
+			} as any;
+			const ldapUser = {
+				department: ['eng'],
+			} as any;
+			const map = { department: 'dept' };
+
+			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy.mock.calls[0][1]).toEqual([{ key: 'dept', values: ['eng'] }]);
+		});
+
+		it('supports mixing array and string LDAP values merging into one ABAC attribute', async () => {
+			const user = { _id: 'u8' } as any;
+			const ldapUser = {
+				deptCode: 'eng',
+				deptName: ['engineering', 'eng'],
+			} as any;
+			const map = { deptCode: 'dept', deptName: 'dept' };
+
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			const final = getUpdatedAttributesFromCall();
+			expect(final?.[0].key).toBe('dept');
+			expect(final?.[0].values).toEqual(['eng', 'engineering']);
+		});
+
+		it('ignores empty string values and unsets when all values invalid and user had attributes', async () => {
+			const user = { _id: 'u9', abacAttributes: [{ key: 'dept', values: ['eng'] }] } as any;
+			const ldapUser = {
+				memberOf: ['', '   ', null],
+				department: '',
+			} as any;
+			const map = { memberOf: 'dept', department: 'dept' };
+
+			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
+			await service.addSubjectAttributes(user, ldapUser, map);
+
+			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
+			expect(unsetCall).toBeDefined();
+			expect(spy).toHaveBeenCalledTimes(1);
+			expect(spy.mock.calls[0][1]).toEqual([]);
+		});
+	});
+
+	describe('didSubjectLoseAttributes', () => {
+		const call = (previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) =>
+			(service as any).didSubjectLoseAttributes(previous, next) as boolean;
+
+		it('returns false if previous is empty (no attributes to lose)', () => {
+			expect(call([], [])).toBe(false);
+			expect(call([], [{ key: 'dept', values: ['engineering'] }])).toBe(false);
+		});
+
+		it('returns false if all previous attributes and values are preserved', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false if previous values are a subset of next values (nothing lost)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true if an entire previous attribute key is missing in next', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true if any previous value is missing from corresponding next attribute', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true if multiple attributes exist and one loses a value', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering', 'qa'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true when next is empty but previous had attributes (all lost)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, [])).toBe(true);
+		});
+
+		it('returns true if one attribute key remains but all its values are lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns true on first detected loss even if multiple losses exist', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'region', values: ['us', 'eu'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: [] },
+				{ key: 'region', values: ['us'] },
+			];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('does not mutate input arrays (pure function)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const prevClone = JSON.parse(JSON.stringify(prev));
+			const nextClone = JSON.parse(JSON.stringify(next));
+			expect(call(prev, next)).toBe(false);
+			expect(prev).toEqual(prevClone);
+			expect(next).toEqual(nextClone);
+		});
+
+		it('returns false if ordering of values changes but values remain (order-insensitive)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['qa', 'engineering'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true if previous attribute key replaced with a different key only', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'role', values: ['admin'] }];
+			expect(call(prev, next)).toBe(true);
+		});
+
+		it('returns false when next adds a new attribute without removing previous ones', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when attribute keys are reordered but unchanged', () => {
+			const prev: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['engineering'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: IAbacAttributeDefinition[] = [
+				{ key: 'role', values: ['admin'] },
+				{ key: 'dept', values: ['engineering'] },
+			];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when duplicate values are present but no unique value is lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'engineering'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns false when previous attribute has an empty values array (nothing to lose)', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: [] }];
+			expect(call(prev, next)).toBe(false);
+		});
+
+		it('returns true when duplicate previous values include one that is lost', () => {
+			const prev: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering', 'qa', 'qa'] }];
+			const next: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['engineering'] }];
+			expect(call(prev, next)).toBe(true);
+		});
 	});
 
 	describe('addAbacAttribute', () => {
