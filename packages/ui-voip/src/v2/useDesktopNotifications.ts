@@ -32,18 +32,15 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 			return;
 		}
 
-		// TODO: Prevent duplicate notifications if peerInfo changes
-		// Probably save a reference to the call id and check if it's the same call
 		window.RocketChatDesktop?.dispatchCustomNotification({
 			type: 'voice',
-			// id: callId,
+			id: sessionInfo.callId,
 			payload: {
 				title: displayInfo.title,
 				body: t('Incoming_call'),
 				avatar: displayInfo.avatar,
-				// requireInteraction: true,
-				// silent: userStatus !== 'online' TODO: get the user status to decide if the notification should be silent. We might need to check some preferences too.
+				requireInteraction: true,
 			},
 		});
-	}, [displayInfo?.avatar, displayInfo?.title, sessionInfo.state, t]);
+	}, [displayInfo?.avatar, displayInfo?.title, sessionInfo.callId, sessionInfo.state, t]);
 };
