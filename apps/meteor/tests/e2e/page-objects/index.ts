@@ -28,4 +28,3 @@ export * from './omnichannel-settings';
 export * from './omnichannel-business-hours';
 export * from './omnichannel-tags';
 export * from './marketplace';
-export * from './toastBar';

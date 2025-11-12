@@ -244,6 +244,7 @@ export const permissions = [
 	{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
 	{ _id: 'send-mail', roles: ['admin'] },
 	{ _id: 'view-federation-data', roles: ['admin'] },
+	{ _id: 'access-federation', roles: ['admin', 'user'] },
 	{ _id: 'add-all-to-room', roles: ['admin'] },
 	{ _id: 'get-server-info', roles: ['admin'] },
 	{ _id: 'register-on-cloud', roles: ['admin'] },

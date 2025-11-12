@@ -27,7 +27,7 @@
 		"/server"
 	],
 	"dependencies": {
-		"@swc/core": "~1.13.20",
+		"@swc/core": "1.13.19",
 		"@swc/jest": "~0.2.39",
 		"@testing-library/jest-dom": "~6.8.0",
 		"@types/jest-axe": "~3.5.9",

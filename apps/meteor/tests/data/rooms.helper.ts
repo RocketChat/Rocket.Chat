@@ -2,6 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { api, credentials, methodCall, request } from './api-data';
+import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -13,6 +14,7 @@ type CreateRoomParams = {
 	credentials?: Credentials;
 	extraData?: Record<string, any>;
 	voipCallDirection?: 'inbound' | 'outbound';
+	config?: IRequestConfig;
 };
 
 export const createRoom = ({
@@ -25,10 +27,14 @@ export const createRoom = ({
 	credentials: customCredentials,
 	extraData,
 	voipCallDirection = 'inbound',
+	config,
 }: CreateRoomParams) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
+
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || customCredentials || credentials;
 
 	if (type === 'v') {
 		/* Special handling for voip type of rooms.
@@ -36,11 +42,7 @@ export const createRoom = ({
 		 * a voip room. Hence creation of a voip room
 		 * is handled separately here.
 		 */
-		return request
-			.get(api('voip/room'))
-			.query({ token, agentId, direction: voipCallDirection })
-			.set(customCredentials || credentials)
-			.send();
+		return requestInstance.get(api('voip/room')).query({ token, agentId, direction: voipCallDirection }).set(credentialsInstance).send();
 	}
 
 	if (type === 'd' && !username) {
@@ -58,9 +60,9 @@ export const createRoom = ({
 	// which is the only case where type is not in the endpoints object
 	const roomType = endpoints[type as keyof typeof endpoints];
 
-	return request
+	return requestInstance
 		.post(api(roomType))
-		.set(customCredentials || credentials)
+		.set(credentialsInstance)
 		.send({
 			...params,
 			...(members && { members }),
@@ -120,18 +122,36 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
 			});
 	});
 
+/**
+ * Adds users to a room using the addUsersToRoom method.
+ *
+ * Invites one or more users to join a room using the DDP method call.
+ * Supports both local and federated users, with proper error handling
+ * for federation restrictions.
+ *
+ * @param usernames - Array of usernames to add to the room
+ * @param rid - The unique identifier of the room
+ * @param userCredentials - Optional credentials for the request (deprecated, use config instead)
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the method call response
+ */
 export const addUserToRoom = ({
 	usernames,
 	rid,
 	userCredentials,
+	config,
 }: {
 	usernames: string[];
 	rid: IRoom['_id'];
 	userCredentials?: Credentials;
+	config?: IRequestConfig;
 }) => {
-	return request
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || userCredentials || credentials;
+
+	return requestInstance
 		.post(methodCall('addUsersToRoom'))
-		.set(userCredentials ?? credentials)
+		.set(credentialsInstance)
 		.send({
 			message: JSON.stringify({
 				method: 'addUsersToRoom',
