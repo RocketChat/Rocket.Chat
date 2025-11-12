@@ -103,14 +103,16 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('setRoomAbacAttributes - new key addition', () => {
 		it('logs users that do not satisfy newly added attribute key or its values and actually removes them', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]);
-			await insertRoom([]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // compliant
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing sales
-				{ _id: 'u3', member: true, abacAttributes: [{ key: 'location', values: ['emea'] }] }, // missing dept key
-				{ _id: 'u4', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
-				{ _id: 'u5', member: false, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // not in room
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]),
+				insertRoom([]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // compliant
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing sales
+					{ _id: 'u3', member: true, abacAttributes: [{ key: 'location', values: ['emea'] }] }, // missing dept key
+					{ _id: 'u4', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
+					{ _id: 'u5', member: false, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // not in room
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -143,11 +145,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant and removes them)', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertRoom([]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // non compliant (missing sales)
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]),
+				insertRoom([]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // non compliant (missing sales)
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -168,12 +172,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('updateRoomAbacAttributeValues - new value addition', () => {
 		it('logs users missing newly added value while retaining compliant ones and removes the missing ones', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertRoom([{ key: 'dept', values: ['eng'] }]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // already superset
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing new value
-				{ _id: 'u3', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]),
+				insertRoom([{ key: 'dept', values: ['eng'] }]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // already superset
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing new value
+					{ _id: 'u3', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -195,11 +201,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('produces no evaluation log when only removing values from existing attribute', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertRoom([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]),
+				insertRoom([{ key: 'dept', values: ['eng', 'sales'] }]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -220,47 +228,48 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('setRoomAbacAttributes - multi-attribute addition', () => {
 		it('enforces all attributes (AND semantics) removing users failing any', async () => {
-			await insertDefinitions([
-				{ key: 'dept', values: ['eng', 'sales', 'hr'] },
-				{ key: 'region', values: ['emea', 'apac'] },
-			]);
-			await insertRoom([{ key: 'dept', values: ['eng'] }]);
-
-			await insertUsers([
-				{
-					_id: 'u1',
-					member: true,
-					abacAttributes: [
-						{ key: 'dept', values: ['eng', 'sales'] },
-						{ key: 'region', values: ['emea'] },
-					],
-				}, // compliant after expansion
-				{
-					_id: 'u2',
-					member: true,
-					abacAttributes: [{ key: 'dept', values: ['eng'] }], // missing region
-				},
-				{
-					_id: 'u3',
-					member: true,
-					abacAttributes: [{ key: 'region', values: ['emea'] }], // missing dept key
-				},
-				{
-					_id: 'u4',
-					member: true,
-					abacAttributes: [
-						{ key: 'dept', values: ['eng', 'sales', 'hr'] },
-						{ key: 'region', values: ['emea', 'apac'] },
-					],
-				}, // superset across both
-				{
-					_id: 'u5',
-					member: true,
-					abacAttributes: [
-						{ key: 'dept', values: ['eng', 'sales'] },
-						{ key: 'region', values: ['apac'] },
-					],
-				},
+			await Promise.all([
+				insertDefinitions([
+					{ key: 'dept', values: ['eng', 'sales', 'hr'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+				]),
+				insertRoom([{ key: 'dept', values: ['eng'] }]),
+				insertUsers([
+					{
+						_id: 'u1',
+						member: true,
+						abacAttributes: [
+							{ key: 'dept', values: ['eng', 'sales'] },
+							{ key: 'region', values: ['emea'] },
+						],
+					}, // compliant after expansion
+					{
+						_id: 'u2',
+						member: true,
+						abacAttributes: [{ key: 'dept', values: ['eng'] }], // missing region
+					},
+					{
+						_id: 'u3',
+						member: true,
+						abacAttributes: [{ key: 'region', values: ['emea'] }], // missing dept key
+					},
+					{
+						_id: 'u4',
+						member: true,
+						abacAttributes: [
+							{ key: 'dept', values: ['eng', 'sales', 'hr'] },
+							{ key: 'region', values: ['emea', 'apac'] },
+						],
+					}, // superset across both
+					{
+						_id: 'u5',
+						member: true,
+						abacAttributes: [
+							{ key: 'dept', values: ['eng', 'sales'] },
+							{ key: 'region', values: ['apac'] },
+						],
+					},
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -289,11 +298,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('Idempotency & no-op behavior', () => {
 		it('does not remove anyone when calling with identical attribute set twice', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertRoom([]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // will be removed on first pass
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]),
+				insertRoom([]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // will be removed on first pass
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -323,11 +334,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('Superset and missing attribute edge cases', () => {
 		it('keeps user with superset values and removes user missing one required value', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]);
-			await insertRoom([]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] },
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'hr'] }] }, // missing sales
+			await Promise.all([
+				insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]),
+				insertRoom([]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] },
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng', 'hr'] }] }, // missing sales
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -346,12 +359,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('removes user missing attribute key entirely', async () => {
-			await insertDefinitions([{ key: 'region', values: ['emea', 'apac'] }]);
-			await insertRoom([]);
-			await insertUsers([
-				{ _id: 'u1', member: true, abacAttributes: [{ key: 'region', values: ['emea'] }] },
-				{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing region
-				{ _id: 'u3', member: true }, // no abacAttributes field
+			await Promise.all([
+				insertDefinitions([{ key: 'region', values: ['emea', 'apac'] }]),
+				insertRoom([]),
+				insertUsers([
+					{ _id: 'u1', member: true, abacAttributes: [{ key: 'region', values: ['emea'] }] },
+					{ _id: 'u2', member: true, abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing region
+					{ _id: 'u3', member: true }, // no abacAttributes field
+				]),
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
@@ -375,8 +390,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 	describe('Large member set performance sanity (lightweight)', () => {
 		it('removes only expected fraction in a larger population', async () => {
-			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertRoom([]);
+			await Promise.all([insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]), insertRoom([])]);
 
 			const bulk: Parameters<typeof insertUsers>[0] = [];
 			for (let i = 0; i < 300; i++) {
