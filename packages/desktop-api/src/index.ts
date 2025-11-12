@@ -14,7 +14,18 @@ export type OutlookEventsResponse = {
 	status: 'success' | 'canceled';
 };
 
+export type CustomNotificationOptions = {
+	type: 'voice' | 'text';
+	payload: {
+		title: string;
+		body: string;
+		avatar?: string;
+		silent?: boolean;
+	};
+};
+
 export interface IRocketChatDesktop {
+	dispatchCustomNotification: (options: CustomNotificationOptions) => void;
 	onReady: (cb: (serverInfo: ServerInfo) => void) => void;
 	setServerInfo: (serverInfo: ServerInfo) => void;
 	setUrlResolver: (getAbsoluteUrl: (relativePath?: string) => string) => void;
