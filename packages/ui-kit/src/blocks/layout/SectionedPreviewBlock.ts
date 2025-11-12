@@ -6,8 +6,7 @@ import type { PlainText } from '../text/PlainText';
 
 type PreviewSection = {
 	variant: 'foreground' | 'background';
-	accessory?: IconElement;
-	title: PlainText;
+	elements: readonly (IconElement | PlainText)[];
 	action?: IconButtonElement;
 };
 
