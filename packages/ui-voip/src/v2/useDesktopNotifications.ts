@@ -25,9 +25,16 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 	const displayInfo = getDisplayInfo(sessionInfo.peerInfo);
 
 	useEffect(() => {
+		if (
+			typeof window.RocketChatDesktop?.dispatchCustomNotification !== 'function' ||
+			typeof window.RocketChatDesktop?.closeCustomNotification !== 'function'
+		) {
+			return;
+		}
+
 		if (sessionInfo.state !== 'ringing') {
 			if (previousCallId.current) {
-				window.RocketChatDesktop?.closeCustomNotification(previousCallId.current);
+				window.RocketChatDesktop.closeCustomNotification(previousCallId.current);
 				previousCallId.current = undefined;
 			}
 			return;
@@ -37,7 +44,7 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 			return;
 		}
 
-		window.RocketChatDesktop?.dispatchCustomNotification({
+		window.RocketChatDesktop.dispatchCustomNotification({
 			type: 'voice',
 			id: sessionInfo.callId,
 			payload: {
