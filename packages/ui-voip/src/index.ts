@@ -1,5 +1,3 @@
-import './global.d.ts';
-
 export { default as MediaCallProvider } from './v2/MediaCallProvider';
 
 export * from './hooks';
