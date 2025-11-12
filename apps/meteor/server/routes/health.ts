@@ -19,8 +19,6 @@ function setDefaultHeaders(res: ServerResponse) {
  * @deprecated Update infrastructure to use /livez and /readyz.
  */
 WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) => {
-	SystemLogger.warn('Deprecated /health endpoint was called. Please update to /livez or /readyz.');
-
 	setDefaultHeaders(res);
 
 	res.writeHead(200);
