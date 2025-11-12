@@ -62,6 +62,11 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.10.2",
+		"@babel/core": "~7.28.4",
+		"@babel/eslint-parser": "~7.28.4",
+		"@babel/preset-env": "~7.28.3",
+		"@babel/preset-react": "~7.27.1",
+		"@babel/register": "~7.28.3",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.52.0",
 		"@rocket.chat/desktop-api": "workspace:~",
@@ -214,11 +219,6 @@
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
-		"@babel/core": "~7.28.4",
-		"@babel/eslint-parser": "~7.28.4",
-		"@babel/preset-env": "~7.28.3",
-		"@babel/preset-react": "~7.27.1",
-		"@babel/register": "~7.28.3",
 		"@babel/runtime": "~7.28.4",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",

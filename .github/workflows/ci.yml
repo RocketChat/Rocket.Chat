@@ -66,10 +66,10 @@ jobs:
             --exclude='.git' \
             .
 
-          # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v7
+          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v8
 
           # Uncomment the following line to include the run ID in the hash and disable caching between runs
-          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
+          # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
 
           echo hash=${SOURCE_HASH}
 
