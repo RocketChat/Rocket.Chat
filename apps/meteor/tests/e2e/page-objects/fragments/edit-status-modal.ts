@@ -3,8 +3,6 @@ import type { Page } from 'playwright-core';
 import { Modal } from './modal';
 
 export class EditStatusModal extends Modal {
-	protected readonly page: Page;
-
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Edit Status' }));
 	}
