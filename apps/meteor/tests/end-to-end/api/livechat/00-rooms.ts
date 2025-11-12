@@ -442,8 +442,8 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await closeOmnichannelRoom(manualRoom._id);
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 
 			it('should return queued rooms when `queued` param is passed', async () => {
@@ -484,10 +484,10 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				await updateSetting('Livechat_allow_manual_on_hold', false);
 				await closeOmnichannelRoom(room._id);
 				await closeOmnichannelRoom(room2._id);
+				await updateSetting('Livechat_allow_manual_on_hold', false);
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 
 			it('should not return on hold rooms along with queued rooms when `queued` is true and `onHold` is true', async () => {
@@ -2624,10 +2624,10 @@ describe('LIVECHAT - rooms', () => {
 				room = await createLivechatRoom(visitor.token);
 			});
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-
 				await deleteVisitor(visitor._id);
 				await closeOmnichannelRoom(room._id);
+
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 			it('should not allow users to update room info without serving the chat or having "save-others-livechat-room-info" permission', async () => {
 				await request
