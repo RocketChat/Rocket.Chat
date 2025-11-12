@@ -29954,6 +29954,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-limit@npm:3.1.0, p-limit@npm:^3.0.1, p-limit@npm:^3.0.2, p-limit@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "p-limit@npm:3.1.0"
+  dependencies:
+    yocto-queue: "npm:^0.1.0"
+  checksum: 10/7c3690c4dbf62ef625671e20b7bdf1cbc9534e83352a2780f165b0d3ceba21907e77ad63401708145ca4e25bfc51636588d89a8c0aeb715e6c37d1c066430360
+  languageName: node
+  linkType: hard
+
 "p-limit@npm:^2.0.0, p-limit@npm:^2.2.0":
   version: 2.3.0
   resolution: "p-limit@npm:2.3.0"
@@ -38522,6 +38531,16 @@ __metadata:
     y18n: "npm:^5.0.5"
     yargs-parser: "npm:^21.1.1"
   checksum: 10/abb3e37678d6e38ea85485ed86ebe0d1e3464c640d7d9069805ea0da12f69d5a32df8e5625e370f9c96dd1c2dc088ab2d0a4dd32af18222ef3c4224a19471576
+  languageName: node
+  linkType: hard
+
+"yauzl@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "yauzl@npm:3.2.0"
+  dependencies:
+    buffer-crc32: "npm:~0.2.3"
+    pend: "npm:~1.2.0"
+  checksum: 10/a3cd2bfcf7590673bb35750f2a4e5107e3cc939d32d98a072c0673fe42329e390f471b4a53dbbd72512229099b18aa3b79e6ddb87a73b3a17446080c903a2c4b
   languageName: node
   linkType: hard
 
