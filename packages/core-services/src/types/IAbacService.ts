@@ -5,6 +5,7 @@ import type {
 	IUser,
 	AbacAccessOperation,
 	AbacObjectType,
+	ILDAPEntry,
 } from '@rocket.chat/core-typings';
 
 export interface IAbacService {
@@ -31,4 +32,5 @@ export interface IAbacService {
 		action: AbacAccessOperation,
 		objectType: AbacObjectType,
 	): Promise<boolean>;
+	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void>;
 }
