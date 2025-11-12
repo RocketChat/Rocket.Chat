@@ -77,7 +77,7 @@
 		"adm-zip": "0.5.9",
 		"underscore": "1.13.7",
 		"lodash": "4.17.21",
-		"mongodb": "6.10.0",
+		"mongodb": "7.0.0",
 		"cross-spawn": "7.0.6",
 		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch"
