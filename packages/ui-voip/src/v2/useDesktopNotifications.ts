@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PeerInfo } from './MediaCallContext';
@@ -19,12 +19,17 @@ const getDisplayInfo = (peerInfo?: PeerInfo) => {
 };
 
 export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
+	const previousCallId = useRef<string | undefined>(undefined);
 	const { t } = useTranslation();
 
 	const displayInfo = getDisplayInfo(sessionInfo.peerInfo);
 
 	useEffect(() => {
 		if (sessionInfo.state !== 'ringing') {
+			if (previousCallId.current) {
+				window.RocketChatDesktop?.closeCustomNotification(previousCallId.current);
+				previousCallId.current = undefined;
+			}
 			return;
 		}
 
@@ -42,5 +47,7 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 				requireInteraction: true,
 			},
 		});
+
+		previousCallId.current = sessionInfo.callId;
 	}, [displayInfo?.avatar, displayInfo?.title, sessionInfo.callId, sessionInfo.state, t]);
 };
