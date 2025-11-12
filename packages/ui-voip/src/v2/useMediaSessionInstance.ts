@@ -21,10 +21,12 @@ interface BaseSession {
 
 interface EmptySession extends BaseSession {
 	state: Extract<State, 'closed' | 'new'>;
+	callId: undefined;
 }
 
 interface CallSession extends BaseSession {
 	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	callId: string;
 	peerInfo: PeerInfo;
 }
 

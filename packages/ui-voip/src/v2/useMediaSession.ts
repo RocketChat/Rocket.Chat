@@ -8,6 +8,7 @@ import type { SessionInfo } from './useMediaSessionInstance';
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
+	callId: undefined,
 	connectionState: 'CONNECTING' as const,
 	peerInfo: undefined,
 	transferredBy: undefined,
@@ -46,7 +47,10 @@ export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined
 	return undefined;
 };
 
-const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
+const deriveWidgetStateFromCallState = (
+	callState: CallState,
+	callRole: CallRole,
+): Extract<State, 'ongoing' | 'ringing' | 'calling'> | undefined => {
 	switch (callState) {
 		case 'active':
 		case 'accepted':
@@ -141,7 +145,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				return;
 			}
 
-			const { contact, transferredBy: callTransferredBy, state: callState, role, muted, held, hidden } = mainCall;
+			const { contact, transferredBy: callTransferredBy, state: callState, role, muted, held, hidden, callId } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 			const connectionState = deriveConnectionStateFromCallState(callState);
 
@@ -150,7 +154,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (contact.type === 'sip') {
 				dispatch({
 					type: 'instance_updated',
-					payload: { peerInfo: { number: contact.id || 'unknown' }, transferredBy, state, muted, held, connectionState, hidden },
+					payload: { peerInfo: { number: contact.id || 'unknown' }, transferredBy, state, muted, held, connectionState, hidden, callId },
 				});
 				return;
 			}
@@ -175,7 +179,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				callerId: contact.sipExtension,
 			} as PeerInfo;
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, callId } });
 		};
 
 		const offCbs = [instance.on('sessionStateChange', updateSessionState), instance.on('hiddenCall', updateSessionState)];
