@@ -8,6 +8,7 @@ export async function handleSuggestedGroupKey(
 	rid: string,
 	userId: string | null,
 	method: string,
+	key?: string,
 ): Promise<void> {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method });
@@ -20,6 +21,13 @@ export async function handleSuggestedGroupKey(
 
 	const suggestedKey = String(sub.E2ESuggestedKey ?? '').trim();
 	if (!suggestedKey) {
+		if (key) {
+			const setGroupE2EKeyResponse = await Subscriptions.setGroupE2EKey(sub._id, key);
+			if (setGroupE2EKeyResponse.modifiedCount) {
+				void notifyOnSubscriptionChangedById(sub._id);
+			}
+			return;
+		}
 		throw new Meteor.Error('error-no-suggested-key-available', 'No suggested key available', { method });
 	}
 

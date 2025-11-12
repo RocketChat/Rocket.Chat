@@ -6,6 +6,7 @@ const ajv = new Ajv({
 
 export type e2eGetUsersOfRoomWithoutKeyParamsGET = {
 	rid: string;
+	key: string;
 };
 
 const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
@@ -14,9 +15,12 @@ const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
 		rid: {
 			type: 'string',
 		},
+		key: {
+			type: 'string',
+		},
 	},
 	additionalProperties: false,
-	required: ['rid'],
+	required: ['rid', 'key'],
 };
 
 export const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(

@@ -133,7 +133,7 @@ export type E2eEndpoints = {
 		};
 	};
 	'/v1/e2e.acceptSuggestedGroupKey': {
-		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;
+		POST: (params: { rid: string; key: string }) => void;
 	};
 	'/v1/e2e.rejectSuggestedGroupKey': {
 		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;

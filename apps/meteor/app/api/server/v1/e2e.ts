@@ -169,9 +169,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid } = this.bodyParams;
+			const { rid, key } = this.bodyParams;
 
-			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
+			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey', key);
 
 			return API.v1.success();
 		},

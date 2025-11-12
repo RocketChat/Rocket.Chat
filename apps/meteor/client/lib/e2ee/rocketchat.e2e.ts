@@ -123,7 +123,7 @@ class E2E extends Emitter {
 
 		if (sub.E2ESuggestedKey) {
 			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-				await this.acceptSuggestedKey(sub.rid);
+				await this.acceptSuggestedKey(sub.rid, sub.E2ESuggestedKey);
 				e2eRoom.keyReceived();
 			} else {
 				span.warn('rejected');
@@ -209,7 +209,7 @@ class E2E extends Emitter {
 
 					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
 						span.info('importedE2ESuggestedKey');
-						await e2e.acceptSuggestedKey(sub.rid);
+						await e2e.acceptSuggestedKey(sub.rid, sub.E2ESuggestedKey);
 						e2eRoom.keyReceived();
 					} else {
 						span.error('invalidE2ESuggestedKey');
@@ -300,9 +300,10 @@ class E2E extends Emitter {
 		});
 	}
 
-	async acceptSuggestedKey(rid: string): Promise<void> {
+	async acceptSuggestedKey(rid: string, key: string): Promise<void> {
 		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
 			rid,
+			key,
 		});
 	}
 
