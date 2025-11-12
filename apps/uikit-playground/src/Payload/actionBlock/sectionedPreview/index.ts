@@ -16,13 +16,11 @@ export const sectionedPreviewPlain: readonly LayoutBlock[] = [
 		sections: [
 			{
 				variant: 'foreground',
-				accessory: { type: 'icon', icon: 'phone-off', variant: 'default' },
-				title: { type: 'plain_text', text: 'Call ended' },
+				elements: [
+					{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
+					{ type: 'plain_text', text: 'Call failed' },
+				],
 				action: getIconButtonPayload({ icon: 'info' }),
-			},
-			{
-				variant: 'background',
-				title: { type: 'plain_text', text: '00:58' },
 			},
 		],
 	},
@@ -34,13 +32,15 @@ export const sectionedPreviewMultipleSections: readonly LayoutBlock[] = [
 		sections: [
 			{
 				variant: 'foreground',
-				accessory: { type: 'icon', icon: 'phone-off', variant: 'default' },
-				title: { type: 'plain_text', text: 'Call ended' },
+				elements: [
+					{ type: 'icon', icon: 'phone-off', variant: 'default' },
+					{ type: 'plain_text', text: 'Call ended' },
+				],
 				action: getIconButtonPayload({ icon: 'info' }),
 			},
 			{
 				variant: 'background',
-				title: { type: 'plain_text', text: '00:58' },
+				elements: [{ type: 'plain_text', text: '00:58' }],
 			},
 		],
 	},
