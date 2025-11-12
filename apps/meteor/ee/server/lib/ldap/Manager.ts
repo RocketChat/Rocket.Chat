@@ -723,8 +723,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const users = await Users.findLDAPUsers().toArray();
-		for await (const user of users) {
+		for await (const user of Users.findLDAPUsers()) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
 				continue;

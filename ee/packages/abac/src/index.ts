@@ -7,6 +7,7 @@ import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.c
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
+import { extractAttribute } from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -28,32 +29,25 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const entries = Object.entries(map || {});
 
-		const extractAttribute = (ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
-			if (!ldapKey || !abacKey) {
-				return;
+		const mergedMap = new Map<string, Set<string>>();
+		for (const [ldapKey, abacKey] of entries) {
+			const attr = extractAttribute(ldapUser, ldapKey, abacKey);
+			if (!attr) {
+				continue;
 			}
-			const raw = ldapUser?.[ldapKey];
-			if (!raw) {
-				return;
+			const existing = mergedMap.get(attr.key);
+			if (!existing) {
+				mergedMap.set(attr.key, new Set(attr.values));
+				continue;
 			}
-			const valuesSet = new Set<string>();
-			if (Array.isArray(raw)) {
-				for (const v of raw) {
-					if (typeof v === 'string' && v.length) {
-						valuesSet.add(v);
-					}
-				}
-			} else if (typeof raw === 'string' && raw.length) {
-				valuesSet.add(raw);
+			for (const v of attr.values) {
+				existing.add(v);
 			}
-			if (!valuesSet.size) {
-				return;
-			}
-			return { key: abacKey, values: Array.from(valuesSet) };
-		};
-		const finalAttributes: IAbacAttributeDefinition[] = entries
-			.map(([ldapKey, abacKey]) => extractAttribute(ldapKey, abacKey))
-			.filter((attr): attr is IAbacAttributeDefinition => !!attr);
+		}
+		const finalAttributes = Array.from(mergedMap.entries()).map<IAbacAttributeDefinition>(([key, valuesSet]) => ({
+			key,
+			values: Array.from(valuesSet),
+		}));
 
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
