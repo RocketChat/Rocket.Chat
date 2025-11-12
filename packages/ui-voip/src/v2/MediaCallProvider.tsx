@@ -19,6 +19,7 @@ import MediaCallContext, { PeerInfo } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
 import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';
+import { useDesktopNotifications } from './useDesktopNotifications';
 import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
@@ -36,6 +37,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const instance = useMediaSessionInstance(userId ?? undefined);
 	const session = useMediaSession(instance);
+
+	useDesktopNotifications(session);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
