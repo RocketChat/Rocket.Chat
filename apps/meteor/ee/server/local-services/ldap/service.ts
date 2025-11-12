@@ -17,4 +17,8 @@ export class LDAPEEService extends ServiceClassInternal implements ILDAPEEServic
 	async syncLogout(): Promise<void> {
 		return LDAPEEManager.syncLogout();
 	}
+
+	async syncAbacAttributes(): Promise<void> {
+		return LDAPEEManager.syncAbacAttributes();
+	}
 }
