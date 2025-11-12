@@ -5,7 +5,6 @@ import { callbacks } from '../../../lib/callbacks';
 import './beforeCreateRoom';
 import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
-import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
 import './methods/fetchMyKeys';
 import './methods/resetOwnE2EKey';
