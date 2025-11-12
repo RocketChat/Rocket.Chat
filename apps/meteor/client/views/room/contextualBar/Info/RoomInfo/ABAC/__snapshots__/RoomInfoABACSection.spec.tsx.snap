@@ -23,10 +23,8 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-at rcx-icon rcx-css-1g87xs3"
-              >
-                
-              </i>
+                class="rcx-box rcx-box--full rcx-icon--name-hash-shield rcx-icon rcx-css-1g87xs3"
+              />
               <div
                 class="rcx-box rcx-box--full rcx-css-1hq8wl6"
               >
