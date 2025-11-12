@@ -20,9 +20,10 @@ const SectionedPreview = ({ block, surfaceRenderer, context }: SectionedPreviewP
 			borderColor='extra-light'
 			maxWidth='345px'
 			backgroundColor='surface-neutral'
+			overflow='hidden'
 		>
 			{sections.map((section, index) => {
-				const { title, action, accessory, variant } = section;
+				const { elements, action, variant } = section;
 				return (
 					<Box
 						key={`${blockId}-${index}`}
@@ -33,9 +34,24 @@ const SectionedPreview = ({ block, surfaceRenderer, context }: SectionedPreviewP
 						justifyContent='space-between'
 						flexDirection='row'
 					>
-						<Box display='flex' alignItems='center' flexDirection='row'>
-							{accessory ? <IconElement block={accessory} context={context} surfaceRenderer={surfaceRenderer} index={index} /> : null}
-							<Box mis={8}>{surfaceRenderer.renderTextObject(title, index, UiKit.BlockContext.NONE)}</Box>
+						<Box display='flex' alignItems='center' flexDirection='row' mi={-4}>
+							{elements.map((element, index) => {
+								if (element.type === 'icon') {
+									return (
+										<Box key={index} mi={4}>
+											<IconElement block={element} context={context} surfaceRenderer={surfaceRenderer} index={index} />
+										</Box>
+									);
+								}
+								if (element.type === 'plain_text') {
+									return (
+										<Box key={index} mi={4}>
+											<>{surfaceRenderer.renderTextObject(element, index, UiKit.BlockContext.NONE)}</>
+										</Box>
+									);
+								}
+								return null;
+							})}
 						</Box>
 						<div>
 							{action ? <IconButtonElement block={action} context={context} surfaceRenderer={surfaceRenderer} index={index} /> : null}

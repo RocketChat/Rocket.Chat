@@ -15,8 +15,10 @@ export const sectionedPreview: readonly UiKit.SectionedPreviewBlock[] = [
 		sections: [
 			{
 				variant: 'foreground',
-				accessory: { type: 'icon', icon: 'phone-issue', variant: 'danger' },
-				title: { type: 'plain_text', text: 'Voice call failed' },
+				elements: [
+					{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
+					{ type: 'plain_text', text: 'Voice call failed' },
+				],
 				action: getIconButtonPayload({ icon: 'info' }),
 			},
 		],
@@ -29,13 +31,15 @@ export const sectionedPreviewMultiple: readonly UiKit.SectionedPreviewBlock[] = 
 		sections: [
 			{
 				variant: 'foreground',
-				accessory: { type: 'icon', icon: 'phone-off', variant: 'default' },
-				title: { type: 'plain_text', text: 'Call ended' },
+				elements: [
+					{ type: 'icon', icon: 'phone-off', variant: 'default' },
+					{ type: 'plain_text', text: 'Call ended' },
+				],
 				action: getIconButtonPayload({ icon: 'info' }),
 			},
 			{
 				variant: 'background',
-				title: { type: 'plain_text', text: '00:58' },
+				elements: [{ type: 'plain_text', text: '00:58' }],
 			},
 		],
 	},
