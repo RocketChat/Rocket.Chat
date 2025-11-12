@@ -613,7 +613,7 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports-coverage
           path: /tmp/coverage_report
