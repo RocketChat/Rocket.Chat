@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.12.0-develop",
+	"version": "7.13.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -79,7 +79,8 @@
 		"lodash": "4.17.21",
 		"mongodb": "6.10.0",
 		"cross-spawn": "7.0.6",
-		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
+		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch",
+		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.3.19",
+	"version": "0.3.20",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -21,7 +21,6 @@
 		"@react-pdf/renderer": "^3.4.5",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
 		"moment": "^2.30.1",
 		"moment-timezone": "^0.5.48",

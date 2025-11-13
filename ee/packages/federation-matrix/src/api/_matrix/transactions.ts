@@ -1,4 +1,5 @@
-import type { HomeserverServices, EventID } from '@rocket.chat/federation-sdk';
+import type { EventID } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -314,13 +315,11 @@ const BackfillResponseSchema = {
 
 const isBackfillResponseProps = ajv.compile(BackfillResponseSchema);
 
-export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, federationAuth } = services;
-
+export const getMatrixTransactionsRoutes = () => {
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
-			.use(isAuthenticatedMiddleware(federationAuth))
+			.use(isAuthenticatedMiddleware())
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -337,7 +336,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					const body = await c.req.json();
 
 					try {
-						await event.processIncomingTransaction(body);
+						await federationSDK.processIncomingTransaction(body);
 					} catch (error: any) {
 						// TODO custom error types?
 						if (error.message === 'too-many-concurrent-transactions') {
@@ -375,7 +374,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateIdsResponseProps,
 					},
 				},
-				canAccessResourceMiddleware(federationAuth, 'room'),
+				canAccessResourceMiddleware('room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -390,7 +389,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						};
 					}
 
-					const stateIds = await event.getStateIds(roomId, eventId as EventID);
+					const stateIds = await federationSDK.getStateIds(roomId, eventId as EventID);
 
 					return {
 						body: stateIds,
@@ -406,7 +405,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 						200: isGetStateResponseProps,
 					},
 				},
-				canAccessResourceMiddleware(federationAuth, 'room'),
+				canAccessResourceMiddleware('room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
@@ -420,7 +419,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 							statusCode: 404,
 						};
 					}
-					const state = await event.getState(roomId, eventId as EventID);
+					const state = await federationSDK.getState(roomId, eventId as EventID);
 					return {
 						statusCode: 200,
 						body: state,
@@ -438,9 +437,9 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				canAccessResourceMiddleware(federationAuth, 'event'),
+				canAccessResourceMiddleware('event'),
 				async (c) => {
-					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
+					const eventData = await federationSDK.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {
 						return {
 							body: {
@@ -473,7 +472,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				canAccessResourceMiddleware(federationAuth, 'room'),
+				canAccessResourceMiddleware('room'),
 				async (c) => {
 					const roomId = c.req.param('roomId');
 					const limit = Number(c.req.query('limit') || 100);
@@ -489,7 +488,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					}
 
 					try {
-						const result = await event.getBackfillEvents(roomId, eventIds as EventID[], limit);
+						const result = await federationSDK.getBackfillEvents(roomId, eventIds as EventID[], limit);
 
 						return {
 							body: result,

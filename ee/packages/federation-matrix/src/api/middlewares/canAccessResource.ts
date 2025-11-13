@@ -1,5 +1,4 @@
-import { errCodes } from '@rocket.chat/federation-sdk';
-import type { EventAuthorizationService } from '@rocket.chat/federation-sdk';
+import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import { every } from 'hono/combine';
 import { createMiddleware } from 'hono/factory';
 
@@ -24,7 +23,7 @@ function extractEntityId(
 	return null;
 }
 
-const canAccessResource = (federationAuth: EventAuthorizationService, entityType: 'event' | 'media' | 'room') =>
+const canAccessResource = (entityType: 'event' | 'media' | 'room') =>
 	createMiddleware(async (c, next) => {
 		try {
 			const mediaId = c.req.param('mediaId');
@@ -36,7 +35,7 @@ const canAccessResource = (federationAuth: EventAuthorizationService, entityType
 				return c.json({ errcode: 'M_INVALID_PARAM', error: `Missing required ${entityType} identifier` }, 400);
 			}
 
-			const resourceAccess = await federationAuth.canAccessResource(entityType, resourceId, c.get('authenticatedServer'));
+			const resourceAccess = await federationSDK.canAccessResource(entityType, resourceId, c.get('authenticatedServer'));
 			if (!resourceAccess) {
 				return c.json(
 					{
@@ -53,5 +52,5 @@ const canAccessResource = (federationAuth: EventAuthorizationService, entityType
 		}
 	});
 
-export const canAccessResourceMiddleware = (federationAuth: EventAuthorizationService, entityType: 'event' | 'media' | 'room') =>
-	every(isAuthenticatedMiddleware(federationAuth), canAccessResource(federationAuth, entityType));
+export const canAccessResourceMiddleware = (entityType: 'event' | 'media' | 'room') =>
+	every(isAuthenticatedMiddleware(), canAccessResource(entityType));
