@@ -83,6 +83,7 @@ export interface IClientMediaCall {
 	busy: boolean;
 	/* if the other side has put the call on hold */
 	remoteHeld: boolean;
+	remoteMute: boolean;
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
