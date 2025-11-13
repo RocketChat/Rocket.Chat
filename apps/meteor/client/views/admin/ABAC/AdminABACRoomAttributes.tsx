@@ -63,7 +63,7 @@ const AdminABACRoomAttributes = () => {
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary mis={8} disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} primary mis={8} disabled={!isABACAvailable === true}>
 						{t('ABAC_New_attribute')}
 					</Button>
 				</Box>

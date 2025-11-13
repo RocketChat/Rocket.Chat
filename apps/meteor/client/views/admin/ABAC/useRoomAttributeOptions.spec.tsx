@@ -8,6 +8,10 @@ const mockNavigate = jest.fn();
 const mockSetModal = jest.fn();
 const mockDispatchToastMessage = jest.fn();
 
+let ABACAvailable = true;
+
+jest.mock('./hooks/useIsABACAvailable', () => jest.fn(() => ABACAvailable));
+
 jest.mock('@rocket.chat/ui-contexts', () => {
 	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
 	return {
@@ -80,7 +84,7 @@ describe('useRoomAttributeItems', () => {
 		});
 	});
 
-	it('should enable edit when ABAC is available', () => {
+	it('should enable edit when ABAC is available', async () => {
 		const { result } = renderHook(() => useRoomAttributeItems(mockAttribute), {
 			wrapper: baseAppRoot
 				.withEndpoint('DELETE', '/v1/abac/attributes/:_id', async () => null)
@@ -88,7 +92,9 @@ describe('useRoomAttributeItems', () => {
 				.build(),
 		});
 
-		expect(result.current[0].disabled).toBe(false);
+		await waitFor(() => {
+			expect(result.current[0].disabled).toBe(false);
+		});
 	});
 
 	it('should navigate to edit page when edit action is clicked', async () => {
@@ -118,6 +124,7 @@ describe('useRoomAttributeItems', () => {
 	});
 
 	it('should disable edit when ABAC is not available', () => {
+		ABACAvailable = false;
 		const { result } = renderHook(() => useRoomAttributeItems(mockAttribute), {
 			wrapper: baseAppRoot
 				.withSetting('ABAC_Enabled', false, {
