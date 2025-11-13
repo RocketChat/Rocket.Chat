@@ -121,7 +121,7 @@ export class LivenessManager {
 
 	public stop() {
 		this.pingAbortController.emit('abort');
-		clearTimeout(this.watchdogTimeout);
+		clearInterval(this.watchdogTimeout);
 		this.watchdogTimeout = null;
 	}
 

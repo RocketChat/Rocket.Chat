@@ -7,10 +7,8 @@ import { Expect, Setup, SetupFixture, SpyOn, Teardown, TeardownFixture, Test, Te
 import debugFactory from 'debug';
 
 import type { DenoRuntimeSubprocessController } from '../../../../src/server/runtime/deno/AppsEngineDenoRuntime';
-import { LivenessManager } from '../../../../src/server/runtime/deno/LivenessManager';
+import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/deno/LivenessManager';
 import { ProcessMessenger } from '../../../../src/server/runtime/deno/ProcessMessenger';
-
-const COMMAND_PING = '_zPING';
 
 @TestFixture()
 export class LivenessManagerTestFixture {
