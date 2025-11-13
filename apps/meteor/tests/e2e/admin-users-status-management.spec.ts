@@ -59,7 +59,7 @@ test.describe.serial('Admin > Users', () => {
 
 		test('After the first login, the user gets listed under the Active tab', async () => {
 			await test.step('should be visible in the All tab', async () => {
-				await adminUsers.getTabByName('Active').click();
+				await adminUsers.getTabByName().click();
 				await adminUsers.searchUser(user.data.username);
 			});
 
