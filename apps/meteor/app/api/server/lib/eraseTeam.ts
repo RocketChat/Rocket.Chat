@@ -1,16 +1,16 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { MeteorError, Team } from '@rocket.chat/core-services';
-import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
-type eraseRoomFnType = (rid: string, userIdOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
+type eraseRoomFnType = (rid: string, userIdOrUser: string | AtLeast<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
 
 export const eraseTeamShared = async (
-	userIdOrUserForUnset: string | Pick<IUser, '_id' | 'username' | 'name'>,
+	userIdOrUserForUnset: string | AtLeast<IUser, '_id' | 'username' | 'name'>,
 	team: ITeam,
 	roomsToRemove: IRoom['_id'][] = [],
 	eraseRoomFn: eraseRoomFnType,
@@ -21,7 +21,7 @@ export const eraseTeamShared = async (
 
 	const user =
 		typeof userIdOrUserForUnset === 'string'
-			? await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(userIdOrUserForUnset, { projection: { username: 1, name: 1 } })
+			? await Users.findOneById<AtLeast<IUser, '_id' | 'username' | 'name'>>(userIdOrUserForUnset, { projection: { username: 1, name: 1 } })
 			: userIdOrUserForUnset;
 
 	if (!user) {
