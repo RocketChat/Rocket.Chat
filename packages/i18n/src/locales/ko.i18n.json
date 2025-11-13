@@ -4044,5 +4044,6 @@
   "__usernames__and__count__more_joined": "{{usernames}} 과 {{count}} 더 가입함",
   "__usernames__joined": "{{usernames}} 입장함",
   "__usersCount__joined": "{{count}} 입장함",
-  "__usersCount__people_will_be_invited": "{{usersCount}} 사람을 초대함"
+  "__usersCount__people_will_be_invited": "{{usersCount}} 사람을 초대함",
+  "Incoming_call": "수신 전화..."
 }

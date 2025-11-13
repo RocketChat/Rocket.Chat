@@ -5405,5 +5405,6 @@
   },
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} többé már nem {{role}} {{user_by}} által",
   "__username__was_set__role__by__user_by_": "{{username}} most már {{role}} {{user_by}} által",
-  "__usersCount__people_will_be_invited": "{{usersCount}} személy lesz meghívva"
+  "__usersCount__people_will_be_invited": "{{usersCount}} személy lesz meghívva",
+  "Incoming_call": "Bejövő hívás..."
 }

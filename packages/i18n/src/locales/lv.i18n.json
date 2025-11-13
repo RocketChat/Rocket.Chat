@@ -2745,5 +2745,6 @@
   "yesterday": "vakar",
   "your_message": "Jūsu ziņojums",
   "your_message_optional": "Jūsu ziņojums (nav obligāti)",
-  "__username__was_set__role__by__user_by_": "{{username}} tika iestatīts {{role}} {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} tika iestatīts {{role}} {{user_by}}",
+  "Incoming_call": "Ienākošais zvans..."
 }

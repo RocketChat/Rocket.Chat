@@ -2733,5 +2733,6 @@
   "you_are_in_preview_mode_of": "คุณอยู่ในโหมดดูตัวอย่างของช่อง # <strong>{{room_name}}</strong>",
   "your_message": "ข้อความของคุณ",
   "your_message_optional": "ข้อความของคุณ (ไม่จำเป็น)",
-  "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ไม่ไช่ {{role}} by {{user_by}}"
+  "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ไม่ไช่ {{role}} by {{user_by}}",
+  "Incoming_call": "สายเข้า..."
 }

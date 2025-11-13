@@ -2741,5 +2741,6 @@
   "your_message": "tvoja poruka",
   "your_message_optional": "tvoja poruka (opcionalno)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{user_by}} je uklonio {{username}} iz {{role}} grupe",
-  "__username__was_set__role__by__user_by_": "{{user_by}} je postavio {{username}} u {{role}} grupu "
+  "__username__was_set__role__by__user_by_": "{{user_by}} je postavio {{username}} u {{role}} grupu ",
+  "Incoming_call": "Dolazni poziv..."
 }

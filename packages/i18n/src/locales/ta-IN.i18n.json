@@ -2750,5 +2750,6 @@
   "your_message": "உங்கள் தகவல்",
   "your_message_optional": "உங்கள் செய்தி (விரும்பினால்)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} {{user_by}} மூலம், {{role}} இனி ஆகிறது",
-  "__username__was_set__role__by__user_by_": "{{username}} {{user_by}} மூலம் {{role}} அமைக்கப்பட்டது"
+  "__username__was_set__role__by__user_by_": "{{username}} {{user_by}} மூலம் {{role}} அமைக்கப்பட்டது",
+  "Incoming_call": "வருகிற அழைப்பு..."
 }

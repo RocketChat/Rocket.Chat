@@ -2744,5 +2744,6 @@
   "your_message": "твоето съобщение",
   "your_message_optional": "Вашето съобщение (по избор)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} вече не е {{role}} от {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} бе зададено {{role}} от {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} бе зададено {{role}} от {{user_by}}",
+  "Incoming_call": "Входящо обаждане..."
 }

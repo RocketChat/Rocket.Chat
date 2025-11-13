@@ -5091,5 +5091,6 @@
   "__departments__departments_and__count__conversations__period__": "{{departments}} departamentos y {{count}} conversaciones, {{period}}",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ya no es {{role}} (por {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{username}} se ha establecido como {{role}} por {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados"
+  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados",
+  "Incoming_call": "Llamada entrante..."
 }

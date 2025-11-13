@@ -2738,5 +2738,6 @@
   "your_message": "peyama we",
   "your_message_optional": "Peyama we (bijartî)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} e êdî {{role}}, ji aliyê {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} {{role}} destê {{user_by}} hat avakirin"
+  "__username__was_set__role__by__user_by_": "{{username}} {{role}} destê {{user_by}} hat avakirin",
+  "Incoming_call": "Bangî tê de..."
 }

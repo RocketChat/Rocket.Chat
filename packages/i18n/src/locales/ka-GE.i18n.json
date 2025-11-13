@@ -3674,5 +3674,6 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} ცარიელი ოთახი ავტომატურად მოიხსნება.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> ცარიელი ოთახები ავტომატურად წაიშლება: <br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}}ჩამეორთვა {{role}} {{user_by}}მიერ",
-  "__username__was_set__role__by__user_by_": "{{username}} -ს მისცა {{role}} უფლება მომხმარებელმა: {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} -ს მისცა {{role}} უფლება მომხმარებელმა: {{user_by}}",
+  "Incoming_call": "შემოსული ზარი..."
 }

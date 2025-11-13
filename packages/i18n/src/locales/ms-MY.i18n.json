@@ -2757,5 +2757,6 @@
   "you_are_in_preview_mode_of": "Anda berapa di dalam mod pralihat saluran #<strong>{{room_name}}</strong>",
   "your_message": "mesej anda",
   "your_message_optional": "mesej anda (pilihan)",
-  "__username__was_set__role__by__user_by_": "{{username}} ditubuhkan {{role}} oleh {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} ditubuhkan {{role}} oleh {{user_by}}",
+  "Incoming_call": "Panggilan masuk..."
 }

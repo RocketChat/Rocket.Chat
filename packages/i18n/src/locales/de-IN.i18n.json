@@ -3047,5 +3047,6 @@
   "your_message": "Deine Nachricht",
   "your_message_optional": "Deine optionale Nachricht",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ist nicht länger {{role}}, geändert durch {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} ist jetzt {{role}}, geändert durch {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} ist jetzt {{role}}, geändert durch {{user_by}}",
+  "Incoming_call": "Eingehender Anruf..."
 }

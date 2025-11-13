@@ -6090,5 +6090,6 @@
   "__departments__departments_and__count__conversations__period__": "{{departments}} विभाग और {{count}} बातचीत, {{period}}",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is no longer {{role}} by {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} was set {{role}} by {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} लोगों को आमंत्रित किया जाएगा"
+  "__usersCount__people_will_be_invited": "{{usersCount}} लोगों को आमंत्रित किया जाएगा",
+  "Incoming_call": "आने वाली कॉल..."
 }

@@ -4665,5 +4665,6 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} sales buides seran eliminades automàticament.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> sales buides seran eliminades automàticament: <br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ja no és {{role}} (per {{user_by}})",
-  "__username__was_set__role__by__user_by_": "Ara {{username}} és {{role}} (per {{user_by}})"
+  "__username__was_set__role__by__user_by_": "Ara {{username}} és {{role}} (per {{user_by}})",
+  "Incoming_call": "Trucada entrant..."
 }

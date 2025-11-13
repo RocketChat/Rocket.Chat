@@ -2756,5 +2756,6 @@
   "your_message": "pesan Anda",
   "your_message_optional": "pesan Anda (opsional)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} tidak lagi {{role}} oleh {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} ditetapkan {{role}} oleh {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} ditetapkan {{role}} oleh {{user_by}}",
+  "Incoming_call": "Panggilan masuk..."
 }

@@ -2749,5 +2749,6 @@
   "your_message": "via mesaĝo",
   "your_message_optional": "via mesaĝo (laŭvola)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ne plu estas {{role}} per {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} estis difinita {{role}} per {{user_by}}"
+  "__username__was_set__role__by__user_by_": "{{username}} estis difinita {{role}} per {{user_by}}",
+  "Incoming_call": "Envenanta alvoko..."
 }

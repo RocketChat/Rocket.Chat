@@ -2739,5 +2739,6 @@
   "you_are_in_preview_mode_of": "Та сувгийн урьдчилан харах горимд байна <strong>{{room_name}}</strong>",
   "your_message": "таны зурвас",
   "your_message_optional": "таны мессеж (заавал биш)",
-  "__count__empty_rooms_will_be_removed_automatically": "{{count}} тооны хоосон өрөөнүүд автоматаар устгагдах болно"
+  "__count__empty_rooms_will_be_removed_automatically": "{{count}} тооны хоосон өрөөнүүд автоматаар устгагдах болно",
+  "Incoming_call": "Ирж буй дуудлага..."
 }

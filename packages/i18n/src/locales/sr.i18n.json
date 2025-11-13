@@ -2546,5 +2546,6 @@
   "yesterday": "јуче",
   "you_are_in_preview_mode_of": "Ви сте у режиму прегледа од канала # <strong>{{room_name}}</strong>",
   "your_message": "Ваша порука",
-  "your_message_optional": "Ваша порука (опционално)"
+  "your_message_optional": "Ваша порука (опционално)",
+  "Incoming_call": "Dolazni poziv..."
 }

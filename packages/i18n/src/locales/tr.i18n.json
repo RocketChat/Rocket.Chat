@@ -3257,5 +3257,6 @@
   "your_message": "iletiniz",
   "your_message_optional": "iletiniz (isteğe bağlı)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} adlı kullanıcı {{user_by}} tarafından {{role}} rolünden çıkarıldı.",
-  "__username__was_set__role__by__user_by_": "{{username}} adlı kullanıcı {{user_by}} tarafından {{role}} rolüne atandı."
+  "__username__was_set__role__by__user_by_": "{{username}} adlı kullanıcı {{user_by}} tarafından {{role}} rolüne atandı.",
+  "Incoming_call": "Gelen arama..."
 }
