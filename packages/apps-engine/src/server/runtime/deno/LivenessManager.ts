@@ -192,7 +192,7 @@ export class LivenessManager {
 	}
 
 	private handleExit(exitCode: number, signal: string) {
-		this.pingAbortController.emit('abort');
+		this.stop();
 
 		const processState = this.controller.getProcessState();
 		// If the we're restarting the process, or want to stop the process, or it exited cleanly, nothing else for us to do
