@@ -748,8 +748,92 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return false;
 	}
 
-	protected async onSubjectAttributesChanged(_user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
-		// no-op (hook point for when a user loses an ABAC attribute or value)
+	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
+		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length) {
+			return;
+		}
+
+		const roomIds: string[] = user.__rooms;
+
+		try {
+			// No attributes: no rooms :(
+			if (!_next.length) {
+				const cursor = Rooms.find(
+					{
+						_id: { $in: roomIds },
+						abacAttributes: { $exists: true, $ne: [] },
+					},
+					{ projection: { _id: 1 } },
+				);
+
+				const removalPromises: Promise<void>[] = [];
+				for await (const room of cursor) {
+					removalPromises.push(
+						limit(() =>
+							Room.removeUserFromRoom(room._id, user, {
+								skipAppPreEvents: true,
+								customSystemMessage: 'abac-removed-user-from-room' as const,
+							}),
+						),
+					);
+				}
+
+				await Promise.all(removalPromises);
+				return;
+			}
+
+			const query = {
+				_id: { $in: roomIds },
+				$or: this.buildRoomNonCompliantConditionsFromSubject(_next),
+			};
+
+			const cursor = Rooms.find(query, { projection: { _id: 1 } });
+
+			const removalPromises: Promise<unknown>[] = [];
+			for await (const room of cursor) {
+				console.log(room);
+				removalPromises.push(
+					limit(() =>
+						Room.removeUserFromRoom(room._id, user, {
+							skipAppPreEvents: true,
+							customSystemMessage: 'abac-removed-user-from-room' as const,
+						}),
+					),
+				);
+			}
+
+			await Promise.all(removalPromises);
+		} catch (err) {
+			this.logger.error({
+				msg: 'Failed to query and remove user from non-compliant ABAC rooms',
+				err,
+			});
+		}
+	}
+
+	private buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IAbacAttributeDefinition[]) {
+		const map = new Map(subjectAttributes.map((a) => [a.key, new Set(a.values)]));
+		const userKeys = Array.from(map.keys());
+		const conditions = [];
+		conditions.push({
+			abacAttributes: {
+				$elemMatch: {
+					key: { $nin: userKeys },
+				},
+			},
+		});
+		for (const [key, valuesSet] of map.entries()) {
+			const valuesArr = Array.from(valuesSet);
+			conditions.push({
+				abacAttributes: {
+					$elemMatch: {
+						key,
+						values: { $elemMatch: { $nin: valuesArr } },
+					},
+				},
+			});
+		}
+		return conditions;
 	}
 }
 

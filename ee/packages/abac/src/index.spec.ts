@@ -1252,4 +1252,143 @@ describe('AbacService (unit)', () => {
 			]);
 		});
 	});
+	describe('buildRoomNonCompliantConditionsFromSubject (private)', () => {
+		const invoke = (defs: IAbacAttributeDefinition[]) => (service as any).buildRoomNonCompliantConditionsFromSubject(defs) as any[];
+
+		it('returns a single $nin condition when given no subject attributes', () => {
+			const result = invoke([]);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: [] },
+					},
+				},
+			});
+		});
+
+		it('builds conditions for a single attribute with multiple values', () => {
+			const result = invoke([{ key: 'dept', values: ['eng', 'sales'] }]);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['eng', 'sales'] } },
+					},
+				},
+			});
+		});
+
+		it('deduplicates attribute values and preserves key insertion order', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['eng', 'sales', 'eng'] },
+				{ key: 'region', values: ['emea', 'emea', 'apac'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(3);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept', 'region'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['eng', 'sales'] } },
+					},
+				},
+			});
+			expect(result[2]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'region',
+						values: { $elemMatch: { $nin: ['emea', 'apac'] } },
+					},
+				},
+			});
+		});
+
+		it('overrides duplicated keys using the last occurrence only', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'dept', values: ['support'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['support'] } },
+					},
+				},
+			});
+		});
+
+		it('is resilient to mixed ordering of attributes', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'b', values: ['2', '1'] },
+				{ key: 'a', values: ['x'] },
+				{ key: 'c', values: ['z', 'z', 'y'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(4);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['b', 'a', 'c'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'b',
+						values: { $elemMatch: { $nin: ['2', '1'] } },
+					},
+				},
+			});
+			expect(result[2]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'a',
+						values: { $elemMatch: { $nin: ['x'] } },
+					},
+				},
+			});
+			expect(result[3]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'c',
+						values: { $elemMatch: { $nin: ['z', 'y'] } },
+					},
+				},
+			});
+		});
+
+		it('does not mutate the input definitions array or their internal values', () => {
+			const defs: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['eng', 'sales'] }];
+			const copy = JSON.parse(JSON.stringify(defs));
+			invoke(defs);
+			expect(defs).toEqual(copy);
+		});
+	});
 });
