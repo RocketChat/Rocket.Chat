@@ -34,6 +34,11 @@ const InternalUser = ({ displayName, avatarUrl, callerId, status, slots }: Inter
 						{remoteStatusText ? ` - ${remoteStatusText}` : undefined}
 					</Box>
 				)}
+				{!callerId && remoteStatusText && (
+					<Box fontScale='c1' color='secondary-info'>
+						{remoteStatusText}
+					</Box>
+				)}
 			</Box>
 		</Box>
 	);
