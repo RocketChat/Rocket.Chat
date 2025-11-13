@@ -6,11 +6,10 @@ import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import type { BlockProps } from '../utils/BlockProps';
 
-type SectionedPreviewProps = BlockProps<UiKit.SectionedPreviewBlock>;
+type InfoCardProps = BlockProps<UiKit.InfoCardBlock>;
 
-const SectionedPreview = ({ block, surfaceRenderer, context }: SectionedPreviewProps): ReactElement => {
-	console.log('SectionedPreview', block, context);
-	const { sections, blockId } = block;
+const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElement => {
+	const { rows, blockId } = block;
 	return (
 		<Box
 			display='flex'
@@ -22,13 +21,13 @@ const SectionedPreview = ({ block, surfaceRenderer, context }: SectionedPreviewP
 			backgroundColor='surface-neutral'
 			overflow='hidden'
 		>
-			{sections.map((section, index) => {
-				const { elements, action, variant } = section;
+			{rows.map((row, index) => {
+				const { elements, action, background } = row;
 				return (
 					<Box
 						key={`${blockId}-${index}`}
 						padding={16}
-						backgroundColor={variant === 'foreground' ? 'surface-light' : undefined}
+						backgroundColor={background === 'default' ? 'surface-light' : undefined}
 						display='flex'
 						alignItems='center'
 						justifyContent='space-between'
@@ -63,4 +62,4 @@ const SectionedPreview = ({ block, surfaceRenderer, context }: SectionedPreviewP
 	);
 };
 
-export default SectionedPreview;
+export default InfoCard;

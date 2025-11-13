@@ -43,7 +43,7 @@ export { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export { LayoutBlock } from './blocks/LayoutBlock';
 export { CalloutBlock } from './blocks/layout/CalloutBlock';
 export { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
-export { SectionedPreviewBlock } from './blocks/layout/SectionedPreviewBlock';
+export { InfoCardBlock } from './blocks/layout/InfoCardBlock';
 
 export { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
 

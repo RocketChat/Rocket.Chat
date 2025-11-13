@@ -4,13 +4,13 @@ import type { IconButtonElement } from '../elements/IconButtonElement';
 import type { IconElement } from '../elements/IconElement';
 import type { PlainText } from '../text/PlainText';
 
-type PreviewSection = {
-	variant: 'foreground' | 'background';
+type InfoCardRow = {
+	background: 'default' | 'secondary';
 	elements: readonly (IconElement | PlainText)[];
 	action?: IconButtonElement;
 };
 
-export type SectionedPreviewBlock = LayoutBlockish<{
-	type: `${LayoutBlockType.SECTIONED_PREVIEW}`;
-	sections: readonly PreviewSection[];
+export type InfoCardBlock = LayoutBlockish<{
+	type: `${LayoutBlockType.INFO_CARD}`;
+	rows: readonly InfoCardRow[];
 }>;

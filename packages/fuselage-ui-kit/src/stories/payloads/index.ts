@@ -7,4 +7,4 @@ export * from './image';
 export * from './input';
 export * from './section';
 export * from './preview';
-export * from './sectionedPreview';
+export * from './infoCard';

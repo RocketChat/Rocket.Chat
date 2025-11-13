@@ -5,11 +5,11 @@ import type { ContextBlock } from './layout/ContextBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
 import type { ImageBlock } from './layout/ImageBlock';
+import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
-import type { SectionedPreviewBlock } from './layout/SectionedPreviewBlock';
 
 export type LayoutBlock =
 	| PreviewBlock
@@ -23,4 +23,4 @@ export type LayoutBlock =
 	| VideoConferenceBlock
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock
-	| SectionedPreviewBlock;
+	| InfoCardBlock;

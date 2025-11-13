@@ -1,6 +1,6 @@
-import type * as UiKit from '@rocket.chat/ui-kit';
+import type { LayoutBlock, IconElement, IconButtonElement } from '@rocket.chat/ui-kit';
 
-const getIconButtonPayload = (icon: Partial<UiKit.IconElement>, label?: string): UiKit.IconButtonElement => ({
+const getIconButtonPayload = (icon: Partial<IconElement>, label?: string): IconButtonElement => ({
 	appId: 'dummy-app-id',
 	blockId: 'dummy-block-id',
 	actionId: 'dummy-action-id',
@@ -9,28 +9,29 @@ const getIconButtonPayload = (icon: Partial<UiKit.IconElement>, label?: string):
 	label: label ?? 'Call history',
 });
 
-export const sectionedPreview: readonly UiKit.SectionedPreviewBlock[] = [
-	{
-		type: 'sectioned_preview',
-		sections: [
+
+export const infoCardPlain: readonly LayoutBlock[] = [
+    {
+		type: 'info_card',
+		rows: [
 			{
-				variant: 'foreground',
+				background: 'default',
 				elements: [
 					{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
-					{ type: 'plain_text', text: 'Voice call failed' },
+					{ type: 'plain_text', text: 'Call failed' },
 				],
 				action: getIconButtonPayload({ icon: 'info' }),
 			},
 		],
 	},
-] as const;
+];
 
-export const sectionedPreviewMultiple: readonly UiKit.SectionedPreviewBlock[] = [
-	{
-		type: 'sectioned_preview',
-		sections: [
+export const infoCardMultipleRows: readonly LayoutBlock[] = [
+    {
+		type: 'info_card',
+		rows: [
 			{
-				variant: 'foreground',
+				background: 'default',
 				elements: [
 					{ type: 'icon', icon: 'phone-off', variant: 'default' },
 					{ type: 'plain_text', text: 'Call ended' },
@@ -38,9 +39,11 @@ export const sectionedPreviewMultiple: readonly UiKit.SectionedPreviewBlock[] = 
 				action: getIconButtonPayload({ icon: 'info' }),
 			},
 			{
-				variant: 'background',
+				background: 'secondary',
 				elements: [{ type: 'plain_text', text: '00:58' }],
 			},
 		],
 	},
-] as const;
+];
+
+

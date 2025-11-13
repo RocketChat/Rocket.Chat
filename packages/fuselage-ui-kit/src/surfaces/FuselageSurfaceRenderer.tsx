@@ -9,7 +9,7 @@ import ImageBlock from '../blocks/ImageBlock';
 import InputBlock from '../blocks/InputBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
-import SectionedPreview from '../blocks/SectionedPreview';
+import InfoCard from '../blocks/InfoCard';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
 import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
@@ -64,7 +64,7 @@ type FuselageSurfaceRendererProps = ConstructorParameters<typeof UiKit.SurfaceRe
 
 export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
 	public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
-		super(allowedBlocks || ['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'sectioned_preview']);
+		super(allowedBlocks || ['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'info_card']);
 	}
 
 	public plain_text(textObject: UiKit.PlainText, context: UiKit.BlockContext, index: number): ReactElement | null {
@@ -346,12 +346,12 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return null;
 	}
 
-	sectioned_preview(block: UiKit.SectionedPreviewBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+	info_card(block: UiKit.InfoCardBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
 		if (context !== UiKit.BlockContext.BLOCK) {
 			return null;
 		}
 
-		return <SectionedPreview block={block} context={context} index={index} surfaceRenderer={this} />;
+		return <InfoCard block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	icon(block: UiKit.IconElement, context: UiKit.BlockContext, index: number): ReactElement | null {

@@ -52,7 +52,7 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
-import { sectionedPreviewPlain, sectionedPreviewMultipleSections } from './sectionedPreview';
+import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import { disabled, plain, selected } from '../tabNavigation';
 import { actionWithToggleSwitch } from '../action/toggleSwitch';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -233,15 +233,15 @@ const BlocksTree: Item = [
     ],
   },
   {
-    label: 'sectioned preview',
+    label: 'info card',
     branches: [
       {
         label: 'plain',
-        payload: sectionedPreviewPlain,
+        payload: infoCardPlain,
       },
       {
         label: 'multiple sections',
-        payload: sectionedPreviewMultipleSections,
+        payload: infoCardMultipleRows,
       },
     ],
   },
