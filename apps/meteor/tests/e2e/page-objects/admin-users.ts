@@ -37,7 +37,7 @@ export class AdminUsers extends Admin {
 	}
 
 	getUserRowByUsername(username: string): Locator {
-		return this.page.locator('tr', { hasText: username });
+		return this.page.locator('tr', { hasText: username }).first();
 	}
 
 	getTabByName(name: 'All' | 'Pending' | 'Active' | 'Deactivated' = 'All'): Locator {
