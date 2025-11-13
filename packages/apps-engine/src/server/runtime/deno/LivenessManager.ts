@@ -115,6 +115,8 @@ export class LivenessManager {
 
 			this.ping();
 		}, this.options.pingIntervalInMS);
+
+		this.watchdogTimeout.unref();
 	}
 
 	public stop() {
