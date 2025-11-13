@@ -5,6 +5,7 @@ import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSke
 import BaseGroupPage from '../groups/BaseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
+import OpenIDConnectGroupPage from '../groups/OpenIDConnectGroupPage/OpenIDConnectGroupPage';
 import VoipGroupPage from '../groups/VoipGroupPage';
 
 type SettingsGroupSelectorProps = {
@@ -21,6 +22,10 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 
 	if (groupId === 'OAuth') {
 		return <OAuthGroupPage {...group} onClickBack={onClickBack} />;
+	}
+
+	if (groupId === 'OpenID_Connect') {
+		return <OpenIDConnectGroupPage />;
 	}
 
 	if (groupId === 'LDAP') {
