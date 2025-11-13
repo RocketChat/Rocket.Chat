@@ -19,7 +19,7 @@ import {
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -33,6 +33,8 @@ import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
+	const layoutDefaultExpanded = !!location.hash;
+	const lastHash = useRef('');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const preferencesValues = useAccessiblityPreferencesValues();
 
@@ -47,6 +49,17 @@ const AccessibilityPage = () => {
 		],
 		[t],
 	);
+
+	useEffect(() => {
+		if (location.hash) {
+			lastHash.current = location.hash.slice(1);
+		}
+
+		if (lastHash.current && document.getElementById(lastHash.current)) {
+			document.getElementById(lastHash.current)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			lastHash.current = '';
+		}
+	}, []);
 
 	const pageFormId = useId();
 	const fontSizeId = useId();
@@ -131,7 +144,7 @@ const AccessibilityPage = () => {
 								);
 							})}
 						</AccordionItem>
-						<AccordionItem title={t('Adjustable_layout')}>
+						<AccordionItem title={t('Adjustable_layout')} defaultExpanded={layoutDefaultExpanded}>
 							<FieldGroup>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
@@ -169,7 +182,9 @@ const AccessibilityPage = () => {
 									</FieldDescription>
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={clockModeId}>{t('Message_TimeFormat')}</FieldLabel>
+									<FieldLabel htmlFor={clockModeId} id='timeformat'>
+										{t('Message_TimeFormat')}
+									</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='clockMode'
@@ -182,7 +197,9 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={hideUsernamesId}>{t('Show_usernames')}</FieldLabel>
+										<FieldLabel htmlFor={hideUsernamesId} id='usernames'>
+											{t('Show_usernames')}
+										</FieldLabel>
 										<Controller
 											name='hideUsernames'
 											control={control}
@@ -201,7 +218,9 @@ const AccessibilityPage = () => {
 								{displayRolesEnabled && (
 									<Field>
 										<FieldRow>
-											<FieldLabel htmlFor={hideRolesId}>{t('Show_roles')}</FieldLabel>
+											<FieldLabel htmlFor={hideRolesId} id='roles'>
+												{t('Show_roles')}
+											</FieldLabel>
 											<Controller
 												name='hideRoles'
 												control={control}
