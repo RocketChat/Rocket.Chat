@@ -21,7 +21,7 @@ export const useChangeAdminStatusAction = (
 		try {
 			if (isAdmin) {
 				await removeUserFromRoleEndpoint({ roleId: 'admin', username });
-				dispatchToastMessage({ type: 'info', message: t('User_is_no_longer_an_admin') });
+				dispatchToastMessage({ type: 'success', message: t('User_is_no_longer_an_admin') });
 				onChange();
 				return;
 			}
