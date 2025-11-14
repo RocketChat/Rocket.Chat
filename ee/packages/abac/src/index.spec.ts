@@ -43,6 +43,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
 		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
 }));

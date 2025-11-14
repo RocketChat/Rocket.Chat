@@ -52,16 +52,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
-				await Users.updateOne({ _id: user._id }, { $unset: { abacAttributes: 1 } });
-				await this.onSubjectAttributesChanged(user, []);
+				const finalUser = await Users.findOneAndUpdate({ _id: user._id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
+				await this.onSubjectAttributesChanged(finalUser!, []);
 			}
 			return;
 		}
 
-		await Users.updateOne({ _id: user._id }, { $set: { abacAttributes: finalAttributes } });
+		const finalUser = await Users.findOneAndUpdate(
+			{ _id: user._id },
+			{ $set: { abacAttributes: finalAttributes } },
+			{ returnDocument: 'after' },
+		);
 
 		if (this.didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
-			await this.onSubjectAttributesChanged(user, finalAttributes);
+			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
 		}
 
 		this.logger.debug({
@@ -791,7 +795,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const removalPromises: Promise<unknown>[] = [];
 			for await (const room of cursor) {
-				console.log(room);
 				removalPromises.push(
 					limit(() =>
 						Room.removeUserFromRoom(room._id, user, {
