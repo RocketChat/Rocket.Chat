@@ -1,6 +1,7 @@
+import type { Option } from '@rocket.chat/fuselage';
 import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ComponentPropsWithoutRef, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +32,7 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 			endReached={() => fetchNextPage()}
 			onBlur={onBlur}
 			onChange={onChange}
-			renderItem={({ label, value, ...props }) => (
+			renderItem={({ label, value, ...props }: ComponentPropsWithoutRef<typeof Option>) => (
 				<CheckOption {...props} label={label} selected={value ? selectedValues.has(value) : false} />
 			)}
 		/>
