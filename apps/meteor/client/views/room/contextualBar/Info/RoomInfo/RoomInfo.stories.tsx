@@ -1,4 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomInfo from './RoomInfo';
@@ -70,6 +71,14 @@ Broadcast.args = {
 };
 
 export const ABAC = Template.bind({});
+ABAC.decorators = [
+	mockAppRoot().withSetting('ABAC_Enabled', true).withSetting('ABAC_ShowAttributesInRooms', true).buildStoryDecorator(),
+	(fn) => (
+		<FakeRoomProvider roomOverrides={roomArgs}>
+			<Contextualbar height='100vh'>{fn()}</Contextualbar>
+		</FakeRoomProvider>
+	),
+];
 ABAC.args = {
 	...Default.args,
 	room: {

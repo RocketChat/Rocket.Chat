@@ -130,7 +130,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
 						{/* @ts-expect-error - abacAttributes is not yet implemented in Rooms properties */}
-						{room.abacAttributes !== undefined && room.abacAttributes.length > 0 && <RoomInfoABACSection room={room} />}
+						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>

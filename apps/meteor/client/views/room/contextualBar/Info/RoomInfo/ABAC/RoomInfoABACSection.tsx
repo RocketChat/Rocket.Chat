@@ -41,19 +41,23 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 
 				{t('ABAC_Managed_description')}
 
-				<InfoPanelLabel>{t('ABAC_Room_Attributes')}</InfoPanelLabel>
-				{room.abacAttributes.map((attribute) => (
-					<Box key={attribute.name} mb={16}>
-						{attribute.name}
-						<Box display='flex' mbs={8} alignItems='center'>
-							{attribute.values.map((value) => (
-								<Box mie={4} key={value}>
-									<Tag medium>{value}</Tag>
-								</Box>
-							))}
+				<InfoPanelLabel id='room-attributes-list-label'>{t('ABAC_Room_Attributes')}</InfoPanelLabel>
+				<Box aria-labelledby='room-attributes-list-label'>
+					{room.abacAttributes.map((attribute) => (
+						<Box key={attribute.name} mb={16}>
+							<Box is='span' id={`room-attribute-${attribute.name}-label`}>
+								{attribute.name}
+							</Box>
+							<Box display='flex' mbs={8} alignItems='center' aria-labelledby={`room-attribute-${attribute.name}-label`}>
+								{attribute.values.map((value) => (
+									<Box mie={4} key={value}>
+										<Tag medium>{value}</Tag>
+									</Box>
+								))}
+							</Box>
 						</Box>
-					</Box>
-				))}
+					))}
+				</Box>
 			</InfoPanelField>
 		</>
 	);
