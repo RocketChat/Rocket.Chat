@@ -148,9 +148,8 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click();
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
@@ -224,8 +223,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.btnCreate.click();
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		// Send Unencrypted Messages
 		await poHomeChannel.content.sendMessage('first unencrypted message');
@@ -272,15 +271,15 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionStarMessage.click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionPinMessage.click();
 		await poHomeChannel.content.btnModalConfirm.click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await pinnedMessagesTab.openTab();
 		await pinnedMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');

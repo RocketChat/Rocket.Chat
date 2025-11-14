@@ -59,7 +59,7 @@ test.describe('enforce two factor authentication', () => {
 		await expect(poAccountProfile.email2FASwitch).toBeVisible();
 		await poAccountProfile.email2FASwitch.click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.toastMessage.waitForDisplay();
 		await expect(poHomeChannel.sidenav.sidebarHomeAction).toBeVisible();
 		await expect(poAccountProfile.securityHeader).not.toBeVisible();
 	});

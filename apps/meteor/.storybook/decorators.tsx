@@ -20,10 +20,6 @@ export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
 		document.head.appendChild(linkElement);
 	}
 
-	/* eslint-disable @typescript-eslint/no-var-requires */
-	/* eslint-disable-next-line */
-	const { default: icons } = require('!!raw-loader!../private/public/icons.svg');
-
 	return (
 		<MockedAppRoot>
 			<ServerContextMock {...parameters.serverContext}>
@@ -35,7 +31,6 @@ export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
 									background-color: white;
 								}
 							`}</style>
-							<div dangerouslySetInnerHTML={{ __html: icons }} />
 							<div className='color-primary-font-color'>{fn()}</div>
 						</RouterContextMock>
 					</ModalContextMock>

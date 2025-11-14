@@ -16,3 +16,4 @@ export * from './menu';
 export * from './pinned-messages-tab';
 export * from './room-toolbar';
 export * from './starred-messages-tab';
+export * from './toolbar';

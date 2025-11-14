@@ -1,4 +1,4 @@
-import { NavBarDivider, NavBarGroup, NavBarSection } from '@rocket.chat/fuselage';
+import { NavBarGroup, NavBarSection } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 
 import NavBarPagesGroup from './NavBarPagesGroup';
@@ -14,7 +14,6 @@ const NavBarPagesSection = () => {
 					<NavBarGroup>
 						<SidebarTogglerV2 />
 					</NavBarGroup>
-					<NavBarDivider />
 				</>
 			)}
 			<NavBarPagesGroup />

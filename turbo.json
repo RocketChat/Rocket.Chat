@@ -14,7 +14,6 @@
 			"outputs": ["dist/**"]
 		},
 		"test-storybook": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {
