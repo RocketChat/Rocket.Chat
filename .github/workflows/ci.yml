@@ -23,7 +23,7 @@ env:
 jobs:
   release-versions:
     name: ⚙️ Variables Setup
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
@@ -31,7 +31,6 @@ jobs:
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
-      services: ${{ steps.var.outputs.services }}
       source-hash: ${{ steps.source.outputs.hash }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
@@ -69,6 +68,9 @@ jobs:
 
           SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v3
 
+          # Uncomment the following line to include the run ID in the hash and disable caching between runs
+          # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
+
           echo hash=${SOURCE_HASH}
 
           echo hash=${SOURCE_HASH} >> $GITHUB_OUTPUT
@@ -87,8 +89,6 @@ jobs:
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
           echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
-
-          echo "services=[\"rocketchat\",\"authorization-service\",\"account-service\",\"ddp-streamer-service\",\"presence-service\",\"stream-hub-service\",\"queue-worker-service\",\"omnichannel-transcript-service\"]" >> $GITHUB_OUTPUT
 
       - id: by-tag
         run: |
@@ -121,7 +121,7 @@ jobs:
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     needs: [release-versions]
     steps:
       - uses: actions/checkout@v5
@@ -164,7 +164,7 @@ jobs:
   packages-build:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
         uses: actions/cache@v4
@@ -173,8 +173,6 @@ jobs:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
           key: ${{ runner.OS }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
-          restore-keys: |
-            ${{ runner.os }}-packages-build-
 
       - name: Debug cache-hit
         run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
@@ -222,7 +220,7 @@ jobs:
             $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -230,7 +228,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: turbo-build
           path: .turbo/cache
@@ -240,12 +238,16 @@ jobs:
   build:
     name: 📦 Meteor Build (${{ matrix.type }})
     needs: [release-versions, packages-build]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     strategy:
       fail-fast: false
       matrix:
-        type: ['production', 'coverage']
+        type:
+          - production
+          - coverage
+        exclude:
+          - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -276,38 +278,100 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: ['amd64', 'arm64']
-        service: ${{ fromJson(needs.release-versions.outputs.services) }}
-        type: ['production']
+        arch: [arm64, amd64]
+        service:
+          [
+            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
+            [rocketchat],
+          ]
+        type:
+          # if running in a PR build with coverage
+          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
         include:
-          # for rocketchat monolith and on develop branch builds we create a coverage image to run tests against it
-          # and keep the baseline of the coverage for other PRs
+          # if not, build with coverage for tests
           - arch: amd64
-            service: rocketchat
+            service: [rocketchat]
+            type: coverage
+          - arch: arm64
+            service: [rocketchat]
             type: coverage
 
     steps:
       - uses: actions/checkout@v5
 
+      - name: Restore packages build
+        uses: actions/download-artifact@v6
+        with:
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
       # we only build and publish the actual docker images if not a PR from a fork
-      - uses: ./.github/actions/build-docker
+      - name: Image ${{ matrix.service[0] }}
+        uses: ./.github/actions/build-docker
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          # add suffix for the extra images with coverage if building for production
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[0] }}
+          type: ${{ matrix.type }}
+
+      - name: Image ${{ matrix.service[1] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[1] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
-          node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           arch: ${{ matrix.arch }}
-          service: ${{ matrix.service }}
+          service: ${{ matrix.service[1] }}
           type: ${{ matrix.type }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[2] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[2] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[2] }}
+          type: ${{ matrix.type }}
+          setup-docker: false
+
+      - name: Image ${{ matrix.service[3] || '"skipped"' }}
+        uses: ./.github/actions/build-docker
+        if: matrix.service[3] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        env:
+          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          arch: ${{ matrix.arch }}
+          service: ${{ matrix.service[3] }}
+          type: ${{ matrix.type }}
+          setup-docker: false
 
   build-gh-docker-publish:
     name: 🚢 Publish Docker Images (ghcr.io)
     needs: [build-gh-docker, release-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     env:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -456,7 +520,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['5.0']"
+      mongodb-version: "['5.0', '8.2']"
+      coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -505,6 +570,7 @@ jobs:
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
       mongodb-version: "['8.2']"
+      coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -567,9 +633,61 @@ jobs:
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
 
+  report-coverage:
+    name: 📊 Report Coverage
+    runs-on: ubuntu-24.04
+    needs: [release-versions, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+
+      - name: Restore coverage folder
+        uses: actions/download-artifact@v6
+        with:
+          pattern: coverage-*
+          path: /tmp/coverage
+          merge-multiple: true
+
+      - name: Generate lcov report
+        run: |
+          set -o xtrace
+
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/api --temp-dir=/tmp/coverage/api
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
+
+      - name: Store coverage-reports
+        uses: actions/upload-artifact@v5
+        with:
+          name: reports-coverage
+          path: /tmp/coverage_report
+          include-hidden-files: true
+
+      - name: Report API coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: /tmp/coverage_report/api/lcov.info
+          working-directory: .
+          flags: e2e-api
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Report UI coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: /tmp/coverage_report/ui/lcov.info
+          working-directory: .
+          flags: e2e
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   tests-done:
     name: ✅ Tests Done
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
     if: always()
     steps:
@@ -611,7 +729,7 @@ jobs:
 
   deploy:
     name: 🚀 Publish build assets
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker-publish, release-versions]
 
@@ -665,12 +783,8 @@ jobs:
 
   docker-image-publish:
     name: 🚀 Publish Docker Images (DockerHub)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     needs: [deploy, release-versions]
-
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.release-versions.outputs.services) }}
 
     env:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -697,31 +811,22 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Get Docker image name
-        id: gh-docker
-        run: |
-          # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-          GH_IMAGE_NAME=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ matrix.service }}" '.services[$s].image')
-
-          echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
-
-          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Pull Docker image
-        run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
+      - name: Download digests
+        if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: actions/download-artifact@v6
+        with:
+          pattern: digests-*
+          path: /tmp/digests
+          merge-multiple: true
 
       - name: Publish Docker images
         run: |
           set -euo pipefail
+          set -o xtrace
+          shopt -s nullglob
 
-          sudo apt-get update -y
-          sudo apt-get install -y skopeo
-
-          if [[ '${{ matrix.service }}' == 'rocketchat' ]]; then
-            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
-          else
-            IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}"
-          fi
+          # sudo apt-get update -y
+          # sudo apt-get install -y skopeo
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
@@ -755,26 +860,46 @@ jobs:
           # get first tag as primary
           PRIMARY="${TAGS[0]}"
 
-          SRC="${{ steps.gh-docker.outputs.gh-image-name }}"
-          DEST_REPO="docker.io/${IMAGE_NAME}"
+          for service_dir in /tmp/digests/*; do
+            [[ -d "$service_dir" ]] || continue
+            service="$(basename "$service_dir")"
 
-          # build --additional-tag for all other tags
-          EXTRA_ARGS=()
-          if (( ${#TAGS[@]} > 1 )); then
-            for t in "${TAGS[@]:1}"; do
-              EXTRA_ARGS+=( --additional-tag "${DEST_REPO}:${t}" )
-            done
-          fi
+            if [ "$service" == "rocketchat-cov" ]; then
+              continue
+            fi
 
-          echo "Copying $SRC to ${DEST_REPO}:${PRIMARY} with extras ${EXTRA_ARGS[*]}"
-          skopeo copy --all \
-            "docker://${SRC}" \
-            "docker://${DEST_REPO}:${PRIMARY}" \
-            "${EXTRA_ARGS[@]}"
+            echo "Promoting $service"
+
+            if [[ "${service}" == 'rocketchat' ]]; then
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
+            else
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
+            fi
+
+            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            DEST_REPO="docker.io/${IMAGE_NAME}"
+
+            echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"
+            skopeo copy --all \
+              "docker://${SRC}" \
+              "docker://${DEST_REPO}:${PRIMARY}"
+
+            # copy additional tags
+            if (( ${#TAGS[@]} > 1 )); then
+              for t in "${TAGS[@]:1}"; do
+                echo "Copying $SRC to ${DEST_REPO}:${t}"
+                skopeo copy --all \
+                  "docker://${SRC}" \
+                  "docker://${DEST_REPO}:${t}"
+              done
+            fi
+
+          done
 
   notify-services:
     name: 🚀 Notify external services
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     needs:
       - docker-image-publish
       - release-versions

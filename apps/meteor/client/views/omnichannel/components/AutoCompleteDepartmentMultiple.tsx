@@ -1,7 +1,7 @@
 import { CheckOption, Option, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ComponentPropsWithoutRef, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +53,7 @@ const AutoCompleteDepartmentMultiple = ({
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
-	const renderItem = ({ label, value, ...props }: ComponentProps<typeof Option>): ReactElement => {
+	const renderItem = ({ label, value, ...props }: ComponentPropsWithoutRef<typeof Option>): ReactElement => {
 		if (withCheckbox) {
 			return (
 				<CheckOption

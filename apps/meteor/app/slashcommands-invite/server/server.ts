@@ -40,17 +40,16 @@ slashCommands.add({
 			if (FederationActions.shouldPerformFederationAction(room)) {
 				await FederationMatrix.ensureFederatedUsersExistLocally(federatedUsernames);
 			} else {
-				await Promise.all(
-					federatedUsernames.map(async () => {
-						return api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
-						});
-					}),
-				);
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+				});
 				// These federated users shouldn't be invited and we already broadcasted the error message
 				usernames = usernames.filter((username) => {
 					return !federatedUsernames.includes(username);
 				});
+				if (usernames.length === 0) {
+					return;
+				}
 			}
 		}
 
