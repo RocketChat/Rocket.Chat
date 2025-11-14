@@ -8,7 +8,6 @@ import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
 import ComposerBlocked from './ComposerBlocked';
 import ComposerFederation from './ComposerFederation';
-import ComposerFederationInvalidVersion from './ComposerFederation/ComposerFederationInvalidVersion';
 import ComposerJoinWithPassword from './ComposerJoinWithPassword';
 import type { ComposerMessageProps } from './ComposerMessage';
 import ComposerMessage from './ComposerMessage';
