@@ -423,7 +423,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 										control={control}
 										rules={{ required: t('Required_field', { field: t('Password') }) ,minLength:{
 											value:6,
-											message:t("Password must be at least 6 characters long "),
+											message:t("Password must be at least 8 characters long "),
 										}}}
 										render={({ field }) => (
 											<PasswordInput
@@ -548,7 +548,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 										control={control}
 										rules={{ required: t('Required_field', { field: t('Password') }),minLength:{
 											value:6,
-											message:t('Password must be at least 6 characters long'),
+											message:t('Password must be at least 8 characters long'),
 										} }}
 										render={({ field }) => (
 											<PasswordInput
