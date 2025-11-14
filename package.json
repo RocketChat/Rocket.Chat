@@ -82,7 +82,7 @@
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch"
 	},
 	"dependencies": {
-		"@types/stream-buffers": "^3.0.7",
+		"@types/stream-buffers": "^3.0.8",
 		"node-gyp": "^10.2.0"
 	}
 }
