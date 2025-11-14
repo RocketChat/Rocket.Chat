@@ -39,63 +39,81 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
       ABAC_Managed_description
       <div
         class="rcx-box rcx-box--full rcx-css-f0ql1y"
+        id="room-attributes-list-label"
       >
         ABAC_Room_Attributes
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-1jagyun"
+        aria-labelledby="room-attributes-list-label"
+        class="rcx-box rcx-box--full"
       >
-        Chat-sensitivity
         <div
-          class="rcx-box rcx-box--full rcx-css-q18nro"
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
         >
-          <div
-            class="rcx-box rcx-box--full rcx-css-sdt442"
+          <span
+            class="rcx-box rcx-box--full"
+            id="room-attribute-Chat-sensitivity-label"
           >
-            <span
-              class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+            Chat-sensitivity
+          </span>
+          <div
+            aria-labelledby="room-attribute-Chat-sensitivity-label"
+            class="rcx-box rcx-box--full rcx-css-q18nro"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-tag__inner"
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
               >
-                Classified
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Classified
+                </span>
               </span>
-            </span>
-          </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-sdt442"
-          >
-            <span
-              class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-tag__inner"
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
               >
-                Top-Secret
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Top-Secret
+                </span>
               </span>
-            </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1jagyun"
-      >
-        Country
         <div
-          class="rcx-box rcx-box--full rcx-css-q18nro"
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
         >
-          <div
-            class="rcx-box rcx-box--full rcx-css-sdt442"
+          <span
+            class="rcx-box rcx-box--full"
+            id="room-attribute-Country-label"
           >
-            <span
-              class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+            Country
+          </span>
+          <div
+            aria-labelledby="room-attribute-Country-label"
+            class="rcx-box rcx-box--full rcx-css-q18nro"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-tag__inner"
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
               >
-                US-only
+                <span
+                  class="rcx-tag__inner"
+                >
+                  US-only
+                </span>
               </span>
-            </span>
+            </div>
           </div>
         </div>
       </div>
