@@ -39,6 +39,22 @@ export const OngoingCallWithRemoteStatus: StoryFn<typeof OngoingCall> = () => {
 	);
 };
 
+export const OngoingCallWithRemoteStatusMuted: StoryFn<typeof OngoingCall> = () => {
+	return (
+		<MediaCallProviderMock remoteMuted={true} remoteHeld={false}>
+			<OngoingCall />
+		</MediaCallProviderMock>
+	);
+};
+
+export const OngoingCallWithRemoteStatusHeld: StoryFn<typeof OngoingCall> = () => {
+	return (
+		<MediaCallProviderMock remoteMuted={false} remoteHeld={true}>
+			<OngoingCall />
+		</MediaCallProviderMock>
+	);
+};
+
 export const OngoingCallWithSlotsAndRemoteStatus: StoryFn<typeof OngoingCall> = () => {
 	return (
 		<MediaCallProviderMock muted={true} held={true} remoteMuted={true} remoteHeld={true}>
