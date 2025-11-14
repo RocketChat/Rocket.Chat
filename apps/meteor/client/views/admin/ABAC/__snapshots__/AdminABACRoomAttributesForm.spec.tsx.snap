@@ -105,7 +105,7 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
                     <span
                       class="rcx-button--content"
                     >
-                      Add Value
+                      Add_Value
                     </span>
                   </button>
                 </div>
@@ -326,7 +326,7 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
                     <span
                       class="rcx-button--content"
                     >
-                      Add Value
+                      Add_Value
                     </span>
                   </button>
                 </div>
