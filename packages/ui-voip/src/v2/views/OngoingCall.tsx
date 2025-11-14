@@ -44,7 +44,7 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				<PeerInfo {...peerInfo} slots={remoteSlots} />
+				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
