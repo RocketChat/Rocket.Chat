@@ -1,5 +1,4 @@
 import { ContextualbarTitle } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -50,22 +49,20 @@ const RoomAttributesContextualBar = ({ attributeData, onClose }: RoomAttributesC
 		_id: attributeId ?? '',
 	});
 
-	const onSave = useEffectEvent(async (data: AdminABACRoomAttributesFormFormData) => {
-		const payload = {
-			key: data.name,
-			values: [...data.lockedAttributes.map((attribute) => attribute.value), ...data.attributeValues.map((attribute) => attribute.value)],
-		};
-		if (attributeId) {
-			await updateAttribute(payload);
-		} else {
-			await createAttribute(payload);
-		}
-	});
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveMutation = useMutation({
-		mutationFn: onSave,
+		mutationFn: async (data: AdminABACRoomAttributesFormFormData) => {
+			const payload = {
+				key: data.name,
+				values: [...data.lockedAttributes.map((attribute) => attribute.value), ...data.attributeValues.map((attribute) => attribute.value)],
+			};
+			if (attributeId) {
+				await updateAttribute(payload);
+			} else {
+				await createAttribute(payload);
+			}
+		},
 		onSuccess: () => {
 			if (attributeId) {
 				dispatchToastMessage({ type: 'success', message: t('ABAC_Attribute_updated', { attributeName: getValues('name') }) });
