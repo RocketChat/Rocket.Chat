@@ -78,6 +78,9 @@ jobs:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
+      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
+      COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
+      COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
 
     strategy:
       fail-fast: false
@@ -85,7 +88,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Collect Workflow Telemetry
@@ -144,7 +147,9 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
+          arch: amd64
           service: 'rocketchat'
+          type: 'coverage'
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
@@ -156,10 +161,11 @@ jobs:
           docker compose -f docker-compose-ci.yml up -d httpbin
 
       - name: Prepare code coverage directory
-        if: inputs.coverage == matrix.mongodb-version
         run: |
-          mkdir -p /tmp/coverage
-          chmod 777 /tmp/coverage
+          set -o xtrace
+
+          mkdir -p $COVERAGE_DIR
+          chmod 777 $COVERAGE_DIR
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
@@ -172,8 +178,6 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
-          COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcov'
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
@@ -201,8 +205,6 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
-          COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcovonly'
         run: |
           set -o xtrace
 
@@ -210,7 +212,7 @@ jobs:
 
           docker compose -f ../../docker-compose-ci.yml stop
 
-          ls -l $COVERAGE_DIR
+          ls -la $COVERAGE_DIR
           exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
@@ -235,8 +237,17 @@ jobs:
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
         run: |
+          set -o xtrace
+
           yarn prepare
           yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+
+      - name: Merge ui coverage files
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        working-directory: ./apps/meteor
+        run: |
+          npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
+          ls -la $COVERAGE_DIR || true
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
@@ -254,40 +265,10 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose-ci.yml logs mongo
 
-      - name: Extract e2e:ee:coverage
-        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
-        working-directory: ./apps/meteor
-        run: yarn test:e2e:nyc
-
-      - uses: codecov/codecov-action@v3
-        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
-        with:
-          directory: ./apps/meteor
-          flags: e2e
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v3
-        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'api'
-        with:
-          directory: /tmp/coverage
-          working-directory: .
-          flags: e2e-api
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Store e2e-api-ee-coverage
-        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'api'
+      - name: Store coverage
+        if: inputs.coverage == matrix.mongodb-version
         uses: actions/upload-artifact@v5
         with:
-          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
-          include-hidden-files: true
-
-      - name: Store e2e-ee-coverage
-        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
-        uses: actions/upload-artifact@v5
-        with:
-          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
-          path: ./apps/meteor/coverage*
           include-hidden-files: true

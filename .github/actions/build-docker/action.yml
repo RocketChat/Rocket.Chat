@@ -12,7 +12,7 @@ inputs:
   arch:
     required: false
     description: 'Architecture'
-    default: 'amd64'
+    default: 'arm64'
   service:
     required: false
     description: 'Container to build'
@@ -28,7 +28,7 @@ inputs:
   type:
     required: false
     description: 'production or coverage'
-    default: 'production'
+    default: 'coverage'
 
 runs:
   using: composite
