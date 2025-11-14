@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { Utils, Registration } from './page-objects';
+import { Registration, Authenticated } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Login', () => {
 	let poRegistration: Registration;
-	let poUtils: Utils;
+	let poAuth: Authenticated;
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
-		poUtils = new Utils(page);
+		poAuth = new Authenticated(page);
 
 		await page.goto('/home');
 	});
@@ -42,7 +42,7 @@ test.describe.parallel('Login', () => {
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 
-			await expect(poUtils.mainContent).toBeVisible();
+			await poAuth.waitForDisplay();
 		});
 	});
 
@@ -52,7 +52,7 @@ test.describe.parallel('Login', () => {
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 
-			await expect(poUtils.mainContent).toBeVisible();
+			await poAuth.waitForDisplay();
 		});
 	});
 

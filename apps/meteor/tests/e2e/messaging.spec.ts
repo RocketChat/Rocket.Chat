@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
-import { HomeChannel, ToastBar } from './page-objects';
+import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -11,7 +11,6 @@ test.use({ storageState: Users.user1.state });
 
 test.describe('Messaging', () => {
 	let poHomeChannel: HomeChannel;
-	let poToastBar: ToastBar;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -20,8 +19,6 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poToastBar = new ToastBar(page);
-
 		await page.goto('/home');
 	});
 
@@ -195,9 +192,7 @@ test.describe('Messaging', () => {
 				}
 
 				await editPromise;
-				const toastError = await poToastBar.waitForError();
-
-				expect(toastError).toBe(true);
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
 	});
