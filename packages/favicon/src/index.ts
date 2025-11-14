@@ -95,7 +95,11 @@ export const manageFavicon = () => {
 		}
 
 		updateOrCollect = (badge) => {
-			renderAndUpdate({ badge, canvas, favicons, context, img });
+			try {
+				renderAndUpdate({ badge, canvas, favicons, context, img });
+			} catch (error) {
+				console.error('Error rendering favicon:', error);
+			}
 		};
 
 		if (pendingBadge) {
@@ -104,7 +108,9 @@ export const manageFavicon = () => {
 		}
 	};
 
-	init();
+	init().catch((error) => {
+		console.error('Error initializing favicon manager:', error);
+	});
 
 	return (badge: Badge) => {
 		updateOrCollect(badge);
