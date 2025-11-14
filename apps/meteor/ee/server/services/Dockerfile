@@ -1,4 +1,4 @@
-FROM node:22.16.0-alpine3.21 as build
+FROM node:22.21.1-alpine3.21 as build
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ RUN yarn install
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:22.16.0-alpine3.21
+FROM node:22.21.1-alpine3.21
 
 ARG SERVICE
 
