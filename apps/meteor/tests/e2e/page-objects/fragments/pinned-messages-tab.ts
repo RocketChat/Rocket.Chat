@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Message } from './message';
-import { RoomToolbar } from './room-toolbar';
+import { RoomToolbar } from './toolbar';
 import { expect } from '../../utils/test';
 
 export class PinnedMessagesTab {
@@ -19,7 +19,8 @@ export class PinnedMessagesTab {
 	}
 
 	async openTab(): Promise<void> {
-		await this.roomToolbar.openPinnedMessagesList();
+		await this.roomToolbar.openMoreOptions();
+		await this.roomToolbar.menuItemPinnedMessages.click();
 		await expect(this.root).toBeVisible();
 	}
 

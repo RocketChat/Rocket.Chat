@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Message } from './message';
-import { RoomToolbar } from './room-toolbar';
+import { RoomToolbar } from './toolbar';
 import { expect } from '../../utils/test';
 
 export class StarredMessagesTab {
@@ -19,7 +19,8 @@ export class StarredMessagesTab {
 	}
 
 	async openTab(): Promise<void> {
-		await this.roomToolbar.openStarredMessagesList();
+		await this.roomToolbar.openMoreOptions();
+		await this.roomToolbar.menuItemStarredMessages.click();
 		await expect(this.root).toBeVisible();
 	}
 
