@@ -57,11 +57,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	}
 
 	if (isFederation) {
-		if (isFederationBlocked) {
-			return <ComposerFederationInvalidVersion />;
-		}
-
-		return <ComposerFederation {...props} />;
+		return <ComposerFederation blocked={isFederationBlocked} {...props} />;
 	}
 
 	if (isAnonymous) {
