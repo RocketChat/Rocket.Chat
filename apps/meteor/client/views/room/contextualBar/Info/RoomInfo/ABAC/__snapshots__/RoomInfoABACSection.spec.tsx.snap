@@ -43,11 +43,11 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
       >
         ABAC_Room_Attributes
       </div>
-      <div
+      <ul
         aria-labelledby="room-attributes-list-label"
         class="rcx-box rcx-box--full"
       >
-        <div
+        <li
           class="rcx-box rcx-box--full rcx-css-1jagyun"
         >
           <span
@@ -56,11 +56,11 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
           >
             Chat-sensitivity
           </span>
-          <div
+          <ul
             aria-labelledby="room-attribute-Chat-sensitivity-label"
             class="rcx-box rcx-box--full rcx-css-q18nro"
           >
-            <div
+            <li
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
@@ -72,8 +72,8 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
                   Classified
                 </span>
               </span>
-            </div>
-            <div
+            </li>
+            <li
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
@@ -85,10 +85,10 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
                   Top-Secret
                 </span>
               </span>
-            </div>
-          </div>
-        </div>
-        <div
+            </li>
+          </ul>
+        </li>
+        <li
           class="rcx-box rcx-box--full rcx-css-1jagyun"
         >
           <span
@@ -97,11 +97,11 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
           >
             Country
           </span>
-          <div
+          <ul
             aria-labelledby="room-attribute-Country-label"
             class="rcx-box rcx-box--full rcx-css-q18nro"
           >
-            <div
+            <li
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
@@ -113,10 +113,10 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
                   US-only
                 </span>
               </span>
-            </div>
-          </div>
-        </div>
-      </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </body>
