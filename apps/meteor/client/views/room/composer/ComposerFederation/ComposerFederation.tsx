@@ -15,7 +15,7 @@ const ComposerFederation = ({ subscription, children, ...props }: ComposerMessag
 		return <ComposerFederationDisabled />;
 	}
 
-	if (!subscription && !federationModuleEnabled) {
+	if (!federationModuleEnabled) {
 		return <ComposerFederationJoinRoomDisabled />;
 	}
 
