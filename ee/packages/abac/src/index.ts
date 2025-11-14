@@ -52,17 +52,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
-				const finalUser = await Users.findOneAndUpdate({ _id: user._id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
+				const finalUser = await Users.unsetAbacAttributesById(user._id);
 				await this.onSubjectAttributesChanged(finalUser!, []);
 			}
 			return;
 		}
 
-		const finalUser = await Users.findOneAndUpdate(
-			{ _id: user._id },
-			{ $set: { abacAttributes: finalAttributes } },
-			{ returnDocument: 'after' },
-		);
+		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
 		if (this.didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
 			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);

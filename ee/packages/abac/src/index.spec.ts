@@ -18,6 +18,8 @@ const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
+const mockUsersSetAbacAttributesById = jest.fn();
+const mockUsersUnsetAbacAttributesById = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -43,6 +45,8 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
+		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
 		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
 		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
@@ -70,8 +74,8 @@ describe('AbacService (unit)', () => {
 
 	describe('addSubjectAttributes (merging behavior)', () => {
 		const getUpdatedAttributesFromCall = () => {
-			const call = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$set?.abacAttributes);
-			return call?.[1].$set.abacAttributes as any[] | undefined;
+			const last = mockUsersSetAbacAttributesById.mock.calls.at(-1);
+			return last?.[1] as any[] | undefined;
 		};
 
 		it('merges values from multiple LDAP keys mapping to the same ABAC key', async () => {
@@ -88,7 +92,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			expect(mockUsersUpdateOne).toHaveBeenCalledTimes(1);
+			expect(mockUsersSetAbacAttributesById).toHaveBeenCalledTimes(1);
 			const final = getUpdatedAttributesFromCall();
 			expect(final).toBeDefined();
 			expect(final).toHaveLength(1);
@@ -131,8 +135,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
-			expect(unsetCall).toBeDefined();
+			expect(mockUsersUnsetAbacAttributesById).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when no LDAP values are found and user had no previous attributes', async () => {
@@ -142,7 +145,8 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			expect(mockUsersUpdateOne).not.toHaveBeenCalled();
+			expect(mockUsersSetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockUsersUnsetAbacAttributesById).not.toHaveBeenCalled();
 		});
 
 		it('calls onSubjectAttributesChanged when user loses an attribute value', async () => {
@@ -227,8 +231,7 @@ describe('AbacService (unit)', () => {
 			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
-			expect(unsetCall).toBeDefined();
+			expect(mockUsersUnsetAbacAttributesById).toHaveBeenCalledTimes(1);
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy.mock.calls[0][1]).toEqual([]);
 		});
