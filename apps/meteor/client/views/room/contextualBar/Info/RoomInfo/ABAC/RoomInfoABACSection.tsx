@@ -22,7 +22,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 	const abacEnabled = useSetting('ABAC_Enabled');
 	const showAttributesInRoom = useSetting('ABAC_ShowAttributesInRooms');
 
-	if (!abacEnabled || !showAttributesInRoom || !room.abacAttributes || room.abacAttributes.length === 0) {
+	if (!abacEnabled || !showAttributesInRoom || room.abacAttributes?.length === 0) {
 		return null;
 	}
 
