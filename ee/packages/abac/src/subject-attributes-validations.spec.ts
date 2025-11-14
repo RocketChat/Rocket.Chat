@@ -15,7 +15,7 @@ beforeAll(async () => {
 	client = await MongoClient.connect(mongo.getUri(), {});
 	db = client.db('abac_global');
 	registerServiceModels(db);
-});
+}, 30_000);
 
 afterAll(async () => {
 	await client.close();
