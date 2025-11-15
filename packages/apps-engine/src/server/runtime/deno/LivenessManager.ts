@@ -193,8 +193,6 @@ export class LivenessManager {
 	}
 
 	private handleExit(exitCode: number, signal: string) {
-		this.stop();
-
 		const processState = this.controller.getProcessState();
 		// If the we're restarting the process, or want to stop the process, or it exited cleanly, nothing else for us to do
 		if (processState === 'restarting' || processState === 'stopped' || (exitCode === 0 && !signal)) {
@@ -216,6 +214,8 @@ export class LivenessManager {
 	}
 
 	private async restartProcess(reason: string, source = 'liveness-manager') {
+		this.stop();
+
 		if (this.restartCount >= this.options.maxRestarts) {
 			this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
 			this.controller.stopApp();
