@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-11-15T22:28:42Z",
+  "tag": "pr-37527",
+  "total": 1275473594,
+  "services": {
+    "account-service": 118634259,
+    "authorization-service": 115909232,
+    "ddp-streamer-service": 132279890,
+    "omnichannel-transcript-service": 147214751,
+    "presence-service": 115904767,
+    "queue-worker-service": 147190798,
+    "rocketchat": 382428392,
+    "stream-hub-service": 115911505
+  },
+  "commit": "53b7f4aaccece50f113a7a3695ad26df5b763363"
+}
