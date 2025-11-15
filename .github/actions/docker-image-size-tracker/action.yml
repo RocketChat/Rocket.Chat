@@ -39,18 +39,25 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Install dependencies
       shell: bash
       run: |
         if ! command -v skopeo &> /dev/null; then
           sudo apt-get update -qq
-          sudo apt-get install -y skopeo jq
+          sudo apt-get install -y skopeo jq bc
         fi
 
     - name: Measure image sizes
       id: measure
       shell: bash
       run: |
+        set -o xtrace
+
         SERVICES='${{ inputs.services }}'
         REGISTRY="${{ inputs.registry }}"
         ORG="${{ inputs.repository }}"
@@ -69,6 +76,7 @@ runs:
           fi
 
           image="$REGISTRY/$ORG/$image_name:$TAG"
+          image_not_tag="$REGISTRY/$ORG/$image_name"
           echo "Measuring $image..."
 
           size=0
@@ -77,7 +85,7 @@ runs:
             if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
               digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
               if [[ -n "$digest" ]]; then
-                manifest=$(skopeo inspect --raw "docker://$image@$digest" 2>/dev/null)
+                manifest=$(skopeo inspect --raw "docker://$image_not_tag@$digest" 2>/dev/null)
               fi
             fi
 
@@ -137,13 +145,14 @@ runs:
           fi
 
           image="$REGISTRY/$ORG/$image_name:$TAG"
+          image_not_tag="$REGISTRY/$ORG/$image_name"
 
           size=0
           if manifest=$(skopeo inspect --raw "docker://$image" 2>/dev/null); then
             if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
               digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
               if [[ -n "$digest" ]]; then
-                manifest=$(skopeo inspect --raw "docker://$image@$digest" 2>/dev/null)
+                manifest=$(skopeo inspect --raw "docker://$image_not_tag@$digest" 2>/dev/null)
               fi
             fi
 
@@ -176,6 +185,59 @@ runs:
 
         echo "  }" >> baseline-sizes.json
         echo "}" >> baseline-sizes.json
+
+    - name: Setup history storage
+      id: history
+      shell: bash
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Try to fetch history branch
+        if git ls-remote --heads origin image-size-history | grep -q image-size-history; then
+          git fetch origin image-size-history:image-size-history
+          git checkout image-size-history
+        else
+          # Create orphan branch for history
+          git checkout --orphan image-size-history
+          git rm -rf . 2>/dev/null || true
+          mkdir -p history
+          echo "# Image Size History" > README.md
+          echo "This branch stores historical image size data for tracking" >> README.md
+          git add README.md
+          git commit -m "Initialize image size history"
+        fi
+
+        mkdir -p history
+
+    - name: Load historical data
+      id: load-history
+      shell: bash
+      run: |
+        # Load last 30 measurements
+        echo "[]" > history-data.json
+        if [[ -d history ]]; then
+          jq -s '.' history/*.json 2>/dev/null | jq 'sort_by(.timestamp) | .[-30:]' > history-data.json || echo "[]" > history-data.json
+        fi
+
+        count=$(jq 'length' history-data.json)
+        echo "Loaded $count historical measurements"
+
+    - name: Save current measurement to history
+      if: github.ref == 'refs/heads/develop'
+      shell: bash
+      run: |
+        timestamp=$(date -u +%Y%m%d-%H%M%S)
+        commit_sha="${{ github.sha }}"
+
+        # Add commit info to current measurement
+        jq --arg sha "$commit_sha" '. + {commit: $sha}' current-sizes.json > "history/${timestamp}.json"
+
+        git add "history/${timestamp}.json"
+        git commit -m "Add measurement for ${timestamp} (${commit_sha:0:7})"
+        git push origin image-size-history
+
+        echo "Saved measurement to history"
 
     - name: Compare and generate report
       id: compare
@@ -262,6 +324,74 @@ runs:
           echo "| $icon **$service** | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) |" >> report.md
         done
 
+        # Generate historical trend chart
+        echo "" >> report.md
+        echo "## 📈 Historical Trend" >> report.md
+        echo "" >> report.md
+
+        # Load history and generate mermaid chart
+        history_count=$(jq 'length' history-data.json)
+
+        if [[ $history_count -gt 0 ]]; then
+          # Generate Mermaid chart data
+          x_labels=""
+          y_values=""
+
+          while IFS= read -r line; do
+            timestamp=$(echo "$line" | jq -r '.timestamp')
+            total=$(echo "$line" | jq -r '.total')
+
+            date_label=$(echo "$timestamp" | cut -d'T' -f1 | cut -d'-' -f2- | tr '-' '/')
+            size_gb=$(awk "BEGIN {printf \"%.2f\", $total / 1073741824}")
+
+            if [[ -z "$x_labels" ]]; then
+              x_labels="\"$date_label\""
+              y_values="$size_gb"
+            else
+              x_labels="$x_labels, \"$date_label\""
+              y_values="$y_values, $size_gb"
+            fi
+          done < <(jq -c '.[]' history-data.json)
+
+          # Add current PR as last point
+          current_date=$(date -u +"%m/%d")
+          current_gb=$(awk "BEGIN {printf \"%.2f\", $current_total / 1073741824}")
+          x_labels="$x_labels, \"$current_date (PR)\""
+          y_values="$y_values, $current_gb"
+
+          cat >> report.md << EOF
+        \`\`\`mermaid
+        %%{init: {'theme':'base'}}%%
+        xychart-beta
+          title "Total Image Size Evolution (Last 30 Builds + This PR)"
+          x-axis [$x_labels]
+          y-axis "Size (GB)" 0 --> 20
+          line [$y_values]
+        \`\`\`
+
+        EOF
+
+          # Add summary stats
+          min_size=$(jq '[.[].total] | min' history-data.json)
+          max_size=$(jq '[.[].total] | max' history-data.json)
+          avg_size=$(jq '[.[].total] | add / length' history-data.json)
+
+          cat >> report.md << EOF
+        **Statistics (last $history_count builds):**
+        - 📊 Average: $(numfmt --to=iec-i --suffix=B ${avg_size%.*})
+        - ⬇️ Minimum: $(numfmt --to=iec-i --suffix=B $min_size)
+        - ⬆️ Maximum: $(numfmt --to=iec-i --suffix=B $max_size)
+        - 🎯 Current PR: $(numfmt --to=iec-i --suffix=B $current_total)
+
+        EOF
+
+        else
+          cat >> report.md << 'EOF'
+        *No historical data available yet. History tracking starts after merging to develop.*
+
+        EOF
+        fi
+
         cat >> report.md << EOF
 
         <details>
@@ -272,6 +402,7 @@ runs:
         - **Tag:** \`${{ inputs.tag }}\`
         - **Baseline:** \`${{ inputs.baseline-tag }}\`
         - **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        - **Historical data points:** $history_count
 
         </details>
         EOF

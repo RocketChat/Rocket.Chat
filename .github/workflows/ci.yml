@@ -443,6 +443,7 @@ jobs:
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
     permissions:
       pull-requests: write
+      contents: write
 
     steps:
       - uses: actions/checkout@v5
