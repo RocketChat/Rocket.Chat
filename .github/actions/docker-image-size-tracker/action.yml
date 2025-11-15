@@ -253,7 +253,7 @@ runs:
         echo "Loaded $count historical measurements"
 
     - name: Save current measurement to history
-      if: github.ref == 'refs/heads/develop'
+      # if: github.ref == 'refs/heads/develop'
       shell: bash
       run: |
         timestamp=$(date -u +%Y%m%d-%H%M%S)
