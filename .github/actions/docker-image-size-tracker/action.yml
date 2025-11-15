@@ -1,0 +1,328 @@
+name: 'Docker Image Size Tracker'
+description: 'Track and report Docker image sizes in Pull Requests'
+author: 'Rocket.Chat'
+
+inputs:
+  github-token:
+    description: 'GitHub token for commenting on PRs'
+    required: true
+  registry:
+    description: 'Container registry (e.g., ghcr.io)'
+    required: false
+    default: 'ghcr.io'
+  repository:
+    description: 'Repository name (e.g., rocketchat)'
+    required: true
+  tag:
+    description: 'Image tag to measure'
+    required: true
+  baseline-tag:
+    description: 'Baseline tag to compare against'
+    required: false
+    default: 'develop'
+  services:
+    description: 'JSON array of service names to track'
+    required: false
+    default: '["rocketchat","authorization-service","account-service","ddp-streamer-service","presence-service","stream-hub-service","queue-worker-service","omnichannel-transcript-service"]'
+
+outputs:
+  total-size:
+    description: 'Total size in bytes'
+    value: ${{ steps.measure.outputs.total-size }}
+  size-diff:
+    description: 'Size difference in bytes'
+    value: ${{ steps.compare.outputs.size-diff }}
+  size-diff-percent:
+    description: 'Size difference percentage'
+    value: ${{ steps.compare.outputs.size-diff-percent }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if ! command -v skopeo &> /dev/null; then
+          sudo apt-get update -qq
+          sudo apt-get install -y skopeo jq
+        fi
+
+    - name: Measure image sizes
+      id: measure
+      shell: bash
+      run: |
+        SERVICES='${{ inputs.services }}'
+        REGISTRY="${{ inputs.registry }}"
+        ORG="${{ inputs.repository }}"
+        TAG="${{ inputs.tag }}"
+
+        echo "Measuring images: $REGISTRY/$ORG/*:$TAG"
+
+        declare -A sizes
+        total=0
+
+        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+          if [[ "$service" == "rocketchat" ]]; then
+            image_name="rocket.chat"
+          else
+            image_name="$service"
+          fi
+
+          image="$REGISTRY/$ORG/$image_name:$TAG"
+          echo "Measuring $image..."
+
+          size=0
+          if manifest=$(skopeo inspect --raw "docker://$image" 2>/dev/null); then
+            # Handle multi-arch manifests
+            if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
+              digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
+              if [[ -n "$digest" ]]; then
+                manifest=$(skopeo inspect --raw "docker://$image@$digest" 2>/dev/null)
+              fi
+            fi
+
+            # Sum layer sizes
+            size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
+            config_size=$(echo "$manifest" | jq '.config.size // 0')
+            size=$((size + config_size))
+          fi
+
+          echo "  → $service: $size bytes"
+          sizes[$service]=$size
+          total=$((total + size))
+        done
+
+        echo "total-size=$total" >> $GITHUB_OUTPUT
+
+        # Save to JSON
+        echo "{" > current-sizes.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> current-sizes.json
+        echo "  \"tag\": \"$TAG\"," >> current-sizes.json
+        echo "  \"total\": $total," >> current-sizes.json
+        echo "  \"services\": {" >> current-sizes.json
+
+        first=true
+        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+          if [[ "$first" == "true" ]]; then
+            first=false
+          else
+            echo "," >> current-sizes.json
+          fi
+          echo "    \"$service\": ${sizes[$service]}" >> current-sizes.json
+        done
+
+        echo "  }" >> current-sizes.json
+        echo "}" >> current-sizes.json
+
+    - name: Measure baseline
+      id: baseline
+      shell: bash
+      continue-on-error: true
+      run: |
+        SERVICES='${{ inputs.services }}'
+        REGISTRY="${{ inputs.registry }}"
+        ORG="${{ inputs.repository }}"
+        TAG="${{ inputs.baseline-tag }}"
+
+        echo "Measuring baseline: $REGISTRY/$ORG/*:$TAG"
+
+        declare -A sizes
+        total=0
+
+        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+          if [[ "$service" == "rocketchat" ]]; then
+            image_name="rocket.chat"
+          else
+            image_name="$service"
+          fi
+
+          image="$REGISTRY/$ORG/$image_name:$TAG"
+
+          size=0
+          if manifest=$(skopeo inspect --raw "docker://$image" 2>/dev/null); then
+            if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
+              digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
+              if [[ -n "$digest" ]]; then
+                manifest=$(skopeo inspect --raw "docker://$image@$digest" 2>/dev/null)
+              fi
+            fi
+
+            size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
+            config_size=$(echo "$manifest" | jq '.config.size // 0')
+            size=$((size + config_size))
+          fi
+
+          sizes[$service]=$size
+          total=$((total + size))
+        done
+
+        echo "baseline-total=$total" >> $GITHUB_OUTPUT
+
+        echo "{" > baseline-sizes.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> baseline-sizes.json
+        echo "  \"tag\": \"$TAG\"," >> baseline-sizes.json
+        echo "  \"total\": $total," >> baseline-sizes.json
+        echo "  \"services\": {" >> baseline-sizes.json
+
+        first=true
+        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+          if [[ "$first" == "true" ]]; then
+            first=false
+          else
+            echo "," >> baseline-sizes.json
+          fi
+          echo "    \"$service\": ${sizes[$service]}" >> baseline-sizes.json
+        done
+
+        echo "  }" >> baseline-sizes.json
+        echo "}" >> baseline-sizes.json
+
+    - name: Compare and generate report
+      id: compare
+      shell: bash
+      run: |
+        current_total=$(jq -r '.total' current-sizes.json)
+
+        if [[ ! -f baseline-sizes.json ]]; then
+          echo "No baseline available"
+          echo "size-diff=0" >> $GITHUB_OUTPUT
+          echo "size-diff-percent=0" >> $GITHUB_OUTPUT
+
+          cat > report.md << 'EOF'
+        # 📦 Docker Image Size Report
+
+        **Status:** First measurement - no baseline for comparison
+
+        **Total Size:** $(numfmt --to=iec-i --suffix=B $current_total)
+        EOF
+          exit 0
+        fi
+
+        baseline_total=$(jq -r '.total' baseline-sizes.json)
+        diff=$((current_total - baseline_total))
+
+        if [[ $baseline_total -gt 0 ]]; then
+          percent=$(awk "BEGIN {printf \"%.2f\", ($diff / $baseline_total) * 100}")
+        else
+          percent=0
+        fi
+
+        echo "size-diff=$diff" >> $GITHUB_OUTPUT
+        echo "size-diff-percent=$percent" >> $GITHUB_OUTPUT
+
+        # Generate report
+        if (( $(echo "$diff > 0" | bc -l) )); then
+          emoji="📈"
+          badge="![](https://img.shields.io/badge/size-+${percent}%25-red)"
+          sign="+"
+        elif (( $(echo "$diff < 0" | bc -l) )); then
+          emoji="📉"
+          badge="![](https://img.shields.io/badge/size-${percent}%25-green)"
+          sign=""
+        else
+          emoji="➡️"
+          badge="![](https://img.shields.io/badge/size-unchanged-gray)"
+          sign=""
+        fi
+
+        cat > report.md << EOF
+        # 📦 Docker Image Size Report
+
+        ## $emoji Summary $badge
+
+        | Metric | Value |
+        |--------|-------|
+        | **Current Total** | $(numfmt --to=iec-i --suffix=B $current_total) |
+        | **Baseline Total** | $(numfmt --to=iec-i --suffix=B $baseline_total) |
+        | **Difference** | **${sign}$(numfmt --to=iec-i --suffix=B ${diff#-})** (${sign}${percent}%) |
+
+        ## 📊 Service Details
+
+        | Service | Current | Baseline | Change |
+        |---------|---------|----------|--------|
+        EOF
+
+        SERVICES='${{ inputs.services }}'
+        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+          current=$(jq -r ".services.\"$service\"" current-sizes.json)
+          baseline=$(jq -r ".services.\"$service\"" baseline-sizes.json)
+          service_diff=$((current - baseline))
+
+          if [[ $service_diff -gt 0 ]]; then
+            icon="📈"
+            sign="+"
+          elif [[ $service_diff -lt 0 ]]; then
+            icon="📉"
+            sign=""
+          else
+            icon="➡️"
+            sign=""
+          fi
+
+          echo "| $icon **$service** | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) |" >> report.md
+        done
+
+        cat >> report.md << EOF
+
+        <details>
+        <summary>ℹ️ About this report</summary>
+
+        This report compares Docker image sizes from this build against the \`${{ inputs.baseline-tag }}\` baseline.
+
+        - **Tag:** \`${{ inputs.tag }}\`
+        - **Baseline:** \`${{ inputs.baseline-tag }}\`
+        - **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+        </details>
+        EOF
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+
+          if (!fs.existsSync('report.md')) {
+            console.log('No report found, skipping comment');
+            return;
+          }
+
+          const report = fs.readFileSync('report.md', 'utf8');
+
+          // Find existing comment
+          const comments = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });
+
+          const botComment = comments.data.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('📦 Docker Image Size Report')
+          );
+
+          const commentBody = report + '\n\n---\n*Updated: ' + new Date().toUTCString() + '*';
+
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody
+            });
+            console.log('Updated existing comment');
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+            console.log('Created new comment');
+          }
+
+branding:
+  icon: 'package'
+  color: 'blue'

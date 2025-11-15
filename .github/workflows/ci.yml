@@ -436,6 +436,26 @@ jobs:
               ${refs[@]}
           done
 
+  track-image-sizes:
+    name: 📦 Track Image Sizes
+    needs: [build-gh-docker-publish, release-versions]
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Track Docker image sizes
+        uses: ./.github/actions/docker-image-size-tracker
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ needs.release-versions.outputs.lowercase-repo }}
+          tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          baseline-tag: develop
+
   checks:
     needs: [release-versions, packages-build]
 
@@ -775,7 +795,7 @@ jobs:
 
           # sudo apt-get update -y
           # sudo apt-get install -y skopeo
-          
+
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
@@ -807,7 +827,7 @@ jobs:
 
           # get first tag as primary
           PRIMARY="${TAGS[0]}"
-          
+
           for service_dir in /tmp/digests/*; do
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
