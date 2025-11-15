@@ -208,4 +208,46 @@ export class LivenessManagerTestFixture {
 		const newTimestamp = runtimeData.lastHeartbeatTimestamp;
 		Expect(newTimestamp).toBe(LivenessManagerTestFixture.PING_INTERVAL_MS + 20);
 	}
+
+	@Test('should keep track of consecutive timeouts, and clear the count on a heartbeat')
+	public testConsecutiveTimeouts() {
+		this.controllerEventEmitter.emit('constructed');
+
+		// Wait for the full interval
+		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS);
+
+		// Verify ping was sent
+		Expect(this.sendSpy).toHaveBeenCalledWith(COMMAND_PING);
+
+		// Timeout the ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Verify consecutive timeout count incremented
+		let runtimeData = this.livenessManager.getRuntimeData();
+		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(1);
+
+		// Tick the rest of the interval to next ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS - LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Verify ping was sent
+		Expect(this.sendSpy).toHaveBeenCalled().exactly(2).times;
+
+		// Timeout the ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Verify consecutive timeout count incremented
+		runtimeData = this.livenessManager.getRuntimeData();
+		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(2);
+
+		this.controllerEventEmitter.emit('heartbeat');
+
+		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS - LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Shouldn't have called ping due to recent heartbeat
+		Expect(this.sendSpy).toHaveBeenCalled().exactly(2).times;
+
+		// Verify consecutive timeout count was reset
+		runtimeData = this.livenessManager.getRuntimeData();
+		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(0);
+	}
 }

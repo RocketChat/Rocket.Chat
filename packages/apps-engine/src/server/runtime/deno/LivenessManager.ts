@@ -74,6 +74,7 @@ export class LivenessManager {
 
 		this.controller.on('heartbeat', () => {
 			this.lastHeartbeatTimestamp = Date.now();
+			this.pingTimeoutConsecutiveCount = 0;
 		});
 
 		this.controller.on('error', async (reason) => {
