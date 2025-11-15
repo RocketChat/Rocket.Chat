@@ -606,6 +606,7 @@ jobs:
 
       - name: Restore turbo build
         uses: actions/download-artifact@v6
+        continue-on-error: true
         with:
           name: turbo-build
           path: .turbo/cache
