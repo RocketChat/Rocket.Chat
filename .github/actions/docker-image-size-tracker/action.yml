@@ -39,23 +39,12 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y jq bc
-
-    - name: Login to registry (for baseline)
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ inputs.registry }}
-        username: ${{ github.actor }}
-        password: ${{ inputs.github-token }}
+    # - name: Login to registry (for baseline)
+    #   uses: docker/login-action@v3
+    #   with:
+    #     registry: ${{ inputs.registry }}
+    #     username: ${{ github.actor }}
+    #     password: ${{ inputs.github-token }}
 
     - name: Download manifests
       uses: actions/download-artifact@v6
@@ -240,17 +229,21 @@ runs:
         mkdir -p history
 
     - name: Load historical data
-      id: load-history
       shell: bash
       run: |
-        # Load last 30 measurements
+        # Load last 30 measurements and group by day (keep only last entry per day)
         echo "[]" > history-data.json
         if [[ -d history ]]; then
-          jq -s '.' history/*.json 2>/dev/null | jq 'sort_by(.timestamp) | .[-30:]' > history-data.json || echo "[]" > history-data.json
+          jq -s '.' history/*.json 2>/dev/null | jq '
+            sort_by(.timestamp) |
+            group_by(.timestamp[0:16]) |
+            map(.[-1]) |
+            .[-30:]
+          ' > history-data.json || echo "[]" > history-data.json
         fi
 
         count=$(jq 'length' history-data.json)
-        echo "Loaded $count historical measurements"
+        echo "Loaded $count historical measurements (one per day)"
 
     - name: Save current measurement to history
       # if: github.ref == 'refs/heads/develop'
@@ -301,102 +294,149 @@ runs:
         echo "size-diff=$diff" >> $GITHUB_OUTPUT
         echo "size-diff-percent=$percent" >> $GITHUB_OUTPUT
 
+        color="gray"
+        if (( $(awk "BEGIN {print ($percent > 1)}") )); then
+          color="red"
+        elif (( $(awk "BEGIN {print ($percent < -1)}") )); then
+          color="green"
+        fi
+
         # Generate report
-        if (( $(echo "$diff > 0" | bc -l) )); then
+        if [[ $diff -gt 0 ]]; then
           emoji="📈"
-          badge="![](https://img.shields.io/badge/size-+${percent}%25-red)"
+          badge="![](https://img.shields.io/badge/size-+${percent}%25-${color})"
           sign="+"
-        elif (( $(echo "$diff < 0" | bc -l) )); then
+        elif [[ $diff -lt 0 ]]; then
           emoji="📉"
-          badge="![](https://img.shields.io/badge/size-${percent}%25-green)"
-          sign=""
+          badge="![](https://img.shields.io/badge/size--${percent}%25-${color})"
+          sign="-"
         else
           emoji="➡️"
-          badge="![](https://img.shields.io/badge/size-unchanged-gray)"
+          badge="![](https://img.shields.io/badge/size-unchanged-${color})"
           sign=""
         fi
 
         cat > report.md << EOF
         # 📦 Docker Image Size Report
 
-        ## $emoji Summary $badge
+        ## $emoji Changes $badge
 
-        | Metric | Value |
-        |--------|-------|
-        | **Current Total** | $(numfmt --to=iec-i --suffix=B $current_total) |
-        | **Baseline Total** | $(numfmt --to=iec-i --suffix=B $baseline_total) |
-        | **Difference** | **${sign}$(numfmt --to=iec-i --suffix=B ${diff#-})** (${sign}${percent}%) |
-
-        ## 📊 Service Details
-
-        | Service | Current | Baseline | Change |
-        |---------|---------|----------|--------|
+        | Service | Current | Baseline | Change | Percent |
+        |---------|---------|----------|--------|---------|
+        | **sum of all images** | **$(numfmt --to=iec-i --suffix=B $current_total)** | **$(numfmt --to=iec-i --suffix=B $baseline_total)** | **${sign}$(numfmt --to=iec-i --suffix=B ${diff#-})** | $badge |
         EOF
 
-        # Get services dynamically from current-sizes.json
-        for service in $(jq -r '.services | keys[]' current-sizes.json); do
+        # Get services dynamically from current-sizes.json, sorted by size (largest first)
+        for service in $(jq -r '.services | to_entries | sort_by(-.value) | .[].key' current-sizes.json); do
           current=$(jq -r ".services.\"$service\"" current-sizes.json)
           baseline=$(jq -r ".services.\"$service\" // 0" baseline-sizes.json)
           service_diff=$((current - baseline))
 
+          if [[ $baseline -gt 0 ]]; then
+            service_percent=$(awk "BEGIN {printf \"%.2f\", ($service_diff / $baseline) * 100}")
+          else
+            service_percent=0
+          fi
+
+          color="gray"
+          if (( $(awk "BEGIN {print ($service_percent > 1)}") )); then
+            color="red"
+          elif (( $(awk "BEGIN {print ($service_percent < -1)}") )); then
+            color="green"
+          fi
+
           if [[ $service_diff -gt 0 ]]; then
-            icon="📈"
+            badge="![](https://img.shields.io/badge/size-+${service_percent}%25-${color})"
             sign="+"
           elif [[ $service_diff -lt 0 ]]; then
-            icon="📉"
-            sign=""
+            badge="![](https://img.shields.io/badge/size--${service_percent}%25-${color})"
+            sign="-"
           else
-            icon="➡️"
+            badge="![](https://img.shields.io/badge/size-unchanged-${color})"
             sign=""
           fi
 
-          echo "| $icon **$service** | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) |" >> report.md
+          echo "| $service | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) | $badge |" >> report.md
         done
 
         # Generate historical trend chart
         echo "" >> report.md
-        echo "## 📈 Historical Trend" >> report.md
+        echo "## 📊 Historical Trend" >> report.md
         echo "" >> report.md
 
         # Load history and generate mermaid chart
         history_count=$(jq 'length' history-data.json)
 
         if [[ $history_count -gt 0 ]]; then
+          # Get all services from current build
+          all_services=$(jq -r '.services | keys | .[]' current-sizes.json | sort)
+
           # Generate Mermaid chart data
           x_labels=""
-          y_values=""
+          declare -A service_data
 
+          # Initialize service data arrays
+          for service in $all_services; do
+            service_data[$service]=""
+          done
+
+          # Process historical data
           while IFS= read -r line; do
             timestamp=$(echo "$line" | jq -r '.timestamp')
-            total=$(echo "$line" | jq -r '.total')
-
-            date_label=$(echo "$timestamp" | cut -d'T' -f1 | cut -d'-' -f2- | tr '-' '/')
-            size_gb=$(awk "BEGIN {printf \"%.2f\", $total / 1073741824}")
+            date_label=$(date -d "$timestamp" +"%m/%d %H:%M")
 
             if [[ -z "$x_labels" ]]; then
               x_labels="\"$date_label\""
-              y_values="$size_gb"
             else
               x_labels="$x_labels, \"$date_label\""
-              y_values="$y_values, $size_gb"
             fi
+
+            # Add data point for each service
+            for service in $all_services; do
+              size=$(echo "$line" | jq -r ".services.\"$service\" // 0")
+              size_gb=$(awk "BEGIN {printf \"%.2f\", $size / 1073741824}")
+
+              if [[ -z "${service_data[$service]}" ]]; then
+                service_data[$service]="$size_gb"
+              else
+                service_data[$service]="${service_data[$service]}, $size_gb"
+              fi
+            done
           done < <(jq -c '.[]' history-data.json)
 
           # Add current PR as last point
-          current_date=$(date -u +"%m/%d")
-          current_gb=$(awk "BEGIN {printf \"%.2f\", $current_total / 1073741824}")
+          current_date=$(date -u +"%m/%d %H:%M")
           x_labels="$x_labels, \"$current_date (PR)\""
-          y_values="$y_values, $current_gb"
 
+          for service in $all_services; do
+            size=$(jq -r ".services.\"$service\" // 0" current-sizes.json)
+            size_gb=$(awk "BEGIN {printf \"%.2f\", $size / 1073741824}")
+            service_data[$service]="${service_data[$service]}, $size_gb"
+          done
+
+          # Generate mermaid chart with multiple lines
           cat >> report.md << EOF
         \`\`\`mermaid
-        %%{init: {'theme':'base'}}%%
-        xychart-beta
-          title "Total Image Size Evolution (Last 30 Builds + This PR)"
+        ---
+        config:
+          theme: "dark"
+          xyChart:
+            width: 900
+            height: 400
+        ---
+        xychart
+          title "Image Size Evolution by Service (Last 30 Days + This PR)"
           x-axis [$x_labels]
-          y-axis "Size (GB)" 0 --> 20
-          line [$y_values]
-        \`\`\`
+          y-axis "Size (GB)" 0 --> 3
+        EOF
+
+          # Add a line for each service
+          for service in $all_services; do
+            echo "  line \"$service\" [${service_data[$service]}]" >> report.md
+          done
+
+          cat >> report.md << 'EOF'
+        ```
 
         EOF
 
@@ -406,7 +446,7 @@ runs:
           avg_size=$(jq '[.[].total] | add / length' history-data.json)
 
           cat >> report.md << EOF
-        **Statistics (last $history_count builds):**
+        **Statistics (last $history_count days):**
         - 📊 Average: $(numfmt --to=iec-i --suffix=B ${avg_size%.*})
         - ⬇️ Minimum: $(numfmt --to=iec-i --suffix=B $min_size)
         - ⬆️ Maximum: $(numfmt --to=iec-i --suffix=B $max_size)
@@ -484,9 +524,7 @@ runs:
           }
 
     - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      uses: actions/checkout@v5
 
 branding:
   icon: 'package'
