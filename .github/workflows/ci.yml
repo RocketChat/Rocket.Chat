@@ -589,7 +589,7 @@ jobs:
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v5
@@ -630,7 +630,7 @@ jobs:
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
         env:
-          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.official
+          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
 
