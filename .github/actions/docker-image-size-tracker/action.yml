@@ -20,10 +20,10 @@ inputs:
     description: 'Baseline tag to compare against'
     required: false
     default: 'develop'
-  services:
-    description: 'JSON array of service names to track'
+  platform:
+    description: 'Platform architecture to compare (amd64 or arm64)'
     required: false
-    default: '["rocketchat","authorization-service","account-service","ddp-streamer-service","presence-service","stream-hub-service","queue-worker-service","omnichannel-transcript-service"]'
+    default: 'arm64'
 
 outputs:
   total-size:
@@ -47,70 +47,74 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        if ! command -v skopeo &> /dev/null; then
-          sudo apt-get update -qq
-          sudo apt-get install -y skopeo jq bc
-        fi
+        sudo apt-get update -qq
+        sudo apt-get install -y jq bc
 
-    - name: Measure image sizes
+    - name: Login to registry (for baseline)
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+
+    - name: Download manifests
+      uses: actions/download-artifact@v6
+      with:
+        pattern: manifests-*
+        path: /tmp/manifests
+        merge-multiple: true
+
+    - name: Measure image sizes from artifacts
       id: measure
       shell: bash
       run: |
-        set -o xtrace
-
-        SERVICES='${{ inputs.services }}'
-        REGISTRY="${{ inputs.registry }}"
-        ORG="${{ inputs.repository }}"
-        TAG="${{ inputs.tag }}"
-
-        echo "Measuring images: $REGISTRY/$ORG/*:$TAG"
+        PLATFORM="${{ inputs.platform }}"
+        echo "Reading image sizes from build artifacts for platform: $PLATFORM"
 
         declare -A sizes
+        declare -a services_list
         total=0
 
-        for service in $(echo "$SERVICES" | jq -r '.[]'); do
-          if [[ "$service" == "rocketchat" ]]; then
-            image_name="rocket.chat"
-          else
-            image_name="$service"
-          fi
+        # Loop through service directories (same as publish workflow)
+        shopt -s nullglob
+        for service_dir in /tmp/manifests/*; do
+          [[ -d "$service_dir" ]] || continue
+          service="$(basename "$service_dir")"
 
-          image="$REGISTRY/$ORG/$image_name:$TAG"
-          image_not_tag="$REGISTRY/$ORG/$image_name"
-          echo "Measuring $image..."
+          echo "Processing service: $service"
+          services_list+=("$service")
 
           size=0
-          if manifest=$(skopeo inspect --raw "docker://$image" 2>/dev/null); then
-            # Handle multi-arch manifests
-            if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
-              digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
-              if [[ -n "$digest" ]]; then
-                manifest=$(skopeo inspect --raw "docker://$image_not_tag@$digest" 2>/dev/null)
-              fi
-            fi
+          # Read only the specified platform architecture
+          manifest_file="$service_dir/$PLATFORM/manifest.json"
+          if [[ -f "$manifest_file" ]]; then
+            # Docker manifest inspect -v returns SchemaV2Manifest with sizes
+            # Extract config size and layer sizes
+            config_size=$(jq -r '.SchemaV2Manifest.config.size // 0' "$manifest_file")
+            layers_size=$(jq '[.SchemaV2Manifest.layers[]?.size // 0] | add // 0' "$manifest_file")
+            size=$((config_size + layers_size))
 
-            # Sum layer sizes
-            size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
-            config_size=$(echo "$manifest" | jq '.config.size // 0')
-            size=$((size + config_size))
+            echo "  → Found $manifest_file: $size bytes (config: $config_size, layers: $layers_size)"
+          else
+            echo "  ⚠ Manifest not found for platform $PLATFORM: $manifest_file"
           fi
 
-          echo "  → $service: $size bytes"
           sizes[$service]=$size
           total=$((total + size))
         done
 
+        echo "Total size (all services, $PLATFORM only): $total bytes"
         echo "total-size=$total" >> $GITHUB_OUTPUT
 
         # Save to JSON
         echo "{" > current-sizes.json
         echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> current-sizes.json
-        echo "  \"tag\": \"$TAG\"," >> current-sizes.json
+        echo "  \"tag\": \"${{ inputs.tag }}\"," >> current-sizes.json
         echo "  \"total\": $total," >> current-sizes.json
         echo "  \"services\": {" >> current-sizes.json
 
         first=true
-        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+        for service in "${services_list[@]}"; do
           if [[ "$first" == "true" ]]; then
             first=false
           else
@@ -122,48 +126,73 @@ runs:
         echo "  }" >> current-sizes.json
         echo "}" >> current-sizes.json
 
+        echo "Current sizes saved:"
+        cat current-sizes.json
+
+        # Save services list for baseline measurement
+        printf '%s\n' "${services_list[@]}" > /tmp/services-list.txt
+
     - name: Measure baseline
       id: baseline
       shell: bash
       continue-on-error: true
       run: |
-        SERVICES='${{ inputs.services }}'
         REGISTRY="${{ inputs.registry }}"
         ORG="${{ inputs.repository }}"
         TAG="${{ inputs.baseline-tag }}"
+        PLATFORM="${{ inputs.platform }}"
 
-        echo "Measuring baseline: $REGISTRY/$ORG/*:$TAG"
+        echo "Measuring baseline: $REGISTRY/$ORG/*:$TAG (platform: $PLATFORM)"
 
         declare -A sizes
+        declare -a services_list
         total=0
 
-        for service in $(echo "$SERVICES" | jq -r '.[]'); do
-          if [[ "$service" == "rocketchat" ]]; then
+        # Read services list from current measurement
+        while IFS= read -r service; do
+          services_list+=("$service")
+
+          # Map service name to image name (handle rocketchat -> rocket.chat)
+          if [[ "$service" == "rocketchat" ]] || [[ "$service" == "rocketchat-cov" ]]; then
             image_name="rocket.chat"
+            [[ "$service" == "rocketchat-cov" ]] && image_name="rocket.chat-cov"
           else
             image_name="$service"
           fi
 
           image="$REGISTRY/$ORG/$image_name:$TAG"
-          image_not_tag="$REGISTRY/$ORG/$image_name"
+          echo "  → Inspecting $image"
 
           size=0
-          if manifest=$(skopeo inspect --raw "docker://$image" 2>/dev/null); then
+          if manifest=$(docker manifest inspect "$image" 2>/dev/null); then
+            # Check if it's a manifest list (multi-arch)
             if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
-              digest=$(echo "$manifest" | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest' | head -1)
-              if [[ -n "$digest" ]]; then
-                manifest=$(skopeo inspect --raw "docker://$image_not_tag@$digest" 2>/dev/null)
-              fi
-            fi
+              # Manifest list - find the specified platform
+              echo "    → Multi-arch manifest detected, filtering for $PLATFORM"
+              platform_digest=$(echo "$manifest" | jq -r --arg arch "$PLATFORM" '.manifests[] | select(.platform.architecture == $arch) | .digest' | head -1)
 
-            size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
-            config_size=$(echo "$manifest" | jq '.config.size // 0')
-            size=$((size + config_size))
+              if [[ -n "$platform_digest" ]]; then
+                echo "      → Inspecting $PLATFORM platform: $platform_digest"
+                if platform_manifest=$(docker manifest inspect "$REGISTRY/$ORG/$image_name@$platform_digest" 2>/dev/null); then
+                  config_size=$(echo "$platform_manifest" | jq -r '.config.size // 0')
+                  layers_size=$(echo "$platform_manifest" | jq '[.layers[]?.size // 0] | add // 0')
+                  size=$((config_size + layers_size))
+                  echo "        → Size: $size bytes"
+                fi
+              else
+                echo "      ⚠ Platform $PLATFORM not found in manifest"
+              fi
+            else
+              # Single arch manifest
+              config_size=$(echo "$manifest" | jq -r '.config.size // 0')
+              layers_size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
+              size=$((config_size + layers_size))
+            fi
           fi
 
           sizes[$service]=$size
           total=$((total + size))
-        done
+        done < /tmp/services-list.txt
 
         echo "baseline-total=$total" >> $GITHUB_OUTPUT
 
@@ -174,7 +203,7 @@ runs:
         echo "  \"services\": {" >> baseline-sizes.json
 
         first=true
-        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+        for service in "${services_list[@]}"; do
           if [[ "$first" == "true" ]]; then
             first=false
           else
@@ -304,10 +333,10 @@ runs:
         |---------|---------|----------|--------|
         EOF
 
-        SERVICES='${{ inputs.services }}'
-        for service in $(echo "$SERVICES" | jq -r '.[]'); do
+        # Get services dynamically from current-sizes.json
+        for service in $(jq -r '.services | keys[]' current-sizes.json); do
           current=$(jq -r ".services.\"$service\"" current-sizes.json)
-          baseline=$(jq -r ".services.\"$service\"" baseline-sizes.json)
+          baseline=$(jq -r ".services.\"$service\" // 0" baseline-sizes.json)
           service_diff=$((current - baseline))
 
           if [[ $service_diff -gt 0 ]]; then
@@ -429,8 +458,8 @@ runs:
             issue_number: context.issue.number
           });
 
-          const botComment = comments.data.find(comment => 
-            comment.user.type === 'Bot' && 
+          const botComment = comments.data.find(comment =>
+            comment.user.type === 'Bot' &&
             comment.body.includes('📦 Docker Image Size Report')
           );
 
@@ -453,6 +482,11 @@ runs:
             });
             console.log('Created new comment');
           }
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
 branding:
   icon: 'package'
