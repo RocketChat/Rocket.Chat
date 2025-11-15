@@ -211,12 +211,17 @@ runs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+        # Create a separate worktree for history branch
+        mkdir -p /tmp/history-worktree
+
         # Try to fetch history branch
         if git ls-remote --heads origin image-size-history | grep -q image-size-history; then
-          git fetch origin image-size-history:image-size-history
-          git checkout image-size-history
+          git fetch origin image-size-history
+          git worktree add /tmp/history-worktree image-size-history
         else
-          # Create orphan branch for history
+          # Create orphan branch for history in worktree
+          git worktree add --detach /tmp/history-worktree
+          cd /tmp/history-worktree
           git checkout --orphan image-size-history
           git rm -rf . 2>/dev/null || true
           mkdir -p history
@@ -224,17 +229,19 @@ runs:
           echo "This branch stores historical image size data for tracking" >> README.md
           git add README.md
           git commit -m "Initialize image size history"
+          git push origin image-size-history
+          cd -
         fi
 
-        mkdir -p history
+        mkdir -p /tmp/history-worktree/history
 
     - name: Load historical data
       shell: bash
       run: |
         # Load last 30 measurements and group by day (keep only last entry per day)
         echo "[]" > history-data.json
-        if [[ -d history ]]; then
-          jq -s '.' history/*.json 2>/dev/null | jq '
+        if [[ -d /tmp/history-worktree/history ]]; then
+          jq -s '.' /tmp/history-worktree/history/*.json 2>/dev/null | jq '
             sort_by(.timestamp) |
             group_by(.timestamp[0:16]) |
             map(.[-1]) |
@@ -253,11 +260,13 @@ runs:
         commit_sha="${{ github.sha }}"
 
         # Add commit info to current measurement
-        jq --arg sha "$commit_sha" '. + {commit: $sha}' current-sizes.json > "history/${timestamp}.json"
+        jq --arg sha "$commit_sha" '. + {commit: $sha}' current-sizes.json > "/tmp/history-worktree/history/${timestamp}.json"
 
+        cd /tmp/history-worktree
         git add "history/${timestamp}.json"
         git commit -m "Add measurement for ${timestamp} (${commit_sha:0:7})"
         git push origin image-size-history
+        cd -
 
         echo "Saved measurement to history"
 
@@ -295,9 +304,9 @@ runs:
         echo "size-diff-percent=$percent" >> $GITHUB_OUTPUT
 
         color="gray"
-        if (( $(awk "BEGIN {print ($percent > 1)}") )); then
+        if (( $(awk "BEGIN {print ($percent > 0.01)}") )); then
           color="red"
-        elif (( $(awk "BEGIN {print ($percent < -1)}") )); then
+        elif (( $(awk "BEGIN {print ($percent < -0.01)}") )); then
           color="green"
         fi
 
@@ -339,9 +348,9 @@ runs:
           fi
 
           color="gray"
-          if (( $(awk "BEGIN {print ($service_percent > 1)}") )); then
+          if (( $(awk "BEGIN {print ($service_percent > 0.01)}") )); then
             color="red"
-          elif (( $(awk "BEGIN {print ($service_percent < -1)}") )); then
+          elif (( $(awk "BEGIN {print ($service_percent < -0.01)}") )); then
             color="green"
           fi
 
@@ -427,7 +436,7 @@ runs:
         xychart
           title "Image Size Evolution by Service (Last 30 Days + This PR)"
           x-axis [$x_labels]
-          y-axis "Size (GB)" 0 --> 3
+          y-axis "Size (GB)" 0 --> 0.5
         EOF
 
           # Add a line for each service
@@ -523,8 +532,13 @@ runs:
             console.log('Created new comment');
           }
 
-    - name: Checkout repository
-      uses: actions/checkout@v5
+    - name: Cleanup worktree
+      if: always()
+      shell: bash
+      run: |
+        if [[ -d /tmp/history-worktree ]]; then
+          git worktree remove /tmp/history-worktree --force 2>/dev/null || true
+        fi
 
 branding:
   icon: 'package'
