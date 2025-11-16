@@ -39,13 +39,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # - name: Login to registry (for baseline)
-    #   uses: docker/login-action@v3
-    #   with:
-    #     registry: ${{ inputs.registry }}
-    #     username: ${{ github.actor }}
-    #     password: ${{ inputs.github-token }}
-
     - name: Download manifests
       uses: actions/download-artifact@v6
       with:
@@ -253,7 +246,7 @@ runs:
         echo "Loaded $count historical measurements (one per day)"
 
     - name: Save current measurement to history
-      # if: github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/develop'
       shell: bash
       run: |
         timestamp=$(date -u +%Y%m%d-%H%M%S)

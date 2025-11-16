@@ -440,7 +440,7 @@ jobs:
   track-image-sizes:
     name: 📦 Track Image Sizes
     needs: [build-gh-docker-publish, release-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
     permissions:
       pull-requests: write
