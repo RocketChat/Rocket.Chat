@@ -117,7 +117,14 @@ export class LivenessManager {
 				return;
 			}
 
-			this.ping();
+			try {
+				this.ping();
+			} catch {
+				// If the ping call fails synchronously, it's because we couldn't send the ping message
+				// then likely the process isn't running, so we stop everything
+				this.debug('[LivenessManager] Failed to send ping to subprocess, stopping watchdog...');
+				this.stop();
+			}
 		}, this.options.pingIntervalInMS);
 
 		this.watchdogTimeout.unref();
