@@ -273,7 +273,7 @@ export class LivenessManagerTestFixture {
 		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(1);
 
 		// Wait for ping handler to finish
-		await (this.livenessManager as any).pendingPing;
+		await this.livenessManager.getPendingPing();
 
 		// Tick the rest of the interval to next ping
 		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS - LivenessManagerTestFixture.PING_TIMEOUT_MS);
@@ -285,7 +285,7 @@ export class LivenessManagerTestFixture {
 		mock.timers.tick(LivenessManagerTestFixture.PING_TIMEOUT_MS);
 
 		// Wait for ping handler to finish
-		await (this.livenessManager as any).pendingPing;
+		await this.livenessManager.getPendingPing();
 
 		// Verify consecutive timeout count incremented
 		runtimeData = this.livenessManager.getRuntimeData();

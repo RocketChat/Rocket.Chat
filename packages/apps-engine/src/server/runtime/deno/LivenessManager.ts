@@ -130,6 +130,10 @@ export class LivenessManager {
 		this.pendingPing = null;
 	}
 
+	public getPendingPing() {
+		return this.pendingPing;
+	}
+
 	/**
 	 * Start up the process of ping/pong for liveness check
 	 *
