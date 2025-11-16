@@ -293,5 +293,7 @@ export class LivenessManagerTestFixture {
 
 		// Verify that restart has been called due to reaching consecutive timeout limit
 		Expect(spy).toHaveBeenCalledWith('Too many pings timed out');
+
+		spy.restore();
 	}
 }
