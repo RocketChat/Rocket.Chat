@@ -38,13 +38,11 @@ export class ProcessMessenger {
 
 	private switchStrategy() {
 		if (this.deno?.stdin?.writable) {
-			console.log('SWITCH STRATEGY DENO WRITEABLE');
 			this._sendStrategy = this.strategySend.bind(this);
 
 			// Get a clean encoder
 			this.encoder = newEncoder();
 		} else {
-			console.log('SWITCH STRATEGY ERROR');
 			this._sendStrategy = this.strategyError.bind(this);
 		}
 	}
