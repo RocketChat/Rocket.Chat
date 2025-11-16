@@ -3,14 +3,14 @@ import { mock } from 'node:test';
 import { EventEmitter } from 'stream';
 
 import type { RestorableFunctionSpy } from 'alsatian';
-import { Expect, Setup, SetupFixture, SpyOn, Teardown, TeardownFixture, Test, TestFixture } from 'alsatian';
+import { AsyncTest, Expect, Setup, SetupFixture, SpyOn, Teardown, TeardownFixture, Test, TestFixture } from 'alsatian';
 import debugFactory from 'debug';
 
 import type { DenoRuntimeSubprocessController } from '../../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import { COMMAND_PING, LivenessManager } from '../../../../src/server/runtime/deno/LivenessManager';
 import { ProcessMessenger } from '../../../../src/server/runtime/deno/ProcessMessenger';
 
-@TestFixture()
+@TestFixture('LivenessManager ping mechanism')
 export class LivenessManagerTestFixture {
 	private static readonly PING_INTERVAL_MS = 100;
 
@@ -249,5 +249,49 @@ export class LivenessManagerTestFixture {
 		// Verify consecutive timeout count was reset
 		runtimeData = this.livenessManager.getRuntimeData();
 		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(0);
+	}
+
+	@AsyncTest('should call restart when consecutive timeout count reaches limit from options')
+	public async testRestartOnConsecutiveTimeoutsLimit() {
+		(this.livenessManager as any).options.consecutiveTimeoutLimit = 2;
+		const spy = SpyOn(this.livenessManager, 'restartProcess');
+		spy.andStub();
+
+		this.controllerEventEmitter.emit('constructed');
+
+		// Wait for the full interval
+		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS);
+
+		// Verify ping was sent
+		Expect(this.sendSpy).toHaveBeenCalledWith(COMMAND_PING);
+
+		// Timeout the ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Verify consecutive timeout count incremented
+		let runtimeData = this.livenessManager.getRuntimeData();
+		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(1);
+
+		// Wait for ping handler to finish
+		await (this.livenessManager as any).pendingPing;
+
+		// Tick the rest of the interval to next ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_INTERVAL_MS - LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Verify ping was sent
+		Expect(this.sendSpy).toHaveBeenCalled().exactly(2).times;
+
+		// Timeout the ping
+		mock.timers.tick(LivenessManagerTestFixture.PING_TIMEOUT_MS);
+
+		// Wait for ping handler to finish
+		await (this.livenessManager as any).pendingPing;
+
+		// Verify consecutive timeout count incremented
+		runtimeData = this.livenessManager.getRuntimeData();
+		Expect(runtimeData.pingTimeoutConsecutiveCount).toBe(2);
+
+		// Verify that restart has been called due to reaching consecutive timeout limit
+		Expect(spy).toHaveBeenCalledWith('Too many pings timed out');
 	}
 }

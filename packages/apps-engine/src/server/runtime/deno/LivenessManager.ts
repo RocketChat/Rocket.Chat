@@ -48,6 +48,9 @@ export class LivenessManager {
 
 	private lastHeartbeatTimestamp = NaN;
 
+	// A promise tracking the current ping process - used mostly for testing
+	private pendingPing: Promise<boolean> | null;
+
 	// This is the perfect use-case for an AbortController, but it's experimental in Node 14.x
 	private pingAbortController: EventEmitter;
 
@@ -124,6 +127,7 @@ export class LivenessManager {
 		this.pingAbortController.emit('abort');
 		clearInterval(this.watchdogTimeout);
 		this.watchdogTimeout = null;
+		this.pendingPing = null;
 	}
 
 	/**
@@ -136,14 +140,14 @@ export class LivenessManager {
 	private ping() {
 		const start = Date.now();
 
-		const promise = new Promise<void>((resolve, reject) => {
+		this.pendingPing = new Promise<boolean>((resolve, reject) => {
 			const onceCallback = () => {
 				const now = Date.now();
 				this.debug('Ping successful in %d ms', now - start);
 				clearTimeout(timeoutId);
 				this.pingTimeoutConsecutiveCount = 0;
 				this.lastHeartbeatTimestamp = now;
-				resolve();
+				resolve(true);
 			};
 
 			const timeoutCallback = () => {
@@ -183,8 +187,6 @@ export class LivenessManager {
 			});
 
 		this.messenger.send(COMMAND_PING);
-
-		return promise;
 	}
 
 	private handleError(err: Error) {
