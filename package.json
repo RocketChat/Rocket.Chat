@@ -83,6 +83,7 @@
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",
-		"node-gyp": "^10.2.0"
+		"node-gyp": "^10.2.0",
+		"jose": "^5.2.4"
 	}
 }
