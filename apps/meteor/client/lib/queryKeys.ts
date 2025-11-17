@@ -138,3 +138,12 @@ export const appsQueryKeys = {
 	all: ['apps'] as const,
 	slashCommands: () => [...appsQueryKeys.all, 'slashCommands'] as const,
 };
+
+export const ABACQueryKeys = {
+	all: ['abac'] as const,
+	roomAttributes: {
+		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
+		roomAttributesList: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), 'room-attributes-list', query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), 'attribute', attributeId] as const,
+	},
+};
