@@ -9,7 +9,7 @@ import { RoomIcon } from '../../../../../../components/RoomIcon';
 // TODO: Remove type union when ABAC is implemented
 type RoomInfoABACSectionProps = {
 	room: IRoom & {
-		abacAttributes: {
+		abacAttributes?: {
 			name: string;
 			values: string[];
 		}[];
@@ -22,7 +22,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 	const abacEnabled = useSetting('ABAC_Enabled');
 	const showAttributesInRoom = useSetting('ABAC_ShowAttributesInRooms');
 
-	if (!abacEnabled || !showAttributesInRoom || room.abacAttributes?.length === 0) {
+	if (!abacEnabled || !showAttributesInRoom || !room.abacAttributes?.length) {
 		return null;
 	}
 
