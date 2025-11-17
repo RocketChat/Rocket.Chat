@@ -65,10 +65,8 @@ test.describe.parallel('administration', () => {
 			await page.goto('/admin/users');
 		});
 
-		test('expect find "user1" user', async ({ page }) => {
-			await poAdminUsers.inputSearchUsers.fill('user1');
-
-			await expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
+		test('expect find "user1" user', async () => {
+			await poAdminUsers.searchUser('user1');
 		});
 
 		test('expect create a user', async () => {
@@ -103,7 +101,7 @@ test.describe.parallel('administration', () => {
 			await expect(poAdminUsers.editUser.joinDefaultChannels).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();
 
-			await poAdminUsers.inputSearchUsers.fill(username);
+			await poAdminUsers.searchUser(username);
 			await poAdminUsers.getUserRowByUsername(username).click();
 			await poAdminUsers.userInfo.btnEdit.click();
 			await expect(poAdminUsers.editUser.inputUserName).toHaveValue(username);
