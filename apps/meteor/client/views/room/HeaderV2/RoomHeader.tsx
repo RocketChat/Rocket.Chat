@@ -12,7 +12,6 @@ import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import ABACHeaderTag from '../../../components/ABAC/ABACHeaderTag';
 import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 
 export type RoomHeaderProps = {
@@ -44,7 +43,6 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					<ABACHeaderTag room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />

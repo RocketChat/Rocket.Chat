@@ -18,6 +18,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { links } from '../../../lib/links';
 
 const CustomFieldsTable = () => {
 	const t = useTranslation();
@@ -99,7 +100,7 @@ const CustomFieldsTable = () => {
 					description={t('No_custom_fields_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_custom_field')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_custom_fields')}
 				/>
 			)}

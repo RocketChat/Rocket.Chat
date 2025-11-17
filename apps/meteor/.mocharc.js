@@ -13,6 +13,7 @@ module.exports = {
 		'lib/callbacks.spec.ts',
 		'server/lib/ldap/*.spec.ts',
 		'server/lib/ldap/**/*.spec.ts',
+		'server/lib/dataExport/**/*.spec.ts',
 		'server/ufs/*.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/tests/**/*.tests.ts',

@@ -1,14 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class ExportMessagesTab {
-	private readonly root: Locator;
+import { FlexTab } from './flextab';
 
+export class ExportMessagesTab extends FlexTab {
 	constructor(page: Page) {
-		this.root = page.getByRole('dialog', { name: 'Export Messages' });
-	}
-
-	get dialog() {
-		return this.root;
+		super(page.getByRole('dialog', { name: 'Export Messages' }));
 	}
 
 	async exposeMethods() {

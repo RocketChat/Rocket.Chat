@@ -6,6 +6,7 @@ import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
 import ImageBlock from '../blocks/ImageBlock';
+import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
@@ -15,6 +16,8 @@ import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSel
 import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import IconButtonElement from '../elements/IconButtonElement';
+import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
 import LinearScaleElement from '../elements/LinearScaleElement';
 import MarkdownTextElement from '../elements/MarkdownTextElement';
@@ -61,7 +64,7 @@ type FuselageSurfaceRendererProps = ConstructorParameters<typeof UiKit.SurfaceRe
 
 export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
 	public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
-		super(allowedBlocks || ['actions', 'context', 'divider', 'image', 'input', 'section', 'preview']);
+		super(allowedBlocks || ['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'info_card']);
 	}
 
 	public plain_text(textObject: UiKit.PlainText, context: UiKit.BlockContext, index: number): ReactElement | null {
@@ -341,5 +344,33 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		}
 
 		return null;
+	}
+
+	info_card(block: UiKit.InfoCardBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context !== UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <InfoCard block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	icon(block: UiKit.IconElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <IconElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	icon_button(block: UiKit.IconButtonElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<IconButtonElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
 	}
 }
