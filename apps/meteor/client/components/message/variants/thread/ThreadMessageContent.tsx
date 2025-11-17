@@ -33,6 +33,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
+	const isFederationMessage = Boolean(message?.federation);
 
 	const { t } = useTranslation();
 
@@ -85,7 +86,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
+			{!isFederationMessage && readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };
