@@ -8,13 +8,13 @@ import { createFakeRoom } from '../../../../../../../tests/mocks/data';
 
 type RoomWithABAC = IRoom & {
 	abacAttributes?: {
-		name: string;
+		key: string;
 		values: string[];
 	}[];
 };
 
 describe('RoomInfoABACSection', () => {
-	const createRoomWithABAC = (attributes: { name: string; values: string[] }[]): RoomWithABAC => {
+	const createRoomWithABAC = (attributes: { key: string; values: string[] }[]): RoomWithABAC => {
 		const room = createFakeRoom();
 		return {
 			...room,
@@ -26,7 +26,7 @@ describe('RoomInfoABACSection', () => {
 
 	describe('Conditional rendering', () => {
 		it('should return null when ABAC_Enabled is false', () => {
-			const room = createRoomWithABAC([{ name: 'Test', values: ['Value1'] }]);
+			const room = createRoomWithABAC([{ key: 'Test', values: ['Value1'] }]);
 			const appRoot = mockAppRoot().withSetting('ABAC_Enabled', false).withSetting('ABAC_ShowAttributesInRooms', true).build();
 
 			render(<RoomInfoABACSection room={room} />, { wrapper: appRoot });
@@ -34,7 +34,7 @@ describe('RoomInfoABACSection', () => {
 		});
 
 		it('should return null when ABAC_ShowAttributesInRooms is false', () => {
-			const room = createRoomWithABAC([{ name: 'Test', values: ['Value1'] }]);
+			const room = createRoomWithABAC([{ key: 'Test', values: ['Value1'] }]);
 			const appRoot = mockAppRoot().withSetting('ABAC_Enabled', true).withSetting('ABAC_ShowAttributesInRooms', false).build();
 
 			render(<RoomInfoABACSection room={room} />, { wrapper: appRoot });
@@ -48,7 +48,7 @@ describe('RoomInfoABACSection', () => {
 		});
 
 		it('should render when all conditions are met', () => {
-			const room = createRoomWithABAC([{ name: 'Test', values: ['Value1'] }]);
+			const room = createRoomWithABAC([{ key: 'Test', values: ['Value1'] }]);
 			render(<RoomInfoABACSection room={room} />, { wrapper: appRootWithABACEnabled });
 			expect(screen.getByText('ABAC_Managed')).toBeInTheDocument();
 		});
@@ -57,8 +57,8 @@ describe('RoomInfoABACSection', () => {
 	describe('Accessibility', () => {
 		it('should have no accessibility violations', async () => {
 			const room = createRoomWithABAC([
-				{ name: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
-				{ name: 'Country', values: ['US-only'] },
+				{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+				{ key: 'Country', values: ['US-only'] },
 			]);
 			const { container } = render(<RoomInfoABACSection room={room} />, { wrapper: appRootWithABACEnabled });
 
@@ -69,8 +69,8 @@ describe('RoomInfoABACSection', () => {
 	describe('Snapshot', () => {
 		it('should match the snapshot', () => {
 			const room = createRoomWithABAC([
-				{ name: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
-				{ name: 'Country', values: ['US-only'] },
+				{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+				{ key: 'Country', values: ['US-only'] },
 			]);
 			const { baseElement } = render(<RoomInfoABACSection room={room} />, { wrapper: appRootWithABACEnabled });
 			expect(baseElement).toMatchSnapshot();
