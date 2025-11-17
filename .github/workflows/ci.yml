@@ -394,12 +394,12 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Download digests
+      - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@v6
         with:
-          pattern: digests-*
-          path: /tmp/digests
+          pattern: manifests-*
+          path: /tmp/manifests
           merge-multiple: true
 
       - name: Create and push multi-arch manifests
@@ -408,14 +408,15 @@ jobs:
           set -o xtrace
           shopt -s nullglob
 
-          for service_dir in /tmp/digests/*; do
+          for service_dir in /tmp/manifests/*; do
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
             echo "Creating manifest for $service"
 
+            # Extract digests from manifest.json files
             mapfile -t refs < <(
-              find "$service_dir" -type f -name 'digest.txt' -print0 \
-                | xargs -0 -I{} sh -c "tr -d '\r' < '{}' | sed '/^[[:space:]]*$/d'"
+              find "$service_dir" -type f -name 'manifest.json' -print0 \
+                | xargs -0 -I{} jq -r '.Descriptor.digest as $digest | .Ref | split("@")[0] + "@" + $digest' {}
             )
 
             echo "Digest for ${service}: ${refs[@]}"
@@ -436,6 +437,27 @@ jobs:
               --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
               ${refs[@]}
           done
+
+  track-image-sizes:
+    name: 📦 Track Image Sizes
+    needs: [build-gh-docker-publish, release-versions]
+    runs-on: ubuntu-24.04-arm
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Track Docker image sizes
+        uses: ./.github/actions/docker-image-size-tracker
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ needs.release-versions.outputs.lowercase-repo }}
+          tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          baseline-tag: develop
 
   checks:
     needs: [release-versions, packages-build]
@@ -813,12 +835,12 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Download digests
+      - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@v6
         with:
-          pattern: digests-*
-          path: /tmp/digests
+          pattern: manifests-*
+          path: /tmp/manifests
           merge-multiple: true
 
       - name: Publish Docker images
@@ -862,7 +884,7 @@ jobs:
           # get first tag as primary
           PRIMARY="${TAGS[0]}"
 
-          for service_dir in /tmp/digests/*; do
+          for service_dir in /tmp/manifests/*; do
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
