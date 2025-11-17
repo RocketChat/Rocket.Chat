@@ -21,8 +21,8 @@ import type { FormEvent } from 'react';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
+import AutoCompleteAgentWithoutExtension from '../../../../omnichannel/components/AutoCompleteAgentWithoutExtension';
 
 type AssignAgentModalProps = {
 	closeModal: () => void;

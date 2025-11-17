@@ -34,6 +34,18 @@ type MediaSession = SessionInfo & {
 	sendTone: (tone: string) => void;
 };
 
+export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
+	if ('callerId' in peerInfo) {
+		return peerInfo.callerId;
+	}
+
+	if ('number' in peerInfo) {
+		return peerInfo.number;
+	}
+
+	return undefined;
+};
+
 const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
 	switch (callState) {
 		case 'active':
