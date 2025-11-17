@@ -137,7 +137,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		if (!room) {
 			return;
 		}
-		const userId = call.createdBy.type === 'user' ? call.createdBy.id : call.caller.id;
+
+		const userId = call.caller.id || call.createdBy?.id; // I think this should always be the caller, since during a transfer the createdBy contact is the one that transferred the call
 
 		const user = await Users.findOneById(userId);
 		if (!user) {
