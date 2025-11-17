@@ -1,6 +1,6 @@
-import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
-import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { FederationMatrix, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
+import { isEditedMessage, isRoomNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
@@ -217,4 +217,51 @@ callbacks.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-create-direct-room',
+);
+
+callbacks.add(
+	'afterSaveUser',
+	async ({ user, oldUser }) => {
+		if (!oldUser || !user) {
+			return;
+		}
+
+		const nameChanged = user.name !== oldUser.name;
+		if (!nameChanged) {
+			return;
+		}
+
+		const newDisplayName = user.name || user.username;
+		if (!newDisplayName) {
+			return;
+		}
+
+		// check if user, even if local, is part of some federated room
+		// TODO have a method to check if user is part of some federated room
+		const oldDisplayName = oldUser.name || oldUser.username;
+		const federatedRoomIds: string[] = [];
+		const subscriptions = Subscriptions.findByUserId(user._id);
+		for await (const subscription of subscriptions) {
+			const room = await Rooms.findOneById(subscription.rid, { fields: { _id: 1, federation: 1, federated: 1 } });
+			if (!room || !isRoomNativeFederated(room)) {
+				continue;
+			}
+			federatedRoomIds.push(room._id);
+		}
+
+		if (federatedRoomIds.length > 0) {
+			await FederationMatrix.updateUserProfile(user._id, newDisplayName);
+
+			// send system message to each federated room
+			for await (const roomId of federatedRoomIds) {
+				try {
+					await Message.saveSystemMessage('user-display-name-changed', roomId, `${oldDisplayName}|${newDisplayName}`, user);
+				} catch (error) {
+					console.error(`Failed to send displayname change system message to room ${roomId}:`, error);
+				}
+			}
+		}
+	},
+	callbacks.priority.MEDIUM,
+	'native-federation-after-user-profile-update',
 );

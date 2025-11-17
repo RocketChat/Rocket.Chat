@@ -373,7 +373,7 @@ export const getMatrixProfilesRoutes = () => {
 				if (field) {
 					return {
 						body: {
-							[field]: response[field as 'displayname' | 'avatar_url'] || null,
+							[field]: response?.[field as 'displayname' | 'avatar_url'] || null,
 						},
 						statusCode: 200,
 					};

@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, api, Message } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
 import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -59,9 +59,41 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 
 	if (localUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, localUser._id);
+
 		if (subscription) {
+			const newDisplayName = data.content.displayname;
+			const prevContent = data.event.unsigned?.prev_content;
+			const oldDisplayName = prevContent?.displayname;
+			const isDisplaynameChange = oldDisplayName && oldDisplayName !== newDisplayName;
+
+			if (newDisplayName && newDisplayName !== localUser.name) {
+				// direct DB update for inbound federation events (don't use _setRealName)
+				// this is intentional: using _setRealName would trigger afterSaveUser callback
+				// which would try to send the update back to Matrix, creating a loop
+				await Users.updateOne({ _id: localUser._id }, { $set: { name: newDisplayName } });
+
+				// direct broadcast for federation events (bypasses notifyOnUserChange)
+				// we always want to notify clients about federation updates regardless of DB watcher settings
+				void api.broadcast('watch.users', {
+					clientAction: 'updated',
+					id: localUser._id,
+					diff: { name: 1 },
+					unset: {},
+				});
+
+				// send system message if this is a displayname change (not initial join)
+				if (isDisplaynameChange) {
+					try {
+						await Message.saveSystemMessage('user-display-name-changed', room._id, `${oldDisplayName}|${newDisplayName}`, localUser);
+					} catch (error) {
+						logger.error('Failed to send displayname change system message:', error);
+					}
+				}
+			}
+
 			return;
 		}
+
 		await Room.addUserToRoom(room._id, localUser);
 		return;
 	}
@@ -70,10 +102,58 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 		throw new Error('Invalid sender format, missing server name');
 	}
 
+	// first, check if this is a displayname change for an existing user
+	const [existingUsername] = getUsernameServername(data.state_key, federationSDK.getConfig('serverName'));
+	const existingUser = await Users.findOneByUsername(existingUsername);
+
+	const newDisplayName = data.content.displayname;
+	const prevContent = data.event.unsigned?.prev_content;
+	const oldDisplayName = prevContent?.displayname;
+
+	const isDisplaynameChange =
+		existingUser && // user exists
+		prevContent && // has previous state
+		prevContent.membership === 'join' && // was already joined
+		oldDisplayName !== newDisplayName && // displayname actually changed
+		newDisplayName; // new displayname exists
+
+	if (isDisplaynameChange) {
+		// this is a displayname change, not a new join
+		// check if user is in this room
+		const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, existingUser._id);
+
+		if (existingSubscription) {
+			// direct DB update for inbound federation events (don't use _setRealName)
+			// this is intentional: using _setRealName would trigger afterSaveUser callback
+			// which would try to send the update back to Matrix, creating a loop
+			await Users.updateOne({ _id: existingUser._id }, { $set: { name: newDisplayName } });
+
+			// direct broadcast for federation events (bypasses notifyOnUserChange)
+			// we always want to notify clients about federation updates regardless of DB watcher settings
+			void api.broadcast('watch.users', {
+				clientAction: 'updated',
+				id: existingUser._id,
+				diff: { name: 1 },
+				unset: {},
+			});
+
+			// send system message to the room about the displayname change
+			try {
+				await Message.saveSystemMessage('user-display-name-changed', room._id, `${oldDisplayName}|${newDisplayName}`, existingUser);
+			} catch (error) {
+				logger.error('Failed to send displayname change system message:', error);
+			}
+
+			logger.info(`Updated displayname for federated user ${existingUser.username} (${existingUser._id})`);
+			return;
+		}
+	}
+
+	// either not a displayname change, or user not in room yet - proceed with createOrUpdate
 	const insertedId = await createOrUpdateFederatedUser({
 		username: data.event.state_key,
 		origin: serverName,
-		name: data.content.displayname || (data.state_key as `@${string}:${string}`),
+		name: newDisplayName || (data.state_key as `@${string}:${string}`),
 	});
 
 	const user = await Users.findOneById(insertedId);

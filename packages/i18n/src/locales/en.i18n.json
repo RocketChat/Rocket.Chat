@@ -5544,6 +5544,7 @@
   "User_has_been_removed_from_team": "User has been removed from team",
   "User_has_been_unignored": "User is no longer ignored",
   "User_has_been_unmuted": "unmuted {{user_unmuted}}",
+  "User_changed_display_name": "changed display name from \"{{old_name}}\" to \"{{new_name}}\"",
   "User_is_blocked": "User is blocked",
   "User_is_no_longer_an_admin": "User is no longer an admin",
   "User_is_now_an_admin": "User is now an admin",
