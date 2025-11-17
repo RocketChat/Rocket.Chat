@@ -39,6 +39,11 @@ export interface IRoomService {
 			skipSystemMessage?: boolean;
 			skipAlertSound?: boolean;
 			createAsHidden?: boolean;
+			invited?: boolean;
+			federation?: {
+				inviteEventId?: string;
+				inviterUsername?: string;
+			};
 		},
 	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
