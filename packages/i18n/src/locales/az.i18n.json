@@ -2754,6 +2754,5 @@
   "your_message": "sənin mesajın",
   "your_message_optional": "mesajınız (isteğe bağlı)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} artıq {{user_by}} tərəfindən {{role}} deyil",
-  "__username__was_set__role__by__user_by_": "{{username}}, {{user_by}} tərəfindən {{role}} təyin edildi",
-  "Incoming_call": "Gələn çağırış..."
+  "__username__was_set__role__by__user_by_": "{{username}}, {{user_by}} tərəfindən {{role}} təyin edildi"
 }

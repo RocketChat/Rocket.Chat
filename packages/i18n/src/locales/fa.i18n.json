@@ -3102,6 +3102,5 @@
   },
   "__roomName__was_added_to_favorites": "{{roomName}} به موارد دلخواه اضافه شد",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} دیگر توسط {{user_by}} {{role}} نمی شود",
-  "__username__was_set__role__by__user_by_": "{{username}} توسط {{user_by}} به عنوان {{role}} تعیین شد",
-  "Incoming_call": "تماس دریافتی..."
+  "__username__was_set__role__by__user_by_": "{{username}} توسط {{user_by}} به عنوان {{role}} تعیین شد"
 }

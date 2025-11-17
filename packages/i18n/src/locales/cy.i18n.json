@@ -2743,6 +2743,5 @@
   "your_message": "dy neges",
   "your_message_optional": "eich neges (dewisol)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} bellach yn {{role}} gan {{user_by}}",
-  "__username__was_set__role__by__user_by_": "Gosodwyd {{username}} {{role}} gan {{user_by}}",
-  "Incoming_call": "Galwad Yn Dod..."
+  "__username__was_set__role__by__user_by_": "Gosodwyd {{username}} {{role}} gan {{user_by}}"
 }

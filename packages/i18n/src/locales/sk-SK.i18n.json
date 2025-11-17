@@ -2754,6 +2754,5 @@
   "your_message": "tvoja správa",
   "your_message_optional": "Vaša správa (voliteľné)",
   "__username__is_no_longer__role__defined_by__user_by_": "používateľovi {{username}} bola zrušená funkcia {{role}} používateľom {{user_by}}",
-  "__username__was_set__role__by__user_by_": "používateľovi {{username}} bola nastavená funkcia {{role}} používateľom {{user_by}}",
-  "Incoming_call": "Prichádzajúci hovor..."
+  "__username__was_set__role__by__user_by_": "používateľovi {{username}} bola nastavená funkcia {{role}} používateľom {{user_by}}"
 }

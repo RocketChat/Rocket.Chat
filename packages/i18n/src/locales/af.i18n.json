@@ -2751,6 +2751,5 @@
   "your_message": "jou boodskap",
   "your_message_optional": "jou boodskap (opsioneel)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is nie meer {{role}} deur {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} is ingestel {{role}} deur {{user_by}}",
-  "Incoming_call": "Inkomende oproep..."
+  "__username__was_set__role__by__user_by_": "{{username}} is ingestel {{role}} deur {{user_by}}"
 }

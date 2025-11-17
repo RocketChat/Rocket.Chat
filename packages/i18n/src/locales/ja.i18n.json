@@ -4818,6 +4818,5 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}}個の空のルームが自動的に削除されます。",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold>個の空のルームが自動的に削除されます：<br/> {{rooms}}。",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}}は{{user_by}}によって{{role}}ではなくなりました",
-  "__username__was_set__role__by__user_by_": "{{user_by}}によって{{role}}が{{username}}に設定されました",
-  "Incoming_call": "着信..."
+  "__username__was_set__role__by__user_by_": "{{user_by}}によって{{role}}が{{username}}に設定されました"
 }

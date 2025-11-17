@@ -2751,6 +2751,5 @@
   "your_message": "Mesazhi juaj",
   "your_message_optional": "mesazhi juaj (opsional)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} nuk është më {{role}}, duke {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} u {{role}} nga {{user_by}}",
-  "Incoming_call": "Thirrje ardhese..."
+  "__username__was_set__role__by__user_by_": "{{username}} u {{role}} nga {{user_by}}"
 }

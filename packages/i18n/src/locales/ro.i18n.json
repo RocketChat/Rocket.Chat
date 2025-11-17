@@ -2743,6 +2743,5 @@
   "your_message": "mesajul tau",
   "your_message_optional": "mesajul dvs. (opțional)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} nu mai este {{role}}, prin {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} a fost stabilită {{role}} de {{user_by}}",
-  "Incoming_call": "Apel de intrare..."
+  "__username__was_set__role__by__user_by_": "{{username}} a fost stabilită {{role}} de {{user_by}}"
 }

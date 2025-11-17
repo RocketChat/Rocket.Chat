@@ -2741,6 +2741,5 @@
   "your_message": "vaše sporočilo",
   "your_message_optional": "vaše sporočilo (neobvezno)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ni več {{role}} by {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} je bil nastavljen kot {{role}} by {{user_by}}",
-  "Incoming_call": "Dohodni klic..."
+  "__username__was_set__role__by__user_by_": "{{username}} je bil nastavljen kot {{role}} by {{user_by}}"
 }

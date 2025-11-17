@@ -2766,6 +2766,5 @@
   "your_message": "你的信息",
   "your_message_optional": "你的信息（可选）",
   "__username__is_no_longer__role__defined_by__user_by_": " {{user_by}}  已把 {{username}} 從 {{role}} 中移除",
-  "__username__was_set__role__by__user_by_": " {{user_by}}  已把 {{username}} 加進 {{role}} 中",
-  "Incoming_call": "來電中..."
+  "__username__was_set__role__by__user_by_": " {{user_by}}  已把 {{username}} 加進 {{role}} 中"
 }

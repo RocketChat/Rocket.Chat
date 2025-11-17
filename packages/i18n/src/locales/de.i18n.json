@@ -5506,6 +5506,5 @@
   },
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ist nicht länger {{role}}, geändert durch {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} ist jetzt {{role}}, geändert durch {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} Mitglieder werden eingeladen",
-  "Incoming_call": "Eingehender Anruf..."
+  "__usersCount__people_will_be_invited": "{{usersCount}} Mitglieder werden eingeladen"
 }

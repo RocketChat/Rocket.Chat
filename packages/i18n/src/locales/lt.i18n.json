@@ -2802,6 +2802,5 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tušti kambariai bus pašalinti automatiškai.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tušti kambariai bus pašalinti automatiškai:<br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} nebėra {{role}} pagal {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} buvo nustatytas {{role}} pagal {{user_by}}",
-  "Incoming_call": "Įeinantis skambutis..."
+  "__username__was_set__role__by__user_by_": "{{username}} buvo nustatytas {{role}} pagal {{user_by}}"
 }

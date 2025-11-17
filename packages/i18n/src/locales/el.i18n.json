@@ -2754,6 +2754,5 @@
   "your_message": "το μήνυμά σου",
   "your_message_optional": "το μήνυμά σας (προαιρετικό)",
   "__username__is_no_longer__role__defined_by__user_by_": "Ο {{username}} δεν είναι πλέον {{role}} από τον {{user_by}}",
-  "__username__was_set__role__by__user_by_": "Ο {{username}} ορίστηκε ως {{role}} από τον {{user_by}}",
-  "Incoming_call": "Εισερχόμενη κλήση..."
+  "__username__was_set__role__by__user_by_": "Ο {{username}} ορίστηκε ως {{role}} από τον {{user_by}}"
 }

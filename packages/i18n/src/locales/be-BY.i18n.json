@@ -2777,6 +2777,5 @@
   "your_message": "тваё паведамленне",
   "your_message_optional": "Ваша паведамленне (па жаданні)",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} более не {{role}} па рашэнні {{user_by}}",
-  "__username__was_set__role__by__user_by_": "{{username}} быў усталяваны {{role}} па рашэнні {{user_by}}",
-  "Incoming_call": "Вхідны выклік..."
+  "__username__was_set__role__by__user_by_": "{{username}} быў усталяваны {{role}} па рашэнні {{user_by}}"
 }
