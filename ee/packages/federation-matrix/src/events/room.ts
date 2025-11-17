@@ -22,8 +22,12 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 		await Room.saveRoomName(localRoomId._id, localUserId._id, name);
 	});
 
-	emitter.on('homeserver.matrix.room.topic', async (data) => {
-		const { room_id: roomId, topic, user_id: userId } = data;
+	emitter.on('homeserver.matrix.room.topic', async ({ event }) => {
+		const {
+			room_id: roomId,
+			content: { topic },
+			sender: userId,
+		} = event;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
 		if (!localRoomId) {

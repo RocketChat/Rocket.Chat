@@ -24,11 +24,9 @@ test.describe('Admin > Users', () => {
 	});
 
 	test('New user shows in correct tabs when deactivated', async () => {
-		await admin.inputSearchUsers.fill(user.data.username);
-
 		await test.step('should be visible in the All tab', async () => {
 			await admin.getTabByName().click();
-			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+			await admin.searchUser(user.data.username);
 		});
 
 		await test.step('should be visible in the Pending tab', async () => {
