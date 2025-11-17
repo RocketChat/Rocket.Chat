@@ -117,3 +117,12 @@ export const teamsQueryKeys = {
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
 };
+
+export const ABACQueryKeys = {
+	all: ['abac'] as const,
+	roomAttributes: {
+		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
+		roomAttributesList: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), 'room-attributes-list', query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), 'attribute', attributeId] as const,
+	},
+};

@@ -23,7 +23,7 @@ export type AdminABACRoomAttributesFormFormData = {
 };
 
 type AdminABACRoomAttributesFormProps = {
-	onSave: (data: unknown) => void;
+	onSave: (data: AdminABACRoomAttributesFormFormData) => void;
 	onCancel: () => void;
 	description: string;
 };
@@ -68,68 +68,74 @@ const AdminABACRoomAttributesForm = ({ onSave, onCancel, description }: AdminABA
 	}, [errors.attributeValues, errors.lockedAttributes]);
 
 	return (
-		<Box is='form' onSubmit={handleSubmit(onSave)} id={formId}>
+		<>
 			<ContextualbarScrollableContent>
-				<Box>{description}</Box>
-				<Field mb={16}>
-					<FieldLabel htmlFor={nameField} required>
-						{t('Name')}
-					</FieldLabel>
-					<FieldRow>
-						<TextInput
-							error={errors.name?.message}
-							id={nameField}
-							{...register('name', { required: t('Required_field', { field: t('Name') }) })}
-						/>
-					</FieldRow>
-					<FieldError>{errors.name?.message || ''}</FieldError>
-				</Field>
-				<Field mb={16}>
-					<FieldLabel required id={valuesField}>
-						{t('Values')}
-					</FieldLabel>
-					{lockedAttributesFields.map((field, index) => (
-						<FieldRow key={field.id}>
+				<Box is='form' onSubmit={handleSubmit(onSave)} id={formId}>
+					<Box>{description}</Box>
+					<Field mb={16}>
+						<FieldLabel htmlFor={nameField} required>
+							{t('Name')}
+						</FieldLabel>
+						<FieldRow>
 							<TextInput
-								disabled
-								aria-labelledby={valuesField}
-								error={errors.lockedAttributes?.[index]?.value?.message || ''}
-								{...register(`lockedAttributes.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
+								error={errors.name?.message}
+								id={nameField}
+								{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 							/>
-							{index !== 0 && <IconButton aria-label={t('Remove')} icon='trash' onClick={() => removeLockedAttribute(index)} />}
 						</FieldRow>
-					))}
-					{fields.map((field, index) => (
-						<FieldRow key={field.id}>
-							<TextInput
-								aria-labelledby={valuesField}
-								error={errors.attributeValues?.[index]?.value?.message || ''}
-								{...register(`attributeValues.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
-							/>
-							{(index !== 0 || lockedAttributesFields.length > 0) && (
-								<IconButton aria-label={t('Remove')} icon='trash' onClick={() => remove(index)} />
-							)}
-						</FieldRow>
-					))}
-					<FieldError>{getAttributeValuesError()}</FieldError>
-					<Button
-						onClick={() => append({ value: '' })}
-						// Checking for values since rhf does consider the newly added field as dirty after an append() call
-						disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
-					>
-						{t('Add Value')}
-					</Button>
-				</Field>
+						<FieldError>{errors.name?.message || ''}</FieldError>
+					</Field>
+					<Field mb={16}>
+						<FieldLabel required id={valuesField}>
+							{t('Values')}
+						</FieldLabel>
+						{lockedAttributesFields.map((field, index) => (
+							<FieldRow key={field.id}>
+								<TextInput
+									disabled
+									aria-labelledby={valuesField}
+									error={errors.lockedAttributes?.[index]?.value?.message || ''}
+									{...register(`lockedAttributes.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
+								/>
+								{index !== 0 && <IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />}
+							</FieldRow>
+						))}
+						{fields.map((field, index) => (
+							<FieldRow key={field.id}>
+								<TextInput
+									aria-labelledby={valuesField}
+									error={errors.attributeValues?.[index]?.value?.message || ''}
+									{...register(`attributeValues.${index}.value`, { required: t('Required_field', { field: t('Values') }) })}
+								/>
+								{(index !== 0 || lockedAttributesFields.length > 0) && (
+									<IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+								)}
+							</FieldRow>
+						))}
+						<FieldError>{getAttributeValuesError()}</FieldError>
+						<Button
+							onClick={() => append({ value: '' })}
+							// Checking for values since rhf does consider the newly added field as dirty after an append() call
+							disabled={
+								!!getAttributeValuesError() ||
+								attributeValues?.some((value: { value: string }) => value?.value === '') ||
+								lockedAttributesFields.length + fields.length >= 10
+							}
+						>
+							{t('Add Value')}
+						</Button>
+					</Field>
+				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => onCancel()}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={hasValuesErrors || !!errors.name} primary>
+					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Box>
+		</>
 	);
 };
 
