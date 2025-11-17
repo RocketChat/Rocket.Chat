@@ -132,29 +132,25 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	findUsersByIdentifiers(
 		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
 		options: FindOptions<IUser> = {},
-	): FindCursor<IUser> | void {
-		usernames = (usernames || []).filter(Boolean);
-		ids = (ids || []).filter(Boolean);
-		emails = (emails || []).map((e) => String(e).trim()).filter(Boolean);
-		ldapIds = (ldapIds || []).filter(Boolean);
-
-		if (!usernames.length && !ids.length && !emails.length && !ldapIds.length) {
-			return;
-		}
+	): FindCursor<IUser> {
+		const normalizedIds = (ids ?? []).filter(Boolean);
+		const normalizedUsernames = (usernames ?? []).filter(Boolean);
+		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
+		const normalizedLdapIds = (ldapIds ?? []).filter(Boolean);
 
 		const or: Filter<IUser>[] = [];
 
-		if (ids.length) {
-			or.push({ _id: { $in: ids } });
+		if (normalizedIds.length) {
+			or.push({ _id: { $in: normalizedIds } });
 		}
-		if (usernames.length) {
-			or.push({ username: { $in: usernames } });
+		if (normalizedUsernames.length) {
+			or.push({ username: { $in: normalizedUsernames } });
 		}
-		if (emails.length) {
-			or.push({ 'emails.address': { $in: emails } });
+		if (normalizedEmails.length) {
+			or.push({ 'emails.address': { $in: normalizedEmails } });
 		}
-		if (ldapIds.length) {
-			or.push({ 'services.ldap.id': { $in: ldapIds } });
+		if (normalizedLdapIds.length) {
+			or.push({ 'services.ldap.id': { $in: normalizedLdapIds } });
 		}
 
 		const query: Filter<IUser> = {

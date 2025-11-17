@@ -200,12 +200,7 @@ const abacEndpoints = API.v1
 
 			const { usernames, ids, emails, ldapIds } = this.bodyParams;
 
-			const cursor = Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds });
-			if (!cursor) {
-				throw new Error('error-invalid-params');
-			}
-
-			await LDAPEE.syncUsersAbacAttributes(cursor);
+			await LDAPEE.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
 
 			return API.v1.success();
 		},

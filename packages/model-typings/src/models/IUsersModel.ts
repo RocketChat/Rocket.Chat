@@ -94,7 +94,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findUsersByIdentifiers(
 		params: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
 		options?: FindOptions<IUser>,
-	): FindCursor<IUser> | void;
+	): FindCursor<IUser>;
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
