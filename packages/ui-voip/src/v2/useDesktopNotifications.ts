@@ -58,7 +58,7 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 				id: sessionInfo.callId,
 				payload: {
 					title: displayInfo.title,
-					body: t('Incoming_call'),
+					body: t('Incoming_call_ellipsis'),
 					avatar: avatarAsPng || undefined,
 					requireInteraction: true,
 				},

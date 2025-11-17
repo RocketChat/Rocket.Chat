@@ -2559,6 +2559,7 @@
   "Incoming_Livechats": "Queued chats",
   "Incoming_WebHook": "Incoming WebHook",
   "Incoming_call": "Incoming call",
+  "Incoming_call_ellipsis": "Incoming call...",
   "Incoming_call_from": "Incoming call from",
   "Incoming_call_from__roomName__": "Incoming call from {{roomName}}",
   "Incoming_call_transfer": "Incoming call transfer",
