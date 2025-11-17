@@ -66,7 +66,7 @@ jobs:
             --exclude='.git' \
             .
 
-          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v3
+          SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-v8
 
           # Uncomment the following line to include the run ID in the hash and disable caching between runs
           # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
@@ -279,11 +279,12 @@ jobs:
       fail-fast: false
       matrix:
         arch: [arm64, amd64]
-        service: [
-          [authorization-service, queue-worker-service, ddp-streamer-service],
-          [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
-          [rocketchat]
-        ]
+        service:
+          [
+            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
+            [rocketchat],
+          ]
         type:
           # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
@@ -393,12 +394,12 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Download digests
+      - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@v6
         with:
-          pattern: digests-*
-          path: /tmp/digests
+          pattern: manifests-*
+          path: /tmp/manifests
           merge-multiple: true
 
       - name: Create and push multi-arch manifests
@@ -407,14 +408,15 @@ jobs:
           set -o xtrace
           shopt -s nullglob
 
-          for service_dir in /tmp/digests/*; do
+          for service_dir in /tmp/manifests/*; do
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
             echo "Creating manifest for $service"
 
+            # Extract digests from manifest.json files
             mapfile -t refs < <(
-              find "$service_dir" -type f -name 'digest.txt' -print0 \
-                | xargs -0 -I{} sh -c "tr -d '\r' < '{}' | sed '/^[[:space:]]*$/d'"
+              find "$service_dir" -type f -name 'manifest.json' -print0 \
+                | xargs -0 -I{} jq -r '.Descriptor.digest as $digest | .Ref | split("@")[0] + "@" + $digest' {}
             )
 
             echo "Digest for ${service}: ${refs[@]}"
@@ -435,6 +437,27 @@ jobs:
               --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
               ${refs[@]}
           done
+
+  track-image-sizes:
+    name: 📦 Track Image Sizes
+    needs: [build-gh-docker-publish, release-versions]
+    runs-on: ubuntu-24.04-arm
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Track Docker image sizes
+        uses: ./.github/actions/docker-image-size-tracker
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: ${{ needs.release-versions.outputs.lowercase-repo }}
+          tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          baseline-tag: develop
 
   checks:
     needs: [release-versions, packages-build]
@@ -585,6 +608,54 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-federation-matrix:
+    name: 🔨 Test Federation Matrix
+    needs: [checks, build-gh-docker-publish, packages-build, release-versions]
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          cache-modules: true
+          install: true
+
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore turbo build
+        uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          name: turbo-build
+          path: .turbo/cache
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Configure /etc/hosts for federation services
+        run: |
+          sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
+          sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
+
+      - name: Run federation integration tests with pre-built image
+        working-directory: ./ee/packages/federation-matrix
+        env:
+          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
+          ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
+        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
@@ -613,7 +684,7 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports-coverage
           path: /tmp/coverage_report
@@ -640,7 +711,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -670,6 +741,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
 
@@ -759,12 +834,12 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Download digests
+      - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: actions/download-artifact@v6
         with:
-          pattern: digests-*
-          path: /tmp/digests
+          pattern: manifests-*
+          path: /tmp/manifests
           merge-multiple: true
 
       - name: Publish Docker images
@@ -775,7 +850,7 @@ jobs:
 
           # sudo apt-get update -y
           # sudo apt-get install -y skopeo
-          
+
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
@@ -807,8 +882,8 @@ jobs:
 
           # get first tag as primary
           PRIMARY="${TAGS[0]}"
-          
-          for service_dir in /tmp/digests/*; do
+
+          for service_dir in /tmp/manifests/*; do
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
