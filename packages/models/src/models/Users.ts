@@ -129,6 +129,42 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		];
 	}
 
+	findUsersByIdentifiers(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options: FindOptions<IUser> = {},
+	): FindCursor<IUser> | void {
+		usernames = (usernames || []).filter(Boolean);
+		ids = (ids || []).filter(Boolean);
+		emails = (emails || []).map((e) => String(e).trim()).filter(Boolean);
+		ldapIds = (ldapIds || []).filter(Boolean);
+
+		if (!usernames.length && !ids.length && !emails.length && !ldapIds.length) {
+			return;
+		}
+
+		const or: Filter<IUser>[] = [];
+
+		if (ids.length) {
+			or.push({ _id: { $in: ids } });
+		}
+		if (usernames.length) {
+			or.push({ username: { $in: usernames } });
+		}
+		if (emails.length) {
+			or.push({ 'emails.address': { $in: emails } });
+		}
+		if (ldapIds.length) {
+			or.push({ 'services.ldap.id': { $in: ldapIds } });
+		}
+
+		const query: Filter<IUser> = {
+			active: true,
+			$or: or,
+		};
+
+		return this.find(query, options);
+	}
+
 	/**
 	 * @param {string} uid
 	 * @param {IRole['_id'][]} roles list of role ids
