@@ -231,11 +231,6 @@ describe('AbacService.addSubjectAttributes (room removals)', () => {
 			__rooms: user.__rooms || [],
 		});
 
-	afterAll(async () => {
-		await client.close();
-		await mongo.stop();
-	});
-
 	beforeEach(async () => {
 		service = new AbacService();
 		roomsCol = db.collection('rocketchat_room');
