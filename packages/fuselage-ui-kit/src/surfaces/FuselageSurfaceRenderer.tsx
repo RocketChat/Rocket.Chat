@@ -367,6 +367,10 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return null;
 		}
 
-		return <IconButtonElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<IconButtonElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
 	}
 }
