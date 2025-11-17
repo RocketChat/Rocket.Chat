@@ -32,4 +32,5 @@ export interface IFederationMatrixService {
 	): Promise<{ event_id: EventID; event: PersistentEventBase<RoomVersion, 'm.room.member'>; room_id: RoomID }[]>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
+	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
 }
