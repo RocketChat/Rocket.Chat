@@ -6159,6 +6159,7 @@
   "error-department-removal-disabled": "Department removal is disabled by administration, please contact your administrator",
   "error-direct-message-file-upload-not-allowed": "File sharing not allowed in direct messages",
   "error-direct-message-max-user-exceeded": "You cannot add more than {{maxUsers}} users, including yourself to a direct message",
+  "error-direct-message-internal-external-user-mix-not-allowed": "Cannot pick multiple people if one is outside of the workspace", 
   "error-duplicate-channel-name": "A channel with name '{{channel_name}}' exists",
   "error-duplicate-priority-name": "A priority with the same name already exists",
   "error-duplicated-sla": "An SLA with the same name or due time already exists",
