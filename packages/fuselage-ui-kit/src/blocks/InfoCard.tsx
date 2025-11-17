@@ -25,7 +25,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 				const { elements, action, background } = row;
 				return (
 					<Box
-						key={`${blockId}-${index}`}
+						key={`${blockId ?? 'info_card'}-${index}`}
 						padding={16}
 						backgroundColor={background === 'default' ? 'surface-light' : undefined}
 						display='flex'
