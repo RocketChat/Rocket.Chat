@@ -1,11 +1,12 @@
 import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
-import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 
+import { getHistoryMessagePayload } from './getHistoryMessagePayload';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { createDirectMessage } from '../../methods/createDirectMessage';
@@ -143,25 +144,23 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		// TODO: Adjust message type and blocks to match what should be used for voice calls.
-		// Use `call._id` to keep a reference to the call
-		const record = {
-			t: 'videoconf',
-			msg: '',
-			groupable: false,
-			blocks: [
-				{
-					type: 'section',
-					appId: 'media-call-core',
-					text: {
-						type: 'mrkdwn',
-						text: `Voice Call`,
-					},
-				},
-			],
-		} satisfies Partial<IMessage>;
+		const state = this.getCallHistoryItemState(call);
+		const duration = this.getCallDuration(call);
 
-		await sendMessage(user, record, room, false);
+		const record = getHistoryMessagePayload(state, duration);
+
+		try {
+			const message = await sendMessage(user, record, room, false);
+
+			if ('_id' in message) {
+				await CallHistory.updateOne({ callId: call._id }, { $set: { messageId: message._id } });
+				return;
+			}
+			throw new Error('Failed to save message id in history');
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Failed to send history message';
+			logger.error({ msg: errorMessage, error, callId: call._id });
+		}
 	}
 
 	private getCallDuration(call: IMediaCall): number {
