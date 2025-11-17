@@ -1,4 +1,5 @@
 import { Abac } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import {
@@ -12,6 +13,8 @@ import {
 	POSTRoomAbacAttributesBodySchema,
 	POSTSingleRoomAbacAttributeBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
+	POSTAbacUsersSyncBodySchema,
+	POSTAbacUsersSyncResponseSchema,
 	GenericErrorSchema,
 	GETAbacRoomsListQueryValidator,
 	GETAbacRoomsResponseValidator,
@@ -20,6 +23,7 @@ import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
+import { LDAPEE } from '../../sdk';
 
 const abacEndpoints = API.v1
 	.post(
@@ -175,7 +179,38 @@ const abacEndpoints = API.v1
 			);
 		},
 	)
-	// create attribute
+
+	.post(
+		'abac/users/sync',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac', 'ldap-enterprise'],
+			body: POSTAbacUsersSyncBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			const { usernames, ids, emails, ldapIds } = this.bodyParams;
+
+			const cursor = Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds });
+			if (!cursor) {
+				throw new Error('error-invalid-params');
+			}
+
+			await LDAPEE.syncUsersAbacAttributes(cursor);
+
+			return API.v1.success();
+		},
+	)
 	.post(
 		'abac/attributes',
 		{
@@ -239,7 +274,6 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-
 			const result = await Abac.getAbacAttributeById(_id);
 			return API.v1.success(result);
 		},
@@ -259,7 +293,6 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-
 			await Abac.deleteAbacAttributeById(_id);
 			return API.v1.success();
 		},
@@ -279,7 +312,6 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { key } = this.urlParams;
-
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
 		},
