@@ -7,7 +7,7 @@ import RoomInfoABACSection from './RoomInfoABACSection';
 import { createFakeRoom } from '../../../../../../../tests/mocks/data';
 
 type RoomWithABAC = IRoom & {
-	abacAttributes: {
+	abacAttributes?: {
 		name: string;
 		values: string[];
 	}[];
