@@ -14,7 +14,6 @@ import {
 	POSTSingleRoomAbacAttributeBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
 	POSTAbacUsersSyncBodySchema,
-	POSTAbacUsersSyncResponseSchema,
 	GenericErrorSchema,
 	GETAbacRoomsListQueryValidator,
 	GETAbacRoomsResponseValidator,
