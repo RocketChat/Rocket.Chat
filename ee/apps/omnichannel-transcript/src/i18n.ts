@@ -1,5 +1,5 @@
 import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
-import i18nDict from '@rocket.chat/i18n/dist/resources';
+import languages from '@rocket.chat/i18n/dist/languages';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -12,10 +12,14 @@ void i18n.init({
 	ns: availableTranslationNamespaces,
 	nsSeparator: '.',
 	resources: Object.fromEntries(
-		Object.entries(i18nDict).map(([language, source]) => [
-			language,
-			extractTranslationNamespaces(source as unknown as Record<string, string>),
-		]),
+		await Promise.all(
+			languages.map(async (language) => [
+				language,
+				extractTranslationNamespaces(
+					(await import(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`)) as unknown as Record<string, string>,
+				),
+			]),
+		),
 	),
 	initImmediate: false,
 });
