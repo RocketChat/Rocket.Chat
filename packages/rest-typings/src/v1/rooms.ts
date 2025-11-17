@@ -688,6 +688,29 @@ const roomsHideSchema = {
 
 export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
+type RoomsInviteProps = {
+	subscriptionId: string;
+	action: 'accept' | 'reject';
+};
+
+const roomsInvitePropsSchema = {
+	type: 'object',
+	properties: {
+		subscriptionId: {
+			type: 'string',
+			minLength: 1,
+		},
+		action: {
+			type: 'string',
+			enum: ['accept', 'reject'],
+		},
+	},
+	required: ['subscriptionId', 'action'],
+	additionalProperties: false,
+};
+
+export const isRoomsInviteProps = ajv.compile<RoomsInviteProps>(roomsInvitePropsSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -867,5 +890,9 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.hide': {
 		POST: (params: RoomsHideProps) => void;
+	};
+
+	'/v1/rooms.invite': {
+		POST: (params: RoomsInviteProps) => void;
 	};
 };
