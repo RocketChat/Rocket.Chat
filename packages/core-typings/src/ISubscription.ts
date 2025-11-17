@@ -72,6 +72,12 @@ export interface ISubscription extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 	oldRoomKeys?: OldKey[];
 	suggestedOldRoomKeys?: OldKey[];
+
+	invited?: true;
+	federation?: {
+		inviteEventId?: string;
+		inviterUsername?: string;
+	};
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
