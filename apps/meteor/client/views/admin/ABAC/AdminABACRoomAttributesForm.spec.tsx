@@ -135,7 +135,7 @@ describe('AdminABACRoomAttributesForm', () => {
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.getAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		expect(screen.getByDisplayValue('Value 1')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Value 2')).toBeInTheDocument();
 
@@ -158,7 +158,7 @@ describe('AdminABACRoomAttributesForm', () => {
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.queryAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.queryAllByRole('button', { name: 'ABAC_Remove_attribute' });
 
 		expect(screen.getByDisplayValue('Locked Value 1')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Locked Value 2')).toBeInTheDocument();
@@ -211,7 +211,7 @@ describe('AdminABACRoomAttributesForm', () => {
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.queryAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.queryAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		await userEvent.click(trashButtons[0]);
 
 		const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -253,7 +253,7 @@ describe('AdminABACRoomAttributesForm', () => {
 		expect(screen.getByDisplayValue('Locked Value')).toBeDisabled();
 		expect(screen.getByDisplayValue('Regular Value')).not.toBeDisabled();
 
-		const trashButtons = screen.getAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		expect(trashButtons).toHaveLength(1);
 	});
 });
