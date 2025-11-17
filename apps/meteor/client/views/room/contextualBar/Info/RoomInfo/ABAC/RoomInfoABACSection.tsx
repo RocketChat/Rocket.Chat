@@ -10,7 +10,7 @@ import { RoomIcon } from '../../../../../../components/RoomIcon';
 type RoomInfoABACSectionProps = {
 	room: IRoom & {
 		abacAttributes?: {
-			name: string;
+			key: string;
 			values: string[];
 		}[];
 	};
@@ -44,11 +44,11 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 				<InfoPanelLabel id='room-attributes-list-label'>{t('ABAC_Room_Attributes')}</InfoPanelLabel>
 				<Box is='ul' aria-labelledby='room-attributes-list-label'>
 					{room.abacAttributes.map((attribute) => (
-						<Box is='li' key={attribute.name} mb={16}>
-							<Box is='span' id={`room-attribute-${attribute.name}-label`}>
-								{attribute.name}
+						<Box is='li' key={attribute.key} mb={16}>
+							<Box is='span' id={`room-attribute-${attribute.key}-label`}>
+								{attribute.key}
 							</Box>
-							<Box is='ul' display='flex' mbs={8} alignItems='center' aria-labelledby={`room-attribute-${attribute.name}-label`}>
+							<Box is='ul' display='flex' mbs={8} alignItems='center' aria-labelledby={`room-attribute-${attribute.key}-label`}>
 								{attribute.values.map((value) => (
 									<Box is='li' mie={4} key={value}>
 										<Tag medium>{value}</Tag>

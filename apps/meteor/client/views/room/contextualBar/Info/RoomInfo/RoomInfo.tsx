@@ -129,7 +129,6 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
-						{/* @ts-expect-error - abacAttributes is not yet implemented in Rooms properties */}
 						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
