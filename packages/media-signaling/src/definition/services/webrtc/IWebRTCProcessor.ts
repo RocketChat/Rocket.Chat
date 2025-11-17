@@ -3,6 +3,7 @@ import type { Emitter } from '@rocket.chat/emitter';
 import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
+import type { ITimerProcessor } from '../ITimerProcessor';
 
 export type WebRTCInternalStateMap = {
 	signaling: RTCSignalingState;
@@ -43,6 +44,7 @@ export type WebRTCProcessorConfig = {
 	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;
 	rtc?: RTCConfiguration;
+	timerProcessor: ITimerProcessor<unknown, unknown>;
 };
 
 export type WebRTCProcessorFactory = (config: WebRTCProcessorConfig) => IWebRTCProcessor;

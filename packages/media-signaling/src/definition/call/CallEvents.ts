@@ -14,6 +14,9 @@ export type CallEvents = {
 	/* Triggered as soon as the call is registered on this client */
 	initialized: void;
 
+	/* Triggered when the call is confirmed to exist in the server */
+	confirmed: void;
+
 	/* Triggered when this client is telling the server that we want to accept the call */
 	accepting: void;
 	/* Triggered when the call's state on the server changes to 'accepted' */
