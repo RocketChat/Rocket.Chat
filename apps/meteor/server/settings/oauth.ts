@@ -428,7 +428,7 @@ export const createOauthSettings = () =>
 				enableQuery,
 			});
 		});
-		return this.section('Proxy', async function () {
+		await this.section('Proxy', async function () {
 			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
 				type: 'string',
 				public: true,
@@ -436,6 +436,15 @@ export const createOauthSettings = () =>
 			return this.add('Accounts_OAuth_Proxy_services', '', {
 				type: 'string',
 				public: true,
+			});
+		});
+
+		await this.section('OpenID Connect', async function () {
+			await this.add('Accounts_OpenID_Description', '', {
+				type: 'string',
+				i18nLabel: 'Accounts_OpenID_Description',
+				i18nDescription: 'Accounts_OpenID_Description_Text',
+				readonly: true,
 			});
 		});
 	});
