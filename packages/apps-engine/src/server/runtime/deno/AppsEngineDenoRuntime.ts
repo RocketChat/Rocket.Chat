@@ -260,6 +260,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		await this.waitUntilReady();
 
 		await this.sendRequest({ method: 'app:construct', params: [this.appPackage] });
+
+		this.emit('constructed');
 	}
 
 	public async stopApp() {
@@ -659,6 +661,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 					if (Array.isArray(JSONRPCMessage)) {
 						throw new Error('Invalid message format');
 					}
+
+					this.emit('heartbeat');
 
 					if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
 						this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
