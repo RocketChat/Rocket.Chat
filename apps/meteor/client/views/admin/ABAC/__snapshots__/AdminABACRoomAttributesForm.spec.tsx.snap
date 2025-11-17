@@ -6,40 +6,40 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1dwbzta"
     >
-      <form
-        class="rcx-box rcx-box--full"
-        id=":r0:"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1svuzur"
+          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-            data-overlayscrollbars="host"
+            class="os-size-observer"
           >
             <div
-              class="os-size-observer"
-            >
-              <div
-                class="os-size-observer-listener"
-              />
-            </div>
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
             <div
-              class=""
-              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
-              tabindex="-1"
+              class="rcx-box rcx-box--full rcx-css-iag4sp"
             >
-              <div
-                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              <form
+                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                id=":r0:"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                  class="rcx-box rcx-box--full"
                 >
                   Create an attribute that can later be assigned to rooms.
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1dd6ilo"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -69,7 +69,7 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
                   />
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1dd6ilo"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -109,64 +109,65 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
                     </span>
                   </button>
                 </div>
-              </div>
-            </div>
-            <div
-              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-            >
-              <div
-                class="os-scrollbar-track"
-              >
-                <div
-                  class="os-scrollbar-handle"
-                />
-              </div>
-            </div>
-            <div
-              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-            >
-              <div
-                class="os-scrollbar-track"
-              >
-                <div
-                  class="os-scrollbar-handle"
-                />
-              </div>
+              </form>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-m843eh"
-        >
           <div
-            class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
-            role="group"
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
           >
-            <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-              type="button"
+            <div
+              class="os-scrollbar-track"
             >
-              <span
-                class="rcx-button--content"
-              >
-                Cancel
-              </span>
-            </button>
-            <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="submit"
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
             >
-              <span
-                class="rcx-button--content"
-              >
-                Save
-              </span>
-            </button>
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
           </div>
         </div>
-      </form>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m843eh"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Cancel
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            form=":r0:"
+            type="submit"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Save
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </body>
@@ -178,40 +179,40 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1dwbzta"
     >
-      <form
-        class="rcx-box rcx-box--full"
-        id=":r3:"
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1svuzur"
+          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-            data-overlayscrollbars="host"
+            class="os-size-observer"
           >
             <div
-              class="os-size-observer"
-            >
-              <div
-                class="os-size-observer-listener"
-              />
-            </div>
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
             <div
-              class=""
-              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
-              tabindex="-1"
+              class="rcx-box rcx-box--full rcx-css-iag4sp"
             >
-              <div
-                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              <form
+                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                id=":r3:"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                  class="rcx-box rcx-box--full"
                 >
                   Attribute values cannot be edited, but can be added or deleted.
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1dd6ilo"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -241,7 +242,7 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
                   />
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1dd6ilo"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -279,8 +280,8 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
                       type="text"
                     />
                     <button
-                      aria-label="Remove"
                       class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+                      title="ABAC_Remove_attribute"
                       type="button"
                     >
                       <i
@@ -303,8 +304,8 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
                       type="text"
                     />
                     <button
-                      aria-label="Remove"
                       class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+                      title="ABAC_Remove_attribute"
                       type="button"
                     >
                       <i
@@ -329,64 +330,65 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
                     </span>
                   </button>
                 </div>
-              </div>
-            </div>
-            <div
-              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-            >
-              <div
-                class="os-scrollbar-track"
-              >
-                <div
-                  class="os-scrollbar-handle"
-                />
-              </div>
-            </div>
-            <div
-              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-            >
-              <div
-                class="os-scrollbar-track"
-              >
-                <div
-                  class="os-scrollbar-handle"
-                />
-              </div>
+              </form>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-m843eh"
-        >
           <div
-            class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
-            role="group"
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
           >
-            <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-              type="button"
+            <div
+              class="os-scrollbar-track"
             >
-              <span
-                class="rcx-button--content"
-              >
-                Cancel
-              </span>
-            </button>
-            <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="submit"
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
             >
-              <span
-                class="rcx-button--content"
-              >
-                Save
-              </span>
-            </button>
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
           </div>
         </div>
-      </form>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m843eh"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Cancel
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            form=":r3:"
+            type="submit"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Save
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </body>
