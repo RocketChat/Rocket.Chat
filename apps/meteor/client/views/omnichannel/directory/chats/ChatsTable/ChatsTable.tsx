@@ -18,8 +18,8 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { links } from '../../../../../lib/links';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
+import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
 const ChatsTable = () => {

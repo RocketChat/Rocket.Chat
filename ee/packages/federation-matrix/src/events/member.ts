@@ -1,6 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
@@ -8,14 +8,16 @@ import { createOrUpdateFederatedUser, getUsernameServername } from '../Federatio
 
 const logger = new Logger('federation-matrix:member');
 
-async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver.matrix.membership'], services: HomeserverServices) {
+async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver.matrix.membership']) {
 	const room = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 	if (!room) {
 		logger.warn(`No bridged room found for Matrix room_id: ${data.room_id}`);
 		return;
 	}
 
-	const [affectedUsername] = getUsernameServername(data.state_key, services.config.serverName);
+	const serverName = federationSDK.getConfig('serverName');
+
+	const [affectedUsername] = getUsernameServername(data.state_key, serverName);
 	// state_key is the user affected by the membership change
 	const affectedUser = await Users.findOneByUsername(affectedUsername);
 	if (!affectedUser) {
@@ -31,7 +33,7 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 	} else {
 		// Kick - find who kicked
 
-		const [kickerUsername] = getUsernameServername(data.sender, services.config.serverName);
+		const [kickerUsername] = getUsernameServername(data.sender, serverName);
 		const kickerUser = await Users.findOneByUsername(kickerUsername);
 
 		await Room.removeUserFromRoom(room._id, affectedUser, {
@@ -43,14 +45,14 @@ async function membershipLeaveAction(data: HomeserverEventSignatures['homeserver
 	}
 }
 
-async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.matrix.membership'], services: HomeserverServices) {
+async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.matrix.membership']) {
 	const room = await Rooms.findOne({ 'federation.mrid': data.room_id });
 	if (!room) {
 		logger.warn(`No bridged room found for room_id: ${data.room_id}`);
 		return;
 	}
 
-	const [username, serverName, isLocal] = getUsernameServername(data.sender, services.config.serverName);
+	const [username, serverName, isLocal] = getUsernameServername(data.sender, federationSDK.getConfig('serverName'));
 
 	// for local users we must to remove the @ and the server domain
 	const localUser = isLocal && (await Users.findOneByUsername(username));
@@ -83,15 +85,15 @@ async function membershipJoinAction(data: HomeserverEventSignatures['homeserver.
 	await Room.addUserToRoom(room._id, user);
 }
 
-export function member(emitter: Emitter<HomeserverEventSignatures>, services: HomeserverServices) {
+export function member(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.membership', async (data) => {
 		try {
 			if (data.content.membership === 'leave') {
-				return membershipLeaveAction(data, services);
+				return membershipLeaveAction(data);
 			}
 
 			if (data.content.membership === 'join') {
-				return membershipJoinAction(data, services);
+				return membershipJoinAction(data);
 			}
 
 			logger.debug(`Ignoring membership event with membership: ${data.content.membership}`);

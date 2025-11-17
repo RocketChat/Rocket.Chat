@@ -2,7 +2,7 @@ import type { BrowserContext, Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AdminUsers, Registration, Utils } from './page-objects';
+import { AdminUsers, Registration, Authenticated } from './page-objects';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
@@ -22,13 +22,13 @@ test.describe.serial('Admin > Users', () => {
 		let context: BrowserContext;
 		let page: Page;
 		let poRegistration: Registration;
-		let poUtils: Utils;
+		let poAuth: Authenticated;
 
 		test.beforeAll(async ({ browser }) => {
 			context = await browser.newContext();
 			page = await context.newPage();
 			poRegistration = new Registration(page);
-			poUtils = new Utils(page);
+			poAuth = new Authenticated(page);
 		});
 
 		test.afterAll(async () => {
@@ -44,7 +44,7 @@ test.describe.serial('Admin > Users', () => {
 			});
 
 			await test.step('Assert user is logged in', async () => {
-				await expect(poUtils.mainContent).toBeVisible();
+				await poAuth.waitForDisplay();
 			});
 		});
 	});
@@ -58,11 +58,9 @@ test.describe.serial('Admin > Users', () => {
 		});
 
 		test('After the first login, the user gets listed under the Active tab', async () => {
-			await adminUsers.inputSearchUsers.fill(user.data.username);
-
 			await test.step('should be visible in the All tab', async () => {
-				await adminUsers.getTabByName('Active').click();
-				await expect(adminUsers.getUserRowByUsername(user.data.username)).toBeVisible();
+				await adminUsers.getTabByName().click();
+				await adminUsers.searchUser(user.data.username);
 			});
 
 			await test.step('should not be visible in the Pending tab', async () => {
