@@ -20,6 +20,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 			maxWidth='345px'
 			backgroundColor='surface-neutral'
 			overflow='hidden'
+			color='default'
 		>
 			{rows.map((row, index) => {
 				const { elements, action, background } = row;
@@ -42,7 +43,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 										</Box>
 									);
 								}
-								if (element.type === 'plain_text') {
+								if (element.type === 'plain_text' || element.type === 'mrkdwn') {
 									return (
 										<Box key={index} mi={4}>
 											<>{surfaceRenderer.renderTextObject(element, index, UiKit.BlockContext.NONE)}</>
