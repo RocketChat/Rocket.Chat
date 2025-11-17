@@ -2,18 +2,20 @@ import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
 import type { IconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
 import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
+const APP_ID = 'media-call-core';
+
 // TODO bold the text
 export const callStateToTranslationKey = (callState: CallHistoryItemState): TextObject => {
 	switch (callState) {
 		case 'ended':
-			return { type: 'mrkdwn', text: 'Call_ended' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_ended' }, text: 'Call ended' };
 		case 'not-answered':
-			return { type: 'mrkdwn', text: 'Call_not_answered' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_not_answered' }, text: 'Call not answered' };
 		case 'failed':
 		case 'error':
-			return { type: 'mrkdwn', text: 'Call_failed' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_failed' }, text: 'Call failed' };
 		case 'transferred':
-			return { type: 'mrkdwn', text: 'Call_transferred' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_transferred' }, text: 'Call transferred' };
 	}
 };
 
@@ -67,6 +69,7 @@ export const getHistoryMessagePayload = (
 		groupable: false,
 		blocks: [
 			{
+				appId: APP_ID,
 				type: 'info_card',
 				rows: [
 					{
