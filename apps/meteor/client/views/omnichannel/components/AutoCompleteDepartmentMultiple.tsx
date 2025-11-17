@@ -1,7 +1,7 @@
 import { CheckOption, Option, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ComponentPropsWithoutRef, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,20 +53,6 @@ const AutoCompleteDepartmentMultiple = ({
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
-	const renderItem = ({ label, value, ...props }: ComponentPropsWithoutRef<typeof Option>): ReactElement => {
-		if (withCheckbox) {
-			return (
-				<CheckOption
-					{...props}
-					label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-					selected={value ? selectedValues.has(value) : false}
-				/>
-			);
-		}
-
-		return <Option {...props} label={label} />;
-	};
-
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
@@ -80,7 +66,19 @@ const AutoCompleteDepartmentMultiple = ({
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			renderItem={renderItem}
+			renderItem={({ label, value, ref: _ref, ...props }) => {
+				if (withCheckbox) {
+					return (
+						<CheckOption
+							{...props}
+							label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
+							selected={value ? selectedValues.has(value) : false}
+						/>
+					);
+				}
+
+				return <Option {...props} label={label} />;
+			}}
 			endReached={() => fetchNextPage()}
 		/>
 	);
