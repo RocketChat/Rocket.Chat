@@ -92,7 +92,7 @@ export async function setUserAvatar(
 ): Promise<void> {
 	if (service === 'initials') {
 		if (updater) {
-			updater.set('avatarOrigin', origin);
+			updater.set('avatarOrigin', service);
 		} else {
 			await Users.setAvatarData(user._id, service, null, { session });
 		}
@@ -190,7 +190,7 @@ export async function setUserAvatar(
 
 	if (service) {
 		if (updater) {
-			updater.set('avatarOrigin', origin);
+			updater.set('avatarOrigin', service);
 			updater.set('avatarETag', avatarETag);
 		} else {
 			// TODO: Why was this timeout added?

@@ -2,7 +2,7 @@ import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads } from '@rocket.chat/models';
+import { Avatars, Uploads } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:media-service');
 
@@ -62,6 +62,14 @@ export class MatrixMediaService {
 
 	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
 		try {
+			if (mediaId.startsWith('avatar')) {
+				const avatarFile = await Avatars.findOneByETag(mediaId.substring(6));
+				if (!avatarFile) {
+					return null;
+				}
+				return avatarFile;
+			}
+
 			let file = await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName);
 
 			if (!file) {

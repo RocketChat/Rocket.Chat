@@ -4,6 +4,7 @@ import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typi
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 
 export class UploadService extends ServiceClassInternal implements IUploadService {
@@ -37,5 +38,9 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	async parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments> {
 		return parseFileIntoMessageAttachments(file, roomId, user);
+	}
+
+	async setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void> {
+		return setUserAvatar(user, buffer, contentType, service);
 	}
 }
