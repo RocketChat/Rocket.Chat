@@ -64,7 +64,7 @@ const GetAbacAttributesQuery = {
 	additionalProperties: false,
 };
 
-export const GETAbacAttributesQuerySchema = ajv.compile<{ key: string; values: string; offset: number; count: number }>(
+export const GETAbacAttributesQuerySchema = ajv.compile<{ key?: string; values?: string; offset: number; count: number }>(
 	GetAbacAttributesQuery,
 );
 
