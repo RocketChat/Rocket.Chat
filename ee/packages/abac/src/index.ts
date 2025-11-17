@@ -173,14 +173,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			skip: offset,
 			limit,
 			sort: { name: 1 },
-			projection: {
-				name: 1,
-				fname: 1,
-				t: 1,
-				teamMain: 1,
-				abacAttributes: 1,
-				default: 1,
-			},
 		});
 
 		const rooms = await cursor.toArray();
