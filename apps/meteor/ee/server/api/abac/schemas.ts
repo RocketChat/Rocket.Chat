@@ -1,4 +1,5 @@
-import type { IAbacAttribute, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
@@ -217,3 +218,39 @@ const GenericError = {
 };
 
 export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
+
+const GETAbacRoomsListQuerySchema = {
+	type: 'object',
+	properties: {
+		filter: { type: 'string', minLength: 1 },
+		filterType: { type: 'string', enum: ['all', 'roomName', 'attribute', 'value'] },
+	},
+};
+
+type GETAbacRoomsListQuery = PaginatedRequest<{ filter?: string; filterType?: 'all' | 'roomName' | 'attribute' | 'value' }>;
+
+export const GETAbacRoomsListQueryValidator = ajv.compile<GETAbacRoomsListQuery>(GETAbacRoomsListQuerySchema);
+
+export const GETAbacRoomsResponseSchema = {
+	type: 'object',
+	properties: {
+		rooms: {
+			type: 'array',
+		},
+		offset: {
+			type: 'number',
+		},
+		count: {
+			type: 'number',
+		},
+		total: {
+			type: 'number',
+		},
+	},
+};
+
+type GETAbacRoomsResponse = PaginatedResult<{
+	rooms: IRoom[];
+}>;
+
+export const GETAbacRoomsResponseValidator = ajv.compile<GETAbacRoomsResponse>(GETAbacRoomsResponseSchema);
