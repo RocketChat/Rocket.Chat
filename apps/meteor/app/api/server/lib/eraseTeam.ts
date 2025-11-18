@@ -29,7 +29,7 @@ export const eraseTeamShared = async (
 	await Promise.all(rooms.map((room) => eraseRoomFn(room, user)));
 
 	// Move every other room back to the workspace
-	await Team.unsetTeamIdOfRooms(user, team._id);
+	await Team.unsetTeamIdOfRooms(user, team);
 
 	// Remove the team's main room
 	await eraseRoomFn(team.roomId, user);
@@ -41,8 +41,8 @@ export const eraseTeamShared = async (
 	await Team.deleteById(team._id);
 };
 
-export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove: IRoom['_id'][]) => {
-	await eraseTeamShared({ _id: userId }, team, roomsToRemove, async (rid, user) => {
+export const eraseTeam = async (user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: ITeam, roomsToRemove: IRoom['_id'][]) => {
+	await eraseTeamShared(user, team, roomsToRemove, async (rid, user) => {
 		return eraseRoom(rid, user._id);
 	});
 };
@@ -54,7 +54,7 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
  */
 export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []): Promise<string[]> => {
 	const deletedRooms = new Set<string>();
-	await eraseTeamShared({ _id: 'rocket.cat' }, team, roomsToRemove, async (rid) => {
+	await eraseTeamShared({ _id: 'rocket.cat', username: 'rocket.cat', name: 'Rocket.Cat' }, team, roomsToRemove, async (rid) => {
 		const isDeleted = await eraseRoomLooseValidation(rid);
 		if (isDeleted) {
 			deletedRooms.add(rid);

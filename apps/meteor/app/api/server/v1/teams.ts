@@ -136,7 +136,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
 			await Team.deleteById(team._id);
 
@@ -644,7 +644,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			await eraseTeam(this.userId, team, roomsToRemove);
+			await eraseTeam(this.user, team, roomsToRemove);
 
 			return API.v1.success();
 		},

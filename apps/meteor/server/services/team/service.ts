@@ -416,18 +416,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 	}
 
-	async unsetTeamIdOfRooms(
-		uidOrUser: string | Pick<IUser, '_id' | 'username' | 'name'>,
-		teamIdOrTeam: string | Pick<ITeam, '_id' | 'roomId'>,
-	): Promise<void> {
-		if (!teamIdOrTeam) {
-			throw new Error('missing-teamId');
-		}
-
-		const team =
-			typeof teamIdOrTeam === 'string'
-				? await Team.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamIdOrTeam, { projection: { roomId: 1 } })
-				: teamIdOrTeam;
+	async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -438,10 +427,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
-		const user =
-			typeof uidOrUser === 'string'
-				? await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uidOrUser, { projection: { username: 1, name: 1 } })
-				: uidOrUser;
 		if (!user) {
 			throw new Error('invalid-user');
 		}
