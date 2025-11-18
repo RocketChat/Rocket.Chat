@@ -1,16 +1,16 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { MeteorError, Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
-type eraseRoomFnType = (rid: string, userIdOrUser: string | AtLeast<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
+type eraseRoomFnType = (rid: string, user: AtLeast<IUser, '_id' | 'username' | 'name'>) => Promise<boolean | void>;
 
 export const eraseTeamShared = async (
-	userIdOrUserForUnset: string | AtLeast<IUser, '_id' | 'username' | 'name'>,
+	user: AtLeast<IUser, '_id' | 'username' | 'name'>,
 	team: ITeam,
 	roomsToRemove: IRoom['_id'][] = [],
 	eraseRoomFn: eraseRoomFnType,
@@ -18,11 +18,6 @@ export const eraseTeamShared = async (
 	const rooms: string[] = roomsToRemove.length
 		? (await Team.getMatchingTeamRooms(team._id, roomsToRemove)).filter((roomId) => roomId !== team.roomId)
 		: [];
-
-	const user =
-		typeof userIdOrUserForUnset === 'string'
-			? await Users.findOneById<AtLeast<IUser, '_id' | 'username' | 'name'>>(userIdOrUserForUnset, { projection: { username: 1, name: 1 } })
-			: userIdOrUserForUnset;
 
 	if (!user) {
 		throw new MeteorError('Invalid user provided for erasing team', 'error-invalid-user', {
@@ -47,8 +42,8 @@ export const eraseTeamShared = async (
 };
 
 export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove: IRoom['_id'][]) => {
-	await eraseTeamShared(userId, team, roomsToRemove, async (rid, user) => {
-		return eraseRoom(rid, typeof user === 'string' ? user : user._id);
+	await eraseTeamShared({ _id: userId }, team, roomsToRemove, async (rid, user) => {
+		return eraseRoom(rid, user._id);
 	});
 };
 
@@ -57,9 +52,9 @@ export const eraseTeam = async (userId: IUser['_id'], team: ITeam, roomsToRemove
  * @param roomsToRemove
  * @returns deleted room ids
  */
-export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []) => {
+export const eraseTeamOnRelinquishRoomOwnerships = async (team: ITeam, roomsToRemove: IRoom['_id'][] = []): Promise<string[]> => {
 	const deletedRooms = new Set<string>();
-	await eraseTeamShared('rocket.cat', team, roomsToRemove, async (rid) => {
+	await eraseTeamShared({ _id: 'rocket.cat' }, team, roomsToRemove, async (rid) => {
 		const isDeleted = await eraseRoomLooseValidation(rid);
 		if (isDeleted) {
 			deletedRooms.add(rid);
