@@ -47,12 +47,18 @@ declare module 'meteor/meteor' {
 			twoFactorChecked: boolean | undefined;
 		}
 
-		interface IDDPMessage {
-			msg: 'method' | 'ping';
+		interface IDDPPingMessage {
+			msg: 'ping';
+		}
+
+		interface IDDPMethodMessage {
+			msg: 'method';
 			method: string;
 			params: EJSON[];
 			id: string;
 		}
+
+		type IDDPMessage = IDDPPingMessage | IDDPMethodMessage;
 
 		interface IDDPUpdatedMessage {
 			msg: 'updated';
@@ -64,16 +70,6 @@ declare module 'meteor/meteor' {
 			referer: string;
 			clientAddress: string;
 			_send(message: IDDPMessage): void;
-
-			_heartbeat: {
-				heartbeatInterval: number;
-				heartbeatTimeout: number;
-				_heartbeatIntervalHandle: number;
-				_heartbeatTimeoutHandle: number | null;
-				_onTimeout(): void;
-				_seenPacket: boolean;
-				_sendPing(): void;
-			};
 
 			_methodInvokers: Record<string, any>;
 
