@@ -25,6 +25,7 @@ export const AppPermissions = {
 	'user': {
 		read: { name: 'user.read' },
 		write: { name: 'user.write' },
+		getUserRoomIds: { name: 'user.getUserRoomIds' },
 	},
 	'upload': {
 		read: { name: 'upload.read' },
@@ -121,9 +122,6 @@ export const AppPermissions = {
 	},
 	'outboundComms': {
 		provide: { name: 'outbound-communication.provide' },
-	},
-	'experimental': {
-		getUserRoomIds: { name: 'experimental.getUserRoomIds' },
 	},
 };
 

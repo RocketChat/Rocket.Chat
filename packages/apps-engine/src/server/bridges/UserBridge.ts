@@ -45,6 +45,12 @@ export abstract class UserBridge extends BaseBridge {
 		}
 	}
 
+	public async doGetUserRoomIds(userId: string, appId: string): Promise<string[] | undefined> {
+		if (this.hasGetUserRoomIdsPermission(appId)) {
+			return this.getUserRoomIds(userId, appId);
+		}
+	}
+
 	public async doDeleteUsersCreatedByApp(appId: string, type: UserType.BOT | UserType.APP): Promise<boolean> {
 		if (this.hasWritePermission(appId)) {
 			return this.deleteUsersCreatedByApp(appId, type);
@@ -66,6 +72,8 @@ export abstract class UserBridge extends BaseBridge {
 	protected abstract getActiveUserCount(): Promise<number>;
 
 	protected abstract getUserUnreadMessageCount(uid: string, appId: string): Promise<number>;
+
+	protected abstract getUserRoomIds(userId: string, appId: string): Promise<string[] | undefined>;
 
 	/**
 	 * Creates a user.
@@ -141,6 +149,21 @@ export abstract class UserBridge extends BaseBridge {
 			new PermissionDeniedError({
 				appId,
 				missingPermissions: [AppPermissions.user.write],
+			}),
+		);
+
+		return false;
+	}
+
+	private hasGetUserRoomIdsPermission(appId: string): boolean {
+		if (AppPermissionManager.hasPermission(appId, AppPermissions.user.getUserRoomIds)) {
+			return true;
+		}
+
+		AppPermissionManager.notifyAboutError(
+			new PermissionDeniedError({
+				appId,
+				missingPermissions: [AppPermissions.user.getUserRoomIds],
 			}),
 		);
 

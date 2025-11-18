@@ -12,11 +12,15 @@ export class UserReadAccessorTestFixture {
 
 	private mockAppId: 'test-appId';
 
+	private roomIds: Array<string>;
+
 	@SetupFixture
 	public setupFixture() {
 		this.user = TestData.getUser();
+		this.roomIds = ['room-1', 'room-2'];
 
 		const theUser = this.user;
+		const roomIds = this.roomIds;
 		this.mockUserBridge = {
 			doGetById(id, appId): Promise<IUser> {
 				return Promise.resolve(theUser);
@@ -26,6 +30,9 @@ export class UserReadAccessorTestFixture {
 			},
 			doGetAppUser(appId?: string): Promise<IUser> {
 				return Promise.resolve(theUser);
+			},
+			doGetUserRoomIds(userId: string): Promise<Array<string>> {
+				return Promise.resolve(roomIds);
 			},
 		} as UserBridge;
 	}
@@ -45,5 +52,6 @@ export class UserReadAccessorTestFixture {
 		Expect(await ur.getAppUser(this.mockAppId)).toBeDefined();
 		Expect(await ur.getAppUser(this.mockAppId)).toEqual(this.user);
 		Expect(await ur.getAppUser()).toEqual(this.user);
+		Expect(await ur.getUserRoomIds(this.user.id)).toEqual(this.roomIds);
 	}
 }

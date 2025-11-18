@@ -642,6 +642,7 @@
   "Apps_Permissions_upload_read": "Access files uploaded to this server",
   "Apps_Permissions_upload_write": "Upload files to this server",
   "Apps_Permissions_user_read": "Access user information",
+  "Apps_Permissions_user_getUserRoomIds": "List the rooms a user is a member of",
   "Apps_Permissions_user_write": "Modify user information",
   "Apps_Private_App_Is_Exempt": "{{appName}} is already installed and exempt from the app limit policy.\nExempted apps cannot be updated.",
   "Apps_Settings": "App's Settings",
