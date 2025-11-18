@@ -37,6 +37,9 @@ type MediaCallContextType = {
 	muted: boolean;
 	held: boolean;
 
+	remoteMuted: boolean;
+	remoteHeld: boolean;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -69,6 +72,9 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 
 	muted: false,
 	held: false,
+	remoteMuted: false,
+	remoteHeld: false,
+
 	onMute: () => undefined,
 	onHold: () => undefined,
 
