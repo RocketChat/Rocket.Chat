@@ -1,5 +1,3 @@
-import type { IncomingHttpHeaders } from 'http';
-
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -59,5 +57,5 @@ Meteor.onConnection((connection) => {
 Meteor.onConnection((connection) => {
 	const { httpHeaders } = connection;
 
-	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders: httpHeaders as IncomingHttpHeaders });
+	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders });
 });
