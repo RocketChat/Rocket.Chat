@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
@@ -107,19 +107,33 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser, user);
-			} else {
-				if (!newUser.username) {
-					return;
+				let inviteOptions: { invited?: boolean; federation?: { inviteEventId?: string; inviterUsername?: string } } = {};
+
+				if (isRoomNativeFederated(room) && user && newUser.username) {
+					const inviteResult = await FederationMatrix.inviteUsersToRoom(room, [newUser.username], user);
+					inviteOptions = {
+						invited: true,
+						federation: {
+							inviteEventId: inviteResult.eventId,
+							inviterUsername: user.username,
+						},
+					};
 				}
-				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: i18n.t('Username_is_already_in_here', {
-						postProcess: 'sprintf',
-						sprintf: [newUser.username],
-						lng: user?.language,
-					}),
-				});
+
+				return addUserToRoom(data.rid, newUser, user, inviteOptions);
 			}
+
+			if (!newUser.username) {
+				return;
+			}
+
+			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+				msg: i18n.t('Username_is_already_in_here', {
+					postProcess: 'sprintf',
+					sprintf: [newUser.username],
+					lng: user?.language,
+				}),
+			});
 		}),
 	);
 
