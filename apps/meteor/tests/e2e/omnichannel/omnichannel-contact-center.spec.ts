@@ -1,10 +1,22 @@
+import { randomBytes } from 'crypto';
+
 import { faker } from '@faker-js/faker';
 
-import { createToken } from '../../../client/lib/utils/createToken';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from '../page-objects/omnichannel-section';
 import { test, expect } from '../utils/test';
+
+const createToken = (): string => {
+	const array = new Uint8Array(16);
+
+	const buffer = randomBytes(16);
+	array.set(buffer);
+
+	return Array.from(array)
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('');
+};
 
 const createContact = (generateToken = false) => ({
 	id: null,
