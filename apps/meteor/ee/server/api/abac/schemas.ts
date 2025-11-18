@@ -224,7 +224,10 @@ const GETAbacRoomsListQuerySchema = {
 	properties: {
 		filter: { type: 'string', minLength: 1 },
 		filterType: { type: 'string', enum: ['all', 'roomName', 'attribute', 'value'] },
+		offset: { type: 'number' },
+		count: { type: 'number' },
 	},
+	additionalProperties: false,
 };
 
 type GETAbacRoomsListQuery = PaginatedRequest<{ filter?: string; filterType?: 'all' | 'roomName' | 'attribute' | 'value' }>;
@@ -236,6 +239,7 @@ export const GETAbacRoomsResponseSchema = {
 	properties: {
 		rooms: {
 			type: 'array',
+			items: { type: 'object' },
 		},
 		offset: {
 			type: 'number',
@@ -247,6 +251,8 @@ export const GETAbacRoomsResponseSchema = {
 			type: 'number',
 		},
 	},
+	required: ['rooms', 'offset', 'count', 'total'],
+	additionalProperties: false,
 };
 
 type GETAbacRoomsResponse = PaginatedResult<{
