@@ -122,6 +122,69 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
+	async listAbacRooms(filters?: {
+		offset?: number;
+		count?: number;
+		filter?: string;
+		filterType?: 'all' | 'roomName' | 'attribute' | 'value';
+	}): Promise<{
+		rooms: IRoom[];
+		offset: number;
+		count: number;
+		total: number;
+	}> {
+		const offset = filters?.offset ?? 0;
+		const limit = filters?.count ?? 25;
+
+		const baseQuery: Document = {
+			t: 'p',
+			abacAttributes: { $exists: true, $ne: [] },
+		};
+
+		const { filter, filterType } = filters || {};
+
+		if (filter?.trim().length) {
+			const regex = new RegExp(escapeRegExp(filter.trim()), 'i');
+
+			let condition: Document;
+
+			switch (filterType) {
+				case 'roomName':
+					condition = { $or: [{ name: regex }, { fname: regex }] };
+					break;
+				case 'attribute':
+					condition = { 'abacAttributes.key': regex };
+					break;
+				case 'value':
+					condition = { 'abacAttributes.values': regex };
+					break;
+				case 'all':
+				default:
+					condition = {
+						$or: [{ name: regex }, { fname: regex }, { 'abacAttributes.key': regex }, { 'abacAttributes.values': regex }],
+					};
+					break;
+			}
+
+			Object.assign(baseQuery, condition);
+		}
+
+		const { cursor, totalCount } = Rooms.findPaginated(baseQuery, {
+			skip: offset,
+			limit,
+			sort: { name: 1 },
+		});
+
+		const rooms = await cursor.toArray();
+
+		return {
+			rooms,
+			offset,
+			count: rooms.length,
+			total: await totalCount,
+		};
+	}
+
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }): Promise<void> {
 		if (!update.key && !update.values) {
 			return;
