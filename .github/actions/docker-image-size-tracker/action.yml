@@ -236,7 +236,7 @@ runs:
         if [[ -d /tmp/history-worktree/history ]]; then
           jq -s '.' /tmp/history-worktree/history/*.json 2>/dev/null | jq '
             sort_by(.timestamp) |
-            group_by(.timestamp[0:16]) |
+            group_by(.timestamp[0:10]) |
             map(.[-1]) |
             .[-30:]
           ' > history-data.json || echo "[]" > history-data.json
