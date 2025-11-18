@@ -114,7 +114,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 					inviteOptions = {
 						invited: true,
 						federation: {
-							inviteEventId: inviteResult.eventId,
+							inviteEventId: inviteResult[0].event_id,
 							inviterUsername: user.username,
 						},
 					};
