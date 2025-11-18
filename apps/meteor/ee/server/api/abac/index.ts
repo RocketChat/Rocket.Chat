@@ -13,6 +13,8 @@ import {
 	POSTSingleRoomAbacAttributeBodySchema,
 	PUTRoomAbacAttributeValuesBodySchema,
 	GenericErrorSchema,
+	GETAbacRoomsListQueryValidator,
+	GETAbacRoomsResponseValidator,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -280,6 +282,33 @@ const abacEndpoints = API.v1
 
 			const inUse = await Abac.isAbacAttributeInUseByKey(key);
 			return API.v1.success({ inUse });
+		},
+	)
+	.get(
+		'abac/rooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GETAbacRoomsResponseValidator,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+			query: GETAbacRoomsListQueryValidator,
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { filter, filterType } = this.queryParams;
+
+			const result = await Abac.listAbacRooms({
+				offset,
+				count,
+				filter,
+				filterType,
+			});
+
+			return API.v1.success(result);
 		},
 	);
 
