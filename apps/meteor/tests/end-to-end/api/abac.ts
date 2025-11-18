@@ -1574,4 +1574,345 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 	});
+
+	describe('list abac rooms', () => {
+		const listAttrKey1 = `list_attr_1_${Date.now()}`;
+		const listAttrKey2 = `list_attr_2_${Date.now()}`;
+		const listRoomName1 = `abac-list-room-1-${Date.now()}`;
+		const listRoomName2 = `abac-list-room-2-${Date.now()}`;
+		const listRoomNoAttrName = `abac-list-room-noattr-${Date.now()}`;
+
+		let listRoomId1: string;
+		let listRoomId2: string;
+		let listRoomNoAttrId: string;
+
+		before('ensure ABAC enabled and create attribute definitions & rooms', async () => {
+			await updateSetting('ABAC_Enabled', true);
+
+			// Create attribute definitions
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: listAttrKey1, values: ['alpha', 'beta'] })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: listAttrKey2, values: ['x', 'y'] })
+				.expect(200);
+
+			// Create private rooms
+			listRoomId1 = (await createRoom({ type: 'p', name: listRoomName1 })).body.group._id;
+			listRoomId2 = (await createRoom({ type: 'p', name: listRoomName2 })).body.group._id;
+			listRoomNoAttrId = (await createRoom({ type: 'p', name: listRoomNoAttrName })).body.group._id;
+
+			// Assign attributes to first two rooms
+			await request
+				.post(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/rooms/${listRoomId2}/attributes/${listAttrKey2}`)
+				.set(credentials)
+				.send({ values: ['x'] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'p', roomId: listRoomId1 }),
+				deleteRoom({ type: 'p', roomId: listRoomId2 }),
+				deleteRoom({ type: 'p', roomId: listRoomNoAttrId }),
+			]);
+		});
+
+		it('should list only private rooms with ABAC attributes (baseline)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').that.is.an('array');
+					const ids = res.body.rooms.map((r: any) => r._id);
+					expect(ids).to.include(listRoomId1);
+					expect(ids).to.include(listRoomId2);
+					expect(ids).to.not.include(listRoomNoAttrId);
+				});
+		});
+
+		it('should NOT list a newly created private room without attributes', async () => {
+			const tempNoAttrRoomId = (await createRoom({ type: 'p', name: `abac-list-temp-noattr-${Date.now()}` })).body.group._id;
+			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const ids = res.body.rooms.map((r: any) => r._id);
+			expect(ids).to.not.include(tempNoAttrRoomId);
+			await deleteRoom({ type: 'p', roomId: tempNoAttrRoomId });
+		});
+
+		it('should NOT list a public room (cannot be ABAC managed)', async () => {
+			const publicRoomId = (await createRoom({ type: 'c', name: `abac-list-public-${Date.now()}` })).body.channel._id;
+			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const ids = res.body.rooms.map((r: any) => r._id);
+			expect(ids).to.not.include(publicRoomId);
+			await deleteRoom({ type: 'c', roomId: publicRoomId });
+		});
+
+		it('should NOT list a team private room without attributes', async () => {
+			// Create a private team and a private room inside it (not main room)
+			const teamRes = await request
+				.post(`${v1}/teams.create`)
+				.set(credentials)
+				.send({ name: `abac-list-team-noattr-${Date.now()}`, type: 0 })
+				.expect(200);
+			const teamIdLocal = teamRes.body.team._id;
+			const teamRoomRes = await createRoom({ type: 'p', name: `abac-list-team-room-${Date.now()}`, extraData: { teamId: teamIdLocal } });
+			const teamPrivateRoomId = teamRoomRes.body.group._id;
+			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const ids = res.body.rooms.map((r: any) => r._id);
+			expect(ids).to.not.include(teamPrivateRoomId);
+			await deleteRoom({ type: 'p', roomId: teamPrivateRoomId });
+			await deleteTeam(credentials, teamRes.body.team.name);
+		});
+
+		it('should stop listing a room after its ABAC attributes are removed', async () => {
+			// Ensure room 1 currently listed
+			const resBefore = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const idsBefore = resBefore.body.rooms.map((r: any) => r._id);
+			expect(idsBefore).to.include(listRoomId1);
+
+			// Remove its only attribute key (listAttrKey1) - value was 'alpha'
+			await request.delete(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`).set(credentials).expect(200);
+
+			const resAfter = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const idsAfter = resAfter.body.rooms.map((r: any) => r._id);
+			expect(idsAfter).to.not.include(listRoomId1);
+
+			// Re-add attribute so other tests relying on it remain stable
+			await request
+				.post(`${v1}/abac/rooms/${listRoomId1}/attributes/${listAttrKey1}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+		});
+
+		it('should NOT list a default private room even if attempt to add attribute fails', async () => {
+			const defaultRoomId = (await createRoom({ type: 'p', name: `abac-list-default-${Date.now()}` })).body.group._id;
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: true }).expect(200);
+			const defKey = `list_def_attr_${Date.now()}`;
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: defKey, values: ['one'] })
+				.expect(200);
+			await request
+				.post(`${v1}/abac/rooms/${defaultRoomId}/attributes/${defKey}`)
+				.set(credentials)
+				.send({ values: ['one'] })
+				.expect(400);
+			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+			const ids = res.body.rooms.map((r: any) => r._id);
+			expect(ids).to.not.include(defaultRoomId);
+			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: false }).expect(200);
+			await deleteRoom({ type: 'p', roomId: defaultRoomId });
+		});
+
+		it('should filter by room name (filterType=roomName)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ filter: 'abac-list-room-1', filterType: 'roomName' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					const ids = res.body.rooms.map((r: any) => r._id);
+					expect(ids).to.include(listRoomId1);
+					expect(ids).to.not.include(listRoomId2);
+				});
+		});
+
+		it('should filter by attribute key (filterType=attribute)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ filter: listAttrKey2, filterType: 'attribute' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					const ids = res.body.rooms.map((r: any) => r._id);
+					expect(ids).to.include(listRoomId2);
+					expect(ids).to.not.include(listRoomId1);
+				});
+		});
+
+		it('should filter by attribute value (filterType=value)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ filter: 'alpha', filterType: 'value' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					const ids = res.body.rooms.map((r: any) => r._id);
+					expect(ids).to.include(listRoomId1);
+					expect(ids).to.not.include(listRoomId2);
+				});
+		});
+
+		it('should match across name, key and values when filterType=all (default)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ filter: 'x', filterType: 'all' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					const ids = res.body.rooms.map((r: any) => r._id);
+					expect(ids).to.include(listRoomId2);
+					expect(ids).to.not.include(listRoomId1);
+				});
+		});
+
+		it('should paginate results (count=1 offset=0)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ count: 1, offset: 0 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body.rooms).to.have.lengthOf(1);
+				});
+		});
+
+		it('should paginate results (count=1 offset=1)', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ count: 1, offset: 1 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body).to.have.property('offset', 1);
+					expect(res.body).to.have.property('count').that.is.at.most(1);
+					expect(res.body.rooms).to.have.length.at.most(1);
+				});
+		});
+
+		it('should return empty list when filter does not match anything', async () => {
+			await request
+				.get(`${v1}/abac/rooms`)
+				.set(credentials)
+				.query({ filter: 'nonexistent-filter-xyz', filterType: 'roomName' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body.rooms).to.be.an('array').with.lengthOf(0);
+				});
+		});
+
+		it('should reject unauthorized user (403)', async () => {
+			await request.get(`${v1}/abac/rooms`).set(unauthorizedCredentials).expect(403);
+		});
+
+		describe('ABAC managed private team main rooms listing', () => {
+			const teamListAttrKey = `team_list_attr_${Date.now()}`;
+			const teamListName = `abac-list-team-${Date.now()}`;
+			let teamListMainRoomId: string;
+
+			before('create private team (no attributes yet) and attribute definition', async () => {
+				const teamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamListName, type: 1 }).expect(200);
+
+				teamListMainRoomId = teamRes.body.team.roomId;
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: teamListAttrKey, values: ['red', 'blue'] })
+					.expect(200);
+			});
+
+			it('baseline: team main private room without attributes should NOT appear in /abac/rooms list', async () => {
+				await request
+					.get(`${v1}/abac/rooms`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						const ids = res.body.rooms.map((r: any) => r._id);
+						expect(ids).to.not.include(teamListMainRoomId);
+					});
+			});
+
+			it('after adding ABAC attribute to team main room it SHOULD appear in /abac/rooms list', async () => {
+				await request
+					.post(`${v1}/abac/rooms/${teamListMainRoomId}/attributes/${teamListAttrKey}`)
+					.set(credentials)
+					.send({ values: ['red'] })
+					.expect(200);
+
+				await request
+					.get(`${v1}/abac/rooms`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						const ids = res.body.rooms.map((r: any) => r._id);
+						expect(ids).to.include(teamListMainRoomId);
+					});
+			});
+
+			it('filterType=attribute should return team main room when filtering by its attribute key', async () => {
+				await request
+					.get(`${v1}/abac/rooms`)
+					.set(credentials)
+					.query({ filter: teamListAttrKey, filterType: 'attribute' })
+					.expect(200)
+					.expect((res) => {
+						const ids = res.body.rooms.map((r: any) => r._id);
+						expect(ids).to.include(teamListMainRoomId);
+					});
+			});
+
+			it('filterType=value should return team main room when filtering by an assigned attribute value', async () => {
+				await request
+					.get(`${v1}/abac/rooms`)
+					.set(credentials)
+					.query({ filter: 'red', filterType: 'value' })
+					.expect(200)
+					.expect((res) => {
+						const ids = res.body.rooms.map((r: any) => r._id);
+						expect(ids).to.include(teamListMainRoomId);
+					});
+			});
+
+			it('filterType=value should NOT return team main room when filtering by a non-existent value', async () => {
+				await request
+					.get(`${v1}/abac/rooms`)
+					.set(credentials)
+					.query({ filter: 'nonexistent-team-value', filterType: 'value' })
+					.expect(200)
+					.expect((res) => {
+						const ids = res.body.rooms.map((r: any) => r._id);
+						expect(ids).to.not.include(teamListMainRoomId);
+					});
+			});
+
+			it('pagination should include team main room on a page where it falls (count=1 offset varies)', async () => {
+				// Get full list to determine index
+				const fullRes = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
+				const allIds: string[] = fullRes.body.rooms.map((r: any) => r._id);
+				const index = allIds.indexOf(teamListMainRoomId);
+				expect(index).to.not.equal(-1);
+
+				// Request the page containing the team main room
+				const pageRes = await request.get(`${v1}/abac/rooms`).set(credentials).query({ count: 1, offset: index }).expect(200);
+				expect(pageRes.body.rooms.map((r: any) => r._id)).to.include(teamListMainRoomId);
+			});
+
+			after(async () => {
+				await deleteTeam(credentials, teamListName);
+			});
+		});
+	});
 });
