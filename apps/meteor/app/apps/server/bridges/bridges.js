@@ -60,7 +60,7 @@ export class RealAppBridges extends AppBridges {
 		this._emailBridge = new AppEmailBridge(orch);
 		this._contactBridge = new AppContactBridge(orch);
 		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
-		this._experimentalBridge = new AppExperimentalBridge();
+		this._experimentalBridge = new AppExperimentalBridge(orch);
 	}
 
 	getCommandBridge() {

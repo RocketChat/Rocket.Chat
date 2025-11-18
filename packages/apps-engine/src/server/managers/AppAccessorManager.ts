@@ -190,7 +190,7 @@ export class AppAccessorManager {
 			const contactReader = new ContactRead(this.bridges, appId);
 			const thread = new ThreadRead(this.bridges.getThreadBridge(), appId);
 			const role = new RoleRead(this.bridges.getRoleBridge(), appId);
-			const experimental = new ExperimentalRead();
+			const experimental = new ExperimentalRead(this.bridges.getExperimentalBridge(), appId);
 
 			this.readers.set(
 				appId,
