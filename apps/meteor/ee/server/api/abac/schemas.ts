@@ -237,6 +237,10 @@ export const GETAbacRoomsListQueryValidator = ajv.compile<GETAbacRoomsListQuery>
 export const GETAbacRoomsResponseSchema = {
 	type: 'object',
 	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
 		rooms: {
 			type: 'array',
 			items: { type: 'object' },
