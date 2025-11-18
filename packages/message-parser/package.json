@@ -48,9 +48,9 @@
     "docs": "typedoc"
   },
   "devDependencies": {
-    "@babel/core": "~7.28.4",
-    "@babel/eslint-parser": "~7.28.4",
-    "@babel/preset-env": "~7.28.3",
+    "@babel/core": "~7.28.5",
+    "@babel/eslint-parser": "~7.28.5",
+    "@babel/preset-env": "~7.28.5",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
@@ -67,7 +67,7 @@
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
     "ts-loader": "~9.5.4",
-    "typedoc": "~0.28.13",
+    "typedoc": "~0.28.14",
     "typescript": "~5.9.3",
     "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"

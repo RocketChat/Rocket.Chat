@@ -21,11 +21,13 @@ import { useKeypad } from '../useKeypad';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { muted, held, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState } = useMediaCallContext();
+	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState } =
+		useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held, connectionState);
+	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
@@ -41,10 +43,10 @@ const OngoingCall = () => {
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetInfo slots={slots} />
 			<WidgetContent>
-				<PeerInfo {...peerInfo} />
+				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 			</WidgetContent>
+			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{keypad}
 				<ButtonGroup large>
