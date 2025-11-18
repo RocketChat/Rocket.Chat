@@ -49,6 +49,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -64,6 +65,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -79,6 +81,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -94,6 +97,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -109,6 +113,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -124,6 +129,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -139,6 +145,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -156,6 +163,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -163,6 +171,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -178,6 +187,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -185,6 +195,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -200,6 +211,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -207,6 +219,7 @@ describe('Presence micro service', () => {
 						id: 'random',
 						instanceId: 'random',
 						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() + 1000 * 60),
 						_createdAt: new Date(),
 						_updatedAt: new Date(),
 					},
@@ -236,5 +249,39 @@ describe('Presence micro service', () => {
 			status: UserStatus.OFFLINE,
 			statusConnection: UserStatus.OFFLINE,
 		});
+	});
+
+	test('should return correct status and statusConnection when there are expired connections', () => {
+		expect(
+			processPresenceAndStatus(
+				[
+					{
+						id: 'random',
+						instanceId: 'random',
+						status: UserStatus.ONLINE,
+						expiresAt: new Date(Date.now() - 1000 * 60),
+						_createdAt: new Date(),
+						_updatedAt: new Date(),
+					},
+				],
+				UserStatus.ONLINE,
+			),
+		).toStrictEqual({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE });
+
+		expect(
+			processPresenceAndStatus(
+				[
+					{
+						id: 'random',
+						instanceId: 'random',
+						status: UserStatus.AWAY,
+						expiresAt: new Date(Date.now() - 1000 * 60),
+						_createdAt: new Date(),
+						_updatedAt: new Date(),
+					},
+				],
+				UserStatus.ONLINE,
+			),
+		).toStrictEqual({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE });
 	});
 });

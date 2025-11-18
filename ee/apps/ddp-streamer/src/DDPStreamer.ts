@@ -215,6 +215,11 @@ export class DDPStreamer extends ServiceClass {
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
 			this.api?.broadcast('socket.connected', connection);
 		});
+
+		server.on(DDP_EVENTS.PING, (client: Client): void => {
+			const { connection } = client;
+			Presence.renewConnection(connection.id);
+		});
 	}
 
 	async started(): Promise<void> {

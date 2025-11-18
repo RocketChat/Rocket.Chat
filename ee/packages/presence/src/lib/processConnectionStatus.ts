@@ -36,7 +36,10 @@ export const processPresenceAndStatus = (
 	userSessions: IUserSessionConnection[] = [],
 	statusDefault = UserStatus.ONLINE,
 ): { status: UserStatus; statusConnection: UserStatus } => {
-	const statusConnection = userSessions.map((s) => s.status).reduce(processConnectionStatus, UserStatus.OFFLINE);
+	const statusConnection = userSessions
+		.filter((s) => s.expiresAt > new Date())
+		.map((s) => s.status)
+		.reduce(processConnectionStatus, UserStatus.OFFLINE);
 
 	const status = processStatus(statusConnection, statusDefault);
 

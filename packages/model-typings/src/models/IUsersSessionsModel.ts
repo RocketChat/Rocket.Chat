@@ -8,10 +8,11 @@ export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
 	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	removeConnectionsFromInstanceId(instanceId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	removeConnectionByConnectionId(connectionId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
+	renewConnectionByConnectionId(connectionId: string, expiresAt: Date): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	findByInstanceId(instanceId: string): FindCursor<IUserSession>;
 	addConnectionById(
 		userId: string,
-		{ id, instanceId, status }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status'>,
+		{ id, instanceId, status, expiresAt }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status' | 'expiresAt'>,
 	): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	findByOtherInstanceIds(instanceIds: string[], options?: FindOptions<IUserSession>): FindCursor<IUserSession>;
 	removeConnectionsFromOtherInstanceIds(instanceIds: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>;
