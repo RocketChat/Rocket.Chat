@@ -11,10 +11,18 @@ const MediaCallProviderMock = ({
 	children,
 	state = 'closed',
 	transferredBy = undefined,
+	remoteMuted = false,
+	remoteHeld = false,
+	muted = false,
+	held = false,
 }: {
 	children: React.ReactNode;
 	state?: State;
 	transferredBy?: string;
+	remoteMuted?: boolean;
+	remoteHeld?: boolean;
+	muted?: boolean;
+	held?: boolean;
 }) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
 		displayName: 'John Doe',
@@ -25,15 +33,15 @@ const MediaCallProviderMock = ({
 		status: UserStatus.ONLINE,
 	});
 	const [widgetState, setWidgetState] = useState<State>(state);
-	const [muted, setMuted] = useState(false);
-	const [held, setHeld] = useState(false);
+	const [mutedState, setMutedState] = useState(muted);
+	const [heldState, setHeldState] = useState(held);
 
-	const onMute = () => setMuted((prev) => !prev);
-	const onHold = () => setHeld((prev) => !prev);
+	const onMute = () => setMutedState((prev) => !prev);
+	const onHold = () => setHeldState((prev) => !prev);
 
 	const clearState = () => {
-		setMuted(false);
-		setHeld(false);
+		setMutedState(false);
+		setHeldState(false);
 	};
 
 	const onDeviceChange = (device: any) => {
@@ -118,8 +126,10 @@ const MediaCallProviderMock = ({
 		connectionState: 'CONNECTED' as const,
 		peerInfo,
 		transferredBy,
-		muted,
-		held,
+		muted: mutedState,
+		held: heldState,
+		remoteMuted,
+		remoteHeld,
 		onMute,
 		onHold,
 		onDeviceChange,
