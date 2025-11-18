@@ -5,4 +5,9 @@
  * team evaluates the proper signature, underlying implementation and performance
  * impact of candidates for future APIs
  */
-export type IExperimentalRead = Record<string, never>;
+export interface IExperimentalRead {
+	/**
+	 * @internal placeholder so the interface is not empty while we evaluate new APIs.
+	 */
+	readonly __brand?: never;
+}
