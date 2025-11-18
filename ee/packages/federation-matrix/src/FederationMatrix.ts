@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, UserID, FileMessageType, PresenceState, PersistentEventBase, RoomVersion, RoomID } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -540,13 +540,29 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	async inviteUsersToRoom(room: IRoomNativeFederated, matrixUsersUsername: string[], inviter: IUser): Promise<void> {
+	async inviteUsersToRoom(
+		room: IRoomNativeFederated,
+		matrixUsersUsername: string[],
+		inviter: IUser,
+	): Promise<{ event_id: EventID, event: PersistentEventBase<RoomVersion, 'm.room.member'>, room_id: RoomID }[]> {
 		try {
 			const inviterUserId = `@${inviter.username}:${this.serverName}`;
+			const isInviterNativeFederated = isUserNativeFederated(inviter);
 
-			await Promise.all(
-				matrixUsersUsername.map(async (username) => {
-					if (validateFederatedUsername(username)) {
+			// if inviter is an external user it means we receive the invite from the endpoint
+			// since we accept from there we can skip accepting here - only process external users
+			const usersToInvite = isInviterNativeFederated
+				? matrixUsersUsername.filter(validateFederatedUsername)
+				: matrixUsersUsername;
+
+			if (usersToInvite.length === 0) {
+				return [];
+			}
+
+			return Promise.all(
+				usersToInvite.map(async (username) => {
+					const isExternalUser = validateFederatedUsername(username);
+					if (isExternalUser) {
 						return federationSDK.inviteUserToRoom(
 							userIdSchema.parse(username),
 							roomIdSchema.parse(room.federation.mrid),
@@ -554,14 +570,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						);
 					}
 
-					// if inviter is an external user it means we receive the invite from the endpoint
-					// since we accept from there we can skip accepting here
-					if (isUserNativeFederated(inviter)) {
-						this.logger.debug('Inviter is native federated, skip accept invite');
-						return;
-					}
-
-					const result = await federationSDK.inviteUserToRoom(
+					return federationSDK.inviteUserToRoom(
 						userIdSchema.parse(`@${username}:${this.serverName}`),
 						roomIdSchema.parse(room.federation.mrid),
 						userIdSchema.parse(inviterUserId),
@@ -571,7 +580,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}),
 			);
 		} catch (error) {
-			this.logger.error({ msg: 'Failed to invite an user to Matrix:', err: error });
+			this.logger.error('Failed to invite a user to Matrix:', error);
 			throw error;
 		}
 	}
