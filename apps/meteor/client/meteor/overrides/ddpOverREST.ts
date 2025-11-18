@@ -29,6 +29,10 @@ const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]) => void) => {
 	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]): void {
 		if (shouldBypass(message)) {
+			if (message.msg === 'ping') {
+				sdk.call('UserPresence:renew');
+			}
+
 			return _send.call(this, message, ...args);
 		}
 

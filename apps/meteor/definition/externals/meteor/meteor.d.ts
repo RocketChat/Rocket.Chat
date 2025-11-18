@@ -48,7 +48,7 @@ declare module 'meteor/meteor' {
 		}
 
 		interface IDDPMessage {
-			msg: 'method';
+			msg: 'method' | 'ping';
 			method: string;
 			params: EJSON[];
 			id: string;
@@ -64,6 +64,16 @@ declare module 'meteor/meteor' {
 			referer: string;
 			clientAddress: string;
 			_send(message: IDDPMessage): void;
+
+			_heartbeat: {
+				heartbeatInterval: number;
+				heartbeatTimeout: number;
+				_heartbeatIntervalHandle: number;
+				_heartbeatTimeoutHandle: number | null;
+				_onTimeout(): void;
+				_seenPacket: boolean;
+				_sendPing(): void;
+			};
 
 			_methodInvokers: Record<string, any>;
 
