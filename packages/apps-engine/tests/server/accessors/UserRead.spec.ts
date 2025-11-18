@@ -19,8 +19,7 @@ export class UserReadAccessorTestFixture {
 		this.user = TestData.getUser();
 		this.roomIds = ['room-1', 'room-2'];
 
-		const theUser = this.user;
-		const roomIds = this.roomIds;
+		const { user: theUser, roomIds } = this;
 		this.mockUserBridge = {
 			doGetById(id, appId): Promise<IUser> {
 				return Promise.resolve(theUser);
