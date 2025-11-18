@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import { ReadableStream } from 'stream/web';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
@@ -65,6 +66,10 @@ export async function getUploadFormData<
 		fileOptional?: boolean;
 	} = {},
 ): Promise<UploadResultWithOptionalFile<K>> {
+	if (!(request.body instanceof ReadableStream)) {
+		return Promise.reject(new Error('Invalid request body'));
+	}
+
 	const limits = {
 		files: 1,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
@@ -159,29 +164,8 @@ export async function getUploadFormData<
 		reject();
 	});
 
-	const webReadableStream = await request.blob().then((blob) => blob.stream());
-
-	const nodeReadableStream = new Readable({
-		async read() {
-			const reader = webReadableStream.getReader();
-			try {
-				const processChunk = async () => {
-					const { done, value } = await reader.read();
-					if (done) {
-						this.push(null);
-						return;
-					}
-					this.push(Buffer.from(value));
-					await processChunk();
-				};
-				await processChunk();
-			} catch (err: any) {
-				this.destroy(err);
-			}
-		},
-	});
-
-	nodeReadableStream.pipe(bb);
+	// Unclear why typescript complains that the ReadableStream from request.body is incompatible here
+	Readable.fromWeb(request.body satisfies ReadableStream).pipe(bb);
 
 	return resultPromise;
 }
