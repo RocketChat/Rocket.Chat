@@ -54,6 +54,8 @@ export const createUser = <TUser extends IUser>(
 		name?: string;
 		password?: string;
 		freeSwitchExtension?: string;
+		bio?: string;
+		nickname?: string;
 	} = {},
 	config?: IRequestConfig,
 ) =>
