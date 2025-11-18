@@ -8,28 +8,28 @@ const APP_ID = 'media-call-core';
 export const callStateToTranslationKey = (callState: CallHistoryItemState): TextObject => {
 	switch (callState) {
 		case 'ended':
-			return { type: 'mrkdwn', i18n: { key: 'Call_ended' }, text: 'Call ended' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' };
 		case 'not-answered':
-			return { type: 'mrkdwn', i18n: { key: 'Call_not_answered' }, text: 'Call not answered' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_not_answered_bold' }, text: 'Call not answered' };
 		case 'failed':
 		case 'error':
-			return { type: 'mrkdwn', i18n: { key: 'Call_failed' }, text: 'Call failed' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' };
 		case 'transferred':
-			return { type: 'mrkdwn', i18n: { key: 'Call_transferred' }, text: 'Call transferred' };
+			return { type: 'mrkdwn', i18n: { key: 'Call_transferred_bold' }, text: 'Call transferred' };
 	}
 };
 
 export const callStateToIcon = (callState: CallHistoryItemState): IconElement => {
 	switch (callState) {
 		case 'ended':
-			return { type: 'icon', icon: 'phone-off', variant: 'default' };
+			return { type: 'icon', icon: 'phone-off', variant: 'secondary' };
 		case 'not-answered':
 			return { type: 'icon', icon: 'clock', variant: 'danger' };
 		case 'failed':
 		case 'error':
 			return { type: 'icon', icon: 'phone-issue', variant: 'danger' };
 		case 'transferred':
-			return { type: 'icon', icon: 'arrow-forward', variant: 'default' };
+			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary' };
 	}
 };
 
@@ -37,7 +37,11 @@ const buildDurationString = (...values: number[]): string => {
 	return values.map((value) => value.toString().padStart(2, '0')).join(':');
 };
 
-export const getFormattedCallDuration = (callDuration: number | undefined): TextObject | undefined => {
+export const getFormattedCallDuration = (callDuration: number | undefined, callState: CallHistoryItemState): TextObject | undefined => {
+	if (callState !== 'ended' && callState !== 'transferred') {
+		return undefined;
+	}
+
 	if (typeof callDuration !== 'number') {
 		return undefined;
 	}
@@ -62,7 +66,7 @@ export const getHistoryMessagePayload = (
 ): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
 	const callStateTranslationKey = callStateToTranslationKey(callState);
 	const icon = callStateToIcon(callState);
-	const callDurationFormatted = getFormattedCallDuration(callDuration);
+	const callDurationFormatted = getFormattedCallDuration(callDuration, callState);
 
 	return {
 		msg: '',
