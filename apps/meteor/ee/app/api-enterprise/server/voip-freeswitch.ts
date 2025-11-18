@@ -1,7 +1,6 @@
 import { VoipFreeSwitch } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import {
-	isVoipFreeSwitchExtensionAssignProps,
 	isVoipFreeSwitchExtensionGetDetailsProps,
 	isVoipFreeSwitchExtensionGetInfoProps,
 	isVoipFreeSwitchExtensionListProps,
@@ -58,50 +57,6 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ extensions });
-		},
-	},
-);
-
-API.v1.addRoute(
-	'voip-freeswitch.extension.assign',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-voip-extensions'],
-		validateParams: isVoipFreeSwitchExtensionAssignProps,
-		deprecation: {
-			version: '8.0.0',
-			alternatives: ['/v1/users.update'],
-		},
-		license: ['voip-enterprise'],
-	},
-	{
-		async post() {
-			if (!settings.get('VoIP_TeamCollab_Enabled')) {
-				throw new Error('error-voip-disabled');
-			}
-
-			const { extension, username } = this.bodyParams;
-
-			if (!username) {
-				return API.v1.notFound();
-			}
-
-			const user = await Users.findOneByUsername(username, { projection: { freeSwitchExtension: 1 } });
-			if (!user) {
-				return API.v1.notFound();
-			}
-
-			const existingUser = extension && (await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } }));
-			if (existingUser && existingUser._id !== user._id) {
-				throw new Error('error-extension-not-available');
-			}
-
-			if (extension && user.freeSwitchExtension === extension) {
-				return API.v1.success();
-			}
-
-			await Users.setFreeSwitchExtension(user._id, extension);
-			return API.v1.success();
 		},
 	},
 );
