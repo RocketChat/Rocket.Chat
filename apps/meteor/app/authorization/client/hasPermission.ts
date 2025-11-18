@@ -56,7 +56,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!PermissionsCachedStore.watchReady()) {
+	if (!watch(PermissionsCachedStore.useReady, (state) => state)) {
 		return false;
 	}
 

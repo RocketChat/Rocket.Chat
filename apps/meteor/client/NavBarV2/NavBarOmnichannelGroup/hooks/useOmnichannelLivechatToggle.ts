@@ -3,7 +3,7 @@ import type { Keys } from '@rocket.chat/icons';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelAgentAvailable } from '../../../hooks/omnichannel/useOmnichannelAgentAvailable';
+import { useOmnichannelAgentAvailable } from '../../../views/omnichannel/hooks/useOmnichannelAgentAvailable';
 
 export const useOmnichannelLivechatToggle = () => {
 	const { t } = useTranslation();

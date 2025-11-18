@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
-import { RoomActivityIcon } from '../../../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../../../omnichannel/priorities/PriorityIcon';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
+import RoomActivityIcon from '../../../components/RoomActivityIcon';
 import RemoveChatButton from '../../../currentChats/RemoveChatButton';
+import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
+import { PriorityIcon } from '../../../priorities/PriorityIcon';
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();

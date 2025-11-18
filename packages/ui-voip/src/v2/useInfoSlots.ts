@@ -41,7 +41,7 @@ const getConnectionStateSlot = (connectionState: ConnectionState, t: ReturnType<
 	return undefined;
 };
 
-export const useInfoSlots = (muted: boolean, held: boolean, connectionState: ConnectionState): Slot[] => {
+export const useInfoSlots = (muted: boolean, held: boolean, connectionState?: ConnectionState): Slot[] => {
 	const { t } = useTranslation();
 	const [slots, setSlots] = useState<Slot[]>([]);
 
@@ -49,7 +49,7 @@ export const useInfoSlots = (muted: boolean, held: boolean, connectionState: Con
 		const slots: Slot[] = [];
 		const heldSlot = getHeldSlot(held, t);
 		const mutedSlot = getMutedSlot(muted, t);
-		const connectionStateSlot = getConnectionStateSlot(connectionState, t);
+		const connectionStateSlot = connectionState ? getConnectionStateSlot(connectionState, t) : undefined;
 
 		if (connectionStateSlot) {
 			slots.push(connectionStateSlot);

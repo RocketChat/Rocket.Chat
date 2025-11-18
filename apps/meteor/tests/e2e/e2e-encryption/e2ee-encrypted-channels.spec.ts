@@ -52,7 +52,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Disable encryption' }).click();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
@@ -65,7 +65,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await page.waitForTimeout(1000);
 
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
@@ -138,9 +138,8 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
@@ -236,8 +235,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.btnCreate.click();
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		// Send Unencrypted Messages
 		await poHomeChannel.content.sendMessage('first unencrypted message');
@@ -291,15 +290,15 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Pin"]').click();
 		await page.locator('#modal-root >> button:has-text("Yes, pin message")').click();
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.waitForDisplay();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnPinnedMessagesList.click();

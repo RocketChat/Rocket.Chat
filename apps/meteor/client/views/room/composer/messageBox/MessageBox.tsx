@@ -1,12 +1,11 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	MessageComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
@@ -424,35 +423,18 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<FeaturePreview feature='expandableMessageComposer'>
-					<FeaturePreviewOn>
-						<MessageComposerInputExpandable
-							dimensions={sizes}
-							ref={mergedRefs}
-							aria-label={composerPlaceholder}
-							name='msg'
-							disabled={isRecording || !canSend}
-							onChange={setTyping}
-							style={textAreaStyle}
-							placeholder={composerPlaceholder}
-							onPaste={handlePaste}
-							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-						/>
-					</FeaturePreviewOn>
-					<FeaturePreviewOff>
-						<MessageComposerInput
-							ref={mergedRefs}
-							aria-label={composerPlaceholder}
-							name='msg'
-							disabled={isRecording || !canSend}
-							onChange={setTyping}
-							style={textAreaStyle}
-							placeholder={composerPlaceholder}
-							onPaste={handlePaste}
-							aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-						/>
-					</FeaturePreviewOff>
-				</FeaturePreview>
+				<MessageComposerInputExpandable
+					dimensions={sizes}
+					ref={mergedRefs}
+					aria-label={composerPlaceholder}
+					name='msg'
+					disabled={isRecording || !canSend}
+					onChange={setTyping}
+					style={textAreaStyle}
+					placeholder={composerPlaceholder}
+					onPaste={handlePaste}
+					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+				/>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction

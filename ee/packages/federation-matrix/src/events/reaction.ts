@@ -8,20 +8,20 @@ import emojione from 'emojione';
 const logger = new Logger('federation-matrix:reaction');
 
 export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.reaction', async (data) => {
+	emitter.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
 		try {
-			const isSetReaction = data.content?.['m.relates_to'];
+			const isSetReaction = event.content?.['m.relates_to'];
 
 			const reactionTargetEventId = isSetReaction?.event_id;
 			const reactionKey = isSetReaction?.key;
 
-			const [userPart, domain] = data.sender.split(':');
+			const [userPart, domain] = event.sender.split(':');
 			if (!userPart || !domain) {
-				logger.error('Invalid Matrix sender ID format:', data.sender);
+				logger.error('Invalid Matrix sender ID format:', event.sender);
 				return;
 			}
 
-			const internalUsername = data.sender;
+			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
 				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${internalUsername}`);
@@ -41,15 +41,15 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
-			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, data.event_id);
+			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
 		} catch (error) {
 			logger.error('Failed to process Matrix reaction:', error);
 		}
 	});
 
-	emitter.on('homeserver.matrix.redaction', async (data) => {
+	emitter.on('homeserver.matrix.redaction', async ({ event }) => {
 		try {
-			const redactedEventId = data.redacts;
+			const redactedEventId = event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
 				return;
@@ -76,7 +76,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const internalUsername = data.sender;
+			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
 				logger.debug(`User not found: ${internalUsername}`);

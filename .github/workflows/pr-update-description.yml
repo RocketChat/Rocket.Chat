@@ -13,7 +13,7 @@ jobs:
     if: startsWith(github.head_ref, 'release-')
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.CI_PAT }}

@@ -23,22 +23,22 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
+import DepartmentTags from './DepartmentTags';
 import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
-import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
-import DepartmentTags from './DepartmentTags';
-import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
+import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 export type EditDepartmentProps = {
 	id?: string;

@@ -25,6 +25,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useId, useCallback } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -142,6 +143,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<legend>{t('Profile_details')}</legend>
+				</VisuallyHidden>
 				<Field>
 					<Controller
 						control={control}
@@ -240,7 +244,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+							rules={{
+								maxLength: {
+									value: USER_STATUS_TEXT_MAX_LENGTH,
+									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+								},
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}

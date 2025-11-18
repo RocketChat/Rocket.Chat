@@ -1,11 +1,11 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
-import { getNewCallTransferredBy } from '../../server/getNewCallTransferredBy';
+import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
 
 export class UserActorAgent extends BaseMediaCallAgent {
@@ -77,7 +77,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(this.buildNewCallSignal(call));
+		await this.sendSignal(buildNewCallSignal(call, this.role));
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
@@ -165,22 +165,5 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration });
 		// internal calls have nothing to do with DTMFs
-	}
-
-	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
-		const transferredBy = getNewCallTransferredBy(call);
-
-		return {
-			callId: call._id,
-			type: 'new',
-			service: call.service,
-			kind: call.kind,
-			role: this.role,
-			self: this.getMyCallActor(call),
-			contact: this.getOtherCallActor(call),
-			...(call.parentCallId && { replacingCallId: call.parentCallId }),
-			...(transferredBy && { transferredBy }),
-			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),
-		};
 	}
 }

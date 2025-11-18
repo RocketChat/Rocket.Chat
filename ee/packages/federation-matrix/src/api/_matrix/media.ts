@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import type { IUpload } from '@rocket.chat/core-typings';
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -73,8 +73,7 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 	return { file, buffer };
 }
 
-export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
-	const { config, federationAuth } = homeserverServices;
+export const getMatrixMediaRoutes = () => {
 	return new Router('/federation')
 		.get(
 			'/v1/media/download/:mediaId',
@@ -90,11 +89,11 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				},
 				tags: ['Federation', 'Media'],
 			},
-			canAccessResourceMiddleware(federationAuth, 'media'),
+			canAccessResourceMiddleware('media'),
 			async (c) => {
 				try {
 					const { mediaId } = c.req.param();
-					const { serverName } = config;
+					const serverName = federationSDK.getConfig('serverName');
 
 					// TODO: Add file streaming support
 					const result = await getMediaFile(mediaId, serverName);
@@ -138,7 +137,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				},
 				tags: ['Federation', 'Media'],
 			},
-			canAccessResourceMiddleware(federationAuth, 'media'),
+			canAccessResourceMiddleware('media'),
 			async (_c) => ({
 				statusCode: 404,
 				body: {

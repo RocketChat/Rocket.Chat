@@ -6,13 +6,13 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/express": "^4.17.23",
+		"@types/express": "^4.17.25",
 		"@types/jest": "~30.0.0",
 		"@types/supertest": "~6.0.3",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"supertest": "~7.1.4",
-		"ts-jest": "~29.4.4",
+		"ts-jest": "~29.4.5",
 		"typescript": "~5.9.3"
 	},
 	"scripts": {

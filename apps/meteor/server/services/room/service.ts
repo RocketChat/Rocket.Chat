@@ -114,6 +114,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
+		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
+		}
+
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
 			if (!joinCode) {
 				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });

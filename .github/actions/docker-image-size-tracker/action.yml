@@ -1,0 +1,538 @@
+name: 'Docker Image Size Tracker'
+description: 'Track and report Docker image sizes in Pull Requests'
+author: 'Rocket.Chat'
+
+inputs:
+  github-token:
+    description: 'GitHub token for commenting on PRs'
+    required: true
+  registry:
+    description: 'Container registry (e.g., ghcr.io)'
+    required: false
+    default: 'ghcr.io'
+  repository:
+    description: 'Repository name (e.g., rocketchat)'
+    required: true
+  tag:
+    description: 'Image tag to measure'
+    required: true
+  baseline-tag:
+    description: 'Baseline tag to compare against'
+    required: false
+    default: 'develop'
+  platform:
+    description: 'Platform architecture to compare (amd64 or arm64)'
+    required: false
+    default: 'arm64'
+
+outputs:
+  total-size:
+    description: 'Total size in bytes'
+    value: ${{ steps.measure.outputs.total-size }}
+  size-diff:
+    description: 'Size difference in bytes'
+    value: ${{ steps.compare.outputs.size-diff }}
+  size-diff-percent:
+    description: 'Size difference percentage'
+    value: ${{ steps.compare.outputs.size-diff-percent }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download manifests
+      uses: actions/download-artifact@v6
+      with:
+        pattern: manifests-*
+        path: /tmp/manifests
+        merge-multiple: true
+
+    - name: Measure image sizes from artifacts
+      id: measure
+      shell: bash
+      run: |
+        PLATFORM="${{ inputs.platform }}"
+        echo "Reading image sizes from build artifacts for platform: $PLATFORM"
+
+        declare -A sizes
+        declare -a services_list
+        total=0
+
+        # Loop through service directories (same as publish workflow)
+        shopt -s nullglob
+        for service_dir in /tmp/manifests/*; do
+          [[ -d "$service_dir" ]] || continue
+          service="$(basename "$service_dir")"
+
+          echo "Processing service: $service"
+          services_list+=("$service")
+
+          size=0
+          # Read only the specified platform architecture
+          manifest_file="$service_dir/$PLATFORM/manifest.json"
+          if [[ -f "$manifest_file" ]]; then
+            # Docker manifest inspect -v returns SchemaV2Manifest with sizes
+            # Extract config size and layer sizes
+            config_size=$(jq -r '.SchemaV2Manifest.config.size // 0' "$manifest_file")
+            layers_size=$(jq '[.SchemaV2Manifest.layers[]?.size // 0] | add // 0' "$manifest_file")
+            size=$((config_size + layers_size))
+
+            echo "  → Found $manifest_file: $size bytes (config: $config_size, layers: $layers_size)"
+          else
+            echo "  ⚠ Manifest not found for platform $PLATFORM: $manifest_file"
+          fi
+
+          sizes[$service]=$size
+          total=$((total + size))
+        done
+
+        echo "Total size (all services, $PLATFORM only): $total bytes"
+        echo "total-size=$total" >> $GITHUB_OUTPUT
+
+        # Save to JSON
+        echo "{" > current-sizes.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> current-sizes.json
+        echo "  \"tag\": \"${{ inputs.tag }}\"," >> current-sizes.json
+        echo "  \"total\": $total," >> current-sizes.json
+        echo "  \"services\": {" >> current-sizes.json
+
+        first=true
+        for service in "${services_list[@]}"; do
+          if [[ "$first" == "true" ]]; then
+            first=false
+          else
+            echo "," >> current-sizes.json
+          fi
+          echo "    \"$service\": ${sizes[$service]}" >> current-sizes.json
+        done
+
+        echo "  }" >> current-sizes.json
+        echo "}" >> current-sizes.json
+
+        echo "Current sizes saved:"
+        cat current-sizes.json
+
+        # Save services list for baseline measurement
+        printf '%s\n' "${services_list[@]}" > /tmp/services-list.txt
+
+    - name: Measure baseline
+      id: baseline
+      shell: bash
+      continue-on-error: true
+      run: |
+        REGISTRY="${{ inputs.registry }}"
+        ORG="${{ inputs.repository }}"
+        TAG="${{ inputs.baseline-tag }}"
+        PLATFORM="${{ inputs.platform }}"
+
+        echo "Measuring baseline: $REGISTRY/$ORG/*:$TAG (platform: $PLATFORM)"
+
+        declare -A sizes
+        declare -a services_list
+        total=0
+
+        # Read services list from current measurement
+        while IFS= read -r service; do
+          services_list+=("$service")
+
+          # Map service name to image name (handle rocketchat -> rocket.chat)
+          if [[ "$service" == "rocketchat" ]] || [[ "$service" == "rocketchat-cov" ]]; then
+            image_name="rocket.chat"
+            [[ "$service" == "rocketchat-cov" ]] && image_name="rocket.chat-cov"
+          else
+            image_name="$service"
+          fi
+
+          image="$REGISTRY/$ORG/$image_name:$TAG"
+          echo "  → Inspecting $image"
+
+          size=0
+          if manifest=$(docker manifest inspect "$image" 2>/dev/null); then
+            # Check if it's a manifest list (multi-arch)
+            if echo "$manifest" | jq -e '.manifests' > /dev/null 2>&1; then
+              # Manifest list - find the specified platform
+              echo "    → Multi-arch manifest detected, filtering for $PLATFORM"
+              platform_digest=$(echo "$manifest" | jq -r --arg arch "$PLATFORM" '.manifests[] | select(.platform.architecture == $arch) | .digest' | head -1)
+
+              if [[ -n "$platform_digest" ]]; then
+                echo "      → Inspecting $PLATFORM platform: $platform_digest"
+                if platform_manifest=$(docker manifest inspect "$REGISTRY/$ORG/$image_name@$platform_digest" 2>/dev/null); then
+                  config_size=$(echo "$platform_manifest" | jq -r '.config.size // 0')
+                  layers_size=$(echo "$platform_manifest" | jq '[.layers[]?.size // 0] | add // 0')
+                  size=$((config_size + layers_size))
+                  echo "        → Size: $size bytes"
+                fi
+              else
+                echo "      ⚠ Platform $PLATFORM not found in manifest"
+              fi
+            else
+              # Single arch manifest
+              config_size=$(echo "$manifest" | jq -r '.config.size // 0')
+              layers_size=$(echo "$manifest" | jq '[.layers[]?.size // 0] | add // 0')
+              size=$((config_size + layers_size))
+            fi
+          fi
+
+          sizes[$service]=$size
+          total=$((total + size))
+        done < /tmp/services-list.txt
+
+        echo "baseline-total=$total" >> $GITHUB_OUTPUT
+
+        echo "{" > baseline-sizes.json
+        echo "  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> baseline-sizes.json
+        echo "  \"tag\": \"$TAG\"," >> baseline-sizes.json
+        echo "  \"total\": $total," >> baseline-sizes.json
+        echo "  \"services\": {" >> baseline-sizes.json
+
+        first=true
+        for service in "${services_list[@]}"; do
+          if [[ "$first" == "true" ]]; then
+            first=false
+          else
+            echo "," >> baseline-sizes.json
+          fi
+          echo "    \"$service\": ${sizes[$service]}" >> baseline-sizes.json
+        done
+
+        echo "  }" >> baseline-sizes.json
+        echo "}" >> baseline-sizes.json
+
+    - name: Setup history storage
+      id: history
+      shell: bash
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Create a separate worktree for history branch
+        mkdir -p /tmp/history-worktree
+
+        # Try to fetch history branch
+        if git ls-remote --heads origin image-size-history | grep -q image-size-history; then
+          git fetch origin image-size-history
+          git worktree add /tmp/history-worktree image-size-history
+        else
+          # Create orphan branch for history in worktree
+          git worktree add --detach /tmp/history-worktree
+          cd /tmp/history-worktree
+          git checkout --orphan image-size-history
+          git rm -rf . 2>/dev/null || true
+          mkdir -p history
+          echo "# Image Size History" > README.md
+          echo "This branch stores historical image size data for tracking" >> README.md
+          git add README.md
+          git commit -m "Initialize image size history"
+          git push origin image-size-history
+          cd -
+        fi
+
+        mkdir -p /tmp/history-worktree/history
+
+    - name: Load historical data
+      shell: bash
+      run: |
+        # Load last 30 measurements and group by day (keep only last entry per day)
+        echo "[]" > history-data.json
+        if [[ -d /tmp/history-worktree/history ]]; then
+          jq -s '.' /tmp/history-worktree/history/*.json 2>/dev/null | jq '
+            sort_by(.timestamp) |
+            group_by(.timestamp[0:10]) |
+            map(.[-1]) |
+            .[-30:]
+          ' > history-data.json || echo "[]" > history-data.json
+        fi
+
+        count=$(jq 'length' history-data.json)
+        echo "Loaded $count historical measurements (one per day)"
+
+    - name: Save current measurement to history
+      if: github.ref == 'refs/heads/develop'
+      shell: bash
+      run: |
+        timestamp=$(date -u +%Y%m%d-%H%M%S)
+        commit_sha="${{ github.sha }}"
+
+        # Add commit info to current measurement
+        jq --arg sha "$commit_sha" '. + {commit: $sha}' current-sizes.json > "/tmp/history-worktree/history/${timestamp}.json"
+
+        cd /tmp/history-worktree
+        git add "history/${timestamp}.json"
+        git commit -m "Add measurement for ${timestamp} (${commit_sha:0:7})"
+        git push origin image-size-history
+        cd -
+
+        echo "Saved measurement to history"
+
+    - name: Compare and generate report
+      id: compare
+      shell: bash
+      run: |
+        current_total=$(jq -r '.total' current-sizes.json)
+
+        if [[ ! -f baseline-sizes.json ]]; then
+          echo "No baseline available"
+          echo "size-diff=0" >> $GITHUB_OUTPUT
+          echo "size-diff-percent=0" >> $GITHUB_OUTPUT
+
+          cat > report.md << 'EOF'
+        # 📦 Docker Image Size Report
+
+        **Status:** First measurement - no baseline for comparison
+
+        **Total Size:** $(numfmt --to=iec-i --suffix=B $current_total)
+        EOF
+          exit 0
+        fi
+
+        baseline_total=$(jq -r '.total' baseline-sizes.json)
+        diff=$((current_total - baseline_total))
+
+        if [[ $baseline_total -gt 0 ]]; then
+          percent=$(awk "BEGIN {printf \"%.2f\", ($diff / $baseline_total) * 100}")
+        else
+          percent=0
+        fi
+
+        echo "size-diff=$diff" >> $GITHUB_OUTPUT
+        echo "size-diff-percent=$percent" >> $GITHUB_OUTPUT
+
+        color="gray"
+        if (( $(awk "BEGIN {print ($percent > 0.01)}") )); then
+          color="red"
+        elif (( $(awk "BEGIN {print ($percent < -0.01)}") )); then
+          color="green"
+        fi
+
+        # Generate report
+        if [[ $diff -gt 0 ]]; then
+          emoji="📈"
+          badge="![](https://img.shields.io/badge/size-+${percent}%25-${color})"
+          sign="+"
+        elif [[ $diff -lt 0 ]]; then
+          emoji="📉"
+          badge="![](https://img.shields.io/badge/size--${percent}%25-${color})"
+          sign="-"
+        else
+          emoji="➡️"
+          badge="![](https://img.shields.io/badge/size-unchanged-${color})"
+          sign=""
+        fi
+
+        cat > report.md << EOF
+        # 📦 Docker Image Size Report
+
+        ## $emoji Changes $badge
+
+        | Service | Current | Baseline | Change | Percent |
+        |---------|---------|----------|--------|---------|
+        | **sum of all images** | **$(numfmt --to=iec-i --suffix=B $current_total)** | **$(numfmt --to=iec-i --suffix=B $baseline_total)** | **${sign}$(numfmt --to=iec-i --suffix=B ${diff#-})** | $badge |
+        EOF
+
+        # Get services dynamically from current-sizes.json, sorted by size (largest first)
+        for service in $(jq -r '.services | to_entries | sort_by(-.value) | .[].key' current-sizes.json); do
+          current=$(jq -r ".services.\"$service\"" current-sizes.json)
+          baseline=$(jq -r ".services.\"$service\" // 0" baseline-sizes.json)
+          service_diff=$((current - baseline))
+
+          if [[ $baseline -gt 0 ]]; then
+            service_percent=$(awk "BEGIN {printf \"%.2f\", ($service_diff / $baseline) * 100}")
+          else
+            service_percent=0
+          fi
+
+          color="gray"
+          if (( $(awk "BEGIN {print ($service_percent > 0.01)}") )); then
+            color="red"
+          elif (( $(awk "BEGIN {print ($service_percent < -0.01)}") )); then
+            color="green"
+          fi
+
+          if [[ $service_diff -gt 0 ]]; then
+            badge="![](https://img.shields.io/badge/size-+${service_percent}%25-${color})"
+            sign="+"
+          elif [[ $service_diff -lt 0 ]]; then
+            badge="![](https://img.shields.io/badge/size--${service_percent}%25-${color})"
+            sign="-"
+          else
+            badge="![](https://img.shields.io/badge/size-unchanged-${color})"
+            sign=""
+          fi
+
+          echo "| $service | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) | $badge |" >> report.md
+        done
+
+        # Generate historical trend chart
+        echo "" >> report.md
+        echo "## 📊 Historical Trend" >> report.md
+        echo "" >> report.md
+
+        # Load history and generate mermaid chart
+        history_count=$(jq 'length' history-data.json)
+
+        if [[ $history_count -gt 0 ]]; then
+          # Get all services from current build
+          all_services=$(jq -r '.services | keys | .[]' current-sizes.json | sort)
+
+          # Generate Mermaid chart data
+          x_labels=""
+          declare -A service_data
+
+          # Initialize service data arrays
+          for service in $all_services; do
+            service_data[$service]=""
+          done
+
+          # Process historical data
+          while IFS= read -r line; do
+            timestamp=$(echo "$line" | jq -r '.timestamp')
+            date_label=$(date -d "$timestamp" +"%m/%d %H:%M")
+
+            if [[ -z "$x_labels" ]]; then
+              x_labels="\"$date_label\""
+            else
+              x_labels="$x_labels, \"$date_label\""
+            fi
+
+            # Add data point for each service
+            for service in $all_services; do
+              size=$(echo "$line" | jq -r ".services.\"$service\" // 0")
+              size_gb=$(awk "BEGIN {printf \"%.2f\", $size / 1073741824}")
+
+              if [[ -z "${service_data[$service]}" ]]; then
+                service_data[$service]="$size_gb"
+              else
+                service_data[$service]="${service_data[$service]}, $size_gb"
+              fi
+            done
+          done < <(jq -c '.[]' history-data.json)
+
+          # Add current PR as last point
+          current_date=$(date -u +"%m/%d %H:%M")
+          x_labels="$x_labels, \"$current_date (PR)\""
+
+          for service in $all_services; do
+            size=$(jq -r ".services.\"$service\" // 0" current-sizes.json)
+            size_gb=$(awk "BEGIN {printf \"%.2f\", $size / 1073741824}")
+            service_data[$service]="${service_data[$service]}, $size_gb"
+          done
+
+          # Generate mermaid chart with multiple lines
+          cat >> report.md << EOF
+        \`\`\`mermaid
+        ---
+        config:
+          theme: "dark"
+          xyChart:
+            width: 900
+            height: 400
+        ---
+        xychart
+          title "Image Size Evolution by Service (Last 30 Days + This PR)"
+          x-axis [$x_labels]
+          y-axis "Size (GB)" 0 --> 0.5
+        EOF
+
+          # Add a line for each service
+          for service in $all_services; do
+            echo "  line \"$service\" [${service_data[$service]}]" >> report.md
+          done
+
+          cat >> report.md << 'EOF'
+        ```
+
+        EOF
+
+          # Add summary stats
+          min_size=$(jq '[.[].total] | min' history-data.json)
+          max_size=$(jq '[.[].total] | max' history-data.json)
+          avg_size=$(jq '[.[].total] | add / length' history-data.json)
+
+          cat >> report.md << EOF
+        **Statistics (last $history_count days):**
+        - 📊 Average: $(numfmt --to=iec-i --suffix=B ${avg_size%.*})
+        - ⬇️ Minimum: $(numfmt --to=iec-i --suffix=B $min_size)
+        - ⬆️ Maximum: $(numfmt --to=iec-i --suffix=B $max_size)
+        - 🎯 Current PR: $(numfmt --to=iec-i --suffix=B $current_total)
+
+        EOF
+
+        else
+          cat >> report.md << 'EOF'
+        *No historical data available yet. History tracking starts after merging to develop.*
+
+        EOF
+        fi
+
+        cat >> report.md << EOF
+
+        <details>
+        <summary>ℹ️ About this report</summary>
+
+        This report compares Docker image sizes from this build against the \`${{ inputs.baseline-tag }}\` baseline.
+
+        - **Tag:** \`${{ inputs.tag }}\`
+        - **Baseline:** \`${{ inputs.baseline-tag }}\`
+        - **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        - **Historical data points:** $history_count
+
+        </details>
+        EOF
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+
+          if (!fs.existsSync('report.md')) {
+            console.log('No report found, skipping comment');
+            return;
+          }
+
+          const report = fs.readFileSync('report.md', 'utf8');
+
+          // Find existing comment
+          const comments = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });
+
+          const botComment = comments.data.find(comment =>
+            comment.user.type === 'Bot' &&
+            comment.body.includes('📦 Docker Image Size Report')
+          );
+
+          const commentBody = report + '\n\n---\n*Updated: ' + new Date().toUTCString() + '*';
+
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody
+            });
+            console.log('Updated existing comment');
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+            console.log('Created new comment');
+          }
+
+    - name: Cleanup worktree
+      if: always()
+      shell: bash
+      run: |
+        if [[ -d /tmp/history-worktree ]]; then
+          git worktree remove /tmp/history-worktree --force 2>/dev/null || true
+        fi
+
+branding:
+  icon: 'package'
+  color: 'blue'

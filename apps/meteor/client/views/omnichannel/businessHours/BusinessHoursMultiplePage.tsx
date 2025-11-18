@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
-const BusinessHoursTable = lazy(() => import('../../../omnichannel/businessHours/BusinessHoursTable'));
+const BusinessHoursTable = lazy(() => import('./BusinessHoursTable'));
 
 const BusinessHoursMultiplePage = () => {
 	const { t } = useTranslation();

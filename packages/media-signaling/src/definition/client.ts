@@ -4,12 +4,8 @@ export type ClientState =
 	| 'accepting' // The client tried to accept the call and is wating for confirmation from the server
 	| 'accepted' // The call was accepted, but the client doesn't have a webrtc offer yet
 	| 'busy-elsewhere' // The call is happening in a different session/client
-	| 'has-offer' // The call was accepted and the client has a webrtc offer
-	| 'has-answer' // The call was accepted and the client has a webrtc offer and answer
 	| 'active' // The webrtc call was established
 	| 'renegotiating' // the webrtc call was established but the client is starting a new negotiation
-	| 'has-new-offer' // The webrtc call was established but the client has an offer for a new negotiation
-	| 'has-new-answer' // The webrtc call was established but the client is finishing a renegotiation
 	| 'hangup'; // The call is over, or happening in some other client
 
 export type ClientContractState =

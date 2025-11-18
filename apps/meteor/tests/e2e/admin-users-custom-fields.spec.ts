@@ -61,9 +61,7 @@ test.describe('Admin users custom fields', () => {
 
 	test('should allow admin to add user custom fields', async () => {
 		await test.step('should find and click on add test user', async () => {
-			await poAdmin.inputSearchUsers.fill(addTestUser.data.username);
-
-			await expect(poAdmin.getUserRowByUsername(addTestUser.data.username)).toBeVisible();
+			await poAdmin.searchUser(addTestUser.data.username);
 			await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
 		});
 
@@ -78,7 +76,7 @@ test.describe('Admin users custom fields', () => {
 
 		await test.step('should save user custom fields', async () => {
 			await poAdmin.editUser.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.dismissToast();
 			await poAdmin.editUser.close();
 		});
 
@@ -93,9 +91,7 @@ test.describe('Admin users custom fields', () => {
 
 	test('should allow admin to update existing user custom fields', async () => {
 		await test.step('should find and click on update test user', async () => {
-			await poAdmin.inputSearchUsers.fill(updateTestUser.data.username);
-
-			await expect(poAdmin.getUserRowByUsername(updateTestUser.data.username)).toBeVisible();
+			await poAdmin.searchUser(updateTestUser.data.username);
 			await poAdmin.getUserRowByUsername(updateTestUser.data.username).click();
 		});
 
@@ -115,7 +111,7 @@ test.describe('Admin users custom fields', () => {
 
 		await test.step('should save and verify partial update', async () => {
 			await poAdmin.editUser.btnSaveUser.click();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.dismissToast();
 
 			await poAdmin.editUser.close();
 			await poAdmin.getUserRowByUsername(updateTestUser.data.username).click();
@@ -144,9 +140,7 @@ test.describe('Admin users custom fields', () => {
 
 		test('should not render fields with invalid custom field type', async () => {
 			await test.step('should find and click on add test user', async () => {
-				await poAdmin.inputSearchUsers.fill(addTestUser.data.username);
-
-				await expect(poAdmin.getUserRowByUsername(addTestUser.data.username)).toBeVisible();
+				await poAdmin.searchUser(addTestUser.data.username);
 				await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
 			});
 

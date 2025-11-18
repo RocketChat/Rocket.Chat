@@ -88,7 +88,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 			await agentA.poHomeOmnichannel.content.forwardChatModal.selectUser('user2');
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputComment.type('any_comment');
 			await agentA.poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-			await expect(agentA.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await agentA.poHomeOmnichannel.toastMessage.waitForDisplay();
 		});
 
 		await test.step('expect to have 1 omnichannel assigned to agent 2', async () => {

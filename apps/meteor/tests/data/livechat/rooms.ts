@@ -55,6 +55,55 @@ export const createLivechatRoomWidget = async (
 	return response.body.room;
 };
 
+export const createVisitorWithCustomData = async ({
+	department,
+	visitorName,
+	customPhone,
+	customFields,
+	customToken,
+	customEmail,
+	ignoreEmail = false,
+	ignorePhone = false,
+}: {
+	department?: string;
+	customPhone?: string;
+	visitorName?: string;
+	customEmail?: string;
+	customFields?: { key: string; value: string; overwrite: boolean }[];
+	customToken?: string;
+	ignoreEmail?: boolean;
+	ignorePhone?: boolean;
+}): Promise<ILivechatVisitor> => {
+	const token = customToken || getRandomVisitorToken();
+	const email = customEmail || `${token}@${token}.com`;
+	const phone = customPhone || `${Math.floor(Math.random() * 10000000000)}`;
+
+	try {
+		const res = await request.get(api(`livechat/visitor/${token}`));
+		if (res?.body?.visitor) {
+			return res.body.visitor as ILivechatVisitor;
+		}
+	} catch {
+		// Ignore errors from GET; we will create the visitor below.
+	}
+
+	const res = await request
+		.post(api('livechat/visitor'))
+		.set(credentials)
+		.send({
+			visitor: {
+				name: visitorName || `Visitor ${Date.now()}`,
+				token,
+				customFields: customFields || [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
+				...(department ? { department } : {}),
+				...(!ignoreEmail ? { email } : {}),
+				...(!ignorePhone ? { phone } : {}),
+			},
+		});
+
+	return res.body.visitor as ILivechatVisitor;
+};
+
 export const createVisitor = (
 	department?: string,
 	visitorName?: string,

@@ -74,14 +74,14 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage, 'time-on-site', 5);
-			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
+			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
 		});
 
 		triggerMessage = 'This is a trigger message chat opened by visitor';
 		await test.step('expect update trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
 			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName, triggerMessage);
-			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
+			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
 		});
 	});
 
@@ -122,7 +122,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
 			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration', triggerMessage });
 			await agent.poHomeOmnichannel.triggers.btnSave.click();
-			await agent.poHomeOmnichannel.triggers.btnCloseToastMessage.click();
+			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
 			await agent.page.waitForTimeout(500);
 		});
 

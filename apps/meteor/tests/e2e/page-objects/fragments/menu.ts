@@ -19,3 +19,9 @@ export class MenuMore extends Menu {
 		super(page.getByRole('menu', { name: 'More' }));
 	}
 }
+
+export class MenuMoreActions extends Menu {
+	constructor(page: Page) {
+		super(page.getByRole('menu', { name: 'More actions' }));
+	}
+}

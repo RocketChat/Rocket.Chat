@@ -85,11 +85,11 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.security2FASection.click();
 			await expect(poAccountProfile.email2FASwitch).toBeVisible();
 			await poAccountProfile.email2FASwitch.click();
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.waitForDisplay();
+			await poHomeChannel.toastMessage.dismissToast();
 
 			await poAccountProfile.email2FASwitch.click();
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.toastMessage.waitForDisplay();
 		});
 	});
 

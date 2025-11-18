@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { FederationHomeContent } from './fragments/home-content';
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
-import { RoomToolbar } from '../../page-objects/fragments/toolbar';
+import { RoomToolbar, ToastMessages } from '../../page-objects/fragments';
 
 export class FederationChannel {
 	private readonly page: Page;
@@ -16,20 +16,15 @@ export class FederationChannel {
 
 	readonly roomToolbar: RoomToolbar;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new FederationHomeContent(page);
 		this.sidenav = new FederationSidenav(page);
 		this.tabs = new FederationHomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get toastError(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnContextualbarClose(): Locator {

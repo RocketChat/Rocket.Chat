@@ -1,15 +1,19 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelSidenav, ToastMessages } from './fragments';
 
 export class OmnichannelTriggers {
 	private readonly page: Page;
 
 	readonly sidenav: OmnichannelSidenav;
 
+	// TODO: This will be inherited from a BasePage Object
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	headingButtonNew(name: string) {
@@ -30,14 +34,6 @@ export class OmnichannelTriggers {
 
 	firstRowInTriggerTable(triggersName1: string) {
 		return this.page.locator(`text="${triggersName1}"`);
-	}
-
-	get toastMessage(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success >> nth=0');
-	}
-
-	get btnCloseToastMessage(): Locator {
-		return this.toastMessage.locator('role=button');
 	}
 
 	get btnDeletefirstRowInTable() {

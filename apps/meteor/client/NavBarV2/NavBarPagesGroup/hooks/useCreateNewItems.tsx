@@ -3,8 +3,8 @@ import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.cha
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
-import { useOutboundMessageAccess } from '../../../components/Omnichannel/OutboundMessage/hooks';
-import { useOutboundMessageModal } from '../../../components/Omnichannel/OutboundMessage/modals';
+import { useOutboundMessageAccess } from '../../../views/omnichannel/components/outboundMessage/hooks';
+import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelModal from '../actions/CreateChannelModal';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
 import CreateTeamModal from '../actions/CreateTeamModal';

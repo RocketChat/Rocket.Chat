@@ -8,7 +8,7 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
-import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
 	rid: string;

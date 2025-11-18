@@ -1,4 +1,4 @@
-import { NavBarDivider, NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
+import { NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
@@ -11,12 +11,9 @@ const NavBarVoipGroup = () => {
 	}
 
 	return (
-		<>
-			<NavBarGroup aria-label={t('Voice_Call')}>
-				<NavBarItem title={callAction.title} icon={callAction.icon} onClick={() => callAction.action()} />;
-			</NavBarGroup>
-			<NavBarDivider />
-		</>
+		<NavBarGroup aria-label={t('Voice_Call')}>
+			<NavBarItem title={callAction.title} icon={callAction.icon} onClick={() => callAction.action()} />
+		</NavBarGroup>
 	);
 };
 

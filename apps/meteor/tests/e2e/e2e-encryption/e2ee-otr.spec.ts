@@ -45,7 +45,7 @@ test.describe('E2EE OTR (Off-The-Record)', () => {
 			await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
 			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 			await page.getByRole('button', { name: 'Disable encryption' }).click();
-			await poHomeChannel.dismissToast();
+			await poHomeChannel.toastMessage.dismissToast();
 			await poHomeChannel.tabs.kebab.click({ force: true });
 		}
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
@@ -56,7 +56,7 @@ test.describe('E2EE OTR (Off-The-Record)', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();

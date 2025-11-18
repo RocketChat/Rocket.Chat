@@ -1,9 +1,9 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { useOutboundMessageAccess } from '../../../../../components/Omnichannel/OutboundMessage/hooks';
-import type { OutboundMessageModalProps } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
-import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
+import { useOutboundMessageAccess } from '../../../components/outboundMessage/hooks';
+import type { OutboundMessageModalProps } from '../../../components/outboundMessage/modals/OutboundMessageModal';
+import { useOutboundMessageModal } from '../../../components/outboundMessage/modals/OutboundMessageModal';
 
 type ContactInfoOutboundMessageButtonProps = {
 	title?: string;

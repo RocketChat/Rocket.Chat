@@ -183,7 +183,7 @@ test.describe('OC - Manage Departments', () => {
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 				await poOmnichannelDepartments.firstRowInTableMenu.click();
 				await poOmnichannelDepartments.menuArchiveOption.click();
-				await expect(poOmnichannelDepartments.toastSuccess).toBeVisible();
+				await poOmnichannelDepartments.toastMessage.waitForDisplay();
 
 				await poOmnichannelDepartments.archivedDepartmentsTab.click();
 				await poOmnichannelDepartments.search(department.name);

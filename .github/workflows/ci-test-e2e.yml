@@ -12,12 +12,6 @@ on:
       lowercase-repo:
         required: true
         type: string
-      rc-dockerfile:
-        required: true
-        type: string
-      rc-docker-tag:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -26,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['5.0', '8.2']"
+        default: "['8.2']"
         required: false
         type: string
       release:
@@ -46,6 +40,9 @@ on:
         type: number
       type:
         required: true
+        type: string
+      coverage:
+        required: false
         type: string
       db-watcher-disabled:
         default: 'true'
@@ -76,9 +73,14 @@ env:
 jobs:
   test:
     runs-on: ubuntu-24.04
+
     env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '8.2' && 'debian' && false) || 'alpine' }}
+      # if building for production on develop branch or release, add suffix for coverage images
+      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+      MONGODB_VERSION: ${{ matrix.mongodb-version }}
+      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
+      COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
+      COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
 
     strategy:
       fail-fast: false
@@ -86,7 +88,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '8.2' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Collect Workflow Telemetry
@@ -113,14 +115,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.12.0
-        with:
-          mongodb-image: mongodb/mongodb-community-server
-          mongodb-version: ${{ matrix.mongodb-version }}-ubi8
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -133,13 +128,16 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
+      - name: Restore packages build
+        uses: actions/download-artifact@v6
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
 
-      - run: yarn build
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
@@ -147,13 +145,11 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
-          node-version: ${{ inputs.node-version }}
-          # we already called the turbo cache at this point, so it should be false
-          turbo-cache: false
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
-          setup: false
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          arch: amd64
+          service: 'rocketchat'
+          type: 'coverage'
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
@@ -162,57 +158,32 @@ jobs:
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
         run: |
-          docker run -d -p 10000:80 --name httpbin-container kennethreitz/httpbin
-          i=0
-          while [ $i -lt 10 ]; do
-            if curl -s -o /dev/null http://localhost:10000; then
-              echo "httpbin is running"
-              break
-            fi
-            i=$((i + 1))
-            sleep 5
-          done
-          if [ $i -eq 10 ]; then
-            echo "Failed to verify httpbin is running"
-            exit 1
-          fi
+          docker compose -f docker-compose-ci.yml up -d httpbin
 
       - name: Prepare code coverage directory
-        if: inputs.release == 'ee'
         run: |
-          mkdir -p /tmp/coverage
-          chmod 777 /tmp/coverage
+          set -o xtrace
+
+          mkdir -p $COVERAGE_DIR
+          chmod 777 $COVERAGE_DIR
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
-        env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
         env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
-          COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcov'
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
-
-      - name: Wait for Rocket.Chat to start up
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'http://localhost:3000/health'
-          responseCode: '200'
-          timeout: 60000
-          interval: 1000
 
       - name: Wait services to start up
         if: inputs.release == 'ee'
@@ -232,39 +203,22 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://host.docker.internal:10000'
+          WEBHOOK_TEST_URL: 'http://httpbin'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
-          COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcovonly'
         run: |
-          for i in $(seq 1 2); do
-            npm run testapi && s=0 && break || s=$?
+          set -o xtrace
 
-            docker compose -f ../../docker-compose-ci.yml logs --tail=100
+          npm run testapi
 
-            docker compose -f ../../docker-compose-ci.yml stop
-
-            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
-
-            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
-
-            docker compose -f ../../docker-compose-ci.yml restart
-
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-              echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
-              sleep 10
-            done;
-          done;
           docker compose -f ../../docker-compose-ci.yml stop
 
-          ls -l $COVERAGE_DIR
+          ls -la $COVERAGE_DIR
           exit $s
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
-          E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -283,59 +237,38 @@ jobs:
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
         run: |
+          set -o xtrace
+
           yarn prepare
           yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
+      - name: Merge ui coverage files
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        working-directory: ./apps/meteor
+        run: |
+          npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
+          ls -la $COVERAGE_DIR || true
+
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
       - name: Show server logs if E2E test failed
-        if: failure() && inputs.release == 'ee'
-        run: docker compose -f docker-compose-ci.yml logs
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service stream-hub-service omnichannel-transcript-service
 
-      - name: Show server logs if E2E test failed
-        if: failure() && inputs.release != 'ee'
-        run: docker compose -f docker-compose-ci.yml logs rocketchat
+      - name: Show mongo logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs mongo
 
-      - name: Extract e2e:ee:coverage
-        if: inputs.type == 'ui' && inputs.release == 'ee'
-        working-directory: ./apps/meteor
-        run: yarn test:e2e:nyc
-
-      - uses: codecov/codecov-action@v3
-        if: inputs.type == 'ui' && inputs.release == 'ee'
+      - name: Store coverage
+        if: inputs.coverage == matrix.mongodb-version
+        uses: actions/upload-artifact@v5
         with:
-          directory: ./apps/meteor
-          flags: e2e
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - uses: codecov/codecov-action@v3
-        if: inputs.type == 'api' && inputs.release == 'ee'
-        with:
-          directory: /tmp/coverage
-          working-directory: .
-          flags: e2e-api
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Store e2e-api-ee-coverage
-        if: inputs.type == 'api' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
-          include-hidden-files: true
-
-      - name: Store e2e-ee-coverage
-        if: inputs.type == 'ui' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
-          path: ./apps/meteor/coverage*
           include-hidden-files: true

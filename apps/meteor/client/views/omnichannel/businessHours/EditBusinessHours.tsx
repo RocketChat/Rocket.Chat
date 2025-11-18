@@ -9,8 +9,8 @@ import type { BusinessHoursFormData } from './BusinessHoursForm';
 import BusinessHoursForm from './BusinessHoursForm';
 import { defaultWorkHours } from './mapBusinessHoursForm';
 import { useIsSingleBusinessHours } from './useIsSingleBusinessHours';
+import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useRemoveBusinessHour } from '../../../omnichannel/businessHours/useRemoveBusinessHour';
 
 const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | undefined) => ({
 	name: businessHourData?.name || '',
