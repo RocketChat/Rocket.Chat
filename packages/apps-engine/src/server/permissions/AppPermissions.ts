@@ -25,7 +25,6 @@ export const AppPermissions = {
 	'user': {
 		read: { name: 'user.read' },
 		write: { name: 'user.write' },
-		getUserRoomIds: { name: 'user.getUserRoomIds' },
 	},
 	'upload': {
 		read: { name: 'upload.read' },

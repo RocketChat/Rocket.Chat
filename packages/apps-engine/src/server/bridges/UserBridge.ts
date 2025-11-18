@@ -46,7 +46,7 @@ export abstract class UserBridge extends BaseBridge {
 	}
 
 	public async doGetUserRoomIds(userId: string, appId: string): Promise<string[] | undefined> {
-		if (this.hasGetUserRoomIdsPermission(appId)) {
+		if (this.hasReadPermission(appId)) {
 			return this.getUserRoomIds(userId, appId);
 		}
 	}
@@ -149,21 +149,6 @@ export abstract class UserBridge extends BaseBridge {
 			new PermissionDeniedError({
 				appId,
 				missingPermissions: [AppPermissions.user.write],
-			}),
-		);
-
-		return false;
-	}
-
-	private hasGetUserRoomIdsPermission(appId: string): boolean {
-		if (AppPermissionManager.hasPermission(appId, AppPermissions.user.getUserRoomIds)) {
-			return true;
-		}
-
-		AppPermissionManager.notifyAboutError(
-			new PermissionDeniedError({
-				appId,
-				missingPermissions: [AppPermissions.user.getUserRoomIds],
 			}),
 		);
 
