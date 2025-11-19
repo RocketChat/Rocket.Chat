@@ -161,6 +161,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	getUserLanguages(): Promise<{ _id: string; total: number }[]>;
 
+	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
+	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
+
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
