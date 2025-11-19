@@ -47,16 +47,41 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 
 	renewConnectionStatusById(uid: string, connectionId: string, expiresAt: Date): ReturnType<BaseRaw<IUserSession>['updateOne']> {
 		const query = {
-			'_id': uid,
-			'connections.id': connectionId,
+			_id: uid,
 		};
 
-		const update = {
-			$set: {
-				'connections.$.expiresAt': expiresAt,
-				'connections.$._updatedAt': new Date(),
+		const update = [
+			{
+				$set: {
+					connections: {
+						$map: {
+							input: {
+								$filter: {
+									input: '$connections',
+									as: 'connection',
+									cond: { $gte: ['$$connection.expiresAt', new Date()] },
+								},
+							},
+							as: 'connection',
+							in: {
+								$mergeObjects: [
+									'$$connection',
+									{
+										expiresAt: {
+											$cond: {
+												if: { $eq: ['$$connection.id', connectionId] },
+												then: expiresAt,
+												else: '$$connection.expiresAt',
+											},
+										},
+									},
+								],
+							},
+						},
+					},
+				},
 			},
-		};
+		];
 
 		return this.updateOne(query, update);
 	}
