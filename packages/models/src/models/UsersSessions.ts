@@ -45,6 +45,22 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		return this.updateOne(query, update);
 	}
 
+	renewConnectionStatusById(uid: string, connectionId: string, expiresAt: Date): ReturnType<BaseRaw<IUserSession>['updateOne']> {
+		const query = {
+			'_id': uid,
+			'connections.id': connectionId,
+		};
+
+		const update = {
+			$set: {
+				'connections.$.expiresAt': expiresAt,
+				'connections.$._updatedAt': new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	async removeConnectionsFromInstanceId(instanceId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {
 		return this.updateMany(
 			{
@@ -88,22 +104,6 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 				},
 			},
 		);
-	}
-
-	async renewConnectionByConnectionId(connectionId: string, expiresAt: Date): ReturnType<BaseRaw<IUserSession>['updateMany']> {
-		const result = await this.updateMany(
-			{
-				'connections.id': connectionId,
-			},
-			{
-				$set: {
-					'connections.$.expiresAt': expiresAt,
-					'connections.$._updatedAt': new Date(),
-				},
-			},
-		);
-
-		return result;
 	}
 
 	findByInstanceId(instanceId: string): FindCursor<IUserSession> {

@@ -181,11 +181,8 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.map(({ _id }) => _id);
 	}
 
-	async renewConnection(connectionId: string): Promise<void> {
-		const result = await UsersSessions.renewConnectionByConnectionId(connectionId, new Date(Date.now() + 5 * 60 * 1000));
-		if (result.modifiedCount === 0) {
-			throw new Error('Connection not found');
-		}
+	async renewConnection(uid: string, connectionId: string): Promise<void> {
+		await UsersSessions.renewConnectionStatusById(uid, connectionId, new Date(Date.now() + 5 * 60 * 1000));
 	}
 
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {

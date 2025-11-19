@@ -36,10 +36,10 @@ Meteor.methods<ServerMethods>({
 		return Presence.setConnectionStatus(userId, UserStatus.AWAY, connection.id);
 	},
 	'UserPresence:renew'() {
-		const { connection } = this;
-		if (!connection) {
+		const { connection, userId } = this;
+		if (!userId || !connection) {
 			return;
 		}
-		return Presence.renewConnection(connection.id);
+		return Presence.renewConnection(userId, connection.id);
 	},
 });
