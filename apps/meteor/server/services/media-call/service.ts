@@ -207,9 +207,11 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 		const dmCreatorId = requesterId || callerId || call.uids[0];
 
-		const usernames = (await Users.findByIds(call.uids, { projection: { username: 1 } }).toArray())
-			.map(({ username }) => username)
-			.filter((username) => username);
+		const usernames = (
+			await Users.findByIds(call.uids, { projection: { username: 1 } })
+				.map((user) => user.username)
+				.toArray()
+		).filter((username) => username);
 
 		if (usernames.length !== 2) {
 			throw new Error('Invalid usernames for DM.');
