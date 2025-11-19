@@ -3,6 +3,7 @@ import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from
 import { License } from '@rocket.chat/license';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
+import type { FindCursor } from 'mongodb';
 
 import type {
 	ImporterAfterImportCallback,
@@ -119,6 +120,27 @@ export class LDAPEEManager extends LDAPManager {
 
 			try {
 				await this.updateUserAbacAttributes(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
+	public static async syncUsersAbacAttributes(users: FindCursor<IUser>): Promise<void> {
+		if (!settings.get('LDAP_Enable') || !License.hasModule('abac') || !settings.get('ABAC_Enabled')) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				for await (const user of users) {
+					await this.syncUserAbacAttribute(ldap, user);
+				}
 			} finally {
 				ldap.disconnect();
 			}
@@ -731,6 +753,21 @@ export class LDAPEEManager extends LDAPManager {
 
 			await Abac.addSubjectAttributes(user, ldapUser, mapping);
 		}
+	}
+
+	private static async syncUserAbacAttribute(ldap: LDAPConnection, user: IUser): Promise<void> {
+		const mapping = this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+		if (!mapping) {
+			logger.error('LDAP to ABAC attribute mapping is not valid JSON');
+			return;
+		}
+
+		const ldapUser = await this.findLDAPUser(ldap, user);
+		if (!ldapUser) {
+			return;
+		}
+
+		await Abac.addSubjectAttributes(user, ldapUser, mapping);
 	}
 
 	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
