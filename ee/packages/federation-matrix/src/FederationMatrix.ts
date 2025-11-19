@@ -9,7 +9,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState, PersistentEventBase, RoomVersion, RoomID } from '@rocket.chat/federation-sdk';
+import type {
+	EventID,
+	UserID,
+	FileMessageType,
+	PresenceState,
+	PersistentEventBase,
+	RoomVersion,
+	RoomID,
+} from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
@@ -544,16 +552,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		room: IRoomNativeFederated,
 		matrixUsersUsername: string[],
 		inviter: IUser,
-	): Promise<{ event_id: EventID, event: PersistentEventBase<RoomVersion, 'm.room.member'>, room_id: RoomID }[]> {
+	): Promise<{ event_id: EventID; event: PersistentEventBase<RoomVersion, 'm.room.member'>; room_id: RoomID }[]> {
 		try {
 			const inviterUserId = `@${inviter.username}:${this.serverName}`;
 			const isInviterNativeFederated = isUserNativeFederated(inviter);
 
 			// if inviter is an external user it means we receive the invite from the endpoint
 			// since we accept from there we can skip accepting here - only process external users
-			const usersToInvite = isInviterNativeFederated
-				? matrixUsersUsername.filter(validateFederatedUsername)
-				: matrixUsersUsername;
+			const usersToInvite = isInviterNativeFederated ? matrixUsersUsername.filter(validateFederatedUsername) : matrixUsersUsername;
 
 			if (usersToInvite.length === 0) {
 				return [];
@@ -927,6 +933,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error('User not found');
+		}
+
+		if (!user.username) {
+			throw new Error('User username not found');
 		}
 
 		// TODO: should use common function to get matrix user ID
