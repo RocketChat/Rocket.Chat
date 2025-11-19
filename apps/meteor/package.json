@@ -238,6 +238,7 @@
 		"@parse/node-apn": "^6.3.0",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@react-pdf/renderer": "^3.4.5",
+		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",

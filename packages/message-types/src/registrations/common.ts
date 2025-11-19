@@ -200,4 +200,10 @@ export default (instance: MessageTypes) => {
 		system: true,
 		text: (t) => t('Pinned_a_message'),
 	});
+
+	instance.registerType({
+		id: 'abac-removed-user-from-room',
+		system: true,
+		text: (t) => t('abac_removed_user_from_the_room'),
+	});
 };

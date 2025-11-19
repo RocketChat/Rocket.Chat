@@ -80,6 +80,7 @@ import {
 	VoipRoomRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
+	AbacAttributesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -171,3 +172,4 @@ registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IVoipRoomModel', new VoipRoomRaw(db, trashCollection));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
+registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));

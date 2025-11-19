@@ -1,0 +1,346 @@
+import { Abac } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
+import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
+
+import {
+	GenericSuccessSchema,
+	PUTAbacAttributeUpdateBodySchema,
+	GETAbacAttributesQuerySchema,
+	GETAbacAttributesResponseSchema,
+	GETAbacAttributeByIdResponseSchema,
+	POSTAbacAttributeDefinitionSchema,
+	GETAbacAttributeIsInUseResponseSchema,
+	POSTRoomAbacAttributesBodySchema,
+	POSTSingleRoomAbacAttributeBodySchema,
+	PUTRoomAbacAttributeValuesBodySchema,
+	POSTAbacUsersSyncBodySchema,
+	GenericErrorSchema,
+	GETAbacRoomsListQueryValidator,
+	GETAbacRoomsResponseValidator,
+} from './schemas';
+import { API } from '../../../../app/api/server';
+import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { settings } from '../../../../app/settings/server';
+import { LDAPEE } from '../../sdk';
+
+const abacEndpoints = API.v1
+	.post(
+		'abac/rooms/:rid/attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			body: POSTRoomAbacAttributesBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+			license: ['abac'],
+		},
+		async function action() {
+			const { rid } = this.urlParams;
+			const { attributes } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			// This is a replace-all operation
+			// IF you need fine grained, use the other endpoints for removing, editing & adding single attributes
+			await Abac.setRoomAbacAttributes(rid, attributes);
+			return API.v1.success();
+		},
+	)
+	.delete(
+		'abac/rooms/:rid/attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid } = this.urlParams;
+
+			// We don't need to check if ABAC is enabled to clear attributes
+			// Since we're always allowing this operation
+			// license check is also not required
+			await Abac.setRoomAbacAttributes(rid, {});
+			return API.v1.success();
+		},
+	)
+	// add an abac attribute by key
+	.post(
+		'abac/rooms/:rid/attributes/:key',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: POSTSingleRoomAbacAttributeBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid, key } = this.urlParams;
+			const { values } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await Abac.addRoomAbacAttributeByKey(rid, key, values);
+			return API.v1.success();
+		},
+	)
+	// edit a room attribute
+	.put(
+		'abac/rooms/:rid/attributes/:key',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			body: PUTRoomAbacAttributeValuesBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+			license: ['abac'],
+		},
+		async function action() {
+			const { rid, key } = this.urlParams;
+			const { values } = this.bodyParams;
+
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await Abac.replaceRoomAbacAttributeByKey(rid, key, values);
+			return API.v1.success();
+		},
+	)
+	// delete a room attribute
+	.delete(
+		'abac/rooms/:rid/attributes/:key',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid, key } = this.urlParams;
+
+			await Abac.removeRoomAbacAttribute(rid, key);
+			return API.v1.success();
+		},
+	)
+	// attribute endpoints
+	// list attributes
+	.get(
+		'abac/attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			query: GETAbacAttributesQuerySchema,
+			response: {
+				200: GETAbacAttributesResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { key, values } = this.queryParams;
+
+			return API.v1.success(
+				await Abac.listAbacAttributes({
+					key,
+					values,
+					offset,
+					count,
+				}),
+			);
+		},
+	)
+
+	.post(
+		'abac/users/sync',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac', 'ldap-enterprise'],
+			body: POSTAbacUsersSyncBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			const { usernames, ids, emails, ldapIds } = this.bodyParams;
+
+			await LDAPEE.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'abac/attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: POSTAbacAttributeDefinitionSchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await Abac.addAbacAttribute(this.bodyParams);
+			return API.v1.success();
+		},
+	)
+	// update attribute definition (key and/or values)
+	.put(
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac'],
+			body: PUTAbacAttributeUpdateBodySchema,
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { _id } = this.urlParams;
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			await Abac.updateAbacAttributeById(_id, this.bodyParams);
+			return API.v1.success();
+		},
+	)
+	// get single attribute with usage
+	.get(
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GETAbacAttributeByIdResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { _id } = this.urlParams;
+			const result = await Abac.getAbacAttributeById(_id);
+			return API.v1.success(result);
+		},
+	)
+	// delete attribute (only if not in use)
+	.delete(
+		'abac/attributes/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GenericSuccessSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { _id } = this.urlParams;
+			await Abac.deleteAbacAttributeById(_id);
+			return API.v1.success();
+		},
+	)
+	// check if attribute is in use
+	.get(
+		'abac/attributes/:key/is-in-use',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GETAbacAttributeIsInUseResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { key } = this.urlParams;
+			const inUse = await Abac.isAbacAttributeInUseByKey(key);
+			return API.v1.success({ inUse });
+		},
+	)
+	.get(
+		'abac/rooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			response: {
+				200: GETAbacRoomsResponseValidator,
+				401: validateUnauthorizedErrorResponse,
+				400: GenericErrorSchema,
+				403: validateUnauthorizedErrorResponse,
+			},
+			query: GETAbacRoomsListQueryValidator,
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { filter, filterType } = this.queryParams;
+
+			const result = await Abac.listAbacRooms({
+				offset,
+				count,
+				filter,
+				filterType,
+			});
+
+			return API.v1.success(result);
+		},
+	);
+
+export type AbacEndpoints = ExtractRoutesFromAPI<typeof abacEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends AbacEndpoints {}
+}

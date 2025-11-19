@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,21 +10,28 @@ import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRo
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
-export const removeUserFromRoom = async function (rid: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
+export const removeUserFromRoom = async function (
+	rid: string,
+	user: IUser,
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		return;
 	}
 
-	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
-	} catch (error: any) {
-		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	// Rationale: for an abac room, we don't want apps to be able to prevent a user from leaving
+	if (!options?.skipAppPreEvents) {
+		try {
+			await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
+		} catch (error: any) {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
+			throw error;
+		}
 	}
 
 	await Room.beforeLeave(room);
@@ -38,7 +45,9 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 
 	if (subscription) {
 		const removedUser = user;
-		if (options?.byUser) {
+		if (options?.customSystemMessage) {
+			await Message.saveSystemMessage(options?.customSystemMessage, rid, user.username || '', user);
+		} else if (options?.byUser) {
 			const extraData = {
 				u: options.byUser,
 			};
