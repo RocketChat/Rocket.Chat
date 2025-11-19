@@ -111,20 +111,23 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			...(rid && { rid }),
 		};
 
-		await Promise.allSettled([
-			CallHistory.insertOne({
-				...sharedData,
-				uid: call.caller.id,
-				direction: 'outbound',
-				contactId: call.callee.id,
-			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
-			CallHistory.insertOne({
-				...sharedData,
-				uid: call.callee.id,
-				direction: 'inbound',
-				contactId: call.caller.id,
-			}).catch((error: unknown) => logger.error({ msg: 'Failed to insert item into Call History', error })),
-		]);
+		const outboundHistoryItem = {
+			...sharedData,
+			uid: call.caller.id,
+			direction: 'outbound',
+			contactId: call.callee.id,
+		} as const;
+
+		const inboundHistoryItem = {
+			...sharedData,
+			uid: call.callee.id,
+			direction: 'inbound',
+			contactId: call.caller.id,
+		} as const;
+
+		await CallHistory.insertMany([outboundHistoryItem, inboundHistoryItem]).catch((error: unknown) =>
+			logger.error({ msg: 'Failed to insert items into Call History', error }),
+		);
 
 		if (rid) {
 			return this.sendHistoryMessage(call, rid);
