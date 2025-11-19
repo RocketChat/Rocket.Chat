@@ -93,10 +93,11 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		const rid = await this.getRoomIdForInternalCall(call).catch((error) => {
+		const room = await this.getRoomIdForInternalCall(call).catch((error) => {
 			logger.error({ msg: 'Failed to determine room id for Internal Call', error });
 			return undefined;
 		});
+		const { _id: rid } = room || {};
 		const state = this.getCallHistoryItemState(call);
 		const duration = this.getCallDuration(call);
 
@@ -129,17 +130,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			logger.error({ msg: 'Failed to insert items into Call History', error }),
 		);
 
-		if (rid) {
-			return this.sendHistoryMessage(call, rid);
+		if (room) {
+			return this.sendHistoryMessage(call, room);
 		}
 	}
 
-	private async sendHistoryMessage(call: IMediaCall, rid: IRoom['_id']): Promise<void> {
-		const room = await Rooms.findOneById(rid);
-		if (!room) {
-			return;
-		}
-
+	private async sendHistoryMessage(call: IMediaCall, room: IRoom): Promise<void> {
 		const userId = call.caller.id || call.createdBy?.id; // I think this should always be the caller, since during a transfer the createdBy contact is the one that transferred the call
 
 		const user = await Users.findOneById(userId);
@@ -200,10 +196,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return 'ended';
 	}
 
-	private async getRoomIdForInternalCall(call: IMediaCall): Promise<IRoom['_id']> {
-		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(call.uids, { projection: { _id: 1 } });
+	private async getRoomIdForInternalCall(call: IMediaCall): Promise<IRoom> {
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(call.uids);
 		if (room) {
-			return room._id;
+			return room;
 		}
 
 		const requesterId = call.createdBy.type === 'user' && call.createdBy.id;
@@ -222,7 +218,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const dmCreatorIsPartOfTheCall = call.uids.includes(dmCreatorId);
 
 		const newRoom = await createDirectMessage(usernames, dmCreatorId, !dmCreatorIsPartOfTheCall); // If the dm creator is not part of the call, we need to exclude him from the new DM
-		return newRoom.rid;
+		return {
+			...newRoom,
+			_id: newRoom.rid,
+		};
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
