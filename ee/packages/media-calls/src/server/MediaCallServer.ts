@@ -124,6 +124,10 @@ export class MediaCallServer implements IMediaCallServer {
 		this.settings = settings;
 	}
 
+	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
+		return this.settings.permissionCheck(uid, callType);
+	}
+
 	/**
 	 * Receives params for a call a client wishes to do, with actors needing only their basic identification
 	 * Returns params for a call that should actually be done, according to server routing rules

@@ -28,6 +28,8 @@ export { RadioButtonElement } from './blocks/elements/RadioButtonElement';
 export { TimePickerElement } from './blocks/elements/TimePickerElement';
 export { BlockElement } from './blocks/BlockElement';
 export { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
+export { IconElement } from './blocks/elements/IconElement';
+export { IconButtonElement } from './blocks/elements/IconButtonElement';
 
 export { ActionsBlock } from './blocks/layout/ActionsBlock';
 export { ConditionalBlock } from './blocks/layout/ConditionalBlock';
@@ -41,6 +43,7 @@ export { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export { LayoutBlock } from './blocks/LayoutBlock';
 export { CalloutBlock } from './blocks/layout/CalloutBlock';
 export { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
+export { InfoCardBlock } from './blocks/layout/InfoCardBlock';
 
 export { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
 

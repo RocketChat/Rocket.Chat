@@ -35,6 +35,11 @@ const Template: StoryFn<typeof UserInfo> = (args) => <UserInfo {...defaultArgs} 
 
 export const Default = Template.bind({});
 
+export const WithVoiceCallExtension = Template.bind({});
+WithVoiceCallExtension.args = {
+	freeSwitchExtension: '1234567890',
+};
+
 export const WithABACAttributes = Template.bind({});
 WithABACAttributes.args = {
 	// @ts-expect-error - abacAttributes is not yet implemented in Users properties

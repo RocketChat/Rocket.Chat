@@ -62,7 +62,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.inputTopic.fill('hello-topic-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
 
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await poHomeChannel.roomToolbar.openRoomInfo();
 		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
@@ -76,7 +76,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.inputAnnouncement.fill('hello-announcement-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
 
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await poHomeChannel.roomToolbar.openRoomInfo();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-announcement-edited');
 		await expect(poHomeChannel.content.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
@@ -89,7 +89,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.inputDescription.fill('hello-description-edited');
 		await poHomeChannel.tabs.room.btnSave.click();
 
-		await poHomeChannel.dismissToast();
+		await poHomeChannel.toastMessage.dismissToast();
 		await poHomeChannel.roomToolbar.openRoomInfo();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-description-edited');
 		await expect(poHomeChannel.content.getSystemMessageByText('changed room description to: hello-description-edited')).toBeVisible();

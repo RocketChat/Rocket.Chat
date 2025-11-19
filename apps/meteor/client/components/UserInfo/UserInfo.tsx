@@ -40,6 +40,7 @@ type UserInfoDataProps = Serialized<
 		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
+		| 'freeSwitchExtension'
 	>
 >;
 
@@ -71,6 +72,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	freeSwitchExtension,
 	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
 	abacAttributes = null,
 	...props
@@ -177,6 +179,13 @@ const UserInfo = ({
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{freeSwitchExtension && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
+							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
 						</InfoPanelField>
 					)}
 

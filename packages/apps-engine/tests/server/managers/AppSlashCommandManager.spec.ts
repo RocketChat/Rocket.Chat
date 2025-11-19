@@ -17,7 +17,7 @@ import { AppAccessorManager, AppSlashCommandManager } from '../../../src/server/
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import { Room } from '../../../src/server/rooms/Room';
-import type { AppLogStorage } from '../../../src/server/storage';
+import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
@@ -39,7 +39,7 @@ export class AppSlashCommandManagerTestFixture {
 	public setupFixture() {
 		this.mockBridges = new TestsAppBridges();
 
-		this.mockApp = TestData.getMockApp({ id: 'testing', name: 'TestApp' }, this.mockManager);
+		this.mockApp = TestData.getMockApp({ info: { id: 'testing', name: 'TestApp' } } as IAppStorageItem, this.mockManager);
 
 		const bri = this.mockBridges;
 		const app = this.mockApp;

@@ -15,16 +15,20 @@ interface BaseSession {
 	transferredBy: string | undefined;
 	muted: boolean;
 	held: boolean;
+	remoteMuted: boolean;
+	remoteHeld: boolean;
 	startedAt: Date | null; // todo not sure if I need this
 	hidden: boolean;
 }
 
 interface EmptySession extends BaseSession {
 	state: Extract<State, 'closed' | 'new'>;
+	callId: undefined;
 }
 
 interface CallSession extends BaseSession {
 	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	callId: string;
 	peerInfo: PeerInfo;
 }
 
@@ -151,6 +155,14 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		this._webrtcProcessorFactory = factory;
 		this.change();
 	}
+
+	public processSignal(signal: ServerMediaSignal, userId?: string) {
+		if (!this.sessionInstance || this.sessionInstance.userId !== userId) {
+			return;
+		}
+
+		this.sessionInstance.processSignal(signal);
+	}
 }
 
 const mediaSession = new MediaSessionStore();
@@ -173,6 +185,20 @@ export const useMediaSessionInstance = (userId?: string) => {
 		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
 	}, [writeStream, userId]);
 
+	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+
+		const unsubNotification = notifyUserStream(`${userId}/media-signal`, (signal: ServerMediaSignal) =>
+			mediaSession.processSignal(signal, userId),
+		);
+
+		return () => {
+			unsubNotification();
+		};
+	}, [userId, notifyUserStream]);
+
 	const instance = useSyncExternalStore(
 		useCallback((callback) => {
 			return mediaSession.onChange(callback);
@@ -181,20 +207,6 @@ export const useMediaSessionInstance = (userId?: string) => {
 			return mediaSession.getInstance(userId);
 		}, [userId]),
 	);
-
-	useEffect(() => {
-		if (!instance) {
-			return;
-		}
-
-		const unsubNotification = notifyUserStream(`${instance.userId}/media-signal`, (signal: ServerMediaSignal) =>
-			instance.processSignal(signal),
-		);
-
-		return () => {
-			unsubNotification();
-		};
-	}, [instance, notifyUserStream]);
 
 	return instance ?? undefined;
 };

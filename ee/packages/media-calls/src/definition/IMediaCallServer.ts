@@ -50,4 +50,6 @@ export interface IMediaCallServer {
 	configure(settings: IMediaCallServerSettings): void;
 
 	requestCall(params: InternalCallParams): Promise<void>;
+
+	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 }

@@ -1,5 +1,168 @@
 # @rocket.chat/mock-providers
 
+## 0.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/i18n@1.12.0
+  </details>
+
+## 0.4.1-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.4
+  </details>
+
+## 0.4.1-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.3
+  </details>
+
+## 0.4.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.2
+  </details>
+
+## 0.4.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.1
+  </details>
+
+## 0.4.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.0
+  - @rocket.chat/i18n@1.12.0-rc.0
+  </details>
+
+## 0.4.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [752e6d41463a1d24e6478e9a815d096c61bcccd9, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/i18n@1.11.0
+  - @rocket.chat/ui-contexts@23.0.0
+  </details>
+
+## 0.4.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.7
+  </details>
+
+## 0.4.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.6
+  </details>
+
+## 0.4.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.5
+  </details>
+
+## 0.4.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  </details>
+
+## 0.4.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  </details>
+
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  </details>
+
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.1
+  </details>
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [752e6d41463a1d24e6478e9a815d096c61bcccd9, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/i18n@1.11.0-rc.0
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@22.0.1
+  </details>
+
 ## 0.3.0
 
 ### Minor Changes

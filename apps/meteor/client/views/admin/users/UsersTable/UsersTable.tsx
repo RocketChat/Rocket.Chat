@@ -21,7 +21,7 @@ import {
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
-import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
+import { useVoipExtensionPermission } from '../useVoipExtensionPermission';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;

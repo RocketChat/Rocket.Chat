@@ -9,8 +9,9 @@ import {
 	useSetModal,
 	useSelectedDevices,
 	useToastMessageDispatch,
+	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -18,13 +19,18 @@ import MediaCallContext, { PeerInfo } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
 import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';
-import { useMediaSession } from './useMediaSession';
+import { useDesktopNotifications } from './useDesktopNotifications';
+import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { isValidTone, useTonePlayer } from './useTonePlayer';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 
-const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
+type MediaCallProviderProps = {
+	children: ReactNode;
+};
+
+const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const user = useUser();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -36,6 +42,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const instance = useMediaSessionInstance(userId ?? undefined);
 	const session = useMediaSession(instance);
 
+	useDesktopNotifications(session);
+
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
@@ -44,6 +52,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const { audioInput, audioOutput } = useSelectedDevices() || {};
 
 	const requestDevice = useDevicePermissionPrompt2();
+
+	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
 
 	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
 	// But we're only using the changeDevice method from the session
@@ -202,10 +212,22 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const getAutocompleteOptions = async (filter: string) => {
 		const peerUsername = session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined;
+		const peerExtension = session.peerInfo ? getExtensionFromPeerInfo(session.peerInfo) : undefined;
+
+		const conditions =
+			peerExtension || forceSIPRouting
+				? {
+						$and: [
+							forceSIPRouting && { freeSwitchExtension: { $exists: true } },
+							peerExtension && { freeSwitchExtension: { $ne: peerExtension } },
+						].filter(Boolean),
+					}
+				: undefined;
+
 		const exceptions = [user?.username, peerUsername].filter(Boolean);
 
 		const { items } = await usersAutoCompleteEndpoint({
-			selector: JSON.stringify({ term: filter, exceptions }),
+			selector: JSON.stringify({ term: filter, exceptions, ...(conditions && { conditions }) }),
 		});
 		return (
 			items.map((user) => {
@@ -217,6 +239,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 					value: user._id,
 					label,
 					identifier,
+					status: user.status,
 					avatarUrl: getAvatarPath({ username: user.username, etag: user.avatarETag }),
 				};
 			}) || []
@@ -235,6 +258,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		peerInfo: session.peerInfo,
 		transferredBy: session.transferredBy,
 		hidden: session.hidden,
+		remoteMuted: session.remoteMuted,
+		remoteHeld: session.remoteHeld,
 		onMute,
 		onHold,
 		onDeviceChange,

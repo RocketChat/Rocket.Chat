@@ -23,7 +23,7 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 }));
 
 // TODO: Update this mock when we get the mocked OmnichannelContext working
-jest.mock('../../../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
+jest.mock('../../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
 	useOmnichannelPrioritiesMenu: jest.fn(() => [{ id: 'priority', content: 'Priority', icon: 'priority', onClick: jest.fn() }]),
 }));
 

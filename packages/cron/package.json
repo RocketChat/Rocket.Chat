@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.37",
+	"version": "0.1.41",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -23,7 +23,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
-		"mongodb": "6.10.0"
+		"mongodb": "6.16.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

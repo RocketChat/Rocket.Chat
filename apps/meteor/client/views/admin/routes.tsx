@@ -72,10 +72,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: '/admin/reports';
 			pattern: '/admin/reports';
 		};
-		'federation-dashboard': {
-			pathname: '/admin/federation';
-			pattern: '/admin/federation';
-		};
 		'admin-permissions': {
 			pathname: `/admin/permissions${`/${string}` | ''}${`/${string}` | ''}`;
 			pattern: '/admin/permissions/:context?/:_id?';
