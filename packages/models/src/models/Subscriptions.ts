@@ -2086,4 +2086,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		]);
 	}
+
+	async markInviteAsAccepted(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					invited: 1,
+					federation: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
+	}
 }
