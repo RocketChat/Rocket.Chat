@@ -1,6 +1,5 @@
 import './livechat';
 import './startup';
-import '../lib/messageTypes';
 import './hooks/leadCapture';
 import './hooks/markRoomResponded';
 import './hooks/offlineMessage';

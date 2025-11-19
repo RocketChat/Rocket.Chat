@@ -1,0 +1,122 @@
+import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
+import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { MediaCalls } from '@rocket.chat/models';
+
+import { settings } from '../../../app/settings/server';
+
+const logger = new Logger('media-call service');
+
+export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
+	protected name = 'media-call';
+
+	constructor() {
+		super();
+		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
+		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
+		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
+
+		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
+			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+				setImmediate(() => this.configureMediaCallServer());
+			}
+		});
+
+		this.configureMediaCallServer();
+	}
+
+	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
+		try {
+			logger.debug({ msg: 'new client signal', type: signal.type, uid });
+			callServer.receiveSignal(uid, signal);
+		} catch (error) {
+			logger.error({ msg: 'failed to process client signal', error, signal, uid });
+		}
+	}
+
+	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
+		try {
+			logger.debug({ msg: 'new client signal', uid });
+
+			const deserialized = await this.deserializeClientSignal(signal);
+
+			callServer.receiveSignal(uid, deserialized);
+		} catch (error) {
+			logger.error({ msg: 'failed to process client signal', error, uid });
+		}
+	}
+
+	public async hangupExpiredCalls(): Promise<void> {
+		await callServer.hangupExpiredCalls().catch((error) => {
+			logger.error({ msg: 'Media Call Server failed to hangup expired calls', error });
+		});
+
+		try {
+			if (await MediaCalls.hasUnfinishedCalls()) {
+				callServer.scheduleExpirationCheck();
+			}
+		} catch (error) {
+			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', error });
+		}
+	}
+
+	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
+		void api.broadcast('user.media-signal', { userId: toUid, signal });
+	}
+
+	private configureMediaCallServer(): void {
+		callServer.configure(this.getMediaServerSettings());
+	}
+
+	private getMediaServerSettings(): IMediaCallServerSettings {
+		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
+		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
+
+		return {
+			enabled,
+			internalCalls: {
+				requireExtensions: forceSip,
+				routeExternally: forceSip ? 'always' : 'never',
+			},
+			sip: {
+				enabled: sipEnabled,
+				drachtio: {
+					host: settings.get<string>('VoIP_TeamCollab_Drachtio_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_Drachtio_Port') ?? 9022,
+					secret: settings.get<string>('VoIP_TeamCollab_Drachtio_Password') ?? '',
+				},
+				sipServer: {
+					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
+				},
+			},
+			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
+		};
+	}
+
+	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
+		if (callType === 'any') {
+			return Authorization.hasAtLeastOnePermission(uid, ['allow-internal-voice-calls', 'allow-external-voice-calls']);
+		}
+
+		const permissionId = `allow-${callType}-voice-calls`;
+
+		return Authorization.hasPermission(uid, permissionId);
+	}
+
+	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {
+		try {
+			const signal = JSON.parse(serialized);
+			if (!isClientMediaSignal(signal)) {
+				throw new Error('signal-format-invalid');
+			}
+			return signal;
+		} catch (error) {
+			logger.error({ msg: 'Failed to parse client signal' }, error);
+			throw error;
+		}
+	}
+}

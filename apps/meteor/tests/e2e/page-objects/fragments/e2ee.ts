@@ -3,6 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { Modal } from './modal';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
+import { LoginPage } from '../login';
 
 abstract class E2EEBanner {
 	constructor(protected root: Locator) {}
@@ -18,7 +19,7 @@ abstract class E2EEBanner {
 
 export class SaveE2EEPasswordBanner extends E2EEBanner {
 	constructor(page: Page) {
-		super(page.getByRole('button', { name: 'Save your encryption password' }));
+		super(page.getByRole('button', { name: 'Save your new E2EE password' }));
 	}
 }
 
@@ -43,7 +44,7 @@ export class SaveE2EEPasswordModal extends Modal {
 	private readonly toastMessages: ToastMessages;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Save your encryption password' }));
+		super(page.getByRole('dialog', { name: 'Save your new E2EE password' }));
 		this.toastMessages = new ToastMessages(page);
 	}
 
@@ -75,6 +76,10 @@ export class EnterE2EEPasswordModal extends Modal {
 		return this.root.getByPlaceholder('Please enter your E2EE password');
 	}
 
+	private get forgotPasswordLink() {
+		return this.root.getByRole('link', { name: 'Forgot E2EE password?' });
+	}
+
 	private get enterE2EEPasswordButton() {
 		return this.root.getByRole('button', { name: 'Enable encryption' });
 	}
@@ -83,6 +88,30 @@ export class EnterE2EEPasswordModal extends Modal {
 		await this.passwordInput.fill(password);
 		await this.enterE2EEPasswordButton.click();
 		await this.waitForDismissal();
+	}
+
+	async forgotPassword() {
+		await this.forgotPasswordLink.click();
+		await this.waitForDismissal();
+	}
+}
+
+export class ResetE2EEPasswordModal extends Modal {
+	private readonly login: LoginPage;
+
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Reset E2EE password' }));
+		this.login = new LoginPage(page);
+	}
+
+	private get resetE2EEPasswordButton() {
+		return this.root.getByRole('button', { name: 'Reset E2EE password' });
+	}
+
+	async confirmReset() {
+		await this.resetE2EEPasswordButton.click();
+		await this.waitForDismissal();
+		await this.login.waitForIt();
 	}
 }
 

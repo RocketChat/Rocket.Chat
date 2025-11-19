@@ -64,8 +64,6 @@ export type RouterContextValue = {
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
 	defineRoutes(routes: RouteObject[]): () => void;
-	getRoutes(): RouteObject[];
-	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
 	getRoomRoute(roomType: 'd', routeData: DirectRoomRouteData): { path: LocationPathname };
 	getRoomRoute(roomType: 'l' | 'v', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
 	getRoomRoute(roomType: 'p' | 'c', routeData: ChannelRouteData): { path: LocationPathname };
@@ -99,11 +97,7 @@ export const RouterContext = createContext<RouterContextValue>({
 	},
 	navigate: () => undefined,
 	defineRoutes: () => () => undefined,
-	getRoutes: () => {
-		throw new Error('not implemented');
-	},
 	getRoomRoute: () => {
 		throw new Error('not implemented');
 	},
-	subscribeToRoutesChange: () => () => undefined,
 });

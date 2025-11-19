@@ -1,7 +1,6 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"allowJs": true, // TODO remove asap
 		"incremental": true,
 
 		/* Strict Type-Checking Options */

@@ -23,6 +23,7 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 			onConfirm={onConfirm}
 			onCancel={onCancel}
 			onDismiss={() => undefined}
+			annotation={t('Proceed_with_caution')}
 		>
 			<Box mbe={16} is='p'>
 				<Trans i18nKey='E2E_disable_encryption_description' tOptions={{ roomType }} />

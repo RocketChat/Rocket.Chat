@@ -1,16 +1,16 @@
 /* eslint-disable complexity */
-import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	MessageComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
+	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -44,6 +44,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -172,13 +173,15 @@ const MessageBox = ({
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
-		if (chat.currentEditing) {
+		const mid = chat.currentEditingMessage.getMID();
+		if (mid) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			chat.currentEditing.reset().then((reset) => {
+			chat.currentEditingMessage.reset().then((reset) => {
 				if (!reset) {
-					chat.currentEditing?.cancel();
+					chat.currentEditingMessage.cancel();
+					chat.currentEditingMessage.stop();
 				}
 			});
 		}
@@ -277,7 +280,8 @@ const MessageBox = ({
 
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
-	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+	const federationMatrixEnabled = useIsFederationEnabled();
+
 	const canSend = useReactiveValue(
 		useCallback(() => {
 			if (!room.t) {
@@ -289,10 +293,15 @@ const MessageBox = ({
 			}
 
 			if (isRoomFederated(room)) {
+				// we are dropping the non native federation for now
+				if (!isRoomNativeFederated(room)) {
+					return false;
+				}
+
 				return federationMatrixEnabled;
 			}
 			return true;
-		}, [federationMatrixEnabled, room]),
+		}, [room, federationMatrixEnabled]),
 	);
 
 	const sizes = useContentBoxSize(textareaRef);
@@ -414,7 +423,8 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInput
+				<MessageComposerInputExpandable
+					dimensions={sizes}
 					ref={mergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'

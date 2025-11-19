@@ -11,7 +11,7 @@ export interface IOnUserStreamData {
 }
 
 export interface IOTRDecrypt {
-	ack: string | Uint8Array;
+	ack: string | Uint8Array<ArrayBuffer>;
 	text: string;
 	ts: Date;
 	userId: IUser['_id'];

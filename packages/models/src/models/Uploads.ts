@@ -2,7 +2,7 @@
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -12,7 +12,12 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [...super.modelIndexes(), { key: { uploadedAt: -1 } }, { key: { rid: 1, _hidden: 1, typeGroup: 1 } }];
+		return [
+			...super.modelIndexes(),
+			{ key: { uploadedAt: -1 } },
+			{ key: { rid: 1, _hidden: 1, typeGroup: 1 } },
+			{ key: { 'federation.mediaId': 1, 'federation.serverName': 1 }, unique: true, sparse: true },
+		];
 	}
 
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
@@ -45,6 +50,14 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 				typeGroup: 1,
 			},
 		});
+	}
+
+	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null> {
+		return this.findOne({ 'federation.mediaId': mediaId, 'federation.serverName': serverName });
+	}
+
+	setFederationInfo(fileId: IUpload['_id'], info: Required<IUpload>['federation']): Promise<UpdateResult> {
+		return this.updateOne({ _id: fileId }, { $set: { federation: info } });
 	}
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {

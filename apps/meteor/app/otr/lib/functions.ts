@@ -14,9 +14,9 @@ export const encryptAES = async ({
 	_sessionKey,
 	data,
 }: {
-	iv: Uint8Array;
+	iv: Uint8Array<ArrayBuffer>;
 	_sessionKey: CryptoKey;
-	data: Uint8Array;
+	data: Uint8Array<ArrayBuffer>;
 }): Promise<ArrayBuffer> =>
 	subtle.encrypt(
 		{
@@ -52,7 +52,7 @@ export const importKey = async (publicKeyObject: JsonWebKey): Promise<CryptoKey>
 		false,
 		[],
 	);
-export const importKeyRaw = async (sessionKeyData: Uint8Array): Promise<CryptoKey> =>
+export const importKeyRaw = async (sessionKeyData: Uint8Array<ArrayBuffer>): Promise<CryptoKey> =>
 	subtle.importKey(
 		'raw',
 		sessionKeyData,
@@ -72,7 +72,7 @@ export const generateKeyPair = async (): Promise<CryptoKeyPair> =>
 		false,
 		['deriveKey', 'deriveBits'],
 	);
-export const decryptAES = async (cipherText: Uint8Array, _sessionKey: CryptoKey): Promise<ArrayBuffer> => {
+export const decryptAES = async (cipherText: Uint8Array<ArrayBuffer>, _sessionKey: CryptoKey): Promise<ArrayBuffer> => {
 	const iv = cipherText.slice(0, 12);
 	cipherText = cipherText.slice(12);
 	const data = await subtle.decrypt(

@@ -1,14 +1,14 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { beforeAddUsersToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
-import { Federation } from '../../../../server/services/federation/Federation';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
@@ -18,6 +18,15 @@ declare module '@rocket.chat/ddp-client' {
 		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
 	}
 }
+
+export const sanitizeUsername = (username: string) => {
+	const isFederatedUsername = username.includes('@') && username.includes(':');
+	if (isFederatedUsername) {
+		return username;
+	}
+
+	return username.replace(/(^@)|( @)/, '');
+};
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
@@ -76,23 +85,29 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		});
 	}
 
-	// Validate each user, then add to room
-	if (isRoomFederated(room)) {
-		await callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
-		return true;
-	}
+	await beforeAddUsersToRoom.run({ usernames: data.users, inviter: user }, room);
 
 	await Promise.all(
 		data.users.map(async (username) => {
-			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			const sanitizedUsername = sanitizeUsername(username);
+
+			// If it's a federated username format and the room is not federated, throw error immediately
+			if (validateFederatedUsername(sanitizedUsername) && !isRoomNativeFederated(room)) {
+				throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
 					method: 'addUsersToRoom',
 				});
 			}
-			const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
+
+			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);
+			if (!newUser) {
+				throw new Meteor.Error('error-user-not-found', 'User not found', {
+					method: 'addUsersToRoom',
+				});
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser || username, user);
+				await addUserToRoom(data.rid, newUser, user);
 			} else {
 				if (!newUser.username) {
 					return;

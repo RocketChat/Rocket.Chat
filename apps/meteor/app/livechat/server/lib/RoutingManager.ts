@@ -48,7 +48,12 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room?: IOmnichannelRoom,
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
+	unassignAgent(
+		inquiry: ILivechatInquiryRecord,
+		departmentId?: string,
+		shouldQueue?: boolean,
+		agent?: SelectedAgent | null,
+	): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -157,11 +162,19 @@ export const RoutingManager: Routing = {
 		return { inquiry, user };
 	},
 
-	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
+	async unassignAgent(inquiry, departmentId, shouldQueue = false, defaultAgent?: SelectedAgent | null) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
-		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
+		logger.debug({
+			msg: 'Removing assignations of inquiry',
+			inquiryId: inquiry._id,
+			departmentId,
+			room: { _id: room?._id, open: room?.open, servedBy: room?.servedBy },
+			shouldQueue,
+			defaultAgent,
+		});
+
 		if (!room?.open) {
 			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
 			return false;
@@ -187,7 +200,7 @@ export const RoutingManager: Routing = {
 		}
 
 		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage, defaultAgent);
 			if (queuedInquiry) {
 				inquiry = queuedInquiry;
 				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
@@ -256,7 +269,11 @@ export const RoutingManager: Routing = {
 			return cbRoom;
 		}
 
-		await LivechatInquiry.takeInquiry(_id);
+		const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
+		if (result.modifiedCount === 0) {
+			logger.error('Failed to take inquiry, could not match lockedAt', { inquiryId: _id, lockedAt: inquiry.lockedAt });
+			throw new Error('error-taking-inquiry-lockedAt-mismatch');
+		}
 
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 

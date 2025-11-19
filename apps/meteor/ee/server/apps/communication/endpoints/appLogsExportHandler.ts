@@ -8,7 +8,10 @@ import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 import { APIClass } from '../../../../../app/api/server/ApiClass';
 
-const isErrorResponse = ajv.compile({
+const isErrorResponse = ajv.compile<{
+	success: false;
+	error: string;
+}>({
 	type: 'object',
 	properties: {
 		success: {

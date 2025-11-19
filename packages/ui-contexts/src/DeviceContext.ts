@@ -17,6 +17,7 @@ type EnabledDeviceContextValue = {
 	setAudioOutputDevice: (data: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }) => void;
 	setAudioInputDevice: (device: Device) => void;
 	// setVideoInputDevice: (device: Device) => void;
+	permissionStatus: PermissionStatus | undefined;
 };
 
 type DisabledDeviceContextValue = {

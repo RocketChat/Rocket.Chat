@@ -16,6 +16,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'authorization:deleteRole'(roleId) {
+		methodDeprecationLogger.method('authorization:deleteRole', '8.0.0', '/v1/roles.delete');
+
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {

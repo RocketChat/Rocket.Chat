@@ -45,7 +45,3 @@ export const defaultSounds: ICustomSound[] = [
 	{ _id: 'dialtone', name: 'Sound_Dialtone', extension: 'mp3', src: getAssetUrl('sounds/dialtone.mp3') },
 	{ _id: 'ringtone', name: 'Sound_Ringtone', extension: 'mp3', src: getAssetUrl('sounds/ringtone.mp3') },
 ];
-
-export const formatVolume = (volume: number) => {
-	return Number((volume / 100).toPrecision(2));
-};

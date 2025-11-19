@@ -10,7 +10,6 @@ it('should not break with invalid Accounts_CustomFieldsToShowInUserInfo setting'
 				prop: 'value',
 			}),
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withSetting('Accounts_CustomFieldsToShowInUserInfo', '{"Invalid": "Object", "InvalidProperty": "Invalid" }')
 				.build(),

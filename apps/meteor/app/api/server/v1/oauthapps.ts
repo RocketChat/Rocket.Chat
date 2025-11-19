@@ -2,8 +2,6 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
-	isUpdateOAuthAppParams,
-	isOauthAppsGetParams,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -58,6 +56,76 @@ const OauthAppsAddParamsSchema = {
 };
 
 const isOauthAppsAddParams = ajv.compile<OauthAppsAddParams>(OauthAppsAddParamsSchema);
+
+type UpdateOAuthAppParams = {
+	appId: string;
+	name: string;
+	active: boolean;
+	clientId?: string | undefined;
+	clientSecret?: string | undefined;
+	redirectUri: string;
+};
+
+const UpdateOAuthAppParamsSchema = {
+	type: 'object',
+	properties: {
+		appId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		redirectUri: {
+			type: 'string',
+		},
+	},
+	required: ['appId', 'name', 'active', 'redirectUri'],
+	additionalProperties: false,
+};
+
+const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
+
+type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
+
+const oauthAppsGetParamsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				clientId: {
+					type: 'string',
+				},
+			},
+			required: ['clientId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				appId: {
+					type: 'string',
+				},
+			},
+			required: ['appId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isOauthAppsGetParams = ajv.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
 
 const oauthAppsEndpoints = API.v1
 	.get(
@@ -156,13 +224,63 @@ const oauthAppsEndpoints = API.v1
 
 			return API.v1.success({ application });
 		},
-	);
+	)
+	.post(
+		'oauth-apps.update',
+		{
+			authRequired: true,
+			body: isUpdateOAuthAppParams,
+			permissionsRequired: ['manage-oauth-apps'],
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<IOAuthApps | null>({
+					allOf: [
+						{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						{
+							type: 'object',
+							properties: {
+								success: { type: 'boolean', enum: [true] },
+							},
+							required: ['success'],
+						},
+					],
+				}),
+			},
+		},
+		async function action() {
+			const { appId } = this.bodyParams;
 
-API.v1.addRoute(
-	'oauth-apps.get',
-	{ authRequired: true, validateParams: isOauthAppsGetParams },
-	{
-		async get() {
+			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
+
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'oauth-apps.get',
+		{
+			authRequired: true,
+			query: isOauthAppsGetParams,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ oauthApp: IOAuthApps }>({
+					type: 'object',
+					properties: {
+						oauthApp: { anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['oauthApp', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
 			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
 
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
@@ -182,26 +300,7 @@ API.v1.addRoute(
 				oauthApp,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'oauth-apps.update',
-	{
-		authRequired: true,
-		validateParams: isUpdateOAuthAppParams,
-		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const { appId } = this.bodyParams;
-
-			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
-
-			return API.v1.success(result);
-		},
-	},
-);
+	);
 
 export type OauthAppsEndpoints = ExtractRoutesFromAPI<typeof oauthAppsEndpoints>;
 

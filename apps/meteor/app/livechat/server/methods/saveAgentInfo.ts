@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { saveAgentInfo } from '../lib/omni-users';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
+		methodDeprecationLogger.method('livechat:saveAgentInfo', '8.0.0', '/v1/livechat/agents.saveInfo');
 		check(_id, String);
 		check(agentData, Object);
 		check(agentDepartments, [String]);

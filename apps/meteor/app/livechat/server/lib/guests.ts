@@ -11,13 +11,9 @@ import {
 	LivechatContacts,
 	Users,
 } from '@rocket.chat/models';
-import { wrapExceptions } from '@rocket.chat/tools';
 import UAParser from 'ua-parser-js';
 
-import { parseAgentCustomFields, validateEmail } from './Helper';
-import type { RegisterGuestType } from './Visitors';
-import { Visitors } from './Visitors';
-import { ContactMerger, type FieldAndValue } from './contacts/ContactMerger';
+import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -78,7 +74,7 @@ export async function saveGuest(
 	return ret;
 }
 
-async function removeGuest({ _id }: { _id: string }) {
+export async function removeGuest({ _id }: { _id: string }) {
 	await cleanGuestHistory(_id);
 	return LivechatVisitors.disableById(_id);
 }
@@ -100,46 +96,6 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 
 		await LivechatContacts.disableByVisitorId(_id);
 	}
-}
-
-export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
-	const visitor = await Visitors.registerGuest(newData);
-	if (!visitor) {
-		return null;
-	}
-
-	const { name, phone, email, username } = newData;
-
-	const validatedEmail =
-		email &&
-		wrapExceptions(() => {
-			const trimmedEmail = email.trim().toLowerCase();
-			validateEmail(trimmedEmail);
-			return trimmedEmail;
-		}).suppress();
-
-	const fields = [
-		{ type: 'name', value: name },
-		{ type: 'phone', value: phone?.number },
-		{ type: 'email', value: validatedEmail },
-		{ type: 'username', value: username || visitor.username },
-	].filter((field) => Boolean(field.value)) as FieldAndValue[];
-
-	if (!fields.length) {
-		return null;
-	}
-
-	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
-	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-	for await (const contact of contacts) {
-		await ContactMerger.mergeFieldsIntoContact({
-			fields,
-			contact,
-			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
-		});
-	}
-
-	return visitor;
 }
 
 async function cleanGuestHistory(_id: string) {

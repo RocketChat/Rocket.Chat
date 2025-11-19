@@ -11,10 +11,6 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
-	get btnCall(): Locator {
-		return this.page.locator('role=button[name=Call"]');
-	}
-
 	get tabHistory(): Locator {
 		return this.dialogContactInfo.getByRole('tab', { name: 'History' });
 	}

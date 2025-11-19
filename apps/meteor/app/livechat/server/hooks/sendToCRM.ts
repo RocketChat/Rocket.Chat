@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom, IOmnichannelSystemMessage, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
+import type { Response } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
@@ -140,12 +141,15 @@ export async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await sendRequest(responseData);
-
-	if (response) {
+	// do not wait for the request to be answered
+	// this will avoid blocking the process of saving the message
+	void sendRequest(responseData, 5, async (response: Response) => {
+		if (!response) {
+			return;
+		}
 		const responseData = await response.text();
 		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
-	}
+	});
 
 	return room;
 }

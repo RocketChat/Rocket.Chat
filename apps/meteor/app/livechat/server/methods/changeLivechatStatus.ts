@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
-		methodDeprecationLogger.method('livechat:changeLivechatStatus', '7.0.0');
+		methodDeprecationLogger.method('livechat:changeLivechatStatus', '7.0.0', '/v1/livechat/agent.status');
 
 		const uid = Meteor.userId();
 

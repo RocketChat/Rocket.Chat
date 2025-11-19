@@ -9,14 +9,14 @@ import { roomsQueryKeys } from '../lib/queryKeys';
 type UseRoomInfoEndpointOptions<
 	TData = Serialized<{
 		room: IRoom | undefined;
-		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u' | 'sidepanel'>;
+		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 	}>,
 > = Omit<
 	UseQueryOptions<
 		Serialized<{
 			room: IRoom | undefined;
-			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u' | 'sidepanel'>;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		}>,
 		{ success: boolean; error: string },
@@ -29,7 +29,7 @@ type UseRoomInfoEndpointOptions<
 export const useRoomInfoEndpoint = <
 	TData = Serialized<{
 		room: IRoom | undefined;
-		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u' | 'sidepanel'>;
+		parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 		team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 	}>,
 >(

@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -9,9 +9,6 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { federationSearchUsers } from '../../app/federation/server/handler';
-import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
-import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { settings } from '../../app/settings/server';
 import { isTruthy } from '../../lib/isTruthy';
 import { trim } from '../../lib/utils/stringUtils';
@@ -48,7 +45,7 @@ const sortUsers = (field: string, direction: 'asc' | 'desc'): Record<string, Sor
 };
 
 const getChannelsAndGroups = async (
-	user: IUser & { __rooms?: IRoom['_id'][] },
+	user: AtLeast<IUser, '_id' | '__rooms'>,
 	canViewAnon: boolean,
 	searchTerm: string,
 	sort: Record<string, number>,
@@ -122,7 +119,7 @@ const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 });
 
 const getTeams = async (
-	user: IUser,
+	user: AtLeast<IUser, '_id' | '__rooms'>,
 	searchTerm: string,
 	sort: Record<string, number>,
 	pagination: {
@@ -233,13 +230,7 @@ const findUsers = async ({
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept<FederatedUser>(
-			text,
-			[],
-			options,
-			searchFields,
-			getFederationDomain(),
-		);
+		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept<FederatedUser>(text, [], options, searchFields);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -247,13 +238,7 @@ const findUsers = async ({
 		};
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept<FederatedUser>(
-		text,
-		[],
-		options,
-		searchFields,
-		getFederationDomain(),
-	);
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept<FederatedUser>(text, [], options, searchFields);
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
@@ -262,7 +247,7 @@ const findUsers = async ({
 };
 
 const getUsers = async (
-	user: IUser | undefined,
+	user: AtLeast<IUser, '_id' | '__rooms'> | undefined,
 	text: string,
 	workspace: string,
 	sort: Record<string, SortDirection>,
@@ -278,29 +263,6 @@ const getUsers = async (
 	const viewFullOtherUserInfo = await hasPermissionAsync(user._id, 'view-full-other-user-info');
 
 	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
-
-	// Try to find federated users, when applicable
-	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {
-		const users = await federationSearchUsers(text);
-
-		for (const user of users) {
-			if (results.find((e) => e._id === user._id)) {
-				continue;
-			}
-
-			// Add the federated user to the results
-			results.unshift({
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-				bio: user.bio,
-				nickname: user.nickname,
-				emails: user.emails,
-				federation: user.federation,
-				isRemote: true,
-			});
-		}
-	}
 
 	return {
 		total,
@@ -337,7 +299,7 @@ export const browseChannelsMethod = async (
 		offset = 0,
 		limit = 10,
 	}: BrowseChannelsParams,
-	user: IUser | undefined | null,
+	user: AtLeast<IUser, '_id' | '__rooms'> | undefined | null,
 ) => {
 	const searchTerm = trim(escapeRegExp(text));
 

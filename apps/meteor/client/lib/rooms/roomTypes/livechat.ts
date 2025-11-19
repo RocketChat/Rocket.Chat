@@ -1,7 +1,5 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../../app/authorization/client';
-import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -43,10 +41,6 @@ roomCoordinator.add(
 				default:
 					return '';
 			}
-		},
-
-		condition() {
-			return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 		},
 
 		getAvatarPath(room) {

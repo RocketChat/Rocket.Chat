@@ -3,13 +3,14 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/client';
 import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { loginServices } from '../lib/loginServices';
+import { settings } from '../lib/settings';
+import { getUser } from '../lib/user';
 import { router } from '../providers/RouterProvider';
 
 const commands = {
@@ -52,7 +53,7 @@ const commands = {
 			);
 		};
 
-		const siteUrl = `${Meteor.settings.Site_Url}/`;
+		const siteUrl = `${settings.peek('Site_Url') ?? ''}/`;
 		if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
 			data.redirectUrl = null;
 		}
@@ -77,11 +78,10 @@ const commands = {
 	},
 
 	async 'logout'() {
-		const user = Meteor.user();
+		const user = getUser();
 		Meteor.logout(() => {
-			if (!user) {
-				return;
-			}
+			if (!user) return;
+
 			void afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
 			return router.navigate('/home');
@@ -94,7 +94,7 @@ type CommandMessage<TCommandName extends keyof typeof commands = keyof typeof co
 } & Parameters<(typeof commands)[TCommandName]>[0];
 
 window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: MessageEvent<TCommandMessage>) => {
-	if (!settings.get<boolean>('Iframe_Integration_receive_enable')) {
+	if (!settings.peek<boolean>('Iframe_Integration_receive_enable')) {
 		return;
 	}
 
@@ -102,7 +102,7 @@ window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: M
 		return;
 	}
 
-	const origins = settings.get<string>('Iframe_Integration_receive_origin');
+	const origins = settings.peek<string>('Iframe_Integration_receive_origin') ?? '*';
 
 	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
 		console.error('Origin not allowed', e.origin);

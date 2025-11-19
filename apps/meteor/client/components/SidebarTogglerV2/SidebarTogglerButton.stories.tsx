@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import SidebarTogglerButton from './SidebarTogglerButton';
 
 export default {
-	title: 'Components/SidebarToggler/SidebarTogglerButtonV2',
 	component: SidebarTogglerButton,
 	parameters: {
 		layout: 'centered',

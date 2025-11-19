@@ -1,4 +1,4 @@
-import { Media, Team } from '@rocket.chat/core-services';
+import { Media, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -130,7 +130,21 @@ API.v1.addRoute(
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
-			await eraseRoom(roomId, this.userId);
+			const room = await Rooms.findOneById(roomId);
+
+			if (!room) {
+				throw new MeteorError('error-invalid-room', 'Invalid room', {
+					method: 'eraseRoom',
+				});
+			}
+
+			if (room.teamMain) {
+				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+					method: 'eraseRoom',
+				});
+			}
+
+			await eraseRoom(room, this.userId);
 
 			return API.v1.success();
 		},
@@ -176,7 +190,7 @@ API.v1.addRoute(
 		authRequired: true,
 		deprecation: {
 			version: '8.0.0',
-			alternatives: ['rooms.media'],
+			alternatives: ['/v1/rooms.media/:rid'],
 		},
 	},
 	{
@@ -211,6 +225,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -289,6 +304,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -361,13 +377,8 @@ API.v1.addRoute(
 			}
 
 			await Promise.all(
-				Object.keys(notifications as Notifications).map(async (notificationKey) =>
-					saveNotificationSettingsMethod(
-						this.userId,
-						roomId,
-						notificationKey as NotificationFieldType,
-						notifications[notificationKey as keyof Notifications],
-					),
+				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
 
@@ -461,7 +472,7 @@ API.v1.addRoute(
 			const discussionParent =
 				room.prid &&
 				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
-					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1, sidepanel: 1 },
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
 				}));
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;

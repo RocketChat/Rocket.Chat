@@ -9,7 +9,7 @@ import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 
 type MainLayoutProps = {
 	children?: ReactNode;
-} & Record<string, unknown>;
+};
 
 const MainLayout = ({ children = null }: MainLayoutProps): ReactElement => {
 	useCustomScript();

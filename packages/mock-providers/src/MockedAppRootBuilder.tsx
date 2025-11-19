@@ -3,27 +3,38 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
+	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
 	SettingValue,
 } from '@rocket.chat/core-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamerCallback,
+	StreamerCallbackArgs,
+	StreamerEvents,
+	StreamKeys,
+	StreamNames,
+} from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
 	Device,
+	DeviceContext,
 	LoginService,
 	ModalContextValue,
+	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
 	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
-	ConnectionStatusContext,
 	RouterContext,
 	ServerContext,
 	SettingsContext,
@@ -51,9 +62,35 @@ type Mutable<T> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface MockedAppRootEvents {
+// interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
+// 	'update-modal': void;
+// }
+// Extract all key values from objects that have a 'key' property
+type ExtractKeys<T, N extends string> = T extends readonly (infer U)[]
+	? U extends { key: infer K }
+		? K extends string
+			? string extends K
+				? never
+				: `stream-${N}-${K}`
+			: never
+		: never
+	: never;
+
+// Union of all key values from all streams
+type AllStreamerEventKeys = {
+	[K in keyof StreamerEvents]: ExtractKeys<StreamerEvents[K], K>;
+}[keyof StreamerEvents];
+
+type MockedAppRootEvents = {
 	'update-modal': void;
-}
+} & Record<AllStreamerEventKeys, any>;
+
+export type StreamControllerRef<N extends StreamNames> = {
+	controller?: {
+		emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => void;
+		has: (eventName: StreamKeys<N>) => boolean;
+	};
+};
 
 const empty = [] as const;
 
@@ -62,15 +99,11 @@ export class MockedAppRootBuilder {
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
-	private connectionStatus: ContextType<typeof ConnectionStatusContext> = {
+	private server: ContextType<typeof ServerContext> = {
 		connected: true,
 		status: 'connected',
-		retryTime: undefined,
-		reconnect: () => undefined,
-		isLoggingIn: false,
-	};
-
-	private server: ContextType<typeof ServerContext> = {
+		retryCount: 0,
+		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
 			method,
@@ -88,7 +121,7 @@ export class MockedAppRootBuilder {
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => Promise.reject(new Error('not implemented')),
 		reconnect: () => Promise.reject(new Error('not implemented')),
-		info: undefined,
+		writeStream: () => Promise.reject(new Error('not implemented')),
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -98,11 +131,9 @@ export class MockedAppRootBuilder {
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
 		getRouteParameters: () => ({}),
-		getRoutes: () => [],
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
-		subscribeToRoutesChange: () => () => undefined,
 		getRoomRoute: () => ({ path: '/' }),
 	};
 
@@ -118,10 +149,10 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => undefined],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
+		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptions ?? []], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -172,7 +203,7 @@ export class MockedAppRootBuilder {
 
 	private room: IRoom | undefined = undefined;
 
-	private subscriptions: SubscriptionWithRoom[] = [];
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -203,6 +234,7 @@ export class MockedAppRootBuilder {
 	private authServices: LoginService[] = [];
 
 	private authentication: ContextType<typeof AuthenticationContext> = {
+		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
@@ -217,9 +249,16 @@ export class MockedAppRootBuilder {
 
 	private events = new Emitter<MockedAppRootEvents>();
 
-	private audioInputDevices: Device[] = [];
-
-	private audioOutputDevices: Device[] = [];
+	private deviceContext: Partial<ContextType<typeof DeviceContext>> = {
+		enabled: true,
+		availableAudioOutputDevices: [],
+		availableAudioInputDevices: [],
+		selectedAudioOutputDevice: undefined,
+		selectedAudioInputDevice: undefined,
+		setAudioOutputDevice: () => undefined,
+		setAudioInputDevice: () => undefined,
+		permissionStatus: undefined,
+	};
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -249,6 +288,30 @@ export class MockedAppRootBuilder {
 		};
 
 		this.server.callEndpoint = outerFn;
+
+		return this;
+	}
+
+	withStream<N extends StreamNames>(streamName: N, ref: StreamControllerRef<N>): this {
+		const innerFn = this.server.getStream;
+
+		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
+			if (innerStreamName === (streamName as StreamNames)) {
+				ref.controller = {
+					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
+						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
+					},
+					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
+				};
+
+				return <K extends StreamKeys<N>>(eventName: K, callback: StreamerCallback<N, K>) =>
+					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
+			}
+
+			return innerFn(innerStreamName);
+		};
+
+		this.server.getStream = outerFn;
 
 		return this;
 	}
@@ -347,7 +410,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
 
 		return this;
@@ -405,8 +468,9 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withSetting(id: string, value: SettingValue): this {
+	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
+			...settingStructure,
 			_id: id,
 			value,
 		} as ISetting;
@@ -493,12 +557,29 @@ export class MockedAppRootBuilder {
 	}
 
 	withAudioInputDevices(devices: Device[]): this {
-		this.audioInputDevices = devices;
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioInputDevices = devices;
 		return this;
 	}
 
 	withAudioOutputDevices(devices: Device[]): this {
-		this.audioOutputDevices = devices;
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioOutputDevices = devices;
+		return this;
+	}
+
+	withMicrophonePermissionState(status: PermissionStatus): this {
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.permissionStatus = status;
 		return this;
 	}
 
@@ -533,6 +614,26 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	// Manually changes the language in the i18next instance
+	// To be used with languages other than the default one
+	withDefaultLanguage(lng: string): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.changeLanguage(lng);
+			return this;
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.changeLanguage(lng);
+		});
+
+		return this;
+	}
+
+	withServerContext(partial: Partial<ServerContextValue>): this {
+		this.server = { ...this.server, ...partial };
+		return this;
+	}
+
 	build(): JSXElementConstructor<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
@@ -541,21 +642,7 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const {
-			connectionStatus,
-			server,
-			router,
-			settings,
-			user,
-			userPresence,
-			videoConf,
-			i18n,
-			authorization,
-			wrappers,
-			audioInputDevices,
-			audioOutputDevices,
-			authentication,
-		} = this;
+		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -617,79 +704,74 @@ export class MockedAppRootBuilder {
 
 			return (
 				<QueryClientProvider client={queryClient}>
-					<ConnectionStatusContext.Provider value={connectionStatus}>
-						<ServerContext.Provider value={server}>
-							<RouterContext.Provider value={router}>
-								<SettingsContext.Provider value={settings}>
-									<I18nextProvider i18n={i18n}>
-										<TranslationContext.Provider value={translation}>
-											{/* <SessionProvider>
+					<ServerContext.Provider value={server}>
+						<RouterContext.Provider value={router}>
+							<SettingsContext.Provider value={settings}>
+								<I18nextProvider i18n={i18n}>
+									<TranslationContext.Provider value={translation}>
+										{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-											<UserContext.Provider value={user}>
-												<AuthenticationContext.Provider value={authentication}>
-													<MockedDeviceContext
-														availableAudioInputDevices={audioInputDevices}
-														availableAudioOutputDevices={audioOutputDevices}
-													>
-														<ModalContext.Provider value={modal}>
-															<AuthorizationContext.Provider value={authorization}>
-																{/* <EmojiPickerProvider>
+										<UserContext.Provider value={user}>
+											<AuthenticationContext.Provider value={authentication}>
+												<MockedDeviceContext {...deviceContext}>
+													<ModalContext.Provider value={modal}>
+														<AuthorizationContext.Provider value={authorization}>
+															{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-																<UserPresenceContext.Provider value={userPresence}>
-																	<ActionManagerContext.Provider
-																		value={{
-																			generateTriggerId: () => '',
-																			emitInteraction: () => Promise.reject(new Error('not implemented')),
-																			getInteractionPayloadByViewId: () => undefined,
-																			handleServerInteraction: () => undefined,
-																			off: () => undefined,
-																			on: () => undefined,
-																			openView: () => undefined,
-																			disposeView: () => undefined,
-																			notifyBusy: () => undefined,
-																			notifyIdle: () => undefined,
-																		}}
-																	>
-																		<VideoConfContext.Provider value={videoConf}>
-																			{/* <CallProvider>
+															<UserPresenceContext.Provider value={userPresence}>
+																<ActionManagerContext.Provider
+																	value={{
+																		generateTriggerId: () => '',
+																		emitInteraction: () => Promise.reject(new Error('not implemented')),
+																		getInteractionPayloadByViewId: () => undefined,
+																		handleServerInteraction: () => undefined,
+																		off: () => undefined,
+																		on: () => undefined,
+																		openView: () => undefined,
+																		disposeView: () => undefined,
+																		notifyBusy: () => undefined,
+																		notifyIdle: () => undefined,
+																	}}
+																>
+																	<VideoConfContext.Provider value={videoConf}>
+																		{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																			{wrappers.reduce<ReactNode>(
-																				(children, wrapper) => wrapper(children),
-																				<>
-																					{children}
-																					{modal.currentModal.component}
-																				</>,
-																			)}
-																			{/* </OmnichannelProvider>
+																		{wrappers.reduce<ReactNode>(
+																			(children, wrapper) => wrapper(children),
+																			<>
+																				{children}
+																				{modal.currentModal.component}
+																			</>,
+																		)}
+																		{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																		</VideoConfContext.Provider>
-																	</ActionManagerContext.Provider>
-																</UserPresenceContext.Provider>
-																{/*
+																	</VideoConfContext.Provider>
+																</ActionManagerContext.Provider>
+															</UserPresenceContext.Provider>
+															{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-															</AuthorizationContext.Provider>
-														</ModalContext.Provider>
-													</MockedDeviceContext>
-												</AuthenticationContext.Provider>
-											</UserContext.Provider>
-											{/* 					</CustomSoundProvider>
+														</AuthorizationContext.Provider>
+													</ModalContext.Provider>
+												</MockedDeviceContext>
+											</AuthenticationContext.Provider>
+										</UserContext.Provider>
+										{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-										</TranslationContext.Provider>
-									</I18nextProvider>
-								</SettingsContext.Provider>
-							</RouterContext.Provider>
-						</ServerContext.Provider>
-					</ConnectionStatusContext.Provider>
+									</TranslationContext.Provider>
+								</I18nextProvider>
+							</SettingsContext.Provider>
+						</RouterContext.Provider>
+					</ServerContext.Provider>
 				</QueryClientProvider>
 			);
 		};

@@ -18,6 +18,7 @@ function ColorSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	editor,
 	allowedTypes = [],
 	placeholder,
@@ -99,6 +100,7 @@ function ColorSettingInput({
 				</FieldRow>
 			</Margins>
 			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

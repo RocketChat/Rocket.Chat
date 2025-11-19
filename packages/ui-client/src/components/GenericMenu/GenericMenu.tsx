@@ -11,6 +11,7 @@ type GenericMenuCommonProps = {
 	icon?: ComponentProps<typeof IconButton>['icon'];
 	disabled?: boolean;
 	callbackAction?: () => void;
+	isOpen?: boolean;
 };
 
 type GenericMenuConditionalProps =

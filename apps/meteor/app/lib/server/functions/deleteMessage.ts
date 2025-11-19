@@ -36,7 +36,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 	const bridges = Apps.self?.isLoaded() && Apps.getBridges();
 
-	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
+	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1, federation: 1 } });
 
 	if (deletedMsg) {
 		if (bridges) {
@@ -94,7 +94,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		await Rooms.decreaseMessageCountById(message.rid, 1);
 	}
 
-	await callbacks.run('afterDeleteMessage', deletedMsg, room);
+	await callbacks.run('afterDeleteMessage', deletedMsg, { room, user });
 
 	void notifyOnRoomChangedById(message.rid);
 

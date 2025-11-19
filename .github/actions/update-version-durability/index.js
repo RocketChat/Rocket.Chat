@@ -12,6 +12,7 @@ import { Octokit } from '@octokit/rest';
 const D360_TOKEN = core.getInput('D360_TOKEN');
 const D360_ARTICLE_ID = core.getInput('D360_ARTICLE_ID');
 const PUBLISH = core.getInput('PUBLISH') === 'true';
+const LTS_VERSIONS = (core.getInput('LTS_VERSIONS') || '7.10').split(',').map((v) => v.trim());
 
 const octokit = new Octokit({
 	auth: core.getInput('GH_TOKEN'),
@@ -79,6 +80,11 @@ async function generateTable({ owner, repo } = {}) {
 			continue;
 		}
 
+		// Mark LTS
+		if (LTS_VERSIONS.includes(`${currentVersion.major}.${currentVersion.minor}`)) {
+			release.lts = true;
+		}
+
 		index++;
 	}
 
@@ -97,7 +103,7 @@ async function generateTable({ owner, repo } = {}) {
 		minorDate.setDate(1);
 		supportDateStart = minorDate;
 		supportDate = new Date(minorDate);
-		supportDate.setMonth(supportDate.getMonth() + (lts ? 6 : 6));
+		supportDate.setMonth(supportDate.getMonth() + (lts ? 9 : 6));
 
 		releaseData.push({
 			release: {
@@ -145,7 +151,7 @@ async function generateTable({ owner, repo } = {}) {
 		const endOfLife = !release.extendedSupport
 			? 'TBD'
 			: release.extendedSupport.end.toLocaleString('en', { month: 'short', year: "numeric" });
-		const link = `${release.version} (<a href="${latestPatch.url}" target="_blank" translate="no">${latestPatch.version}</a>)`;
+		const link = `${release.version}${release.lts ? " LTS" : ""} (<a href="${latestPatch.url}" target="_blank" translate="no">${latestPatch.version}</a>)`;
 
 		text.push(
 			'<tr>',

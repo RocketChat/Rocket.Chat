@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -10,6 +11,22 @@ const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['rol
 	newRoles !== undefined &&
 	(newRoles.some((item) => !previousRoles.includes(item)) || previousRoles.some((item) => !newRoles.includes(item)));
 const isEditingField = (previousValue?: string, newValue?: string) => typeof newValue !== 'undefined' && newValue !== previousValue;
+
+export const canEditExtension = async (userId: string, newExtension?: string) => {
+	if (!settings.get('VoIP_TeamCollab_Enabled')) {
+		return false;
+	}
+
+	if (!(await hasPermissionAsync(userId, 'manage-voip-extensions'))) {
+		return false;
+	}
+
+	if (newExtension && (await Users.findOneByFreeSwitchExtension(newExtension, { projection: { _id: 1 } }))) {
+		throw new MeteorError('error-extension-not-available', 'Extension is already assigned to another user');
+	}
+
+	return true;
+};
 
 /**
  * Validate permissions to edit user fields
@@ -45,7 +62,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	if (
 		isEditingField(user.username, userData.username) &&
 		!settings.get('Accounts_AllowUsernameChange') &&
-		(!canEditOtherUserInfo || (editingMyself && user.username))
+		(editingMyself ? user.username : !canEditOtherUserInfo)
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -87,8 +104,22 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		});
 	}
 
-	if (userData.password && !settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
+	if (
+		userData.password &&
+		!settings.get('Accounts_AllowPasswordChange') &&
+		(editingMyself ? user.services?.password || !user.requirePasswordChange : !canEditOtherUserPassword)
+	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user password is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (
+		isEditingField(user.freeSwitchExtension ?? '', userData.freeSwitchExtension) &&
+		!(await canEditExtension(userId, userData.freeSwitchExtension))
+	) {
+		throw new MeteorError('error-action-not-allowed', 'Edit user voice call extension is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});

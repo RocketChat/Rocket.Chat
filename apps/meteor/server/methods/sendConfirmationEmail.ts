@@ -31,7 +31,7 @@ export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 
 Meteor.methods<ServerMethods>({
 	async sendConfirmationEmail(to) {
-		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
+		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0', '/v1/users.sendConfirmationEmail');
 
 		return sendConfirmationEmail(to);
 	},

@@ -1,13 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import {
 	ContextualbarContent,

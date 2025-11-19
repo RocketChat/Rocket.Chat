@@ -1,4 +1,4 @@
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
+import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
@@ -306,6 +306,17 @@ export class NotificationsModule {
 					uid,
 					rid,
 				});
+			}
+
+			if (e === 'media-calls') {
+				if (!this.userId || !data || typeof data !== 'string') {
+					return false;
+				}
+
+				void MediaCall.processSerializedSignal(this.userId, data).catch(() => null);
+
+				// media call signals don't ever need to be broadcasted
+				return false;
 			}
 
 			return Boolean(this.userId);

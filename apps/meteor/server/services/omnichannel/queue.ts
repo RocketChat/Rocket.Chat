@@ -10,6 +10,7 @@ import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
+import { metrics } from '../../../app/metrics/server';
 import { settings } from '../../../app/settings/server';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
@@ -141,6 +142,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				result,
 			});
 		} catch (e) {
+			metrics.totalItemsFailedByQueue.inc({ queue: queue || 'Public' });
 			queueLogger.error({
 				msg: 'Error processing queue',
 				queue: queue || 'Public',
@@ -234,16 +236,19 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		// This is a precaution to avoid taking inquiries tied to rooms that no longer exist.
 		// This should never happen.
 		if (!roomFromDb) {
+			metrics.totalItemsProcessedByReconciliationQueue.inc({ queue, action: 'missing_room' });
 			return this.reconciliation('missing', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
 		// This is a precaution to avoid taking the same inquiry multiple times. It should not happen, but it's a safety net
 		if (roomFromDb.servedBy) {
+			metrics.totalItemsProcessedByReconciliationQueue.inc({ queue, action: 'room_taken' });
 			return this.reconciliation('taken', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
 		// This is another precaution. If the room is closed, we should not take it
 		if (roomFromDb.closedAt) {
+			metrics.totalItemsProcessedByReconciliationQueue.inc({ queue, action: 'room_closed' });
 			return this.reconciliation('closed', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
@@ -259,6 +264,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);
 
+			metrics.timeToQueueProcessingByQueue.observe({ queue }, (Date.now() - inquiry.ts.getTime()) / 1000);
+			metrics.totalItemsProcessedByQueue.inc({ queue });
 			return true;
 		}
 

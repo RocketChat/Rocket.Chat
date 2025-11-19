@@ -1,17 +1,17 @@
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
+import AutoCompleteAgent from '../components/AutoCompleteAgent';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
 type FilterByTextTypeProps = {
 	setFilter: Dispatch<SetStateAction<Record<string, any>>>;
@@ -81,12 +81,12 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		reset();
 	});
 
-	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
+	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
 
 	const handleRemoveClosed = useEffectEvent(async () => {
 		const onDeleteAll = async (): Promise<void> => {
 			try {
-				await removeClosedChats();
+				await removeClosedRooms();
 				reload?.();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
@@ -137,11 +137,11 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('From')}</Label>
-					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} data-qa='current-chats-from' color='default' />
+					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} color='default' />
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('To')}</Label>
-					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' color='default' />
+					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} color='default' />
 				</Box>
 
 				<RemoveAllClosed

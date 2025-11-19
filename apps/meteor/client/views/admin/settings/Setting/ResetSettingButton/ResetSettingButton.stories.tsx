@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ResetSettingButton from './ResetSettingButton';
 
 export default {
-	title: 'Admin/Settings/ResetSettingButton',
 	component: ResetSettingButton,
 	parameters: {
 		layout: 'centered',

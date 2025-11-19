@@ -4,7 +4,6 @@ import KeyboardShortcutsWithData from './KeyboardShortcutsWithData';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/KeyboardShortcut',
 	component: KeyboardShortcutsWithData,
 	parameters: {
 		layout: 'fullscreen',

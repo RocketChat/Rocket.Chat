@@ -25,6 +25,7 @@ export type UsersUpdateParamsPOST = {
 		settings?: IUserSettings;
 		language?: string;
 		status?: string;
+		freeSwitchExtension?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -102,6 +103,10 @@ const UsersUpdateParamsPostSchema = {
 					nullable: true,
 				},
 				status: {
+					type: 'string',
+					nullable: true,
+				},
+				freeSwitchExtension: {
 					type: 'string',
 					nullable: true,
 				},

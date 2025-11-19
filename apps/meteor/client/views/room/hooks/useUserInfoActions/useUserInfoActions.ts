@@ -16,8 +16,8 @@ import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
+import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
-import { useVoipCallAction } from './actions/useVoipCallAction';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
@@ -29,6 +29,7 @@ type UserInfoActionWithOnlyIcon = {
 	title: string;
 	variant?: 'danger';
 	onClick: () => void;
+	disabled?: boolean;
 };
 
 type UserInfoActionWithContent = {
@@ -38,6 +39,7 @@ type UserInfoActionWithContent = {
 	title?: string;
 	variant?: 'danger';
 	onClick: () => void;
+	disabled?: boolean;
 };
 
 export type UserInfoAction = UserInfoActionWithContent | UserInfoActionWithOnlyIcon;
@@ -74,16 +76,16 @@ export const useUserInfoActions = ({
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload);
 	const videoCall = useVideoCallAction(user);
-	const voipCall = useVoipCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
+	const userMediaCall = useUserMediaCallAction(user, rid);
 
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(videoCall && { videoCall }),
-			...(voipCall && { voipCall }),
+			...(userMediaCall && { userMediaCall }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
@@ -99,7 +101,7 @@ export const useUserInfoActions = ({
 			openDirectMessage,
 			isLayoutEmbedded,
 			videoCall,
-			voipCall,
+			userMediaCall,
 			changeOwner,
 			changeLeader,
 			changeModerator,

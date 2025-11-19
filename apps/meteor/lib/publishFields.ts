@@ -76,7 +76,6 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
-	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
@@ -114,6 +113,7 @@ export const roomFields = {
 
 	// Federation fields
 	federated: 1,
+	federation: 1,
 
 	// fields used by DMs
 	usernames: 1,

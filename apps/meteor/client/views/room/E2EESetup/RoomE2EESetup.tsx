@@ -4,9 +4,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
-import { e2e } from '../../../../app/e2e/client';
-import { E2EEState } from '../../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import { e2e } from '../../../lib/e2ee';
 import RoomBody from '../body/RoomBody';
 import RoomBodyV2 from '../body/RoomBodyV2';
 import { useRoom } from '../contexts/RoomContext';
@@ -32,7 +30,7 @@ const RoomE2EESetup = () => {
 
 	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFlow(), []);
 
-	if (e2eeState === E2EEState.SAVE_PASSWORD) {
+	if (e2eeState === 'SAVE_PASSWORD') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
@@ -44,7 +42,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	if (e2eeState === E2EEState.ENTER_PASSWORD) {
+	if (e2eeState === 'ENTER_PASSWORD') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
@@ -56,7 +54,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	if (e2eRoomState === E2ERoomState.WAITING_KEYS) {
+	if (e2eRoomState === 'WAITING_KEYS') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('Check_back_later')}

@@ -5,7 +5,6 @@ import NotificationsPreferences from './NotificationPreferences';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/NotificationsPreferences',
 	component: NotificationsPreferences,
 	parameters: {
 		layout: 'fullscreen',

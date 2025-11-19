@@ -7,10 +7,6 @@ export class AccountSidenav {
 		this.page = page;
 	}
 
-	get linkTokens(): Locator {
-		return this.page.locator('.flex-nav [href="/account/tokens"]');
-	}
-
 	get linkSecurity(): Locator {
 		return this.page.locator('.flex-nav [href="/account/security"]');
 	}

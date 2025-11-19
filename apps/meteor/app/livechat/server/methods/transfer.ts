@@ -27,7 +27,7 @@ declare module '@rocket.chat/ddp-client' {
 // TODO: Deprecated: Remove in v6.0.0
 Meteor.methods<ServerMethods>({
 	async 'livechat:transfer'(transferData) {
-		methodDeprecationLogger.method('livechat:transfer', '7.0.0');
+		methodDeprecationLogger.method('livechat:transfer', '7.0.0', '/v1/livechat/room.forward');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });

@@ -5,7 +5,7 @@ import { flushSync } from 'react-dom';
 
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { settings } from '../../../settings/client';
+import { settings } from '../../../../client/lib/settings';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 
@@ -90,17 +90,17 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
-			if (!settings.get('Katex_Enabled')) {
+			if (!settings.peek('Katex_Enabled')) {
 				return;
 			}
-			if (settings.get('Katex_Dollar_Syntax')) {
+			if (settings.peek('Katex_Dollar_Syntax')) {
 				return '$$KaTeX$$';
 			}
-			if (settings.get('Katex_Parenthesis_Syntax')) {
+			if (settings.peek('Katex_Parenthesis_Syntax')) {
 				return '\\[KaTeX\\]';
 			}
 		},
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => settings.get('Katex_Enabled'),
+		condition: () => settings.watch('Katex_Enabled') ?? true,
 	},
 ] as const;

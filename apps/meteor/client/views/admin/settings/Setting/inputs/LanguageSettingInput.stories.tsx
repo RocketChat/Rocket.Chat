@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import LanguageSettingInput from './LanguageSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/LanguageSettingInput',
 	component: LanguageSettingInput,
 	parameters: {
 		actions: {

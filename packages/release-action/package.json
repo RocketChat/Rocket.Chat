@@ -8,10 +8,10 @@
 		"lint:fix": "eslint --fix src"
 	},
 	"main": "dist/index.js",
-	"packageManager": "yarn@4.9.2",
+	"packageManager": "yarn@4.11.0",
 	"devDependencies": {
-		"@types/node": "~22.16.1",
-		"typescript": "~5.8.3"
+		"@types/node": "~22.16.5",
+		"typescript": "~5.9.3"
 	},
 	"dependencies": {
 		"@actions/core": "^1.11.1",

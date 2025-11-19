@@ -1,10 +1,10 @@
 import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Document, Filter, FindOptions } from 'mongodb';
+import type { Document, Filter, FilterOperators, FindOptions } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 type Pagination<T extends Document> = { pagination: { offset: number; count: number; sort: FindOptions<T>['sort'] } };
@@ -46,7 +46,7 @@ export async function findDepartments({
 	showArchived = false,
 	pagination: { offset, count, sort },
 }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
-	let query = {
+	let query: FilterOperators<ILivechatDepartment> = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		...(!showArchived && { archived: { $ne: !showArchived } }),
 		...(enabled && { enabled: Boolean(enabled) }),
@@ -55,7 +55,7 @@ export async function findDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await applyDepartmentRestrictions(query, userId);
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -81,7 +81,7 @@ export async function findArchivedDepartments({
 	excludeDepartmentId,
 	pagination: { offset, count, sort },
 }: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
-	let query = {
+	let query: FilterOperators<ILivechatDepartment> = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		archived: { $eq: true },
 		...(text && { name: new RegExp(escapeRegExp(text), 'i') }),
@@ -89,7 +89,7 @@ export async function findArchivedDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await applyDepartmentRestrictions(query, userId);
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -119,10 +119,10 @@ export async function findDepartmentById({
 }> {
 	const canViewLivechatDepartments = includeAgents && (await hasPermissionAsync(userId, 'view-livechat-departments'));
 
-	let query = { _id: departmentId };
+	let query: FilterOperators<ILivechatDepartment> = { _id: departmentId };
 
 	if (onlyMyDepartments) {
-		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await applyDepartmentRestrictions(query, userId);
 	}
 
 	const result = {
@@ -146,7 +146,7 @@ export async function findDepartmentsToAutocomplete({
 	let { conditions = {} } = selector;
 
 	if (onlyMyDepartments) {
-		conditions = await callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
+		conditions = await applyDepartmentRestrictions(conditions, uid);
 	}
 
 	const conditionsWithArchived = { archived: { $ne: !showArchived }, ...conditions };
@@ -168,24 +168,18 @@ export async function findDepartmentsToAutocomplete({
 export async function findDepartmentAgents({
 	departmentId,
 	pagination: { offset, count, sort },
-}: FindDepartmentAgentsParams): Promise<
-	PaginatedResult<{ agents: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[] }>
-> {
-	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentId(departmentId, {
+}: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
+	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
 	});
-	const [
-		{
-			result,
-			totalCount: [{ total } = { total: 0 }],
-		},
-	] = await cursor.toArray();
+
+	const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
-		agents: result,
-		count: result.length,
+		agents,
+		count: agents.length,
 		offset,
 		total,
 	};

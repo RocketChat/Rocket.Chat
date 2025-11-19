@@ -102,10 +102,7 @@ test.describe.serial('OC - Livechat', () => {
 		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
-			await poHomeOmnichannel.content.btnCloseChat.click();
-			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });
@@ -158,10 +155,7 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
-			await poHomeOmnichannel.content.btnCloseChat.click();
-			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });

@@ -3,6 +3,7 @@ export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
 export * from './CustomFieldsForm';
+export { PasswordVerifierList } from './PasswordVerifier/PasswordVerifierList';
 export * from './PasswordVerifier/PasswordVerifier';
 export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';

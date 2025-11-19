@@ -11,6 +11,7 @@ export * from './IEnvironmentalVariableRead';
 export * from './IEnvironmentRead';
 export * from './IEnvironmentWrite';
 export * from './IExternalComponentsExtend';
+export * from './IExperimentalRead';
 export * from './IHttp';
 export * from './ILivechatCreator';
 export * from './ILivechatMessageBuilder';
