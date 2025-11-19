@@ -279,11 +279,12 @@ jobs:
       fail-fast: false
       matrix:
         arch: [arm64, amd64]
-        service: [
-          [authorization-service, queue-worker-service, ddp-streamer-service],
-          [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
-          [rocketchat]
-        ]
+        service:
+          [
+            [authorization-service, queue-worker-service, ddp-streamer-service],
+            [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
+            [rocketchat],
+          ]
         type:
           # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
@@ -607,6 +608,54 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-federation-matrix:
+    name: 🔨 Test Federation Matrix
+    needs: [checks, build-gh-docker-publish, packages-build, release-versions]
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          cache-modules: true
+          install: true
+
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore turbo build
+        uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          name: turbo-build
+          path: .turbo/cache
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Configure /etc/hosts for federation services
+        run: |
+          sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
+          sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
+
+      - name: Run federation integration tests with pre-built image
+        working-directory: ./ee/packages/federation-matrix
+        env:
+          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
+          ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
+        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
@@ -662,7 +711,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -692,6 +741,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
 
