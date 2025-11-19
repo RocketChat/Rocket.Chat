@@ -46,9 +46,7 @@ test.each([
     '[link](https://example.com/query?this=(is)&a=problem)',
     [
       paragraph([
-        link('https://example.com/query?this=(is)&a=problem', [
-          plain('link'),
-        ]),
+        link('https://example.com/query?this=(is)&a=problem', [plain('link')]),
       ]),
     ],
   ],
@@ -76,9 +74,10 @@ test.each([
     '[Multiple params](https://example.com/api?filter=(status=active)&sort=(name,date))',
     [
       paragraph([
-        link('https://example.com/api?filter=(status=active)&sort=(name,date)', [
-          plain('Multiple params'),
-        ]),
+        link(
+          'https://example.com/api?filter=(status=active)&sort=(name,date)',
+          [plain('Multiple params')],
+        ),
       ]),
     ],
   ],
@@ -108,9 +107,7 @@ test.each([
     '[Empty parens](https://example.com/path()/file)',
     [
       paragraph([
-        link('https://example.com/path()/file', [
-          plain('Empty parens'),
-        ]),
+        link('https://example.com/path()/file', [plain('Empty parens')]),
       ]),
     ],
   ],
@@ -118,13 +115,9 @@ test.each([
     '[Link 1](https://example.com/a(1)) and [Link 2](https://example.com/b(2))',
     [
       paragraph([
-        link('https://example.com/a(1)', [
-          plain('Link 1'),
-        ]),
+        link('https://example.com/a(1)', [plain('Link 1')]),
         plain(' and '),
-        link('https://example.com/b(2)', [
-          plain('Link 2'),
-        ]),
+        link('https://example.com/b(2)', [plain('Link 2')]),
       ]),
     ],
   ],
