@@ -50,7 +50,7 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 	const restRidsToRemove = rids.filter((rid) => !deletedRoomIds.includes(rid));
 	await Promise.all(
 		restRidsToRemove.map(async (rid) => {
-			const isDeleted = await eraseRoomLooseValidation(rid, 'rocket.cat');
+			const isDeleted = await eraseRoomLooseValidation(rid);
 			if (isDeleted) {
 				deletedRoomIds.push(rid);
 			}
