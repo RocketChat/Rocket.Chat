@@ -193,6 +193,7 @@ describe('miscellaneous', () => {
 					'notifyCalendarEvents',
 					'enableMobileRinging',
 					'featuresPreview',
+					'desktopNotificationVoiceCalls',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);

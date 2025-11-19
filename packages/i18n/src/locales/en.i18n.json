@@ -3764,6 +3764,7 @@
   "Nothing_found": "Nothing found",
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Notice that public Channels will be public and visible to everyone.",
   "Notification_Desktop_Default_For": "Show Desktop Notifications For",
+  "Notification_Desktop_show_voice_calls": "Show desktop notifications for voice calls",
   "Notification_Push_Default_For": "Send Push Notifications For",
   "Notification_RequireInteraction": "Require Interaction to Dismiss Desktop Notification",
   "Notification_RequireInteraction_Description": "Works only with Chrome browser versions > 50. Utilizes the parameter *requireInteraction* to show the desktop notification to indefinite until the user interacts with it.",
