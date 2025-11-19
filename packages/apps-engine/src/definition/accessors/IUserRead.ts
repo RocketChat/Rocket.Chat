@@ -25,5 +25,5 @@ export interface IUserRead {
 	 *
 	 * @param userId the user whose memberships should be returned
 	 */
-	getUserRoomIds(userId: string): Promise<string[] | undefined>;
+	getUserRoomIds(userId: string): Promise<string[]>;
 }

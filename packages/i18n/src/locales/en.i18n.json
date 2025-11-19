@@ -631,6 +631,7 @@
   "Apps_Permissions_message_read": "Access messages",
   "Apps_Permissions_message_write": "Send and modify messages",
   "Apps_Permissions_networking": "Access to this server network",
+  "Apps_Permissions_experimental_default": "Use experimental APIs",
   "Apps_Permissions_persistence": "Store internal data in the database",
   "Apps_Permissions_room_read": "Access room information",
   "Apps_Permissions_room_write": "Create and modify rooms",

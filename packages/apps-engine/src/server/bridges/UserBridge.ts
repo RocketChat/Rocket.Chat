@@ -45,7 +45,7 @@ export abstract class UserBridge extends BaseBridge {
 		}
 	}
 
-	public async doGetUserRoomIds(userId: string, appId: string): Promise<string[] | undefined> {
+	public async doGetUserRoomIds(userId: string, appId: string): Promise<string[]> {
 		if (this.hasReadPermission(appId)) {
 			return this.getUserRoomIds(userId, appId);
 		}
@@ -73,7 +73,7 @@ export abstract class UserBridge extends BaseBridge {
 
 	protected abstract getUserUnreadMessageCount(uid: string, appId: string): Promise<number>;
 
-	protected abstract getUserRoomIds(userId: string, appId: string): Promise<string[] | undefined>;
+	protected abstract getUserRoomIds(userId: string, appId: string): Promise<string[]>;
 
 	/**
 	 * Creates a user.

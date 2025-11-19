@@ -38,7 +38,7 @@ export class TestsUserBridge extends UserBridge {
 		throw new Error('Method not implemented.');
 	}
 
-	protected getUserRoomIds(userId: string, appId: string): Promise<string[] | undefined> {
+	protected getUserRoomIds(userId: string, appId: string): Promise<string[]> {
 		throw new Error('Method not implemented.');
 	}
 

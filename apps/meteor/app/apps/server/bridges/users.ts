@@ -169,7 +169,7 @@ export class AppUserBridge extends UserBridge {
 		return Subscriptions.getBadgeCount(uid);
 	}
 
-	protected async getUserRoomIds(userId: string, appId: string): Promise<string[] | undefined> {
+	protected async getUserRoomIds(userId: string, appId: string): Promise<string[]> {
 		this.orch.debugLog(`The App ${appId} is getting the room ids for the user: "${userId}"`);
 
 		const subscriptions = await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray();
