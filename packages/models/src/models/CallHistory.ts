@@ -10,9 +10,6 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { uid: 1, callId: 1 }, unique: true },
-			{ key: { uid: 1, ts: -1 }, unique: false },
-		];
+		return [{ key: { uid: 1, callId: 1 }, unique: true }, { key: { uid: 1, ts: -1 } }];
 	}
 }
