@@ -65,7 +65,7 @@ const EventBaseSchema = {
 			nullable: true,
 		},
 	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events', 'origin'],
+	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events'],
 };
 
 const MembershipEventContentSchema = {
