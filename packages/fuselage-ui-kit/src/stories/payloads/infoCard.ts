@@ -23,7 +23,7 @@ export const infoCard: readonly UiKit.InfoCardBlock[] = [
 			},
 		],
 	},
-] as const;
+];
 
 export const infoCardMultiple: readonly UiKit.InfoCardBlock[] = [
 	{
@@ -43,4 +43,4 @@ export const infoCardMultiple: readonly UiKit.InfoCardBlock[] = [
 			},
 		],
 	},
-] as const;
+];
