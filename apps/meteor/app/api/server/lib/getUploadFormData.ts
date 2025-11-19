@@ -67,7 +67,7 @@ export async function getUploadFormData<
 	} = {},
 ): Promise<UploadResultWithOptionalFile<K>> {
 	if (!(request.body instanceof ReadableStream)) {
-		return Promise.reject(new Error('Invalid request body'));
+		return Promise.reject(new MeteorError('Invalid request body'));
 	}
 
 	const limits = {
