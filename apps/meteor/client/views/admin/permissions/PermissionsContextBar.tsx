@@ -14,7 +14,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
-	const hasCustomRolesModule = useHasLicenseModule('custom-roles') === true;
+	const { data: hasCustomRolesModule = false } = useHasLicenseModule('custom-roles');
 
 	const handleCloseContextualbar = useEffectEvent(() => {
 		router.push({});

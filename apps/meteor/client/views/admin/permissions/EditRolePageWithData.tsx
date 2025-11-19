@@ -19,11 +19,11 @@ const EditRolePageWithData = ({ roleId }: { roleId?: IRole['_id'] }): ReactEleme
 		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
 	}
 
-	if (hasCustomRolesModule === 'loading') {
+	if (!hasCustomRolesModule.isSuccess) {
 		return <PageSkeleton />;
 	}
 
-	return <EditRolePage key={roleId} role={role} isEnterprise={hasCustomRolesModule} />;
+	return <EditRolePage key={roleId} role={role} isEnterprise={hasCustomRolesModule.data} />;
 };
 
 export default EditRolePageWithData;

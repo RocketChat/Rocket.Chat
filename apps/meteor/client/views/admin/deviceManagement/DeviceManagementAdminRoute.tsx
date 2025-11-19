@@ -17,7 +17,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const setModal = useSetModal();
 	const isModalOpen = !!useCurrentModal();
 
-	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
+	const { data: hasDeviceManagement = false } = useHasLicenseModule('device-management');
 	const canViewDeviceManagement = usePermission('view-device-management');
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasDeviceManagement);

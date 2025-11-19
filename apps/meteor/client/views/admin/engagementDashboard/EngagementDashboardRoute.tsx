@@ -31,7 +31,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const tab = useRouteParameter('tab');
 	const eventStats = useEndpoint('POST', '/v1/statistics.telemetry');
 
-	const hasEngagementDashboard = useHasLicenseModule('engagement-dashboard') as boolean;
+	const { data: hasEngagementDashboard = false } = useHasLicenseModule('engagement-dashboard');
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasEngagementDashboard);
 
