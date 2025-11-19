@@ -4,7 +4,6 @@ import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
 const APP_ID = 'media-call-core';
 
-// TODO bold the text
 export const callStateToTranslationKey = (callState: CallHistoryItemState): TextObject => {
 	switch (callState) {
 		case 'ended':
@@ -55,7 +54,6 @@ export const getFormattedCallDuration = (callDuration: number | undefined): Text
 	} as const;
 };
 
-// TODO proper translation keys
 export const getHistoryMessagePayload = (
 	callState: CallHistoryItemState,
 	callDuration: number | undefined,
