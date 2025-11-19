@@ -217,7 +217,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('Invalid usernames for DM.');
 		}
 
-		const newRoom = await createDirectMessage(usernames, dmCreatorId);
+		const dmCreatorIsPartOfTheCall = call.uids.includes(dmCreatorId);
+
+		const newRoom = await createDirectMessage(usernames, dmCreatorId, !dmCreatorIsPartOfTheCall); // If the dm creator is not part of the call, we need to exclude him from the new DM
 		return newRoom.rid;
 	}
 
