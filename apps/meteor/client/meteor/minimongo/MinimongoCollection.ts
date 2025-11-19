@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { LocalCollection } from './LocalCollection';
 import type { Query } from './queries';
-import { createDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
+import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 
 /**
  * Implements a minimal version of a MongoDB collection using Zustand for state management.
@@ -12,7 +13,7 @@ import { createDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore'
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
 	private pendingRecomputations = new Set<Query<T>>();
 
-	private recomputeAll() {
+	recomputeAll() {
 		this.pendingRecomputations.clear();
 
 		for (const query of this._collection.queries) {
@@ -20,7 +21,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		}
 	}
 
-	private scheduleRecomputationsFor(docs: T[]) {
+	scheduleRecomputationsFor(docs: T[]) {
 		for (const query of this._collection.queries) {
 			if (this.pendingRecomputations.has(query)) continue;
 
@@ -44,30 +45,23 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	}
 
 	/**
-	 * A Zustand store that holds the records of the collection.
-	 *
-	 * It should be used as a hook in React components to access the collection's records and methods.
-	 *
-	 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
-	 * queries that depend on the changed documents.
-	 */
-	readonly use = createDocumentMapStore<T>({
-		onInvalidateAll: () => {
-			this.recomputeAll();
-		},
-		onInvalidate: (...docs) => {
-			this.scheduleRecomputationsFor(docs);
-		},
-	});
-
-	/**
 	 * The internal collection that manages the queries and results.
 	 *
 	 * It overrides the default Mongo.Collection's methods to use Zustand for state management.
 	 */
 	protected _collection = new LocalCollection<T>(this.use);
 
-	constructor() {
+	constructor(
+		/**
+		 * A Zustand store that holds the records of the collection.
+		 *
+		 * It should be used as a hook in React components to access the collection's records and methods.
+		 *
+		 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
+		 * queries that depend on the changed documents.
+		 */
+		public readonly use: UseBoundStore<StoreApi<IDocumentMapStore<T>>>,
+	) {
 		super(null);
 	}
 

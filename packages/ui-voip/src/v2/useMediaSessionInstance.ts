@@ -15,6 +15,8 @@ interface BaseSession {
 	transferredBy: string | undefined;
 	muted: boolean;
 	held: boolean;
+	remoteMuted: boolean;
+	remoteHeld: boolean;
 	startedAt: Date | null; // todo not sure if I need this
 	hidden: boolean;
 }
