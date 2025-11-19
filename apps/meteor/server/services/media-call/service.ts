@@ -217,7 +217,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('Invalid usernames for DM.');
 		}
 
-		const newRoom = await createDirectMessage(usernames, dmCreatorId, true);
+		const newRoom = await createDirectMessage(usernames, dmCreatorId);
 		return newRoom.rid;
 	}
 
