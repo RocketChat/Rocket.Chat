@@ -10,4 +10,5 @@ export enum LayoutBlockType {
 	VIDEO_CONF = 'video_conf',
 	CALLOUT = 'callout',
 	TAB_NAVIGATION = 'tab_navigation',
+	INFO_CARD = 'info_card',
 }

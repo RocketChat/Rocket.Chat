@@ -8,6 +8,7 @@ import type { SessionInfo } from './useMediaSessionInstance';
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
+	callId: undefined,
 	connectionState: 'CONNECTING' as const,
 	peerInfo: undefined,
 	transferredBy: undefined,
@@ -48,7 +49,10 @@ export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined
 	return undefined;
 };
 
-const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
+const deriveWidgetStateFromCallState = (
+	callState: CallState,
+	callRole: CallRole,
+): Extract<State, 'ongoing' | 'ringing' | 'calling'> | undefined => {
 	switch (callState) {
 		case 'active':
 		case 'accepted':
@@ -143,7 +147,18 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 				return;
 			}
 
-			const { contact, transferredBy: callTransferredBy, state: callState, role, muted, held, hidden, remoteHeld, remoteMute } = mainCall;
+			const {
+				contact,
+				transferredBy: callTransferredBy,
+				state: callState,
+				role,
+				muted,
+				held,
+				hidden,
+				remoteHeld,
+				remoteMute,
+				callId,
+			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 			const connectionState = deriveConnectionStateFromCallState(callState);
 
@@ -162,6 +177,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 						hidden,
 						remoteHeld,
 						remoteMuted: remoteMute,
+						callId,
 					},
 				});
 				return;
@@ -189,7 +205,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 			dispatch({
 				type: 'instance_updated',
-				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute },
+				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute, callId },
 			});
 		};
 
