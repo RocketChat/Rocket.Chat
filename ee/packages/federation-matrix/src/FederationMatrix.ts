@@ -936,6 +936,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('User not found');
 		}
 
+		if (!user.username) {
+			throw new Error('User username not found');
+		}
+
 		// TODO: should use common function to get matrix user ID
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 		if (!user.username) {
