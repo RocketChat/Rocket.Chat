@@ -160,27 +160,15 @@ export class E2EEMessageActions {
 		this.page = page;
 	}
 
-	private get forwardMessageButton(): Locator {
+	get forwardMessageButton(): Locator {
 		return this.page.getByRole('button', { name: 'Forward message not available on encrypted content' });
 	}
 
-	private get replyInDirectMessageOption(): Locator {
+	get replyInDirectMessageOption(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Reply in direct message' });
 	}
 
-	private get copyLinkOption(): Locator {
+	get copyLinkOption(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Copy link' });
-	}
-
-	async expectForwardMessageToBeDisabled(): Promise<void> {
-		await expect(this.forwardMessageButton).toBeDisabled();
-	}
-
-	async expectReplyInDirectMessageToBeDisabled(): Promise<void> {
-		await expect(this.replyInDirectMessageOption).toHaveClass(/disabled/);
-	}
-
-	async expectCopyLinkToBeDisabled(): Promise<void> {
-		await expect(this.copyLinkOption).toHaveClass(/disabled/);
 	}
 }

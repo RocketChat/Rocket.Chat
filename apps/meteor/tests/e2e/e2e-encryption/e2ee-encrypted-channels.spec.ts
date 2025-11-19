@@ -131,12 +131,12 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
 		await poHomeChannel.content.lastUserMessage.hover();
-		await e2eeMessageActions.expectForwardMessageToBeDisabled();
+		await expect(e2eeMessageActions.forwardMessageButton).toBeDisabled();
 
 		await poHomeChannel.content.openLastMessageMenu();
 
-		await e2eeMessageActions.expectReplyInDirectMessageToBeDisabled();
-		await e2eeMessageActions.expectCopyLinkToBeDisabled();
+		await expect(e2eeMessageActions.replyInDirectMessageOption).toHaveClass(/disabled/);
+		await expect(e2eeMessageActions.copyLinkOption).toHaveClass(/disabled/);
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
@@ -282,16 +282,16 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.toastMessage.dismissToast();
 
 		await pinnedMessagesTab.openTab();
-		await pinnedMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
+		await expect(pinnedMessagesTab.lastMessage.body).toContainText('This message should be pinned and starred.');
 		await pinnedMessagesTab.openLastMessageMenu();
-		await e2eeMessageActions.expectCopyLinkToBeDisabled();
+		await expect(e2eeMessageActions.copyLinkOption).toHaveClass(/disabled/);
 
 		await poHomeChannel.btnContextualbarClose.click();
 
 		await starredMessagesTab.openTab();
-		await starredMessagesTab.expectLastMessageToContainText('This message should be pinned and starred.');
+		await expect(starredMessagesTab.lastMessage.body).toContainText('This message should be pinned and starred.');
 		await starredMessagesTab.openLastMessageMenu();
-		await e2eeMessageActions.expectCopyLinkToBeDisabled();
+		await expect(e2eeMessageActions.copyLinkOption).toHaveClass(/disabled/);
 	});
 
 	test('expect to edit encrypted message', async ({ page }) => {

@@ -5,7 +5,7 @@ import { RoomToolbar } from './toolbar';
 import { expect } from '../../utils/test';
 
 export class PinnedMessagesTab {
-	private readonly root: Locator;
+	readonly root: Locator;
 
 	private readonly roomToolbar: RoomToolbar;
 
@@ -14,7 +14,7 @@ export class PinnedMessagesTab {
 		this.roomToolbar = new RoomToolbar(page);
 	}
 
-	private get lastMessage(): Message {
+	get lastMessage(): Message {
 		return new Message(this.root.locator('[data-qa-type="message"]').last());
 	}
 
@@ -22,10 +22,6 @@ export class PinnedMessagesTab {
 		await this.roomToolbar.openMoreOptions();
 		await this.roomToolbar.menuItemPinnedMessages.click();
 		await expect(this.root).toBeVisible();
-	}
-
-	async expectLastMessageToContainText(text: string): Promise<void> {
-		await expect(this.lastMessage.root).toContainText(text);
 	}
 
 	async openLastMessageMenu(): Promise<void> {

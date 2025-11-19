@@ -67,11 +67,11 @@ export class HomeContent {
 	}
 
 	getUserMention(username: string): Locator {
-		return this.page.getByRole('button', { name: username });
+		return this.page.locator('[data-uid]', { hasText: username });
 	}
 
 	getChannelMention(channelName: string): Locator {
-		return this.page.getByRole('button', { name: channelName });
+		return this.page.locator('[title="Mentions channel"]', { hasText: channelName });
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
