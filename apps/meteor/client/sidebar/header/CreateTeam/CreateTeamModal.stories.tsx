@@ -4,7 +4,6 @@ import CreateTeamModal from './CreateTeamModal';
 import CreateTeamModalV2 from '../../../NavBarV2/NavBarPagesGroup/actions/CreateTeamModal';
 
 export default {
-	title: 'views/sidebar/CreateTeamModal',
 	component: CreateTeamModal,
 } satisfies Meta<typeof CreateTeamModal>;
 

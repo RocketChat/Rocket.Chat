@@ -11,7 +11,6 @@ import { useCategories } from '../../hooks/useCategories';
 import { useCategoryToggle } from '../../hooks/useCategoryToggle';
 
 export default {
-	title: 'Admin/Apps/CategoryDropDown',
 	component: CategoryDropDownAnchor,
 };
 

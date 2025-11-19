@@ -7,6 +7,7 @@ import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirecto
 import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
 import { UserActorAgent } from '../internal/agents/UserActorAgent';
 import { logger } from '../logger';
+import { BroadcastActorAgent } from './BroadcastAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -104,8 +105,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	public async getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentForActorAndRole', actor, role });
-
 		if (actor.type === 'user') {
 			return this.getAgentForUserActorAndRole(actor, role);
 		}
@@ -114,17 +113,18 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 			return this.getAgentForSipActorAndRole(actor, role);
 		}
 
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForActorAndRole.null', actor, role });
 		return null;
 	}
 
 	protected async getAgentForUserActorAndRole(actor: MediaCallContact, role: CallRole): Promise<UserActorAgent | null> {
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForUserActorAndRole', id: actor.id, role });
 		return new UserActorAgent(actor, role);
 	}
 
-	protected async getAgentForSipActorAndRole(_actor: MediaCallContact, _role: CallRole): Promise<IMediaCallAgent | null> {
-		// #TODO: SIP Agents
-
-		return null;
+	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
+		logger.debug({ msg: 'MediaCallCastDirector.getAgentForSipActorAndRole', id: actor.id, role });
+		return new BroadcastActorAgent(actor, role);
 	}
 
 	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation): ContactList {

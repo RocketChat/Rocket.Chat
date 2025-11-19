@@ -1006,7 +1006,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.deleteLastMessage();
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 				await expect(poFederationChannelServer1.content.lastUserMessage).not.toBeVisible();
 				await expect(poFederationChannelServerUser2.content.lastUserMessage).not.toBeVisible();
@@ -1048,7 +1048,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await page.waitForTimeout(2000);
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server B');
 				await poFederationChannelServerUser2.content.deleteLastMessage();
-				await expect(poFederationChannelServerUser2.toastSuccess).toBeVisible();
+				await poFederationChannelServerUser2.toastMessage.waitForDisplay();
 
 				await expect(poFederationChannelServer1.content.lastUserMessage).not.toBeVisible();
 				await expect(poFederationChannelServerUser2.content.lastUserMessage).not.toBeVisible();
@@ -1089,9 +1089,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.starLastMessage();
-				await expect(
-					poFederationChannelServer1.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
-				).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay({ type: 'success', message: 'Message has been starred' });
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 				await page2.close();
@@ -1131,9 +1129,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await expect(poFederationChannelServerUser2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServerUser2.content.starLastMessage();
-				await expect(
-					poFederationChannelServerUser2.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
-				).toBeVisible();
+				await poFederationChannelServerUser2.toastMessage.waitForDisplay({ type: 'success', message: 'Message has been starred' });
 
 				await expect(poFederationChannelServerUser2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 				await page2.close();
@@ -1297,7 +1293,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 
-				await expect(poFederationChannelServer1.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see the file list sent in the DM on Server B', async () => {
@@ -1305,61 +1301,61 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 
-				await expect(poFederationChannelServer2.tabs.btnFileList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.btnFiles).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to see all the starred messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnStarredMessagesList).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemStarredMessages).toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not to see the pinned messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPinnedMessagesList).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the DM on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.tabs.kebab.click();
+				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer1.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 
 			test('expect to not be able to prune messages sent in the DM on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await poFederationChannelServer2.tabs.kebab.click();
+				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
-				await expect(poFederationChannelServer2.tabs.btnPruneMessages).not.toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.menuItemPruneMessages).not.toBeVisible();
 			});
 		});
 	});

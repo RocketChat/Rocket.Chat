@@ -38,7 +38,7 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	state: MediaCallState;
 
-	createdBy: MediaCallActor;
+	createdBy: MediaCallContact;
 	createdAt: Date;
 
 	caller: MediaCallSignedContact;
@@ -51,11 +51,16 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	expiresAt: Date;
 
+	/** The timestamp of the moment the callee accepted the call */
+	acceptedAt?: Date;
+	/** The timestamp of the moment either side reported the call as active for the first time */
+	activatedAt?: Date;
+
 	callerRequestedId?: string;
 	parentCallId?: string;
 
 	/** transferred* fields are filled as soon as the transfer is requested, but the old call will only end when the new one is created */
-	transferredBy?: MediaCallSignedActor;
+	transferredBy?: MediaCallSignedContact;
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
 

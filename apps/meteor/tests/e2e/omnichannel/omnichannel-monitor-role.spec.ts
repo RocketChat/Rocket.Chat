@@ -187,9 +187,7 @@ test.describe('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
-			await poOmnichannel.content.btnOnHold.click({ clickCount: 2 });
-			await expect(poOmnichannel.content.modalOnHold).toBeVisible();
-			await poOmnichannel.content.btnOnHoldConfirm.click();
+			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
 				`Chat On Hold: The chat was manually placed On Hold by ${MONITOR}`,
 			);
@@ -201,16 +199,13 @@ test.describe('OC - Monitor Role', () => {
 			await poOmnichannel.content.btnResume.click();
 			await expect(poOmnichannel.content.btnResume).not.toBeVisible();
 			await expect(poOmnichannel.content.inputMessage).toBeVisible();
-			await expect(poOmnichannel.content.btnOnHold).toBeVisible();
+			await expect(poOmnichannel.quickActionsRoomToolbar.btnOnHold).toBeVisible();
 		});
 
 		// await test.step('expect to be able to edit room information from another agent', async () => {);
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
-			await poOmnichannel.content.btnCloseChat.click();
-			await poOmnichannel.content.inputModalClosingComment.type('any_comment');
-			await poOmnichannel.content.btnModalConfirm.click();
-			await expect(poOmnichannel.toastSuccess).toBeVisible();
+			await poOmnichannel.quickActionsRoomToolbar.closeChat();
 			await page.waitForURL('/omnichannel/current');
 		});
 

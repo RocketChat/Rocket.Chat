@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
@@ -15,6 +15,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	constructor() {
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
+		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
+		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id.startsWith('VoIP_TeamCollab_')) {
@@ -70,8 +72,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
 		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
-		const sipEnabled = false;
-		const forceSip = false;
+		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
 			enabled,
@@ -81,8 +83,28 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			},
 			sip: {
 				enabled: sipEnabled,
+				drachtio: {
+					host: settings.get<string>('VoIP_TeamCollab_Drachtio_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_Drachtio_Port') ?? 9022,
+					secret: settings.get<string>('VoIP_TeamCollab_Drachtio_Password') ?? '',
+				},
+				sipServer: {
+					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
+				},
 			},
+			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 		};
+	}
+
+	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
+		if (callType === 'any') {
+			return Authorization.hasAtLeastOnePermission(uid, ['allow-internal-voice-calls', 'allow-external-voice-calls']);
+		}
+
+		const permissionId = `allow-${callType}-voice-calls`;
+
+		return Authorization.hasPermission(uid, permissionId);
 	}
 
 	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {

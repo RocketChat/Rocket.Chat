@@ -97,7 +97,7 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
-		await poFederationChannelServer2.tabs.btnTabMembers.click();
+		await poFederationChannelServer2.roomToolbar.openMembersTab();
 		await poFederationChannelServer2.tabs.members.showAllUsers();
 
 		await expect(poFederationChannelServer2.tabs.members.getUserInList(adminUsernameWithDomainFromServer1)).toContainText(newName);
@@ -121,7 +121,7 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
-		await poFederationChannelServer1.tabs.btnTabMembers.click();
+		await poFederationChannelServer1.roomToolbar.openMembersTab();
 		await poFederationChannelServer1.tabs.members.showAllUsers();
 
 		await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toContainText(newName);

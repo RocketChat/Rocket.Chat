@@ -1,4 +1,5 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 
 import NavBarControlsMenu from './NavBarControlsMenu';
@@ -7,16 +8,13 @@ import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelContactAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelContactAction';
 import { useOmnichannelLivechatToggle } from '../NavBarOmnichannelGroup/hooks/useOmnichannelLivechatToggle';
 import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelQueueAction';
-import { useVoipDialerAction } from '../NavBarVoipGroup/hooks/useVoipDialerAction';
-import { useVoipTogglerAction } from '../NavBarVoipGroup/hooks/useVoipTogglerAction';
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const isCallEnabled = useIsCallEnabled();
 
-	const { title: dialerTitle, handleToggleDialer, isPressed: isVoipDialerPressed, isDisabled: dialerDisabled } = useVoipDialerAction();
-	const { isRegistered, title: togglerTitle, handleToggleVoip, isDisabled: togglerDisabled } = useVoipTogglerAction();
+	const callAction = useMediaCallAction();
 
 	const {
 		isEnabled: queueEnabled,
@@ -39,22 +37,14 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 		handleAvailableStatusChange,
 	} = useOmnichannelLivechatToggle();
 
-	const voipItems = [
-		{
-			id: 'voipDialer',
-			icon: 'dialpad',
-			content: dialerTitle,
-			onClick: handleToggleDialer,
-			disabled: dialerDisabled,
-		},
-		{
-			id: 'voipToggler',
-			icon: isRegistered ? 'phone-disabled' : 'phone',
-			content: togglerTitle,
-			onClick: handleToggleVoip,
-			disabled: togglerDisabled,
-		},
-	].filter(Boolean) as GenericMenuItemProps[];
+	const callItem = callAction
+		? {
+				id: 'rcx-media-call',
+				icon: callAction.icon,
+				content: callAction.title,
+				onClick: () => callAction.action(),
+			}
+		: undefined;
 
 	const omnichannelItems = [
 		queueEnabled && {
@@ -62,7 +52,6 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 			icon: queueIcon,
 			content: queueTitle,
 			onClick: handleGoToQueue,
-			disabled: dialerDisabled,
 		},
 		{
 			id: 'omnichannelContact',
@@ -78,13 +67,13 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 		},
 	].filter(Boolean) as GenericMenuItemProps[];
 
-	const isPressed = isVoipDialerPressed || isQueuePressed || isContactPressed;
+	const isPressed = isQueuePressed || isContactPressed;
 
 	if (isCallEnabled) {
-		return <NavbarControlsWithCall voipItems={voipItems} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
+		return <NavbarControlsWithCall callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 	}
 
-	return <NavBarControlsMenu voipItems={voipItems} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
+	return <NavBarControlsMenu callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 };
 
 export default NavBarControlsWithData;

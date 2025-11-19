@@ -2598,13 +2598,30 @@ describe('[Rooms]', () => {
 
 	describe('/rooms.delete', () => {
 		let testChannel: IRoom;
+		let testTeam: ITeam;
+		let testUser: IUser;
+		let testUser2: IUser;
+		let userCredentials: Credentials;
 
-		before('create an channel', async () => {
-			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
-			testChannel = result.body.channel;
+		before('create channel and team', async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			userCredentials = await login(testUser.username, password);
+
+			const {
+				body: { channel },
+			} = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = channel;
+			testTeam = await createTeam(userCredentials, `team.test.${Date.now()}-${Math.random()}`, TEAM_TYPE.PUBLIC, [
+				testUser.username as string,
+				testUser2.username as string,
+			]);
 		});
 
-		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+		after('delete channel and team', async () => {
+			await deleteTeam(userCredentials, testTeam.name);
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
 
 		it('should throw an error when roomId is not provided', (done) => {
 			void request
@@ -2636,6 +2653,18 @@ describe('[Rooms]', () => {
 				.post(api('rooms.delete'))
 				.set(credentials)
 				.send({ roomId: 'invalid' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should throw an error when room is a main team room', (done) => {
+			void request
+				.post(api('rooms.delete'))
+				.set(credentials)
+				.send({ roomId: testTeam.roomId })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {

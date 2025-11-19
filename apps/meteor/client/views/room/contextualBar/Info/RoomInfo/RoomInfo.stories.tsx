@@ -5,7 +5,6 @@ import RoomInfo from './RoomInfo';
 import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomInfo',
 	component: RoomInfo,
 	parameters: {
 		layout: 'fullscreen',

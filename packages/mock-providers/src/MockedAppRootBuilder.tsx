@@ -150,9 +150,9 @@ export class MockedAppRootBuilder {
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptions ?? []], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -203,7 +203,7 @@ export class MockedAppRootBuilder {
 
 	private room: IRoom | undefined = undefined;
 
-	private subscriptions: SubscriptionWithRoom[] = [];
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -410,7 +410,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
 
 		return this;
@@ -468,8 +468,9 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withSetting(id: string, value: SettingValue): this {
+	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
+			...settingStructure,
 			_id: id,
 			value,
 		} as ISetting;

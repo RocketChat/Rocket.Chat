@@ -1,4 +1,5 @@
 export * from './answer';
+export * from './dtmf';
 export * from './error';
 export * from './hangup';
 export * from './local-sdp';

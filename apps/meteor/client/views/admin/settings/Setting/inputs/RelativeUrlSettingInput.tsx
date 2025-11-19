@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 
@@ -11,6 +11,7 @@ function RelativeUrlSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -44,6 +45,7 @@ function RelativeUrlSettingInput({
 				autoComplete={autocomplete === false ? 'off' : undefined}
 				onChange={handleChange}
 			/>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

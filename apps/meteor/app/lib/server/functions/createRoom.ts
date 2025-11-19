@@ -3,6 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -13,6 +14,7 @@ import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../..
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -53,6 +55,7 @@ async function createUsersSubscriptions({
 		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
 
 		if (insertedId) {
+			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
 			await notifyOnRoomChanged(room, 'inserted');
 		}
 
@@ -67,6 +70,7 @@ async function createUsersSubscriptions({
 
 	const membersCursor = Users.findUsersByUsernames(members);
 
+	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
 		try {
 			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
@@ -130,7 +134,32 @@ export const createRoom = async <T extends RoomType>(
 		rid: string;
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
+
+	const hasFederatedMembers = members.some((member) => {
+		if (typeof member === 'string') {
+			return member.includes(':') && member.includes('@');
+		}
+		return member.username?.includes(':') && member.username?.includes('@');
+	});
+
+	// Prevent adding federated users to rooms that are not marked as federated explicitly
+	if (hasFederatedMembers && optionalExtraData.federated !== true) {
+		throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
+			method: 'createRoom',
+		});
+	}
+
+	const extraData = {
+		...optionalExtraData,
+		...((hasFederatedMembers || optionalExtraData.federated) && {
+			federated: true,
+			federation: {
+				version: 1,
+				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
+			},
+		}),
+	};
 
 	await prepareCreateRoomCallback.run({
 		type,
@@ -141,6 +170,13 @@ export const createRoom = async <T extends RoomType>(
 		extraData,
 		// options,
 	});
+
+	const shouldBeHandledByFederation = isRoomNativeFederated(extraData);
+	if (shouldBeHandledByFederation && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
+			method: 'createRoom',
+		});
+	}
 
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
@@ -235,8 +271,6 @@ export const createRoom = async <T extends RoomType>(
 		Object.assign(roomProps, eventResult);
 	}
 
-	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
-
 	await beforeCreateRoomCallback.run({
 		owner,
 		room: roomProps,
@@ -264,6 +298,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+
 	if (shouldBeHandledByFederation) {
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}

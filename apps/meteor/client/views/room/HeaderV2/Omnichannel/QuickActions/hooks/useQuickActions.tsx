@@ -7,7 +7,6 @@ import {
 	usePermission,
 	useRole,
 	useEndpoint,
-	useMethod,
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
@@ -17,16 +16,16 @@ import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
-import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
-import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
-import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
-import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
-import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
-import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { quickActionHooks } from '../../../../../../ui';
+import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
+import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
+import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
+import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
+import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
+import ReturnChatQueueModal from '../../../../../omnichannel/modals/ReturnChatQueueModal';
+import TranscriptModal from '../../../../../omnichannel/modals/TranscriptModal';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
@@ -105,12 +104,12 @@ export const useQuickActions = (): {
 		}
 	}, [dispatchToastMessage, sendTranscriptPDF, t]);
 
-	const sendTranscript = useMethod('livechat:sendTranscript');
+	const sendTranscript = useEndpoint('POST', '/v1/livechat/transcript');
 
 	const handleSendTranscript = useCallback(
 		async (email: string, subject: string, token: string) => {
 			try {
-				await sendTranscript(token, rid, email, subject);
+				await sendTranscript({ token, rid, email, subject });
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

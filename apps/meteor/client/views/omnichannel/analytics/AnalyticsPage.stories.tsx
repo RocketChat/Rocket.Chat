@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import AnalyticsPage from './AnalyticsPage';
 
 export default {
-	title: 'Omnichannel/AnalyticsPage',
 	component: AnalyticsPage,
 	parameters: {
 		layout: 'fullscreen',

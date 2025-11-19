@@ -6,9 +6,9 @@ import type { Key } from 'react';
 import { useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { getDateRange } from '../../../lib/utils/getDateRange';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';
 import ChatDurationChart from './charts/ChatDurationChart';

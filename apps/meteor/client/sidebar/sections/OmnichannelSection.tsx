@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { OverMacLimitSection } from './OverMacLimitSection';
 import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
-import { useIsOverMacLimit } from '../../hooks/omnichannel/useIsOverMacLimit';
-import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
+import { useIsOverMacLimit } from '../../views/omnichannel/hooks/useIsOverMacLimit';
+import { useOmnichannelShowQueueLink } from '../../views/omnichannel/hooks/useOmnichannelShowQueueLink';
 import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';
 
 const OmnichannelSection = () => {

@@ -1,3 +1,4 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ type InternalPeerInfo = {
 	username?: string;
 	avatarUrl?: string;
 	callerId?: string;
+	status?: UserStatus;
 };
 
 type ExternalPeerInfo = {
@@ -28,11 +30,16 @@ type MediaCallContextType = {
 	connectionState: ConnectionState;
 
 	peerInfo: PeerInfo | undefined;
+	transferredBy: string | undefined;
 
 	hidden: boolean;
 
 	muted: boolean;
 	held: boolean;
+
+	remoteMuted: boolean;
+	remoteHeld: boolean;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -54,16 +61,20 @@ type MediaCallContextType = {
 	getPeerInfo: (id: string) => Promise<PeerInfo | undefined>;
 };
 
-const MediaCallContext = createContext<MediaCallContextType>({
+export const defaultMediaCallContextValue: MediaCallContextType = {
 	state: 'closed',
 	connectionState: 'CONNECTED',
 
 	peerInfo: undefined,
+	transferredBy: undefined,
 
 	hidden: false,
 
 	muted: false,
 	held: false,
+	remoteMuted: false,
+	remoteHeld: false,
+
 	onMute: () => undefined,
 	onHold: () => undefined,
 
@@ -81,10 +92,57 @@ const MediaCallContext = createContext<MediaCallContextType>({
 
 	getAutocompleteOptions: () => Promise.resolve([]),
 	getPeerInfo: () => Promise.resolve(undefined),
-});
+};
 
+type MediaCallExternalContextType = {
+	state: State;
+	onToggleWidget: (peerInfo?: PeerInfo) => void;
+	onEndCall: () => void;
+	peerInfo: PeerInfo | undefined;
+};
+
+type MediaCallUnauthorizedContextType = {
+	state: 'unauthorized';
+	onToggleWidget: undefined;
+	onEndCall: undefined;
+	peerInfo: undefined;
+};
+
+type MediaCallUnlicensedContextType = {
+	state: 'unlicensed';
+	onToggleWidget: (peerInfo?: any) => void;
+	onEndCall: undefined;
+	peerInfo: undefined;
+};
+
+const MediaCallContext = createContext<MediaCallContextType | MediaCallUnauthorizedContextType | MediaCallUnlicensedContextType>(
+	defaultMediaCallContextValue,
+);
+
+// This hook is for internal use only. It will only be available if the user has the necessary permissions and the workspace has the necessary modules.
 export const useMediaCallContext = (): MediaCallContextType => {
-	return useContext(MediaCallContext);
+	const context = useContext(MediaCallContext);
+	if (context.state === 'unauthorized') {
+		throw new Error('MediaCallContext is unauthorized');
+	}
+	if (context.state === 'unlicensed') {
+		throw new Error('MediaCallContext is unlicensed');
+	}
+	return context;
+};
+
+// This hook is for other modules/packages, and exposes the necessary properties to interact with the context.
+export const useMediaCallExternalContext = ():
+	| MediaCallExternalContextType
+	| MediaCallUnauthorizedContextType
+	| MediaCallUnlicensedContextType => {
+	const context = useContext(MediaCallContext);
+
+	if (context.state === 'unauthorized' || context.state === 'unlicensed') {
+		return context;
+	}
+
+	return { state: context.state, onToggleWidget: context.onToggleWidget, onEndCall: context.onEndCall, peerInfo: context.peerInfo };
 };
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
@@ -141,6 +199,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 				userId: localInfo.value,
 				displayName: localInfo.label,
 				avatarUrl: localInfo.avatarUrl,
+				status: localInfo.status as UserStatus,
 			});
 		},
 		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,

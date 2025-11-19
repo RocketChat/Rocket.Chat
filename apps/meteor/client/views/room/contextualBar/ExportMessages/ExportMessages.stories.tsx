@@ -4,7 +4,6 @@ import ExportMessages from './index';
 import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/ExportMessages',
 	component: ExportMessages,
 	parameters: {
 		layout: 'fullscreen',

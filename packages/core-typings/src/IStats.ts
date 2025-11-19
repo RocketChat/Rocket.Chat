@@ -99,6 +99,7 @@ export interface IStats {
 	enterpriseReady: boolean;
 	uploadsTotal: number;
 	uploadsTotalSize: number;
+	fileStoreType: string;
 	migration: {
 		_id?: string;
 		locked: boolean;

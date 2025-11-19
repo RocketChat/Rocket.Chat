@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
@@ -19,7 +19,7 @@ import {
 	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
-import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
+import { sleep } from '../../../data/livechat/utils';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
@@ -324,7 +324,7 @@ describe('LIVECHAT - inquiries', () => {
 		});
 	});
 
-	describe('livechat:returnAsInquiry', () => {
+	describe('livechat/inquiries.returnAsInquiry', () => {
 		let testUser: { user: IUser; credentials: Credentials };
 		before(async () => {
 			const user = await createUser();
@@ -344,59 +344,39 @@ describe('LIVECHAT - inquiries', () => {
 		it('should throw an error if user doesnt have view-l-room permission', async () => {
 			await removePermissionFromAllRoles('view-l-room');
 			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: ['test'],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: 'test' })
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(403);
 
-			const response = parseMethodResponse(body);
-
-			expect(response.error.error).to.be.equal('error-not-allowed');
+			expect(body).to.have.property('success', false);
+			expect(body.error).to.have.equal('User does not have the permissions required for this action [error-unauthorized]');
 		});
 		it('should fail if provided room doesnt exists', async () => {
 			await restorePermissionToRoles('view-l-room');
 			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(credentials)
 				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: ['test'],
-						id: 'id',
-						msg: 'method',
-					}),
+					roomId: 'test',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(400);
 
-			const response = parseMethodResponse(body);
-			expect(response.error.error).to.be.equal('error-invalid-room');
+			expect(body).to.have.property('success', false);
+			expect(body).to.have.property('error', 'error-room-not-found');
 		});
 		it('should fail if room is not a livechat room', async () => {
 			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: ['GENERAL'],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: 'GENERAL' })
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(400);
 
-			const response = parseMethodResponse(body);
-			expect(response.error.error).to.be.equal('error-invalid-room');
+			expect(body).to.have.property('success', false);
+			expect(body).to.have.property('error', 'error-room-not-found');
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
@@ -404,21 +384,14 @@ describe('LIVECHAT - inquiries', () => {
 			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: [room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: room._id })
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(400);
 
-			const response = parseMethodResponse(body);
-			expect(response.error.error).to.be.equal('room-closed');
+			expect(body).to.have.property('success', false);
+			expect(body).to.have.property('error', 'room-closed');
 		});
 		describe('no serving', () => {
 			let room: IOmnichannelRoom;
@@ -431,21 +404,14 @@ describe('LIVECHAT - inquiries', () => {
 			});
 			it('should fail if no one is serving the room', async () => {
 				const { body } = await request
-					.post(methodCall('livechat:returnAsInquiry'))
+					.post(api('livechat/inquiries.returnAsInquiry'))
 					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'livechat:returnAsInquiry',
-							params: [room._id],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
+					.send({ roomId: room._id })
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 
-				const response = parseMethodResponse(body);
-				expect(response.result).to.be.false;
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('result', false);
 			});
 		});
 
@@ -460,21 +426,14 @@ describe('LIVECHAT - inquiries', () => {
 			await takeInquiry(inq._id, testUser.credentials);
 
 			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(testUser.credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: [room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			const response = parseMethodResponse(body);
-			expect(response.result).to.be.true;
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('result', true);
 		});
 		(IS_EE ? it : it.skip)('should appear on users queued elements', async () => {
 			const { body } = await request
@@ -554,16 +513,9 @@ describe('LIVECHAT - inquiries', () => {
 			await request.post(api('livechat/message')).send({ token: visitor.token, rid: room._id, msg: msgText }).expect(200);
 
 			await request
-				.post(methodCall('livechat:returnAsInquiry'))
+				.post(api('livechat/inquiries.returnAsInquiry'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: [room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 

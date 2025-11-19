@@ -5,6 +5,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 type ResponseData = {
@@ -98,7 +99,11 @@ export const saveCannedResponse = async (
 			});
 		}
 
-		result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
+		result = await CannedResponse.updateCannedResponse(_id, {
+			...responseData,
+			...(cannedResponse.scope === 'user' && { userId: cannedResponse.userId }),
+			createdBy: cannedResponse.createdBy,
+		});
 	} else {
 		const user = await Users.findOneById(userId);
 
@@ -122,6 +127,7 @@ export const saveCannedResponse = async (
 
 Meteor.methods<ServerMethods>({
 	async saveCannedResponse(_id, responseData) {
+		methodDeprecationLogger.method('saveCannedResponse', '8.0.0', 'POST /v1/canned-responses');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });

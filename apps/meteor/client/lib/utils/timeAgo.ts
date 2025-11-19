@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import type { Moment, MomentInput } from 'moment';
 import moment from 'moment';
@@ -6,11 +5,12 @@ import moment from 'moment';
 import { getUserPreference } from '../../../app/utils/client';
 import { t } from '../../../app/utils/lib/i18n';
 import { settings } from '../settings';
+import { getUserId } from '../user';
 
 const dayFormat = ['h:mm A', 'H:mm'];
 
 export const timeAgo = (date: MomentInput) => {
-	const clockMode = Tracker.nonreactive(() => getUserPreference(Meteor.userId(), 'clockMode', false) as number | boolean);
+	const clockMode = Tracker.nonreactive(() => getUserPreference(getUserId(), 'clockMode', false) as number | boolean);
 	const messageTimeFormat = settings.peek('Message_TimeFormat');
 	const sameDay = (typeof clockMode === 'number' ? dayFormat[clockMode - 1] : undefined) || messageTimeFormat;
 

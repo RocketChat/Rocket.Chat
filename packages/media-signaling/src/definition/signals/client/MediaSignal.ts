@@ -1,6 +1,7 @@
 import { Ajv, type JSONSchemaType } from 'ajv';
 
 import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer';
+import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
 import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
 import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
@@ -17,6 +18,7 @@ export type ClientMediaSignal =
 	| ClientMediaSignalError
 	| ClientMediaSignalAnswer
 	| ClientMediaSignalHangup
+	| ClientMediaSignalDTMF
 	| ClientMediaSignalRequestCall
 	| ClientMediaSignalLocalState
 	| ClientMediaSignalRegister
@@ -33,6 +35,7 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalErrorSchema,
 		clientMediaSignalAnswerSchema,
 		clientMediaSignalHangupSchema,
+		clientMediaSignalDTMFSchema,
 		clientMediaSignalRequestCallSchema,
 		clientMediaSignalLocalStateSchema,
 		clientMediaSignalRegisterSchema,

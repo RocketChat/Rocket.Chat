@@ -1,19 +1,20 @@
 import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	isPendingState,
-	type ClientMediaSignal,
-	type ClientMediaSignalRegister,
-	type ClientMediaSignalRequestCall,
-	type ServerMediaSignal,
-	type ServerMediaSignalRejectedCallRequest,
+import { isPendingState } from '@rocket.chat/media-signaling';
+import type {
+	ClientMediaSignal,
+	ClientMediaSignalRegister,
+	ClientMediaSignalRequestCall,
+	ServerMediaSignal,
+	ServerMediaSignalRejectedCallRequest,
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
 import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
-import { MediaCallDirector } from '../server/CallDirector';
+import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
+import { buildNewCallSignal } from '../server/buildNewCallSignal';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -86,14 +87,17 @@ export class GlobalSignalProcessor {
 			const role = isCaller ? 'caller' : 'callee';
 			const callActor = call[role];
 
+			// Hangup requests from different clients won't be coming from the signed client
+			const skipContractCheck = signal.type === 'hangup' && signal.reason === 'another-client';
+
 			// Ignore signals from different sessions if the actor is already signed
-			if (callActor.contractId && callActor.contractId !== signal.contractId) {
+			if (!skipContractCheck && callActor.contractId && callActor.contractId !== signal.contractId) {
 				return;
 			}
 
-			await MediaCallDirector.renewCallId(call._id);
+			await mediaCallDirector.renewCallId(call._id);
 
-			const agents = await MediaCallDirector.cast.getAgentsFromCall(call);
+			const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
 			const { [role]: agent } = agents;
 
 			if (!(agent instanceof UserActorAgent)) {
@@ -136,45 +140,14 @@ export class GlobalSignalProcessor {
 			// If it's signed to the same session that is now registering
 			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
 			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
-				await MediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
+				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
 			}
 		} else {
-			await MediaCallDirector.renewCallId(call._id);
+			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		if (isCaller) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'caller',
-				self: {
-					...call.caller,
-				},
-				contact: {
-					...call.callee,
-				},
-				...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
-			});
-		}
-
-		if (isCallee) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'callee',
-				self: {
-					...call.callee,
-				},
-				contact: {
-					...call.caller,
-				},
-			});
-		}
+		this.sendSignal(uid, buildNewCallSignal(call, role));
 
 		if (call.state === 'active') {
 			this.sendSignal(uid, {
@@ -268,20 +241,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, {
-			callId: call._id,
-			type: 'new',
-			service: call.service,
-			kind: call.kind,
-			role: 'caller',
-			self: {
-				...call.caller,
-			},
-			contact: {
-				...call.callee,
-			},
-			requestedCallId: signal.callId,
-		});
+		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
 
 		return call;
 	}

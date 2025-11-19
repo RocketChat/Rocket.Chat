@@ -2,6 +2,7 @@ import { SidebarV2Banner } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import AirGappedRestrictionWarning from './AirGappedRestrictionWarning';
+import { links } from '../../../lib/links';
 
 const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: { isRestricted: boolean; remainingDays: number }) => {
 	const { t } = useTranslation();
@@ -13,7 +14,7 @@ const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: { isRestri
 			linkProps={{
 				target: '_blank',
 				rel: 'noopener noreferrer',
-				href: 'https://go.rocket.chat/i/airgapped-restriction',
+				href: links.go.airgappedRestriction,
 			}}
 		/>
 	);

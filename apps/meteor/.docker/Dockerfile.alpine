@@ -1,3 +1,23 @@
+FROM node:22.16.0-alpine3.20 AS builder
+
+ENV LANG=C.UTF-8
+
+RUN apk add --no-cache python3 make g++ py3-setuptools libc6-compat
+
+COPY . /app
+
+ENV NODE_ENV=production
+
+RUN cd /app/bundle/programs/server \
+    && npm install --omit=dev \
+    # Re install sharp dependencies to ensure proper binary for architecture
+    # We only need the @img folder from sharp dependencies
+    && cd /app/bundle/programs/server/npm/node_modules/sharp \
+    && npm install --omit=dev \
+    && rm -rf ../@img \
+    && mv node_modules/@img ../@img \
+    && rm -rf node_modules
+
 FROM node:22.16.0-alpine3.20
 
 LABEL maintainer="buildmaster@rocket.chat"
@@ -16,12 +36,12 @@ ENV LANG=C.UTF-8
 # and more complex or security conscious daemons run as dedicated users.
 # The daemon user is also handy for locally installed daemons.
 # """
-RUN apk add --no-cache deno ttf-dejavu \
-    && apk add --no-cache --virtual deps shadow python3 make g++ py3-setuptools libc6-compat \
+RUN apk add --no-cache shadow deno ttf-dejavu \
+    # Update OpenSSL
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    && apk upgrade --no-cache openssl \
     && groupmod -n rocketchat nogroup \
     && useradd -u 65533 -r -g rocketchat rocketchat
-
-COPY --chown=rocketchat:rocketchat . /app
 
 # needs a mongo instance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \
@@ -34,33 +54,7 @@ ENV DEPLOY_METHOD=docker \
 
 USER rocketchat
 
-RUN cd /app/bundle/programs/server \
-    && npm install --omit=dev \
-    && cd /app/bundle/programs/server \
-    && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.32.6 --no-save \
-    && mv node_modules/sharp npm/node_modules/sharp \
-    # End hack for sharp
-    && cd /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk \
-    && npm install \
-    # # Start hack for isolated-vm...
-    # && rm -rf npm/node_modules/isolated-vm \
-    # && npm install isolated-vm@4.6.0 \
-    # && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
-    # # End hack for isolated-vm
-    && cd /app/bundle/programs/server/npm \
-    && npm rebuild bcrypt --build-from-source \
-    && npm cache clear --force
-
-USER root
-
-RUN apk del deps
-
-USER rocketchat
-
-# TODO: remove hack once upstream builds are fixed
-COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
-COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
+COPY --from=builder --chown=rocketchat:rocketchat /app /app
 
 VOLUME /app/uploads
 

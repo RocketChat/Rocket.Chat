@@ -1,8 +1,10 @@
-import { NavBarSection, NavBarGroup, NavBarDivider } from '@rocket.chat/fuselage';
+import { NavBarSection, NavBarGroup } from '@rocket.chat/fuselage';
 import { useUser, useLayout } from '@rocket.chat/ui-contexts';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
 import NavBarControlsWithData from './NavBarControlsWithData';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import NavBarOmnichannelGroup from '../NavBarOmnichannelGroup';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from '../NavBarSettingsToolbar';
 import NavBarVoipGroup from '../NavBarVoipGroup';
@@ -10,14 +12,15 @@ import NavBarVoipGroup from '../NavBarVoipGroup';
 const NavBarControlsSection = () => {
 	const { t } = useTranslation();
 	const user = useUser();
-
 	const { isMobile } = useLayout();
+
+	const showOmnichannel = useOmnichannelEnabled();
+	const callAction = useMediaCallAction();
 
 	if (isMobile) {
 		return (
 			<NavBarSection>
-				<NavBarControlsWithData />
-				<NavBarDivider />
+				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
 				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
@@ -28,8 +31,8 @@ const NavBarControlsSection = () => {
 
 	return (
 		<NavBarSection>
-			<NavBarVoipGroup />
-			<NavBarOmnichannelGroup />
+			{callAction && <NavBarVoipGroup />}
+			{showOmnichannel && <NavBarOmnichannelGroup />}
 			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 				<NavBarItemAdministrationMenu />
 				{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}

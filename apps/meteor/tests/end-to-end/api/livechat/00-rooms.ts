@@ -101,7 +101,7 @@ describe('LIVECHAT - rooms', () => {
 					expect(res.body).to.have.a.property('app');
 					expect(res.body.app).to.have.a.property('id');
 					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+					expect(res.body.app).to.have.a.property('status').and.to.be.equal('manually_enabled');
 
 					appId = res.body.app.id;
 				});
@@ -442,8 +442,8 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await closeOmnichannelRoom(manualRoom._id);
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 
 			it('should return queued rooms when `queued` param is passed', async () => {
@@ -484,10 +484,10 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				await updateSetting('Livechat_allow_manual_on_hold', false);
 				await closeOmnichannelRoom(room._id);
 				await closeOmnichannelRoom(room2._id);
+				await updateSetting('Livechat_allow_manual_on_hold', false);
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 
 			it('should not return on hold rooms along with queued rooms when `queued` is true and `onHold` is true', async () => {
@@ -2624,10 +2624,10 @@ describe('LIVECHAT - rooms', () => {
 				room = await createLivechatRoom(visitor.token);
 			});
 			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-
 				await deleteVisitor(visitor._id);
 				await closeOmnichannelRoom(room._id);
+
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			});
 			it('should not allow users to update room info without serving the chat or having "save-others-livechat-room-info" permission', async () => {
 				await request
@@ -2838,30 +2838,23 @@ describe('LIVECHAT - rooms', () => {
 			});
 			it('should throw an error if a valid custom field fails the check', async () => {
 				await request
-					.post(methodCall('livechat:saveCustomField'))
+					.post(api('livechat/custom-fields.save'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'livechat:saveCustomField',
-							params: [
-								null,
-								{
-									field: 'intfield',
-									label: 'intfield',
-									scope: 'room',
-									visibility: 'visible',
-									regexp: '\\d+',
-									searchable: true,
-									type: 'input',
-									required: false,
-									defaultValue: '0',
-									options: '',
-									public: false,
-								},
-							],
-							id: 'id',
-							msg: 'method',
-						}),
+						customFieldId: null,
+						customFieldData: {
+							field: 'intfield',
+							label: 'intfield',
+							scope: 'room',
+							visibility: 'visible',
+							regexp: '\\d+',
+							searchable: true,
+							type: 'input',
+							required: false,
+							defaultValue: '0',
+							options: '',
+							public: false,
+						},
 					})
 					.expect(200);
 

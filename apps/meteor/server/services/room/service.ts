@@ -1,9 +1,10 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
+import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
@@ -11,7 +12,13 @@ import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUser
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { addRoomLeader } from '../../methods/addRoomLeader';
+import { addRoomModerator } from '../../methods/addRoomModerator';
+import { addRoomOwner } from '../../methods/addRoomOwner';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { removeRoomLeader } from '../../methods/removeRoomLeader';
+import { removeRoomModerator } from '../../methods/removeRoomModerator';
+import { removeRoomOwner } from '../../methods/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -81,10 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
-		user: {
-			username: string;
-			_id: string;
-		},
+		user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'>,
 		sendMessage = true,
 	): Promise<void> {
 		await saveRoomTopic(roomId, roomTopic, user, sendMessage);
@@ -108,6 +112,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		if (!(await Authorization.canAccessRoom(room, user))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+		}
+
+		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
@@ -141,5 +149,61 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async beforeTopicChange(room: IRoom): Promise<void> {
 		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async saveRoomName(roomId: string, userId: string, name: string) {
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		await saveRoomName(roomId, name, user);
+	}
+
+	public async addUserRoleRoomScoped(
+		fromUserId: string,
+		userId: string,
+		roomId: string,
+		role: 'moderator' | 'owner' | 'leader' | 'user',
+	): Promise<void> {
+		if (role === 'moderator') {
+			await addRoomModerator(fromUserId, roomId, userId);
+			return;
+		}
+
+		if (role === 'owner') {
+			await addRoomOwner(fromUserId, roomId, userId);
+			return;
+		}
+
+		if (role === 'leader') {
+			await addRoomLeader(fromUserId, roomId, userId);
+			return;
+		}
+
+		const sub = await Subscriptions.findByUserIdAndRoomIds(userId, [roomId], { projection: { roles: 1 } }).next();
+		if (!sub) {
+			throw new Error('user and room subsciption not found');
+		}
+
+		if (!sub.roles) {
+			return; // 'user' role essentially
+		}
+
+		for await (const currentRole of sub.roles) {
+			if (currentRole === 'owner') {
+				await removeRoomOwner(fromUserId, roomId, userId);
+				return;
+			}
+
+			if (currentRole === 'leader') {
+				await removeRoomLeader(fromUserId, roomId, userId);
+				return;
+			}
+
+			if (currentRole === 'moderator') {
+				await removeRoomModerator(fromUserId, roomId, userId);
+				return;
+			}
+		}
 	}
 }

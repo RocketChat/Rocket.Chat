@@ -62,6 +62,8 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
+const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
+
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
@@ -241,10 +243,19 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						<Controller
 							control={control}
 							name='members'
+							rules={{
+								validate: (members) =>
+									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
+							}}
 							render={({ field: { onChange, value } }): ReactElement => (
 								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
 							)}
 						/>
+						{errors.members && (
+							<FieldError aria-live='assertive' id={`${addMembersId}-error`}>
+								{errors.members.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
 						<FieldRow>

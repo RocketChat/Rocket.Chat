@@ -9,6 +9,7 @@ type KeyProps = {
 	longPressKey?: string;
 	onLongKeyPress: (digit: string) => void;
 	onKeyPress: (digit: string) => void;
+	large?: boolean;
 };
 
 const dialPadButtonClass = css`
@@ -18,7 +19,7 @@ const dialPadButtonClass = css`
 	}
 `;
 
-const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPress }: KeyProps) => {
+const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPress, large }: KeyProps) => {
 	const { t } = useTranslation();
 
 	const { longPressProps } = useLongPress({
@@ -34,7 +35,7 @@ const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPr
 
 	return (
 		<Button minWidth={52} w={52} h={40} p={0} m={4} {...buttonProps} className={dialPadButtonClass} borderRadius={8}>
-			<Box is='span' fontScale='p1' mb={-4}>
+			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} mb={-4}>
 				{primaryKey}
 			</Box>
 			<Box is='span' fontScale='c1' color='hint' aria-hidden minHeight={16} letterSpacing='0.15em'>

@@ -68,8 +68,6 @@ export * from './models/UsersSessions';
 export * from './models/VideoConference';
 export * from './models/VoipRoom';
 export * from './models/WebdavAccounts';
-export * from './models/MatrixBridgedRoom';
-export * from './models/MatrixBridgedUser';
 export * from './models/CredentialTokens';
 export * from './models/MessageReads';
 export * from './models/CronHistoryModel';

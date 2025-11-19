@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import EditTrigger from './EditTrigger';
 
 export default {
-	title: 'Omnichannel/EditTrigger',
 	component: EditTrigger,
 	decorators: [
 		(fn) => (

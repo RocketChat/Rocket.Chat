@@ -1,12 +1,4 @@
-import type {
-	AtLeast,
-	IMediaCall,
-	IUser,
-	MediaCallActorType,
-	MediaCallContact,
-	MediaCallSignedActor,
-	MediaCallSignedContact,
-} from '@rocket.chat/core-typings';
+import type { AtLeast, IMediaCall, IUser, MediaCallActorType, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import type { CallRejectedReason, CallService } from '@rocket.chat/media-signaling';
 
 export type MinimalUserData = Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
@@ -22,7 +14,7 @@ export type InternalCallParams = {
 	requestedCallId?: string;
 	requestedService?: CallService;
 	parentCallId?: string;
-	requestedBy?: MediaCallSignedActor;
+	requestedBy?: MediaCallSignedContact;
 };
 
 export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;

@@ -77,6 +77,8 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	public abstract onCallTransferred(callId: string): Promise<void>;
 
+	public abstract onDTMF(callId: string, dtmf: string, duration: number): Promise<void>;
+
 	protected async createOrUpdateChannel(call: IMediaCall, contractId: string): Promise<IMediaCallChannel> {
 		if (!contractId) {
 			throw new Error('error-invalid-contract');

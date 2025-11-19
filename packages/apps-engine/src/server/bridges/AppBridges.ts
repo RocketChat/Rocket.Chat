@@ -6,6 +6,7 @@ import type { CommandBridge } from './CommandBridge';
 import type { ContactBridge } from './ContactBridge';
 import type { EmailBridge } from './EmailBridge';
 import type { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
+import type { ExperimentalBridge } from './ExperimentalBridge';
 import type { HttpBridge } from './HttpBridge';
 import type { IInternalBridge } from './IInternalBridge';
 import type { IInternalFederationBridge } from './IInternalFederationBridge';
@@ -42,6 +43,7 @@ export type Bridge =
 	| IInternalBridge
 	| ServerSettingBridge
 	| EmailBridge
+	| ExperimentalBridge
 	| UploadBridge
 	| UserBridge
 	| UiInteractionBridge
@@ -106,4 +108,6 @@ export abstract class AppBridges {
 	public abstract getRoleBridge(): RoleBridge;
 
 	public abstract getOutboundMessageBridge(): OutboundMessageBridge;
+
+	public abstract getExperimentalBridge(): ExperimentalBridge;
 }
