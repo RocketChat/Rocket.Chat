@@ -3,13 +3,14 @@ import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { getUserId } from '../lib/user';
 import { Messages } from '../stores';
 
 Meteor.startup(() => {
 	onLoggedIn(() => {
 		// Only event I found triggers this is from ephemeral messages
 		// Other types of messages come from another stream
-		return sdk.stream('notify-user', [`${Meteor.userId()}/message`], (msg: IMessage) => {
+		return sdk.stream('notify-user', [`${getUserId()}/message`], (msg: IMessage) => {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
@@ -18,7 +19,7 @@ Meteor.startup(() => {
 	});
 
 	onLoggedIn(() => {
-		return sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
+		return sdk.stream('notify-user', [`${getUserId()}/subscriptions-changed`], (_action, sub) => {
 			Messages.state.update(
 				(record) => record.rid === sub.rid && ('ignored' in sub && sub.ignored ? !sub.ignored.includes(record.u._id) : 'ignored' in record),
 				({ ignored: _, ...record }) => record,

@@ -1,11 +1,11 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.5.17-rc.2",
+	"version": "0.5.20",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

@@ -64,10 +64,13 @@ export type CallRejectedReason =
 	| 'invalid-call-params' // something is wrong with the params (eg. no valid route between caller and callee)
 	| 'forbidden'; // one of the actors on the call doesn't have permission for it
 
+export type CallFlag = 'internal' | 'create-data-channel';
+
 export interface IClientMediaCall {
 	callId: string;
 	role: CallRole;
 	service: CallService | null;
+	flags: readonly CallFlag[];
 
 	state: CallState;
 	ignored: boolean;
@@ -78,8 +81,14 @@ export interface IClientMediaCall {
 	held: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
+	/* if the other side has put the call on hold */
+	remoteHeld: boolean;
+	remoteMute: boolean;
 
 	contact: CallContact;
+	transferredBy: CallContact | null;
+	audioLevel: number;
+	localAudioLevel: number;
 
 	emitter: Emitter<CallEvents>;
 
@@ -93,4 +102,6 @@ export interface IClientMediaCall {
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
+
+	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 }

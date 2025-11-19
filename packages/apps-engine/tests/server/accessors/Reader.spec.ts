@@ -3,6 +3,7 @@ import { Expect, SetupFixture, Test } from 'alsatian';
 import type {
 	ICloudWorkspaceRead,
 	IEnvironmentRead,
+	IExperimentalRead,
 	ILivechatRead,
 	IMessageRead,
 	INotifier,
@@ -47,6 +48,8 @@ export class ReaderAccessorTestFixture {
 
 	private contact: IContactRead;
 
+	private experimental: IExperimentalRead;
+
 	@SetupFixture
 	public setupFixture() {
 		this.env = {} as IEnvironmentRead;
@@ -63,6 +66,7 @@ export class ReaderAccessorTestFixture {
 		this.thread = {} as IThreadRead;
 		this.role = {} as IRoleRead;
 		this.contact = {} as IContactRead;
+		this.experimental = {} as IExperimentalRead;
 	}
 
 	@Test()
@@ -84,6 +88,7 @@ export class ReaderAccessorTestFixture {
 					this.oauthApps,
 					this.thread,
 					this.role,
+					this.experimental,
 				),
 		).not.toThrow();
 
@@ -102,6 +107,7 @@ export class ReaderAccessorTestFixture {
 			this.oauthApps,
 			this.thread,
 			this.role,
+			this.experimental,
 		);
 
 		Expect(rd.getEnvironmentReader()).toBeDefined();

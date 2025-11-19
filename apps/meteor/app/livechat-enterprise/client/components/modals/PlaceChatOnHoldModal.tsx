@@ -21,7 +21,8 @@ const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, 
 	const { t } = useTranslation();
 
 	return (
-		<Modal {...props} data-qa-id='on-hold-modal'>
+		// TODO: Replace Modal with GenericModal
+		<Modal {...props} aria-label={t('Omnichannel_onHold_Chat')}>
 			<ModalHeader>
 				<ModalIcon name='pause-unfilled' />
 				<ModalTitle>{t('Omnichannel_onHold_Chat')}</ModalTitle>

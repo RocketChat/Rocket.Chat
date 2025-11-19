@@ -1,6 +1,6 @@
 import { Message, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { Document, UpdateResult } from 'mongodb';
@@ -63,6 +63,10 @@ export async function saveRoomName(
 
 	await Room.beforeNameChange(room);
 
+	if (isRoomNativeFederated(room)) {
+		displayName = `${displayName}:${room.federation.mrid.split(':').pop()}`;
+	}
+
 	if (displayName === room.name) {
 		return;
 	}
@@ -73,11 +77,11 @@ export async function saveRoomName(
 
 	const isDiscussion = Boolean(room?.prid);
 
-	const slugifiedRoomName = isDiscussion ? displayName : await getValidRoomName(displayName, rid);
+	const slugifiedRoomName = isDiscussion || isRoomNativeFederated(room) ? displayName : await getValidRoomName(displayName, rid);
 
 	let update;
 
-	if (isDiscussion || isRoomFederated(room)) {
+	if (isDiscussion || isRoomNativeFederated(room)) {
 		update = await updateFName(rid, displayName);
 	} else {
 		update = await updateRoomName(rid, displayName, slugifiedRoomName);

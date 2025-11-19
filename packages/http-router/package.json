@@ -1,19 +1,19 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.5-rc.2",
+	"version": "7.9.8",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/express": "^4.17.23",
+		"@types/express": "^4.17.25",
 		"@types/jest": "~30.0.0",
-		"@types/supertest": "^6.0.3",
+		"@types/supertest": "~6.0.3",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
-		"supertest": "^7.1.1",
-		"ts-jest": "~29.4.0",
-		"typescript": "~5.9.2"
+		"jest": "~30.2.0",
+		"supertest": "~7.1.4",
+		"ts-jest": "~29.4.5",
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",
@@ -31,6 +31,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",

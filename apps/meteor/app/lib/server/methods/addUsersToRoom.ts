@@ -1,6 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -17,8 +19,13 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-const isAFederatedUsername = (username: string) => {
-	return username.includes('@') && username.includes(':');
+export const sanitizeUsername = (username: string) => {
+	const isFederatedUsername = username.includes('@') && username.includes(':');
+	if (isFederatedUsername) {
+		return username;
+	}
+
+	return username.replace(/(^@)|( @)/, '');
 };
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
@@ -82,15 +89,25 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	await Promise.all(
 		data.users.map(async (username) => {
-			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !isAFederatedUsername(username)) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			const sanitizedUsername = sanitizeUsername(username);
+
+			// If it's a federated username format and the room is not federated, throw error immediately
+			if (validateFederatedUsername(sanitizedUsername) && !isRoomNativeFederated(room)) {
+				throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
 					method: 'addUsersToRoom',
 				});
 			}
-			const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
+
+			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);
+			if (!newUser) {
+				throw new Meteor.Error('error-user-not-found', 'User not found', {
+					method: 'addUsersToRoom',
+				});
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser || username, user);
+				await addUserToRoom(data.rid, newUser, user);
 			} else {
 				if (!newUser.username) {
 					return;

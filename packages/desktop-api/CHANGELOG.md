@@ -1,5 +1,11 @@
 # @rocket.chat/desktop-api
 
+## 1.1.0
+
+### Minor Changes
+
+- ([#36912](https://github.com/RocketChat/Rocket.Chat/pull/36912)) Defines `reloadServer()` method for the context bridge object type.
+
 ## 1.1.0-rc.0
 
 ### Minor Changes

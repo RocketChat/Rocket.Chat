@@ -9,8 +9,9 @@ import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Chart from './Chart';
+import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { drawLineChart, resetChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefined, t: TFunction) =>
@@ -29,41 +30,43 @@ const ChatsPerDepartmentChart = ({ departmentId, dateRange, ...props }: ChatsPer
 	const { t } = useTranslation();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<chartjs.Chart<'line'>>();
-
-	const updateChartData = useUpdateChartData({
-		context,
-		canvas,
-		t,
-		init,
-	});
 
 	const getChatsPerDepartment = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/chats-per-department');
 	const { isSuccess, data } = useQuery({
 		queryKey: omnichannelQueryKeys.analytics.chatsPerDepartment(departmentId, dateRange),
 		queryFn: () => getChatsPerDepartment({ departmentId, ...dateRange }),
+		select: ({ success: _, ...data }) => Object.entries(data),
+		gcTime: 0,
+	});
+
+	const context = useChartContext({
+		canvas,
+		init,
+		t,
+	});
+
+	const updateChartData = useUpdateChartData({
+		context,
+		canvas,
+		init,
+		t,
 	});
 
 	useEffect(() => {
-		const initChart = async () => {
-			if (!canvas.current) {
-				return;
-			}
-			context.current = await init(canvas.current, context.current, t);
-		};
-		initChart();
-	}, [t]);
+		if (!context) {
+			return;
+		}
 
-	useEffect(() => {
-		if (!isSuccess) return;
-		Object.entries(data).forEach(([name, value]) => {
-			if (name === 'success') {
-				return;
-			}
+		if (!isSuccess) {
+			return;
+		}
 
+		resetChart(context);
+
+		data.forEach(([name, value]) => {
 			updateChartData(name, [value.open, value.closed]);
 		});
-	}, [data, isSuccess, t, updateChartData]);
+	}, [context, data, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

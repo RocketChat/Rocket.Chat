@@ -3,9 +3,9 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
-		"@types/node-fetch": "~2.6.12",
+		"@types/node-fetch": "~2.6.13",
 		"eslint": "~8.45.0",
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

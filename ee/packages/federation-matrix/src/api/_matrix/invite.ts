@@ -1,19 +1,16 @@
-import { FederationMatrix, Room } from '@rocket.chat/core-services';
+import { Authorization, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
-import { eventIdSchema, roomIdSchema } from '@rocket.chat/federation-sdk';
-import type {
-	HomeserverServices,
-	RoomService,
-	StateService,
-	PduMembershipEventContent,
-	PersistentEventBase,
-	RoomVersion,
-} from '@rocket.chat/federation-sdk';
+import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+
+const logger = new Logger('federation-matrix:invite');
 
 const EventBaseSchema = {
 	type: 'object',
@@ -144,8 +141,14 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	try {
 		await fn();
 	} catch (e) {
-		const delay = Math.max(625, delaySec ** 2);
-		console.error(`error occurred, retrying in ${delay}ms`, e);
+		// don't retry on authorization/validation errors - they won't succeed on retry
+		if (e instanceof NotAllowedError) {
+			logger.error('Authorization error, not retrying:', e);
+			return;
+		}
+
+		const delay = Math.min(625, delaySec ** 2);
+		logger.error(`error occurred, retrying in ${delay}s`, e);
 		setTimeout(() => {
 			runWithBackoff(fn, delay);
 		}, delay * 1000);
@@ -155,13 +158,9 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 async function joinRoom({
 	inviteEvent,
 	user, // ours trying to join the room
-	room,
-	state,
 }: {
 	inviteEvent: PersistentEventBase<RoomVersion, 'm.room.member'>;
 	user: IUser;
-	room: RoomService;
-	state: StateService;
 }) {
 	// from the response we get the event
 	if (!inviteEvent.stateKey) {
@@ -169,10 +168,10 @@ async function joinRoom({
 	}
 
 	// backoff needed for this call, can fail
-	await room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
+	await federationSDK.joinUser(inviteEvent, inviteEvent.event.state_key);
 
 	// now we create the room we saved post joining
-	const matrixRoom = await state.getLatestRoomState2(inviteEvent.roomId);
+	const matrixRoom = await federationSDK.getLatestRoomState2(inviteEvent.roomId);
 	if (!matrixRoom) {
 		throw new Error('room not found not processing invite');
 	}
@@ -181,7 +180,7 @@ async function joinRoom({
 	const isDM = inviteEvent.getContent<PduMembershipEventContent>().is_direct;
 
 	if (!isDM && !matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
-		throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
+		throw new Error('room is neither direct message - rocketchat is unable to join for now');
 	}
 
 	// need both the sender and the participating user to exist in the room
@@ -265,10 +264,6 @@ async function joinRoom({
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
-
-	for await (const event of matrixRoom.getMemberJoinEvents()) {
-		await FederationMatrix.emitJoin(event.event, event.eventId);
-	}
 }
 
 async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {
@@ -276,11 +271,7 @@ async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {
 }
 
 // This is a special case where inside rocket chat we invite users inside rockechat, so if the sender or the invitee are external iw should throw an error
-export const acceptInvite = async (
-	inviteEvent: PersistentEventBase<RoomVersion, 'm.room.member'>,
-	username: string,
-	services: HomeserverServices,
-) => {
+export const acceptInvite = async (inviteEvent: PersistentEventBase<RoomVersion, 'm.room.member'>, username: string) => {
 	if (!inviteEvent.stateKey) {
 		throw new Error('join event has missing state key, unable to determine user to join');
 	}
@@ -290,12 +281,11 @@ export const acceptInvite = async (
 		throw new Error('room not found not processing invite');
 	}
 
-	const inviter = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(
-		getUsernameServername(inviteEvent.sender, services.config.serverName)[0],
-		{
-			projection: { _id: 1, username: 1 },
-		},
-	);
+	const serverName = federationSDK.getConfig('serverName');
+
+	const inviter = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(getUsernameServername(inviteEvent.sender, serverName)[0], {
+		projection: { _id: 1, username: 1 },
+	});
 
 	if (!inviter) {
 		throw new Error('Sender user ID not found');
@@ -316,11 +306,11 @@ export const acceptInvite = async (
 		throw new Error('User is native federated');
 	}
 
-	await services.room.joinUser(inviteEvent.roomId, inviteEvent.event.state_key);
+	await federationSDK.joinUser(inviteEvent, inviteEvent.event.state_key);
 };
 
-export const getMatrixInviteRoutes = (services: HomeserverServices) => {
-	const { invite, state, room } = services;
+export const getMatrixInviteRoutes = () => {
+	const logger = new Logger('matrix-invite');
 
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
@@ -333,14 +323,25 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 			tags: ['Federation'],
 			license: ['federation'],
 		},
+		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion } = await c.req.json();
+			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
 
 			const userToCheck = event.state_key as string;
 
 			if (!userToCheck) {
 				throw new Error('join event has missing state key, unable to determine user to join');
+			}
+
+			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+				return {
+					body: {
+						errcode: 'M_MISSING_PARAM',
+						error: 'Missing invite_room_state: m.room.create event is required',
+					},
+					statusCode: 400,
+				};
 			}
 
 			const [username /* domain */] = userToCheck.split(':');
@@ -353,26 +354,66 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomIdSchema.parse(roomId), eventIdSchema.parse(eventId), roomVersion);
+			// check federation permission before processing the invite
+			if (!(await Authorization.hasPermission(ourUser._id, 'access-federation'))) {
+				logger.info(`User ${userToCheck} denied federation access, rejecting invite to room ${roomId}`);
 
-			setTimeout(
-				() => {
-					void startJoiningRoom({
-						inviteEvent,
-						user: ourUser,
-						room,
-						state,
-					});
-				},
-				inviteEvent.event.content.is_direct ? 2000 : 0,
-			);
+				return {
+					body: {
+						errcode: 'M_FORBIDDEN',
+						error: 'User does not have permission to access federation',
+					},
+					statusCode: 403,
+				};
+			}
 
-			return {
-				body: {
-					event: inviteEvent.event,
-				},
-				statusCode: 200,
-			};
+			try {
+				const inviteEvent = await federationSDK.processInvite(
+					event,
+					roomIdSchema.parse(roomId),
+					eventIdSchema.parse(eventId),
+					roomVersion,
+					c.get('authenticatedServer'),
+					strippedStateEvents,
+				);
+
+				setTimeout(
+					() => {
+						void startJoiningRoom({
+							inviteEvent,
+							user: ourUser,
+						});
+					},
+					inviteEvent.event.content.is_direct ? 2000 : 0,
+				);
+
+				return {
+					body: {
+						event: inviteEvent.event,
+					},
+					statusCode: 200,
+				};
+			} catch (error) {
+				if (error instanceof NotAllowedError) {
+					return {
+						body: {
+							errcode: 'M_FORBIDDEN',
+							error: 'This server does not allow joining this type of room based on federation settings.',
+						},
+						statusCode: 403,
+					};
+				}
+
+				logger.error({ msg: 'Error processing invite', err: error });
+
+				return {
+					body: {
+						errcode: 'M_UNKNOWN',
+						error: error instanceof Error ? error.message : 'Internal server error while processing request',
+					},
+					statusCode: 500,
+				};
+			}
 		},
 	);
 };

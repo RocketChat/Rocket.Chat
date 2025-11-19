@@ -1,6 +1,6 @@
 import type { AppAccessorManager } from '.';
 import { AppMethod } from '../../definition/metadata';
-import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
+import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundCommunication';
 import type { ProxiedApp } from '../ProxiedApp';
 import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { AppLogStorage } from '../storage';

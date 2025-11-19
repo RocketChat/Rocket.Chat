@@ -21,6 +21,7 @@ import _ from 'underscore';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
+import { checkSettingValueBounds } from '../../../lib/server/lib/checkSettingValueBonds';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -230,6 +231,8 @@ API.v1.addRoute(
 				}
 
 				if (isSettingsUpdatePropDefault(this.bodyParams)) {
+					checkSettingValueBounds(setting, this.bodyParams.value);
+
 					const { matchedCount } = await auditSettingOperation(
 						Settings.updateValueNotHiddenById,
 						this.urlParams._id,

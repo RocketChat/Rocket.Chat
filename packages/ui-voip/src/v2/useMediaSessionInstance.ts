@@ -11,19 +11,24 @@ import { useIceServers } from '../hooks/useIceServers';
 interface BaseSession {
 	state: State;
 	connectionState: ConnectionState;
-	peerInfo?: PeerInfo;
+	peerInfo: PeerInfo | undefined;
+	transferredBy: string | undefined;
 	muted: boolean;
 	held: boolean;
+	remoteMuted: boolean;
+	remoteHeld: boolean;
 	startedAt: Date | null; // todo not sure if I need this
 	hidden: boolean;
 }
 
 interface EmptySession extends BaseSession {
 	state: Extract<State, 'closed' | 'new'>;
+	callId: undefined;
 }
 
 interface CallSession extends BaseSession {
 	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	callId: string;
 	peerInfo: PeerInfo;
 }
 
@@ -97,7 +102,8 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	private makeInstance(userId: string) {
 		if (this.sessionInstance !== null) {
-			this.sessionInstance.disableStateReport();
+			this.sessionInstance.endSession();
+			this.sessionInstance = null;
 		}
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {

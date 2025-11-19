@@ -10,7 +10,7 @@ import { useToggleFavoriteAction } from '../../../../hooks/menuActions/useToggle
 import { useToggleNotificationAction } from '../../../../hooks/menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
-import { useOmnichannelPrioritiesMenu } from '../../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { useOmnichannelPrioritiesMenu } from '../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
 	rid: string;

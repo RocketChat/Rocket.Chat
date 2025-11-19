@@ -1,12 +1,12 @@
 import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	isPendingState,
-	type ClientMediaSignal,
-	type ClientMediaSignalRegister,
-	type ClientMediaSignalRequestCall,
-	type ServerMediaSignal,
-	type ServerMediaSignalRejectedCallRequest,
+import { isPendingState } from '@rocket.chat/media-signaling';
+import type {
+	ClientMediaSignal,
+	ClientMediaSignalRegister,
+	ClientMediaSignalRequestCall,
+	ServerMediaSignal,
+	ServerMediaSignalRejectedCallRequest,
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
@@ -14,6 +14,7 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
+import { buildNewCallSignal } from '../server/buildNewCallSignal';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -146,38 +147,7 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		if (isCaller) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'caller',
-				self: {
-					...call.caller,
-				},
-				contact: {
-					...call.callee,
-				},
-				...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
-			});
-		}
-
-		if (isCallee) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'callee',
-				self: {
-					...call.callee,
-				},
-				contact: {
-					...call.caller,
-				},
-			});
-		}
+		this.sendSignal(uid, buildNewCallSignal(call, role));
 
 		if (call.state === 'active') {
 			this.sendSignal(uid, {
@@ -271,20 +241,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, {
-			callId: call._id,
-			type: 'new',
-			service: call.service,
-			kind: call.kind,
-			role: 'caller',
-			self: {
-				...call.caller,
-			},
-			contact: {
-				...call.callee,
-			},
-			requestedCallId: signal.callId,
-		});
+		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
 
 		return call;
 	}

@@ -19,7 +19,7 @@ export const useOmnichannelContinuousSoundNotification = <T>(queue: T[]) => {
 			return;
 		}
 
-		notificationSounds.playNewMessageLoop();
+		notificationSounds.playNewRoomLoop();
 
 		return () => {
 			notificationSounds.stopNewRoom();

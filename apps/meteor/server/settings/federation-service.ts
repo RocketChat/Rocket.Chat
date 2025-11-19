@@ -84,5 +84,21 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			invalidValue: false,
 			alert: 'Federation_Service_EDU_Process_Presence_Alert',
 		});
+
+		await this.add('Federation_Service_Join_Encrypted_Rooms', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+		});
+
+		await this.add('Federation_Service_Join_Non_Private_Rooms', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+		});
 	});
 };

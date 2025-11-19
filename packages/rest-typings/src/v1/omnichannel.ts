@@ -513,6 +513,36 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
+type POSTLivechatTagsRemoveParams = {
+	id: string;
+};
+
+const POSTLivechatTagsRemoveSchema = {
+	type: 'object',
+	properties: {
+		id: {
+			type: 'string',
+		},
+	},
+	required: ['id'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatTagsRemoveParams = ajv.compile<POSTLivechatTagsRemoveParams>(POSTLivechatTagsRemoveSchema);
+
+const POSTLivechatTagsRemoveSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatTagsRemoveSuccessResponse = ajv.compile<void>(POSTLivechatTagsRemoveSuccessResponseSchema);
+
 type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
@@ -3467,6 +3497,48 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 
 export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
 
+type POSTLivechatInquiriesReturnAsInquiry = {
+	roomId: string;
+	departmentId?: string;
+};
+
+const POSTLivechatInquiriesReturnAsInquirySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatInquiriesReturnAsInquiry = ajv.compile<POSTLivechatInquiriesReturnAsInquiry>(
+	POSTLivechatInquiriesReturnAsInquirySchema,
+);
+
+const POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		result: {
+			type: 'boolean',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatInquiriesReturnAsInquirySuccessResponse = ajv.compile<{ result: boolean }>(
+	POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema,
+);
+
 type GETDashboardTotalizers = {
 	start: string;
 	end: string;
@@ -4067,6 +4139,53 @@ export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedR
 	POSTLivechatRoomsCloseAllSuccessResponseSchema,
 );
 
+type POSTLivechatRemoveRoomParams = {
+	roomId: string;
+};
+
+const POSTLivechatRemoveRoomParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveRoomParams = ajv.compile<POSTLivechatRemoveRoomParams>(POSTLivechatRemoveRoomParamsSchema);
+
+const POSTLivechatRemoveRoomSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatRemoveRoomSuccess = ajv.compile<void>(POSTLivechatRemoveRoomSuccessSchema);
+
+type POSTLivechatRemoveCustomFields = {
+	customFieldId: string;
+};
+
+const POSTLivechatRemoveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+	},
+	required: ['customFieldId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
+
 const POSTLivechatSaveCustomFieldsSchema = {
 	type: 'object',
 	properties: {
@@ -4185,23 +4304,6 @@ const POSTLivechatSaveCustomFieldSuccessSchema = {
 export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<{ customField: ILivechatCustomField }>(
 	POSTLivechatSaveCustomFieldSuccessSchema,
 );
-
-type POSTLivechatRemoveCustomFields = {
-	customFieldId: string;
-};
-
-const POSTLivechatRemoveCustomFieldsSchema = {
-	type: 'object',
-	properties: {
-		customFieldId: {
-			type: 'string',
-		},
-	},
-	required: ['customFieldId'],
-	additionalProperties: false,
-};
-
-export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
 
 const POSTLivechatRemoveCustomFieldSuccessSchema = {
 	type: 'object',

@@ -11,7 +11,7 @@ import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyLis
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'> | AtLeast<IMessage, '_id' | 'rid' | 'content'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],

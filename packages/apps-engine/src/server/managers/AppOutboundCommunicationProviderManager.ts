@@ -5,7 +5,7 @@ import type {
 	IOutboundPhoneMessageProvider,
 	ValidOutboundProvider,
 	IOutboundMessage,
-} from '../../definition/outboundComunication';
+} from '../../definition/outboundCommunication';
 import type { AppManager } from '../AppManager';
 import type { OutboundMessageBridge } from '../bridges';
 import { OutboundMessageProvider } from './AppOutboundCommunicationProvider';

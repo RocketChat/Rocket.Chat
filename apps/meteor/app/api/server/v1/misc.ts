@@ -364,6 +364,7 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
+			const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
 			const result = await browseChannelsMethod(
 				{
 					...filter,
@@ -372,7 +373,7 @@ API.v1.addRoute(
 					offset: Math.max(0, offset),
 					limit: Math.max(0, count),
 				},
-				this.user,
+				user,
 			);
 
 			if (!result) {
