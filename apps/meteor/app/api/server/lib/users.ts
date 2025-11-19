@@ -131,7 +131,7 @@ type FindPaginatedUsersByStatusProps = {
 	searchTerm: string;
 	hasLoggedIn: boolean;
 	type: string;
-	inactiveReason: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
+	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
 };
 
 export async function findPaginatedUsersByStatus({
