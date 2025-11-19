@@ -18,6 +18,8 @@ const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
+const mockUsersSetAbacAttributesById = jest.fn();
+const mockUsersUnsetAbacAttributesById = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -43,6 +45,9 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
+		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
+		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
 		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
 }));
@@ -69,8 +74,8 @@ describe('AbacService (unit)', () => {
 
 	describe('addSubjectAttributes (merging behavior)', () => {
 		const getUpdatedAttributesFromCall = () => {
-			const call = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$set?.abacAttributes);
-			return call?.[1].$set.abacAttributes as any[] | undefined;
+			const last = mockUsersSetAbacAttributesById.mock.calls.at(-1);
+			return last?.[1] as any[] | undefined;
 		};
 
 		it('merges values from multiple LDAP keys mapping to the same ABAC key', async () => {
@@ -87,7 +92,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			expect(mockUsersUpdateOne).toHaveBeenCalledTimes(1);
+			expect(mockUsersSetAbacAttributesById).toHaveBeenCalledTimes(1);
 			const final = getUpdatedAttributesFromCall();
 			expect(final).toBeDefined();
 			expect(final).toHaveLength(1);
@@ -130,8 +135,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
-			expect(unsetCall).toBeDefined();
+			expect(mockUsersUnsetAbacAttributesById).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when no LDAP values are found and user had no previous attributes', async () => {
@@ -141,7 +145,8 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			expect(mockUsersUpdateOne).not.toHaveBeenCalled();
+			expect(mockUsersSetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockUsersUnsetAbacAttributesById).not.toHaveBeenCalled();
 		});
 
 		it('calls onSubjectAttributesChanged when user loses an attribute value', async () => {
@@ -226,8 +231,7 @@ describe('AbacService (unit)', () => {
 			const spy = jest.spyOn<any, any>(service as any, 'onSubjectAttributesChanged');
 			await service.addSubjectAttributes(user, ldapUser, map);
 
-			const unsetCall = mockUsersUpdateOne.mock.calls.find((c) => c[1]?.$unset?.abacAttributes);
-			expect(unsetCall).toBeDefined();
+			expect(mockUsersUnsetAbacAttributesById).toHaveBeenCalledTimes(1);
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy.mock.calls[0][1]).toEqual([]);
 		});
@@ -1250,6 +1254,145 @@ describe('AbacService (unit)', () => {
 					},
 				},
 			]);
+		});
+	});
+	describe('buildRoomNonCompliantConditionsFromSubject (private)', () => {
+		const invoke = (defs: IAbacAttributeDefinition[]) => (service as any).buildRoomNonCompliantConditionsFromSubject(defs) as any[];
+
+		it('returns a single $nin condition when given no subject attributes', () => {
+			const result = invoke([]);
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: [] },
+					},
+				},
+			});
+		});
+
+		it('builds conditions for a single attribute with multiple values', () => {
+			const result = invoke([{ key: 'dept', values: ['eng', 'sales'] }]);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['eng', 'sales'] } },
+					},
+				},
+			});
+		});
+
+		it('deduplicates attribute values and preserves key insertion order', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['eng', 'sales', 'eng'] },
+				{ key: 'region', values: ['emea', 'emea', 'apac'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(3);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept', 'region'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['eng', 'sales'] } },
+					},
+				},
+			});
+			expect(result[2]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'region',
+						values: { $elemMatch: { $nin: ['emea', 'apac'] } },
+					},
+				},
+			});
+		});
+
+		it('overrides duplicated keys using the last occurrence only', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'dept', values: ['support'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['dept'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'dept',
+						values: { $elemMatch: { $nin: ['support'] } },
+					},
+				},
+			});
+		});
+
+		it('is resilient to mixed ordering of attributes', () => {
+			const defs: IAbacAttributeDefinition[] = [
+				{ key: 'b', values: ['2', '1'] },
+				{ key: 'a', values: ['x'] },
+				{ key: 'c', values: ['z', 'z', 'y'] },
+			];
+			const result = invoke(defs);
+			expect(result).toHaveLength(4);
+			expect(result[0]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: { $nin: ['b', 'a', 'c'] },
+					},
+				},
+			});
+			expect(result[1]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'b',
+						values: { $elemMatch: { $nin: ['2', '1'] } },
+					},
+				},
+			});
+			expect(result[2]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'a',
+						values: { $elemMatch: { $nin: ['x'] } },
+					},
+				},
+			});
+			expect(result[3]).toEqual({
+				abacAttributes: {
+					$elemMatch: {
+						key: 'c',
+						values: { $elemMatch: { $nin: ['z', 'y'] } },
+					},
+				},
+			});
+		});
+
+		it('does not mutate the input definitions array or their internal values', () => {
+			const defs: IAbacAttributeDefinition[] = [{ key: 'dept', values: ['eng', 'sales'] }];
+			const copy = JSON.parse(JSON.stringify(defs));
+			invoke(defs);
+			expect(defs).toEqual(copy);
 		});
 	});
 });
