@@ -64,11 +64,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	if (user.username != null) {
 		let userToReplaceWhenUnlinking: IUser | null = null;
 		const nameAlias = i18n.t('Removed_User');
+		let affectedRoomIds: string[] = [];
 		await relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
-			case 'Delete':
+			case 'Delete': {
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
@@ -80,6 +81,19 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				}
 
 				await Messages.removeByUserId(userId);
+
+				const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				affectedRoomIds = roomsToUpdate.map((room) => room._id);
+				for await (const room of roomsToUpdate) {
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+
+					if (newLastMessage) {
+						await Rooms.updateOne({ _id: room._id }, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne({ _id: room._id }, { $unset: { lastMessage: 1 } });
+					}
+				}
+
 				await ReadReceipts.removeByUserId(userId);
 
 				await ModerationReports.hideMessageReportsByUserId(
@@ -89,6 +103,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 					'DELETE_USER',
 				);
 
+				}
 				break;
 			case 'Unlink':
 				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
@@ -103,7 +118,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		const rids = subscribedRooms.map((room) => room.rid);
-		void notifyOnRoomChangedById(rids);
+		const allAffectedRids = [...new Set([...rids, ...affectedRoomIds])];
+		void notifyOnRoomChangedById(allAffectedRids);
 
 		await Subscriptions.removeByUserId(userId);
 
