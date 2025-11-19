@@ -58,7 +58,6 @@ const UsersListStatusParamsGetSchema = {
 				type: 'string',
 				enum: ['deactivated', 'pending_approval', 'idle_too_long'],
 			},
-			nullable: true,
 		},
 	},
 	additionalProperties: false,
