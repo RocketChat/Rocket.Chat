@@ -27,8 +27,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { PageScrollableContentWithShadow } from '../../../components/Page';
+import AutoCompleteDepartment from '../../omnichannel/components/AutoCompleteDepartment';
 
 type EmailInboxFormData = {
 	active: boolean;

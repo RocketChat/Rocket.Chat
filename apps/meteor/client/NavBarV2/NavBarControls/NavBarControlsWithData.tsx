@@ -1,4 +1,5 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 
 import NavBarControlsMenu from './NavBarControlsMenu';
@@ -12,6 +13,8 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const isCallEnabled = useIsCallEnabled();
+
+	const callAction = useMediaCallAction();
 
 	const {
 		isEnabled: queueEnabled,
@@ -33,6 +36,15 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 		icon: omnichannelLivechatTogglerIcon,
 		handleAvailableStatusChange,
 	} = useOmnichannelLivechatToggle();
+
+	const callItem = callAction
+		? {
+				id: 'rcx-media-call',
+				icon: callAction.icon,
+				content: callAction.title,
+				onClick: () => callAction.action(),
+			}
+		: undefined;
 
 	const omnichannelItems = [
 		queueEnabled && {
@@ -58,10 +70,10 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const isPressed = isQueuePressed || isContactPressed;
 
 	if (isCallEnabled) {
-		return <NavbarControlsWithCall omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
+		return <NavbarControlsWithCall callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 	}
 
-	return <NavBarControlsMenu omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
+	return <NavBarControlsMenu callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 };
 
 export default NavBarControlsWithData;

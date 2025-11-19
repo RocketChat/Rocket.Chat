@@ -22,12 +22,11 @@ test.describe('Admin > Users', () => {
 		admin = new AdminUsers(page);
 		await page.goto('/admin/users');
 	});
-	test('New user shows in correct tabs when deactivated', async () => {
-		await admin.inputSearchUsers.fill(user.data.username);
 
+	test('New user shows in correct tabs when deactivated', async () => {
 		await test.step('should be visible in the All tab', async () => {
 			await admin.getTabByName().click();
-			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+			await admin.searchUser(user.data.username);
 		});
 
 		await test.step('should be visible in the Pending tab', async () => {
@@ -47,8 +46,7 @@ test.describe('Admin > Users', () => {
 
 		await test.step('should move from Pending to Deactivated tab', async () => {
 			await admin.getTabByName('Pending').click();
-			await admin.btnMoreActionsMenu.click();
-			await admin.menuItemDeactivated.click();
+			await admin.dispatchUserAction(user.data.username, 'Deactivate');
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
 			await admin.getTabByName('Deactivated').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
@@ -56,8 +54,7 @@ test.describe('Admin > Users', () => {
 
 		await test.step('should move from Deactivated to Pending tab', async () => {
 			await admin.getTabByName('Deactivated').click();
-			await admin.btnMoreActionsMenu.click();
-			await admin.menuItemActivate.click();
+			await admin.dispatchUserAction(user.data.username, 'Activate');
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
 			await admin.getTabByName('Pending').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();

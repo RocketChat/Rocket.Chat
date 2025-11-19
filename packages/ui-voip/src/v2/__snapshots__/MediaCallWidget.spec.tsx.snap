@@ -71,27 +71,31 @@ exports[`renders IncomingCall without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-tfsv0s"
+              class="rcx-box rcx-box--full rcx-css-14t6xuk"
             >
-              <svg
-                class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="rcx-box rcx-box--full rcx-css-ilfe77"
               >
-                <path
-                  d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                />
-              </svg>
-              <div
-                class="rcx-box rcx-box--full rcx-css-nc7kyx"
-              >
-                John Doe
-              </div>
+                <svg
+                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                  />
+                </svg>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                >
+                  John Doe
+                </div>
+              </span>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1c8uhnw"
@@ -234,27 +238,31 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-tfsv0s"
+              class="rcx-box rcx-box--full rcx-css-14t6xuk"
             >
-              <svg
-                class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="rcx-box rcx-box--full rcx-css-ilfe77"
               >
-                <path
-                  d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                />
-              </svg>
-              <div
-                class="rcx-box rcx-box--full rcx-css-nc7kyx"
-              >
-                John Doe
-              </div>
+                <svg
+                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                  />
+                </svg>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                >
+                  John Doe
+                </div>
+              </span>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1c8uhnw"
@@ -455,27 +463,31 @@ exports[`renders NewCall without crashing 1`] = `
               </figure>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+              class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-tfsv0s"
+                class="rcx-box rcx-box--full rcx-css-14t6xuk"
               >
-                <svg
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                <span
+                  class="rcx-box rcx-box--full rcx-css-ilfe77"
                 >
-                  <path
-                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                  />
-                </svg>
-                <div
-                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
-                >
-                  John Doe
-                </div>
+                  <svg
+                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                    />
+                  </svg>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                  >
+                    John Doe
+                  </div>
+                </span>
               </div>
               <div
                 class="rcx-box rcx-box--full rcx-css-1c8uhnw"
@@ -612,27 +624,31 @@ exports[`renders OngoingCall without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-tfsv0s"
+              class="rcx-box rcx-box--full rcx-css-14t6xuk"
             >
-              <svg
-                class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="rcx-box rcx-box--full rcx-css-ilfe77"
               >
-                <path
-                  d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                />
-              </svg>
-              <div
-                class="rcx-box rcx-box--full rcx-css-nc7kyx"
-              >
-                John Doe
-              </div>
+                <svg
+                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                  />
+                </svg>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                >
+                  John Doe
+                </div>
+              </span>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1c8uhnw"
@@ -801,27 +817,31 @@ exports[`renders OutgoingCall without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-tfsv0s"
+              class="rcx-box rcx-box--full rcx-css-14t6xuk"
             >
-              <svg
-                class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="rcx-box rcx-box--full rcx-css-ilfe77"
               >
-                <path
-                  d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                />
-              </svg>
-              <div
-                class="rcx-box rcx-box--full rcx-css-nc7kyx"
-              >
-                John Doe
-              </div>
+                <svg
+                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                  />
+                </svg>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                >
+                  John Doe
+                </div>
+              </span>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1c8uhnw"
@@ -947,27 +967,31 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             </figure>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1tbw8nv"
+            class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-tfsv0s"
+              class="rcx-box rcx-box--full rcx-css-14t6xuk"
             >
-              <svg
-                class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <span
+                class="rcx-box rcx-box--full rcx-css-ilfe77"
               >
-                <path
-                  d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
-                />
-              </svg>
-              <div
-                class="rcx-box rcx-box--full rcx-css-nc7kyx"
-              >
-                John Doe
-              </div>
+                <svg
+                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                  />
+                </svg>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-nc7kyx"
+                >
+                  John Doe
+                </div>
+              </span>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-1c8uhnw"

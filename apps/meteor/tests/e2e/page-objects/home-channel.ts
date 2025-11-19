@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
 
@@ -22,6 +22,8 @@ export class HomeChannel {
 	readonly roomToolbar: RoomToolbar;
 
 	readonly voiceCalls: VoiceCalls;
+  
+	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -33,24 +35,15 @@ export class HomeChannel {
 		this.tabs = new HomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	goto() {
 		return this.page.goto('/home');
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	async dismissToast() {
-		// this is a workaround for when the toast is blocking the click of the button
-		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
-		await this.page.mouse.move(0, 0);
 	}
 
 	get composer(): Locator {

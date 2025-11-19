@@ -41,20 +41,7 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		},
 		clientState: {
 			type: 'string',
-			enum: [
-				'none',
-				'pending',
-				'accepting',
-				'accepted',
-				'busy-elsewhere',
-				'has-offer',
-				'has-answer',
-				'active',
-				'renegotiating',
-				'has-new-offer',
-				'has-new-answer',
-				'hangup',
-			],
+			enum: ['none', 'pending', 'accepting', 'accepted', 'busy-elsewhere', 'active', 'renegotiating', 'hangup'],
 			nullable: false,
 		},
 		serviceStates: {
