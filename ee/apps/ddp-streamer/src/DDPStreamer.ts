@@ -217,8 +217,11 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		server.on(DDP_EVENTS.PING, (client: Client): void => {
-			const { connection } = client;
-			Presence.renewConnection(connection.id);
+			const { connection, userId } = client;
+			if (!userId) {
+				return;
+			}
+			Presence.renewConnection(userId, connection.id);
 		});
 	}
 
