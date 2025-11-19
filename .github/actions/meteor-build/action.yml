@@ -1,10 +1,10 @@
 name: 'Meteor Build'
 
 inputs:
-  coverage:
+  type:
     required: false
-    description: 'Enable coverage'
-    type: boolean
+    description: 'production or coverage'
+    default: 'production'
   reset-meteor:
     required: false
     description: 'Reset Meteor'
@@ -20,23 +20,46 @@ inputs:
     required: true
     description: 'Deno version'
     type: string
+  source-hash:
+    required: true
+    description: 'Source code hash'
+    type: string
 
 runs:
   using: composite
 
   steps:
+    - name: Cache build
+      uses: actions/cache@v4
+      id: cache-build
+      with:
+        path: /tmp/Rocket.Chat.tar.gz
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ inputs.type }}-rc-build-${{ inputs.source-hash }}
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
+      if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         swap-size-gb: 4
 
+    - name: Merge dependencies for build
+      shell: bash
+      if: steps.cache-build.outputs.cache-hit != 'true'
+      run: |
+        # Merge dependencies and devDependencies into a new 'dependencies' field
+        cd apps/meteor
+        cp package.json package.json.bak
+        jq '.dependencies = (.dependencies + .devDependencies) | del(.devDependencies)' package.json > package.json.tmp && mv package.json.tmp package.json
+
     - name: Setup NodeJS
       uses: ./.github/actions/setup-node
+      if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         node-version: ${{ inputs.node-version }}
         deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
+        type: 'production'
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     # - name: Free disk space
@@ -47,30 +70,34 @@ runs:
 
     - name: Cache vite
       uses: actions/cache@v3
+      if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./node_modules/.vite
-        key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+        key: vite-local-cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package.json') }}
         restore-keys: |
-          vite-local-cache-${{ runner.os }}-
+          vite-local-cache-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Cache meteor local
       uses: actions/cache@v3
+      if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./apps/meteor/.meteor/local
-        key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+        key: meteor-local-cache-${{ runner.os }}-${{ runner.arch }}-${{ inputs.type }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
         restore-keys: |
-          meteor-local-cache-${{ runner.os }}-
+          meteor-local-cache-${{ runner.os }}-${{ runner.arch }}-${{ inputs.type }}-
 
     - name: Cache meteor
       uses: actions/cache@v3
+      if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ~/.meteor
-        key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
+        key: meteor-cache-${{ runner.os }}-${{ runner.arch }}-${{ inputs.type }}-${{ hashFiles('apps/meteor/.meteor/release') }}
         restore-keys: |
-          meteor-cache-${{ runner.os }}-
+          meteor-cache-${{ runner.os }}-${{ runner.arch }}-${{ inputs.type }}-
 
     - name: Install Meteor
       shell: bash
+      if: steps.cache-build.outputs.cache-hit != 'true'
       run: |
         # Restore bin from cache
         set +e
@@ -91,6 +118,7 @@ runs:
 
     - name: Versions
       shell: bash
+      if: steps.cache-build.outputs.cache-hit != 'true'
       run: |
         npm --versions
         yarn -v
@@ -100,19 +128,31 @@ runs:
         meteor node -v
         git version
 
-    - uses: rharkor/caching-for-turbo@v1.5
+    - uses: rharkor/caching-for-turbo@v1.8
 
     - name: Reset Meteor
       shell: bash
-      if: ${{ inputs.reset-meteor == 'true' }}
+      if: ${{ steps.cache-build.outputs.cache-hit != 'true' && inputs.reset-meteor == 'true' }}
       working-directory: ./apps/meteor
       run: meteor reset
 
+    - name: Restore packages build
+      uses: actions/download-artifact@v6
+      with:
+        name: packages-build
+        path: /tmp
+
+    - name: Unpack packages build
+      shell: bash
+      run: |
+        tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
     - name: Build Rocket.Chat
       shell: bash
+      if: steps.cache-build.outputs.cache-hit != 'true'
       env:
         METEOR_PROFILE: 1000
-        BABEL_ENV: ${{ inputs.coverage == 'true' && 'coverage' || '' }}
+        BABEL_ENV: ${{ inputs.type }}
       run: |
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
@@ -120,14 +160,45 @@ runs:
           echo "Coverage enabled"
         fi
 
+        # Restore original package.json so meteor should not copy devDependencies
+        mv apps/meteor/package.json.bak apps/meteor/package.json
+
         yarn build:ci
 
-    - name: Translation check
-      shell: bash
-      run: yarn turbo run translation-check
+        declare -a meter_modules_to_remove=(
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-x64-musl" # Removes 58M
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-arm64-musl" # Removes 44M
+            "meteor/babel-compiler/node_modules/typescript" # Removes 31M
+            "meteor/babel-compiler/node_modules/@babel" # Removes 14M
+
+            "@rocket.chat/i18n/src" # Removes 16M
+            "typescript" # Removes 19M
+            # "@babel" # Removes 34M - Needed by Minimongo
+        )
+
+        du -s /tmp/dist/bundle
+
+        for dir_path in "${meter_modules_to_remove[@]}"; do
+          path=/tmp/dist/bundle/programs/server/npm/node_modules/${dir_path}
+
+          if [ -d "$path" ]; then
+              rm -rf "$path"
+
+              echo "Removed directory: $path"
+          else
+              echo "Path is not a directory or does not exist: $path"
+          fi
+        done
+
+        # Remove all .d.ts files from node_modules to reduce size
+        # Removes 184M
+        find /tmp/dist/bundle -type f -name "*.d.ts" -delete
+        du -s /tmp/dist/bundle
 
     - name: Prepare build
       shell: bash
+      if: steps.cache-build.outputs.cache-hit != 'true'
       run: |
         cd /tmp/dist
         tar czf /tmp/Rocket.Chat.tar.gz bundle
@@ -135,7 +206,7 @@ runs:
     - name: Store build
       uses: actions/upload-artifact@v4
       with:
-        name: build
+        name: build-${{ inputs.type }}
         path: /tmp/Rocket.Chat.tar.gz
         overwrite: true
         include-hidden-files: true

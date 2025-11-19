@@ -1,11 +1,9 @@
-import { PasswordPolicy } from '@rocket.chat/password-policies';
 import { useMemo } from 'react';
 
+import { usePasswordPolicy, type UsePasswordPolicyReturn } from './usePasswordPolicy';
 import { useSetting } from './useSetting';
 
-type PasswordVerifications = { isValid: boolean; limit?: number; name: string }[];
-
-export const useVerifyPassword = (password: string): PasswordVerifications => {
+export const useVerifyPassword: UsePasswordPolicyReturn = (password) => {
 	const enabled = useSetting('Accounts_Password_Policy_Enabled', false);
 	const minLength = useSetting('Accounts_Password_Policy_MinLength', 7);
 	const maxLength = useSetting('Accounts_Password_Policy_MaxLength', -1);
@@ -16,32 +14,18 @@ export const useVerifyPassword = (password: string): PasswordVerifications => {
 	const mustContainAtLeastOneNumber = useSetting('Accounts_Password_Policy_AtLeastOneNumber', true);
 	const mustContainAtLeastOneSpecialCharacter = useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true);
 
-	const validator = useMemo(
-		() =>
-			new PasswordPolicy({
-				enabled,
-				minLength,
-				maxLength,
-				forbidRepeatingCharacters,
-				forbidRepeatingCharactersCount,
-				mustContainAtLeastOneLowercase,
-				mustContainAtLeastOneUppercase,
-				mustContainAtLeastOneNumber,
-				mustContainAtLeastOneSpecialCharacter,
-				throwError: true,
-			}),
-		[
-			enabled,
-			minLength,
-			maxLength,
-			forbidRepeatingCharacters,
-			forbidRepeatingCharactersCount,
-			mustContainAtLeastOneLowercase,
-			mustContainAtLeastOneUppercase,
-			mustContainAtLeastOneNumber,
-			mustContainAtLeastOneSpecialCharacter,
-		],
-	);
+	const validate = usePasswordPolicy({
+		enabled,
+		minLength,
+		maxLength,
+		forbidRepeatingCharacters,
+		forbidRepeatingCharactersCount,
+		mustContainAtLeastOneLowercase,
+		mustContainAtLeastOneUppercase,
+		mustContainAtLeastOneNumber,
+		mustContainAtLeastOneSpecialCharacter,
+		throwError: false,
+	});
 
-	return useMemo(() => validator.sendValidationMessage(password || ''), [password, validator]);
+	return useMemo(() => validate(password || ''), [password, validate]);
 };

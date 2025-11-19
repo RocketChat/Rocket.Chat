@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
@@ -19,7 +19,7 @@
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/jest-dom": "~6.8.0",
 		"@testing-library/react": "~16.3.0",
-		"@types/react": "~18.3.24",
+		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",

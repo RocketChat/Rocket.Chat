@@ -4,7 +4,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
@@ -12,11 +12,15 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	callItem?: GenericMenuItemProps;
 };
 
-const NavBarControlsMenu = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsMenu = ({ omnichannelItems, isPressed, callItem, ...props }: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const sections = [
+		{
+			title: t('Voice_Call'),
+			items: callItem ? [callItem] : [],
+		},
 		{
 			title: t('Omnichannel'),
 			items: showOmnichannel ? omnichannelItems : [],

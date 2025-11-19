@@ -40,7 +40,7 @@ it('should render policy list if its enabled and not empty', async () => {
 	});
 
 	expect(screen.queryByRole('list')).toBeVisible();
-	expect(screen.queryByRole('listitem', { name: 'get-password-policy-minLength-label' })).toBeVisible();
+	expect(screen.queryByRole('listitem', { name: 'Success get-password-policy-minLength-label' })).toBeVisible();
 });
 
 it('should render all the policies when all policies are enabled', async () => {
@@ -77,7 +77,10 @@ it("should render policy as invalid if password doesn't match the requirements",
 		expect(screen.queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
 
-	expect(screen.getByRole('listitem', { name: 'get-password-policy-minLength-label' })).toHaveAttribute('aria-invalid', 'true');
+	const item = screen.getByRole('listitem', { name: 'Error get-password-policy-minLength-label' });
+
+	expect(item.children[0]).toHaveAccessibleName('Error');
+	expect(item.children[1]).toHaveTextContent('get-password-policy-minLength-label');
 });
 
 it('should render policy as valid if password matches the requirements', async () => {
@@ -91,5 +94,9 @@ it('should render policy as valid if password matches the requirements', async (
 	await waitFor(() => {
 		expect(screen.queryByTestId('password-verifier-skeleton')).toBeNull();
 	});
-	expect(screen.getByRole('listitem', { name: 'get-password-policy-minLength-label' })).toHaveAttribute('aria-invalid', 'false');
+
+	const item = screen.getByRole('listitem', { name: 'Success get-password-policy-minLength-label' });
+
+	expect(item.children[0]).toHaveAccessibleName('Success');
+	expect(item.children[1]).toHaveTextContent('get-password-policy-minLength-label');
 });
