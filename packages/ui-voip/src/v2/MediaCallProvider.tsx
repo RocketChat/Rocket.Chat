@@ -11,7 +11,7 @@ import {
 	useToastMessageDispatch,
 	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -19,13 +19,18 @@ import MediaCallContext, { PeerInfo } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
 import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';
+import { useDesktopNotifications } from './useDesktopNotifications';
 import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { isValidTone, useTonePlayer } from './useTonePlayer';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 
-const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
+type MediaCallProviderProps = {
+	children: ReactNode;
+};
+
+const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const user = useUser();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -36,6 +41,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const instance = useMediaSessionInstance(userId ?? undefined);
 	const session = useMediaSession(instance);
+
+	useDesktopNotifications(session);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
