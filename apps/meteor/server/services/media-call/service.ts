@@ -80,7 +80,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		// TODO: save external media calls to history
 		if (call.uids.length !== 2) {
 			return;
 		}
