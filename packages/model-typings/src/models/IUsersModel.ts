@@ -91,6 +91,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string): Promise<T | null>;
 
 	findOneByAppId<T extends Document = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findUsersByIdentifiers(
+		params: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options?: FindOptions<IUser>,
+	): FindCursor<IUser>;
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
