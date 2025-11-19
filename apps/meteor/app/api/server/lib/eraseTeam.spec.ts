@@ -92,22 +92,22 @@ describe('eraseTeam (TypeScript) module', () => {
 	});
 
 	describe('eraseTeamShared', () => {
-		it('throws when user cannot be found (invalid user)', async () => {
+		it('throws when user is undefined', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			await expect(subject.eraseTeamShared('nonexistent-user', { _id: 'team1', roomId: 'teamRoom' }, [], () => {})).to.be.rejected;
+			await expect(subject.eraseTeamShared(undefined, { _id: 'team1', roomId: 'teamRoom' }, [], () => {})).to.be.rejected;
 		});
 
 		it('erases provided rooms (excluding team.roomId) and cleans up team', async () => {
 			const team = { _id: 'team-id', roomId: 'team-room' };
+			const user = { _id: 'user-1', username: 'u' };
 			stubs.Team.getMatchingTeamRooms.resolves(['room-1', 'room-2', team.roomId]);
-			stubs.Users.findOneById.resolves({ _id: 'user-1', username: 'u' });
 
 			const erased: Array<{ rid: string; user: any }> = [];
 			const eraseRoomFn = async (rid: string, user: any) => {
 				erased.push({ rid, user });
 			};
 
-			await subject.eraseTeamShared('user-1', team, ['room-1', 'room-2', team.roomId], eraseRoomFn);
+			await subject.eraseTeamShared(user, team, ['room-1', 'room-2', team.roomId], eraseRoomFn);
 
 			expect(erased.some((r) => r.rid === 'room-1')).to.be.true;
 			expect(erased.some((r) => r.rid === 'room-2')).to.be.true;
@@ -121,13 +121,12 @@ describe('eraseTeam (TypeScript) module', () => {
 	describe('eraseTeam', () => {
 		it('calls eraseRoom for the team main room (via eraseTeamShared)', async () => {
 			const team = { _id: 't1', roomId: 't-room' };
+			const user = { _id: 'u1', username: 'u', name: 'User' };
 			stubs.Team.getMatchingTeamRooms.resolves([]);
-			stubs.Users.findOneById.resolves({ _id: 'u1', username: 'u' });
-
 			const { eraseRoomStub } = stubs;
 			eraseRoomStub.resolves(true);
 
-			await subject.eraseTeam('u1', team, []);
+			await subject.eraseTeam(user, team, []);
 
 			sinon.assert.calledWith(eraseRoomStub, team.roomId, 'u1');
 		});
@@ -146,12 +145,7 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			const base = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
-				'@rocket.chat/models': {
-					...stubs['@rocket.chat/models'],
-					Users: {
-						findOneById: sandbox.stub().withArgs('rocket.cat').resolves({ _id: 'rocket.cat', username: 'rocket.cat' }),
-					},
-				},
+				'@rocket.chat/models': stubs['@rocket.chat/models'],
 				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
 				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
