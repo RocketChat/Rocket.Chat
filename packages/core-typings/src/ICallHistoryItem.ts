@@ -1,3 +1,4 @@
+import type { IMessage } from './IMessage/IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
@@ -38,6 +39,7 @@ export interface IInternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	contactId: IUser['_id'];
 
 	rid?: IRoom['_id'];
+	messageId?: IMessage['_id']; // Id of the message that was sent after the call ended
 }
 
 // TODO: IExternalMediaCallHistoryItem, planned for 8.0
