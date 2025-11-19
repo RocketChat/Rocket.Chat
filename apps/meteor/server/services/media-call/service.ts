@@ -154,7 +154,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			const message = await sendMessage(user, record, room, false);
 
 			if ('_id' in message) {
-				await CallHistory.updateOne({ callId: call._id }, { $set: { messageId: message._id } });
+				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });
 				return;
 			}
 			throw new Error('Failed to save message id in history');
