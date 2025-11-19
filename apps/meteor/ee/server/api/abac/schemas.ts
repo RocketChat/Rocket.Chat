@@ -217,6 +217,45 @@ const GenericError = {
 	},
 };
 
+const PostAbacUsersSyncBody = {
+	type: 'object',
+	properties: {
+		usernames: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			uniqueItems: true,
+		},
+		ids: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			uniqueItems: true,
+		},
+		emails: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			uniqueItems: true,
+		},
+		ldapIds: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			minItems: 1,
+			uniqueItems: true,
+		},
+	},
+	additionalProperties: false,
+	anyOf: [{ required: ['usernames'] }, { required: ['ids'] }, { required: ['emails'] }, { required: ['ldapIds'] }],
+};
+
+export const POSTAbacUsersSyncBodySchema = ajv.compile<{
+	usernames?: string[];
+	ids?: string[];
+	emails?: string[];
+	ldapIds?: string[];
+}>(PostAbacUsersSyncBody);
+
 export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
 
 const GETAbacRoomsListQuerySchema = {

@@ -129,6 +129,38 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		];
 	}
 
+	findUsersByIdentifiers(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options: FindOptions<IUser> = {},
+	): FindCursor<IUser> {
+		const normalizedIds = (ids ?? []).filter(Boolean);
+		const normalizedUsernames = (usernames ?? []).filter(Boolean);
+		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
+		const normalizedLdapIds = (ldapIds ?? []).filter(Boolean);
+
+		const or: Filter<IUser>[] = [];
+
+		if (normalizedIds.length) {
+			or.push({ _id: { $in: normalizedIds } });
+		}
+		if (normalizedUsernames.length) {
+			or.push({ username: { $in: normalizedUsernames } });
+		}
+		if (normalizedEmails.length) {
+			or.push({ 'emails.address': { $in: normalizedEmails } });
+		}
+		if (normalizedLdapIds.length) {
+			or.push({ 'services.ldap.id': { $in: normalizedLdapIds } });
+		}
+
+		const query: Filter<IUser> = {
+			active: true,
+			$or: or,
+		};
+
+		return this.find(query, options);
+	}
+
 	/**
 	 * @param {string} uid
 	 * @param {IRole['_id'][]} roles list of role ids
