@@ -4,4 +4,4 @@
 "@rocket.chat/ui-kit": minor
 ---
 
-Adds new elements for building apps (ui-kit): Icon, IconButton and InfoCard.
+Adds new elements for building apps (ui-kit): `icon` (block element), `icon_button` (block element) and `info_card` (layout block).
