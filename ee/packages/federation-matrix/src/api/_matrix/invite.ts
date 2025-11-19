@@ -1,7 +1,7 @@
 import { Authorization } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
-import { eventIdSchema, roomIdSchema, NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
+import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -230,14 +230,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			try {
-				const inviteEvent = await federationSDK.processInvite(
-					event,
-					roomIdSchema.parse(roomId),
-					eventIdSchema.parse(eventId),
-					roomVersion,
-					c.get('authenticatedServer'),
-					strippedStateEvents,
-				);
+				const inviteEvent = await federationSDK.processInvite(event, eventId, roomVersion);
 
 				return {
 					body: {
