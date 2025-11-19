@@ -113,16 +113,26 @@ runs:
 
         SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
 
-        mkdir -p /tmp/digests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+        mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+
+        # Get digest and image info
         DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
-        IMAGE_NO_TAG=$(echo "$IMAGE"  | sed 's/:.*$//')
-        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/digest.txt"
+        IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
+        FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
+
+        echo "Inspecting image: $FULL_IMAGE"
+
+        # Inspect the image and save complete manifest with sizes (using -v for verbose)
+        docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+
+        echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+        cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
 
     - uses: actions/upload-artifact@v4
       if: inputs.publish-image == 'true'
       with:
-        name: digests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
-        path: /tmp/digests
+        name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/manifests
         retention-days: 5
 
     - name: Clean up temporary files
