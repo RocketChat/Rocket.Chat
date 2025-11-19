@@ -435,7 +435,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2]);
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 				await poFederationChannelServer2.sidenav.openChat(groupName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
@@ -487,7 +487,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer2UsernameOnly]);
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 				await poFederationChannelServer2.sidenav.openChat(groupName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
@@ -549,7 +549,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2, userFromServer1UsernameOnly]);
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 					await poFederationChannelServer2.sidenav.openChat(createdGroup);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
@@ -641,7 +641,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly, userFromServer2UsernameOnly]);
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 					await poFederationChannelServer2.sidenav.openChat(createdGroup);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
@@ -704,7 +704,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly]);
 
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();

@@ -1,15 +1,15 @@
-import BusinessHoursMultiple from '../../omnichannel/additionalForms/BusinessHoursMultiple';
-import ContactManagerInput from '../../omnichannel/additionalForms/ContactManagerInput';
-import CurrentChatTags from '../../omnichannel/additionalForms/CurrentChatTags';
-import CustomFieldsAdditionalForm from '../../omnichannel/additionalForms/CustomFieldsAdditionalForm';
-import DepartmentBusinessHours from '../../omnichannel/additionalForms/DepartmentBusinessHours';
-import EeNumberInput from '../../omnichannel/additionalForms/EeNumberInput';
-import EeTextAreaInput from '../../omnichannel/additionalForms/EeTextAreaInput';
-import EeTextInput from '../../omnichannel/additionalForms/EeTextInput';
-import MaxChatsPerAgent from '../../omnichannel/additionalForms/MaxChatsPerAgent';
-import MaxChatsPerAgentDisplay from '../../omnichannel/additionalForms/MaxChatsPerAgentDisplay';
-import PrioritiesSelect from '../../omnichannel/additionalForms/PrioritiesSelect';
-import SlaPoliciesSelect from '../../omnichannel/additionalForms/SlaPoliciesSelect';
+import BusinessHoursMultiple from './additionalForms/BusinessHoursMultiple';
+import ContactManagerInput from './additionalForms/ContactManagerInput';
+import CurrentChatTags from './additionalForms/CurrentChatTags';
+import CustomFieldsAdditionalForm from './additionalForms/CustomFieldsAdditionalForm';
+import DepartmentBusinessHours from './additionalForms/DepartmentBusinessHours';
+import EeNumberInput from './additionalForms/EeNumberInput';
+import EeTextAreaInput from './additionalForms/EeTextAreaInput';
+import EeTextInput from './additionalForms/EeTextInput';
+import MaxChatsPerAgent from './additionalForms/MaxChatsPerAgent';
+import MaxChatsPerAgentDisplay from './additionalForms/MaxChatsPerAgentDisplay';
+import PrioritiesSelect from './additionalForms/PrioritiesSelect';
+import SlaPoliciesSelect from './additionalForms/SlaPoliciesSelect';
 
 export {
 	CustomFieldsAdditionalForm,

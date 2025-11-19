@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 
 export class HomeChannel {
@@ -10,7 +10,7 @@ export class HomeChannel {
 
 	readonly sidenav: HomeSidenav;
 
-	readonly sidebar: Sidebar;
+	readonly sidebar: RoomSidebar;
 
 	readonly sidepanel: Sidepanel;
 
@@ -20,33 +20,26 @@ export class HomeChannel {
 
 	readonly roomToolbar: RoomToolbar;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
-		this.sidebar = new Sidebar(page);
+		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	goto() {
 		return this.page.goto('/home');
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	async dismissToast() {
-		// this is a workaround for when the toast is blocking the click of the button
-		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
-		await this.page.mouse.move(0, 0);
 	}
 
 	get composer(): Locator {

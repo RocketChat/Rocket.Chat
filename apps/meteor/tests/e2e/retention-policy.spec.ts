@@ -184,7 +184,7 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 				await poHomeChannel.tabs.room.inputRetentionMaxAge.fill('365');
 				await poHomeChannel.tabs.room.btnSave.click();
-				await poHomeChannel.dismissToast();
+				await poHomeChannel.toastMessage.dismissToast();
 
 				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();
@@ -201,7 +201,7 @@ test.describe.serial('retention-policy', () => {
 			test('should override ignore threads default value', async () => {
 				await poHomeChannel.tabs.room.checkboxIgnoreThreads.click();
 				await poHomeChannel.tabs.room.btnSave.click();
-				await poHomeChannel.dismissToast();
+				await poHomeChannel.toastMessage.dismissToast();
 
 				await poHomeChannel.roomToolbar.openRoomInfo();
 				await poHomeChannel.tabs.room.btnEdit.click();

@@ -8,10 +8,10 @@ import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
-import Tags from '../../../../../../components/Omnichannel/Tags';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
-import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
+import Tags from '../../../../components/Tags';
+import { useOmnichannelPriorities } from '../../../../hooks/useOmnichannelPriorities';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';

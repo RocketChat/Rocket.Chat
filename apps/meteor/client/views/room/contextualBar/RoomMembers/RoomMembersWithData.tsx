@@ -34,7 +34,6 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const isDirect = room && isDirectMessageRoom(room);
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links', rid);
 	const isFederated = room && isRoomFederated(room);
-
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
 
@@ -118,6 +117,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			reload={refetch}
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
+			// @ts-expect-error to be implemented in ABAC Feature branch
+			isABACRoom={Boolean(room?.abacAttributes)}
 		/>
 	);
 };

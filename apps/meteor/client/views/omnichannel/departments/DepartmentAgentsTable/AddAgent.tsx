@@ -5,8 +5,8 @@ import type { AriaAttributes } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
+import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import type { IDepartmentAgent } from '../definitions';
 
 type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {

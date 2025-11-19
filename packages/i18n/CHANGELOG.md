@@ -1,5 +1,17 @@
 # @rocket.chat/i18n
 
+## 1.12.0
+
+### Minor Changes
+
+- ([#37207](https://github.com/RocketChat/Rocket.Chat/pull/37207)) Adds call transfer requester information on call widget
+
+## 1.12.0-rc.0
+
+### Minor Changes
+
+- ([#37207](https://github.com/RocketChat/Rocket.Chat/pull/37207)) Adds call transfer requester information on call widget
+
 ## 1.11.0
 
 ### Minor Changes

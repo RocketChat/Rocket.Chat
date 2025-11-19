@@ -1,6 +1,6 @@
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
 
@@ -16,12 +16,6 @@ export interface IRemoteFileReference {
 }
 
 export class MatrixMediaService {
-	private static homeserverServices: HomeserverServices;
-
-	static setHomeserverServices(services: HomeserverServices): void {
-		this.homeserverServices = services;
-	}
-
 	static generateMXCUri(fileId: string, serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
 	}
@@ -109,11 +103,7 @@ export class MatrixMediaService {
 				return uploadAlreadyExists._id;
 			}
 
-			if (!this.homeserverServices) {
-				throw new Error('Homeserver services not initialized. Call setHomeserverServices first.');
-			}
-
-			const buffer = await this.homeserverServices.media.downloadFromRemoteServer(parts.serverName, parts.mediaId);
+			const buffer = await federationSDK.downloadFromRemoteServer(parts.serverName, parts.mediaId);
 			if (!buffer) {
 				throw new Error('Download from remote server returned null content.');
 			}

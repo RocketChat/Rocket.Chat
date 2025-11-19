@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "2.0.31",
+	"version": "2.0.32",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
@@ -39,7 +39,7 @@
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"sodium-native": "^4.3.3",
@@ -48,11 +48,11 @@
 		"ws": "~8.18.3"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "~0.44.0",
+		"@rocket.chat/icons": "^0.45.0",
 		"@types/cookie": "^0.5.4",
-		"@types/cookie-parser": "^1.4.9",
+		"@types/cookie-parser": "^1.4.10",
 		"@types/ejson": "^2.2.2",
-		"@types/express": "^4.17.23",
+		"@types/express": "^4.17.25",
 		"@types/fibers": "^3.1.4",
 		"@types/node": "~22.16.5",
 		"@types/ws": "^8.5.13",

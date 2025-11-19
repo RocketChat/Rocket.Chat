@@ -1,10 +1,10 @@
-import type { ReadReceipt, IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IReadReceipt, IUser, IMessage } from '@rocket.chat/core-typings';
 import type { FindCursor, DeleteResult, UpdateResult, Document, Filter } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-export interface IReadReceiptsModel extends IBaseModel<ReadReceipt> {
-	findByMessageId(messageId: string): FindCursor<ReadReceipt>;
+export interface IReadReceiptsModel extends IBaseModel<IReadReceipt> {
+	findByMessageId(messageId: string): FindCursor<IReadReceipt>;
 	removeByUserId(userId: string): Promise<DeleteResult>;
 	removeByRoomId(roomId: string): Promise<DeleteResult>;
 	removeByRoomIds(roomIds: string[]): Promise<DeleteResult>;

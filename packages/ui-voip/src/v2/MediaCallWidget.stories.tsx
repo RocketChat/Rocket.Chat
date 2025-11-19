@@ -4,7 +4,7 @@ import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import { useMediaCallContext } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
-import MediaCallProviderMock from './MockedMediaCallProvider';
+import MockedMediaCallProvider from './MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -26,9 +26,9 @@ const meta = {
 	decorators: [
 		mockedContexts,
 		(Story, options) => (
-			<MediaCallProviderMock {...options.args}>
+			<MockedMediaCallProvider {...options.args}>
 				<Story />
-			</MediaCallProviderMock>
+			</MockedMediaCallProvider>
 		),
 	],
 } satisfies Meta<typeof MediaCallWidget>;
