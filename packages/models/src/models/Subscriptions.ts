@@ -161,6 +161,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			rid,
 			'u._id': uid,
+			'invited': { $exists: false },
 		};
 
 		return this.countDocuments(query);
