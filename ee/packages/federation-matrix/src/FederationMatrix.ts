@@ -1,4 +1,4 @@
-import { type IFederationMatrixService, ServiceClass } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, Message, ServiceClass } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -913,5 +913,42 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 
 		return results;
+	}
+
+	async handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void> {
+		const subscription = await Subscriptions.findOne(
+			{
+				'_id': subscriptionId,
+				'u._id': userId,
+				'invited': true,
+			},
+			{ projection: { _id: 1, rid: 1, federation: 1 } },
+		);
+		if (!subscription) {
+			throw new Error('Subscription not found');
+		}
+		if (!subscription.federation?.inviteEventId) {
+			throw new Error('Invite event ID not found');
+		}
+
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		// TODO: should use common function to get matrix user ID
+		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		if (!user.username) {
+			throw new Error('User username not found');
+		}
+
+		if (action === 'accept') {
+			await federationSDK.acceptInvite(subscription.federation?.inviteEventId, matrixUserId);
+			await Message.saveSystemMessage('uj', subscription.rid, user.username, user, { u: { _id: user._id, username: user.username } });
+		}
+		if (action === 'reject') {
+			await federationSDK.rejectInvite(subscription.federation?.inviteEventId, matrixUserId);
+			await Message.saveSystemMessage('uir', subscription.rid, user.username, user, { u: { _id: user._id, username: user.username } });
+		}
 	}
 }
