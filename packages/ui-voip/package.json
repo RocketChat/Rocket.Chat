@@ -19,6 +19,7 @@
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
+		"@rocket.chat/desktop-api": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/media-signaling": "workspace:~",
 		"@tanstack/react-query": "~5.65.1",
@@ -26,7 +27,7 @@
 		"sip.js": "^0.21.2"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.4",
+		"@babel/core": "~7.28.5",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.52.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
@@ -59,7 +60,7 @@
 		"@testing-library/user-event": "~14.6.1",
 		"@types/jest": "~30.0.0",
 		"@types/jest-axe": "~3.5.9",
-		"@types/react": "~18.3.24",
+		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.37.5",

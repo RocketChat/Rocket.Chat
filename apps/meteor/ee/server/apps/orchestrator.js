@@ -6,6 +6,8 @@ import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket
 import { Meteor } from 'meteor/meteor';
 
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
+import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
@@ -24,15 +26,13 @@ import { AppThreadsConverter } from '../../../app/apps/server/converters/threads
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
 
-function isTesting() {
-	return process.env.TEST_MODE === 'true';
-}
-
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
 export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
+
+		this.marketplaceClient = new MarketplaceAPIClient();
 	}
 
 	initialize() {
@@ -41,12 +41,6 @@ export class AppServerOrchestrator {
 		}
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
-			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
-		} else {
-			this._marketplaceUrl = 'https://marketplace.rocket.chat';
-		}
 
 		this._model = AppsModel;
 		this._logModel = AppLogs;
@@ -87,6 +81,10 @@ export class AppServerOrchestrator {
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
+	}
+
+	getMarketplaceClient() {
+		return this.marketplaceClient;
 	}
 
 	getModel() {
@@ -167,10 +165,6 @@ export class AppServerOrchestrator {
 		if (this.isDebugging()) {
 			this.getRocketChatLogger().debug(...args);
 		}
-	}
-
-	getMarketplaceUrl() {
-		return this._marketplaceUrl;
 	}
 
 	async load() {
