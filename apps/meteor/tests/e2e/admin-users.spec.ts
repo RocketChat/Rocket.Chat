@@ -12,8 +12,8 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('Admin > Users', () => {
 	test.beforeAll('Create a new user', async ({ api }) => {
-		user = await createTestUser(api);
 		await setSettingValueById(api, 'Accounts_ManuallyApproveNewUsers', true);
+		user = await createTestUser(api);
 	});
 
 	test.afterAll('Delete the new user', async ({ api }) => {
