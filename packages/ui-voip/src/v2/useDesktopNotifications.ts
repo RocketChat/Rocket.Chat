@@ -1,3 +1,4 @@
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,9 +23,14 @@ const getDisplayInfo = (peerInfo?: PeerInfo) => {
 export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 	const previousCallId = useRef<string | undefined>(undefined);
 	const { t } = useTranslation();
+	const desktopNotificationsEnabled = useUserPreference('desktopNotificationVoiceCalls');
 
 	const displayInfo = getDisplayInfo(sessionInfo.peerInfo);
 	useEffect(() => {
+		if (!desktopNotificationsEnabled) {
+			return;
+		}
+
 		if (
 			typeof window.RocketChatDesktop?.dispatchCustomNotification !== 'function' ||
 			typeof window.RocketChatDesktop?.closeCustomNotification !== 'function'
@@ -71,5 +77,5 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 		return () => {
 			isMounted = false;
 		};
-	}, [displayInfo?.avatar, displayInfo?.title, sessionInfo.callId, sessionInfo.state, t]);
+	}, [displayInfo?.avatar, displayInfo?.title, sessionInfo.callId, sessionInfo.state, t, desktopNotificationsEnabled]);
 };
