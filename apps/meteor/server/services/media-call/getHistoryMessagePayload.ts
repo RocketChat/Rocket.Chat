@@ -37,12 +37,8 @@ const buildDurationString = (...values: number[]): string => {
 	return values.map((value) => value.toString().padStart(2, '0')).join(':');
 };
 
-export const getFormattedCallDuration = (callDuration: number | undefined, callState: CallHistoryItemState): TextObject | undefined => {
-	if (callState !== 'ended' && callState !== 'transferred') {
-		return undefined;
-	}
-
-	if (typeof callDuration !== 'number') {
+export const getFormattedCallDuration = (callDuration: number | undefined): TextObject | undefined => {
+	if (!callDuration || typeof callDuration !== 'number') {
 		return undefined;
 	}
 
@@ -66,7 +62,7 @@ export const getHistoryMessagePayload = (
 ): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
 	const callStateTranslationKey = callStateToTranslationKey(callState);
 	const icon = callStateToIcon(callState);
-	const callDurationFormatted = getFormattedCallDuration(callDuration, callState);
+	const callDurationFormatted = getFormattedCallDuration(callDuration);
 
 	return {
 		msg: '',

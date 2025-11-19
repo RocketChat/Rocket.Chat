@@ -57,57 +57,48 @@ describe('callStateToIcon', () => {
 
 describe('getFormattedCallDuration', () => {
 	it('should return undefined when callDuration is undefined', () => {
-		const result = getFormattedCallDuration(undefined, 'ended');
+		const result = getFormattedCallDuration(undefined);
 		expect(result).toBeUndefined();
 	});
 
-	it('should return 00:00 when callDuration is 0', () => {
-		const result = getFormattedCallDuration(0, 'ended');
-		expect(result).toEqual({ type: 'mrkdwn', text: '*00:00*' });
+	it('should return undefined when callDuration is 0', () => {
+		const result = getFormattedCallDuration(0);
+		expect(result).toBeUndefined();
 	});
 
 	it('should format duration correctly for seconds only (less than 60 seconds)', () => {
-		const result = getFormattedCallDuration(30, 'ended');
+		const result = getFormattedCallDuration(30);
 		expect(result).toEqual({ type: 'mrkdwn', text: '*00:30*' });
 	});
 
 	it('should format duration correctly for minutes and seconds (less than 1 hour)', () => {
-		const result = getFormattedCallDuration(125, 'ended'); // 2 minutes 5 seconds
+		const result = getFormattedCallDuration(125); // 2 minutes 5 seconds
 		expect(result).toEqual({ type: 'mrkdwn', text: '*02:05*' });
 	});
 
 	it('should format duration correctly for exactly 1 minute', () => {
-		const result = getFormattedCallDuration(60, 'ended');
+		const result = getFormattedCallDuration(60);
 		expect(result).toEqual({ type: 'mrkdwn', text: '*01:00*' });
 	});
 
 	it('should format duration correctly for hours, minutes, and seconds', () => {
-		const result = getFormattedCallDuration(3665, 'ended'); // 1 hour 1 minute 5 seconds
+		const result = getFormattedCallDuration(3665); // 1 hour 1 minute 5 seconds
 		expect(result).toEqual({ type: 'mrkdwn', text: '*01:01:05*' });
 	});
 
 	it('should format duration correctly for multiple hours', () => {
-		const result = getFormattedCallDuration(7325, 'ended'); // 2 hours 2 minutes 5 seconds
+		const result = getFormattedCallDuration(7325); // 2 hours 2 minutes 5 seconds
 		expect(result).toEqual({ type: 'mrkdwn', text: '*02:02:05*' });
 	});
 
 	it('should pad single digit values with zeros', () => {
-		const result = getFormattedCallDuration(61, 'ended'); // 1 minute 1 second
+		const result = getFormattedCallDuration(61); // 1 minute 1 second
 		expect(result).toEqual({ type: 'mrkdwn', text: '*01:01*' });
 	});
 
 	it('should handle large durations correctly', () => {
-		const result = getFormattedCallDuration(36661, 'ended'); // 10 hours 11 minutes 1 second
+		const result = getFormattedCallDuration(36661); // 10 hours 11 minutes 1 second
 		expect(result).toEqual({ type: 'mrkdwn', text: '*10:11:01*' });
-	});
-
-	it('should return undefined when callState is not "ended" or "transferred"', () => {
-		const resultNotAnswered = getFormattedCallDuration(125, 'not-answered');
-		const resultFailed = getFormattedCallDuration(125, 'failed');
-		const resultError = getFormattedCallDuration(125, 'error');
-		expect(resultNotAnswered).toBeUndefined();
-		expect(resultFailed).toBeUndefined();
-		expect(resultError).toBeUndefined();
 	});
 });
 
@@ -270,11 +261,10 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should handle all call states with duration correctly', () => {
-		const activeStates = ['ended', 'transferred'] as const;
-		const notActiveStates = ['not-answered', 'failed', 'error'] as const;
+		const states = ['ended', 'transferred', 'not-answered', 'failed', 'error'] as const;
 		const duration = 125;
 
-		activeStates.forEach((state) => {
+		states.forEach((state) => {
 			const result = getHistoryMessagePayload(state, duration);
 			expect(result.msg).toBe('');
 			expect(result.groupable).toBe(false);
@@ -283,14 +273,6 @@ describe('getHistoryMessagePayload', () => {
 			expect(result.blocks[0].rows).toHaveLength(2);
 			expect(result.blocks[0].rows[1].background).toBe('secondary');
 			expect(result.blocks[0].rows[1].elements[0].type).toBe('mrkdwn');
-		});
-		notActiveStates.forEach((state) => {
-			const result = getHistoryMessagePayload(state, duration);
-			expect(result.msg).toBe('');
-			expect(result.groupable).toBe(false);
-			expect(result.blocks).toHaveLength(1);
-			expect(result.blocks[0].type).toBe('info_card');
-			expect(result.blocks[0].rows).toHaveLength(1);
 		});
 	});
 });
