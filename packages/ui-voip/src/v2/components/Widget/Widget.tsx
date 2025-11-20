@@ -1,6 +1,6 @@
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
-import { ComponentProps, useLayoutEffect } from 'react';
+import { ComponentProps, ReactNode, useLayoutEffect } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';
@@ -28,7 +28,7 @@ const WidgetBase = styled('article')`
 `;
 
 type WidgetProps = {
-	children: React.ReactNode;
+	children: ReactNode;
 } & ComponentProps<typeof WidgetBase>;
 
 const Widget = ({ children, ...props }: WidgetProps) => {

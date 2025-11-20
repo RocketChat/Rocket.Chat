@@ -1,3 +1,5 @@
+import { ReadableStream } from 'stream/web';
+
 import { expect } from 'chai';
 
 import { getUploadFormData } from './getUploadFormData';
@@ -36,20 +38,10 @@ const createMockRequest = (
 		headers: {
 			entries: () => [['content-type', `multipart/form-data; boundary=${boundary}`]],
 		},
-		blob: async () => ({
-			stream: () => {
-				let hasRead = false;
-				return {
-					getReader: () => ({
-						read: async () => {
-							if (!hasRead) {
-								hasRead = true;
-								return { value: buffer, done: false };
-							}
-							return { done: true };
-						},
-					}),
-				};
+		body: new ReadableStream({
+			async pull(controller) {
+				controller.enqueue(buffer);
+				controller.close();
 			},
 		}),
 	};

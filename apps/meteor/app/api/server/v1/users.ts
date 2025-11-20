@@ -361,9 +361,9 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await deleteUser(user._id, confirmRelinquish, this.userId);
+			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
 
-			return API.v1.success();
+			return API.v1.success({ deletedRooms });
 		},
 	},
 );
