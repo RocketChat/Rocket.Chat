@@ -138,6 +138,7 @@ export class LDAPEEManager extends LDAPManager {
 			await ldap.connect();
 
 			try {
+				logger.debug({ msg: 'Starting ABAC attributes sync for LDAP users' });
 				for await (const user of users) {
 					await this.syncUserAbacAttribute(ldap, user);
 				}
