@@ -286,10 +286,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		const disabledModules = getModulesToDisable(validationResult);
 		const modulesToEnable = this._license.grantedModules.filter(({ module }) => !disabledModules.includes(module));
 
-		const modulesChanged = replaceModules.call(
-			this,
-			modulesToEnable.map(({ module }) => module),
-		);
+		const modulesChanged = replaceModules.call(this, [...modulesToEnable.map(({ module }) => module), 'abac']);
 
 		if (shouldLogModules || modulesChanged) {
 			logger.log({ msg: 'License validated', modules: modulesToEnable });
