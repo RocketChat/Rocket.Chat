@@ -28,11 +28,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let defsCol: Collection<any>;
 	const rid = 'r1';
 
+	const fakeActor = { _id: 'test-user', username: 'testuser', type: 'user' };
+
 	const insertDefinitions = async (defs: { key: string; values: string[] }[]) => {
 		const svc = new AbacService();
 		await Promise.all(
 			defs.map((def) =>
-				svc.addAbacAttribute({ key: def.key, values: def.values }).catch((e: any) => {
+				svc.addAbacAttribute({ key: def.key, values: def.values }, fakeActor).catch((e: any) => {
 					if (e instanceof Error && e.message === 'error-duplicate-attribute-key') {
 						return;
 					}
@@ -118,7 +120,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			const debugSpy = (service as any).logger.debug as jest.Mock;
 			const changeSpy = jest.spyOn<any, any>(service as any, 'onRoomAttributesChanged');
 
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
 
 			// Assert the protected hook received the full room object (first arg) instead of just the id
 			expect(changeSpy).toHaveBeenCalledTimes(1);
@@ -155,7 +157,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'eng', 'sales'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'eng', 'sales'] }, fakeActor);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -183,7 +185,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.updateRoomAbacAttributeValues(rid, 'dept', ['eng', 'sales']);
+			await service.updateRoomAbacAttributeValues(rid, 'dept', ['eng', 'sales'], fakeActor);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -211,7 +213,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.updateRoomAbacAttributeValues(rid, 'dept', ['eng']); // removal only
+			await service.updateRoomAbacAttributeValues(rid, 'dept', ['eng'], fakeActor); // removal only
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -273,10 +275,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, {
-				dept: ['eng', 'sales'],
-				region: ['emea'],
-			});
+			await service.setRoomAbacAttributes(
+				rid,
+				{
+					dept: ['eng', 'sales'],
+					region: ['emea'],
+				},
+				fakeActor,
+			);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -308,7 +314,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
 			const firstEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Room ABAC attributes changed');
 			expect(firstEval.length).toBe(1);
 			expect(firstEval[0].usersToRemove.sort()).toEqual(['u2']);
@@ -321,7 +327,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			// Reset mock counts for clarity
 			debugSpy.mockClear();
 
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
 			const secondEval = debugSpy.mock.calls.map((c: any[]) => c[0]).filter((a: any) => a && a.msg === 'Room ABAC attributes changed');
 			expect(secondEval.length).toBe(0);
 
@@ -344,7 +350,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales', 'hr'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales', 'hr'] }, fakeActor);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -370,7 +376,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, { region: ['emea'] });
+			await service.setRoomAbacAttributes(rid, { region: ['emea'] }, fakeActor);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
@@ -405,7 +411,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			await insertUsers(bulk);
 
 			const debugSpy = (service as any).logger.debug as jest.Mock;
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] });
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
 
 			const evaluationCalls = debugSpy.mock.calls
 				.map((c: any[]) => c[0])
