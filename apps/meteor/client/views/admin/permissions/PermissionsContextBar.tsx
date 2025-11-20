@@ -14,20 +14,24 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
-	const { data: hasCustomRolesModule = false } = useHasLicenseModule('custom-roles');
+	const { isPending, data: hasCustomRolesModule = false } = useHasLicenseModule('custom-roles');
 
 	const handleCloseContextualbar = useEffectEvent(() => {
 		router.push({});
 	});
 
 	useEffect(() => {
+		if (isPending) {
+			return;
+		}
+
 		if (context !== 'new' || hasCustomRolesModule) {
 			return;
 		}
 
 		setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 		handleCloseContextualbar();
-	}, [context, hasCustomRolesModule, handleCloseContextualbar, setModal]);
+	}, [isPending, context, hasCustomRolesModule, handleCloseContextualbar, setModal]);
 
 	return (
 		(context && (
