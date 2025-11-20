@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "20.0.0",
+	"version": "21.0.0-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.28.5",

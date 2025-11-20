@@ -1,5 +1,25 @@
 # @rocket.chat/apps-engine
 
+## 1.58.0-rc.0
+
+### Minor Changes
+
+- ([#37547](https://github.com/RocketChat/Rocket.Chat/pull/37547)) Adds the `getUserRoomIds` method to the `UserRead` accessor in the Apps-Engine, graduating it from the experimental bridge to the stable user bridge.
+
+- ([#37167](https://github.com/RocketChat/Rocket.Chat/pull/37167)) Changes a behavior that would store the result of every status transition that happened to apps
+
+  This caused intermediate status to be saved to the database, which could prevent apps from being restored to the desired status when restarted or during server startup.
+
+### Patch Changes
+
+- ([#37496](https://github.com/RocketChat/Rocket.Chat/pull/37496)) Fixes the ping behavior so it only triggers when the app becomes idle, preventing unnecessary restarts
+
+- ([#37380](https://github.com/RocketChat/Rocket.Chat/pull/37380)) Fixes an issue where apps would never get the bio of a user even though the type has the field defined
+
+- ([#37384](https://github.com/RocketChat/Rocket.Chat/pull/37384)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
+- ([#37152](https://github.com/RocketChat/Rocket.Chat/pull/37152)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
+
 ## 1.57.0
 
 ### Minor Changes
