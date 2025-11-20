@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
-export function addSettings(): void {
-	void settingsRegistry.addGroup('General', async function () {
+export function addSettings(): Promise<void> {
+	return settingsRegistry.addGroup('General', async function () {
 		await this.with(
 			{
 				enterprise: true,
