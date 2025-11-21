@@ -60,6 +60,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { location: '2dsphere' } },
 			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
 			{ key: { unread: 1 }, sparse: true },
+			{ key: { rid: 1, unread: 1, ts: 1, tmid: 1, tshow: 1 }, partialFilterExpression: { unread: { $exists: true } } },
 			{ key: { 'pinnedBy._id': 1 }, sparse: true },
 			{ key: { 'starred._id': 1 }, sparse: true },
 
@@ -602,6 +603,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async findOneByFederationId(federationEventId: string): Promise<IMessage | null> {
 		return this.findOne({ 'federation.eventId': federationEventId });
+	}
+
+	async findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null> {
+		return this.findOne(
+			{
+				'_id': { $ne: messageId },
+				tmid,
+				'federation.eventId': { $exists: true },
+			},
+			{
+				sort: { ts: -1 },
+			},
+		);
 	}
 
 	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
@@ -1556,12 +1570,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document> {
+	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
-				tmid,
+				rid,
 				unread: true,
 				ts: { $lt: until },
+				tmid,
 			},
 			{
 				$unset: {
@@ -1586,8 +1601,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
-			unread: true,
 			rid,
+			unread: true,
 			$or: [
 				{
 					tmid: { $exists: false },
@@ -1611,13 +1626,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	findUnreadThreadMessagesByDate(
+		rid: string,
 		tmid: string,
 		userId: string,
 		after: Date,
 	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
-			'u._id': { $ne: userId },
+			rid,
 			'unread': true,
+			'u._id': { $ne: userId },
 			tmid,
 			'tshow': { $exists: false },
 			...(after && { ts: { $gt: after } }),

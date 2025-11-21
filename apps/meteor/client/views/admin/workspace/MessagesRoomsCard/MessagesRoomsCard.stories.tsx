@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import MessagesRoomsCard from './MessagesRoomsCard';
 
 export default {
-	title: 'Admin/Info/MessagesRoomsCard',
 	component: MessagesRoomsCard,
 	parameters: {
 		layout: 'centered',

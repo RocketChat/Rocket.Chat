@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeCustomField'(_id) {
+		methodDeprecationLogger.method('livechat:removeCustomField', '8.0.0', '/v1/livechat/custom-fields.delete');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

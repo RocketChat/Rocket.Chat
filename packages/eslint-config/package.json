@@ -3,15 +3,16 @@
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
 	"dependencies": {
-		"@babel/core": "^7.26.0",
-		"@babel/eslint-parser": "~7.25.9",
+		"@babel/core": "~7.28.5",
+		"@babel/eslint-parser": "~7.28.5",
 		"@types/eslint": "~8.44.9",
 		"@types/prettier": "^2.7.3",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
-		"eslint-config-prettier": "~9.1.0",
-		"eslint-plugin-anti-trojan-source": "~1.1.1",
+		"eslint-config-prettier": "~9.1.2",
+		"eslint-import-resolver-typescript": "~4.4.4",
+		"eslint-plugin-anti-trojan-source": "~1.1.2",
 		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-jest": "~28.8.3",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
@@ -36,7 +37,7 @@
 		"react.js"
 	],
 	"devDependencies": {
-		"typescript": "~5.9.2"
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

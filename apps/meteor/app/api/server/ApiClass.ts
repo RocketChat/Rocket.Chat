@@ -10,9 +10,11 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
+// eslint-disable-next-line import/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -76,13 +78,13 @@ export type ExtractRoutesFromAPI<T> = Prettify<
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET' | 'DELETE'
 			? (
 					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
 						? [params?: never]
 						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
-			: K2 extends 'POST'
+			: K2 extends 'POST' | 'PUT'
 				? (
 						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
 					) => ExtractValidation<
@@ -702,6 +704,12 @@ export class APIClass<
 				method: 'PUT';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'PUT';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('PUT', subpath, options, action);
 	}
@@ -717,6 +725,12 @@ export class APIClass<
 				method: 'DELETE';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'DELETE';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('DELETE', subpath, options, action);
 	}
@@ -811,12 +825,15 @@ export class APIClass<
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute.call(this, this.request);
 							this.user = user!;
-							this.userId = String(this.request.headers.get('x-user-id'));
+							this.userId = this.user?._id;
 							const authToken = this.request.headers.get('x-auth-token');
 							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
-						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
+						const shouldPreventUserRead = !this.user && options.authRequired;
+
+						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR

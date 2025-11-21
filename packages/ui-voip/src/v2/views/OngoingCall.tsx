@@ -1,4 +1,5 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
 import { useMediaCallContext } from '../MediaCallContext';
 import {
@@ -18,11 +19,18 @@ import { useInfoSlots } from '../useInfoSlots';
 import { useKeypad } from '../useKeypad';
 
 const OngoingCall = () => {
-	const { muted, held, onMute, onHold, onForward, onEndCall, onTone, peerInfo } = useMediaCallContext();
+	const { t } = useTranslation();
 
-	const keypad = useKeypad(onTone);
+	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState } =
+		useMediaCallContext();
 
-	const slots = useInfoSlots(muted, held);
+	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
+
+	const slots = useInfoSlots(muted, held, connectionState);
+	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
+
+	const connecting = connectionState === 'CONNECTING';
+	const reconnecting = connectionState === 'RECONNECTING';
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -32,21 +40,32 @@ const OngoingCall = () => {
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={<Timer />}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetInfo slots={slots} />
 			<WidgetContent>
-				<PeerInfo {...peerInfo} />
+				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 			</WidgetContent>
+			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{keypad?.element}
+				{keypad}
 				<ButtonGroup large>
-					<ActionButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
-					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
-					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
-					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
-					<ActionButton label='phone' icon='phone' danger onClick={onEndCall} />
+					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					<ToggleButton
+						label={t('Hold')}
+						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+						titles={[t('Hold'), t('Resume')]}
+						pressed={held}
+						onToggle={onHold}
+					/>
+					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+					<ActionButton
+						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
+						icon='phone-off'
+						danger
+						onClick={onEndCall}
+					/>
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>

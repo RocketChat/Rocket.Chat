@@ -6,7 +6,6 @@ import DeleteTeamChannels from './DeleteTeamChannels';
 import DeleteTeamConfirmation from './DeleteTeamConfirmation';
 
 export default {
-	title: 'Teams/Contextual Bar/DeleteTeamModal',
 	component: DeleteTeamModal,
 	parameters: {
 		layout: 'fullscreen',

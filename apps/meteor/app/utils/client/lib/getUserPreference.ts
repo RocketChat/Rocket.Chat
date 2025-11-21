@@ -9,7 +9,7 @@ import { Users } from '../../../../client/stores';
  * @param key The preference name
  * @returns The preference value
  */
-export function getUserPreference<TValue>(user: IUser['_id'] | null | undefined, key: string): TValue | undefined;
+export function getUserPreference<TValue>(user: IUser['_id'] | undefined, key: string): TValue | undefined;
 /**
  * Get a user preference
  * @param user The user
@@ -24,7 +24,7 @@ export function getUserPreference<TValue>(user: Pick<IUser, '_id' | 'settings'> 
  * @param defaultValue The default value
  * @returns The preference value or the default value
  */
-export function getUserPreference<TValue>(user: IUser['_id'] | null | undefined, key: string, defaultValue: TValue): TValue;
+export function getUserPreference<TValue>(user: IUser['_id'] | undefined, key: string, defaultValue: TValue): TValue;
 /**
  * Get a user preference
  * @param user The user

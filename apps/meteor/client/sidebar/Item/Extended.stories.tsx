@@ -7,7 +7,6 @@ import Extended from './Extended';
 import * as Status from '../../components/UserStatus';
 
 export default {
-	title: 'Sidebar/Extended',
 	component: Extended,
 	decorators: [
 		(fn) => (

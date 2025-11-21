@@ -9,6 +9,7 @@ import {
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
 	CustomSoundsRaw,
@@ -41,8 +42,9 @@ import {
 	LivechatTriggerRaw,
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
-	MatrixBridgedRoomRaw,
-	MatrixBridgedUserRaw,
+	MediaCallsRaw,
+	MediaCallChannelsRaw,
+	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
 	MigrationsRaw,
@@ -94,6 +96,7 @@ registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
+registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -132,8 +135,9 @@ registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
-registerModel('IMatrixBridgedRoomModel', new MatrixBridgedRoomRaw(db));
-registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
+registerModel('IMediaCallsModel', new MediaCallsRaw(db));
+registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
+registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));

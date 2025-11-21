@@ -32,7 +32,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 			await poOmnichannelDepartments.inputName.fill(departmentName);
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
 			await poOmnichannelDepartments.btnSave.click();
-			await poOmnichannelDepartments.btnCloseToastSuccess.click();
+			await poOmnichannelDepartments.toastMessage.dismissToast();
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();

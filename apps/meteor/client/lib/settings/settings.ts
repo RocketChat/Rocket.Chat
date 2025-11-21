@@ -1,7 +1,7 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 
+import { watch } from '../../meteor/watch';
 import { PublicSettings } from '../../stores';
-import { watch } from '../cachedStores';
 
 type SettingCallback = (key: string, value: SettingValue) => void;
 

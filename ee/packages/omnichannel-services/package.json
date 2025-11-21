@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.34-rc.5",
+	"version": "0.3.38",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -8,8 +8,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
-		"typescript": "~5.9.2"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -22,9 +22,9 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
@@ -33,7 +33,7 @@
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"pino": "^8.21.0"
 	},
 	"scripts": {

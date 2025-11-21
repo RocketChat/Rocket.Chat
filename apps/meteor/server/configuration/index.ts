@@ -8,7 +8,6 @@ import { configureDirectReply } from './configureDirectReply';
 import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
 import { configureSMTP } from './configureSMTP';
-import { configureFederation } from './federation';
 import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
@@ -29,7 +28,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureBoilerplate(settings),
 		configureDirectReply(settings),
 		configureSMTP(settings),
-		configureFederation(settings),
 		configureIRC(settings),
 		configurePasskey(settings),
 	]);

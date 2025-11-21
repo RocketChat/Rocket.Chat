@@ -9,7 +9,8 @@ import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
-import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import type { IRuntimeController } from './runtime/IRuntimeController';
+import { JSONRPC_METHOD_NOT_FOUND } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
@@ -20,7 +21,7 @@ export class ProxiedApp {
 	constructor(
 		private readonly manager: AppManager,
 		private storageItem: IAppStorageItem,
-		private readonly appRuntime: DenoRuntimeSubprocessController,
+		private readonly appRuntime: IRuntimeController,
 	) {
 		this.previousStatus = storageItem.status;
 
@@ -31,7 +32,7 @@ export class ProxiedApp {
 		return this.manager.getRuntime();
 	}
 
-	public getDenoRuntime(): DenoRuntimeSubprocessController {
+	public getRuntimeController(): IRuntimeController {
 		return this.appRuntime;
 	}
 

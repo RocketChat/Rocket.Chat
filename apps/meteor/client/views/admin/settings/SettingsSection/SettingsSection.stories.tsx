@@ -4,7 +4,6 @@ import SettingsSection from './SettingsSection';
 import SettingsSectionSkeleton from './SettingsSectionSkeleton';
 
 export default {
-	title: 'Admin/Settings/SettingsSection',
 	component: SettingsSection,
 	parameters: {
 		layout: 'fullscreen',

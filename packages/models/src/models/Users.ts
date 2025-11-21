@@ -1549,6 +1549,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				federated: true,
+				federation: {
+					version: 1,
+				},
 			},
 		};
 		return this.updateOne(query, update);

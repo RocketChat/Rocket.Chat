@@ -1,10 +1,12 @@
-import { api } from '@rocket.chat/core-services';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
-import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
+import { FederationActions } from '../../../server/services/room/hooks/BeforeFederationActions';
+import { addUsersToRoomMethod, sanitizeUsername } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
 
@@ -15,18 +17,43 @@ import { slashCommands } from '../../utils/server/slashCommand';
 slashCommands.add({
 	command: 'invite',
 	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'invite'>): Promise<void> => {
-		const usernames = params
+		let usernames = params
 			.split(/[\s,]/)
-			.map((username) => username.replace(/(^@)|( @)/, ''))
+			.map((username) => sanitizeUsername(username))
 			.filter((a) => a !== '');
 		if (usernames.length === 0) {
 			return;
 		}
-		const users = await Users.find({
-			username: {
-				$in: usernames,
-			},
-		}).toArray();
+
+		// Get room information for federation check
+		const room = await Rooms.findOneById(message.rid);
+		if (!room) {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('error-invalid-room', { lng: settings.get('Language') || 'en' }),
+			});
+			return;
+		}
+
+		// Ensure federated users exist locally before looking them up
+		const federatedUsernames = usernames.filter((u) => validateFederatedUsername(u)) as string[];
+		if (federatedUsernames.length > 0) {
+			if (FederationActions.shouldPerformFederationAction(room)) {
+				await FederationMatrix.ensureFederatedUsersExistLocally(federatedUsernames);
+			} else {
+				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+					msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+				});
+				// These federated users shouldn't be invited and we already broadcasted the error message
+				usernames = usernames.filter((username) => {
+					return !federatedUsernames.includes(username);
+				});
+				if (usernames.length === 0) {
+					return;
+				}
+			}
+		}
+
+		const users = await Users.findByUsernames(usernames).toArray();
 		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('User_doesnt_exist', {
@@ -81,7 +108,12 @@ slashCommands.add({
 					if (typeof error !== 'string') {
 						return;
 					}
-					if (error === 'cant-invite-for-direct-room') {
+
+					if (error === 'error-federated-users-in-non-federated-rooms') {
+						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+							msg: i18n.t('You_cannot_add_external_users_to_non_federated_room', { lng: settings.get('Language') || 'en' }),
+						});
+					} else if (error === 'cant-invite-for-direct-room') {
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 							msg: i18n.t('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
 						});

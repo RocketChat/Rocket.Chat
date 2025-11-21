@@ -66,7 +66,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				return undefined;
 			}
 
-			const filterUser = ({ username, type }: UserMention) => (!type || type === 'user') && username === mention;
+			const normalizedMention = mention.startsWith('@') ? mention.substring(1) : mention;
+			const filterUser = ({ username, type }: UserMention) => {
+				if (!username || type === 'team') return false;
+				const normalizedUsername = username.startsWith('@') ? username.substring(1) : username;
+				return normalizedUsername === normalizedMention;
+			};
 			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
 
 			return mentions?.find((mention) => filterUser(mention) || filterTeam(mention));

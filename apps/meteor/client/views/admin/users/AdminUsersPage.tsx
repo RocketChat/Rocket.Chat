@@ -148,7 +148,11 @@ const AdminUsersPage = (): ReactElement => {
 				</Tabs>
 				<PageContent>
 					<UsersTable
-						filteredUsersQueryResult={filteredUsersQueryResult}
+						users={filteredUsersQueryResult.data?.users || []}
+						isLoading={filteredUsersQueryResult.isLoading}
+						isError={filteredUsersQueryResult.isError}
+						isSuccess={filteredUsersQueryResult.isSuccess}
+						total={filteredUsersQueryResult.data?.total || 0}
 						setUserFilters={setUserFilters}
 						paginationData={paginationData}
 						sortData={sortData}

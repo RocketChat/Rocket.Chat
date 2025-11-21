@@ -76,7 +76,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'user-added-room-to-team',
 		system: true,
-		text: (t, message) => t('Added__roomName__to_this_team', { roomName: message.msg }),
+		text: (t, message) => t('added__roomName__to_this_team', { roomName: message.msg }),
 	});
 
 	instance.registerType({

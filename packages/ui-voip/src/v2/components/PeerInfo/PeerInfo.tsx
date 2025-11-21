@@ -5,7 +5,7 @@ import { InternalUser, PhoneNumber } from '.';
 export type PeerInfoProps = ComponentProps<typeof InternalUser> | ComponentProps<typeof PhoneNumber>;
 
 const PeerInfo = (props: PeerInfoProps) => {
-	if ('name' in props) {
+	if ('displayName' in props) {
 		return <InternalUser {...props} />;
 	}
 	return <PhoneNumber {...props} />;

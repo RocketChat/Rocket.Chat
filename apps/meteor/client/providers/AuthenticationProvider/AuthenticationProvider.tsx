@@ -45,10 +45,12 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthenticationContext> => ({
 			isLoggingIn,
-			loginWithToken: (token: string): Promise<void> =>
+			loginWithToken: (token: string, callback): Promise<void> =>
 				new Promise((resolve, reject) =>
 					Meteor.loginWithToken(token, (err) => {
 						if (err) {
+							console.error(err);
+							callback?.(err);
 							return reject(err);
 						}
 						resolve(undefined);

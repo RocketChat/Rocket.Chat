@@ -6,7 +6,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
-import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
@@ -61,7 +61,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const agentAvailable = user?.statusLivechat === 'available';
 	const voipCallAvailable = true; // TODO: use backend check;
 
-	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
+	const getRoutingConfig = useEndpoint('GET', '/v1/livechat/config/routing');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
@@ -109,8 +109,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 		const update = async (): Promise<void> => {
 			try {
-				const routeConfig = await getRoutingConfig();
-				setRouteConfig(routeConfig);
+				const { config } = await getRoutingConfig();
+				setRouteConfig(config);
 			} catch (error) {
 				loggerRef.current.error(`update() error in routeConfig ${error}`);
 			}

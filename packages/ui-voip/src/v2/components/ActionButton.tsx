@@ -1,6 +1,6 @@
 import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import { ComponentProps } from 'react';
+import { ComponentProps, forwardRef } from 'react';
 
 type ActionButtonProps = {
 	label: string;
@@ -9,7 +9,10 @@ type ActionButtonProps = {
 	onClick?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
-const ActionButton = ({ disabled, label, icon, onClick, secondary = true, ...props }: ActionButtonProps) => {
+const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
+	{ disabled, label, icon, onClick, secondary = true, ...props },
+	ref,
+) {
 	return (
 		<IconButton
 			label={label}
@@ -21,8 +24,9 @@ const ActionButton = ({ disabled, label, icon, onClick, secondary = true, ...pro
 			disabled={disabled}
 			onClick={onClick}
 			{...props}
+			ref={ref}
 		/>
 	);
-};
+});
 
 export default ActionButton;

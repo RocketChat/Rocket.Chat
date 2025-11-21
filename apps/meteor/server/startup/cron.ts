@@ -1,6 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
 
-import { federationCron } from '../cron/federation';
 import { npsCron } from '../cron/nps';
 import { oembedCron } from '../cron/oembed';
 import { startCron } from '../cron/start';
@@ -22,6 +21,5 @@ export const startCronJobs = async (): Promise<void> => {
 		videoConferencesCron(),
 		passkeyCron(),
 	]);
-	federationCron();
 	userDataDownloadsCron();
 };

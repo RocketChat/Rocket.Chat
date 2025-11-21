@@ -193,6 +193,7 @@ describe('miscellaneous', () => {
 					'notifyCalendarEvents',
 					'enableMobileRinging',
 					'featuresPreview',
+					'desktopNotificationVoiceCalls',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
@@ -215,6 +216,7 @@ describe('miscellaneous', () => {
 	describe('/directory', () => {
 		let user: TestUser<IUser>;
 		let testChannel: IRoom;
+		let testGroup: IRoom;
 		let normalUserCredentials: Credentials;
 		const teamName = `new-team-name-${Date.now()}` as const;
 		let teamCreated: ITeam;
@@ -223,8 +225,11 @@ describe('miscellaneous', () => {
 			await updatePermission('create-team', ['admin', 'user']);
 			user = await createUser();
 			normalUserCredentials = await doLogin(user.username, password);
-			testChannel = (await createRoom({ name: `channel.test.${Date.now()}`, type: 'c' })).body.channel;
-			teamCreated = await createTeam(normalUserCredentials, teamName, TEAM_TYPE.PUBLIC);
+			[testChannel, testGroup, teamCreated] = await Promise.all([
+				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
+				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
+				createTeam(normalUserCredentials, teamName, TEAM_TYPE.PUBLIC),
+			]);
 		});
 
 		after(async () => {
@@ -232,6 +237,7 @@ describe('miscellaneous', () => {
 				deleteTeam(normalUserCredentials, teamName),
 				deleteUser(user),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('create-team', ['admin', 'user']),
 			]);
 		});
@@ -308,6 +314,31 @@ describe('miscellaneous', () => {
 				})
 				.end(done);
 		});
+
+		it('should return private group when search by channel and execute successfully', async () => {
+			await request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					text: testGroup.name,
+					type: 'channels',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('_id', testGroup._id);
+					expect(res.body.result[0]).to.have.property('t', 'p');
+					expect(res.body.result[0]).to.have.property('name');
+					expect(res.body.result[0]).to.have.property('usersCount').and.to.be.an('number');
+					expect(res.body.result[0]).to.have.property('ts');
+				});
+		});
+
 		it('should return an array(result) when search by channel with sort params correctly and execute successfully', (done) => {
 			void request
 				.get(api('directory'))

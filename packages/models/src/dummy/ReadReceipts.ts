@@ -1,15 +1,15 @@
-import type { IUser, IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IUser, IMessage, IReadReceipt } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
 import { BaseDummy } from './BaseDummy';
 
-export class ReadReceiptsDummy extends BaseDummy<ReadReceipt> implements IReadReceiptsModel {
+export class ReadReceiptsDummy extends BaseDummy<IReadReceipt> implements IReadReceiptsModel {
 	constructor() {
 		super('read_receipts');
 	}
 
-	findByMessageId(_messageId: string): FindCursor<ReadReceipt> {
+	findByMessageId(_messageId: string): FindCursor<IReadReceipt> {
 		return this.find({});
 	}
 

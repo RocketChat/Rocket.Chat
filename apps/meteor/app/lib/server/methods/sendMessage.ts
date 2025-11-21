@@ -55,13 +55,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		}
 	}
 
-	const user = await Users.findOneById(uid, {
-		projection: {
-			username: 1,
-			type: 1,
-			name: 1,
-		},
-	});
+	const user = await Users.findOneById(uid);
 	if (!user?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user');
 	}

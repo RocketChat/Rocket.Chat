@@ -18,15 +18,15 @@ export class AccountSecurityPage {
 	}
 
 	private get resetE2EEPasswordButton() {
-		return this.page.getByRole('button', { name: 'Reset E2EE key' });
+		return this.page.getByRole('button', { name: 'Reset E2EE password' });
 	}
 
 	private get newE2EEPasswordInput() {
-		return this.page.getByRole('textbox', { name: 'New encryption password' });
+		return this.page.getByRole('textbox', { name: 'New E2EE password' });
 	}
 
 	private get confirmNewE2EEPasswordInput() {
-		return this.page.getByRole('textbox', { name: 'Confirm new encryption password' });
+		return this.page.getByRole('textbox', { name: 'Confirm new E2EE password' });
 	}
 
 	private get saveChangesButton() {

@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -22,6 +22,7 @@ function StringSettingInput({
 	error,
 	autocomplete,
 	value,
+	hint,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -68,6 +69,7 @@ function StringSettingInput({
 					/>
 				)}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

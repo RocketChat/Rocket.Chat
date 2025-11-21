@@ -4,7 +4,7 @@ import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechat
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
 import { settings } from '../../../../../client/lib/settings';
-import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 
@@ -120,33 +120,38 @@ const addAgentListener = (userId: IOmnichannelAgent['_id']) => {
 };
 
 const subscribe = async (userId: IOmnichannelAgent['_id']) => {
-	const config = await callWithErrorHandling('livechat:getRoutingConfig');
-	if (config?.autoAssignAgent) {
-		return;
+	try {
+		const { config } = await sdk.rest.get('/v1/livechat/config/routing');
+		if (config?.autoAssignAgent) {
+			return;
+		}
+
+		const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
+
+		// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
+		const cleanAgentListener = addAgentListener(userId);
+		const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
+		const globalCleanup = addGlobalListener();
+
+		const computation = Tracker.autorun(async () => {
+			const inquiriesFromAPI = await getInquiriesFromAPI();
+
+			await updateInquiries(inquiriesFromAPI);
+		});
+
+		return () => {
+			useLivechatInquiryStore.getState().discardAll();
+			removeGlobalListener();
+			cleanAgentListener?.();
+			cleanDepartmentListeners?.();
+			globalCleanup?.();
+			departments.clear();
+			computation.stop();
+		};
+	} catch (error) {
+		dispatchToastMessage({ type: 'error', message: error });
+		throw error;
 	}
-
-	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
-
-	// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
-	const cleanAgentListener = addAgentListener(userId);
-	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
-	const globalCleanup = addGlobalListener();
-
-	const computation = Tracker.autorun(async () => {
-		const inquiriesFromAPI = await getInquiriesFromAPI();
-
-		await updateInquiries(inquiriesFromAPI);
-	});
-
-	return () => {
-		useLivechatInquiryStore.getState().discardAll();
-		removeGlobalListener();
-		cleanAgentListener?.();
-		cleanDepartmentListeners?.();
-		globalCleanup?.();
-		departments.clear();
-		computation.stop();
-	};
 };
 
 export const initializeLivechatInquiryStream = (() => {

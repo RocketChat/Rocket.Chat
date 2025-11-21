@@ -190,7 +190,7 @@ const create = async ({
 	}
 
 	if (discussionMsg) {
-		afterSaveMessageAsync(discussionMsg, parentRoom);
+		afterSaveMessageAsync(discussionMsg, parentRoom, user);
 	}
 
 	return discussion;

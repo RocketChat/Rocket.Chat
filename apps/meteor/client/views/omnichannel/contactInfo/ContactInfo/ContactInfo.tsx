@@ -96,6 +96,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
+					contact={contact}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
@@ -103,7 +104,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					customFieldEntries={customFieldEntries}
 				/>
 			)}
-			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
+			{context === 'channels' && <ContactInfoChannels contact={contact} />}
 			{context === 'history' && <ContactInfoHistory contact={contact} />}
 		</ContextualbarDialog>
 	);

@@ -48,7 +48,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message, { _id, prid }) => {
+	async (message, { room: { _id, prid } }) => {
 		if (prid) {
 			const room = await Rooms.findOneById(_id, {
 				projection: {
@@ -87,7 +87,11 @@ callbacks.add(
 callbacks.add(
 	'afterRoomNameChange',
 	async (roomConfig) => {
-		const { rid, name, oldName } = roomConfig;
+		const {
+			room: { _id: rid },
+			name,
+			oldName,
+		} = roomConfig;
 		await Rooms.updateMany({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } });
 		return roomConfig;
 	},

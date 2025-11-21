@@ -13,7 +13,7 @@ export const useResetE2EPasswordMutation = ({ options }: { options?: MutationOpt
 	return useMutation({
 		mutationFn: async () => resetE2eKey(),
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
+			dispatchToastMessage({ type: 'success', message: t('E2EE_password_reset') });
 			logout();
 		},
 		onError: (error) => {

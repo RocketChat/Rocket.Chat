@@ -22,7 +22,6 @@ const callerDefault = {
 };
 
 export default {
-	title: 'SidebarV2/Footer/VoipFooter',
 	component: VoipFooter,
 	parameters: {
 		controls: { expanded: true },

@@ -164,6 +164,7 @@ const POSTOutboundMessageSchema = {
 											properties: {
 												type: { const: 'media' },
 												link: { type: 'string' },
+												format: { type: 'string', enum: ['image', 'video', 'document'] },
 											},
 											additionalProperties: false,
 										},

@@ -5,14 +5,16 @@ import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
 export const requestDevice = async ({
 	onAccept,
 	onReject,
+	constraints = { audio: true },
 }: {
 	onAccept?: (stream: MediaStream) => void;
 	onReject?: (error: DOMException) => void;
+	constraints?: MediaStreamConstraints;
 }): Promise<void> => {
 	if (!navigator.mediaDevices) {
 		return;
 	}
-	navigator.mediaDevices.getUserMedia({ audio: true }).then(onAccept, onReject);
+	navigator.mediaDevices.getUserMedia(constraints).then(onAccept, onReject);
 };
 
 const isPermissionDenied = (state: PermissionState): state is 'denied' => {

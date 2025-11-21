@@ -10,5 +10,13 @@ export default {
 
 export const ToggleButtonStory: StoryFn<typeof ToggleButton> = () => {
 	const [pressed, setPressed] = useState(false);
-	return <ToggleButton label='Mute' icons={['mic', 'mic-off']} pressed={pressed} onToggle={() => setPressed(!pressed)} />;
+	return (
+		<ToggleButton
+			label='Mute'
+			titles={['Mute', 'Unmute']}
+			icons={['mic', 'mic-off']}
+			pressed={pressed}
+			onToggle={() => setPressed(!pressed)}
+		/>
+	);
 };

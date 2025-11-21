@@ -1,4 +1,11 @@
-import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import {
+	isOmnichannelRoom,
+	isRoomFederated,
+	isRoomNativeFederated,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -25,8 +32,15 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
 
+	const isFederated = room && isRoomFederated(room);
+	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
+
 	const enabled = useReactiveValue(
 		useCallback(() => {
+			if (isFederationBlocked) {
+				return false;
+			}
+
 			if (!chat || isOmnichannelRoom(room) || !subscription || message.private || !user) {
 				return false;
 			}
@@ -36,7 +50,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 			}
 
 			return true;
-		}, [chat, room, subscription, message.private, user]),
+		}, [chat, room, subscription, message.private, user, isFederationBlocked]),
 	);
 
 	if (!enabled) {

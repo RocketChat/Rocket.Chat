@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { UserStatus } from '@rocket.chat/core-typings';
+import { ReactNode, useState } from 'react';
 
 import MediaCallContext from './MediaCallContext';
 import type { State, PeerInfo } from './MediaCallContext';
@@ -6,25 +7,46 @@ import type { State, PeerInfo } from './MediaCallContext';
 const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
 const myData: any[] = Array.from({ length: 100 }, (_, i) => ({ value: `user-${i}`, label: `User ${i}`, identifier: `000${i}`, avatarUrl }));
 
-const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React.ReactNode; state?: State }) => {
+type MockedMediaCallProviderProps = {
+	children: ReactNode;
+	state?: State;
+	transferredBy?: string;
+	remoteMuted?: boolean;
+	remoteHeld?: boolean;
+	muted?: boolean;
+	held?: boolean;
+};
+
+const MockedMediaCallProvider = ({
+	children,
+	state = 'closed',
+	transferredBy = undefined,
+	remoteMuted = false,
+	remoteHeld = false,
+	muted = false,
+	held = false,
+}: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
-		name: 'John Doe',
+		displayName: 'John Doe',
+		userId: '1234567890',
 		avatarUrl,
-		identifier: '1234567890',
+		username: 'john.doe',
+		callerId: '1234567890',
+		status: UserStatus.ONLINE,
 	});
 	const [widgetState, setWidgetState] = useState<State>(state);
-	const [muted, setMuted] = useState(false);
-	const [held, setHeld] = useState(false);
+	const [mutedState, setMutedState] = useState(muted);
+	const [heldState, setHeldState] = useState(held);
 
-	const onMute = () => setMuted((prev) => !prev);
-	const onHold = () => setHeld((prev) => !prev);
+	const onMute = () => setMutedState((prev) => !prev);
+	const onHold = () => setHeldState((prev) => !prev);
 
 	const clearState = () => {
-		setMuted(false);
-		setHeld(false);
+		setMutedState(false);
+		setHeldState(false);
 	};
 
-	const onDeviceChange = (device: string) => {
+	const onDeviceChange = (device: any) => {
 		console.log('device', device);
 	};
 
@@ -53,9 +75,11 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		}
 
 		return Promise.resolve({
-			name: peerInfo.label,
+			displayName: peerInfo.label,
+			userId: peerInfo.value,
 			avatarUrl: peerInfo.avatarUrl,
-			identifier: peerInfo.value,
+			username: peerInfo.identifier,
+			callerId: peerInfo.value,
 		});
 	};
 
@@ -94,11 +118,20 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		}
 	};
 
+	const onSelectPeer = (peerInfo: PeerInfo) => {
+		setPeerInfo(peerInfo);
+	};
+
 	const contextValue = {
 		state: widgetState,
+		hidden: false,
+		connectionState: 'CONNECTED' as const,
 		peerInfo,
-		muted,
-		held,
+		transferredBy,
+		muted: mutedState,
+		held: heldState,
+		remoteMuted,
+		remoteHeld,
 		onMute,
 		onHold,
 		onDeviceChange,
@@ -106,7 +139,9 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		onTone,
 		onEndCall,
 		onCall,
+		onAccept: onCall,
 		onToggleWidget,
+		onSelectPeer,
 		getAutocompleteOptions,
 		getPeerInfo,
 	};
@@ -114,4 +149,4 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 	return <MediaCallContext.Provider value={contextValue}>{children}</MediaCallContext.Provider>;
 };
 
-export default MediaCallProviderMock;
+export default MockedMediaCallProvider;

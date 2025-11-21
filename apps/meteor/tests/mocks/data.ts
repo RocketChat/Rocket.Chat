@@ -23,6 +23,7 @@ import type {
 	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
@@ -348,6 +349,22 @@ export function createFakeContact(overrides?: Partial<Serialized<ILivechatContac
 	};
 }
 
+export function createFakeContactWithManagerData(
+	overrides?: Partial<Serialized<ILivechatContactWithManagerData>>,
+): Serialized<ILivechatContactWithManagerData> {
+	const { contactManager: contactManagerOverwrites, ...contactOverwrites } = overrides || {};
+	const contact = createFakeContact(contactOverwrites);
+	return {
+		...contact,
+		contactManager: {
+			_id: faker.string.uuid(),
+			name: faker.person.fullName(),
+			username: faker.internet.userName(),
+			...contactManagerOverwrites,
+		},
+	};
+}
+
 export function createFakeAgent(overrides?: Partial<Serialized<ILivechatAgent>>): Serialized<ILivechatAgent> {
 	const email = faker.internet.email();
 	const firstName = faker.person.firstName();
@@ -436,3 +453,12 @@ export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonito
 		...overrides,
 	};
 }
+
+export const createMockedPagination = (results = 0, total = 0) => ({
+	current: 0,
+	setCurrent: () => undefined,
+	itemsPerPage: 25 as const,
+	setItemsPerPage: () => undefined,
+	itemsPerPageLabel: () => 'Items per page:',
+	showingResultsLabel: () => `Showing results 1 - ${results} of ${total}`,
+});
