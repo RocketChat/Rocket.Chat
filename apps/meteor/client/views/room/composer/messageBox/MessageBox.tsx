@@ -193,8 +193,9 @@ const MessageBox = ({
 		const input = event.target as HTMLTextAreaElement;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+		const disabled = !canSend || !typing;
 
-		if (isSubmitKey) {
+		if (!disabled && isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
 
@@ -474,10 +475,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canSend || !typing}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing}
+									info={typing}
 								/>
 							</>
 						)}
