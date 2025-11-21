@@ -250,24 +250,27 @@ class MessageSearchQueryParser {
 
 		if (/^\/.+\/[imxs]*$/.test(text)) {
 			const r = text.split('/');
-			this.query.msg = {
-				$regex: r[1],
-				$options: r[2],
-			};
+			// Include message text, file description, and attachment descriptions in regex search
+			this.query.$or = [
+				{ msg: { $regex: r[1], $options: r[2] } },
+				{ 'file.description': { $regex: r[1], $options: r[2] } },
+				{ 'attachments.description': { $regex: r[1], $options: r[2] } },
+			];
 		} else if (this.forceRegex) {
-			this.query.msg = {
-				$regex: text,
-				$options: 'i',
-			};
+			// Include message text, file description, and attachment descriptions in regex search
+			this.query.$or = [
+				{ msg: { $regex: text, $options: 'i' } },
+				{ 'file.description': { $regex: text, $options: 'i' } },
+				{ 'attachments.description': { $regex: text, $options: 'i' } },
+			];
 		} else {
-			this.query.$text = {
-				$search: text,
-			};
-			this.options.projection = {
-				score: {
-					$meta: 'textScore',
-				},
-			};
+			// For text search, we need to use $or with $text queries for each field
+			// Since MongoDB $text search doesn't work with $or directly, we'll use regex for consistency
+			this.query.$or = [
+				{ msg: { $regex: escapeRegExp(text), $options: 'i' } },
+				{ 'file.description': { $regex: escapeRegExp(text), $options: 'i' } },
+				{ 'attachments.description': { $regex: escapeRegExp(text), $options: 'i' } },
+			];
 		}
 
 		return text;
