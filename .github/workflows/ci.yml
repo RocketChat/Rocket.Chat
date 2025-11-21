@@ -172,7 +172,7 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-          key: ${{ runner.OS }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
+          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
 
       - name: Debug cache-hit
         run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
@@ -202,9 +202,9 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
-          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          key: vite-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
-            vite-local-cache-${{ runner.os }}-
+            vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
       - uses: rharkor/caching-for-turbo@v1.8
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
