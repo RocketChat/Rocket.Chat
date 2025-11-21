@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -17,6 +18,7 @@ preserveSettings(settingsList);
 
 test.describe('E2EE Server Settings', () => {
 	let poHomeChannel: HomeChannel;
+	let encryptedRoomPage: EncryptedRoomPage;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -30,6 +32,7 @@ test.describe('E2EE Server Settings', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		encryptedRoomPage = new EncryptedRoomPage(page);
 		await page.goto('/home');
 	});
 
@@ -46,11 +49,11 @@ test.describe('E2EE Server Settings', () => {
 		await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
-		await page.locator('[name="msg"]').type('/');
+		await poHomeChannel.content.inputMessage.pressSequentially('/');
 		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
-		await page.locator('[name="msg"]').clear();
+		await poHomeChannel.content.inputMessage.clear();
 
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
 		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
@@ -62,9 +65,11 @@ test.describe('E2EE Server Settings', () => {
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
 		test.skip(!IS_EE, 'Premium Only');
 		let poHomeChannel: HomeChannel;
+		let encryptedRoomPage: EncryptedRoomPage;
 
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
+			encryptedRoomPage = new EncryptedRoomPage(page);
 			await page.goto('/home');
 		});
 
@@ -88,9 +93,9 @@ test.describe('E2EE Server Settings', () => {
 			await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 
-			await page.locator('[name="msg"]').pressSequentially('/');
+			await poHomeChannel.content.inputMessage.pressSequentially('/');
 			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
 		});
 	});
