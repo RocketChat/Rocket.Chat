@@ -1,6 +1,7 @@
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
-import { ComponentProps, ReactNode, useLayoutEffect } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
+import { useLayoutEffect } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';

@@ -10,11 +10,11 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"storybook": "storybook dev -p 6006",
-		"test-storybook": "npx concurrently -k -s first -n \"SB,TEST\" \"yarn storybook --ci\" \"npx wait-on tcp:127.0.0.1:6006 && yarn exec test-storybook\"",
 		"test": "jest",
+		"test-storybook": "npx concurrently -k -s first -n \"SB,TEST\" \"yarn storybook --ci\" \"npx wait-on tcp:127.0.0.1:6006 && yarn exec test-storybook\"",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
@@ -27,8 +27,6 @@
 		"sip.js": "^0.21.2"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.52.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/css-in-js": "~0.31.25",
@@ -49,7 +47,7 @@
 		"@storybook/addon-docs": "^8.6.14",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-interactions": "^8.6.14",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/test": "^8.6.14",

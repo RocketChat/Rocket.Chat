@@ -1,4 +1,5 @@
-import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
+import { Emitter } from '@rocket.chat/emitter';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef, useState } from 'react';
 
@@ -6,12 +7,12 @@ const GRAB_DOM_EVENTS = ['pointerdown'] as const;
 const RELEASE_DOM_EVENTS = ['pointerup', 'pointercancel', 'lostpointercapture'] as const;
 const MOVE_DOM_EVENTS = ['pointermove'] as const;
 
-interface PointCoordinates {
+interface IPointCoordinates {
 	x: number;
 	y: number;
 }
 
-interface IGenericRect extends PointCoordinates {
+interface IGenericRect extends IPointCoordinates {
 	width: number;
 	height: number;
 }
@@ -58,7 +59,7 @@ class GenericRect {
 
 type DraggableElementEvents = {
 	grab: IGenericRect;
-	move: PointCoordinates;
+	move: IPointCoordinates;
 	release: IGenericRect;
 	changeView: IDraggableElement;
 	resize: IGenericRect;
@@ -69,9 +70,9 @@ class Draggable extends Emitter<DraggableElementEvents> {
 
 	private isDragging = false;
 
-	private pointerCoordinates: PointCoordinates = { x: 0, y: 0 };
+	private pointerCoordinates: IPointCoordinates = { x: 0, y: 0 };
 
-	private storedPositionOffset: PointCoordinates = { x: 0, y: 0 };
+	private storedPositionOffset: IPointCoordinates = { x: 0, y: 0 };
 
 	constructor(element: IDraggableElement) {
 		super();
@@ -101,7 +102,7 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		return this.on('release', cb);
 	}
 
-	public onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler {
+	public onMove(cb: (pointerPosition: IPointCoordinates) => void): OffCallbackHandler {
 		return this.on('move', cb);
 	}
 
@@ -113,7 +114,7 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		return this.on('changeView', cb);
 	}
 
-	private setPointerCoordinates(pointerCoordinates: PointCoordinates): void {
+	private setPointerCoordinates(pointerCoordinates: IPointCoordinates): void {
 		this.pointerCoordinates = pointerCoordinates;
 	}
 
@@ -127,18 +128,18 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		this.element.setElementPositionOffset(this.storedPositionOffset);
 	}
 
-	public moveToCoordinates(targetElementCoordinates: PointCoordinates, initialPosition: IGenericRect): void {
+	public moveToCoordinates(targetElementCoordinates: IPointCoordinates, initialPosition: IGenericRect): void {
 		this.setStoredPositionOffset(targetElementCoordinates.x - initialPosition.x, targetElementCoordinates.y - initialPosition.y);
 		this.emit('move', this.getStoredOffset());
 	}
 
-	public handleGrab(startingPointerCoordinates: PointCoordinates, elementRect: IGenericRect): void {
+	public handleGrab(startingPointerCoordinates: IPointCoordinates, elementRect: IGenericRect): void {
 		this.isDragging = true;
 		this.setPointerCoordinates(startingPointerCoordinates);
 		this.emit('grab', elementRect);
 	}
 
-	public handleMove(currentPointerCoordinates: PointCoordinates): void {
+	public handleMove(currentPointerCoordinates: IPointCoordinates): void {
 		if (!this.isDragging) return;
 
 		const xDelta = currentPointerCoordinates.x - this.pointerCoordinates.x;
@@ -162,12 +163,12 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		this.emit('release', finalElementPosition);
 	}
 
-	public moveByOffset(offset: PointCoordinates): void {
+	public moveByOffset(offset: IPointCoordinates): void {
 		this.addElementPositionOffset(offset.x, offset.y);
 		this.emit('move', this.getStoredOffset());
 	}
 
-	public getStoredOffset(): PointCoordinates {
+	public getStoredOffset(): IPointCoordinates {
 		return this.storedPositionOffset;
 	}
 }
@@ -243,7 +244,7 @@ class BoundingElement extends Emitter<{
 		}, this.resizeDebounce);
 	}
 
-	private calculateBoundsOffset(_draggableRect: IGenericRect, _boundsRect: IGenericRect): PointCoordinates {
+	private calculateBoundsOffset(_draggableRect: IGenericRect, _boundsRect: IGenericRect): IPointCoordinates {
 		const draggableRect = new GenericRect(_draggableRect);
 		const boundsRect = new GenericRect(_boundsRect);
 		// If the draggable element's top/left position is less than
@@ -287,7 +288,7 @@ class BoundingElement extends Emitter<{
 }
 
 class HandleElement extends Emitter<{
-	grab: PointCoordinates;
+	grab: IPointCoordinates;
 }> {
 	private draggableInstance: Draggable;
 
@@ -308,7 +309,7 @@ class HandleElement extends Emitter<{
 	}
 }
 
-const getPointerEventCoordinates = (e: PointerEvent): PointCoordinates => ({
+const getPointerEventCoordinates = (e: PointerEvent): IPointCoordinates => ({
 	x: e.clientX,
 	y: e.clientY,
 });
@@ -318,10 +319,10 @@ type OnChangeView<TElement> = (cb: (element: TElement) => void) => OffCallbackHa
 
 interface IDraggableElement {
 	setElement(element: unknown): OffCallbackHandler;
-	setElementPositionOffset(offset: PointCoordinates): void;
+	setElementPositionOffset(offset: IPointCoordinates): void;
 	getElementRect: GetElementRect;
 	// events
-	onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler;
+	onMove(cb: (pointerPosition: IPointCoordinates) => void): OffCallbackHandler;
 	onChangeView: OnChangeView<IDraggableElement>;
 	onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler;
 	onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler;
@@ -338,7 +339,7 @@ interface IBoundingElement {
 interface IHandleElement {
 	setElement(element: unknown): OffCallbackHandler;
 	// events
-	onGrab(cb: (event: [mousePosition: PointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler;
+	onGrab(cb: (event: [mousePosition: IPointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler;
 }
 
 const isLeftClick = (event: PointerEvent) => event.button === 0;
@@ -346,7 +347,7 @@ const isMousePointer = (event: PointerEvent) => event.pointerType === 'mouse';
 
 class HandleDomElement
 	extends Emitter<{
-		grab: [PointCoordinates, IGenericRect];
+		grab: [IPointCoordinates, IGenericRect];
 	}>
 	implements IHandleElement
 {
@@ -373,7 +374,7 @@ class HandleDomElement
 		return () => unsubArray.forEach((unsub) => unsub());
 	}
 
-	public onGrab = (cb: (event: [mousePosition: PointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler => {
+	public onGrab = (cb: (event: [mousePosition: IPointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler => {
 		return this.on('grab', cb);
 	};
 }
@@ -497,7 +498,7 @@ class DraggableDomElement extends Emitter<DraggableDomElementEvents> implements 
 		return this.on('changeView', cb);
 	};
 
-	public onMove = (cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler => {
+	public onMove = (cb: (pointerPosition: IPointCoordinates) => void): OffCallbackHandler => {
 		return this.on('move', cb);
 	};
 
@@ -513,7 +514,7 @@ class DraggableDomElement extends Emitter<DraggableDomElementEvents> implements 
 		return this.element.getBoundingClientRect();
 	}
 
-	public setElementPositionOffset(offset: PointCoordinates): void {
+	public setElementPositionOffset(offset: IPointCoordinates): void {
 		if (!this.element) {
 			return;
 		}

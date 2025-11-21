@@ -10555,8 +10555,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@faker-js/faker": "npm:~8.0.2"
     "@playwright/test": "npm:^1.52.0"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
@@ -10580,7 +10578,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-interactions": "npm:^8.6.14"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/test": "npm:^8.6.14"

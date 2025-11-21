@@ -1,5 +1,5 @@
-import { UserStatus } from '@rocket.chat/core-typings';
-import { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
+import type { UserStatus } from '@rocket.chat/core-typings';
+import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo } from 'react';
 
