@@ -1,5 +1,48 @@
 # @rocket.chat/meteor
 
+## 7.10.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37522](https://github.com/RocketChat/Rocket.Chat/pull/37522) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes client slowdown for users with large amount of channels
+
+- <details><summary>Updated dependencies [b55bb42f16f52aa45c3aea3efa44bcb306dcab77]:</summary>
+
+  - @rocket.chat/favicon@0.0.3
+  - @rocket.chat/core-typings@7.10.5
+  - @rocket.chat/rest-typings@7.10.5
+  - @rocket.chat/license@1.0.33
+  - @rocket.chat/omnichannel-services@0.3.39
+  - @rocket.chat/pdf-worker@0.3.21
+  - @rocket.chat/presence@0.2.42
+  - @rocket.chat/api-client@0.2.42
+  - @rocket.chat/apps@0.5.21
+  - @rocket.chat/core-services@0.10.5
+  - @rocket.chat/cron@0.1.42
+  - @rocket.chat/freeswitch@1.2.29
+  - @rocket.chat/fuselage-ui-kit@22.0.5
+  - @rocket.chat/gazzodown@22.0.5
+  - @rocket.chat/http-router@7.9.9
+  - @rocket.chat/model-typings@1.7.5
+  - @rocket.chat/ui-avatar@18.0.5
+  - @rocket.chat/ui-client@22.0.5
+  - @rocket.chat/ui-contexts@22.0.5
+  - @rocket.chat/web-ui-registration@22.0.5
+  - @rocket.chat/models@1.6.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.21
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.5
+  - @rocket.chat/ui-voip@12.0.5
+  - @rocket.chat/omni-core-ee@0.0.7
+  - @rocket.chat/instance-status@0.1.42
+  - @rocket.chat/omni-core@0.0.7
+  </details>
+
 ## 7.10.4
 
 ### Patch Changes
