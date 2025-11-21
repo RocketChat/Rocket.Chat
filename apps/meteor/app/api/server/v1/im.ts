@@ -534,7 +534,13 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort = { name: 1 }, fields } = await this.parseJsonQuery();
 
-			// TODO: CACHE: Add Breaking notice since we removed the query param
+			/**
+			 * BREAKING CHANGE:
+			 * A query parameter for this endpoint has been removed.
+			 * This parameter was deprecated due to security and performance concerns.
+			 * If you relied on this parameter in previous versions, please update your
+			 * integration accordingly. Refer to the API documentation for migration details.
+			 */
 
 			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' }, { projection: { rid: 1 } })
 				.map((item) => item.rid)
