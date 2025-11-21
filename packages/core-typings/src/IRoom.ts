@@ -402,7 +402,8 @@ export type RoomAdminFieldsType =
 	| 'description'
 	| 'broadcast'
 	| 'uids'
-	| 'avatarETag';
+	| 'avatarETag'
+	| 'abacAttributes';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
