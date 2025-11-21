@@ -3,7 +3,6 @@
 	"description": "The Ultimate Open Source WebChat Platform",
 	"version": "7.13.0-develop",
 	"private": true,
-	"type": "commonjs",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -15,7 +14,7 @@
 	],
 	"scripts": {
 		"start": "meteor",
-		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory /tmp/dist",
+		"build:ci": "meteor build --server-only --directory /tmp/dist --no-legacy",
 		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
@@ -467,6 +466,11 @@
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.ts"
+		},
+		"modern": {
+			"transpiler": {
+				"verbose": true
+			}
 		}
 	},
 	"browserslist": [
