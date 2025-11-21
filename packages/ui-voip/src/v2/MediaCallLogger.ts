@@ -4,8 +4,7 @@ export class MediaCallLogger implements IMediaSignalLogger {
 	private isDebug: boolean;
 
 	constructor() {
-		const searchParams = new URLSearchParams(window.location.search);
-		this.isDebug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
+		this.isDebug = true;
 	}
 
 	log(...what: any[]): void {
