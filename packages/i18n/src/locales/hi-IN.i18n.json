@@ -4648,7 +4648,7 @@
   "UI_Use_Real_Name": "वास्तविक नाम का प्रयोग करें",
   "URL": "यूआरएल",
   "URLs": "यूआरएल",
-  "URL_is_required": "",
+  "URL_is_required": "यूआरएल आवश्यक है",
   "URL_must_start_with_'http://'_or_'https://'": "यूआरएल की शुरुआत 'http://' या 'https://' से होनी चाहिए।",
   "UTC_Timezone": "यूटीसी समय क्षेत्र",
   "UTF8_Channel_Names_Validation": "UTF8 चैनल नाम सत्यापन",

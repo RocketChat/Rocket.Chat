@@ -3891,7 +3891,7 @@
   "UI_Use_Name_Avatar": "Usar iniciales del nombre completo para generar un avatar por defecto",
   "UI_Use_Real_Name": "Usar nombre real",
   "URL": "URL",
-  "URL_is_required": "",
+  "URL_is_required": "La URL es obligatoria",
   "URL_must_start_with_'http://'_or_'https://'": "La URL debe comenzar con 'http://' o 'https://'",
   "UTC_Timezone": "Zona horaria UTC",
   "UTF8_Channel_Names_Validation": "Validación de nombres de Channel UTF8",
