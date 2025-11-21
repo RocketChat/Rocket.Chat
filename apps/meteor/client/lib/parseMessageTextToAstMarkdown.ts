@@ -7,7 +7,6 @@ import {
 	isQuoteAttachment,
 	isTranslatedAttachment,
 	isTranslatedMessage,
-	isEncryptedMessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
@@ -78,10 +77,9 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 		'';
 
 	if (isFileAttachment(attachment) && attachment.description) {
-		attachment.descriptionMd =
-			translated || isEncryptedMessageAttachment(attachment)
-				? textToMessageToken(text, parseOptions)
-				: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
+		attachment.descriptionMd = translated
+			? textToMessageToken(text, parseOptions)
+			: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
 	}
 
 	return {
