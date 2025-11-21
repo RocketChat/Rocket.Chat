@@ -4,6 +4,7 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
+import { slashCommands } from '../../../../../app/utils/client';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
@@ -84,14 +85,13 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
 	}, [items, option, suspended]);
-
 	const select = useEffectEvent((item: T) => {
 		if (!option) {
 			throw new Error('No popup is open');
 		}
 
 		if (commandsRef.current?.select) {
-			commandsRef.current.select(item);
+			commandsRef.current.select(item as T);
 		} else {
 			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 			const selector =
@@ -103,10 +103,30 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				return;
 			}
 
-			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), {
-				start: value.lastIndexOf(result[1] + result[2]),
-				end: chat?.composer?.selection.start,
-			});
+			// Format as "<label>: " or "<label>: @" or "<label>: #" to handle both commands with and without parameters.
+			// Used to retrieve the original parameters of the selected command.
+			const command = slashCommands.commands[option.getValue(item as T)];
+			let formattedParams = '';
+			if (command) {
+				const rawParams = command.params?.trim();
+				if (rawParams) {
+					if (rawParams.startsWith('@') || rawParams.startsWith('#')) {
+						formattedParams = `${rawParams.slice(1)}: ${rawParams.charAt(0)}`;
+					} else {
+						formattedParams = `${rawParams}: `;
+					}
+				}
+			}
+			chat?.composer?.replaceText(
+				(option.prefix ?? option.trigger ?? '') +
+					option.getValue(item as T) +
+					(option.suffix ?? '') +
+					(option.trigger === '/' ? formattedParams : ''),
+				{
+					start: value.lastIndexOf(result[1] + result[2]),
+					end: chat?.composer?.selection.start,
+				},
+			);
 		}
 		setOptionIndex(-1);
 		setFocused(undefined);
@@ -143,6 +163,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				option.matchSelectorRegex ??
 				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
+
 			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
 		}
 		return option;
