@@ -22,7 +22,7 @@ export class HomeChannel {
 	readonly roomToolbar: RoomToolbar;
 
 	readonly voiceCalls: VoiceCalls;
-  
+
 	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
