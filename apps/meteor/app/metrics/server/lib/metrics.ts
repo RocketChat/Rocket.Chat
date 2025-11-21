@@ -199,6 +199,11 @@ export const metrics = {
 		name: 'rocketchat_apps_failed',
 		help: 'total apps that failed to load',
 	}),
+	appsFailedReason: new client.Gauge({
+		name: 'rocketchat_apps_failed_reason',
+		labelNames: ['name', 'id', 'reason'],
+		help: 'name and reason for the apps that failed to load',
+	}),
 	appBridgeMethods: new client.Summary({
 		name: 'rocketchat_apps_bridge_methods',
 		help: 'summary of app bridge method calls count and time',

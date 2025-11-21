@@ -1,5 +1,7 @@
 import type { CpuInfo } from 'os';
 
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+
 import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
@@ -155,6 +157,7 @@ export interface IStats {
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
+		appsFailed: Array<{ name: string; id: string; reason: AppStatus }>;
 	};
 	services: Record<string, unknown>;
 	importer: Record<string, unknown>;
