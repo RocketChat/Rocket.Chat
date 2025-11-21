@@ -158,14 +158,17 @@ describe('[OC] BusinessHourManager', () => {
 			sinon.stub(manager, 'createCronJobsForWorkHours');
 			sinon.stub(manager, 'hasDaylightSavingTimeChanged').returns(true);
 			findActiveBusinessHoursStub.resolves([
-				{ timezone: { name: 'timezoneName' }, workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }] },
+				{
+					timezone: { name: 'timezoneName' },
+					workHours: [{ day: 'Monday', start: { time: 'startTime' }, finish: { time: 'finishTime' }, open: true }],
+				},
 			]);
 			await manager.startDaylightSavingTimeVerifier();
 			expect(
 				saveBusinessHourStub.calledWith({
-					timezone: { name: 'timezoneName' },
+					timezone: 'timezoneName',
 					timezoneName: 'timezoneName',
-					workHours: [{ start: 'startTime', finish: 'finishTime' }],
+					workHours: [{ day: 'Monday', start: 'startTime', finish: 'finishTime', open: true }],
 				}),
 			).to.be.true;
 			expect(manager.createCronJobsForWorkHours.called).to.be.true;
