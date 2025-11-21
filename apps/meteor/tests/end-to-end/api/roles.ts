@@ -276,6 +276,21 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
+
+		(isEnterprise ? it : it.skip)('should fail getting a list of users in a role in case a role name is provided', async () => {
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({
+					role: testRoleName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-roleId');
+				});
+		});
 	});
 
 	describe('[/roles.delete]', () => {

@@ -9,14 +9,12 @@ import { useForceLogout } from '../hooks/loggedIn/useForceLogout';
 import { useLogoutCleanup } from '../hooks/loggedIn/useLogoutCleanup';
 import { useNotificationUserCalendar } from '../hooks/loggedIn/useNotificationUserCalendar';
 import { useNotifyUser } from '../hooks/loggedIn/useNotifyUser';
-import { useOTRMessaging } from '../hooks/loggedIn/useOTRMessaging';
 import { useRestrictedRoles } from '../hooks/loggedIn/useRestrictedRoles';
 import { useRootUrlChange } from '../hooks/loggedIn/useRootUrlChange';
 import { useStoreCookiesOnLogin } from '../hooks/loggedIn/useStoreCookiesOnLogin';
 import { useTwoFactorAuthSetupCheck } from '../hooks/loggedIn/useTwoFactorAuthSetupCheck';
 import { useUnread } from '../hooks/loggedIn/useUnread';
 import { useUpdateVideoConfUser } from '../hooks/loggedIn/useUpdateVideoConfUser';
-import { useWebRTC } from '../hooks/loggedIn/useWebRTC';
 
 const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	const user = useUser();
@@ -29,8 +27,6 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useUnread();
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
-	useWebRTC(user._id);
-	useOTRMessaging(user._id);
 	useNotificationUserCalendar(user);
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);

@@ -217,13 +217,6 @@ const ExportMessages = () => {
 			<ContextualbarScrollableContent>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
-						{room.createdOTR && (
-							<Field>
-								<Callout role='alert' type='warning'>
-									{t('OTR_messages_cannot_be_exported')}
-								</Callout>
-							</Field>
-						)}
 						<Field>
 							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
 							<FieldRow>

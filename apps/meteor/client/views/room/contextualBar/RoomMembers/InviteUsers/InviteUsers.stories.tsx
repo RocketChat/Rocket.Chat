@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 
@@ -5,7 +6,6 @@ import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import { links } from '../../../../../lib/links';
 
 export default {
@@ -15,7 +15,7 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [
-		(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>,
+		(fn) => <Box height='100vh'>{fn()}</Box>,
 		mockAppRoot()
 			.withTranslations('en', 'core', {
 				'Edit_Invite': 'Edit invite',

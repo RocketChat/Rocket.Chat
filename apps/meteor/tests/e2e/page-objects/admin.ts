@@ -19,7 +19,7 @@ export enum AdminSectionsHref {
 	Third_party_login = '/admin/third-party-login',
 	Integrations = '/admin/integrations',
 	Import = '/admin/import',
-	Reports = '/admin/reports',
+	Reports = '/admin/analytic-reports',
 	Sounds = '/admin/sounds',
 	Emoji = '/admin/emoji',
 	Settings = '/admin/settings',
