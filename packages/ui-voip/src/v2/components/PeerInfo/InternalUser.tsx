@@ -1,7 +1,7 @@
-import { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { Avatar, Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 
-import { Slot } from '../../useInfoSlots';
+import type { Slot } from '../../useInfoSlots';
 
 type InternalUserProps = {
 	displayName: string;
