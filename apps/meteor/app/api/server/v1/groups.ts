@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -392,10 +393,16 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const roomName = typeof this.queryParams.roomName === 'string' ? this.queryParams.roomName : undefined;
 
 			const findResult = await findPrivateGroupByIdOrName({
-				params: roomId ? { roomId } : { roomName },
+				params: {
+					...(roomId ? { roomId } : {}),
+					...(roomName ? { roomName } : {}),
+				},
 				userId: this.userId,
 				checkedArchived: false,
 			});
@@ -404,9 +411,9 @@ API.v1.addRoute(
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const filter = {
-				...query,
 				rid: findResult.rid,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...query,
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 			};
 
