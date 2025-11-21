@@ -121,14 +121,21 @@ server.methods({
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, session);
+		return Presence.setConnectionStatus(userId, session, UserStatus.ONLINE);
 	},
 	'UserPresence:away'() {
 		const { userId, session } = this;
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, UserStatus.AWAY, session);
+		return Presence.setConnectionStatus(userId, session, UserStatus.AWAY);
+	},
+	'UserPresence:ping'() {
+		const { userId, session } = this;
+		if (!userId) {
+			return;
+		}
+		return Presence.setConnectionStatus(userId, session);
 	},
 	'setUserStatus'(status, statusText) {
 		const { userId } = this;

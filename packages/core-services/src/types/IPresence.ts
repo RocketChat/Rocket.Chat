@@ -15,7 +15,7 @@ export interface IPresence extends IServiceClass {
 	): Promise<{ uid: string; session: string } | undefined>;
 	removeLostConnections(nodeID: string): Promise<string[]>;
 	setStatus(uid: string, status: UserStatus, statusText?: string): Promise<boolean>;
-	setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean>;
+	setConnectionStatus(uid: string, session: string, status?: UserStatus): Promise<boolean>;
 	updateUserPresence(uid: string): Promise<void>;
 	toggleBroadcast(enabled: boolean): void;
 	getConnectionCount(): { current: number; max: number };

@@ -6,10 +6,12 @@ import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
-const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
-	if (msg !== 'method') {
+const shouldBypass = (message: Meteor.IDDPMessage): message is Exclude<Meteor.IDDPMessage, Meteor.IDDPMethodMessage> => {
+	if (message.msg !== 'method') {
 		return true;
 	}
+
+	const { method, params } = message;
 
 	if (method === 'login' && params[0]?.resume) {
 		return true;
@@ -29,6 +31,9 @@ const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]) => void) => {
 	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]): void {
 		if (shouldBypass(message)) {
+			if (message.msg === 'ping') {
+				sdk.call('UserPresence:ping');
+			}
 			return _send.call(this, message, ...args);
 		}
 

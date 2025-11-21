@@ -47,12 +47,18 @@ declare module 'meteor/meteor' {
 			twoFactorChecked: boolean | undefined;
 		}
 
-		interface IDDPMessage {
+		interface IDDPPingMessage {
+			msg: 'ping';
+		}
+
+		interface IDDPMethodMessage {
 			msg: 'method';
 			method: string;
 			params: EJSON[];
 			id: string;
 		}
+
+		type IDDPMessage = IDDPPingMessage | IDDPMethodMessage;
 
 		interface IDDPUpdatedMessage {
 			msg: 'updated';

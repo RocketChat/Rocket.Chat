@@ -29,7 +29,7 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		);
 	}
 
-	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
+	updateConnectionStatusById(uid: string, connectionId: string, status?: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
 		const query = {
 			'_id': uid,
 			'connections.id': connectionId,
@@ -37,7 +37,7 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 
 		const update = {
 			$set: {
-				'connections.$.status': status,
+				...(status && { 'connections.$.status': status }),
 				'connections.$._updatedAt': new Date(),
 			},
 		};
