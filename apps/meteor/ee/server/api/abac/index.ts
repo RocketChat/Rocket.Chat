@@ -1,8 +1,9 @@
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { ServerEvents, Users } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {
 	GenericSuccessSchema,
@@ -19,6 +20,8 @@ import {
 	GenericErrorSchema,
 	GETAbacRoomsListQueryValidator,
 	GETAbacRoomsResponseValidator,
+	GETAbacAuditEventsQuerySchema,
+	GETAbacAuditEventsResponseSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -352,6 +355,56 @@ const abacEndpoints = API.v1
 			);
 
 			return API.v1.success(result);
+		},
+	)
+	.get(
+		'abac/audit',
+		{
+			response: {
+				200: GETAbacAuditEventsResponseSchema,
+				400: GenericErrorSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+			query: GETAbacAuditEventsQuerySchema,
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac', 'auditing'],
+		},
+		async function action() {
+			const { start, end, actor } = this.queryParams;
+
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { sort } = await this.parseJsonQuery();
+			const _sort = { ts: sort?.ts ? sort?.ts : -1 };
+
+			const { cursor, totalCount } = ServerEvents.findPaginated(
+				{
+					...(actor && convertSubObjectsIntoPaths({ actor })),
+					ts: {
+						$gte: start ? new Date(start) : new Date(0),
+						$lte: end ? new Date(end) : new Date(),
+					},
+					t: {
+						$in: ['abac.attribute.changed', 'abac.object.attribute.changed', 'abac.object.attributes.removed', 'abac.action.performed'],
+					},
+				},
+				{
+					sort: _sort,
+					skip: offset,
+					limit: count,
+					allowDiskUse: true,
+				},
+			);
+
+			const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				events,
+				count: events.length,
+				offset,
+				total,
+			});
 		},
 	);
 
