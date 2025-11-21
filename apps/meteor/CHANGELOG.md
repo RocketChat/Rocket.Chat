@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.9.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies [6db3b29b4fa48b4714b7193a9dcef87e8df8560f]:</summary>
+
+  - @rocket.chat/favicon@0.0.3
+  - @rocket.chat/core-typings@7.9.6
+  - @rocket.chat/rest-typings@7.9.6
+  - @rocket.chat/license@1.0.30
+  - @rocket.chat/omnichannel-services@0.3.36
+  - @rocket.chat/pdf-worker@0.3.18
+  - @rocket.chat/presence@0.2.39
+  - @rocket.chat/api-client@0.2.39
+  - @rocket.chat/apps@0.5.18
+  - @rocket.chat/core-services@0.9.18
+  - @rocket.chat/cron@0.1.39
+  - @rocket.chat/freeswitch@1.2.26
+  - @rocket.chat/fuselage-ui-kit@21.0.6
+  - @rocket.chat/gazzodown@21.0.6
+  - @rocket.chat/http-router@7.9.6
+  - @rocket.chat/model-typings@1.6.18
+  - @rocket.chat/ui-avatar@17.0.6
+  - @rocket.chat/ui-client@21.0.6
+  - @rocket.chat/ui-contexts@21.0.6
+  - @rocket.chat/web-ui-registration@21.0.6
+  - @rocket.chat/models@1.5.18
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.6
+  - @rocket.chat/ui-voip@11.0.6
+  - @rocket.chat/instance-status@0.1.39
+  </details>
+
 ## 7.9.5
 
 ### Patch Changes
