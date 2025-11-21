@@ -4675,6 +4675,10 @@
   "Search_options": "Search options",
   "Search_roles": "Search roles",
   "Search_rooms": "Search rooms",
+  "Search_results": {
+    "one": "{{count}} result",
+    "other": "{{count}} results"
+  },
   "Searchable": "Searchable",
   "Seat_limit_reached": "Seat limit reached",
   "Seat_limit_reached_Description": "Your workspace reached its contractual seat limit. Buy more seats to add more users.",

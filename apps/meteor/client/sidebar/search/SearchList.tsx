@@ -320,6 +320,13 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		return onClose();
 	};
 
+	const [announcementText, setAnnouncementText] = useState('');
+	useEffect(() => {
+		if (items.length !== undefined) {
+			setAnnouncementText(t('Search_results', { count: items.length }));
+		}
+	}, [items.length, t]);
+
 	return (
 		<Box
 			position='absolute'
@@ -362,6 +369,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				aria-live='polite'
 				aria-atomic='true'
 				aria-busy={isLoading}
+				key={`no-results-${items.length}`}
+				aria-label={announcementText}
 				onClick={handleClick}
 			>
 				<VirtualizedScrollbars>
