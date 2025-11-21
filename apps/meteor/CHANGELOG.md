@@ -1,5 +1,53 @@
 # @rocket.chat/meteor
 
+## 7.11.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37541](https://github.com/RocketChat/Rocket.Chat/pull/37541) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `user-agent` is not properly extracted from the DDP connection headers
+
+- ([#37521](https://github.com/RocketChat/Rocket.Chat/pull/37521) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes client slowdown for users with large amount of channels
+
+- <details><summary>Updated dependencies [814fcf54382a2650e017830abd847e28d66a4dd7]:</summary>
+
+  - @rocket.chat/favicon@0.0.3
+  - @rocket.chat/core-typings@7.11.2
+  - @rocket.chat/rest-typings@7.11.2
+  - @rocket.chat/federation-matrix@0.0.4
+  - @rocket.chat/license@1.1.2
+  - @rocket.chat/media-calls@0.0.4
+  - @rocket.chat/omnichannel-services@0.3.39
+  - @rocket.chat/pdf-worker@0.3.21
+  - @rocket.chat/presence@0.2.42
+  - @rocket.chat/api-client@0.2.42
+  - @rocket.chat/apps@0.5.21
+  - @rocket.chat/core-services@0.10.5
+  - @rocket.chat/cron@0.1.42
+  - @rocket.chat/freeswitch@1.2.29
+  - @rocket.chat/fuselage-ui-kit@23.0.2
+  - @rocket.chat/gazzodown@23.0.2
+  - @rocket.chat/http-router@7.9.9
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.2
+  - @rocket.chat/ui-avatar@19.0.2
+  - @rocket.chat/ui-client@23.0.2
+  - @rocket.chat/ui-contexts@23.0.2
+  - @rocket.chat/web-ui-registration@23.0.2
+  - @rocket.chat/models@1.7.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.21
+  - @rocket.chat/omni-core-ee@0.0.7
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@23.0.2
+  - @rocket.chat/ui-voip@13.0.2
+  - @rocket.chat/instance-status@0.1.42
+  - @rocket.chat/omni-core@0.0.7
+  </details>
+
 ## 7.11.1
 
 ### Patch Changes
