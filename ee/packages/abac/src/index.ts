@@ -299,7 +299,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributeRemoved({ _id: room._id }, room.abacAttributes, actor);
+			void Audit.objectAttributesRemoved({ _id: room._id }, room.abacAttributes, actor);
 			return;
 		}
 
@@ -308,7 +308,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensureAttributeDefinitionsExist(normalized);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], normalized, actor);
+		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (this.didAttributesChange(previous, normalized)) {
@@ -414,7 +414,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
-			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], actor);
+			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], 'key-added', actor);
 			const next = [...previous, { key, values }];
 
 			await this.onRoomAttributesChanged(room, next);
@@ -428,7 +428,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], actor);
+		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], 'key-updated', actor);
 
 		if (this.wereAttributeValuesAdded(prevValues, values)) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
@@ -462,16 +462,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 		// if is the last attribute, just remove all
 		if (previous.length === 1) {
 			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributeRemoved({ _id: room._id }, previous, actor);
+			void Audit.objectAttributesRemoved({ _id: room._id }, previous, actor);
 
 			return;
 		}
 
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
-		void Audit.objectAttributeChanged(
+		void Audit.objectAttributeRemoved(
 			{ _id: room._id },
 			previous,
 			previous.filter((a) => a.key !== key),
+			'key-removed',
 			actor,
 		);
 	}
@@ -506,7 +507,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
 		const next = updated?.abacAttributes || [...previous, { key, values }];
 
-		void Audit.objectAttributeChanged({ _id: room._id }, previous, next, actor);
+		void Audit.objectAttributeChanged({ _id: room._id }, previous, next, 'key-added', actor);
 
 		await this.onRoomAttributesChanged(room, next);
 	}
@@ -535,7 +536,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
 
-			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], actor);
+			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], 'key-updated', actor);
 			if (this.wereAttributeValuesAdded(prevValues, values)) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
@@ -548,7 +549,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], actor);
+		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], 'key-added', actor);
 
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}

@@ -15,7 +15,16 @@ type MinimalRoom = Pick<IRoom, '_id'>;
 
 export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval';
 
-export type AbacAttributeDefinitionChangeType = 'created' | 'updated' | 'deleted' | 'key-changed' | 'values-changed';
+export type AbacAttributeDefinitionChangeType =
+	| 'created'
+	| 'updated'
+	| 'deleted'
+	| 'all-deleted'
+	| 'key-removed'
+	| 'key-renamed'
+	| 'value-removed'
+	| 'key-added'
+	| 'key-updated';
 
 export type AbacAttributeDefinitionDiff = {
 	added?: string[];
@@ -37,6 +46,7 @@ interface IServerEventAbacObjectAttributeChanged
 		| { key: 'reason'; value: AbacAuditReason }
 		| { key: 'previous'; value: IAbacAttributeDefinition[] }
 		| { key: 'current'; value: IAbacAttributeDefinition[] | null }
+		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
 	> {
 	t: 'abac.object.attribute.changed';
 }
@@ -62,7 +72,12 @@ interface IServerEventAbacActionPerformed
 	t: 'abac.action.performed';
 }
 
-type ValidEvents = 'abac.subject.attribute.changed' | 'abac.object.attribute.changed' | 'abac.attribute.changed' | 'abac.action.performed';
+type ValidEvents =
+	| 'abac.subject.attribute.changed'
+	| 'abac.object.attribute.changed'
+	| 'abac.attribute.changed'
+	| 'abac.action.performed'
+	| 'abac.object.attributes.removed';
 
 declare module '@rocket.chat/core-typings' {
 	interface IServerEvents {
@@ -70,6 +85,7 @@ declare module '@rocket.chat/core-typings' {
 		'abac.object.attribute.changed': IServerEventAbacObjectAttributeChanged;
 		'abac.attribute.changed': IServerEventAbacAttributeChanged;
 		'abac.action.performed': IServerEventAbacActionPerformed;
+		'abac.object.attributes.removed': IServerEventAbacObjectAttributeChanged;
 	}
 }
 
@@ -130,6 +146,7 @@ export const Audit = {
 		minimalRoom: MinimalRoom,
 		previous: IAbacAttributeDefinition[],
 		current: IAbacAttributeDefinition[],
+		change: AbacAttributeDefinitionChangeType,
 		actor: AbacActor,
 	) => {
 		return audit(
@@ -137,18 +154,39 @@ export const Audit = {
 			{
 				room: minimalRoom,
 				reason: 'api',
+				change,
 				previous,
 				current,
 			},
 			{ type: 'user', ...(actor as any) },
 		);
 	},
-	objectAttributeRemoved: async (minimalRoom: MinimalRoom, previous: IAbacAttributeDefinition[], actor: AbacActor) => {
+	objectAttributeRemoved: async (
+		minimalRoom: MinimalRoom,
+		previous: IAbacAttributeDefinition[],
+		current: IAbacAttributeDefinition[],
+		change: AbacAttributeDefinitionChangeType,
+		actor: AbacActor,
+	) => {
 		return audit(
 			'abac.object.attribute.changed',
 			{
 				room: minimalRoom,
 				reason: 'api',
+				change,
+				previous,
+				current,
+			},
+			{ type: 'user', ...(actor as any) },
+		);
+	},
+	objectAttributesRemoved: async (minimalRoom: MinimalRoom, previous: IAbacAttributeDefinition[], actor: AbacActor) => {
+		return audit(
+			'abac.object.attributes.removed',
+			{
+				room: minimalRoom,
+				reason: 'api',
+				change: 'all-deleted',
 				previous,
 				current: null,
 			},
