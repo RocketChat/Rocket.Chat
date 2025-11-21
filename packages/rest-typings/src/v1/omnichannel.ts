@@ -513,11 +513,11 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
-type POSTLivechatMonitorSaveRequest = {
+type POSTLivechatMonitorCreateRequest = {
 	username: string;
 };
 
-const POSTLivechatMonitorSaveRequestSchema = {
+const POSTLivechatMonitorCreateRequestSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -528,11 +528,11 @@ const POSTLivechatMonitorSaveRequestSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatMonitorSaveRequest = ajv.compile<POSTLivechatMonitorSaveRequest>(POSTLivechatMonitorSaveRequestSchema);
+export const isPOSTLivechatMonitorCreateRequest = ajv.compile<POSTLivechatMonitorCreateRequest>(POSTLivechatMonitorCreateRequestSchema);
 
-type POSTLivechatMonitorsSaveSuccess = Pick<IUser, '_id' | 'username' | 'roles'>;
+type POSTLivechatMonitorsCreateSuccess = Pick<IUser, '_id' | 'username' | 'roles'>;
 
-const POSTLivechatMonitorsSaveSuccessSchema = {
+const POSTLivechatMonitorsCreateSuccessSchema = {
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
@@ -543,7 +543,9 @@ const POSTLivechatMonitorsSaveSuccessSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatMonitorsSaveSuccessResponse = ajv.compile<POSTLivechatMonitorsSaveSuccess>(POSTLivechatMonitorsSaveSuccessSchema);
+export const POSTLivechatMonitorsCreateSuccessResponse = ajv.compile<POSTLivechatMonitorsCreateSuccess>(
+	POSTLivechatMonitorsCreateSuccessSchema,
+);
 
 type POSTLivechatTagsRemoveParams = {
 	id: string;

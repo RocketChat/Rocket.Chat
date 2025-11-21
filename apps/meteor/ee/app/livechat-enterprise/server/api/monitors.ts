@@ -1,7 +1,7 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import {
-	isPOSTLivechatMonitorSaveRequest,
-	POSTLivechatMonitorsSaveSuccessResponse,
+	isPOSTLivechatMonitorCreateRequest,
+	POSTLivechatMonitorsCreateSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -64,7 +64,7 @@ const livechatMonitorsEndpoints = API.v1.post(
 	'livechat/monitors.create',
 	{
 		response: {
-			200: POSTLivechatMonitorsSaveSuccessResponse,
+			200: POSTLivechatMonitorsCreateSuccessResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
@@ -72,7 +72,7 @@ const livechatMonitorsEndpoints = API.v1.post(
 		authRequired: true,
 		permissionsRequired: ['manage-livechat-monitors'],
 		license: ['livechat-enterprise'],
-		body: isPOSTLivechatMonitorSaveRequest,
+		body: isPOSTLivechatMonitorCreateRequest,
 	},
 	async function action() {
 		const { username } = this.bodyParams;
