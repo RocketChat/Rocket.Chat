@@ -6,8 +6,12 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { getUsernameServername } from '../FederationMatrix';
 
 export function room(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.room.name', async (data) => {
-		const { room_id: roomId, name, user_id: userId } = data;
+	emitter.on('homeserver.matrix.room.name', async ({ event }) => {
+		const {
+			room_id: roomId,
+			content: { name },
+			sender: userId,
+		} = event;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
 		if (!localRoomId) {
