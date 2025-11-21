@@ -1,4 +1,4 @@
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
 
@@ -148,6 +148,89 @@ const GetAbacAttributeIsInUseResponse = {
 };
 
 export const GETAbacAttributeIsInUseResponseSchema = ajv.compile<{ inUse: boolean }>(GetAbacAttributeIsInUseResponse);
+
+const GetAbacAuditEventsQuerySchemaObject = {
+	type: 'object',
+	properties: {
+		start: { type: 'string', format: 'date-time', nullable: true },
+		end: { type: 'string', format: 'date-time', nullable: true },
+		offset: { type: 'number', nullable: true },
+		count: { type: 'number', nullable: true },
+		actor: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				type: {
+					type: 'string',
+					nullable: true,
+				},
+				_id: {
+					type: 'string',
+					nullable: true,
+				},
+				username: {
+					type: 'string',
+					nullable: true,
+				},
+				ip: {
+					type: 'string',
+					nullable: true,
+				},
+				useragent: {
+					type: 'string',
+					nullable: true,
+				},
+				reason: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETAbacAuditEventsQuerySchema = ajv.compile<
+	PaginatedRequest<{
+		start?: string;
+		end?: string;
+		actor?: IAuditServerActor;
+	}>
+>(GetAbacAuditEventsQuerySchemaObject);
+
+const GetAbacAuditEventsResponseSchemaObject = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		events: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+		},
+		count: {
+			type: 'number',
+			description: 'The number of events returned in this response.',
+		},
+		offset: {
+			type: 'number',
+			description: 'The number of events that were skipped in this response.',
+		},
+		total: {
+			type: 'number',
+			description: 'The total number of events that match the query.',
+		},
+	},
+	required: ['events', 'count', 'offset', 'total'],
+	additionalProperties: false,
+};
+
+export const GETAbacAuditEventsResponseSchema = ajv.compile<{
+	events: Record<string, any>[];
+	count: number;
+	offset: number;
+	total: number;
+}>(GetAbacAuditEventsResponseSchemaObject);
 
 const PostRoomAbacAttributesBody = {
 	type: 'object',

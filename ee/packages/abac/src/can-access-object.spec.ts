@@ -21,6 +21,9 @@ jest.mock('@rocket.chat/models', () => ({
 		findOne: (...args: any[]) => mockUsersFindOne(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 	},
+	ServerEvents: {
+		createAuditServerEvent: jest.fn(),
+	},
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
