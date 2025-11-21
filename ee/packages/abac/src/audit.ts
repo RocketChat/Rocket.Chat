@@ -113,7 +113,7 @@ export const Audit = {
 				change: 'created',
 				current: attribute,
 			} as EventPayload<'abac.attribute.changed'>,
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	attributeUpdated: async (current: IAbacAttributeDefinition, diff: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -126,7 +126,7 @@ export const Audit = {
 				current,
 				diff,
 			},
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	attributeDeleted: async (attribute: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -139,7 +139,7 @@ export const Audit = {
 				current: null,
 				diff: attribute,
 			},
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	objectAttributeChanged: async (
@@ -158,7 +158,7 @@ export const Audit = {
 				previous,
 				current,
 			},
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	objectAttributeRemoved: async (
@@ -177,7 +177,7 @@ export const Audit = {
 				previous,
 				current,
 			},
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	objectAttributesRemoved: async (minimalRoom: MinimalRoom, previous: IAbacAttributeDefinition[], actor: AbacActor) => {
@@ -190,7 +190,7 @@ export const Audit = {
 				previous,
 				current: null,
 			},
-			{ type: 'user', ...(actor as any) },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 	actionPerformed: async (

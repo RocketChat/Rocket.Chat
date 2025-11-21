@@ -643,7 +643,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const userRemovalPromises = [];
 			for await (const doc of cursor) {
 				usersToRemove.push(doc._id);
-				void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid });
+				void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change');
 				userRemovalPromises.push(
 					limit(() =>
 						Room.removeUserFromRoom(rid, doc, {
@@ -653,13 +653,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 					),
 				);
 			}
-
-			this.logger.debug({
-				msg: 'Room ABAC attributes changed',
-				rid,
-				newAttributes,
-				usersToRemove,
-			});
 
 			if (!usersToRemove.length) {
 				return;
