@@ -2954,20 +2954,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'deactivated' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateOne({ _id }, update);
-	}
-
-	setAllUsersActive(active: boolean) {
-		const update = {
-			$set: {
-				active,
-			},
-		};
-
-		return this.updateMany({}, update);
 	}
 
 	/**
@@ -2988,7 +2980,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'idle_too_long' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateMany(query, update);
