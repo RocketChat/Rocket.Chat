@@ -8366,6 +8366,7 @@ __metadata:
   dependencies:
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
