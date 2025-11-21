@@ -3,8 +3,6 @@ import Ajv from 'ajv';
 
 type SubscriptionsGet = { updatedSince?: string };
 
-type SubscriptionsGetOne = { roomId: IRoom['_id'] };
-
 type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
@@ -26,19 +24,6 @@ const SubscriptionsGetSchema = {
 };
 
 export const isSubscriptionsGetProps = ajv.compile<SubscriptionsGet>(SubscriptionsGetSchema);
-
-const SubscriptionsGetOneSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
 	anyOf: [
@@ -114,12 +99,6 @@ export type SubscriptionsEndpoints = {
 		GET: (params: SubscriptionsGet) => {
 			update: ISubscription[];
 			remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
-		};
-	};
-
-	'/v1/subscriptions.getOne': {
-		GET: (params: SubscriptionsGetOne) => {
-			subscription: ISubscription | null;
 		};
 	};
 
