@@ -59,8 +59,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
 
-	const workspaceHasMarketplaceAddon = useHasLicenseModule(app.addon);
-	const workspaceHasInstalledAddon = useHasLicenseModule(app.installedAddon);
+	const { data: workspaceHasMarketplaceAddon = false } = useHasLicenseModule(app.addon);
+	const { data: workspaceHasInstalledAddon = false } = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);

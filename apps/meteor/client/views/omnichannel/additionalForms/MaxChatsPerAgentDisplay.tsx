@@ -5,7 +5,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const MaxChatsPerAgentDisplay = ({ maxNumberSimultaneousChat = 0 }) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
 		return null;

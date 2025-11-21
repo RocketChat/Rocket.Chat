@@ -8,7 +8,7 @@ export const useAuditMenu = () => {
 	const router = useRouter();
 	const { t } = useTranslation();
 
-	const hasAuditLicense = useHasLicenseModule('auditing') === true;
+	const { data: hasAuditLicense = false } = useHasLicenseModule('auditing');
 
 	const hasAuditPermission = usePermission('can-audit') && hasAuditLicense;
 	const hasAuditLogPermission = usePermission('can-audit-log') && hasAuditLicense;

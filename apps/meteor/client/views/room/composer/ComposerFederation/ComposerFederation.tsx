@@ -9,7 +9,7 @@ import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled
 
 const ComposerFederation = ({ subscription, children, ...props }: ComposerMessageProps): ReactElement => {
 	const federationEnabled = useIsFederationEnabled();
-	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+	const { data: federationModuleEnabled = false } = useHasLicenseModule('federation');
 
 	if (!federationEnabled) {
 		return <ComposerFederationDisabled />;

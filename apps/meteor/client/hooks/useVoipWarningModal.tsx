@@ -8,7 +8,7 @@ import TeamsVoipConfigModal from '../views/room/contextualBar/TeamsVoipConfigMod
 export const useVoipWarningModal = (): (() => void) => {
 	const setModal = useSetModal();
 	const isAdmin = useRole('admin');
-	const hasModule = useHasLicenseModule('teams-voip') === true;
+	const { data: hasModule = false } = useHasLicenseModule('teams-voip');
 	const teamsVoipSettingsRoute = useRoute('admin-settings');
 
 	const handleClose = useEffectEvent(() => setModal(null));

@@ -10,7 +10,7 @@ export const useOutboundMessageUpsellModal = () => {
 	const setModal = useSetModal();
 	const isAdmin = useRole('admin');
 	const license = useLicense();
-	const hasModule = useHasLicenseModule('outbound-messaging') === true;
+	const { data: hasModule = false } = useHasLicenseModule('outbound-messaging');
 
 	const close = useEffectEvent(() => setModal(null));
 	const open = useEffectEvent(() =>

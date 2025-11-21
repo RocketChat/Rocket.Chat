@@ -13,7 +13,7 @@ const ReportsPage = () => {
 	const { t } = useTranslation();
 
 	const hasPermission = usePermission('view-livechat-reports');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasPermission || !isEnterprise) {
 		return <NotAuthorizedPage />;
