@@ -5,7 +5,9 @@
 	"main": "index.js",
 	"private": true,
 	"scripts": {
-		"build": "turbo run build",
+		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
+        "fix-tsconfig": "cp packages/fuselage-ui-kit/tsconfig.esm.json packages/fuselage-ui-kit/tsconfig-esm.json",
+        "build": "yarn fix-tsconfig && turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"testunit": "turbo run testunit",
 		"test-storybook": "turbo run test-storybook",
@@ -13,8 +15,7 @@
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
-		"fuselage": "./fuselage.sh",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
+		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.11",
