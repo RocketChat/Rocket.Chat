@@ -141,8 +141,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('POST should fail creating duplicate key', async () => {
-			const response = await request.get(`${v1}/abac/attributes`).set(credentials).expect(200);
-			console.log(response.body);
+			await request.get(`${v1}/abac/attributes`).set(credentials).expect(200);
 			await request
 				.post(`${v1}/abac/attributes`)
 				.set(credentials)
@@ -276,6 +275,39 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					expect(res.body).to.have.property('key', updatedKey);
 				});
 		});
+
+		it('PUT should update key only (key-updated)', async () => {
+			const testKey = `${initialKey}_update_test`;
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: testKey, values: ['val1', 'val2'] })
+				.expect(200);
+
+			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: testKey }).set(credentials).expect(200);
+
+			const attr = listRes.body.attributes.find((a: any) => a.key === testKey);
+			expect(attr).to.exist;
+			const attrId = attr._id;
+
+			const newKey = `${initialKey}_update_test_renamed`;
+			await request
+				.put(`${v1}/abac/attributes/${attrId}`)
+				.set(credentials)
+				.send({ key: newKey })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(`${v1}/abac/attributes/${attrId}`)
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('key', newKey);
+				});
+		});
 	});
 
 	describe('Room Attribute Operations', () => {
@@ -372,6 +404,60 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect((res) => {
 					expect(res.body.inUse).to.be.true;
 				});
+		});
+
+		describe('DELETE room attribute key (dedicated room)', () => {
+			let dedicatedRoom: IRoom;
+
+			before(async () => {
+				dedicatedRoom = (await createRoom({ type: 'p', name: `abac-dedicated-${Date.now()}` })).body.group;
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'p', roomId: dedicatedRoom._id });
+			});
+
+			it('should succeed and remove only the specified key (key-removed)', async () => {
+				const key1 = `${initialKey}_room1`;
+				const key2 = `${initialKey}_room2`;
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: key1, values: ['value1'] })
+					.expect(200);
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: key2, values: ['value2'] })
+					.expect(200);
+
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+					{ key: key1, values: ['value1'] },
+					{ key: key2, values: ['value2'] },
+				]);
+
+				await request
+					.post(`${v1}/abac/rooms/${dedicatedRoom._id}/attributes`)
+					.set(credentials)
+					.send({ attributes: { [key1]: ['value1'], [key2]: ['value2'] } })
+					.expect(200);
+
+				await request
+					.delete(`${v1}/abac/rooms/${dedicatedRoom._id}/attributes/${key1}`)
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const roomRes = await request.get(`${v1}/rooms.info?roomId=${dedicatedRoom._id}`).set(credentials);
+				expect(roomRes.status).to.equal(200);
+				const abacAttrs = roomRes.body.room?.abacAttributes || [];
+				expect(abacAttrs).to.be.an('array').that.has.lengthOf(1);
+				expect(abacAttrs[0]).to.have.property('key', key2);
+			});
 		});
 
 		it('DELETE room attribute key should succeed and clear usage/inUse=false', async () => {
@@ -552,6 +638,37 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
+				});
+		});
+
+		it('DELETE attribute definition should remove the key (key-removed)', async () => {
+			const testKey = `${initialKey}_delete_test`;
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: testKey, values: ['del1', 'del2'] })
+				.expect(200);
+
+			const listRes = await request.get(`${v1}/abac/attributes`).query({ key: testKey }).set(credentials).expect(200);
+
+			const attr = listRes.body.attributes.find((a: any) => a.key === testKey);
+			expect(attr).to.exist;
+			const attrId = attr._id;
+
+			await request
+				.delete(`${v1}/abac/attributes/${attrId}`)
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(`${v1}/abac/attributes/${attrId}`)
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', 'error-attribute-not-found');
 				});
 		});
 
