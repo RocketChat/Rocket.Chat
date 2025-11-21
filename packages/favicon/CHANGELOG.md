@@ -1,5 +1,11 @@
 # @rocket.chat/favicon
 
+## 0.0.3
+
+### Patch Changes
+
+- ([#37512](https://github.com/RocketChat/Rocket.Chat/pull/37512) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a GUI crash due to an unhandled cross-origin error happening while rendering favicon badge
+
 ## 0.0.2
 
 ### Patch Changes
