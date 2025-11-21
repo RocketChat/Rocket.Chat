@@ -29,7 +29,7 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		);
 	}
 
-	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
+	updateConnectionStatusById(uid: string, connectionId: string, status?: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
 		const query = {
 			'_id': uid,
 			'connections.id': connectionId,
@@ -37,51 +37,10 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 
 		const update = {
 			$set: {
-				'connections.$.status': status,
+				...(status && { 'connections.$.status': status }),
 				'connections.$._updatedAt': new Date(),
 			},
 		};
-
-		return this.updateOne(query, update);
-	}
-
-	renewConnectionStatusById(uid: string, connectionId: string, expiresAt: Date): ReturnType<BaseRaw<IUserSession>['updateOne']> {
-		const query = {
-			_id: uid,
-		};
-
-		const update = [
-			{
-				$set: {
-					connections: {
-						$map: {
-							input: {
-								$filter: {
-									input: '$connections',
-									as: 'connection',
-									cond: { $gte: ['$$connection.expiresAt', new Date()] },
-								},
-							},
-							as: 'connection',
-							in: {
-								$mergeObjects: [
-									'$$connection',
-									{
-										expiresAt: {
-											$cond: {
-												if: { $eq: ['$$connection.id', connectionId] },
-												then: expiresAt,
-												else: '$$connection.expiresAt',
-											},
-										},
-									},
-								],
-							},
-						},
-					},
-				},
-			},
-		];
 
 		return this.updateOne(query, update);
 	}
@@ -139,7 +98,7 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 
 	addConnectionById(
 		userId: string,
-		{ id, instanceId, status, expiresAt }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status' | 'expiresAt'>,
+		{ id, instanceId, status }: Pick<IUserSessionConnection, 'id' | 'instanceId' | 'status'>,
 	): ReturnType<BaseRaw<IUserSession>['updateOne']> {
 		const now = new Date();
 
@@ -149,7 +108,6 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 					id,
 					instanceId,
 					status,
-					expiresAt,
 					_createdAt: now,
 					_updatedAt: now,
 				},
