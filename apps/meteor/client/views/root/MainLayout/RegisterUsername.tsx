@@ -80,7 +80,10 @@ const RegisterUsername = () => {
 			}
 
 			if ([error.errorType].includes('error-field-unavailable')) {
-				return setError('username', { type: 'error-field-unavailable', message: t('error-field-unavailable', { field: username }) });
+				return setError('username', {
+					type: 'error-field-unavailable',
+					message: t('error-field-unavailable', { field: `**${username}**` }),
+				});
 			}
 
 			if ([error.errorType].includes('')) {
