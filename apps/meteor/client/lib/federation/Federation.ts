@@ -109,3 +109,7 @@ export const isRoomSettingAllowed = (room: Partial<IRoom>, setting: ValueOf<type
 	}
 	return allowedRoomSettingsChangesInFederatedRooms.includes(setting);
 };
+
+export const isMatrixUsername = (username: string) => {
+	return /@(.*:.*)/.test(username);
+};

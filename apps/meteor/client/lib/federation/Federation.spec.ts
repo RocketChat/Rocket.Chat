@@ -537,3 +537,21 @@ describe('#isRoomSettingAllowed()', () => {
 		});
 	});
 });
+
+describe('#isMatrixUsername', () => {
+	it('should return true for a valid matrix username', () => {
+		expect(Federation.isMatrixUsername('@user:server.com')).toBe(true);
+	});
+
+	it('should return false for an invalid matrix username (missing @)', () => {
+		expect(Federation.isMatrixUsername('user:server.com')).toBe(false);
+	});
+
+	it('should return false for an invalid matrix username (missing :)', () => {
+		expect(Federation.isMatrixUsername('@userserver.com')).toBe(false);
+	});
+
+	it('should return false for a regular rocketchat username', () => {
+		expect(Federation.isMatrixUsername('user')).toBe(false);
+	});
+});

@@ -21,6 +21,7 @@ import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { isMatrixUsername } from '../../../lib/federation/Federation';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateDirectMessageProps = { onClose: () => void };
@@ -71,10 +72,24 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 								name='users'
 								rules={{
 									required: t('Direct_message_creation_error'),
-									validate: (users) =>
-										users.length + 1 > directMaxUsers
-											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
-											: undefined,
+									validate: {
+										maxUserExceeded: (users) =>
+											users.length + 1 > directMaxUsers
+												? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
+												: undefined,
+										internalAndExternalUserMixNotAllowed: (users) => {
+											if (users.length <= 1) {
+												return undefined;
+											}
+
+											const hasFederatedUser = users.some((username) => isMatrixUsername(username));
+											const hasInternalUser = users.some((username) => !isMatrixUsername(username));
+
+											return hasFederatedUser && hasInternalUser
+												? t('error-direct-message-internal-external-user-mix-not-allowed')
+												: undefined;
+										},
+									},
 								}}
 								control={control}
 								render={({ field: { name, onChange, value, onBlur } }) => (
