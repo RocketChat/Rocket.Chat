@@ -10266,7 +10266,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/fuselage": "npm:~0.68.1"
