@@ -67,14 +67,14 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
-	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithPriority?: number;
 	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt: Date | undefined;
+	lastMessageSentAt?: Date;
 	lastSeenSubscription: string;
 	os: {
 		type: string;
@@ -101,11 +101,12 @@ export interface IStats {
 	uploadsTotalSize: number;
 	fileStoreType: string;
 	migration: {
-		_id?: string;
-		locked: boolean;
+		_id: string;
 		version: number;
-		buildAt?: string | Date;
-		lockedAt?: string | Date;
+		locked: boolean;
+		hash?: string;
+		buildAt?: string;
+		lockedAt?: string;
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
@@ -123,7 +124,10 @@ export interface IStats {
 	routingAlgorithm: string;
 	onHoldEnabled: boolean;
 	emailInboxes: number;
-	BusinessHours: { [key: string]: number | string };
+	BusinessHours: {
+		total: number;
+		strategy: string;
+	};
 	lastChattedAgentPreferred: boolean;
 	assignNewConversationsToContactManager: boolean;
 	visitorAbandonment: string;
@@ -134,7 +138,7 @@ export interface IStats {
 	voipSuccessfulCalls: number;
 	voipErrorCalls: number;
 	voipOnHoldCalls: number;
-	federationOverviewData: {
+	federationOverviewData?: {
 		numberOfEvents: number;
 		numberOfFederatedUsers: number;
 		numberOfServers: number;
@@ -152,9 +156,11 @@ export interface IStats {
 	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
 		engineVersion: string;
-		totalInstalled: number | false;
-		totalActive: number | false;
-		totalFailed: number | false;
+		totalInstalled: number;
+		totalActive: number;
+		totalFailed: number;
+		totalPrivateApps: number;
+		totalPrivateAppsEnabled: number;
 	};
 	services: Record<string, unknown>;
 	importer: Record<string, unknown>;
@@ -188,7 +194,7 @@ export interface IStats {
 			lastDay?: IVoIPPeriodStats;
 		};
 	};
-	createdAt: Date | string;
+	createdAt: Date;
 	totalOTR: number;
 	totalOTRRooms: number;
 	slashCommandsJitsi: number;
@@ -214,7 +220,7 @@ export interface IStats {
 	onLogoutCustomScriptChanged: boolean;
 	loggedOutCustomScriptChanged: boolean;
 	loggedInCustomScriptChanged: boolean;
-	roomsInsideTeams: number;
+	roomsInsideTeams?: number;
 	showHomeButton: boolean;
 	totalEncryptedMessages: number;
 	totalLinkInvitationUses: number;
