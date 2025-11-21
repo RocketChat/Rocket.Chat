@@ -49,7 +49,7 @@ const MonitorsTable = () => {
 
 	// TODO: implement endpoints for monitors add/remove
 	const removeMonitor = useMethod('livechat:removeMonitor');
-	const addMonitor = useMethod('livechat:addMonitor');
+	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
@@ -79,7 +79,7 @@ const MonitorsTable = () => {
 
 	const addMutation = useMutation({
 		mutationFn: async (username: string) => {
-			await addMonitor(username);
+			await addMonitor({ username });
 
 			await queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
 		},
