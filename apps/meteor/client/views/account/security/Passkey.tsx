@@ -20,9 +20,6 @@ const Passkey = () => {
 	const formatDate = useFormatDate();
 
 	const [passkeys, setPasskeys] = useState([]);
-	// const user = useUser();
-
-	// const isEnabled = user?.services?.email2fa?.enabled;
 
 	const findPasskeysAction = useEndpoint('GET', '/v1/users.findPasskeys');
 	const generateRegistrationOptionsAction = useEndpoint('GET', '/v1/users.generateRegistrationOptions');
@@ -123,7 +120,7 @@ const Passkey = () => {
 				</Box>
 				<GenericTable>
 					<GenericTableBody>
-						{/* {phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}*/
+						{/* TODO fzh075 {phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}*/
 						passkeys?.map((passkey) => (
 							<GenericTableRow key={passkey.id} borderBlockEnd='1px solid var(--rcx-color-neutral-200, #e4e7eb)'>
 								<GenericTableCell withTruncatedText>
@@ -155,23 +152,6 @@ const Passkey = () => {
 				</GenericTable>
 			</Box>
 		</Box>
-		// <Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
-		// 	<Margins blockEnd={8}>
-		// 		<Box fontScale='h4'>{t('Your-passkeys')}</Box>
-		// 			<Button primary onClick={handleCreate}>
-		// 				{t('Add-a-passkey')}
-		// 			</Button>
-		// 		<Box>
-		// 		Passkey
-		// 		{/*<Button onClick={handleEdit}>*/}
-		// 		{/*	{t('Edit')}*/}
-		// 		{/*</Button>*/}
-		// 		{/*<Button danger onClick={handleDelete}>*/}
-		// 		{/*	{t('Delete')}*/}
-		// 		{/*</Button>*/}
-		// 		</Box>
-		// 	</Margins>
-		// </Box>
 	);
 };
 
