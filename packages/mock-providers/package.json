@@ -11,6 +11,7 @@
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "~8.0.2",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/mongo-adapter": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
