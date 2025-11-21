@@ -310,8 +310,23 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 		focus();
 
-		const newStart = selectionStart + text.length;
-		const newEnd = selectionStart + text.length;
+		// Check if the text starts and ends with a colon symbol (:) - Used for emoji detection
+		const emoji = /^:.*:$/.test(text.trim());
+
+		let newStart;
+		let newEnd;
+
+		// selectionStart is the current cursor position whereas
+		// selection.start is cursor starting position from where replaceText takes into consideration
+		// if emoji is true then increment cursor position by 1
+		// else increment by the length of the text
+		if (emoji) {
+			newStart = selection.start + 1;
+			newEnd = selection.start + 1;
+		} else {
+			newStart = selectionStart + text.length;
+			newEnd = selectionStart + text.length;
+		}
 
 		if (selectionStart !== selectionEnd) {
 			setSelectionRange(input, selectionStart, selectionStart);
