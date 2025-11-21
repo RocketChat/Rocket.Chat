@@ -9587,6 +9587,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mock-providers@workspace:packages/mock-providers"
   dependencies:
+    "@faker-js/faker": "npm:~8.0.2"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/i18n": "workspace:~"
