@@ -113,7 +113,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 
 		await test.step('user1 transfers call to user3', async () => {
 			await user1.poHomeChannel.voiceCalls.transferCall('user3');
-			await expect(user1.poHomeChannel.toastSuccess).toBeVisible();
+			await user1.poHomeChannel.toastMessage.waitForDisplay({ type: 'success' });
 			await expect(user1.poHomeChannel.voiceCalls.callWidget).not.toBeVisible();
 			await expect(user2.poHomeChannel.voiceCalls.callTransferWidget).toBeVisible();
 		});

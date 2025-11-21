@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
 
@@ -23,6 +23,8 @@ export class HomeChannel {
 
 	readonly voiceCalls: VoiceCalls;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
@@ -33,6 +35,7 @@ export class HomeChannel {
 		this.tabs = new HomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	goto() {
@@ -117,9 +120,5 @@ export class HomeChannel {
 
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 }
