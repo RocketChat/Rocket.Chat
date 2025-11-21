@@ -8708,7 +8708,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:*, @rocket.chat/fuselage@npm:~0.68.1":
+"@rocket.chat/fuselage@npm:~0.68.1":
   version: 0.68.1
   resolution: "@rocket.chat/fuselage@npm:0.68.1"
   dependencies:
@@ -8847,7 +8847,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/icons@npm:*, @rocket.chat/icons@npm:~0.45.0":
+"@rocket.chat/icons@npm:~0.45.0":
   version: 0.45.0
   resolution: "@rocket.chat/icons@npm:0.45.0"
   checksum: 10/9e0967eba17cbef1c482616bb94cf871dfac20e92ac5fad6164cbe60bab95882d9675bf9de2c611928da6d37806a1279d671b0a3463dda0a3148cdade9291147
@@ -10394,11 +10394,11 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:*"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
-    "@rocket.chat/icons": "npm:*"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
