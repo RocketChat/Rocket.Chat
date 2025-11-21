@@ -12,7 +12,7 @@ const HeaderTitleButton = ({ className, ...props }: { className?: string } & Com
 			cursor: pointer;
 			background-color: ${Palette.surface['surface-hover']};
 		}
-		&:focus.focus-visible {
+		&:focus-visible {
 			outline: 0;
 			box-shadow: 0 0 0 2px ${Palette.stroke['stroke-extra-light-highlight']};
 			border-color: ${Palette.stroke['stroke-highlight']};
