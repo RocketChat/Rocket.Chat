@@ -49,7 +49,7 @@ const MonitorsTable = () => {
 
 	// TODO: implement endpoints for monitors add/remove
 	const removeMonitor = useMethod('livechat:removeMonitor');
-	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.save');
+	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;

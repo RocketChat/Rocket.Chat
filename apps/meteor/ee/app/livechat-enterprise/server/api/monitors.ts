@@ -61,7 +61,7 @@ API.v1.addRoute(
 );
 
 const livechatMonitorsEndpoints = API.v1.post(
-	'livechat/monitors.save',
+	'livechat/monitors.create',
 	{
 		response: {
 			200: POSTLivechatMonitorsSaveSuccessResponse,

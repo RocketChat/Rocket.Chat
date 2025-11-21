@@ -7,7 +7,7 @@ import type { DummyResponse } from './utils';
 export const createMonitor = async (username: string): Promise<{ _id: string; username: string; role: string[] }> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(api('livechat/monitors.save'))
+			.post(api('livechat/monitors.create'))
 			.set(credentials)
 			.send({ username })
 			.end((err: Error, res: DummyResponse<{ _id: string; username: string; role: string[] }, 'not-wrapped'>) => {
