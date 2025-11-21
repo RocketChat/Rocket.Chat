@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -8,21 +9,21 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
-const list = {};
-const debounceByRoomId = function (fn) {
-	return function (roomId, ...args) {
-		clearTimeout(list[roomId]);
-		list[roomId] = setTimeout(() => {
-			fn.call(this, roomId, ...args);
-			delete list[roomId];
+const list: Record<string, NodeJS.Timeout> = {};
+const debounceByRoomId = function (fn: (room: IRoom) => Promise<void>) {
+	return function (this: unknown, room: IRoom) {
+		clearTimeout(list[room._id]);
+		list[room._id] = setTimeout(() => {
+			void fn.call(this, room);
+			delete list[room._id];
 		}, 2000);
 	};
 };
 
-const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
+const updateMessages = debounceByRoomId(async ({ _id, lm }: IRoom) => {
 	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
 	const firstSubscription = await Subscriptions.getMinimumLastSeenByRoomId(_id);
-	if (!firstSubscription || !firstSubscription.ls) {
+	if (!firstSubscription?.ls) {
 		return;
 	}
 
@@ -31,14 +32,14 @@ const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
 		void api.broadcast('notify.messagesRead', { rid: _id, until: firstSubscription.ls });
 	}
 
-	if (lm <= firstSubscription.ls) {
+	if (lm && lm <= firstSubscription.ls) {
 		await Rooms.setLastMessageAsRead(_id);
 		void notifyOnRoomChangedById(_id);
 	}
 });
 
-export const ReadReceipt = {
-	async markMessagesAsRead(roomId, userId, userLastSeen) {
+class ReadReceiptClass {
+	async markMessagesAsRead(roomId: string, userId: string, userLastSeen: Date) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -46,16 +47,22 @@ export const ReadReceipt = {
 		const room = await Rooms.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
-		if (!room || userLastSeen > room.lm) {
+		if (!room || (room.lm && userLastSeen > room.lm)) {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
+		void this.storeReadReceipts(
+			() => {
+				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
+			},
+			roomId,
+			userId,
+		);
 
-		await updateMessages(room);
-	},
+		updateMessages(room);
+	}
 
-	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
+	async markMessageAsReadBySender(message: IMessage, { _id: roomId, t }: { _id: string; t: string }, userId: string) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -76,10 +83,17 @@ export const ReadReceipt = {
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
-		this.storeReadReceipts([message], roomId, userId, extraData);
-	},
+		void this.storeReadReceipts(
+			() => {
+				return Promise.resolve([message]);
+			},
+			roomId,
+			userId,
+			extraData,
+		);
+	}
 
-	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
+	async storeThreadMessagesReadReceipts(tmid: string, userId: string, userLastSeen: Date) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -87,17 +101,28 @@ export const ReadReceipt = {
 		const message = await Messages.findOneById(tmid, { projection: { tlm: 1, rid: 1 } });
 
 		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
-		if (!message || userLastSeen > message.tlm) {
+		if (!message || (message.tlm && userLastSeen > message.tlm)) {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray(), message.rid, userId);
-	},
+		void this.storeReadReceipts(
+			() => {
+				return Messages.findUnreadThreadMessagesByDate(message.rid, tmid, userId, userLastSeen).toArray();
+			},
+			message.rid,
+			userId,
+		);
+	}
 
-	async storeReadReceipts(messages, roomId, userId, extraData = {}) {
+	private async storeReadReceipts(
+		getMessages: () => Promise<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>[]>,
+		roomId: string,
+		userId: string,
+		extraData: Partial<IReadReceipt> = {},
+	) {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
-			const receipts = messages.map((message) => ({
+			const receipts = (await getMessages()).map((message) => ({
 				_id: Random.id(),
 				roomId,
 				userId,
@@ -120,18 +145,20 @@ export const ReadReceipt = {
 				SystemLogger.error({ msg: 'Error inserting read receipts per user', err });
 			}
 		}
-	},
+	}
 
-	async getReceipts(message) {
+	async getReceipts(message: Pick<IMessage, '_id'>): Promise<IReadReceiptWithUser[]> {
 		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
 
 		return Promise.all(
 			receipts.map(async (receipt) => ({
 				...receipt,
-				user: receipt.token
+				user: (receipt.token
 					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1 } }),
+					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1, token: 1 } })) as IReadReceiptWithUser['user'],
 			})),
 		);
-	},
-};
+	}
+}
+
+export const ReadReceipt = new ReadReceiptClass();
