@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, UsersSessions } from '@rocket.chat/models';
 
-import { processPresenceAndStatus } from './lib/processConnectionStatus';
+import { processPresenceAndStatus } from './processPresenceAndStatus';
 
 const MAX_CONNECTIONS = 200;
 
@@ -128,7 +128,6 @@ export class Presence extends ServiceClass implements IPresence {
 			id: session,
 			instanceId: nodeId,
 			status: UserStatus.ONLINE,
-			expiresAt: new Date(Date.now() + 5 * 60 * 1000),
 		});
 
 		await this.updateUserPresence(uid);
@@ -181,10 +180,6 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.map(({ _id }) => _id);
 	}
 
-	async renewConnection(uid: string, connectionId: string): Promise<void> {
-		await UsersSessions.renewConnectionStatusById(uid, connectionId, new Date(Date.now() + 5 * 60 * 1000));
-	}
-
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
 		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
 
@@ -208,7 +203,7 @@ export class Presence extends ServiceClass implements IPresence {
 		return !!result.modifiedCount;
 	}
 
-	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
+	async setConnectionStatus(uid: string, session: string, status?: UserStatus): Promise<boolean> {
 		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
 		await this.updateUserPresence(uid);

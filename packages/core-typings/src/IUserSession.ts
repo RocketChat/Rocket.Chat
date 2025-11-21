@@ -4,7 +4,6 @@ export interface IUserSessionConnection {
 	id: string;
 	instanceId: string;
 	status: UserStatus;
-	expiresAt: Date;
 	_createdAt: Date;
 	_updatedAt: Date;
 }
