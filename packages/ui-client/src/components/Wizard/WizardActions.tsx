@@ -1,7 +1,7 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type WizardActionsProps = {
+export type WizardActionsProps = {
 	annotation?: string;
 	children: ReactNode;
 };

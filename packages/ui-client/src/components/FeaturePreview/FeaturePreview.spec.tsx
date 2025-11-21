@@ -1,7 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from './FeaturePreview';
+import FeaturePreview from './FeaturePreview';
+import FeaturePreviewOff from './FeaturePreviewOff';
+import FeaturePreviewOn from './FeaturePreviewOn';
 
 test('should renders off if the feature is disabled', async () => {
 	render(

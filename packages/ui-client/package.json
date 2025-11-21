@@ -17,8 +17,10 @@
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"dompurify": "~3.2.7"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
@@ -68,8 +70,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"dependencies": {
-		"dompurify": "~3.2.7"
 	}
 }
