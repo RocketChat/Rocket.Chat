@@ -21,7 +21,14 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useEndpoint, useToastMessageDispatch, usePermissionWithScopedRoles } from '@rocket.chat/ui-contexts';
+import {
+	useSetting,
+	useTranslation,
+	useEndpoint,
+	useToastMessageDispatch,
+	usePermissionWithScopedRoles,
+	usePermission,
+} from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -50,13 +57,19 @@ type CreateChannelModalPayload = {
 	federated: boolean;
 };
 
-const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
-	if (licenseModule === 'loading' || !licenseModule) {
+const getFederationHintKey = (licenseModule: boolean, featureToggle: boolean, federationAccessPermission: boolean): TranslationKey => {
+	if (!licenseModule) {
 		return 'error-this-is-a-premium-feature';
 	}
+
 	if (!featureToggle) {
 		return 'Federation_Matrix_Federated_Description_disabled';
 	}
+
+	if (!federationAccessPermission) {
+		return 'error-not-authorized-federation';
+	}
+
 	return 'Federation_Matrix_Federated_Description';
 };
 
@@ -74,8 +87,10 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
-	const federatedModule = useHasLicenseModule('federation');
-	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
+	const federatedModule = useHasLicenseModule('federation') === true;
+	const federationAccessPermission = usePermission('access-federation');
+	const canUseFederation = federatedModule && federationAccessPermission && federationEnabled;
+	const federationFieldHint = getFederationHintKey(federatedModule, federationEnabled, federationAccessPermission);
 
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
@@ -303,7 +318,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</FieldHint>
+								<FieldHint id={`${federatedId}-hint`}>{t(federationFieldHint)}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>

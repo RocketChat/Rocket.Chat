@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import type CreateChannelModal2Component from './CreateChannelModal';
+import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 import type CreateChannelModalComponent from '../../../sidebar/header/CreateChannel';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -174,6 +175,88 @@ export function testCreateChannelModal(CreateChannelModal: typeof CreateChannelM
 			expect(broadcast).not.toBeChecked();
 			expect(encrypted).not.toBeChecked();
 			expect(encrypted).toBeDisabled();
+		});
+
+		it('should render with federated option disabled when user lacks license module', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot().build(),
+			});
+
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			expect(federated).toHaveAccessibleDescription('error-this-is-a-premium-feature');
+			expect(federated).toBeInTheDocument();
+			expect(federated).not.toBeChecked();
+			expect(federated).toBeDisabled();
+		});
+
+		it('should render with federated option disabled if the feature is disabled for workspaces', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withSetting('Federation_Matrix_enabled', false)
+					.withEndpoint(
+						'GET',
+						'/v1/licenses.info',
+						jest.fn().mockImplementation(() => ({
+							license: createFakeLicenseInfo({ activeModules: ['federation'] }),
+						})),
+					)
+					.build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			expect(federated).toBeInTheDocument();
+			expect(federated).not.toBeChecked();
+			expect(federated).toBeDisabled();
+			expect(federated).toHaveAccessibleDescription('Federation_Matrix_Federated_Description_disabled');
+		});
+
+		it('should render with federated option disabled when user lacks permission', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withSetting('Federation_Matrix_enabled', true)
+					.withEndpoint(
+						'GET',
+						'/v1/licenses.info',
+						jest.fn().mockImplementation(() => ({
+							license: createFakeLicenseInfo({ activeModules: ['federation'] }),
+						})),
+					)
+					.build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			expect(federated).toBeInTheDocument();
+			expect(federated).not.toBeChecked();
+			expect(federated).toBeDisabled();
+			expect(federated).toHaveAccessibleDescription('error-not-authorized-federation');
+		});
+
+		it('should render with federated option enabled when user has license module, permission and feature enabled', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withSetting('Federation_Matrix_enabled', true)
+					.withPermission('access-federation')
+					.withEndpoint(
+						'GET',
+						'/v1/licenses.info',
+						jest.fn().mockImplementation(() => ({
+							license: createFakeLicenseInfo({ activeModules: ['federation'] }),
+						})),
+					)
+					.build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			expect(federated).toBeInTheDocument();
+			expect(federated).not.toBeChecked();
+			expect(federated).not.toBeDisabled();
+			expect(federated).toHaveAccessibleDescription('Federation_Matrix_Federated_Description');
 		});
 	});
 }
