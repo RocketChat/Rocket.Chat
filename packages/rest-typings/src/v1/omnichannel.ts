@@ -519,7 +519,7 @@ type POSTLivechatTagsSaveParams = {
 		name: string;
 		description?: string;
 	};
-	tagDepartments: string[];
+	tagDepartments?: string[];
 };
 
 const POSTLivechatTagsSaveParamsSchema = {
@@ -546,9 +546,11 @@ const POSTLivechatTagsSaveParamsSchema = {
 			items: {
 				type: 'string',
 			},
+			minItems: 1,
+			nullable: true,
 		},
 	},
-	required: ['tagData', 'tagDepartments'],
+	required: ['tagData'],
 	additionalProperties: false,
 };
 
@@ -585,11 +587,11 @@ const POSTLivechatTagsSaveSuccessResponseSchema = {
 
 export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<ILivechatTag>(POSTLivechatTagsSaveSuccessResponseSchema);
 
-type POSTLivechatTagsRemoveParams = {
+type POSTLivechatTagsDeleteParams = {
 	id: string;
 };
 
-const POSTLivechatTagsRemoveSchema = {
+const POSTLivechatTagsDeleteSchema = {
 	type: 'object',
 	properties: {
 		id: {
@@ -600,9 +602,9 @@ const POSTLivechatTagsRemoveSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatTagsRemoveParams = ajv.compile<POSTLivechatTagsRemoveParams>(POSTLivechatTagsRemoveSchema);
+export const isPOSTLivechatTagsDeleteParams = ajv.compile<POSTLivechatTagsDeleteParams>(POSTLivechatTagsDeleteSchema);
 
-const POSTLivechatTagsRemoveSuccessResponseSchema = {
+const POSTLivechatTagsDeleteSuccessResponseSchema = {
 	type: 'object',
 	properties: {
 		success: {
@@ -613,7 +615,7 @@ const POSTLivechatTagsRemoveSuccessResponseSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatTagsRemoveSuccessResponse = ajv.compile<void>(POSTLivechatTagsRemoveSuccessResponseSchema);
+export const POSTLivechatTagsDeleteSuccessResponse = ajv.compile<void>(POSTLivechatTagsDeleteSuccessResponseSchema);
 
 type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 

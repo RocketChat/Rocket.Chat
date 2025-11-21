@@ -1,8 +1,8 @@
 import {
 	isPOSTLivechatTagsSaveParams,
 	POSTLivechatTagsSaveSuccessResponse,
-	isPOSTLivechatTagsRemoveParams,
-	POSTLivechatTagsRemoveSuccessResponse,
+	isPOSTLivechatTagsDeleteParams,
+	POSTLivechatTagsDeleteSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -96,7 +96,7 @@ const livechatTagsEndpoints = API.v1
 		'livechat/tags.delete',
 		{
 			response: {
-				200: POSTLivechatTagsRemoveSuccessResponse,
+				200: POSTLivechatTagsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -104,21 +104,14 @@ const livechatTagsEndpoints = API.v1
 			authRequired: true,
 			permissions: ['manage-livechat-tags'],
 			license: ['livechat-enterprise'],
-			body: isPOSTLivechatTagsRemoveParams,
+			body: isPOSTLivechatTagsDeleteParams,
 		},
 		async function action() {
 			const { id } = this.bodyParams;
-			try {
-				await LivechatEnterprise.removeTag(id);
 
-				return API.v1.success();
-			} catch (error: unknown) {
-				if (error instanceof Meteor.Error) {
-					return API.v1.failure(error.reason);
-				}
+			await LivechatEnterprise.removeTag(id);
 
-				return API.v1.failure('error-removing-tag');
-			}
+			return API.v1.success();
 		},
 	);
 
