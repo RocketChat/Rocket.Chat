@@ -12,6 +12,21 @@
   <img src="https://img.shields.io/badge/license-MIT-green">
   <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop">
 </p>
+🚀 Rocket.Chat Local Development — Project Report
+
+📌 Problem Statement
+
+The objective of this project was to understand, set up, and work with the open-source Rocket.Chat platform by completing the following tasks:
+	1.	Fork and clone the Rocket.Chat repository to a local machine.
+	2.	Identify and explain 5 key features of the product.
+	3.	Create a user account in the locally running Rocket.Chat instance.
+	4.	Download and explore marketplace apps related to Rocket.Chat.
+	5.	Set up a complete local development environment, including Node, Corepack, and Yarn.
+	6.	Build and run the Rocket.Chat codebase locally (web + Electron desktop app).
+	7.	Review solved issues in the repository that required small (<10 lines) code changes.
+	8.	Update the README with the findings, problem statement, and solutions.
+
+This project demonstrates the ability to set up a large open-source monorepo, troubleshoot environment problems, and analyze code-level issue resolutions.
 
 
 
