@@ -1,11 +1,13 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import type { ISubscription, AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
+import { acceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
@@ -79,6 +81,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
+	}
+
+	async acceptRoomInvite(room: IRoom, subscription: ISubscription, user: Pick<IUser, '_id' | 'username'>): Promise<void> {
+		return acceptRoomInvite(room, subscription, user);
 	}
 
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {

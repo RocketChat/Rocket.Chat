@@ -1,102 +1,139 @@
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
-import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures, UserID, RoomID, PduForType, EventID } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
+import { getOrCreateFederatedRoom, getOrCreateFederatedUser } from './helpers';
 
 const logger = new Logger('federation-matrix:member');
 
-async function membershipLeaveAction(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']) {
-	const room = await Rooms.findOne({ 'federation.mrid': event.room_id }, { projection: { _id: 1 } });
-	if (!room) {
-		logger.warn(`No bridged room found for Matrix room_id: ${event.room_id}`);
+export async function handleInvite(
+	event: HomeserverEventSignatures['homeserver.matrix.membership']['event'],
+	eventId: EventID,
+): Promise<void> {
+	const { room_id: roomId, sender: senderId, state_key: userId, content } = event;
+
+	const inviterUser = await getOrCreateFederatedUser(senderId as UserID);
+	if (!inviterUser) {
+		logger.error(`Failed to get or create inviter user: ${senderId}`);
 		return;
 	}
 
-	const serverName = federationSDK.getConfig('serverName');
-
-	const [affectedUsername] = getUsernameServername(event.state_key, serverName);
-	// state_key is the user affected by the membership change
-	const affectedUser = await Users.findOneByUsername(affectedUsername);
-	if (!affectedUser) {
-		logger.error(`No Rocket.Chat user found for bridged user: ${event.state_key}`);
+	const inviteeUser = await getOrCreateFederatedUser(userId as UserID);
+	if (!inviteeUser) {
+		logger.error(`Failed to get or create invitee user: ${userId}`);
 		return;
 	}
 
-	// Check if this is a kick (sender != state_key) or voluntary leave (sender == state_key)
-	if (event.sender === event.state_key) {
-		// Voluntary leave
-		await Room.removeUserFromRoom(room._id, affectedUser);
-		logger.info(`User ${affectedUser.username} left room ${room._id} via Matrix federation`);
+	// we are not handling public rooms yet - in the future we should use 'c' for public rooms
+	// as well as should rethink the canAccessRoom authorization logic
+	const roomType = content.membership === 'invite' && content?.is_direct ? 'd' : 'p';
+	const strippedState = event.unsigned.invite_room_state;
+
+	const createState = strippedState?.find((state: PduForType<'m.room.create'>) => state.type === 'm.room.create');
+	const roomOriginDomain = createState?.sender?.split(':')?.pop();
+	if (!roomOriginDomain) {
+		throw new Error(`Room origin domain not found: ${roomId}`);
+	}
+
+	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
+	const matrixRoomName = roomNameState?.content?.name;
+
+	// if is a DM, use the sender username as the room name
+	// otherwise, use the matrix room name and the room origin domain
+	let roomName: string;
+	if (content?.is_direct) {
+		roomName = senderId;
+	} else if (matrixRoomName && roomOriginDomain) {
+		roomName = `${matrixRoomName}:${roomOriginDomain}`;
 	} else {
-		// Kick - find who kicked
-
-		const [kickerUsername] = getUsernameServername(event.sender, serverName);
-		const kickerUser = await Users.findOneByUsername(kickerUsername);
-
-		await Room.removeUserFromRoom(room._id, affectedUser, {
-			byUser: kickerUser || { _id: 'matrix.federation', username: 'Matrix User' },
-		});
-
-		const reasonText = event.content.reason ? ` Reason: ${event.content.reason}` : '';
-		logger.info(`User ${affectedUser.username} was kicked from room ${room._id} by ${event.sender} via Matrix federation.${reasonText}`);
+		roomName = `${roomId}:${roomOriginDomain}`;
 	}
+
+	// TODO: Consider refactoring to create federated rooms using the Matrix roomId as the Rocket.Chat room name and set the display (visual) name as the fName property.
+	const roomFName = roomName;
+
+	const room = await getOrCreateFederatedRoom(
+		roomId as RoomID,
+		roomFName,
+		roomType,
+		inviterUser._id as UserID,
+		inviterUser.username as UserID,
+	);
+	if (!room) {
+		logger.error(`Room not found or could not be created: ${roomId}`);
+		return;
+	}
+
+	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
+		invited: true,
+		federation: { inviteEventId: eventId, inviterUsername: inviterUser.username },
+	});
 }
 
-async function membershipJoinAction(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']) {
-	const room = await Rooms.findOne({ 'federation.mrid': event.room_id });
+async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const { room_id: roomId, state_key: userId } = event;
+
+	const joiningUser = await getOrCreateFederatedUser(userId);
+	if (!joiningUser) {
+		logger.error(`Failed to get or create joining user: ${userId}`);
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
-		logger.warn(`No bridged room found for room_id: ${event.room_id}`);
-		return;
+		throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
 	}
 
-	const [username, serverName, isLocal] = getUsernameServername(event.sender, federationSDK.getConfig('serverName'));
-
-	// for local users we must to remove the @ and the server domain
-	const localUser = isLocal && (await Users.findOneByUsername(username));
-
-	if (localUser) {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, localUser._id);
-		if (subscription) {
-			return;
-		}
-		await Room.addUserToRoom(room._id, localUser);
-		return;
-	}
-
-	if (!serverName) {
-		throw new Error('Invalid sender format, missing server name');
-	}
-
-	const insertedId = await createOrUpdateFederatedUser({
-		username: event.state_key,
-		origin: serverName,
-		name: event.content.displayname || event.state_key,
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id, {
+		projection: { _id: 1, invited: 1, federation: 1 },
 	});
-
-	const user = await Users.findOneById(insertedId);
-
-	if (!user) {
-		console.warn(`User with ID ${insertedId} not found after insertion`);
+	if (!subscription) {
+		logger.error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 		return;
 	}
-	await Room.addUserToRoom(room._id, user);
+
+	await Room.acceptRoomInvite(room, subscription, joiningUser);
+}
+
+async function handleLeave(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const { room_id: roomId, state_key: userId } = event;
+
+	const leavingUser = await getOrCreateFederatedUser(userId as UserID);
+	if (!leavingUser) {
+		logger.error(`Failed to get or create leaving user: ${userId}`);
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
+	if (!room) {
+		logger.error(`Room not found while leaving user ${userId} from room ${roomId}`);
+		return;
+	}
+
+	await Room.removeUserFromRoom(room._id, leavingUser);
 }
 
 export function member(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.membership', async ({ event }) => {
+	emitter.on('homeserver.matrix.membership', async ({ event, event_id: eventId }) => {
 		try {
-			if (event.content.membership === 'leave') {
-				return membershipLeaveAction(event);
-			}
+			switch (event.content.membership) {
+				case 'invite':
+					await handleInvite(event, eventId);
+					break;
 
-			if (event.content.membership === 'join') {
-				return membershipJoinAction(event);
-			}
+				case 'join':
+					await handleJoin(event);
+					break;
 
-			logger.debug(`Ignoring membership event with membership: ${event.content.membership}`);
+				case 'leave':
+					await handleLeave(event);
+					break;
+
+				default:
+					logger.warn(`Unknown membership type: ${event.content.membership}`);
+			}
 		} catch (error) {
 			logger.error('Failed to process Matrix membership event:', error);
 		}

@@ -161,6 +161,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			rid,
 			'u._id': uid,
+			'invited': { $exists: false },
 		};
 
 		return this.countDocuments(query);
@@ -2084,5 +2085,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				},
 			},
 		]);
+	}
+
+	async markInviteAsAccepted(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					invited: 1,
+					federation: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
 	}
 }

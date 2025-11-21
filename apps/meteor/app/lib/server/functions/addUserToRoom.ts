@@ -27,10 +27,17 @@ export const addUserToRoom = async (
 		skipSystemMessage,
 		skipAlertSound,
 		createAsHidden = false,
+		invited,
+		federation,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
+		invited?: boolean;
+		federation?: {
+			inviteEventId?: string;
+			inviterUsername?: string;
+		};
 	} = {},
 ): Promise<boolean | undefined> => {
 	const now = new Date();
@@ -99,6 +106,8 @@ export const addUserToRoom = async (
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
+		...(invited && { invited: true }),
+		...(federation && { federation }),
 		...autoTranslateConfig,
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
@@ -122,6 +131,10 @@ export const addUserToRoom = async (
 			};
 			if (room.teamMain) {
 				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
+			} else if (invited) {
+				await Message.saveSystemMessage('ui', rid, userToBeAdded.username, userToBeAdded, {
+					u: { _id: inviter._id, username: inviter.username },
+				});
 			} else {
 				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
 			}
