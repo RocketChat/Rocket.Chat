@@ -5214,6 +5214,8 @@
   "UI_Use_Real_Name": "Usar o nome verdadeiro",
   "URL": "URL",
   "URLs": "URLs",
+  "URL_is_required": "",
+  "URL_must_start_with_'http://'_or_'https://'": "A URL deve começar com 'http://' ou 'https://'",
   "UTC_Timezone": "Fuso horário UTC",
   "UTF8_Channel_Names_Validation": "Validação de nomes de canal UTF8",
   "UTF8_Channel_Names_Validation_Description": "RegExp que será usado para validar nomes de canais",
