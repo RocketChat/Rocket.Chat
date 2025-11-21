@@ -6,6 +6,7 @@ import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
 import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
+import { fixFileUrl } from '../utils/fixFileUrl';
 
 type FileItemProps = {
 	fileData: IUploadWithUser;
@@ -15,14 +16,13 @@ type FileItemProps = {
 const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
-
-	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
+	const correctedPath = fixFileUrl(path);
+	const encryptedAnchorProps = useDownloadFromServiceWorker(correctedPath || '', name);
 
 	return (
 		<>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
-			) : (
+				<ImageItem id={_id} url={correctedPath} name={name} username={user?.username} timestamp={format(uploadedAt)} /> ) : (
 				<Box
 					is='a'
 					minWidth={0}
@@ -34,10 +34,10 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					display='flex'
 					flexGrow={1}
 					flexShrink={1}
-					href={path}
+					href={correctedPath}
 					tabIndex={-1}
 					textDecorationLine='none'
-					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
+					{...(correctedPath?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
 					<FileItemIcon type={type} />
 					<Box mis={8} flexShrink={1} overflow='hidden'>
