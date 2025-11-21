@@ -298,8 +298,9 @@ export const createComposerAPI = (
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selectionStart + text.length;
-		input.selectionEnd = selectionStart + text.length;
+		input.selectionStart = selection.start + text.length;
+		input.selectionEnd = selection.start + text.length;
+
 		if (selectionStart !== selectionEnd) {
 			input.selectionStart = selectionStart;
 		}
