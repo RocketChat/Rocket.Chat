@@ -24,7 +24,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig-esm.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.esm.json",
 		"build": "run-s .:build:clean .:build:esm .:build:cjs",
 		".:build:clean": "rimraf dist",
 		".:build:esm": "tsc -p tsconfig.esm.json",
