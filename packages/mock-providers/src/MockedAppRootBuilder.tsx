@@ -245,6 +245,7 @@ export class MockedAppRootBuilder {
 			subscribe: () => () => undefined,
 		},
 		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
+		loginWithPasskey: () => Promise.reject('loginWithPasskey not implemented'),
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();

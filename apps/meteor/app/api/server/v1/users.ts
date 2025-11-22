@@ -76,6 +76,11 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import { generateRegistrationOptions, VerifiedRegistrationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
+import { log } from '/tests/data/api-data';
+import { generateAuthenticationOptions, VerifiedAuthenticationResponse, verifyAuthenticationResponse } from '@simplewebauthn/server/esm';
+import { Random } from 'meteor/random';
+import { passkey } from '/app/passkey/server';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -1429,3 +1434,77 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+API.v1.addRoute(
+	'users.generateRegistrationOptions',
+	{ authRequired: true },
+	{
+		async get() {
+			const result = await passkey.generateRegistrationOptions(this.userId);
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.verifyRegistrationResponse',
+	{ authRequired: true },
+	{
+		async post() {
+			await passkey.verifyRegistrationResponse(
+				this.userId,
+				this.bodyParams.id,
+				this.bodyParams.registrationResponse,
+				this.bodyParams.name,
+				this.connection,
+			);
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.generateAuthenticationOptions',
+	{ authRequired: false },
+	{
+		async get() {
+			const result = await passkey.generateAuthenticationOptions();
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.findPasskeys',
+	{ authRequired: true },
+	{
+		async get() {
+			const passkeys = await passkey.findPasskeys(this.userId);
+			return API.v1.success({ passkeys });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.editPasskey',
+	{ authRequired: true },
+	{
+		async put() {
+			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.deletePasskey',
+	{ authRequired: true },
+	{
+		async post() {
+			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId, this.connection);
+
+			return API.v1.success();
+		},
+	},
+);

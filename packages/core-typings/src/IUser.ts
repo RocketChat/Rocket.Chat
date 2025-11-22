@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
+import { WebAuthnCredential } from '@simplewebauthn/server';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -252,6 +253,8 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	idForPasskey?: string;
+	passkeys?: Passkey[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -319,3 +322,11 @@ export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarService
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
+
+export type Passkey = WebAuthnCredential & {
+	name: string;
+	createdAt: Date;
+	lastUsedAt: Date | null;
+	sync?: boolean;
+	platform?: string;
+};

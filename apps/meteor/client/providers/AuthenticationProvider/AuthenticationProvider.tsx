@@ -1,14 +1,16 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/string-helpers';
-import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
+import { AuthenticationContext, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
+import { startAuthentication } from '@simplewebauthn/browser';
+import { PathPattern } from '@rocket.chat/rest-typings';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -29,6 +31,8 @@ const callLoginMethod = (
 const getLoggingIn = () => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
+	const generateAuthenticationOptionsAction = useEndpoint('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
+
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
@@ -89,6 +93,31 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 							reject(error);
 						});
 					});
+			},
+			loginWithPasskey: (): Promise<void> => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						const { id, options } = await generateAuthenticationOptionsAction();
+
+						const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
+
+						// TODO fzh075 ts
+						Meteor.loginWithPasskey(id, authenticationResponse, (error: any): void => {
+							if (error) {
+								reject(error);
+								return;
+							}
+							localStorage.setItem(`PasskeySeenFromThisBrowser_${authenticationResponse.id}`, 'true');
+							resolve();
+						});
+					} catch (error) {
+						// TODO fzh075
+						if (error?.name === 'AbortError') {
+							return;
+						}
+						reject(error);
+					}
+				});
 			},
 			loginWithIframe: (token: string, callback) =>
 				new Promise<void>((resolve, reject) => {

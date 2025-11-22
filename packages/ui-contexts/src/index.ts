@@ -47,6 +47,7 @@ export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
 export { useLoginWithIframe } from './hooks/useLoginWithIframe';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
+export { useLoginWithPasskey } from './hooks/useLoginWithPasskey';
 export { useLoginWithTokenRoute } from './hooks/useLoginWithTokenRoute';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';

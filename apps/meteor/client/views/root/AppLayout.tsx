@@ -28,6 +28,7 @@ import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowe
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
+import { usePasskeyGuide } from '../../hooks/usePasskeyGuide';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { appLayout } from '../../lib/appLayout';
@@ -67,6 +68,7 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoadMissedMessages();
+	usePasskeyGuide();
 	useDesktopFavicon();
 	useDesktopTitle();
 

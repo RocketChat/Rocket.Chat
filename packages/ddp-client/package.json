@@ -35,6 +35,7 @@
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^"
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@simplewebauthn/server": "^13.1.1"
 	}
 }

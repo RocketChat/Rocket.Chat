@@ -18,6 +18,7 @@ export type AuthenticationContextValue = {
 		getCurrentValue: () => LoginService[];
 		subscribe: (onStoreChange: () => void) => () => void;
 	};
+	loginWithPasskey: () => Promise<void>;
 };
 
 export const AuthenticationContext = createContext<AuthenticationContextValue>({
@@ -32,4 +33,5 @@ export const AuthenticationContext = createContext<AuthenticationContextValue>({
 		getCurrentValue: () => [],
 		subscribe: (_: () => void) => () => Promise.reject('queryLoginServices not implemented'),
 	},
+	loginWithPasskey: () => Promise.reject('loginWithPasskey not implemented'),
 });

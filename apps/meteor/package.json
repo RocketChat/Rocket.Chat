@@ -308,6 +308,8 @@
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@rocket.chat/ui-voip": "workspace:^",
 		"@rocket.chat/web-ui-registration": "workspace:^",
+		"@simplewebauthn/browser": "^13.1.0",
+		"@simplewebauthn/server": "^13.1.1",
 		"@slack/bolt": "^3.22.0",
 		"@slack/rtm-api": "~7.0.4",
 		"@tanstack/react-query": "~5.65.1",

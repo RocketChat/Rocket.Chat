@@ -9,6 +9,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	Passkey,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -3425,5 +3426,109 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			return 0;
 		}
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
+	}
+
+	findOneByPasskeyId(passkeyId: NonNullable<IUser['passkeys']>[number]['id'], options: FindOptions<IUser> = {}) {
+		const query = {
+			'passkeys.id': passkeyId,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	createPasskey(userId: IUser['_id'], rawPasskey: Passkey) {
+		const passkey: Passkey = {
+			...rawPasskey,
+			createdAt: new Date(),
+			lastUsedAt: new Date(),
+		};
+
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$push: {
+				passkeys: passkey,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	createIdForPasskey(userId: IUser['_id'], idForPasskey: IUser['idForPasskey']) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				idForPasskey: idForPasskey,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updatePasskey(userId: IUser['_id'], passkeyId: Passkey['id'], newName: string) {
+		const query = {
+			_id: userId,
+			passkeys: { $elemMatch: { id: passkeyId } },
+		};
+
+		const update = {
+			$set: {
+				'passkeys.$.name': newName,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	deletePasskey(userId: IUser['_id'], passkeyId: Passkey['id']) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$pull: {
+				passkeys: { id: passkeyId },
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updatePasskeyCounter(userId: IUser['_id'], passkeyId: Passkey['id'], newCounter: Passkey['counter']) {
+		const query = { _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
+
+		const update = {
+			$set: {
+				'passkeys.$.count': newCounter,
+				'passkeys.$.lastUsedAt': new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findExpiredPasskeys(daysThreshold: number) {
+		const cutoffDate = new Date();
+		cutoffDate.setDate(cutoffDate.getDate() - daysThreshold);
+
+		const query = {
+			'passkeys.lastUsedAt': { $lt: cutoffDate },
+		};
+
+		return this.find(query, {
+			projection: {
+				_id: 1,
+				name: 1,
+				username: 1,
+				emails: 1,
+				language: 1,
+				passkeys: 1,
+			},
+		}).toArray();
 	}
 }
