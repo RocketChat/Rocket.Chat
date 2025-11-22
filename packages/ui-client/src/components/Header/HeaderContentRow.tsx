@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const HeaderContentRow: FC<ComponentProps<typeof Box>> = (props) => (
+export type HeaderContentRowProps = ComponentPropsWithoutRef<typeof Box>;
+
+const HeaderContentRow = (props: HeaderContentRowProps) => (
 	<Box alignItems='center' flexShrink={1} flexGrow={1} display='flex' {...props} />
 );
 

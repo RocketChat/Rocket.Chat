@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import { useDraggableWidget } from './WidgetDraggableContext';
 

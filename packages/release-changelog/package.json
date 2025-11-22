@@ -2,21 +2,21 @@
 	"name": "@rocket.chat/release-changelog",
 	"version": "0.1.0",
 	"private": true,
+	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
 		"lint": "eslint src"
 	},
-	"main": "dist/index.js",
+	"dependencies": {
+		"dataloader": "^2.2.3",
+		"node-fetch": "^2.7.0"
+	},
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/node": "~22.16.5",
 		"eslint": "~8.45.0",
 		"typescript": "~5.9.3"
-	},
-	"dependencies": {
-		"dataloader": "^2.2.3",
-		"node-fetch": "^2.7.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

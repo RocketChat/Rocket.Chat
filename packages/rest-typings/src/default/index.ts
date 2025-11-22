@@ -81,7 +81,7 @@ export interface DefaultEndpoints {
 						name: string;
 					};
 				};
-				schemas: {};
+				schemas: unknown;
 			};
 			paths: Record<string, Record<string, unknown>>;
 		};

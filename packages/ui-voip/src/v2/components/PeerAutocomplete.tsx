@@ -1,4 +1,4 @@
-import { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { AutoComplete, Option, Avatar, Field, FieldRow, FieldDescription, FieldError, StatusBullet, Box } from '@rocket.chat/fuselage';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';

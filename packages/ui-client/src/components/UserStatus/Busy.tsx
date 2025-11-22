@@ -1,10 +1,9 @@
-import type { ComponentProps, ReactElement } from 'react';
-
+import type { UserStatusProps } from './UserStatus';
 import UserStatus from './UserStatus';
 
-type BusyProps = Omit<ComponentProps<typeof UserStatus>, 'status'>;
+type BusyProps = Omit<UserStatusProps, 'status'>;
 
-function Busy(props: BusyProps): ReactElement {
+function Busy(props: BusyProps) {
 	return <UserStatus status='busy' {...props} />;
 }
 

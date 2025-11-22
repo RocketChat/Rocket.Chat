@@ -2,11 +2,6 @@
 	"name": "@rocket.chat/jest-presets",
 	"version": "0.0.1",
 	"private": true,
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsc",
-		"lint": "eslint ."
-	},
 	"type": "module",
 	"exports": {
 		"./server": {
@@ -26,6 +21,11 @@
 		"/client",
 		"/server"
 	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf ./dist",
+		"lint": "eslint ."
+	},
 	"dependencies": {
 		"@swc/core": "1.13.19",
 		"@swc/jest": "~0.2.39",

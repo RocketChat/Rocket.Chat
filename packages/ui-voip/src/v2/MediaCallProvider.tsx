@@ -1,21 +1,23 @@
 import { AnchorPortal } from '@rocket.chat/ui-client';
+import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useEndpoint,
 	useUserAvatarPath,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
-	Device,
 	useUser,
 	useSetModal,
 	useSelectedDevices,
 	useToastMessageDispatch,
 	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { ReactNode, useCallback, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import MediaCallContext, { PeerInfo } from './MediaCallContext';
+import type { PeerInfo } from './MediaCallContext';
+import MediaCallContext from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
 import TransferModal from './TransferModal';
 import { useCallSounds } from './useCallSounds';

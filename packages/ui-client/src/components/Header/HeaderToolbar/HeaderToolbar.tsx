@@ -1,8 +1,10 @@
 import { useToolbar } from '@react-aria/toolbar';
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import { type ComponentProps, useRef } from 'react';
+import { type ComponentPropsWithoutRef, useRef } from 'react';
 
-const HeaderToolbar = (props: ComponentProps<typeof ButtonGroup>) => {
+export type HeaderToolbarProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
+
+const HeaderToolbar = (props: HeaderToolbarProps) => {
 	const ref = useRef(null);
 	const { toolbarProps } = useToolbar(props, ref);
 

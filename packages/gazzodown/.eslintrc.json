@@ -45,7 +45,7 @@
 			"version": "detect"
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["dist", "!.storybook"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],

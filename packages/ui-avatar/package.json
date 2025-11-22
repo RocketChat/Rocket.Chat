@@ -2,8 +2,19 @@
 	"name": "@rocket.chat/ui-avatar",
 	"version": "20.0.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/fuselage": "~0.68.1",
@@ -23,18 +34,6 @@
 		"react-virtuoso": "^4.12.0",
 		"typescript": "~5.9.3"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"build": "rm -rf dist && tsc -p tsconfig-build.json",
-		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/ui-contexts": "workspace:^",
