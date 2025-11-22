@@ -43,7 +43,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["dist"],
+	"ignorePatterns": ["dist", "storybook-static", "!.storybook"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
