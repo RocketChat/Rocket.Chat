@@ -8,5 +8,5 @@
 			}
 		}
 	],
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["dist"]
 }

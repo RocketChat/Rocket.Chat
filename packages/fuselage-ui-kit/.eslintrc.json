@@ -43,7 +43,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["dist"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
