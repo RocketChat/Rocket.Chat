@@ -8,7 +8,7 @@ import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomCont
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useUserInfoQuery } from '../useUserInfoQuery';
 
-const getPeerId = (uids: string[], ownUserId: string | null) => {
+const getPeerId = (uids: string[], ownUserId: string | undefined) => {
 	if (!ownUserId) {
 		return undefined;
 	}

@@ -33,7 +33,5 @@
   "Login_Logs_UserAgent": "ব্যর্থ লগইন প্রচেষ্টা লগগুলিতে ব্যবহারকারীর এজেন্ট প্রদর্শন করুন",
   "Looked_for": "অনুসন্ধান করা",
   "access-mailer": "মেইলারের স্ক্রিন এক্সেস করুন",
-  "access-mailer_description": "সমস্ত ব্যবহারকারীর কাছে গণ ইমেল প্রেরণের অনুমতি",
-  "__count__empty_rooms_will_be_removed_automatically": "_কাউন্ট_শূন্যস্থানসমূহ স্বয়ংক্রিয়ভাবে সরানো হবে।",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "_কাউন্ট_শূন্যস্থানসমূহ স্বয়ংক্রিয়ভাবে সরানো হবে:<br/>_স্থান_"
+  "access-mailer_description": "সমস্ত ব্যবহারকারীর কাছে গণ ইমেল প্রেরণের অনুমতি"
 }

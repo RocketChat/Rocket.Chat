@@ -65,6 +65,12 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('callUpdated', params);
 	}
 
+	public updateCallHistory(params: { callId: string }): void {
+		logger.debug({ msg: 'MediaCallServer.updateCallHistory', params });
+
+		this.emitter.emit('historyUpdate', params);
+	}
+
 	public async requestCall(params: InternalCallParams): Promise<void> {
 		try {
 			const fullParams = await this.parseCallContacts(params);
@@ -122,6 +128,10 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'Media Server Configuration' });
 		this.session.configure(settings);
 		this.settings = settings;
+	}
+
+	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
+		return this.settings.permissionCheck(uid, callType);
 	}
 
 	/**

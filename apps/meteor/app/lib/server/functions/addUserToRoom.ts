@@ -21,7 +21,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib
 
 export const addUserToRoom = async (
 	rid: string,
-	user: Pick<IUser, '_id' | 'username'> | string,
+	user: Pick<IUser, '_id' | 'username'>,
 	inviter?: Pick<IUser, '_id' | 'username'>,
 	{
 		skipSystemMessage,
@@ -42,7 +42,7 @@ export const addUserToRoom = async (
 		});
 	}
 
-	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
+	const userToBeAdded = await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {

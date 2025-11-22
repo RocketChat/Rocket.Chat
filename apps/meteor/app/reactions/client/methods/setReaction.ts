@@ -3,16 +3,17 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { getUser, getUserId } from '../../../../client/lib/user';
 import { Rooms, Subscriptions, Messages } from '../../../../client/stores';
 import { emoji } from '../../../emoji/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {
-		if (!Meteor.userId()) {
+		if (!getUserId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = Meteor.user();
+		const user = getUser();
 
 		if (!user?.username) {
 			return false;

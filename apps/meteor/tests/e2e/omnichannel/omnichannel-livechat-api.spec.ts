@@ -495,7 +495,7 @@ test.describe('OC - Livechat API', () => {
 			await test.step('Expect registered guest to have valid info', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 
-				await poAuxContext.poHomeOmnichannel.content.btnGuestInfo.click();
+				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
 				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(registerGuestVisitor.email.toLowerCase());
 			});
@@ -629,7 +629,7 @@ test.describe('OC - Livechat API', () => {
 			await test.step('Expect registered guest to have valid info', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 
-				await poAuxContext.poHomeOmnichannel.content.btnGuestInfo.click();
+				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
 				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(
 					`changed${registerGuestVisitor.email}`.toLowerCase(),
@@ -802,11 +802,7 @@ test.describe('OC - Livechat API', () => {
 				);
 
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
-				await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-				await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-				await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-				await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
-
+				await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 				await watchForTrigger;
 			});
 		});

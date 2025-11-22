@@ -26,11 +26,13 @@ export class MediaSignalTransportWrapper {
 		} as GenericClientMediaSignal<T>);
 	}
 
-	public sendError(callId: string, { errorType, errorCode, negotiationId }: Partial<ClientMediaSignalError>) {
+	public sendError(callId: string, { errorType, errorCode, negotiationId, critical, errorDetails }: Partial<ClientMediaSignalError>) {
 		this.sendToServer(callId, 'error', {
 			errorType: errorType || 'other',
 			...(errorCode && { errorCode }),
 			...(negotiationId && { negotiationId }),
+			...(critical ? { critical } : { critical: false }),
+			...(errorDetails && { errorDetails }),
 		});
 	}
 

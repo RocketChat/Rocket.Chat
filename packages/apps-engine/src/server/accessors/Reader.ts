@@ -1,6 +1,7 @@
 import type {
 	ICloudWorkspaceRead,
 	IEnvironmentRead,
+	IExperimentalRead,
 	ILivechatRead,
 	IMessageRead,
 	INotifier,
@@ -29,10 +30,10 @@ export class Reader implements IRead {
 		private cloud: ICloudWorkspaceRead,
 		private videoConf: IVideoConferenceRead,
 		private contactRead: IContactRead,
-
 		private oauthApps: IOAuthAppsReader,
 		private thread: IThreadRead,
 		private role: IRoleRead,
+		private experimental: IExperimentalRead,
 	) {}
 
 	public getEnvironmentReader(): IEnvironmentRead {
@@ -89,5 +90,9 @@ export class Reader implements IRead {
 
 	public getContactReader(): IContactRead {
 		return this.contactRead;
+	}
+
+	public getExperimentalReader(): IExperimentalRead {
+		return this.experimental;
 	}
 }

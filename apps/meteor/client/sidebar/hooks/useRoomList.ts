@@ -5,8 +5,8 @@ import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useEffect } from 'react';
 
 import { useQueryOptions } from './useQueryOptions';
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
+import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 
 const query = { open: { $ne: false } };
 
