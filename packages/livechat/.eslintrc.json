@@ -63,6 +63,7 @@
 				"version": "detect"
 		}
 	},
+	"ignorePatterns": ["dist", "build", "!.storybook"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
