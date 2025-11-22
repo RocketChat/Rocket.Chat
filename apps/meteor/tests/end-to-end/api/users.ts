@@ -2905,6 +2905,33 @@ describe('[Users]', () => {
 				});
 		});
 
+		it('should be able to erase bio and nickname', async () => {
+			const user = await createUser({
+				bio: `edited-bio-test`,
+				nickname: `edited-nickname-test`,
+			});
+			const userCredentials = await login(user.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						bio: '',
+						nickname: '',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const userData = await getUserByUsername(user.username);
+			expect(userData).to.not.have.property('bio');
+			expect(userData).to.not.have.property('nickname');
+		});
+
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);

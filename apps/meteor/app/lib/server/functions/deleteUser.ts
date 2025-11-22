@@ -31,7 +31,7 @@ import {
 	notifyOnUserChange,
 } from '../lib/notifyListener';
 
-export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {
 		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
 			method: 'deleteUser',
@@ -44,7 +44,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	});
 
 	if (!user) {
-		return;
+		return { deletedRooms: [] };
 	}
 
 	if (isUserFederated(user)) {
@@ -60,11 +60,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		throw new Meteor.Error('user-last-owner', '', rooms);
 	}
 
+	let deletedRooms: string[] = [];
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
 		let userToReplaceWhenUnlinking: IUser | null = null;
 		const nameAlias = i18n.t('Removed_User');
-		await relinquishRoomOwnerships(userId, subscribedRooms);
+		deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms, true);
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
@@ -190,4 +191,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
+
+	return { deletedRooms };
 }

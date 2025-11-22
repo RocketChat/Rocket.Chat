@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
+import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav, ToastMessages } from './fragments';
 import { OmnichannelRoomToolbar, OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
@@ -45,6 +45,8 @@ export class HomeOmnichannel {
 
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
@@ -62,10 +64,7 @@ export class HomeOmnichannel {
 		this.roomInfo = new OmnichannelRoomInfo(page);
 		this.roomToolbar = new OmnichannelRoomToolbar(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnContactInfo(): Locator {

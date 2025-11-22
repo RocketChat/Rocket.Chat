@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import IncomingCallTransfer from './IncomingCallTransfer';
-import MediaCallProviderMock from '../MockedMediaCallProvider';
+import MockedMediaCallProvider from '../MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -19,9 +19,9 @@ export default {
 	decorators: [
 		mockedContexts,
 		(Story) => (
-			<MediaCallProviderMock transferredBy='Jason'>
+			<MockedMediaCallProvider transferredBy='Jason'>
 				<Story />
-			</MediaCallProviderMock>
+			</MockedMediaCallProvider>
 		),
 	],
 } satisfies Meta<typeof IncomingCallTransfer>;

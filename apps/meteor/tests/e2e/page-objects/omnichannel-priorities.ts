@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelSidenav, ToastMessages } from './fragments';
 
 class OmnichannelManagePriority {
 	private readonly page: Page;
@@ -33,14 +33,14 @@ export class OmnichannelPriorities {
 
 	readonly sidenav: OmnichannelSidenav;
 
+	// TODO: This will be inherited from a BasePage Object
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.managePriority = new OmnichannelManagePriority(page);
 		this.sidenav = new OmnichannelSidenav(page);
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnReset() {
@@ -49,10 +49,6 @@ export class OmnichannelPriorities {
 
 	get btnResetConfirm() {
 		return this.page.locator('.rcx-modal').locator('role=button[name="Reset"]');
-	}
-
-	get btnCloseToastSuccess(): Locator {
-		return this.toastSuccess.locator('button');
 	}
 
 	findPriority(name: string) {

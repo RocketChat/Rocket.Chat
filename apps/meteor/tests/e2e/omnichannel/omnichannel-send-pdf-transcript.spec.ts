@@ -76,7 +76,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'false');
 			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.toastMessage.waitForDisplay();
 		});
 	});
 });
