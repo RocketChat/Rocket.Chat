@@ -1,7 +1,6 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
   "compilerOptions": {
-    "noImplicitReturns": true,
     "noImplicitThis": true,
   },
 	"include": ["src", ".storybook/**/*", "jest.config.ts"]
