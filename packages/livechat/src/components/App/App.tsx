@@ -96,12 +96,14 @@ export class App extends Component<AppProps, AppState> {
 			setInitCookies();
 
 			if (gdprRequired && !gdprAccepted) {
-				return route('/gdpr');
+				route('/gdpr');
+				return;
 			}
 
 			if (!online) {
 				parentCall('callback', 'no-agent-online');
-				return route('/leave-message');
+				route('/leave-message');
+				return;
 			}
 
 			const showDepartment = departments.some((dept) => dept.showOnRegistration);
@@ -109,7 +111,7 @@ export class App extends Component<AppProps, AppState> {
 			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggersBeforeRegistration();
 
 			if (url === '/' && showRegistrationForm) {
-				return route('/register');
+				route('/register');
 			}
 		}, 100);
 	};

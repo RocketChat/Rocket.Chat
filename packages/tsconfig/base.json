@@ -12,9 +12,10 @@
 		"resolveJsonModule": true,
 
 		"noImplicitAny": true,
+		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"strictNullChecks": true
+		"strictNullChecks": true,
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }

@@ -61,6 +61,8 @@ const deriveWidgetStateFromCallState = (
 		case 'none':
 		case 'ringing':
 			return callRole === 'callee' ? 'ringing' : 'calling';
+		default:
+			return undefined;
 	}
 };
 
