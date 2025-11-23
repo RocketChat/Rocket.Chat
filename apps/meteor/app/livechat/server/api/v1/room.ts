@@ -49,6 +49,38 @@ import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
 API.v1.addRoute(
+	'livechat/rooms',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+	},
+	{
+		async get() {
+			let parsedQuery: any = {};
+			let parsedFields: any = {};
+
+			try {
+				if (this.queryParams.query) {
+					parsedQuery = JSON.parse(this.queryParams.query);
+				}
+				if (this.queryParams.fields) {
+					parsedFields = JSON.parse(this.queryParams.fields);
+				}
+			} catch (e) {
+				return API.v1.failure('Invalid JSON in query or fields parameter');
+			}
+
+			const rooms = await LivechatRooms.find(parsedQuery, {
+				projection: parsedFields,
+			}).toArray();
+
+			return API.v1.success({ rooms });
+		},
+	},
+);
+
+
+API.v1.addRoute(
 	'livechat/room',
 	{
 		rateLimiterOptions: {
