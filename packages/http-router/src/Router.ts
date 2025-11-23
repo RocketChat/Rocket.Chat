@@ -105,7 +105,7 @@ export class Router<
 	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.base}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, response = {}, authRequired, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			responses: Object.fromEntries(
