@@ -1,8 +1,8 @@
 import { Icon } from '@rocket.chat/fuselage';
-import * as UiKit from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-import { BlockProps } from '../utils/BlockProps';
+import type { BlockProps } from '../utils/BlockProps';
 
 type IconElementProps = BlockProps<UiKit.IconElement>;
 
