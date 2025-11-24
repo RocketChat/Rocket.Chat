@@ -15,7 +15,7 @@ import type {
 	IOutboundMessage,
 	IOutboundPhoneMessageProvider,
 	ProviderMetadata,
-} from '../../src/definition/outboundComunication';
+} from '../../src/definition/outboundCommunication';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
@@ -84,7 +84,7 @@ export class TestInfastructureSetup {
 			runInSandbox: async () => {
 				return {} as unknown as Promise<unknown>;
 			},
-			stopRuntime: () => {},
+			stopRuntime: () => { },
 		} as unknown as AppRuntimeManager;
 
 		this.appManager = {
