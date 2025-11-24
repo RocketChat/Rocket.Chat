@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { ReactElement, memo } from 'react';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
 
 import Emoji from './Emoji';
 
