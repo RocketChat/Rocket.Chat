@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser, SubscriptionStatus } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -39,7 +39,7 @@ export interface IRoomService {
 			skipSystemMessage?: boolean;
 			skipAlertSound?: boolean;
 			createAsHidden?: boolean;
-			invited?: boolean;
+			status?: SubscriptionStatus;
 			federation?: {
 				inviteEventId?: string;
 				inviterUsername?: string;

@@ -67,7 +67,7 @@ export async function handleInvite(
 	}
 
 	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
-		invited: true,
+		status: 'INVITED',
 		federation: { inviteEventId: eventId, inviterUsername: inviterUser.username },
 	});
 }
@@ -87,7 +87,7 @@ async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.me
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id, {
-		projection: { _id: 1, invited: 1, federation: 1 },
+		projection: { _id: 1, status: 1, federation: 1 },
 	});
 	if (!subscription) {
 		logger.error(`Subscription not found while joining user ${userId} to room ${roomId}`);

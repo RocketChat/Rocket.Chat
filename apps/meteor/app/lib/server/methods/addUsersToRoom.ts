@@ -1,5 +1,5 @@
 import { api, FederationMatrix } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, SubscriptionStatus } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
@@ -107,12 +107,12 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				let inviteOptions: { invited?: boolean; federation?: { inviteEventId?: string; inviterUsername?: string } } = {};
+				let inviteOptions: { status?: SubscriptionStatus; federation?: { inviteEventId?: string; inviterUsername?: string } } = {};
 
 				if (isRoomNativeFederated(room) && user && newUser.username) {
 					const inviteResult = await FederationMatrix.inviteUsersToRoom(room, [newUser.username], user);
 					inviteOptions = {
-						invited: true,
+						status: 'INVITED',
 						federation: {
 							inviteEventId: inviteResult[0].event_id,
 							inviterUsername: user.username,

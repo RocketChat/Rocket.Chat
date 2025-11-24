@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
-import { type IUser } from '@rocket.chat/core-typings';
+import { type IUser, type SubscriptionStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -27,13 +27,13 @@ export const addUserToRoom = async (
 		skipSystemMessage,
 		skipAlertSound,
 		createAsHidden = false,
-		invited,
+		status,
 		federation,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
-		invited?: boolean;
+		status?: SubscriptionStatus;
 		federation?: {
 			inviteEventId?: string;
 			inviterUsername?: string;
@@ -106,7 +106,7 @@ export const addUserToRoom = async (
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
-		...(invited && { invited: true }),
+		...(status && { status }),
 		...(federation && { federation }),
 		...autoTranslateConfig,
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
@@ -131,7 +131,7 @@ export const addUserToRoom = async (
 			};
 			if (room.teamMain) {
 				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
-			} else if (invited) {
+			} else if (status === 'INVITED') {
 				await Message.saveSystemMessage('ui', rid, userToBeAdded.username, userToBeAdded, {
 					u: { _id: inviter._id, username: inviter.username },
 				});
