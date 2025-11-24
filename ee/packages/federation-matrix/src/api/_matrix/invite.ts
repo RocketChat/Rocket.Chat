@@ -239,6 +239,10 @@ export const getMatrixInviteRoutes = () => {
 					strippedStateEvents,
 				);
 
+				// Paliative measure to handle invite acceptance until
+				// the full invite structure is implemented
+				await acceptInvite(inviteEvent, username);
+
 				return {
 					body: {
 						event: inviteEvent.event,
