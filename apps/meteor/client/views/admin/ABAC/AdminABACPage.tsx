@@ -9,7 +9,7 @@ import AdminABACTabs from './AdminABACTabs';
 import RoomAttributesContextualBar from './RoomAttributesContextualBar';
 import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
 import useIsABACAvailable from './hooks/useIsABACAvailable';
-import { ContextualbarDialog, ContextualbarSkeletonBody } from '../../../components/Contextualbar';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';
@@ -69,9 +69,8 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 			</Page>
 			{tab === 'room-attributes' && context !== undefined && (
 				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
-					{isABACAvailable === 'loading' && <ContextualbarSkeletonBody />}
-					{context === 'new' && isABACAvailable === true && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
-					{context === 'edit' && _id && isABACAvailable === true && (
+					{context === 'new' && isABACAvailable && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
+					{context === 'edit' && _id && isABACAvailable && (
 						<RoomAttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
 					)}
 				</ContextualbarDialog>
