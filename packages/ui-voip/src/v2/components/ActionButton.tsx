@@ -1,6 +1,7 @@
 import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import { ComponentProps, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import { forwardRef } from 'react';
 
 type ActionButtonProps = {
 	label: string;

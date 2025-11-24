@@ -2,7 +2,8 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PeerInfo, useMediaCallExternalContext } from './MediaCallContext';
+import type { PeerInfo } from './MediaCallContext';
+import { useMediaCallExternalContext } from './MediaCallContext';
 
 export const useMediaCallAction = (
 	callee?: PeerInfo,

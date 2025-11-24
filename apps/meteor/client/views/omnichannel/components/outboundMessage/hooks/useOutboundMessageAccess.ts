@@ -5,8 +5,8 @@ import { useOmnichannelEnabled } from '../../../hooks/useOmnichannelEnabled';
 
 export const useOutboundMessageAccess = (): boolean => {
 	const isOmnichannelEnabled = useOmnichannelEnabled();
-	const hasOmnichannelModule = useHasLicenseModule('livechat-enterprise') === true;
-	const hasOutboundModule = useHasLicenseModule('outbound-messaging') === true;
+	const { data: hasOmnichannelModule = false } = useHasLicenseModule('livechat-enterprise');
+	const { data: hasOutboundModule = false } = useHasLicenseModule('outbound-messaging');
 	const hasPermission = usePermission('outbound.send-messages');
 
 	if (!isOmnichannelEnabled) {

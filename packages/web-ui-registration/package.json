@@ -16,11 +16,10 @@
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"dompurify": "~3.2.7"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/preset-env": "~7.28.5",
-		"@babel/preset-react": "~7.27.1",
-		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
@@ -38,7 +37,7 @@
 		"@storybook/addon-actions": "^8.6.14",
 		"@storybook/addon-docs": "^8.6.14",
 		"@storybook/addon-essentials": "^8.6.14",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/theming": "^8.6.14",
@@ -70,8 +69,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"dependencies": {
-		"dompurify": "~3.2.7"
 	}
 }
