@@ -40,9 +40,9 @@ export interface IRoomService {
 			skipAlertSound?: boolean;
 			createAsHidden?: boolean;
 			status?: SubscriptionStatus;
+			inviterUsername?: string;
 			federation?: {
 				inviteEventId?: string;
-				inviterUsername?: string;
 			};
 		},
 	): Promise<boolean | undefined>;

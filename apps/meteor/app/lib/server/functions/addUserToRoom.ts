@@ -28,15 +28,16 @@ export const addUserToRoom = async (
 		skipAlertSound,
 		createAsHidden = false,
 		status,
+		inviterUsername,
 		federation,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
 		status?: SubscriptionStatus;
+		inviterUsername?: string;
 		federation?: {
 			inviteEventId?: string;
-			inviterUsername?: string;
 		};
 	} = {},
 ): Promise<boolean | undefined> => {
@@ -107,6 +108,7 @@ export const addUserToRoom = async (
 		userMentions: 1,
 		groupMentions: 0,
 		...(status && { status }),
+		...(inviterUsername && { inviterUsername }),
 		...(federation && { federation }),
 		...autoTranslateConfig,
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
