@@ -75,9 +75,9 @@ export interface ISubscription extends IRocketChatRecord {
 	suggestedOldRoomKeys?: OldKey[];
 
 	status?: SubscriptionStatus;
+	inviterUsername?: string;
 	federation?: {
 		inviteEventId?: string;
-		inviterUsername?: string;
 	};
 }
 

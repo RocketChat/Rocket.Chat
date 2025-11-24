@@ -107,15 +107,15 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				let inviteOptions: { status?: SubscriptionStatus; federation?: { inviteEventId?: string; inviterUsername?: string } } = {};
+				let inviteOptions: { status?: SubscriptionStatus; inviterUsername?: string; federation?: { inviteEventId?: string } } = {};
 
 				if (isRoomNativeFederated(room) && user && newUser.username) {
 					const inviteResult = await FederationMatrix.inviteUsersToRoom(room, [newUser.username], user);
 					inviteOptions = {
 						status: 'INVITED',
+						inviterUsername: user.username,
 						federation: {
 							inviteEventId: inviteResult[0].event_id,
-							inviterUsername: user.username,
 						},
 					};
 				}
