@@ -6,7 +6,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { links } from '../../../lib/links';
 
 const AdminABACSettings = () => {
-	const hasABAC = useHasLicenseModule('abac');
+	const { data: hasABAC = false } = useHasLicenseModule('abac');
 	return (
 		<Box maxWidth='x600' w='full' alignSelf='center'>
 			<Box>
