@@ -28,6 +28,8 @@ class VersionCompiler {
 					resolve({});
 				}
 
+				console.log('Getting supported versions from', url);
+
 				https
 					.get(url, function (response) {
 						let data = '';
@@ -130,6 +132,7 @@ class VersionCompiler {
 		};
 
 		for await (const file of files) {
+			console.log('Processing file', file.getDisplayPath());
 			switch (true) {
 				case file.getDisplayPath().endsWith('rocketchat.info'): {
 					await processFile(file);
@@ -150,6 +153,7 @@ class VersionCompiler {
 					throw new Error(`Unexpected file ${file.getDisplayPath()}`);
 				}
 			}
+			console.log('Processed file', file.getDisplayPath());
 		}
 	}
 }
