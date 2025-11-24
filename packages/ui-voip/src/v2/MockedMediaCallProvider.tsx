@@ -1,5 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import { ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 
 import MediaCallContext from './MediaCallContext';
 import type { State, PeerInfo } from './MediaCallContext';

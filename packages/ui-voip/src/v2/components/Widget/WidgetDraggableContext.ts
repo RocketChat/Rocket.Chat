@@ -1,4 +1,5 @@
-import { createContext, Ref, useContext } from 'react';
+import type { Ref } from 'react';
+import { createContext, useContext } from 'react';
 
 type DragContextValue = {
 	draggableRef: Ref<HTMLElement>;
