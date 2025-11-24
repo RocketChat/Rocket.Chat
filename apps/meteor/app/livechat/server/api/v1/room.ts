@@ -49,35 +49,57 @@ import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
 API.v1.addRoute(
-	'livechat/rooms',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-l-room'],
-	},
-	{
-		async get() {
-			let parsedQuery: any = {};
-			let parsedFields: any = {};
+    'livechat/rooms',
+    {
+        authRequired: true,
+        permissionsRequired: ['view-l-room'],
+    },
+    {
+        async get() {
+            let parsedQuery: any = {};
+            let parsedFields: any = {};
 
-			try {
-				if (this.queryParams.query) {
-					parsedQuery = JSON.parse(this.queryParams.query);
-				}
-				if (this.queryParams.fields) {
-					parsedFields = JSON.parse(this.queryParams.fields);
-				}
-			} catch (e) {
-				return API.v1.failure('Invalid JSON in query or fields parameter');
-			}
+            // Parse pagination params
+            const { offset = 0, count = 50 } = this.queryParams;
+            const skip = parseInt(String(offset), 10) || 0;
+            const limit = Math.min(parseInt(String(count), 10) || 50, 100);
 
-			const rooms = await LivechatRooms.find(parsedQuery, {
-				projection: parsedFields,
-			}).toArray();
+            // Parse JSON query + fields
+            try {
+                if (this.queryParams.query) {
+                    parsedQuery = JSON.parse(this.queryParams.query);
+                }
+                if (this.queryParams.fields) {
+                    parsedFields = JSON.parse(this.queryParams.fields);
+                }
+            } catch (e) {
+                return API.v1.failure('Invalid JSON in query or fields parameter');
+            }
 
-			return API.v1.success({ rooms });
-		},
-	},
+            // Database query wrapped in try/catch
+            try {
+                const rooms = await LivechatRooms.find(parsedQuery, {
+                    projection: parsedFields,
+                    skip,
+                    limit,
+                }).toArray();
+
+                const total = await LivechatRooms.countDocuments(parsedQuery);
+
+                return API.v1.success({
+                    rooms,
+                    count: rooms.length,
+                    offset: skip,
+                    total,
+                });
+            } catch (e) {
+                console.error('Error querying /livechat/rooms:', e);
+                return API.v1.failure('Error querying rooms');
+            }
+        },
+    },
 );
+
 
 
 API.v1.addRoute(
