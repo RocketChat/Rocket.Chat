@@ -14,6 +14,10 @@ beforeAll(async () => {
 	mongo = await MongoMemoryServer.create();
 	client = await MongoClient.connect(mongo.getUri(), {});
 	db = client.db('abac_global');
+
+	// @ts-expect-error - ignore
+	await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date() });
+
 	registerServiceModels(db);
 }, 30_000);
 

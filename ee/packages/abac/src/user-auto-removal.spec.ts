@@ -85,6 +85,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		client = await MongoClient.connect(mongo.getUri(), {});
 		db = client.db('abac_integration');
 
+		// @ts-expect-error - ignore
+		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date() });
+
 		// Hack to register the models in here with a custom database without having to call every model by one
 		registerServiceModels(db as any);
 
