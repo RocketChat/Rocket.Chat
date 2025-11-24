@@ -55,7 +55,7 @@ class JIRAReporter implements Reporter {
 			return;
 		}
 
-		if (test.expectedStatus === 'failed' && result.status === 'failed') {
+		if (test.expectedStatus === 'failed') {
 			return;
 		}
 
