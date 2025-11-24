@@ -10502,7 +10502,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -10520,7 +10519,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@types/jest": "npm:~30.0.0"
