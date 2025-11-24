@@ -55,6 +55,10 @@ class JIRAReporter implements Reporter {
 			return;
 		}
 
+		if (test.expectedStatus === 'failed') {
+			return;
+		}
+
 		const payload = {
 			name: test.title,
 			status: result.status,
