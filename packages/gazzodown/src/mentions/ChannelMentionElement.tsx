@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { memo, ReactElement, useContext, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
