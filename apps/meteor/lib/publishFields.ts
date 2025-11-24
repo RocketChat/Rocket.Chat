@@ -43,6 +43,7 @@ export const subscriptionFields = {
 	tunreadGroup: 1,
 	tunreadUser: 1,
 	status: 1,
+	inviterUsername: 1,
 	federation: 1,
 
 	// Omnichannel fields

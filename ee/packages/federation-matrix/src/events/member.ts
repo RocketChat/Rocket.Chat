@@ -68,7 +68,8 @@ export async function handleInvite(
 
 	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
 		status: 'INVITED',
-		federation: { inviteEventId: eventId, inviterUsername: inviterUser.username },
+		inviterUsername: inviterUser.username,
+		federation: { inviteEventId: eventId },
 	});
 }
 
