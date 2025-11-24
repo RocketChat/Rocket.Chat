@@ -11,13 +11,13 @@
 		"resolveJsonModule": true,
 
 		"strict": true,
-		"noImplicitReturns": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }
