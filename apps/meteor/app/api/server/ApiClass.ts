@@ -500,16 +500,15 @@ export class APIClass<
 	public async processTwoFactor({
 		userId,
 		request,
-		invocation,
 		options,
 		connection,
 	}: {
 		userId: string;
 		request: Request;
-		invocation: { twoFactorChecked?: boolean };
+		invocation?: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
-	}): Promise<void> {
+	}) {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
@@ -524,7 +523,7 @@ export class APIClass<
 			connection,
 		});
 
-		invocation.twoFactorChecked = true;
+		return true;
 	}
 
 	public getFullRouteName(route: string, method: string): string {
@@ -851,11 +850,6 @@ export class APIClass<
 							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
-						let result;
-
-						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
-						this.connection = connection;
-
 						try {
 							if (options.deprecation) {
 								parseDeprecation(this, options.deprecation);
@@ -897,23 +891,14 @@ export class APIClass<
 								}
 							}
 
-							const invocation = new DDPCommon.MethodInvocation({
-								connection,
-								isSimulation: false,
-								userId: this.userId,
-							});
+							const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+							this.connection = connection;
 
-							Accounts._accountData[connection.id] = {
-								connection,
-							};
-
-							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
-
-							this.userId &&
+							const twoFactorChecked =
+								this.userId &&
 								(await api.processTwoFactor({
 									userId: this.userId,
 									request: this.request,
-									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
 									connection: connection as unknown as IMethodConnection,
 								}));
@@ -921,34 +906,37 @@ export class APIClass<
 							this.queryOperations = options.queryOperations;
 							(this as any).queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
-
-							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
-						} catch (e: any) {
-							result = ((e: any) => {
-								switch (e.error) {
-									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
-									case 'unauthorized':
-									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
-									case 'forbidden':
-									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
-									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+							if (options.invocationMiddleware) {
+								// eslint-disable-next-line no-var
+								using invocation = api.createInvocation(connection, this.userId, this.token);
+								if (twoFactorChecked) {
+									invocation.value.twoFactorChecked = twoFactorChecked;
 								}
-							})(e);
-						} finally {
-							delete Accounts._accountData[connection.id];
+								return (
+									(await DDP._CurrentInvocation.withValue(invocation.value as any, async () => originalAction.apply(this))) || api.success()
+								);
+							}
+							return (await originalAction.apply(this)) || api.success();
+						} catch (e: any) {
+							switch (e.error) {
+								case 'error-too-many-requests':
+									return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+								case 'unauthorized':
+								case 'error-unauthorized':
+									if (applyBreakingChanges) {
+										return api.unauthorized(typeof e === 'string' ? e : e.message);
+									}
+									return api.forbidden(typeof e === 'string' ? e : e.message);
+								case 'forbidden':
+								case 'error-forbidden':
+									if (applyBreakingChanges) {
+										return api.forbidden(typeof e === 'string' ? e : e.message);
+									}
+									return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+								default:
+									return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+							}
 						}
-
-						return result;
 					} as InnerAction<any, any, any>;
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
@@ -1000,6 +988,36 @@ export class APIClass<
 			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
 			this.reloadRoutesToRefreshRateLimiter();
 		}
+	}
+
+	private createInvocation(
+		connection: { id: string; close: () => void; clientAddress: string; httpHeaders: Record<string, any> },
+		userId: string,
+		token: string,
+	): {
+		value: DDPCommon.MethodInvocation & {
+			twoFactorChecked?: boolean;
+		};
+		[Symbol.dispose]: () => void;
+	} {
+		const invocation = new DDPCommon.MethodInvocation({
+			connection,
+			isSimulation: false,
+			userId,
+		});
+
+		Accounts._accountData[connection.id] = {
+			connection,
+		};
+
+		Accounts._setAccountData(connection.id, 'loginToken', token);
+
+		return {
+			value: invocation,
+			[Symbol.dispose]: () => {
+				delete Accounts._accountData[connection.id];
+			},
+		};
 	}
 
 	protected _initAuth(): void {

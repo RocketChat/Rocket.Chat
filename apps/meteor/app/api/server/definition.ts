@@ -100,6 +100,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			invocationMiddleware?: true;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -119,6 +120,7 @@ export type SharedOptions<TMethod extends string> = (
 				  });
 			authRequired: true;
 			twoFactorRequired: true;
+			invocationMiddleware?: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?:
 				| {
