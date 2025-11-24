@@ -55,6 +55,10 @@ class JIRAReporter implements Reporter {
 			return;
 		}
 
+		if (test.expectedStatus === 'failed' && result.status === 'failed') {
+			return;
+		}
+
 		const payload = {
 			name: test.title,
 			status: result.status,
@@ -71,7 +75,7 @@ class JIRAReporter implements Reporter {
 		// replace all ()[]- with nothing
 		const search = await fetch(
 			`${this.url}/rest/api/2/search?${new URLSearchParams({
-				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[\(\)\[\]-]/g, '')}'`,
+				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[()[\]-]/g, '')}'`,
 			})}`,
 			{
 				method: 'GET',
