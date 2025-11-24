@@ -55,7 +55,7 @@ const getExtendedSession = (session: ClientSession, onceSuccesfulCommit: Extende
 };
 
 class UnsuccessfulTransactionError extends Error {
-	name = UnsuccessfulTransactionError.name;
+	override name = UnsuccessfulTransactionError.name;
 
 	constructor(message?: string) {
 		super(message || 'Something went wrong while trying to commit changes. Please try again.');

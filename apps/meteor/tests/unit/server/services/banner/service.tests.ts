@@ -26,7 +26,7 @@ class BannerDismissModel extends BaseRaw<any> {
 }
 
 class UserModel extends BaseRaw<any> {
-	findOneById(): Promise<any> {
+	override findOneById(): Promise<any> {
 		return Promise.resolve({});
 	}
 }

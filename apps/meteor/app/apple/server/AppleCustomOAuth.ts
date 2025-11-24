@@ -5,7 +5,7 @@ import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { handleIdentityToken } from '../lib/handleIdentityToken';
 
 export class AppleCustomOAuth extends CustomOAuth {
-	async getIdentity(_accessToken: string, query: Record<string, any>): Promise<any> {
+	override async getIdentity(_accessToken: string, query: Record<string, any>): Promise<any> {
 		const { id_token: identityToken, user: userStr = '' } = query;
 
 		let usrObj = {} as any;

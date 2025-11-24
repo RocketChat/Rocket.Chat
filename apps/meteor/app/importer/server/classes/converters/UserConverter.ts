@@ -32,7 +32,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 	private updatedIds = new Set<IUser['_id']>();
 
-	protected async convertRecord(record: IImportUserRecord): Promise<boolean | undefined> {
+	protected override async convertRecord(record: IImportUserRecord): Promise<boolean | undefined> {
 		const { data, _id } = record;
 
 		data.importIds = data.importIds.filter((item) => item);
@@ -55,7 +55,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		return !existingUser;
 	}
 
-	async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
+	override async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
 		this.insertedIds.clear();
 		this.updatedIds.clear();
 
@@ -424,7 +424,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	protected getDataType(): 'user' {
+	protected override getDataType(): 'user' {
 		return 'user';
 	}
 }

@@ -26,7 +26,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		super(db, 'media_calls', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: 1 }, unique: false },
 			{ key: { ended: 1, uids: 1, expiresAt: 1 }, unique: false },

@@ -20,7 +20,7 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 		super(db, 'freeswitch_channels', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { uniqueId: 1 }, unique: true },
 			{ key: { kind: 1, startedAt: -1 } },

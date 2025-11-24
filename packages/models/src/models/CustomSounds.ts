@@ -9,7 +9,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 		super(db, 'custom_sounds', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }];
 	}
 

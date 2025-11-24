@@ -73,7 +73,7 @@ export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
 		return new (class StreamPresence extends Streamer<'user-presence'> {
-			async _publish(
+			override async _publish(
 				publication: IPublication,
 				_eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,

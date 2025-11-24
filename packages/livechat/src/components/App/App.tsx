@@ -71,7 +71,7 @@ type AppState = {
 };
 
 export class App extends Component<AppProps, AppState> {
-	state = {
+	override state = {
 		initialized: false,
 		poppedOut: false,
 	};
@@ -181,15 +181,15 @@ export class App extends Component<AppProps, AppState> {
 		visibility.removeListener(this.handleVisibilityChange);
 	}
 
-	componentDidMount() {
+	override componentDidMount() {
 		this.initialize();
 	}
 
-	componentWillUnmount() {
+	override componentWillUnmount() {
 		this.finalize();
 	}
 
-	componentDidUpdate() {
+	override componentDidUpdate() {
 		const { i18n } = this.props;
 
 		if (i18n.t) {
