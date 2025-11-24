@@ -260,6 +260,8 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/meteor-build
+        env:
+          YARN_DEBUG_NETWORK: 1
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
