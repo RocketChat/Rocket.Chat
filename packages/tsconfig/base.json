@@ -16,6 +16,8 @@
 		"noUnusedParameters": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }
