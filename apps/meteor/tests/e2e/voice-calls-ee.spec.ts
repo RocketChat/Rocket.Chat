@@ -11,8 +11,10 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
-		await api.post('/users.setStatus', { status: 'online', username: 'user1' });
-		await api.post('/users.setStatus', { status: 'online', username: 'user2' });
+		await Promise.all([
+			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
+			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
+		]);
 	});
 
 	test.beforeAll(async ({ browser }) => {
