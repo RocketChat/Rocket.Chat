@@ -19,7 +19,7 @@ class VersionCompiler {
 				const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
 				function handleError(err) {
-					console.error(err);
+					console.error('Error getting supported versions', err);
 					// TODO remove this when we are ready to fail
 					if (process.env.NODE_ENV !== 'development') {
 						reject(err);
