@@ -161,7 +161,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			rid,
 			'u._id': uid,
-			'invited': { $exists: false },
+			'status': { $exists: false },
 		};
 
 		return this.countDocuments(query);
@@ -2092,7 +2092,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ _id: subscriptionId },
 			{
 				$unset: {
-					invited: 1,
+					status: 1,
 					federation: 1,
 				},
 				$set: {

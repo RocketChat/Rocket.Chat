@@ -33,7 +33,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 	await beforeLeaveRoomCallback.run(user, room);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
-		projection: { _id: 1, invited: 1 },
+		projection: { _id: 1, status: 1 },
 	});
 
 	if (subscription) {
@@ -48,7 +48,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 			} else {
 				await Message.saveSystemMessage('ru', rid, user.username || '', user, extraData);
 			}
-		} else if (subscription.invited) {
+		} else if (subscription.status === 'INVITED') {
 			await Message.saveSystemMessage('uir', rid, removedUser.username || '', removedUser);
 		} else if (room.teamMain) {
 			await Message.saveSystemMessage('ult', rid, removedUser.username || '', removedUser);

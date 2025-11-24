@@ -13,7 +13,7 @@ export const acceptRoomInvite = async (room: IRoom, subscription: ISubscription,
 		});
 	}
 
-	if (!subscription.invited) {
+	if (subscription.status !== 'INVITED') {
 		throw new Meteor.Error('error-not-invited', 'User was not invited to this room', {
 			method: 'acceptRoomInvite',
 		});
