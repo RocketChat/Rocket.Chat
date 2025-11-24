@@ -1,5 +1,6 @@
-import { describe, it, beforeEach } from 'node:test';
 import * as assert from 'node:assert';
+import { describe, it, beforeEach } from 'node:test';
+
 import type { ISchedulerModify, IServerSettingsModify, ISlashCommandsModify } from '../../../../src/definition/accessors';
 import { ConfigurationModify } from '../../../../src/server/accessors';
 
