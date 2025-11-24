@@ -15,6 +15,7 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }
