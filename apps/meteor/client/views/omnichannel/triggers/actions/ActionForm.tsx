@@ -40,7 +40,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 	const actionFieldName = `actions.${index}.name` as const;
 	const actionFieldValue = useWatch({ control, name: actionFieldName });
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const actionOptions = useMemo<SelectOption[]>(() => {
 		return [

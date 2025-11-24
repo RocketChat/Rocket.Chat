@@ -7,7 +7,7 @@ import type { RoomToolboxActionConfig } from '../../room/contexts/RoomToolboxCon
 const CannedResponse = lazy(() => import('../cannedResponses/contextualBar/CannedResponse/WrapCannedResponseList'));
 
 export const useCannedResponsesRoomAction = () => {
-	const licensed = useHasLicenseModule('canned-responses') === true;
+	const { data: licensed = false } = useHasLicenseModule('canned-responses');
 	const enabled = useSetting('Canned_Responses_Enable', false);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
