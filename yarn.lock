@@ -10674,10 +10674,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/web-ui-registration@workspace:packages/web-ui-registration"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-react": "npm:~7.27.1"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
@@ -10695,7 +10691,7 @@ __metadata:
     "@storybook/addon-actions": "npm:^8.6.14"
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/theming": "npm:^8.6.14"
