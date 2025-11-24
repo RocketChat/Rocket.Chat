@@ -76,9 +76,6 @@ export interface ISubscription extends IRocketChatRecord {
 
 	status?: SubscriptionStatus;
 	inviterUsername?: string;
-	federation?: {
-		inviteEventId?: string;
-	};
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

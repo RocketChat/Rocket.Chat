@@ -923,13 +923,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				'u._id': userId,
 				'status': 'INVITED',
 			},
-			{ projection: { _id: 1, rid: 1, federation: 1 } },
+			{ projection: { _id: 1, rid: 1 } },
 		);
 		if (!subscription) {
 			throw new Error('Subscription not found');
 		}
-		if (!subscription.federation?.inviteEventId) {
-			throw new Error('Invite event ID not found');
+
+		const room = await Rooms.findOneById(subscription.rid);
+		if (!room || !isRoomNativeFederated(room)) {
+			throw new Error('Room not found or not federated');
 		}
 
 		const user = await Users.findOneById(userId);
@@ -945,10 +947,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		if (action === 'accept') {
-			await federationSDK.acceptInvite(subscription.federation?.inviteEventId, matrixUserId);
+			await federationSDK.acceptInvite(room.federation.mrid, matrixUserId);
 		}
 		if (action === 'reject') {
-			await federationSDK.rejectInvite(subscription.federation?.inviteEventId, matrixUserId);
+			await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
 		}
 	}
 }
