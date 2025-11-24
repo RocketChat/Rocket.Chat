@@ -2,6 +2,7 @@ import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { isFederationDomainAllowedFromUsernames, FederationValidationError } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -108,8 +109,20 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		if (!FederationActions.shouldPerformFederationAction(room)) {
-			return;
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+			}
+
+			const isAllowed = await isFederationDomainAllowedFromUsernames([user.username]);
+			if (!isAllowed) {
+				throw new MeteorError(
+					'federation-policy-denied',
+					"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
+				);
+			}
+
+			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
 		}
 
 		// TODO should we really check for "user" here? it is potentially an external user
@@ -240,6 +253,24 @@ callbacks.add(
 	'beforeCreateDirectRoom',
 	async (members, room): Promise<void> => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
+			const isAllowed = await isFederationDomainAllowedFromUsernames(members);
+			if (!isAllowed) {
+				throw new Meteor.Error(
+					'federation-policy-denied',
+					"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
+					{ method: 'createRoom' },
+				);
+			}
+
+			try {
+				await FederationMatrix.validateFederatedUsersBeforeRoomCreation(members);
+			} catch (error) {
+				if (error instanceof FederationValidationError) {
+					throw new Meteor.Error(error.error, error.userMessage);
+				}
+				throw error;
+			}
+
 			await FederationMatrix.ensureFederatedUsersExistLocally(members);
 		}
 	},

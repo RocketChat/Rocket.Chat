@@ -3,6 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { isFederationDomainAllowedFromUsernames, FederationValidationError } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -188,6 +189,28 @@ export const createRoom = async <T extends RoomType>(
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});
+	}
+
+	if (shouldBeHandledByFederation && onlyUsernames(members)) {
+		// check RC allowlist for domain
+		const isAllowed = await isFederationDomainAllowedFromUsernames(members);
+		if (!isAllowed) {
+			throw new Meteor.Error(
+				'federation-policy-denied',
+				"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
+				{ method: 'createRoom' },
+			);
+		}
+
+		// validate external users (network + user existence checks)
+		try {
+			await FederationMatrix.validateFederatedUsersBeforeRoomCreation(members);
+		} catch (error) {
+			if (error instanceof FederationValidationError) {
+				throw new Meteor.Error(error.error, error.userMessage, { method: 'createRoom' });
+			}
+			throw error;
+		}
 	}
 
 	if (type === 'd') {

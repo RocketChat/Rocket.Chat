@@ -14,6 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
+import { isFederationDomainAllowed } from './api/middlewares/isFederationDomainAllowed';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
@@ -206,17 +207,32 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	}
 
+	static async validateFederatedUsersBeforeRoomCreation(usernames: string[]): Promise<void> {
+		const federatedUsers = usernames.filter(validateFederatedUsername);
+		if (federatedUsers.length === 0) {
+			return;
+		}
+
+		for await (const username of federatedUsers) {
+			await federationSDK.validateOutboundUser(userIdSchema.parse(username));
+		}
+	}
+
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
 		if (room.t !== 'c' && room.t !== 'p') {
 			throw new Error('Room is not a public or private room');
 		}
+
+		let matrixRoomCreated = false;
+		let matrixRoomResult: { room_id: string; event_id: string } | undefined;
 
 		try {
 			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
 			const roomName = room.name || room.fname || 'Untitled Room';
 
 			// canonical alias computed from name
-			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
+			matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
+			matrixRoomCreated = true;
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
@@ -228,7 +244,19 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return matrixRoomResult;
 		} catch (error) {
-			this.logger.error(error, 'Failed to create room');
+			this.logger.error('Failed to create room:', error);
+
+			// if Matrix room was created but invitation failed, we should rollback the room creation
+			if (matrixRoomCreated && matrixRoomResult) {
+				this.logger.warn('Matrix room was created but setup failed, leaving room', matrixRoomResult.room_id);
+				try {
+					const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
+					await federationSDK.leaveRoom(matrixRoomResult.room_id, matrixUserId);
+				} catch (cleanupError) {
+					this.logger.error('Failed to cleanup Matrix room after error:', cleanupError);
+				}
+			}
+
 			throw error;
 		}
 	}
@@ -863,24 +891,30 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					if (!homeserverUrl) {
 						return [matrixId, 'UNABLE_TO_VERIFY'];
 					}
-					try {
-						const result = await federationSDK.queryProfileRemote<
-							| {
-									avatar_url: string;
-									displayname: string;
-							  }
-							| {
-									errcode: string;
-									error: string;
-							  }
-						>({ homeserverUrl, userId: matrixId });
 
-						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {
-							return [matrixId, 'UNVERIFIED'];
+					try {
+						// check RC domain allowlist
+						if (!(await isFederationDomainAllowed([homeserverUrl]))) {
+							return [matrixId, 'POLICY_DENIED'];
 						}
+
+						// validate using homeserver (network + user existence)
+						await federationSDK.validateOutboundUser(userIdSchema.parse(matrixId));
 
 						return [matrixId, 'VERIFIED'];
 					} catch (e) {
+						if (e && typeof e === 'object' && 'code' in e) {
+							const error = e as { code: string };
+							if (error.code === 'CONNECTION_FAILED') {
+								return [matrixId, 'UNABLE_TO_VERIFY'];
+							}
+							if (error.code === 'USER_NOT_FOUND') {
+								return [matrixId, 'UNVERIFIED'];
+							}
+							if (error.code === 'POLICY_DENIED') {
+								return [matrixId, 'POLICY_DENIED'];
+							}
+						}
 						return [matrixId, 'UNABLE_TO_VERIFY'];
 					}
 				}),
