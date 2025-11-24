@@ -1605,7 +1605,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(pendingInvitation).not.toBeUndefined();
 
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					rid = pendingInvitation?.rid!;
+					rid = pendingInvitation!.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
 				}, 15000);
@@ -1644,7 +1644,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(pendingInvitation).not.toBeUndefined();
 
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				rid = pendingInvitation?.rid!;
+				rid = pendingInvitation!.rid!;
 			}, 15000);
 
 			it('It should allow RC user to reject the invite', async () => {
