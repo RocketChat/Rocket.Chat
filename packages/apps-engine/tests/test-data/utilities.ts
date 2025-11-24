@@ -84,7 +84,7 @@ export class TestInfastructureSetup {
 			runInSandbox: async () => {
 				return {} as unknown as Promise<unknown>;
 			},
-			stopRuntime: () => { },
+			stopRuntime: () => {},
 		} as unknown as AppRuntimeManager;
 
 		this.appManager = {

@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
-import * as path from 'path';
-import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import * as assert from 'node:assert';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import * as path from 'path';
 
 import { AppStatus } from '../../../../src/definition/AppStatus';
 import { UserStatusConnection, UserType } from '../../../../src/definition/users';
@@ -63,19 +63,27 @@ describe('DenoRuntimeSubprocessController', () => {
 
 		assert.strictEqual(doCallSpy.mock.calls.length, 1, 'doCallSpy.mock.calls.length');
 		const callArgs = doCallSpy.mock.calls[0].arguments;
-		assert.partialDeepStrictEqual(callArgs[0], {
-			appId: '9c1d62ca-e40f-456f-8601-17c823a16c68',
-			method: 'get',
-			url: 'https://google.com',
-		}, 'callArgs[0]');
+		assert.partialDeepStrictEqual(
+			callArgs[0],
+			{
+				appId: '9c1d62ca-e40f-456f-8601-17c823a16c68',
+				method: 'get',
+				url: 'https://google.com',
+			},
+			'callArgs[0]',
+		);
 
-		assert.deepStrictEqual(r.result, {
-			method: 'get',
-			url: 'https://google.com',
-			content: "{ test: 'test' }",
-			statusCode: 200,
-			headers: {},
-		}, 'r.result');
+		assert.deepStrictEqual(
+			r.result,
+			{
+				method: 'get',
+				url: 'https://google.com',
+				content: "{ test: 'test' }",
+				statusCode: 200,
+				headers: {},
+			},
+			'r.result',
+		);
 	});
 
 	it('correctly identifies a call to the IRead accessor', async () => {
