@@ -102,14 +102,14 @@ export async function findUsersOfRoomOrderedByRole({
 								},
 							},
 						},
-						{ $project: { roles: 1, invited: 1 } },
+						{ $project: { roles: 1, status: 1 } },
 					],
 				},
 			},
 			{
 				$addFields: {
 					roles: { $arrayElemAt: ['$subscription.roles', 0] },
-					invited: { $arrayElemAt: ['$subscription.invited', 0] },
+					status: { $arrayElemAt: ['$subscription.status', 0] },
 				},
 			},
 			{

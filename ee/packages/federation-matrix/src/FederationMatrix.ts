@@ -921,7 +921,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			{
 				'_id': subscriptionId,
 				'u._id': userId,
-				'invited': true,
+				'status': 'INVITED',
 			},
 			{ projection: { _id: 1, rid: 1, federation: 1 } },
 		);
