@@ -89,7 +89,7 @@ const useRoomAttributeItems = (attribute: { _id: string; key: string }): Generic
 	});
 
 	return [
-		{ id: 'edit', icon: 'edit' as const, content: t('Edit'), onClick: () => editAction(), disabled: isABACAvailable !== true },
+		{ id: 'edit', icon: 'edit' as const, content: t('Edit'), onClick: () => editAction(), disabled: !isABACAvailable },
 		{
 			id: 'delete',
 			iconColor: 'danger',
