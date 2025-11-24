@@ -1,6 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, UserID, RoomID, PduForType, EventID } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures, UserID, RoomID, PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
@@ -8,10 +8,7 @@ import { getOrCreateFederatedRoom, getOrCreateFederatedUser } from './helpers';
 
 const logger = new Logger('federation-matrix:member');
 
-export async function handleInvite(
-	event: HomeserverEventSignatures['homeserver.matrix.membership']['event'],
-	eventId: EventID,
-): Promise<void> {
+export async function handleInvite(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const { room_id: roomId, sender: senderId, state_key: userId, content } = event;
 
 	const inviterUser = await getOrCreateFederatedUser(senderId as UserID);
@@ -69,7 +66,6 @@ export async function handleInvite(
 	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
 		status: 'INVITED',
 		inviterUsername: inviterUser.username,
-		federation: { inviteEventId: eventId },
 	});
 }
 
@@ -117,11 +113,11 @@ async function handleLeave(event: HomeserverEventSignatures['homeserver.matrix.m
 }
 
 export function member(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.membership', async ({ event, event_id: eventId }) => {
+	emitter.on('homeserver.matrix.membership', async ({ event }) => {
 		try {
 			switch (event.content.membership) {
 				case 'invite':
-					await handleInvite(event, eventId);
+					await handleInvite(event);
 					break;
 
 				case 'join':
