@@ -1,12 +1,87 @@
 import { Room } from '@rocket.chat/core-services';
+import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { HomeserverEventSignatures, UserID, RoomID, PduForType } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { getOrCreateFederatedRoom, getOrCreateFederatedUser } from './helpers';
+import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
 
 const logger = new Logger('federation-matrix:member');
+
+export async function getOrCreateFederatedUser(matrixId: UserID): Promise<IUser | null> {
+	try {
+		const serverName = federationSDK.getConfig('serverName');
+		const [username, userServerName, isLocal] = getUsernameServername(matrixId, serverName);
+
+		let user = await Users.findOneByUsername(username);
+
+		if (user) {
+			return user;
+		}
+
+		if (isLocal) {
+			logger.warn(`Local user ${username} not found for Matrix ID: ${matrixId}`);
+			return null;
+		}
+
+		logger.info(`Creating federated user for Matrix ID: ${matrixId}`);
+
+		const userId = await createOrUpdateFederatedUser({
+			username: matrixId,
+			name: matrixId,
+			origin: userServerName,
+		});
+
+		user = await Users.findOneById(userId);
+
+		if (!user) {
+			logger.error(`Failed to retrieve user after creation: ${matrixId}`);
+			return null;
+		}
+
+		return user;
+	} catch (error) {
+		logger.error(`Error getting or creating federated user ${matrixId}:`, error);
+		return null;
+	}
+}
+
+export async function getOrCreateFederatedRoom(
+	roomName: RoomID, // matrix room ID
+	roomFName: string,
+	roomType: RoomType,
+	inviterUserId: UserID,
+): Promise<IRoom | null> {
+	try {
+		const room = await Rooms.findOne({ 'federation.mrid': roomName });
+		if (room) {
+			return room;
+		}
+
+		logger.info(`Creating federated room for Matrix room ID: ${roomName} with name: ${roomFName}`);
+
+		const createdRoom = await Room.create(inviterUserId, {
+			type: roomType,
+			name: roomName,
+			options: {
+				federatedRoomId: roomName,
+				creator: inviterUserId,
+			},
+			extraData: {
+				federated: true,
+				fname: roomFName,
+			},
+		});
+
+		logger.info(`Successfully created federated room ${createdRoom._id} for Matrix room ${roomName}`);
+		return createdRoom;
+	} catch (error) {
+		logger.error(`Error getting or creating federated room ${roomName}:`, error);
+		return null;
+	}
+}
 
 export async function handleInvite(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const { room_id: roomId, sender: senderId, state_key: userId, content } = event;
@@ -51,13 +126,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	// TODO: Consider refactoring to create federated rooms using the Matrix roomId as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	const roomFName = roomName;
 
-	const room = await getOrCreateFederatedRoom(
-		roomId as RoomID,
-		roomFName,
-		roomType,
-		inviterUser._id as UserID,
-		inviterUser.username as UserID,
-	);
+	const room = await getOrCreateFederatedRoom(roomId, roomFName, roomType, inviterUser._id as UserID);
 	if (!room) {
 		logger.error(`Room not found or could not be created: ${roomId}`);
 		return;
