@@ -15,7 +15,7 @@
 	],
 	"scripts": {
 		"start": "meteor",
-		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory /tmp/dist",
+		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
 		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
@@ -179,6 +179,7 @@
 		"eslint-plugin-prettier": "~5.2.6",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
+		"eslint-plugin-storybook": "~0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"fast-glob": "^3.3.3",

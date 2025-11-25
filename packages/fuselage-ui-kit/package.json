@@ -81,6 +81,7 @@
 		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
 		"eslint": "~8.45.0",
+		"eslint-plugin-storybook": "~0.11.6",
 		"i18next": "^23.10.1",
 		"jest": "~30.2.0",
 		"normalize.css": "^8.0.1",
