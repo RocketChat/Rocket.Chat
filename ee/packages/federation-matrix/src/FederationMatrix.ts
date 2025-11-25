@@ -231,18 +231,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('Room is not a public or private room');
 		}
 
-		let matrixRoomCreated = false;
-		let matrixRoomResult: { room_id: string; event_id: string } | undefined;
-
 		try {
 			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
 			const roomName = room.name || room.fname || 'Untitled Room';
 
-			// canonical alias computed from name
-			matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
-			matrixRoomCreated = true;
-
-			this.logger.debug('Matrix room created:', matrixRoomResult);
+			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
@@ -253,18 +246,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return matrixRoomResult;
 		} catch (error) {
 			this.logger.error('Failed to create room:', error);
-
-			// if Matrix room was created but invitation failed, we should rollback the room creation
-			if (matrixRoomCreated && matrixRoomResult) {
-				this.logger.warn('Matrix room was created but setup failed, leaving room', matrixRoomResult.room_id);
-				try {
-					const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
-					await federationSDK.leaveRoom(matrixRoomResult.room_id, matrixUserId);
-				} catch (cleanupError) {
-					this.logger.error('Failed to cleanup Matrix room after error:', cleanupError);
-				}
-			}
-
 			throw error;
 		}
 	}
