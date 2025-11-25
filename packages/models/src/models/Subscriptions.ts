@@ -2093,7 +2093,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{
 				$unset: {
 					status: 1,
-					federation: 1,
+					inviterUsername: 1,
 				},
 				$set: {
 					open: true,
