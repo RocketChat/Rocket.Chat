@@ -9,7 +9,7 @@ import { useHasLicenseModule } from '../useHasLicenseModule';
 const VideoConfList = lazy(() => import('../../views/room/contextualBar/VideoConference/VideoConfList'));
 
 export const useCallsRoomAction = () => {
-	const licensed = useHasLicenseModule('videoconference-enterprise') === true;
+	const { data: licensed = false } = useHasLicenseModule('videoconference-enterprise');
 	const room = useContext(RoomContext)?.room;
 	const federated = room ? isRoomFederated(room) : false;
 	const { t } = useTranslation();

@@ -31,7 +31,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const { t } = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });

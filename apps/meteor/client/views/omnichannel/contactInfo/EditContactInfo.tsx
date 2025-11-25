@@ -72,7 +72,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const editContact = useEditContact(['current-contacts']);
