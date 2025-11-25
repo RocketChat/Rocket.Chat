@@ -68,14 +68,12 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 
 	const inviterUser = await getOrCreateFederatedUser(senderId);
 	if (!inviterUser) {
-		logger.error(`Failed to get or create inviter user: ${senderId}`);
-		return;
+		throw new Error(`Failed to get or create inviter user: ${senderId}`);
 	}
 
 	const inviteeUser = await getOrCreateFederatedUser(userId);
 	if (!inviteeUser) {
-		logger.error(`Failed to get or create invitee user: ${userId}`);
-		return;
+		throw new Error(`Failed to get or create invitee user: ${userId}`);
 	}
 
 	// we are not handling public rooms yet - in the future we should use 'c' for public rooms
@@ -108,8 +106,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 
 	const room = await getOrCreateFederatedRoom(roomId, roomFName, roomType, inviterUser._id as UserID);
 	if (!room) {
-		logger.error(`Room not found or could not be created: ${roomId}`);
-		return;
+		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
 
 	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
@@ -144,14 +141,12 @@ async function handleLeave(event: HomeserverEventSignatures['homeserver.matrix.m
 
 	const leavingUser = await getOrCreateFederatedUser(userId);
 	if (!leavingUser) {
-		logger.error(`Failed to get or create leaving user: ${userId}`);
-		return;
+		throw new Error(`Failed to get or create leaving user: ${userId}`);
 	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
-		logger.error(`Room not found while leaving user ${userId} from room ${roomId}`);
-		return;
+		throw new Error(`Room not found while leaving user ${userId} from room ${roomId}`);
 	}
 
 	await Room.removeUserFromRoom(room._id, leavingUser);
