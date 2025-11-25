@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import EditRolePage from './EditRolePage';
 import { useRole } from './hooks/useRole';
+import GenericError from '../../../components/GenericError';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
@@ -13,17 +14,21 @@ const EditRolePageWithData = ({ roleId }: { roleId?: IRole['_id'] }): ReactEleme
 	const { t } = useTranslation();
 	const role = useRole(roleId);
 	const context = useRouteParameter('context');
-	const hasCustomRolesModule = useHasLicenseModule('custom-roles');
+	const { isPending, isError, data: hasLicense } = useHasLicenseModule('custom-roles');
 
 	if (!role && context === 'edit') {
 		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
 	}
 
-	if (hasCustomRolesModule === 'loading') {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 
-	return <EditRolePage key={roleId} role={role} isEnterprise={hasCustomRolesModule} />;
+	if (isError) {
+		return <GenericError />;
+	}
+
+	return <EditRolePage key={roleId} role={role} isEnterprise={hasLicense} />;
 };
 
 export default EditRolePageWithData;

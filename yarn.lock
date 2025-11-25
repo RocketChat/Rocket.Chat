@@ -1917,22 +1917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:~7.28.5":
-  version: 7.28.5
-  resolution: "@babel/plugin-transform-runtime@npm:7.28.5"
-  dependencies:
-    "@babel/helper-module-imports": "npm:^7.27.1"
-    "@babel/helper-plugin-utils": "npm:^7.27.1"
-    babel-plugin-polyfill-corejs2: "npm:^0.4.14"
-    babel-plugin-polyfill-corejs3: "npm:^0.13.0"
-    babel-plugin-polyfill-regenerator: "npm:^0.6.5"
-    semver: "npm:^6.3.1"
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 10/0d16c90d40dd34f1a981e742ad656ceef619b92d3662ec9ac8d7c8ba79f22bb425c3f9e097333659a4938f03868a53077b1a3aadb7f37504157a0c7af64ec2be
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-transform-shorthand-properties@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/plugin-transform-shorthand-properties@npm:7.27.1"
@@ -4790,13 +4774,6 @@ __metadata:
   peerDependencies:
     tslib: 2
   checksum: 10/5b370183700cb40af52841294ba99c3dfb3dcb7fe2a122e15c737eb908d11392d314b75518874c7d631092bb29658ebe298d174b05baeb1adeb33884b9aa33cf
-  languageName: node
-  linkType: hard
-
-"@juggle/resize-observer@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@juggle/resize-observer@npm:3.4.0"
-  checksum: 10/73d1d00ee9132fb6f0aea0531940a6b93603e935590bd450fc6285a328d906102eeeb95dea77b2edac0e779031a9708aa8c82502bd298ee4dd26e7dff48f397a
   languageName: node
   linkType: hard
 
@@ -8327,7 +8304,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.0"
     "@rocket.chat/http-router": "workspace:^"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
@@ -8352,7 +8329,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/express": "npm:^4.17.25"
@@ -8474,7 +8451,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/desktop-api@workspace:packages/desktop-api, @rocket.chat/desktop-api@workspace:~":
+"@rocket.chat/desktop-api@workspace:^, @rocket.chat/desktop-api@workspace:packages/desktop-api, @rocket.chat/desktop-api@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/desktop-api@workspace:packages/desktop-api"
   dependencies:
@@ -8535,7 +8512,7 @@ __metadata:
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
-    "@rocket.chat/emitter": "npm:^0.31.25"
+    "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.0"
     "@rocket.chat/http-router": "workspace:^"
@@ -8625,17 +8602,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:~0.37.2":
-  version: 0.37.2
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.37.2"
-  peerDependencies:
-    "@rocket.chat/emitter": "*"
-    "@rocket.chat/fuselage-tokens": "*"
-    react: "*"
-  checksum: 10/8f9ecf349fc667e4f4cd282fd267402bed9d42e77b206c0966fc0a37bb20b387af4052c0ea15c71c4e4cde285443f9922239a981aab4e23924f7946736e49969
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/fuselage-hooks@npm:~0.38.1":
   version: 0.38.1
   resolution: "@rocket.chat/fuselage-hooks@npm:0.38.1"
@@ -8647,21 +8613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-polyfills@npm:~0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.25"
-  dependencies:
-    "@juggle/resize-observer": "npm:^3.4.0"
-    clipboard-polyfill: "npm:^3.0.3"
-    element-closest-polyfill: "npm:^1.0.6"
-    focus-visible: "npm:^5.2.0"
-    focus-within-polyfill: "npm:^5.2.1"
-    new-event-polyfill: "npm:^1.0.1"
-  checksum: 10/e7d42870155d5fbd09536debbaeaa3f788c97854a018e18523c2bfec71bebdaa9594636afe47b8b2347c2cac74a83fcc1f0815478623ad0afa85fc0015254980
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage-toastbar@npm:^0.35.1":
+"@rocket.chat/fuselage-toastbar@npm:~0.35.1":
   version: 0.35.1
   resolution: "@rocket.chat/fuselage-toastbar@npm:0.35.1"
   dependencies:
@@ -8724,6 +8676,7 @@ __metadata:
     babel-loader: "npm:~10.0.0"
     cross-env: "npm:^7.0.3"
     eslint: "npm:~8.45.0"
+    eslint-plugin-storybook: "npm:~0.11.6"
     i18next: "npm:^23.10.1"
     jest: "npm:~30.2.0"
     normalize.css: "npm:^8.0.1"
@@ -8755,7 +8708,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.68.1, @rocket.chat/fuselage@npm:~0.68.1":
+"@rocket.chat/fuselage@npm:~0.68.1":
   version: 0.68.1
   resolution: "@rocket.chat/fuselage@npm:0.68.1"
   dependencies:
@@ -8786,11 +8739,10 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/styled": "npm:~0.32.0"
@@ -8822,7 +8774,7 @@ __metadata:
     eslint-plugin-anti-trojan-source: "npm:~1.1.2"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
-    eslint-plugin-storybook: "npm:^0.11.6"
+    eslint-plugin-storybook: "npm:~0.11.6"
     highlight.js: "npm:11.8.0"
     i18next: "npm:~23.4.9"
     identity-obj-proxy: "npm:^3.0.0"
@@ -8895,7 +8847,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/icons@npm:^0.45.0, @rocket.chat/icons@npm:~0.45.0":
+"@rocket.chat/icons@npm:~0.45.0":
   version: 0.45.0
   resolution: "@rocket.chat/icons@npm:0.45.0"
   checksum: 10/9e0967eba17cbef1c482616bb94cf871dfac20e92ac5fad6164cbe60bab95882d9675bf9de2c611928da6d37806a1279d671b0a3463dda0a3148cdade9291147
@@ -8954,15 +8906,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@npm:^0.33.1":
-  version: 0.33.1
-  resolution: "@rocket.chat/layout@npm:0.33.1"
+"@rocket.chat/layout@npm:~0.34.0":
+  version: 0.34.0
+  resolution: "@rocket.chat/layout@npm:0.34.0"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/cc7d9289669bd045f72b11b0217ea938fa4cc7933a1b3969a2fc0fd7ac2eddc6349ac5e14a2934de4cd3819e03a13d2b3016e860b69aa28e038bc6f196383d5b
+  checksum: 10/a5520a7be879b687f4938d17a2c585f088011292f46cb42ffdf0c2a38ddff0cdd3bf37a9aa7176c99b6e91122511a7b2c8cc522ef02da38db1be07642153f544
   languageName: node
   linkType: hard
 
@@ -8998,7 +8950,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": "npm:~0.32.3"
@@ -9035,6 +8987,7 @@ __metadata:
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
+    eslint-plugin-storybook: "npm:~0.11.6"
     file-loader: "npm:^6.2.0"
     history: "npm:~5.3.0"
     html-webpack-plugin: "npm:~5.6.4"
@@ -9259,11 +9212,10 @@ __metadata:
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.0"
     "@rocket.chat/freeswitch": "workspace:^"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
-    "@rocket.chat/fuselage-toastbar": "npm:^0.35.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
+    "@rocket.chat/fuselage-toastbar": "npm:~0.35.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9273,7 +9225,7 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "npm:^0.33.1"
+    "@rocket.chat/layout": "npm:~0.34.0"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/log-format": "workspace:^"
@@ -9293,7 +9245,7 @@ __metadata:
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": "npm:^0.35.2"
+    "@rocket.chat/onboarding-ui": "npm:~0.36.0"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
@@ -9464,6 +9416,7 @@ __metadata:
     eslint-plugin-prettier: "npm:~5.2.6"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
+    eslint-plugin-storybook: "npm:~0.11.6"
     eslint-plugin-testing-library: "npm:~6.4.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     eventemitter3: "npm:^5.0.1"
@@ -9621,6 +9574,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mock-providers@workspace:packages/mock-providers"
   dependencies:
+    "@faker-js/faker": "npm:~8.0.2"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/i18n": "workspace:~"
@@ -9847,16 +9801,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:^0.35.2":
-  version: 0.35.2
-  resolution: "@rocket.chat/onboarding-ui@npm:0.35.2"
+"@rocket.chat/onboarding-ui@npm:~0.36.0":
+  version: 0.36.0
+  resolution: "@rocket.chat/onboarding-ui@npm:0.36.0"
   dependencies:
     i18next: "npm:~23.4.9"
     react-hook-form: "npm:~7.54.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/layout": "*"
     "@rocket.chat/logo": "*"
@@ -9864,7 +9817,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/357146bb9d6d39fbc55279214c9801ad780461d671bea72b98056afb87cd184bc2f609a99d1e2794bb77f4babda33ba1f59af1f3d47a40d0f71f89c5d25e2cc6
+  checksum: 10/5915bc45f88869106d556be599431a62a3ad37e956140368a4ff1eef7409659009aeca777a7d8bdb2cc071f27411521c5bfa7dacae6cc68f23e39a2a238f522a
   languageName: node
   linkType: hard
 
@@ -9917,6 +9870,7 @@ __metadata:
     buffer: "npm:~6.0.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
+    eslint-plugin-storybook: "npm:~0.11.6"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     moment: "npm:^2.30.1"
@@ -10180,11 +10134,10 @@ __metadata:
   dependencies:
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:~"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@storybook/addon-a11y": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
@@ -10313,14 +10266,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/react": "npm:~18.3.26"
     "@types/react-dom": "npm:~18.3.7"
@@ -10349,11 +10300,10 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
@@ -10399,15 +10349,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-composer@workspace:packages/ui-composer"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@storybook/addon-a11y": "npm:^8.6.14"
@@ -10415,7 +10363,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@types/jest": "npm:~30.0.0"
@@ -10424,7 +10372,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
-    eslint-plugin-storybook: "npm:^0.11.6"
+    eslint-plugin-storybook: "npm:~0.11.6"
     jest: "npm:~30.2.0"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
@@ -10448,7 +10396,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -10480,12 +10428,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-kit@workspace:packages/ui-kit"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/eslint-parser": "npm:~7.28.5"
-    "@babel/plugin-transform-runtime": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:~"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
@@ -10509,11 +10453,10 @@ __metadata:
   dependencies:
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@types/react": "npm:~18.3.26"
     "@types/react-dom": "npm:~18.3.7"
@@ -10541,15 +10484,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/styled": "npm:~0.32.0"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10560,7 +10501,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@types/jest": "npm:~30.0.0"
@@ -10596,18 +10537,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@faker-js/faker": "npm:~8.0.2"
     "@playwright/test": "npm:^1.52.0"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
+    "@rocket.chat/desktop-api": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/media-signaling": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
@@ -10621,7 +10560,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-interactions": "npm:^8.6.14"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/test": "npm:^8.6.14"
@@ -10637,7 +10576,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
-    eslint-plugin-storybook: "npm:^0.11.6"
+    eslint-plugin-storybook: "npm:~0.11.6"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
@@ -10674,13 +10613,12 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
-    "@rocket.chat/fuselage-toastbar": "npm:^0.35.1"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
+    "@rocket.chat/fuselage-toastbar": "npm:~0.35.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/logo": "npm:~0.32.3"
     "@rocket.chat/styled": "npm:~0.32.0"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10717,20 +10655,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/web-ui-registration@workspace:packages/web-ui-registration"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-react": "npm:~7.27.1"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/fuselage": "npm:^0.68.1"
-    "@rocket.chat/fuselage-hooks": "npm:~0.37.2"
-    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
+    "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
-    "@rocket.chat/icons": "npm:^0.45.0"
-    "@rocket.chat/layout": "npm:^0.33.1"
+    "@rocket.chat/icons": "npm:~0.45.0"
+    "@rocket.chat/layout": "npm:~0.34.0"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
@@ -10739,7 +10672,7 @@ __metadata:
     "@storybook/addon-actions": "npm:^8.6.14"
     "@storybook/addon-docs": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/theming": "npm:^8.6.14"
@@ -10751,6 +10684,7 @@ __metadata:
     "@types/react-dom": "npm:~18.3.7"
     dompurify: "npm:~3.2.7"
     eslint: "npm:~8.45.0"
+    eslint-plugin-storybook: "npm:~0.11.6"
     i18next: "npm:~23.4.9"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
@@ -11948,6 +11882,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/addon-webpack5-compiler-swc@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "@storybook/addon-webpack5-compiler-swc@npm:3.0.0"
+  dependencies:
+    "@swc/core": "npm:^1.10.8"
+    swc-loader: "npm:^0.2.6"
+  checksum: 10/c2b0c26d8bf54875297c82d2159aeb62846048dc71d8e953a6d6301d8a5aedc4eb979cc75877b24a2f7e1667a5baa7116286c1da29bff4a1510d2b6ec657392c
+  languageName: node
+  linkType: hard
+
 "@storybook/blocks@npm:8.6.14, @storybook/blocks@npm:^8.6.14":
   version: 8.6.14
   resolution: "@storybook/blocks@npm:8.6.14"
@@ -12346,6 +12290,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-darwin-arm64@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-darwin-arm64@npm:1.15.3"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
 "@swc/core-darwin-x64@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-darwin-x64@npm:1.12.4"
@@ -12356,6 +12307,13 @@ __metadata:
 "@swc/core-darwin-x64@npm:1.13.19":
   version: 1.13.19
   resolution: "@swc/core-darwin-x64@npm:1.13.19"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-x64@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-darwin-x64@npm:1.15.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -12374,6 +12332,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-arm-gnueabihf@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.15.3"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
 "@swc/core-linux-arm64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-arm64-gnu@npm:1.12.4"
@@ -12384,6 +12349,13 @@ __metadata:
 "@swc/core-linux-arm64-gnu@npm:1.13.19":
   version: 1.13.19
   resolution: "@swc/core-linux-arm64-gnu@npm:1.13.19"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-gnu@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.15.3"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -12402,6 +12374,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-arm64-musl@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-linux-arm64-musl@npm:1.15.3"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@swc/core-linux-x64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-x64-gnu@npm:1.12.4"
@@ -12412,6 +12391,13 @@ __metadata:
 "@swc/core-linux-x64-gnu@npm:1.13.19":
   version: 1.13.19
   resolution: "@swc/core-linux-x64-gnu@npm:1.13.19"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-gnu@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-linux-x64-gnu@npm:1.15.3"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -12430,6 +12416,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-x64-musl@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-linux-x64-musl@npm:1.15.3"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@swc/core-win32-arm64-msvc@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-win32-arm64-msvc@npm:1.12.4"
@@ -12440,6 +12433,13 @@ __metadata:
 "@swc/core-win32-arm64-msvc@npm:1.13.19":
   version: 1.13.19
   resolution: "@swc/core-win32-arm64-msvc@npm:1.13.19"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-arm64-msvc@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.15.3"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -12458,6 +12458,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-win32-ia32-msvc@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.15.3"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
 "@swc/core-win32-x64-msvc@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-win32-x64-msvc@npm:1.12.4"
@@ -12468,6 +12475,13 @@ __metadata:
 "@swc/core-win32-x64-msvc@npm:1.13.19":
   version: 1.13.19
   resolution: "@swc/core-win32-x64-msvc@npm:1.13.19"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-x64-msvc@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@swc/core-win32-x64-msvc@npm:1.15.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -12515,6 +12529,52 @@ __metadata:
     "@swc/helpers":
       optional: true
   checksum: 10/07d0f72d8c82070a1ec2b439964780f0ba7aec61b17fa6518b1c372373bbe208ea9ce68f70f606d42df71a33149e4f704eabe07c6197e15d133e375546915f57
+  languageName: node
+  linkType: hard
+
+"@swc/core@npm:^1.10.8":
+  version: 1.15.3
+  resolution: "@swc/core@npm:1.15.3"
+  dependencies:
+    "@swc/core-darwin-arm64": "npm:1.15.3"
+    "@swc/core-darwin-x64": "npm:1.15.3"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.15.3"
+    "@swc/core-linux-arm64-gnu": "npm:1.15.3"
+    "@swc/core-linux-arm64-musl": "npm:1.15.3"
+    "@swc/core-linux-x64-gnu": "npm:1.15.3"
+    "@swc/core-linux-x64-musl": "npm:1.15.3"
+    "@swc/core-win32-arm64-msvc": "npm:1.15.3"
+    "@swc/core-win32-ia32-msvc": "npm:1.15.3"
+    "@swc/core-win32-x64-msvc": "npm:1.15.3"
+    "@swc/counter": "npm:^0.1.3"
+    "@swc/types": "npm:^0.1.25"
+  peerDependencies:
+    "@swc/helpers": ">=0.5.17"
+  dependenciesMeta:
+    "@swc/core-darwin-arm64":
+      optional: true
+    "@swc/core-darwin-x64":
+      optional: true
+    "@swc/core-linux-arm-gnueabihf":
+      optional: true
+    "@swc/core-linux-arm64-gnu":
+      optional: true
+    "@swc/core-linux-arm64-musl":
+      optional: true
+    "@swc/core-linux-x64-gnu":
+      optional: true
+    "@swc/core-linux-x64-musl":
+      optional: true
+    "@swc/core-win32-arm64-msvc":
+      optional: true
+    "@swc/core-win32-ia32-msvc":
+      optional: true
+    "@swc/core-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@swc/helpers":
+      optional: true
+  checksum: 10/280330d82328818138ed64fdcf9ea9abde6b6f16eca65a9d4db27dde06a8dfffd2649f3447d2243387277513c7430fa4142cafcfd64e943d682ce6a713cb8c2d
   languageName: node
   linkType: hard
 
@@ -17624,17 +17684,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001718":
-  version: 1.0.30001727
-  resolution: "caniuse-lite@npm:1.0.30001727"
-  checksum: 10/6155a4141332c337d6317325bea58a09036a65f45bd9bd834ec38978b40c27d214baa04d25b21a5661664f3fbd00cb830e2bdb7eee8df09970bdd98a71f4dabf
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001737":
-  version: 1.0.30001741
-  resolution: "caniuse-lite@npm:1.0.30001741"
-  checksum: 10/d2fbc09f0941653d40b591e5460c4eb0b6838790d4adac7890a453dfb3b5e6bb84a64de2aded96cb4c6636816ef613614e07d9efb5818adaba566321feb95ffd
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001718, caniuse-lite@npm:^1.0.30001737":
+  version: 1.0.30001755
+  resolution: "caniuse-lite@npm:1.0.30001755"
+  checksum: 10/67f3b87bfd8f4da6fd69df185f54ab5409171f62185a52c916e1eb2f70f853aa374b0ce75d1742cc0215ca61e4bd1da8aa5557081bb2b6bb7220bf03a19b3b6e
   languageName: node
   linkType: hard
 
@@ -18089,13 +18142,6 @@ __metadata:
   version: 3.0.0
   resolution: "cli-width@npm:3.0.0"
   checksum: 10/8730848b04fb189666ab037a35888d191c8f05b630b1d770b0b0e4c920b47bb5cc14bddf6b8ffe5bfc66cee97c8211d4d18e756c1ffcc75d7dbe7e1186cd7826
-  languageName: node
-  linkType: hard
-
-"clipboard-polyfill@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "clipboard-polyfill@npm:3.0.3"
-  checksum: 10/852f136ef4bb2ce31683c5e1f8f08b49fc2e86145ebb0f10e7a45b59750324c4af1fba7c4e9ed0e156130399da84dbdfbdf813d8ef46332334757faca46ee0e9
   languageName: node
   linkType: hard
 
@@ -20350,13 +20396,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-closest-polyfill@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "element-closest-polyfill@npm:1.0.6"
-  checksum: 10/f47d6fec1a2962e35b4dd63fa6cc7d3bad7abb270305345ff98ffa0a997f844589ee9e57c268a3277295dce74dcd70775e059dc1475323b4655b7e3d2f9534c3
-  languageName: node
-  linkType: hard
-
 "elliptic@npm:^6.5.3, elliptic@npm:^6.5.5":
   version: 6.6.0
   resolution: "elliptic@npm:6.6.0"
@@ -21373,7 +21412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:^0.11.6, eslint-plugin-storybook@npm:~0.11.6":
+"eslint-plugin-storybook@npm:~0.11.6":
   version: 0.11.6
   resolution: "eslint-plugin-storybook@npm:0.11.6"
   dependencies:
@@ -22348,20 +22387,6 @@ __metadata:
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 10/7b8376061d5be6e0d3658bbab8bde587647f68797cf6bfeae9dea0e5137d9f27547ab92aaff3512dd9d1299086a6d61be98e9d48a56d17531b634f77faadbc49
-  languageName: node
-  linkType: hard
-
-"focus-visible@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "focus-visible@npm:5.2.0"
-  checksum: 10/11f686d68dbd4a0efb6714f037a4611411ffb8db4369784fcd6ba7f6cc386a42a5fa08211f6feb14ad3660719b451d0621f95058ea49963a59cf204ced38c4bc
-  languageName: node
-  linkType: hard
-
-"focus-within-polyfill@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "focus-within-polyfill@npm:5.2.1"
-  checksum: 10/fe7ce8715791b7778134e23a01ece66e52078b0a88285322b97079b345fe5ee30376680e07914721a23d1abcfd03e947931e69c561a27a50c642cbaa403a34fd
   languageName: node
   linkType: hard
 
@@ -28594,13 +28619,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"new-event-polyfill@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "new-event-polyfill@npm:1.0.1"
-  checksum: 10/4c58d2b0505132b2b75d47d82e6ce4f11839f9fa13f89c22bc9cbfe6a60e18df6046b86da5bc8699dae3077beb3a9e503e76bc56a797b76379db07b44bb6952c
-  languageName: node
-  linkType: hard
-
 "nise@npm:^6.1.1":
   version: 6.1.1
   resolution: "nise@npm:6.1.1"
@@ -32909,7 +32927,7 @@ __metadata:
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/icons": "npm:^0.45.0"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -35035,6 +35053,18 @@ __metadata:
   peerDependencies:
     express: ">=4.0.0 || >=5.0.0-beta"
   checksum: 10/13d95e6683214717f98dd53063bf398751ea798e971c43ece949b67a45102cc48995da319547002b2acc262d39f1994bd4af39828d99e95658966d6b332b585e
+  languageName: node
+  linkType: hard
+
+"swc-loader@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "swc-loader@npm:0.2.6"
+  dependencies:
+    "@swc/counter": "npm:^0.1.3"
+  peerDependencies:
+    "@swc/core": ^1.2.147
+    webpack: ">=2"
+  checksum: 10/fe90948c02a51bb8ffcff1ce3590e01dc12860b0bb7c9e22052b14fa846ed437781ae265614a5e14344bea22001108780f00a6e350e28c0b3499bc4cd11335fb
   languageName: node
   linkType: hard
 
