@@ -1,8 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const HeaderTitleButton = ({ className, ...props }: { className?: string } & ComponentProps<typeof Box>) => {
+export type HeaderTitleButtonProps = { className?: string } & ComponentPropsWithoutRef<typeof Box>;
+
+const HeaderTitleButton = ({ className, ...props }: HeaderTitleButtonProps) => {
 	const customClass = css`
 		border-width: 1px;
 		border-style: solid;
