@@ -7,7 +7,7 @@ import {
 	isUserNativeFederated,
 	UserStatus,
 } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK } from '@rocket.chat/federation-sdk';
 import type {
 	EventID,
@@ -917,20 +917,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return results;
 	}
 
-	async handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void> {
+	async handleInvite(roomId: IRoom['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void> {
 		const subscription = await Subscriptions.findOne(
 			{
-				'_id': subscriptionId,
+				'rid': roomId,
 				'u._id': userId,
 				'status': 'INVITED',
 			},
-			{ projection: { _id: 1, rid: 1 } },
+			{ projection: { _id: 1 } },
 		);
 		if (!subscription) {
-			throw new Error('Subscription not found');
+			throw new Error('User does not have a pending invite for this room');
 		}
 
-		const room = await Rooms.findOneById(subscription.rid);
+		const room = await Rooms.findOneById(roomId);
 		if (!room || !isRoomNativeFederated(room)) {
 			throw new Error('Room not found or not federated');
 		}
