@@ -1,7 +1,7 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, UserID, RoomID, PduForType } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures, UserID, PduForType } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -10,59 +10,43 @@ import { createOrUpdateFederatedUser, getUsernameServername } from '../Federatio
 
 const logger = new Logger('federation-matrix:member');
 
-export async function getOrCreateFederatedUser(matrixId: UserID): Promise<IUser | null> {
+export async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 	try {
 		const serverName = federationSDK.getConfig('serverName');
-		const [username, userServerName, isLocal] = getUsernameServername(matrixId, serverName);
+		const [username, userServerName, isLocal] = getUsernameServername(userId, serverName);
 
-		let user = await Users.findOneByUsername(username);
-
+		const user = await Users.findOneByUsername(username);
 		if (user) {
 			return user;
 		}
 
 		if (isLocal) {
-			logger.warn(`Local user ${username} not found for Matrix ID: ${matrixId}`);
-			return null;
+			throw new Error(`Local user ${username} not found for Matrix ID: ${userId}`);
 		}
 
-		logger.info(`Creating federated user for Matrix ID: ${matrixId}`);
-
-		const userId = await createOrUpdateFederatedUser({
-			username: matrixId,
-			name: matrixId,
+		return createOrUpdateFederatedUser({
+			username: userId,
+			name: userId,
 			origin: userServerName,
 		});
-
-		user = await Users.findOneById(userId);
-
-		if (!user) {
-			logger.error(`Failed to retrieve user after creation: ${matrixId}`);
-			return null;
-		}
-
-		return user;
 	} catch (error) {
-		logger.error(`Error getting or creating federated user ${matrixId}:`, error);
-		return null;
+		throw new Error(`Error getting or creating federated user ${userId}: ${error}`);
 	}
 }
 
 export async function getOrCreateFederatedRoom(
-	roomName: RoomID, // matrix room ID
+	roomName: string, // matrix room ID
 	roomFName: string,
 	roomType: RoomType,
-	inviterUserId: UserID,
-): Promise<IRoom | null> {
+	inviterUserId: string,
+): Promise<IRoom> {
 	try {
 		const room = await Rooms.findOne({ 'federation.mrid': roomName });
 		if (room) {
 			return room;
 		}
 
-		logger.info(`Creating federated room for Matrix room ID: ${roomName} with name: ${roomFName}`);
-
-		const createdRoom = await Room.create(inviterUserId, {
+		return Room.create(inviterUserId, {
 			type: roomType,
 			name: roomName,
 			options: {
@@ -74,25 +58,21 @@ export async function getOrCreateFederatedRoom(
 				fname: roomFName,
 			},
 		});
-
-		logger.info(`Successfully created federated room ${createdRoom._id} for Matrix room ${roomName}`);
-		return createdRoom;
 	} catch (error) {
-		logger.error(`Error getting or creating federated room ${roomName}:`, error);
-		return null;
+		throw new Error(`Error getting or creating federated room ${roomName}: ${error}`);
 	}
 }
 
 export async function handleInvite(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const { room_id: roomId, sender: senderId, state_key: userId, content } = event;
 
-	const inviterUser = await getOrCreateFederatedUser(senderId as UserID);
+	const inviterUser = await getOrCreateFederatedUser(senderId);
 	if (!inviterUser) {
 		logger.error(`Failed to get or create inviter user: ${senderId}`);
 		return;
 	}
 
-	const inviteeUser = await getOrCreateFederatedUser(userId as UserID);
+	const inviteeUser = await getOrCreateFederatedUser(userId);
 	if (!inviteeUser) {
 		logger.error(`Failed to get or create invitee user: ${userId}`);
 		return;
@@ -142,9 +122,8 @@ async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.me
 	const { room_id: roomId, state_key: userId } = event;
 
 	const joiningUser = await getOrCreateFederatedUser(userId);
-	if (!joiningUser) {
-		logger.error(`Failed to get or create joining user: ${userId}`);
-		return;
+	if (!joiningUser || !joiningUser.username) {
+		throw new Error(`Failed to get or create joining user: ${userId}`);
 	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
@@ -152,12 +131,9 @@ async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.me
 		throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id, {
-		projection: { _id: 1, status: 1, federation: 1 },
-	});
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 	if (!subscription) {
-		logger.error(`Subscription not found while joining user ${userId} to room ${roomId}`);
-		return;
+		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
 
 	await Room.acceptRoomInvite(room, subscription, joiningUser);
@@ -166,7 +142,7 @@ async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.me
 async function handleLeave(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const { room_id: roomId, state_key: userId } = event;
 
-	const leavingUser = await getOrCreateFederatedUser(userId as UserID);
+	const leavingUser = await getOrCreateFederatedUser(userId);
 	if (!leavingUser) {
 		logger.error(`Failed to get or create leaving user: ${userId}`);
 		return;

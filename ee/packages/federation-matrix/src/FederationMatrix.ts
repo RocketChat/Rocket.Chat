@@ -96,10 +96,11 @@ export const getUsernameServername = (mxid: string, serverName: string): [mxid: 
  * Because of historical reasons, we can have users only with federated flag but no federation object
  * So we need to upsert the user with the federation object
  */
-export async function createOrUpdateFederatedUser(options: { username: UserID; name?: string; origin: string }): Promise<string> {
+export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
 	const { username, name = username, origin } = options;
 
-	const result = await Users.updateOne(
+	// TODO: Have a specific method to handle this upsert
+	const user = await Users.findOneAndUpdate(
 		{
 			username,
 		},
@@ -126,17 +127,16 @@ export async function createOrUpdateFederatedUser(options: { username: UserID; n
 		},
 		{
 			upsert: true,
+			projection: { _id: 1, username: 1 },
+			returnDocument: 'after',
 		},
 	);
 
-	const userId = result.upsertedId || (await Users.findOneByUsername(username, { projection: { _id: 1 } }))?._id;
-	if (!userId) {
+	if (!user) {
 		throw new Error(`Failed to create or update federated user: ${username}`);
 	}
-	if (typeof userId !== 'string') {
-		return userId.toString();
-	}
-	return userId;
+
+	return user;
 }
 
 export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';

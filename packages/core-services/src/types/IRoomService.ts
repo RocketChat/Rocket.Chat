@@ -47,7 +47,7 @@ export interface IRoomService {
 	acceptRoomInvite(
 		room: IRoom,
 		subscription: ISubscription,
-		user: Pick<IUser, '_id' | 'username'>,
+		user: IUser,
 		options?: {
 			skipSystemMessage?: boolean;
 		},
