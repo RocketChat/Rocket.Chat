@@ -10079,9 +10079,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/presence@workspace:ee/packages/presence"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -10089,7 +10086,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/node": "npm:~22.16.5"
-    babel-jest: "npm:~30.2.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
@@ -10797,7 +10793,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
-    "@rocket.chat/ui-contexts": 25.0.1
+    "@rocket.chat/ui-contexts": 25.0.2
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
