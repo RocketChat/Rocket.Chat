@@ -25,16 +25,12 @@ export async function isFederationDomainAllowed(domains: string[]): Promise<bool
 
 	const isDomainAllowed = (domain: string) => {
 		return allowList.some((pattern) => {
-			if (pattern === domain) {
-				return true;
-			}
-
 			if (pattern.startsWith('*.')) {
 				const baseDomain = pattern.slice(2); // remove '*.'
-				return domain === baseDomain || domain.endsWith(`.${baseDomain}`);
+				return domain.endsWith(`.${baseDomain}`);
 			}
 
-			return domain.endsWith(pattern);
+			return domain === pattern || domain.endsWith(`.${pattern}`);
 		});
 	};
 
