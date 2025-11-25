@@ -204,7 +204,11 @@ export const createRoom = async <T extends RoomType>(
 
 		// validate external users (network + user existence checks)
 		try {
-			await FederationMatrix.validateFederatedUsersBeforeRoomCreation(members);
+			// TODO: Use common function to extract and validate federated users
+			const federatedUsers = members
+				.filter((member: string | IUser) => (typeof member === 'string' ? member.includes(':') : member.username?.includes(':')))
+				.map((member: string | IUser) => (typeof member === 'string' ? member : member.username!));
+			await FederationMatrix.validateFederatedUsers(federatedUsers);
 		} catch (error) {
 			if (error instanceof FederationValidationError) {
 				throw new Meteor.Error(error.error, error.userMessage, { method: 'createRoom' });

@@ -207,7 +207,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	}
 
-	static async validateFederatedUsersBeforeRoomCreation(usernames: string[]): Promise<void> {
+	static async validateFederatedUsers(usernames: string[]): Promise<void> {
 		const hasInvalidFederatedUsername = usernames.some((username) => !validateFederatedUsername(username));
 		if (hasInvalidFederatedUsername) {
 			throw new FederationValidationError(

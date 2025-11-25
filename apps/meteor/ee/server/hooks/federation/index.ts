@@ -262,7 +262,8 @@ callbacks.add(
 			}
 
 			try {
-				await FederationMatrix.validateFederatedUsersBeforeRoomCreation(members);
+				const federatedUsers = members.filter((username) => username.includes(':'));
+				await FederationMatrix.validateFederatedUsers(federatedUsers);
 			} catch (error) {
 				if (error instanceof FederationValidationError) {
 					throw new Meteor.Error(error.error, error.userMessage);
