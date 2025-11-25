@@ -48,6 +48,7 @@
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
+		"eslint-plugin-storybook": "~0.11.6",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
