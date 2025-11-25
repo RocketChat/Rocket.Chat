@@ -231,14 +231,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
 			const federatedRoom = await Rooms.findOneById(room._id);
-
-			if (federatedRoom && isRoomNativeFederated(federatedRoom)) {
-				await this.inviteUsersToRoom(
-					federatedRoom,
-					members.filter((m) => m !== owner.username),
-					owner,
-				);
+			if (!federatedRoom || !isRoomNativeFederated(federatedRoom)) {
+				throw new Error(`Federated room not found: ${room._id}`);
 			}
+
+			await this.inviteUsersToRoom(
+				federatedRoom,
+				members.filter((m) => m !== owner.username),
+				owner,
+			);
 
 			this.logger.debug('Room creation completed successfully', room._id);
 
