@@ -9869,9 +9869,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/presence@workspace:ee/packages/presence"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -9879,7 +9876,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/node": "npm:~22.16.5"
-    babel-jest: "npm:~30.2.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
@@ -16367,7 +16363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-jest@npm:30.2.0, babel-jest@npm:~30.2.0":
+"babel-jest@npm:30.2.0":
   version: 30.2.0
   resolution: "babel-jest@npm:30.2.0"
   dependencies:
