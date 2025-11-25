@@ -16,21 +16,19 @@
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"dompurify": "~3.2.7"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.4",
-		"@babel/preset-env": "~7.28.3",
-		"@babel/preset-react": "~7.27.1",
-		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "~0.66.4",
-		"@rocket.chat/fuselage-hooks": "~0.37.2",
-		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage": "~0.68.1",
+		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/i18n": "workspace:~",
-		"@rocket.chat/icons": "~0.44.0",
-		"@rocket.chat/layout": "^0.33.1",
+		"@rocket.chat/icons": "~0.45.0",
+		"@rocket.chat/layout": "~0.34.0",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
@@ -39,7 +37,7 @@
 		"@storybook/addon-actions": "^8.6.14",
 		"@storybook/addon-docs": "^8.6.14",
 		"@storybook/addon-essentials": "^8.6.14",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/theming": "^8.6.14",
@@ -47,9 +45,10 @@
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.0",
 		"@types/dompurify": "~3.2.0",
-		"@types/react": "~18.3.24",
+		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
+		"eslint-plugin-storybook": "~0.11.6",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
@@ -71,8 +70,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"dependencies": {
-		"dompurify": "~3.2.7"
 	}
 }

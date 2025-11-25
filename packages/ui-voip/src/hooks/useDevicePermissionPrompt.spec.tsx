@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { ModalProvider, ModalRegion } from '@rocket.chat/ui-client';
 import { renderHook, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { useDevicePermissionPrompt } from './useDevicePermissionPrompt';
 

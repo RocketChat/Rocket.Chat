@@ -43,6 +43,7 @@ export default {
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
+				'<rootDir>/server/services/media-call/**.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

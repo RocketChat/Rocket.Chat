@@ -54,8 +54,6 @@ export const startFederationService = async (): Promise<void> => {
 		}
 	});
 
-	await setupFederationMatrix();
-
 	settings.watchMultiple(
 		[
 			'Federation_Service_Enabled',
@@ -72,4 +70,10 @@ export const startFederationService = async (): Promise<void> => {
 			await configureFederation();
 		},
 	);
+
+	try {
+		await setupFederationMatrix();
+	} catch (err) {
+		logger.error({ msg: 'Failed to setup federation-matrix:', err });
+	}
 };

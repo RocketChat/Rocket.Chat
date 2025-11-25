@@ -1,5 +1,5 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "prettier"],
+	"extends": ["@rocket.chat/eslint-config", "prettier", "plugin:storybook/recommended"],
 	"plugins": ["react", "react-hooks", "prettier"],
 	"env": {
 		"jest": true
