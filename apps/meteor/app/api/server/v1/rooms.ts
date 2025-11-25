@@ -1095,10 +1095,10 @@ const roomInviteEndpoints = API.v1.post(
 		},
 	},
 	async function action() {
-		const { subscriptionId, action } = this.bodyParams;
+		const { roomId, action } = this.bodyParams;
 
 		try {
-			await FederationMatrix.handleInvite(subscriptionId, this.userId, action);
+			await FederationMatrix.handleInvite(roomId, this.userId, action);
 			return API.v1.success();
 		} catch (error) {
 			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });

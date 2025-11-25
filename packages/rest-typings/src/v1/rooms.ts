@@ -689,14 +689,14 @@ const roomsHideSchema = {
 export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 type RoomsInviteProps = {
-	subscriptionId: string;
+	roomId: string;
 	action: 'accept' | 'reject';
 };
 
 const roomsInvitePropsSchema = {
 	type: 'object',
 	properties: {
-		subscriptionId: {
+		roomId: {
 			type: 'string',
 			minLength: 1,
 		},
@@ -705,7 +705,7 @@ const roomsInvitePropsSchema = {
 			enum: ['accept', 'reject'],
 		},
 	},
-	required: ['subscriptionId', 'action'],
+	required: ['roomId', 'action'],
 	additionalProperties: false,
 };
 
