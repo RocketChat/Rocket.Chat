@@ -3,7 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { isFederationDomainAllowedFromUsernames, FederationValidationError } from '@rocket.chat/federation-matrix';
+import { isFederationDomainAllowedForUsernames, FederationValidationError } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -193,7 +193,7 @@ export const createRoom = async <T extends RoomType>(
 
 	if (shouldBeHandledByFederation && onlyUsernames(members)) {
 		// check RC allowlist for domain
-		const isAllowed = await isFederationDomainAllowedFromUsernames(members);
+		const isAllowed = await isFederationDomainAllowedForUsernames(members);
 		if (!isAllowed) {
 			throw new Meteor.Error(
 				'federation-policy-denied',

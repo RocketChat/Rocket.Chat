@@ -41,7 +41,7 @@ export async function isFederationDomainAllowed(domains: string[]): Promise<bool
 	return domains.every((domain) => isDomainAllowed(domain.toLowerCase()));
 }
 
-export async function isFederationDomainAllowedFromUsernames(usernames: string[]): Promise<boolean> {
+export async function isFederationDomainAllowedForUsernames(usernames: string[]): Promise<boolean> {
 	// filter out local users (those without ':' in username) and extract domains from external users
 	const domains = usernames.filter((username) => username.includes(':')).map((username) => extractDomainFromId(username));
 

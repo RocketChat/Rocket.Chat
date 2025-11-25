@@ -1,8 +1,7 @@
 import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
-import { isFederationDomainAllowedFromUsernames, FederationValidationError } from '@rocket.chat/federation-matrix';
+import { validateFederatedUsername, FederationValidationError, isFederationDomainAllowedForUsernames } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -114,7 +113,7 @@ beforeAddUserToRoom.add(
 				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 			}
 
-			const isAllowed = await isFederationDomainAllowedFromUsernames([user.username]);
+			const isAllowed = await isFederationDomainAllowedForUsernames([user.username]);
 			if (!isAllowed) {
 				throw new MeteorError(
 					'federation-policy-denied',
@@ -253,7 +252,7 @@ callbacks.add(
 	'beforeCreateDirectRoom',
 	async (members, room): Promise<void> => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			const isAllowed = await isFederationDomainAllowedFromUsernames(members);
+			const isAllowed = await isFederationDomainAllowedForUsernames(members);
 			if (!isAllowed) {
 				throw new Meteor.Error(
 					'federation-policy-denied',

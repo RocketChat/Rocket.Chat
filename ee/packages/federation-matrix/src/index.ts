@@ -8,4 +8,4 @@ export { getFederationRoutes } from './api/routes';
 
 export { setupFederationMatrix, configureFederationMatrixSettings } from './setup';
 
-export { isFederationDomainAllowed, isFederationDomainAllowedFromUsernames } from './api/middlewares/isFederationDomainAllowed';
+export { isFederationDomainAllowed, isFederationDomainAllowedForUsernames } from './api/middlewares/isFederationDomainAllowed';
