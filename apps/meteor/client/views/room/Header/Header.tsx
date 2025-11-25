@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -6,7 +6,9 @@ import { lazy, memo, useMemo } from 'react';
 
 import { HeaderToolbar } from '../../../components/Header';
 import SidebarToggler from '../../../components/SidebarToggler';
+import { isInviteSubscription } from '../utils/isInviteSubscription';
 
+const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
@@ -15,9 +17,10 @@ const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
 	room: T;
+	subscription?: ISubscription;
 };
 
-const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
+const Header = ({ room, subscription }: HeaderProps<IRoom>): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
@@ -36,6 +39,10 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
+	}
+
+	if (isInviteSubscription(subscription)) {
+		return <RoomInviteHeader room={room} slots={slots} />;
 	}
 
 	if (room.t === 'l') {
