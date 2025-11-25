@@ -2314,6 +2314,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	countAbacEnabled(): Promise<number> {
-		return this.countDocuments({ abacAttributes: { $exists: true } });
+		return this.countDocuments({ abacAttributes: { $exists: true }, archived: { $ne: true } });
 	}
 }
