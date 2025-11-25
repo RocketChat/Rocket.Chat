@@ -8,7 +8,7 @@ import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
 import { MediaCallLogger } from './MediaCallLogger';
 import { useIceServers } from '../hooks/useIceServers';
 
-interface BaseSession {
+interface IBaseSession {
 	state: State;
 	connectionState: ConnectionState;
 	peerInfo: PeerInfo | undefined;
@@ -21,16 +21,18 @@ interface BaseSession {
 	hidden: boolean;
 }
 
-interface EmptySession extends BaseSession {
+interface IEmptySession extends IBaseSession {
 	state: Extract<State, 'closed' | 'new'>;
+	callId: undefined;
 }
 
-interface CallSession extends BaseSession {
+interface ICallSession extends IBaseSession {
 	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	callId: string;
 	peerInfo: PeerInfo;
 }
 
-export type SessionInfo = EmptySession | CallSession;
+export type SessionInfo = IEmptySession | ICallSession;
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 

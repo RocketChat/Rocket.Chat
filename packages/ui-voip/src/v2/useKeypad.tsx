@@ -1,11 +1,12 @@
 import { Divider, Box, TextInput, Field, FieldRow } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Keypad } from './components';
 
 type UseKeypad = {
-	element: React.ReactNode;
+	element: ReactNode;
 	buttonProps: {
 		title: string;
 		onClick: () => void;

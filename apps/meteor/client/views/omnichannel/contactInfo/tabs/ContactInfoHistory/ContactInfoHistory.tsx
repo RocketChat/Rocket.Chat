@@ -28,7 +28,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	const setModal = useSetModal();
 	const [storedType, setStoredType] = useLocalStorage<string>('contact-history-type', 'all');
 
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const type = isFilterBlocked(hasLicense, storedType) ? 'all' : storedType;
 
 	const { getSourceName } = useOmnichannelSource();
