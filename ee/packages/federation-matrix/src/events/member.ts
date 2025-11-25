@@ -81,8 +81,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	const roomType = content.membership === 'invite' && content?.is_direct ? 'd' : 'p';
 	const strippedState = event.unsigned.invite_room_state;
 
-	const createState = strippedState?.find((state: PduForType<'m.room.create'>) => state.type === 'm.room.create');
-	const roomOriginDomain = createState?.sender?.split(':')?.pop();
+	const roomOriginDomain = senderId.split(':')?.pop();
 	if (!roomOriginDomain) {
 		throw new Error(`Room origin domain not found: ${roomId}`);
 	}
