@@ -20,8 +20,9 @@
 		"@opentelemetry/sdk-node": "^0.54.2"
 	},
 	"devDependencies": {
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@types/jest": "~30.0.0",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"jest": "~30.2.0",
 		"ts-jest": "~29.4.5",
 		"typescript": "~5.9.3"
