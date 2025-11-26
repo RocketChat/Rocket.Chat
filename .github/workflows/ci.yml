@@ -245,9 +245,9 @@ jobs:
       matrix:
         type:
           - production
-          - coverage
-        exclude:
-          - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
+          # - coverage
+        # exclude:
+          # - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
       - name: Collect Workflow Telemetry
