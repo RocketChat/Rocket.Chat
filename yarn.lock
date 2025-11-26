@@ -8998,11 +8998,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/instance-status@workspace:packages/instance-status"
   dependencies:
-    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/eslint-config-v9": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    eslint: "npm:~8.45.0"
+    eslint: "npm:^9.0.0"
     mongodb: "npm:6.16.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
