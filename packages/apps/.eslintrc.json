@@ -1,4 +1,0 @@
-{
-	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist"]
-}

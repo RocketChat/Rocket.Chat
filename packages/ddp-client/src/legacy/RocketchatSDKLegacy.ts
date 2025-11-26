@@ -100,18 +100,10 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					| {
 							roomName: string;
 					  },
-			): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>> => {
-				return self.rest.get('/v1/rooms.info', args);
-			},
-			join: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> => {
-				return self.rest.post('/v1/channels.join', { roomId: rid });
-			},
-			load: (rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> => {
-				return self.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() });
-			},
-			leave: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> => {
-				return self.rest.post('/v1/channels.leave', { roomId: rid });
-			},
+			): Promise<Serialized<OperationResult<'GET', '/v1/rooms.info'>>> => self.rest.get('/v1/rooms.info', args),
+			join: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.join'>>> => self.rest.post('/v1/channels.join', { roomId: rid }),
+			load: (rid: string, lastUpdate: Date): Promise<Serialized<OperationResult<'GET', '/v1/chat.syncMessages'>>> => self.rest.get('/v1/chat.syncMessages', { roomId: rid, lastUpdate: lastUpdate.toISOString() }),
+			leave: (rid: string): Promise<Serialized<OperationResult<'POST', '/v1/channels.leave'>>> => self.rest.post('/v1/channels.leave', { roomId: rid }),
 		};
 	}
 
@@ -221,8 +213,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		]);
 	}
 
-	subscribeNotifyUser = (): Promise<any> => {
-		return Promise.all([
+	subscribeNotifyUser = (): Promise<any> => Promise.all([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
 			this.stream('notify-user', `${this.account.uid}/otr`, (...args) => this.ev.emit('otr', args)),
 			this.stream('notify-user', `${this.account.uid}/webrtc`, (...args) => this.ev.emit('webrtc', args)),
@@ -231,7 +222,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 			this.stream('notify-user', `${this.account.uid}/subscriptions-changed`, (...args) => this.ev.emit('subscriptions-changed', args)),
 			this.stream('notify-user', `${this.account.uid}/uiInteraction`, (...args) => this.ev.emit('uiInteraction', args)),
 		]);
-	};
 
 	onStreamData<E extends RocketchatSdkLegacyEventsKeys>(event: E, cb: (...data: RocketchatSdkLegacyEventsValues<E>) => void): () => void {
 		return this.ev.on(event, cb as any);
