@@ -9038,10 +9038,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jwt@workspace:packages/jwt"
   dependencies:
+    "@rocket.chat/eslint-config-v9": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
-    eslint: "npm:~8.45.0"
+    eslint: "npm:^9.0.0"
     jest: "npm:~30.2.0"
     jose: "npm:^4.15.9"
     typescript: "npm:~5.9.3"
