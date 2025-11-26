@@ -8637,7 +8637,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
-    eslint: "npm:~8.45.0"
+    "@rocket.chat/eslint-config-v9": "workspace:^"
+    eslint: "npm:^9.0.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
