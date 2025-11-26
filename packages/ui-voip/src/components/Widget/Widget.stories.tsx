@@ -9,8 +9,7 @@ export default {
 	decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Widget>;
 
-export const FullWidget: StoryFn<typeof Widget> = () => {
-	return (
+export const FullWidget: StoryFn<typeof Widget> = () => (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title='Incoming Call...'>
@@ -35,4 +34,3 @@ export const FullWidget: StoryFn<typeof Widget> = () => {
 			</WidgetFooter>
 		</Widget>
 	);
-};

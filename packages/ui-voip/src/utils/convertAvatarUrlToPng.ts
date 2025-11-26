@@ -1,5 +1,4 @@
-export const convertAvatarUrlToPng = (avatarUrl: string | undefined): Promise<string> => {
-	return new Promise((resolve) => {
+export const convertAvatarUrlToPng = (avatarUrl: string | undefined): Promise<string> => new Promise((resolve) => {
 		if (!avatarUrl) {
 			resolve('');
 			return;
@@ -33,4 +32,3 @@ export const convertAvatarUrlToPng = (avatarUrl: string | undefined): Promise<st
 		image.crossOrigin = 'anonymous';
 		image.src = avatarUrl;
 	});
-};

@@ -15,7 +15,5 @@ export const useCallSounds = (state: State, subscribeCallEnded: (callback: () =>
 		}
 	}, [voipSounds, state]);
 
-	useEffect(() => {
-		return subscribeCallEnded(voipSounds.playCallEnded);
-	}, [voipSounds, subscribeCallEnded]);
+	useEffect(() => subscribeCallEnded(voipSounds.playCallEnded), [voipSounds, subscribeCallEnded]);
 };

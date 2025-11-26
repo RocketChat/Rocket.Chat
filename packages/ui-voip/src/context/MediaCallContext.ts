@@ -147,13 +147,9 @@ export const useMediaCallExternalContext = ():
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
 
-export const isFirstPeerAutocompleteOption = (value: string) => {
-	return value.startsWith(PREFIX_FIRST_OPTION);
-};
+export const isFirstPeerAutocompleteOption = (value: string) => value.startsWith(PREFIX_FIRST_OPTION);
 
-const getFirstOption = (filter: string): PeerAutocompleteOptions => {
-	return { value: `${PREFIX_FIRST_OPTION}${filter}`, label: filter, avatarUrl: '' };
-};
+const getFirstOption = (filter: string): PeerAutocompleteOptions => ({ value: `${PREFIX_FIRST_OPTION}${filter}`, label: filter, avatarUrl: '' });
 
 export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, peerInfo: PeerInfo | undefined) => {
 	const { getAutocompleteOptions } = useMediaCallContext();

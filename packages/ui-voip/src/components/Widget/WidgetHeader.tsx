@@ -7,8 +7,7 @@ type WidgetHeaderProps = {
 };
 
 // TODO: A11Y - duration/title
-const WidgetHeader = ({ title, children }: WidgetHeaderProps): ReactElement => {
-	return (
+const WidgetHeader = ({ title, children }: WidgetHeaderProps): ReactElement => (
 		<Box is='header' mi={12} mb={4} display='flex' alignItems='center' justifyContent='space-between'>
 			<Box is='h3' color='titles-labels' fontScale='p1b' id='rcx-media-call-widget-title'>
 				{title}
@@ -16,5 +15,4 @@ const WidgetHeader = ({ title, children }: WidgetHeaderProps): ReactElement => {
 			<Box mis={8}>{children}</Box>
 		</Box>
 	);
-};
 export default WidgetHeader;

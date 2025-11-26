@@ -44,9 +44,7 @@ const randomStringFactory = () => {
 	return window.crypto.randomUUID();
 };
 
-const getSessionIdKey = (userId: string) => {
-	return `rcx-media-session-id-${userId}`;
-};
+const getSessionIdKey = (userId: string) => `rcx-media-session-id-${userId}`;
 
 class MediaSessionStore extends Emitter<{ change: void }> {
 	private sessionInstance: MediaSignalingSession | null = null;
@@ -180,10 +178,10 @@ export const useMediaSessionInstance = (userId?: string) => {
 		);
 	}, [iceServers, iceGatheringTimeout]);
 
-	useEffect(() => {
+	useEffect(() => 
 		// TODO: This stream is not typed.
-		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
-	}, [writeStream, userId]);
+		 mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)))
+	, [writeStream, userId]);
 
 	useEffect(() => {
 		if (!userId) {
@@ -200,12 +198,8 @@ export const useMediaSessionInstance = (userId?: string) => {
 	}, [userId, notifyUserStream]);
 
 	const instance = useSyncExternalStore(
-		useCallback((callback) => {
-			return mediaSession.onChange(callback);
-		}, []),
-		useCallback(() => {
-			return mediaSession.getInstance(userId);
-		}, [userId]),
+		useCallback((callback) => mediaSession.onChange(callback), []),
+		useCallback(() => mediaSession.getInstance(userId), [userId]),
 	);
 
 	return instance ?? undefined;

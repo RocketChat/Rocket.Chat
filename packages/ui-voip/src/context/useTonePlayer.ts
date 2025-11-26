@@ -92,9 +92,7 @@ const DIGIT_TONE_MAP = {
 	'#': [1477, 941],
 } as const;
 
-export const isValidTone = (tone: string): tone is keyof typeof DIGIT_TONE_MAP => {
-	return Object.keys(DIGIT_TONE_MAP).includes(tone);
-};
+export const isValidTone = (tone: string): tone is keyof typeof DIGIT_TONE_MAP => Object.keys(DIGIT_TONE_MAP).includes(tone);
 
 export const useTonePlayer = (sinkId?: string) => {
 	const tonePlayer = useRef<TonePlayer | null>(null);
