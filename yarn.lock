@@ -8340,7 +8340,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
   languageName: unknown
   linkType: soft
 
@@ -9554,7 +9554,7 @@ __metadata:
     twilio: "npm:^5.4.2"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -10440,7 +10440,7 @@ __metadata:
     ts-jest: "npm:~29.4.5"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -36277,7 +36277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:~9.7.2":
+"typia@npm:9.7.2":
   version: 9.7.2
   resolution: "typia@npm:9.7.2"
   dependencies:
@@ -36293,6 +36293,25 @@ __metadata:
   bin:
     typia: lib/executable/typia.js
   checksum: 10/dffe50bd624793cc22d37ccd2bdc8bfe814ee32fd51b35fd988772e9fba9bb2391218a83883bad09c6e7c9bbae6b5c853f607b5c3c57c7ed7d40308c4f273c30
+  languageName: node
+  linkType: hard
+
+"typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch":
+  version: 9.7.2
+  resolution: "typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch::version=9.7.2&hash=cc0415"
+  dependencies:
+    "@samchon/openapi": "npm:^4.7.1"
+    "@standard-schema/spec": "npm:^1.0.0"
+    commander: "npm:^10.0.0"
+    comment-json: "npm:^4.2.3"
+    inquirer: "npm:^8.2.5"
+    package-manager-detector: "npm:^0.2.0"
+    randexp: "npm:^0.5.3"
+  peerDependencies:
+    typescript: ">=4.8.0 <5.10.0"
+  bin:
+    typia: lib/executable/typia.js
+  checksum: 10/db5a671719afedcafff4f48b684d7afb76803d32ccb98df64071fd02e32bd932496d5b1c348112a4deab97d65f53be554ae9fd391ce6f6a90a92a33a6e1086d8
   languageName: node
   linkType: hard
 

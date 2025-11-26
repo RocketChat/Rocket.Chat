@@ -31,7 +31,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"typia": "~9.7.2"
+		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
