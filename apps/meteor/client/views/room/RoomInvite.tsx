@@ -1,14 +1,15 @@
 import type { ComponentProps } from 'react';
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 import RoomHeader from '././RoomHeader';
 import RoomInviteBody from './body/RoomInviteBody';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
 import RoomLayout from './layout/RoomLayout';
 import { useTranslation } from 'react-i18next';
+import { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 
 type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
-	room: IRoom;
+	room: IRoomWithFederationOriginalName;
 	subscription?: ISubscription;
 };
 
