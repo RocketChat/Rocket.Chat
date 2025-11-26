@@ -20,9 +20,7 @@ export const EnterpriseCheck: ServiceSchema = {
 				nodes: string[];
 			}[] = await this.broker.call('$node.services', { skipInternal: true });
 
-			const currentService = services.find((service) => {
-				return service.name === this.name;
-			});
+			const currentService = services.find((service) => service.name === this.name);
 
 			// if current service is not on the list maybe it is already shut down?
 			if (!currentService) {

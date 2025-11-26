@@ -2,9 +2,11 @@
 	"name": "@rocket.chat/ui-theming",
 	"version": "0.4.4",
 	"private": true,
+	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/fuselage": "~0.68.1",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
@@ -12,7 +14,7 @@
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.2",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
@@ -25,8 +27,8 @@
 		"webpack": "~5.99.9"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
 	},

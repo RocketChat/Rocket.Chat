@@ -134,12 +134,10 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
-				return tracerSpan(
+			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => tracerSpan(
 					`action ${name}:${method}`,
 					{},
-					() => {
-						return asyncLocalStorage.run(
+					() => asyncLocalStorage.run(
 							{
 								id: ctx.id,
 								nodeID: ctx.nodeID,
@@ -148,11 +146,9 @@ export class NetworkBroker implements IBroker {
 								ctx,
 							},
 							() => serviceInstance[method](...ctx.params),
-						);
-					},
+						),
 					ctx.meta?.optl,
 				);
-			};
 		}
 
 		this.broker.createService(service);
