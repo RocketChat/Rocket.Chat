@@ -11,6 +11,4 @@ export const getLoginExpirationInDays = (expiry?: number) => {
 	return ACCOUNTS_DEFAULT_LOGIN_EXPIRATION_DAYS;
 };
 
-export const getLoginExpirationInMs = (expiry?: number) => {
-	return convertFromDaysToMilliseconds(getLoginExpirationInDays(expiry));
-};
+export const getLoginExpirationInMs = (expiry?: number) => convertFromDaysToMilliseconds(getLoginExpirationInDays(expiry));

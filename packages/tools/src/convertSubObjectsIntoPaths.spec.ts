@@ -124,7 +124,8 @@ describe('convertSubObjectsIntoPaths', () => {
 		};
 
 		const converted = convertSubObjectsIntoPaths(input);
-		expect(converted).not.to.be.undefined;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		expect(converted).to.not.be.undefined;
 		expect(converted).to.have.keys(['a', 'b.c']);
 
 		expect(converted.a).to.be.a('Date');
