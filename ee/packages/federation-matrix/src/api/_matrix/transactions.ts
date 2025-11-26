@@ -315,9 +315,9 @@ const BackfillResponseSchema = {
 
 const isBackfillResponseProps = ajv.compile(BackfillResponseSchema);
 
-export const getMatrixTransactionsRoutes = () => {
+export const getMatrixTransactionsRoutes = () => 
 	// PUT /_matrix/federation/v1/send/{txnId}
-	return (
+	 (
 		new Router('/federation')
 			.use(isAuthenticatedMiddleware())
 			.put(
@@ -505,5 +505,5 @@ export const getMatrixTransactionsRoutes = () => {
 					}
 				},
 			)
-	);
-};
+	)
+;

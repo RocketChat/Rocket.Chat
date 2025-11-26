@@ -369,8 +369,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		transcriptText: string;
 	}): Promise<IUpload[]> {
 		return Promise.all(
-			roomIds.map((roomId) => {
-				return uploadService.uploadFile({
+			roomIds.map((roomId) =>
+				uploadService.uploadFile({
 					userId: details.userId,
 					buffer,
 					details: {
@@ -384,8 +384,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						userId: 'rocket.cat',
 						size: buffer.length,
 					},
-				});
-			}),
+				})),
 		);
 	}
 

@@ -38,9 +38,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	async created(): Promise<void> {
-		this.queue.databasePromise = () => {
-			return Promise.resolve(this.db);
-		};
+		this.queue.databasePromise = () => Promise.resolve(this.db);
 
 		try {
 			await this.createIndexes();

@@ -889,7 +889,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						}
 
 						return [matrixId, 'VERIFIED'];
-					} catch (e) {
+					} catch {
 						return [matrixId, 'UNABLE_TO_VERIFY'];
 					}
 				}),

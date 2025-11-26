@@ -1,8 +1,9 @@
-import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 import { createHash } from 'node:crypto';
 
 import { federationSDK } from '@rocket.chat/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
+import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+
 
 const WellKnownServerResponseSchema = {
 	type: 'object',
@@ -19,8 +20,7 @@ const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema
 
 // TODO: After changing the domain setting this route is still reporting the old domain until the server is restarted
 // TODO: this is wrong, is siteurl !== domain this path should return 404. this path is to discover the final address, domain being the "proxy" and siteurl the final destination, if domain is different, well-known should be served there, not here.
-export const getWellKnownRoutes = () => {
-	return new Router('/matrix').get(
+export const getWellKnownRoutes = () => new Router('/matrix').get(
 		'/server',
 		{
 			response: {
@@ -43,4 +43,3 @@ export const getWellKnownRoutes = () => {
 			};
 		},
 	);
-};

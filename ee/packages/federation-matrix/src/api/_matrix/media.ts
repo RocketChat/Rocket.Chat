@@ -73,8 +73,7 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 	return { file, buffer };
 }
 
-export const getMatrixMediaRoutes = () => {
-	return new Router('/federation')
+export const getMatrixMediaRoutes = () => new Router('/federation')
 		.get(
 			'/v1/media/download/:mediaId',
 			{
@@ -146,4 +145,3 @@ export const getMatrixMediaRoutes = () => {
 				},
 			}),
 		);
-};

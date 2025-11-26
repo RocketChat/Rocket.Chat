@@ -152,7 +152,7 @@ const MakeJoinParamsSchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
 
 const MakeJoinQuerySchema = {
@@ -178,7 +178,7 @@ const MakeJoinQuerySchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const isMakeJoinQueryProps = ajv.compile(MakeJoinQuerySchema);
 
 const MakeJoinResponseSchema = {
@@ -264,7 +264,7 @@ const MakeJoinResponseSchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
 const GetMissingEventsParamsSchema = {
@@ -352,8 +352,7 @@ const EventAuthResponseSchema = {
 
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
-export const getMatrixProfilesRoutes = () => {
-	return new Router('/federation')
+export const getMatrixProfilesRoutes = () => new Router('/federation')
 		.use(isAuthenticatedMiddleware())
 		.get(
 			'/v1/query/profile',
@@ -416,15 +415,13 @@ export const getMatrixProfilesRoutes = () => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
-			async (_c) => {
-				return {
+			async (_c) => ({
 					body: {
 						errcode: 'M_UNRECOGNIZED',
 						error: 'This endpoint is not implemented on the homeserver side',
 					},
 					statusCode: 501,
-				};
-			},
+				}),
 		)
 		.get(
 			'/v1/make_join/:roomId/:userId',
@@ -509,4 +506,3 @@ export const getMatrixProfilesRoutes = () => {
 				};
 			},
 		);
-};
