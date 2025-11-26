@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/random",
 	"private": true,
-	"type": "module",
 	"description": "Random number generator and utilities; Fork of Meteor's Random package",
 	"version": "1.2.2",
 	"main": "./dist/main.server.js",

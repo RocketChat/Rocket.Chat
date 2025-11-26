@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
 	"version": "0.2.41",
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",

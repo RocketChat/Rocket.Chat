@@ -7,7 +7,6 @@
 		"build": "tsc",
 		"lint": "eslint ."
 	},
-	"type": "module",
 	"exports": {
 		"./server": {
 			"default": "./dist/server/index.js",

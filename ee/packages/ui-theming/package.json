@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/ui-theming",
 	"version": "0.4.4",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",

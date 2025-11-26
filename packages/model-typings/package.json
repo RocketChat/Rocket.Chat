@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/model-typings",
 	"version": "1.8.1",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@types/node-rsa": "^1.1.4",

@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/base64",
 	"private": true,
-	"type": "module",
 	"description": "Base64 encoding and decoding; Fork of Meteor's Base64 package",
 	"version": "1.0.13",
 	"main": "./dist/base64.js",

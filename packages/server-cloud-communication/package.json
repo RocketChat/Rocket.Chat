@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/server-cloud-communication",
 	"version": "0.0.2",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/license": "workspace:^",

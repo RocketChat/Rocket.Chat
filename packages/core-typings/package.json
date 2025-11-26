@@ -3,7 +3,6 @@
 	"name": "@rocket.chat/core-typings",
 	"private": true,
 	"version": "7.13.0-develop",
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config-v9": "workspace:^",

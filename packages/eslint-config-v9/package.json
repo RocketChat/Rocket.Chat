@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/eslint-config-v9",
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config for ESLint 9",
-	"type": "module",
 	"main": "./standard/index.js",
 	"files": [
 		"/standard",

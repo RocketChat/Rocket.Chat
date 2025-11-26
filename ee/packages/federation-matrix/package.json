@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/federation-matrix",
 	"version": "0.0.3",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@babel/cli": "~7.28.3",
 		"@babel/core": "~7.28.5",

@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
 	"version": "1.23.12",
-	"type": "module",
 	"files": [
 		"/build"
 	],
@@ -19,7 +18,7 @@
 		"dev": "yarn build",
 		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
 		"lint": "yarn run eslint && yarn run stylelint",
-		"eslint": "eslint .",
+		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"storybook": "storybook dev -p 9001 -c .storybook",
 		"build-storybook": "storybook build",
@@ -32,7 +31,7 @@
 		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
-		"@rocket.chat/eslint-config-v9": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/logo": "~0.32.3",
@@ -56,7 +55,7 @@
 		"css-loader": "^4.3.0",
 		"cssnano": "^7.0.7",
 		"desvg-loader": "^0.1.0",
-		"eslint": "^9.0.0",
+		"eslint": "~8.45.0",
 		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",

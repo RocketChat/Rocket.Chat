@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/presence",
 	"version": "0.2.41",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@babel/core": "~7.28.5",
 		"@babel/preset-env": "~7.28.5",

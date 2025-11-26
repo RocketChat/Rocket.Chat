@@ -94,9 +94,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 
 		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
-			if (onUpload) {
-				onUpload(files);
-			}
+			onUpload?.(files);
 			return;
 		}
 
@@ -120,9 +118,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 
 		const files = items.filter((item) => item.kind === 'file' && /^image\//.test(item.type)).map((item) => item.getAsFile());
 		if (files.length) {
-			if (onUpload) {
-				onUpload(files);
-			}
+			onUpload?.(files);
 			return;
 		}
 

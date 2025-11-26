@@ -3,7 +3,6 @@
 	"description": "Fork of https://github.com/kcbanner/node-cas",
 	"version": "0.0.3",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"eslint": "^9.0.0",

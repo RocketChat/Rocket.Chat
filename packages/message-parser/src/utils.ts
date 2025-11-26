@@ -75,7 +75,7 @@ export const codeLine = generate('CODE_LINE');
 const isValidLink = (link: string) => {
   try {
     return Boolean(new URL(link));
-  } catch {
+  } catch (error) {
     return false;
   }
 };

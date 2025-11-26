@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/media-calls",
 	"version": "0.0.3",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",

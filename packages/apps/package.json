@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/apps",
 	"version": "0.5.20",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",

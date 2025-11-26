@@ -2,7 +2,6 @@
 	"name": "@rocket.chat/cron",
 	"version": "0.1.41",
 	"private": true,
-	"type": "module",
 	"devDependencies": {
 		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",

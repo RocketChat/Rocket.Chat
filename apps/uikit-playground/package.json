@@ -2,7 +2,6 @@
   "name": "@rocket.chat/uikit-playground",
   "private": true,
   "version": "0.6.32",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build-preview": "tsc && vite build",

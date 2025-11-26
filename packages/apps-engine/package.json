@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
 	"version": "1.57.0",
-	"type": "module",
 	"description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
 	"main": "index",
 	"typings": "index",
@@ -70,7 +69,7 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
 	"devDependencies": {
-		"@rocket.chat/eslint-config-v9": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@seald-io/nedb": "^4.1.2",
 		"@types/adm-zip": "^0.5.7",
@@ -84,7 +83,7 @@
 		"@typescript-eslint/parser": "~5.60.1",
 		"alsatian": "^2.4.0",
 		"browserify": "^16.5.2",
-		"eslint": "^9.0.0",
+		"eslint": "~8.45.0",
 		"npm-run-all": "^4.1.5",
 		"nyc": "^17.1.0",
 		"rimraf": "^6.0.1",
