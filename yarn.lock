@@ -8463,10 +8463,11 @@ __metadata:
   dependencies:
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config-v9": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    eslint: "npm:~8.45.0"
+    eslint: "npm:^9.0.0"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
