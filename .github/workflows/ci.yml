@@ -285,7 +285,8 @@ jobs:
             [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
             [rocketchat],
           ]
-        # type:
+        type: 
+          - production
         #   # if running in a PR build with coverage
         #   - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
         # include:
