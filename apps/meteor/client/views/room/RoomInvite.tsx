@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import type { ISubscription } from '@rocket.chat/core-typings';
 
-import RoomHeader from '././RoomHeader';
+import RoomHeader from './RoomHeader';
 import RoomInviteBody from './body/RoomInviteBody';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
 import RoomLayout from './layout/RoomLayout';
