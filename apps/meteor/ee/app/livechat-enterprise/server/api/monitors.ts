@@ -1,9 +1,9 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import {
 	isPOSTLivechatMonitorCreateRequest,
-	isPOSTLivechatMonitorRemoveRequest,
+	isPOSTLivechatMonitorsDeleteRequest,
 	POSTLivechatMonitorsCreateSuccessResponse,
-	POSTLivechatMonitorsRemoveSuccessResponse,
+	POSTLivechatMonitorsDeleteSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -86,10 +86,10 @@ const livechatMonitorsEndpoints = API.v1
 		},
 	)
 	.post(
-		'livechat/monitors.remove',
+		'livechat/monitors.delete',
 		{
 			response: {
-				200: POSTLivechatMonitorsRemoveSuccessResponse,
+				200: POSTLivechatMonitorsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -97,7 +97,7 @@ const livechatMonitorsEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-livechat-monitors'],
 			license: ['livechat-enterprise'],
-			body: isPOSTLivechatMonitorRemoveRequest,
+			body: isPOSTLivechatMonitorsDeleteRequest,
 		},
 		async function action() {
 			const { username } = this.bodyParams;

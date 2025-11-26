@@ -547,6 +547,33 @@ export const POSTLivechatMonitorsCreateSuccessResponse = ajv.compile<POSTLivecha
 	POSTLivechatMonitorsCreateSuccessSchema,
 );
 
+type POSTLivechatMonitorsDeleteRequest = {
+	username: string;
+};
+
+const POSTLivechatMonitorsDeleteRequestSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatMonitorsDeleteRequest = ajv.compile<POSTLivechatMonitorsDeleteRequest>(POSTLivechatMonitorsDeleteRequestSchema);
+
+const POSTLivechatMonitorsDeleteSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatMonitorsDeleteSuccessResponse = ajv.compile<void>(POSTLivechatMonitorsDeleteSuccessSchema);
+
 type POSTLivechatTagsRemoveParams = {
 	id: string;
 };
