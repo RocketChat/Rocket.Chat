@@ -37,8 +37,7 @@ export class LocalBroker implements IBroker {
 		return tracerActiveSpan(
 			`action ${method}`,
 			{},
-			() => {
-				return asyncLocalStorage.run(
+			() => asyncLocalStorage.run(
 					{
 						id: 'ctx.id',
 						nodeID: 'ctx.nodeID',
@@ -46,8 +45,7 @@ export class LocalBroker implements IBroker {
 						broker: this,
 					},
 					(): any => this.methods.get(method)?.(...data),
-				);
-			},
+				),
 			injectCurrentContext(),
 		);
 	}

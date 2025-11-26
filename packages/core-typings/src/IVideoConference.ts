@@ -123,21 +123,13 @@ export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
-export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {
-	return call?.type === 'direct';
-};
+export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => call?.type === 'direct';
 
-export const isGroupVideoConference = (call: VideoConference | undefined | null): call is IGroupVideoConference => {
-	return call?.type === 'videoconference';
-};
+export const isGroupVideoConference = (call: VideoConference | undefined | null): call is IGroupVideoConference => call?.type === 'videoconference';
 
-export const isLivechatVideoConference = (call: VideoConference | undefined | null): call is ILivechatVideoConference => {
-	return call?.type === 'livechat';
-};
+export const isLivechatVideoConference = (call: VideoConference | undefined | null): call is ILivechatVideoConference => call?.type === 'livechat';
 
-export const isVoIPVideoConference = (call: VideoConference | undefined | null): call is IVoIPVideoConference => {
-	return call?.type === 'voip';
-};
+export const isVoIPVideoConference = (call: VideoConference | undefined | null): call is IVoIPVideoConference => call?.type === 'voip';
 
 type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
 type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };

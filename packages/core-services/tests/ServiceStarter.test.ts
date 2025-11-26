@@ -1,10 +1,8 @@
 import { ServiceStarter } from '../src/lib/ServiceStarter';
 
-const wait = (time: number) => {
-	return new Promise((resolve) => {
+const wait = (time: number) => new Promise((resolve) => {
 		setTimeout(() => resolve(undefined), time);
 	});
-};
 
 describe('ServiceStarter', () => {
 	it('should call the starterFn and stopperFn when calling .start and .stop', async () => {

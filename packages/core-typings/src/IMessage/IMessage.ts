@@ -133,6 +133,7 @@ export type MessageMention = {
 	fname?: string; // incase of channel mentions
 };
 
+ 
 export interface IMessageCustomFields {}
 
 interface IEncryptedContent {
@@ -413,9 +414,7 @@ export interface IMessageDiscussion extends IMessage {
 	drid: RoomID;
 }
 
-export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
-	return 'drid' in message;
-};
+export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => 'drid' in message;
 
 export type IMessageInbox = IMessage & {
 	// email inbox fields

@@ -362,9 +362,7 @@ export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelR
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
-export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
-	return source?.type === OmnichannelSourceType.APP;
-};
+export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => source?.type === OmnichannelSourceType.APP;
 
 export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'sms' | 'email'> & Pick<IOmnichannelRoom, 'source'>;
 
