@@ -1,7 +1,7 @@
 import react from '@rocket.chat/eslint-config-v9/react.js';
 import standard from '@rocket.chat/eslint-config-v9/standard/index.js';
-import youDontNeedLodashUnderscore from 'eslint-plugin-you-dont-need-lodash-underscore';
 import testingLibrary from 'eslint-plugin-testing-library';
+import youDontNeedLodashUnderscore from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
 export default [
@@ -9,18 +9,20 @@ export default [
 		ignores: [
 			'node_modules/**',
 			'packages/**',
+			'.meteor/**',
 			'app/emoji-emojione/generateEmojiIndex.js',
 			'public/**',
 			'private/moment-locales/**',
 			'imports/**',
 			'ee/server/services/dist/**',
 			'storybook-static/**',
-			'!.mocharc.js',
-			'!.mocharc.*.js',
-			'!.scripts/**',
-			'!.storybook/**',
-			'!client/.eslintrc.js',
-			'!ee/client/.eslintrc.js',
+			'.mocharc.js',
+			'.mocharc.*.js',
+			'.scripts/**',
+			'.storybook/**',
+			'client/.eslintrc.js',
+			'ee/client/.eslintrc.js',
+			'tests/**',
 		],
 	},
 	...standard,
@@ -148,6 +150,7 @@ export default [
 			'testing-library/no-manual-cleanup': 'warn',
 			'testing-library/prefer-explicit-assert': 'warn',
 			'testing-library/prefer-user-event': 'warn',
+			'@typescript-eslint/no-unused-expressions': 'off',
 		},
 		languageOptions: {
 			globals: {
@@ -183,4 +186,3 @@ export default [
 		},
 	},
 ];
-
