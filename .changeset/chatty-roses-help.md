@@ -4,4 +4,4 @@
 "@rocket.chat/i18n": patch
 ---
 
-Adds support for invitation requests to rooms
+Adds invitation request support to rooms
