@@ -459,11 +459,25 @@
 		"hoistingLimits": "workspaces"
 	},
 	"meteor": {
+		"disableLegacyBuild": true,
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.ts"
 		},
-		"modern": true
+		"modern": {
+			"transpiler": {
+				"verbose": true
+			}
+		}
+	},
+	"browserslist": [
+		"defaults"
+	],
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"installConfig": {
+		"hoistingLimits": "workspaces"
 	},
 	"rocketchat": {
 		"minimumClientVersions": {
