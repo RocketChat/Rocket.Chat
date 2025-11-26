@@ -2036,6 +2036,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	describe('LDAP integration', () => {
 		before(async () => {
 			await updateSetting('LDAP_Enable', true);
+			await updateSetting('LDAP_Background_Sync', true);
 			await updateSetting('LDAP_Host', 'openldap');
 			await updateSetting('LDAP_Authentication', true);
 			await updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air');
