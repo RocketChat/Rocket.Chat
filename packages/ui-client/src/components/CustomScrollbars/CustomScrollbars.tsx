@@ -47,4 +47,3 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 });
 
 export default memo(CustomScrollbars);
-

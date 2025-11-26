@@ -40,4 +40,3 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 });
 
 export default memo(VirtualizedScrollbars);
-

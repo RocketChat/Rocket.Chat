@@ -30,4 +30,3 @@ const BaseScrollbars = forwardRef<HTMLElement, ComponentProps<typeof Box>>(funct
 });
 
 export default memo(BaseScrollbars);
-
