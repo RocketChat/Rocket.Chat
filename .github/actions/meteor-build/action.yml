@@ -197,6 +197,7 @@ runs:
         du -s /tmp/dist/bundle
 
     - name: Upload strace log
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: network-strace
