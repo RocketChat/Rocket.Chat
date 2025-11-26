@@ -2032,4 +2032,60 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 		});
 	});
+
+	describe('LDAP integration', () => {
+		before(async () => {
+			await updateSetting('LDAP_Enabled', true);
+			await updateSetting('LDAP_Authentication', true);
+			await updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air');
+			await updateSetting('LDAP_Authentication_Password', 'adminpassword');
+			await updateSetting('LDAP_BaseDN', 'cn=admin,dc=space,dc=air');
+			await updateSetting('LDAP_AD_User_Search_Field', 'uid');
+			await updateSetting('LDAP_AD_Username_Field', 'uid');
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '*/5 * * * * *');
+			await updateSetting(
+				'LDAP_ABAC_Attribute_Map',
+				JSON.stringify({
+					departmentNumber: 'department',
+					telephoneNumber: 'department',
+				}),
+			);
+		});
+
+		before(async function () {
+			// Wait for background sync to run once before tests start
+			this.timeout(15000);
+			await new Promise((resolve) => setTimeout(resolve, 10000));
+		});
+
+		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
+			const res = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'john.young' }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('user');
+			const user = res.body.user as IUser;
+
+			expect(user).to.have.property('abacAttributes');
+			expect(user.abacAttributes).to.be.an('array');
+
+			const departmentAttr = user?.abacAttributes?.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+
+			expect(departmentAttr).to.exist;
+			expect(departmentAttr!.values).to.be.an('array').that.is.not.empty;
+		});
+
+		after(async () => {
+			await updateSetting('LDAP_Enabled', false);
+			await updateSetting('LDAP_Authentication', false);
+			await updateSetting('LDAP_Authentication_UserDN', '');
+			await updateSetting('LDAP_Authentication_Password', '');
+			await updateSetting('LDAP_BaseDN', '');
+			await updateSetting('LDAP_AD_User_Search_Field', '');
+			await updateSetting('LDAP_AD_Username_Field', '');
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
+			await updateSetting('LDAP_ABAC_Attribute_Map', '');
+		});
+	});
 });
