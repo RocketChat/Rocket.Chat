@@ -78,12 +78,8 @@ export class TestInfastructureSetup {
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();
 		this.runtimeManager = {
-			startRuntimeForApp: async () => {
-				return TestData.getMockRuntimeController('test');
-			},
-			runInSandbox: async () => {
-				return {} as unknown as Promise<unknown>;
-			},
+			startRuntimeForApp: async () => TestData.getMockRuntimeController('test'),
+			runInSandbox: async () => ({} as unknown as Promise<unknown>),
 			stopRuntime: () => {},
 		} as unknown as AppRuntimeManager;
 
@@ -95,9 +91,7 @@ export class TestInfastructureSetup {
 
 				return this.parser;
 			},
-			getBridges: () => {
-				return this.bridges as AppBridges;
-			},
+			getBridges: () => this.bridges as AppBridges,
 			getCommandManager() {
 				return {} as AppSlashCommandManager;
 			},
@@ -127,9 +121,7 @@ export class TestInfastructureSetup {
 			getSettingsManager() {
 				return {} as AppSettingsManager;
 			},
-			getRuntime: () => {
-				return this.runtimeManager;
-			},
+			getRuntime: () => this.runtimeManager,
 		} as unknown as AppManager;
 	}
 
@@ -299,21 +291,19 @@ export class TestData {
 			i18nDescription: 'justATest_Description',
 			permission: 'create-c',
 			providesPreview: true,
-			executor: (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> => {
-				return Promise.resolve();
-			},
+			executor: (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> =>
+				Promise.resolve(),
 			previewer: (
 				context: SlashCommandContext,
 				read: IRead,
 				modify: IModify,
 				http: IHttp,
 				persis: IPersistence,
-			): Promise<ISlashCommandPreview> => {
-				return Promise.resolve({
+			): Promise<ISlashCommandPreview> =>
+				Promise.resolve({
 					i18nTitle: 'my i18nTitle',
 					items: [],
-				} as ISlashCommandPreview);
-			},
+				} as ISlashCommandPreview),
 			executePreviewItem: (
 				item: ISlashCommandPreviewItem,
 				context: SlashCommandContext,
@@ -321,9 +311,7 @@ export class TestData {
 				modify: IModify,
 				http: IHttp,
 				persis: IPersistence,
-			): Promise<void> => {
-				return Promise.resolve();
-			},
+			): Promise<void> => Promise.resolve(),
 		};
 	}
 
@@ -506,9 +494,7 @@ export class TestData {
 			sendOutboundMessage: async (message): Promise<void> => {
 				console.log('Sending message', message);
 			},
-			getProviderMetadata: async (): Promise<ProviderMetadata> => {
-				return {} as ProviderMetadata;
-			},
+			getProviderMetadata: async (): Promise<ProviderMetadata> => ({} as ProviderMetadata),
 		};
 	}
 

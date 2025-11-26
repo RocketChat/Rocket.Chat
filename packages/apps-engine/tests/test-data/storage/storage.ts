@@ -5,7 +5,7 @@ import type { IMarketplaceInfo } from '../../../src/server/marketplace';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/consistent-type-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/consistent-type-imports
 const Datastore = require('@seald-io/nedb') as typeof import('@seald-io/nedb').default;
 
 export class TestsAppStorage extends AppMetadataStorage {
