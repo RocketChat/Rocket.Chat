@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@types/node-fetch": "~2.6.13",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
