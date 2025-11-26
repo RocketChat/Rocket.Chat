@@ -79,7 +79,7 @@ export class Job {
 
 			this.attrs.nextRunAt = new Date(nextDate.valueOf());
 			debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
-		} catch (error) {
+		} catch {
 			// Nope, humanInterval then!
 			try {
 				const numberInterval = (typeof interval === 'number' ? interval : humanInterval(interval)) || 0;
@@ -92,7 +92,7 @@ export class Job {
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				}
 				// Either `xo` linter or Node.js 8 stumble on this line if it isn't just ignored
-			} catch (error) {
+			} catch {
 				//
 			}
 		} finally {

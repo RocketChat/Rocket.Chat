@@ -470,7 +470,9 @@ export class Agenda extends EventEmitter {
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
 		const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
 
-		result && this._processDbResult(job, result);
+		if (result) {
+			this._processDbResult(job, result);
+		}
 	}
 
 	private async _saveSingleJob(job: Job, props: Record<string, any>, now: Date): Promise<void> {
