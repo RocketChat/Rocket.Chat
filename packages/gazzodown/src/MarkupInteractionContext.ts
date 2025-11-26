@@ -1,7 +1,7 @@
 import type { MessageMention } from '@rocket.chat/core-typings';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { createContext, FormEvent, UIEvent } from 'react';
-import { AriaButtonProps } from 'react-aria';
+import { createContext, type FormEvent, type UIEvent } from 'react';
+import type { AriaButtonProps } from 'react-aria';
 
 export type UserMention = MessageMention;
 export type ChannelMention = MessageMention;

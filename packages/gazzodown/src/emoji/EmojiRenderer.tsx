@@ -1,7 +1,8 @@
 import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import DOMPurify from 'dompurify';
-import { ReactElement, useMemo, useContext, memo } from 'react';
+import type { ReactElement} from 'react';
+import { useMemo, useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
