@@ -128,7 +128,7 @@ export function isPreRelease(cwd: string) {
 		fs.accessSync(path.resolve(cwd, '.changeset', 'pre.json'));
 
 		return true;
-	} catch (e) {
+	} catch {
 		// nothing to do, not a pre release
 	}
 
