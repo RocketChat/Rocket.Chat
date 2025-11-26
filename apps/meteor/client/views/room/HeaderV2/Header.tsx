@@ -1,10 +1,8 @@
-import { isVoipRoom } from '@rocket.chat/core-typings';
+import { isInviteSubscription, isVoipRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, memo } from 'react';
-
-import { isInviteSubscription } from '../utils/isInviteSubscription';
 
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));

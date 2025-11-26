@@ -1,3 +1,4 @@
+import { isInviteSubscription } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
