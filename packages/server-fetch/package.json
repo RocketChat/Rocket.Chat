@@ -2,24 +2,17 @@
 	"name": "@rocket.chat/server-fetch",
 	"version": "0.0.3",
 	"private": true,
-	"devDependencies": {
-		"@types/node-fetch": "~2.6.12",
-		"eslint": "~8.45.0",
-		"typescript": "~5.9.2"
-	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
-	"volta": {
-		"extends": "../../package.json"
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@types/proxy-from-env": "^1.0.4",
@@ -27,5 +20,13 @@
 		"https-proxy-agent": "^7.0.6",
 		"node-fetch": "2.7.0",
 		"proxy-from-env": "^1.1.0"
+	},
+	"devDependencies": {
+		"@types/node-fetch": "~2.6.13",
+		"eslint": "~8.45.0",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

@@ -513,11 +513,11 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
-type POSTLivechatMonitorSaveRequest = {
+type POSTLivechatMonitorCreateRequest = {
 	username: string;
 };
 
-const POSTLivechatMonitorSaveRequestSchema = {
+const POSTLivechatMonitorCreateRequestSchema = {
 	type: 'object',
 	properties: {
 		username: {
@@ -528,11 +528,11 @@ const POSTLivechatMonitorSaveRequestSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatMonitorSaveRequest = ajv.compile<POSTLivechatMonitorSaveRequest>(POSTLivechatMonitorSaveRequestSchema);
+export const isPOSTLivechatMonitorCreateRequest = ajv.compile<POSTLivechatMonitorCreateRequest>(POSTLivechatMonitorCreateRequestSchema);
 
-type POSTLivechatMonitorsSaveSuccess = Pick<IUser, '_id' | 'username' | 'roles'>;
+type POSTLivechatMonitorsCreateSuccess = Pick<IUser, '_id' | 'username' | 'roles'>;
 
-const POSTLivechatMonitorsSaveSuccessSchema = {
+const POSTLivechatMonitorsCreateSuccessSchema = {
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
@@ -543,34 +543,39 @@ const POSTLivechatMonitorsSaveSuccessSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatMonitorsSaveSuccessResponse = ajv.compile<POSTLivechatMonitorsSaveSuccess>(POSTLivechatMonitorsSaveSuccessSchema);
+export const POSTLivechatMonitorsCreateSuccessResponse = ajv.compile<POSTLivechatMonitorsCreateSuccess>(
+	POSTLivechatMonitorsCreateSuccessSchema,
+);
 
-type POSTLivechatMonitorRemoveRequest = {
-	username: string;
+type POSTLivechatTagsRemoveParams = {
+	id: string;
 };
 
-const POSTLivechatMonitorRemoveRequestSchema = {
+const POSTLivechatTagsRemoveSchema = {
 	type: 'object',
 	properties: {
-		username: {
+		id: {
 			type: 'string',
 		},
 	},
-	required: ['username'],
+	required: ['id'],
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatMonitorRemoveRequest = ajv.compile<POSTLivechatMonitorRemoveRequest>(POSTLivechatMonitorRemoveRequestSchema);
+export const isPOSTLivechatTagsRemoveParams = ajv.compile<POSTLivechatTagsRemoveParams>(POSTLivechatTagsRemoveSchema);
 
-const POSTLivechatMonitorsRemoveSuccessSchema = {
+const POSTLivechatTagsRemoveSuccessResponseSchema = {
 	type: 'object',
 	properties: {
-		success: { type: 'boolean', enum: [true] },
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
 	},
 	additionalProperties: false,
 };
 
-export const POSTLivechatMonitorsRemoveSuccessResponse = ajv.compile<void>(POSTLivechatMonitorsRemoveSuccessSchema);
+export const POSTLivechatTagsRemoveSuccessResponse = ajv.compile<void>(POSTLivechatTagsRemoveSuccessResponseSchema);
 
 type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
@@ -3526,6 +3531,48 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 
 export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
 
+type POSTLivechatInquiriesReturnAsInquiry = {
+	roomId: string;
+	departmentId?: string;
+};
+
+const POSTLivechatInquiriesReturnAsInquirySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		departmentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatInquiriesReturnAsInquiry = ajv.compile<POSTLivechatInquiriesReturnAsInquiry>(
+	POSTLivechatInquiriesReturnAsInquirySchema,
+);
+
+const POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		result: {
+			type: 'boolean',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatInquiriesReturnAsInquirySuccessResponse = ajv.compile<{ result: boolean }>(
+	POSTLivechatInquiriesReturnAsInquirySuccessResponseSchema,
+);
+
 type GETDashboardTotalizers = {
 	start: string;
 	end: string;
@@ -4125,6 +4172,36 @@ const POSTLivechatRoomsCloseAllSuccessResponseSchema = {
 export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedRooms: number }>(
 	POSTLivechatRoomsCloseAllSuccessResponseSchema,
 );
+
+type POSTLivechatRemoveRoomParams = {
+	roomId: string;
+};
+
+const POSTLivechatRemoveRoomParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveRoomParams = ajv.compile<POSTLivechatRemoveRoomParams>(POSTLivechatRemoveRoomParamsSchema);
+
+const POSTLivechatRemoveRoomSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatRemoveRoomSuccess = ajv.compile<void>(POSTLivechatRemoveRoomSuccessSchema);
 
 const POSTLivechatSaveCustomFieldsSchema = {
 	type: 'object',

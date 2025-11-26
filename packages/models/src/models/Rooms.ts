@@ -97,6 +97,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			{ key: { t: 1, ts: 1 } },
 			{
+				key: { federated: 1 },
+				sparse: true,
+			},
+			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
 				},
@@ -663,8 +667,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { 'federated': true, 'federation.mrid': mrid, 'federation.origin': origin } });
 	}
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult> {
@@ -937,8 +941,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		return this.findOne({ _id: roomId, t: type }, options);
+	findOneByIdAndType<T extends Document = IRoom>(
+		roomId: IRoom['_id'],
+		type: IRoom['t'],
+		options: FindOptions<T> = {} as FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>({ _id: roomId, t: type }, options);
 	}
 
 	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
@@ -2208,5 +2216,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number) {
 		return this.countDocuments({ _id: rid, rolePrioritiesCreated: syncVersion });
+	}
+
+	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<string[]> {
+		// TODO implement
+		return [];
 	}
 }

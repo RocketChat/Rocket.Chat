@@ -6,8 +6,6 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteDepartmentMultiple from '../../../../components/AutoCompleteDepartmentMultiple';
-import AutoCompleteMultipleAgent from '../../../../components/AutoCompleteMultipleAgent';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -18,8 +16,10 @@ import {
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
-import AutoCompleteUnits from '../../../../omnichannel/additionalForms/AutoCompleteUnits';
 import { CurrentChatTags } from '../../additionalForms';
+import AutoCompleteUnits from '../../additionalForms/AutoCompleteUnits';
+import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
+import AutoCompleteMultipleAgent from '../../components/AutoCompleteMultipleAgent';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 
@@ -31,7 +31,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const { t } = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });

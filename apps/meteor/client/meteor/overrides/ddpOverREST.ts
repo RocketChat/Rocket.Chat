@@ -1,8 +1,8 @@
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
 
@@ -32,7 +32,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 			return _send.call(this, message, ...args);
 		}
 
-		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
+		const endpoint = !getUserId() ? 'method.callAnon' : 'method.call';
 
 		const restParams = {
 			message: DDPCommon.stringifyDDP({ ...message }),

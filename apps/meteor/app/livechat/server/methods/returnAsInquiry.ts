@@ -1,10 +1,10 @@
-import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { returnRoomAsInquiry } from '../lib/rooms';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:returnAsInquiry'(rid, departmentId) {
+		methodDeprecationLogger.method('livechat:returnAsInquiry', '8.0.0', '/v1/livechat/inquiries.returnAsInquiry');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -28,14 +29,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:returnAsInquiry',
 			});
-		}
-
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:returnAsInquiry' });
-		}
-
-		if (!room.open) {
-			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
 		return returnRoomAsInquiry(room, departmentId);

@@ -1,4 +1,5 @@
 import {
+	isEncryptedMessageContent,
 	isOTRAckMessage,
 	isOTRMessage,
 	type IEditedMessage,
@@ -15,6 +16,7 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorizati
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { settings } from '../settings';
+import { getUserId } from '../user';
 import { prependReplies } from '../utils/prependReplies';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
@@ -78,7 +80,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = (settings.peek('Message_AllowEditing') as boolean | undefined) ?? false;
-		const editOwn = message?.u && message.u._id === Meteor.userId();
+		const editOwn = message?.u && message.u._id === getUserId();
 
 		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
@@ -96,7 +98,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findPreviousOwnMessage = async (message?: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return undefined;
@@ -134,7 +136,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findNextOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return undefined;
@@ -175,11 +177,27 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
 	};
 
-	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
-		sdk.call('updateMessage', message, previewUrls);
+	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
+		const params = isEncryptedMessageContent(message)
+			? {
+					msgId: message._id,
+					roomId: message.rid,
+					content: message.content,
+					e2eMentions: message.e2eMentions,
+				}
+			: {
+					previewUrls,
+					msgId: message._id,
+					roomId: message.rid,
+					customFields: message.customFields,
+					text: message.msg,
+				};
+
+		await sdk.rest.post('/v1/chat.update', params);
+	};
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 
 		if (!uid) {
 			return false;
@@ -201,7 +219,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 		const deleteAnyAllowed = hasPermission('delete-message', rid);
 		const deleteOwnAllowed = hasPermission('delete-own-message');
-		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
+		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === getUserId());
 
 		if (!deleteAllowed) {
 			return false;

@@ -29,7 +29,7 @@ export type FindOptions<TSchema extends Document = Document> = {
 };
 
 export type UserContextValue = {
-	userId: string | null;
+	userId: string | undefined;
 	user: IUser | null;
 	queryPreference: <T>(
 		key: string | ObjectId,
@@ -52,7 +52,7 @@ export type UserContextValue = {
 };
 
 export const UserContext = createContext<UserContextValue>({
-	userId: null,
+	userId: undefined,
 	user: null,
 	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],

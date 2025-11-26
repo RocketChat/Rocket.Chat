@@ -1,9 +1,9 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import {
+	isPOSTLivechatMonitorCreateRequest,
 	isPOSTLivechatMonitorRemoveRequest,
-	isPOSTLivechatMonitorSaveRequest,
+	POSTLivechatMonitorsCreateSuccessResponse,
 	POSTLivechatMonitorsRemoveSuccessResponse,
-	POSTLivechatMonitorsSaveSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -64,10 +64,10 @@ API.v1.addRoute(
 
 const livechatMonitorsEndpoints = API.v1
 	.post(
-		'livechat/monitors.save',
+		'livechat/monitors.create',
 		{
 			response: {
-				200: POSTLivechatMonitorsSaveSuccessResponse,
+				200: POSTLivechatMonitorsCreateSuccessResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -75,25 +75,14 @@ const livechatMonitorsEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-livechat-monitors'],
 			license: ['livechat-enterprise'],
-			body: isPOSTLivechatMonitorSaveRequest,
+			body: isPOSTLivechatMonitorCreateRequest,
 		},
 		async function action() {
 			const { username } = this.bodyParams;
 
-			try {
-				const result = await LivechatEnterprise.addMonitor(username);
-				if (!result) {
-					return API.v1.failure('error-adding-monitor');
-				}
+			const result = await LivechatEnterprise.addMonitor(username);
 
-				return API.v1.success(result);
-			} catch (error: unknown) {
-				if (error instanceof Meteor.Error) {
-					return API.v1.failure(error.reason);
-				}
-
-				return API.v1.failure('error-adding-monitor');
-			}
+			return API.v1.success(result);
 		},
 	)
 	.post(

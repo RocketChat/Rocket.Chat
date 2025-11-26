@@ -12,6 +12,7 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
 	MessageComposerHint,
+	MessageComposerInputExpandable,
 } from '.';
 
 export default {
@@ -42,6 +43,21 @@ const MessageToolbarActions = () => (
 export const Default: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
+
+export const Expandable: StoryFn<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerInputExpandable
+			dimensions={{
+				inlineSize: 400,
+				blockSize: 120,
+			}}
+			placeholder='Type a message...'
+		/>
 		<MessageComposerToolbar>
 			<MessageToolbarActions />
 		</MessageComposerToolbar>

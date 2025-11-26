@@ -30,26 +30,28 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	pathPattern,
 	keys,
 	params,
+	signal,
 }: {
 	method: TMethod;
 	pathPattern: TPathPattern;
 	keys: UrlParams<TPathPattern>;
 	params: OperationParams<TMethod, TPathPattern>;
+	signal?: AbortSignal;
 }): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 	switch (method) {
 		case 'GET':
-			return sdk.rest.get(compiledPath, params as any) as any;
+			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
 
 		case 'POST':
-			return sdk.rest.post(compiledPath, params as any) as any;
+			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
 
 		case 'PUT':
-			return sdk.rest.put(compiledPath, params as never) as never;
+			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
 
 		case 'DELETE':
-			return sdk.rest.delete(compiledPath, params as any) as any;
+			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');

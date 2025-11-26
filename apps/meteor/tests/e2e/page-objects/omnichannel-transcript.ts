@@ -12,10 +12,6 @@ export class OmnichannelTranscript {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get checkboxPDF(): Locator {
-		return this.page.locator('//input[@name="transcriptPDF"]//following::i[1]');
-	}
-
 	get contactCenter(): Locator {
 		return this.page.locator('//button[@data-tooltip="Contact Center"]');
 	}

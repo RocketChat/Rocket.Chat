@@ -1,9 +1,9 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentPropsWithoutRef, ReactElement } from 'react';
 import { isValidElement } from 'react';
 
 type HeaderIconProps = {
-	icon: ReactElement | Pick<ComponentProps<typeof Icon>, 'name' | 'color'> | null;
+	icon: ReactElement | Pick<ComponentPropsWithoutRef<typeof Icon>, 'name' | 'color'> | null;
 };
 
 const HeaderTagIcon = ({ icon }: HeaderIconProps) => {

@@ -1,8 +1,5 @@
-export { default as VoipProvider } from './providers/VoipProvider';
-export { default as MediaCallProvider } from './v2/MediaCallProvider';
+export { default as MediaCallProvider } from './context/MediaCallProvider';
 
-export * from './definitions/VoipSession';
-export * from './hooks';
-export * from './components';
+export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, type PeerInfo } from './context';
 
-export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, useMediaCallAction, type PeerInfo } from './v2';
+export { useMediaCallAction } from './hooks';

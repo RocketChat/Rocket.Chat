@@ -22,8 +22,8 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
 
-	const paginationProps = usePagination();
-	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationProps.itemsPerPage, paginationProps.current);
+	const paginationData = usePagination();
+	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationData.itemsPerPage, paginationData.current);
 
 	const handlePermissionsTab = useEffectEvent(() => {
 		if (type === 'permissions') {
@@ -62,7 +62,7 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 						<Tabs.Item
 							data-qa='PermissionTable-Permissions'
 							selected={type === 'permissions'}
-							onClick={handlePermissionsTab}
+							onClick={canViewPermission ? handlePermissionsTab : undefined}
 							disabled={!canViewPermission}
 						>
 							{t('Permissions')}
@@ -84,7 +84,7 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 							permissions={permissions}
 							total={total}
 							setFilter={setFilter}
-							paginationProps={paginationProps}
+							paginationData={paginationData}
 						/>
 					</Margins>
 				</PageContent>

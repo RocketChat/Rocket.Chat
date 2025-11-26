@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Avatar } from '@rocket.chat/fuselage';
+import { Avatar, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 import {
 	Header,
@@ -95,7 +95,7 @@ export const Default = () => (
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} icon='star' title='start' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
@@ -104,9 +104,9 @@ export const Default = () => (
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' />
-			<HeaderToolbarAction icon='key' />
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -114,14 +114,14 @@ export const Default = () => (
 export const WithBurger = () => (
 	<Header>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='burger' />
+			<IconButton title='burger' icon='burger' />
 		</HeaderToolbar>
 		<HeaderAvatar>{avatar}</HeaderAvatar>
 		<HeaderContent>
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} title='star' icon='star' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
@@ -130,9 +130,9 @@ export const WithBurger = () => (
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' />
-			<HeaderToolbarAction icon='key' />
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -144,23 +144,23 @@ export const WithActionBadge = () => (
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} title='favorite' icon='star' />
 			</HeaderContentRow>
 			<HeaderContentRow>
 				<HeaderSubtitle>{room.name}</HeaderSubtitle>
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='call' icon='phone'>
 				<HeaderToolbarActionBadge variant='primary'>1</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='disable' icon='phone'>
 				<HeaderToolbarActionBadge variant='danger'>2</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='decline' icon='phone'>
 				<HeaderToolbarActionBadge variant='warning'>99</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );

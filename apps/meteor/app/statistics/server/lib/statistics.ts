@@ -406,6 +406,8 @@ export const statistics = {
 				}),
 		);
 
+		statistics.fileStoreType = settings.get('FileUpload_Storage_Type');
+
 		statistics.migration = await getControl();
 		statsPms.push(
 			InstanceStatus.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {

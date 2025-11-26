@@ -34,7 +34,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 	});
 
 	test.afterAll('close livechat conversation', async () => {
-		await agent.poHomeChannel.content.closeChat();
+		await agent.poHomeChannel.quickActionsRoomToolbar.closeChat();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -60,7 +60,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {
-			await agent.poHomeChannel.content.btnCannedResponses.click();
+			await agent.poHomeChannel.roomToolbar.openCannedResponses();
 		});
 
 		await test.step('expect to create new canned response', async () => {
@@ -79,7 +79,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {
-			await agent.poHomeChannel.content.btnCannedResponses.click();
+			await agent.poHomeChannel.roomToolbar.openCannedResponses();
 		});
 
 		await test.step('expect to edit canned response', async () => {

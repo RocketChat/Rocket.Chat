@@ -122,6 +122,9 @@ export const AppPermissions = {
 	'outboundComms': {
 		provide: { name: 'outbound-communication.provide' },
 	},
+	'experimental': {
+		default: { name: 'experimental.default' },
+	},
 };
 
 /**

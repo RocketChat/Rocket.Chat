@@ -39,7 +39,7 @@ export const useAppsRoomStarActions = () => {
 			order: 3,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
-					button={<HeaderToolbarAction />}
+					button={<HeaderToolbarAction icon={icon} />}
 					key={id}
 					title={title}
 					disabled={disabled}

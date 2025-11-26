@@ -86,6 +86,7 @@ export class UserActorSignalProcessor {
 		// 1. the signal came from the exact user session where the caller initiated the call
 		// 2. the signal came from the exact user session where the callee accepted the call
 		// 3. the call has not been accepted yet and the signal came from a valid session from the callee
+		// 4. It's a hangup request with reason = 'another-client' and the request came from any valid client of either user
 		switch (signal.type) {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
@@ -96,7 +97,7 @@ export class UserActorSignalProcessor {
 			case 'local-state':
 				return this.reviewLocalState(signal);
 			case 'error':
-				return this.processError(signal.errorType, signal.errorCode);
+				return this.processError(signal);
 			case 'negotiation-needed':
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
 			case 'transfer':
@@ -135,29 +136,110 @@ export class UserActorSignalProcessor {
 		}
 	}
 
-	private async processError(errorType: ClientMediaSignalError['errorType'], errorCode?: string): Promise<void> {
+	private async processError(signal: ClientMediaSignalError): Promise<void> {
 		if (!this.signed) {
 			return;
 		}
 
-		switch (errorType) {
-			case 'signaling':
-				return this.onSignalingError(errorCode);
-			case 'service':
-				return this.onServiceError(errorCode);
-			default:
-				return this.onUnexpectedError(errorCode);
-		}
-	}
+		const { errorType = 'other', errorCode, critical = false, negotiationId, errorDetails } = signal;
+		logger.error({
+			msg: 'Client reported an error',
+			errorType,
+			errorCode,
+			critical,
+			errorDetails,
+			negotiationId,
+			callId: this.callId,
+			role: this.role,
+			state: this.call.state,
+		});
 
-	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
-		// If the negotiation that triggered a request for renegotiation is not the latest negotiation, then a new one must already be happening and we can ignore this request.
-		if (negotiation?._id !== oldNegotiationId) {
+		let hangupReason: CallHangupReason = 'error';
+		if (errorType === 'service') {
+			hangupReason = 'service-error';
+
+			// Do not hangup on service errors after the call is already active;
+			// if the error happened on a renegotiation, then the service may still be able to rollback to a valid state
+			if (this.isPastNegotiation()) {
+				return;
+			}
+		}
+
+		if (!critical) {
 			return;
 		}
 
+		if (errorType === 'signaling') {
+			hangupReason = 'signaling-error';
+		}
+
+		await mediaCallDirector.hangup(this.call, this.agent, hangupReason);
+	}
+
+	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
+		// Unsigned clients may not request negotiations
+		if (!this.signed) {
+			return;
+		}
+
+		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
+
+		// If the call doesn't even have an initial negotiation yet, the clients shouldn't be requesting new ones.
+		if (!negotiation) {
+			return;
+		}
+
+		// If the latest negotiation has an answer, we can accept any request
+		if (negotiation.answer) {
+			return this.startNewNegotiation();
+		}
+
+		const comingFromLatest = oldNegotiationId === negotiation._id;
+		const isRequestImpolite = this.role === 'caller';
+		const isLatestImpolite = negotiation.offerer === 'caller';
+
+		// If the request came from a client who was not yet aware of a newer renegotiation
+		if (!comingFromLatest) {
+			// If the client is polite, we can ignore their request in favor of the existing renegotiation
+			if (!isRequestImpolite) {
+				logger.debug({ msg: 'Ignoring outdated polite renegotiation request' });
+				return;
+			}
+
+			// If the latest negotiation is impolite and the impolite client is not aware of it yet, this must be a duplicate request
+			if (isLatestImpolite) {
+				// If we already received an offer in this situation then something is very wrong (some proxy interfering with signals, perhaps?)
+				if (negotiation.offer) {
+					logger.error({ msg: 'Invalid renegotiation request', requestedBy: this.role, isLatestImpolite });
+					return;
+				}
+
+				// Resend the offer request to the impolite client
+				return this.requestWebRTCOffer({ negotiationId: negotiation._id });
+			}
+
+			// The state of polite negotiations is irrelevant for impolite requests, so we can start a new negotiation here.
+			return this.startNewNegotiation();
+		}
+
+		// The client is up-to-date and requested a renegotiation before the last one was complete
+		// If the request came from the same side as the last negotiation, the client was in no position to request it
+		if (this.role === negotiation.offerer) {
+			logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
+			return;
+		}
+
+		// If the request is from the impolite client, it takes priority over the existing polite negotiation
+		if (isRequestImpolite) {
+			return this.startNewNegotiation();
+		}
+
+		// It's a polite negotiation requested while an impolite one was not yet complete
+		logger.error({ msg: 'Invalid state for renegotiation request', requestedBy: this.role, isLatestImpolite });
+	}
+
+	private async startNewNegotiation(): Promise<void> {
 		const negotiationId = await mediaCallDirector.startNewNegotiation(this.call, this.role);
 		if (negotiationId) {
 			await this.requestWebRTCOffer({ negotiationId });
@@ -272,30 +354,5 @@ export class UserActorSignalProcessor {
 
 			await this.clientIsActive();
 		}
-	}
-
-	private async onSignalingError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await mediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
-	}
-
-	private async onServiceError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a service error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		if (this.isPastNegotiation()) {
-			return;
-		}
-
-		await mediaCallDirector.hangup(this.call, this.agent, 'service-error');
-	}
-
-	private async onUnexpectedError(errorMessage?: string): Promise<void> {
-		logger.error({
-			msg: 'Client reported an unexpected error',
-			errorMessage,
-			callId: this.callId,
-			role: this.role,
-			state: this.call.state,
-		});
-		await mediaCallDirector.hangup(this.call, this.agent, 'error');
 	}
 }

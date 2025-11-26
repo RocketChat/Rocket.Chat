@@ -11,6 +11,7 @@ import { createDiscussionsSettings } from './discussions';
 import { createE2ESettings } from './e2e';
 import { createEmailSettings } from './email';
 import { createFederationSettings } from './federation';
+import { createFederationServiceSettings } from './federation-service';
 import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
 import { createIRCSettings } from './irc';
@@ -36,8 +37,10 @@ import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
 import { createWebRTCSettings } from './webrtc';
+import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
+	createFederationServiceSettings(),
 	createAccountSettings(),
 	createAnalyticsSettings(),
 	createAssetsSettings(),
@@ -50,7 +53,6 @@ await Promise.all([
 	createDiscussionsSettings(),
 	createEmailSettings(),
 	createE2ESettings(),
-	createFederationSettings(),
 	createFileUploadSettings(),
 	createGeneralSettings(),
 	createIRCSettings(),
@@ -76,4 +78,10 @@ await Promise.all([
 	createUserDataSettings(),
 	createWebDavSettings(),
 	createWebRTCSettings(),
+]);
+
+// Run after all the other settings are created since it depends on some of them
+await Promise.all([
+	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 ]);

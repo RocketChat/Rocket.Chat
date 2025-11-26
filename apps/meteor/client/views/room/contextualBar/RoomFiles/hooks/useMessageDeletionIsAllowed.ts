@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { getDifference, MINUTES } from '../lib/getDifference';
 
-export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], file: IUpload, uid: IUser['_id'] | null) => {
+export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], file: IUpload, uid: IUser['_id'] | undefined) => {
 	const canForceDelete = usePermission('force-delete-message', rid);
 	const deletionIsEnabled = useSetting('Message_AllowDeleting');
 	const userHasPermissionToDeleteAny = usePermission('delete-message', rid);

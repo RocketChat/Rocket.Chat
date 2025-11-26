@@ -21,13 +21,12 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
-			'content': t(item.title),
-			'onClick':
+			content: t(item.title),
+			onClick:
 				item.action ??
 				((): void => {
 					openTab(item.id);
 				}),
-			'data-qa-id': `ToolBoxAction-${item.icon}`,
 			...item,
 		}))
 		.reduce((acc, item) => {
