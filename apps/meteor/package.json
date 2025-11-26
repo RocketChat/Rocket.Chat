@@ -465,15 +465,19 @@
 		"zustand": "~5.0.8"
 	},
 	"meteor": {
+		"disableLegacyBuild": true,
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.ts"
 		},
-		"modern": true
+		"modern": {
+			"transpiler": {
+				"verbose": true
+			}
+		}
 	},
 	"browserslist": [
-		"last 2 versions",
-		"Firefox ESR"
+		"defaults"
 	],
 	"volta": {
 		"extends": "../../package.json"
