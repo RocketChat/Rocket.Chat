@@ -2056,7 +2056,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async function () {
 			// Wait for background sync to run once before tests start
-			await request.post(`${v1}/ldap.testConnection`).expect(200);
+			await request.post(`${v1}/ldap.testConnection`).set(credentials).expect(200);
 			this.timeout(15000);
 			await new Promise((resolve) => setTimeout(resolve, 10000));
 		});
