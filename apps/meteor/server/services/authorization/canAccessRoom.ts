@@ -1,7 +1,7 @@
 import { Authorization } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { IUser, ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isInviteSubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
@@ -83,6 +83,17 @@ const roomAccessValidators: RoomAccessValidator[] = [
 
 	canAccessRoomLivechat,
 	canAccessRoomVoip,
+
+	// TODO: Validate if this is something we want
+	async function _validateAccessToInvitedRooms(room, user): Promise<boolean> {
+		if (!room?._id || !user?._id) {
+			return false;
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+
+		return isInviteSubscription(subscription);
+	},
 ];
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
