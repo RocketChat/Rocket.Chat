@@ -125,6 +125,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	countAbacEnabled(): Promise<number>;
+
 	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult>;
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult>;

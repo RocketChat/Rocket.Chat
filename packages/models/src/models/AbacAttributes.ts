@@ -15,4 +15,25 @@ export class AbacAttributesRaw extends BaseRaw<IAbacAttribute> {
 	findOneByKey(key: string, options: FindOptions<IAbacAttribute> = {}): Promise<IAbacAttribute | null> {
 		return this.findOne({ key }, options);
 	}
+
+	async countTotalValues(): Promise<number> {
+		const [result] = await this.col
+			.aggregate<{ totalValues: number }>([
+				{
+					$group: {
+						_id: null,
+						totalValues: {
+							$sum: {
+								$size: {
+									$ifNull: ['$values', []],
+								},
+							},
+						},
+					},
+				},
+			])
+			.toArray();
+
+		return result?.totalValues ?? 0;
+	}
 }
