@@ -470,11 +470,7 @@
 			"client": "client/main.ts",
 			"server": "server/main.ts"
 		},
-		"modern": {
-			"transpiler": {
-				"verbose": true
-			}
-		}
+		"modern": true
 	},
 	"browserslist": [
 		"defaults"
