@@ -24,7 +24,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	const result = useQuery({
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
-		queryKey: ['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
+		queryKey: roomsQueryKeys.roomReference(reference, type, user?._id, user?.username),
 
 		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {

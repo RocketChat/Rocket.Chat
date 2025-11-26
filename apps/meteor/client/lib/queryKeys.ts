@@ -1,9 +1,23 @@
-import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser, ILivechatAgent, IOutboundProvider } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	IMessage,
+	IRoom,
+	ITeam,
+	IUser,
+	ILivechatAgent,
+	IOutboundProvider,
+	RoomType,
+} from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
 	room: (rid: IRoom['_id']) => ['rooms', rid] as const,
+	roomReference: (reference: string, type: RoomType, uid?: IUser['_id'], username?: IUser['username']) => [
+		...roomsQueryKeys.all,
+		{ reference, type },
+		{ uid, username },
+	],
 	starredMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'starred-messages'] as const,
 	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
