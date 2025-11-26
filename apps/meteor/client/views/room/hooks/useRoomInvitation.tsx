@@ -14,13 +14,13 @@ export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
 		onSuccess: async (_, { action }) => {
 			const reference = room.federationOriginalName ?? room.name;
 
-			await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(room._id) });
-
 			if (reference) {
-				await queryClient.invalidateQueries({
+				await queryClient.refetchQueries({
 					queryKey: roomsQueryKeys.roomReference(reference, room.t, user?._id, user?.username),
 				});
 			}
+
+			await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(room._id) });
 
 			if (action === 'reject') {
 				router.navigate('/home');
