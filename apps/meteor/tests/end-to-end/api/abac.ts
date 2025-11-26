@@ -2049,14 +2049,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				'LDAP_ABAC_AttributeMap',
 				JSON.stringify({
 					departmentNumber: 'department',
-					telephoneNumber: 'department',
+					telephoneNumber: 'phone',
 				}),
 			);
 		});
 
 		before(async function () {
 			// Wait for background sync to run once before tests start
-			await request.post(`${v1}/ldap.testConnection`).set(credentials).expect(200);
+			const response = await request.post(`${v1}/ldap.syncNow`).set(credentials);
+			console.log(response.body);
 			this.timeout(15000);
 			await new Promise((resolve) => setTimeout(resolve, 10000));
 		});
@@ -2077,18 +2078,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(departmentAttr!.values).to.be.an('array').that.is.not.empty;
 		});
 
-		after(async () => {
-			await updateSetting('LDAP_Enable', false);
-			await updateSetting('LDAP_Host', '');
-			await updateSetting('LDAP_Authentication', false);
-			await updateSetting('LDAP_Authentication_UserDN', '');
-			await updateSetting('LDAP_Authentication_Password', '');
-			await updateSetting('LDAP_BaseDN', '');
-			await updateSetting('LDAP_AD_User_Search_Field', '');
-			await updateSetting('LDAP_AD_Username_Field', '');
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
-			await updateSetting('LDAP_ABAC_AttributeMap', '');
-		});
+		// after(async () => {
+		// 	await updateSetting('LDAP_Enable', false);
+		// 	await updateSetting('LDAP_Host', '');
+		// 	await updateSetting('LDAP_Authentication', false);
+		// 	await updateSetting('LDAP_Authentication_UserDN', '');
+		// 	await updateSetting('LDAP_Authentication_Password', '');
+		// 	await updateSetting('LDAP_BaseDN', '');
+		// 	await updateSetting('LDAP_AD_User_Search_Field', '');
+		// 	await updateSetting('LDAP_AD_Username_Field', '');
+		// 	await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
+		// 	await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
+		// 	await updateSetting('LDAP_ABAC_AttributeMap', '');
+		// });
 	});
 });
