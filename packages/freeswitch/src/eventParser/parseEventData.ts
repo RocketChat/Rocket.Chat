@@ -71,9 +71,7 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 	const variables = filterStringList(
 		eventData,
 		(key) => key.startsWith('variable_'),
-		([key, value]) => {
-			return [key.replace('variable_', ''), value || ''];
-		},
+		([key, value]) => [key.replace('variable_', ''), value || ''],
 	) as Record<string, string | string[]>;
 	const metadata = filterStringList(eventData, (key) => isMetadata(key)) as Record<string, string>;
 	const unusedRawData = filterStringList(rawEventData, (key) => {

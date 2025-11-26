@@ -2,8 +2,7 @@ import { Field, FieldLabel, FieldRow, FieldHint, FieldDescription, Skeleton, Inp
 import { Form } from '@rocket.chat/layout';
 import type { ReactElement } from 'react';
 
-const FormSkeleton = (): ReactElement => {
-	return (
+const FormSkeleton = (): ReactElement => (
 		<Form aria-busy>
 			<Form.Header>
 				<Form.Title>
@@ -30,6 +29,5 @@ const FormSkeleton = (): ReactElement => {
 			</Form.Footer>
 		</Form>
 	);
-};
 
 export default FormSkeleton;
