@@ -84,7 +84,7 @@ export class Presence extends ServiceClass implements IPresence {
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
 			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
-		} catch (e: unknown) {
+		} catch {
 			// ignore
 		}
 	}

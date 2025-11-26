@@ -64,8 +64,7 @@ export class ChatTranscript implements IStrategy {
 		});
 	}
 
-	private isChatTranscriptData = (data: unknown): data is ChatTranscriptData => {
-		return (
+	private isChatTranscriptData = (data: unknown): data is ChatTranscriptData => (
 			typeof data === 'object' &&
 			data !== null &&
 			'header' in data &&
@@ -79,7 +78,6 @@ export class ChatTranscript implements IStrategy {
 			'date' in data.header &&
 			'time' in data.header
 		);
-	};
 
 	renderTemplate(data: ChatTranscriptData): Promise<NodeJS.ReadableStream> {
 		if (!this.isChatTranscriptData(data)) {
