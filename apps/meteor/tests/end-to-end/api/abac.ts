@@ -2043,7 +2043,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await updateSetting('LDAP_Authentication', true);
 			await updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air');
 			await updateSetting('LDAP_Authentication_Password', 'adminpassword');
-			await updateSetting('LDAP_BaseDN', 'cn=admin,dc=space,dc=air');
+			await updateSetting('LDAP_BaseDN', 'ou=users,dc=space,dc=air');
 			await updateSetting('LDAP_AD_User_Search_Field', 'uid');
 			await updateSetting('LDAP_AD_Username_Field', 'uid');
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
