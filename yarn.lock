@@ -8569,8 +8569,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/desktop-api@workspace:packages/desktop-api"
   dependencies:
-    "@rocket.chat/eslint-config": "workspace:~"
-    eslint: "npm:~8.45.0"
+    "@rocket.chat/eslint-config-v9": "workspace:^"
+    eslint: "npm:^9.0.0"
     rimraf: "npm:~6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
