@@ -2,6 +2,7 @@
 	"name": "@rocket.chat/message-types",
 	"version": "0.0.1",
 	"private": true,
+	"type": "module",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -15,9 +16,9 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
-		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"date-fns": "~4.1.0",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"moment": "^2.30.1",

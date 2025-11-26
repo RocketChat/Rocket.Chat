@@ -270,9 +270,7 @@ const $push = <TField extends string, TItem>(
 };
 
 const $addToSet = <TField extends string, TItem>(target: Record<TField, TItem[]>, field: TField, arg: TItem | { $each: TItem[] }) => {
-	const isEachArgument = (arg: unknown): arg is { $each?: TItem[] } => {
-		return typeof arg === 'object' && arg !== null && '$each' in arg && Array.isArray((arg as { $each: TItem[] }).$each);
-	};
+	const isEachArgument = (arg: unknown): arg is { $each?: TItem[] } => typeof arg === 'object' && arg !== null && '$each' in arg && Array.isArray((arg as { $each: TItem[] }).$each);
 
 	const values = isEachArgument(arg) ? arg.$each : [arg];
 

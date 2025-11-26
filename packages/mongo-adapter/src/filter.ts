@@ -126,8 +126,7 @@ const expandArraysInBranches = (branches: LookupBranch[], skipTheArrays?: boolea
 const convertElementMatcherToBranchedMatcher = (
 	elementMatcher: (value: unknown) => boolean | number,
 	options: { dontExpandLeafArrays?: boolean; dontIncludeLeafArrays?: boolean } = {},
-) => {
-	return (branches: LookupBranch[]) => {
+) => (branches: LookupBranch[]) => {
 		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches, options.dontIncludeLeafArrays);
 
 		return someMatches(expanded, (element) => {
@@ -146,7 +145,6 @@ const convertElementMatcherToBranchedMatcher = (
 			};
 		});
 	};
-};
 
 const operatorBranchedMatcher = <T>(valueSelector: FilterOperators<T>) => {
 	const operatorMatchers = Object.entries(valueSelector).map(([operator, operand]): ((branches: LookupBranch[]) => Match) => {
@@ -196,9 +194,7 @@ const $in = (operand: unknown): ((value: unknown) => boolean) => {
 
 const $eq = (operand: unknown) => convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand));
 
-const $not = (operand: unknown) => {
-	return invertBranchedMatcher(compileValueSelector(operand));
-};
+const $not = (operand: unknown) => invertBranchedMatcher(compileValueSelector(operand));
 
 const $ne = (operand: unknown) => invertBranchedMatcher(convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand)));
 
@@ -533,9 +529,7 @@ const compileValueSelector = (valueSelector: unknown) => {
 	return convertElementMatcherToBranchedMatcher(equalityElementMatcher(valueSelector));
 };
 
-const compileArrayOfDocumentSelectors = <T>(selectors: Filter<T>[]) => {
-	return selectors.map((subSelector) => createDocumentMatcherFromFilter(subSelector));
-};
+const compileArrayOfDocumentSelectors = <T>(selectors: Filter<T>[]) => selectors.map((subSelector) => createDocumentMatcherFromFilter(subSelector));
 
 export const createDocumentMatcherFromFilter = <T>(filter: Filter<T>) => {
 	const docMatchers = Object.entries(filter)
