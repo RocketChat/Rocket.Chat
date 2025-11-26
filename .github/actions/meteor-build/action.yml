@@ -163,7 +163,7 @@ runs:
         # Restore original package.json so meteor should not copy devDependencies
         mv apps/meteor/package.json.bak apps/meteor/package.json
 
-        strace -f -e trace=connect -o network.log yarn build:ci
+        strace -f -e trace=connect,getaddrinfo,gethostbyname -s 256 -o network.log yarn build:ci
 
         declare -a meter_modules_to_remove=(
             "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
