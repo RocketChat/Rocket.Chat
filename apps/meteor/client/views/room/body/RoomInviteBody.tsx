@@ -2,6 +2,8 @@ import { Box, Button, Chip, States, StatesActions, StatesIcon, StatesLink, State
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
+import { links } from '../../../lib/links';
+
 type RoomInviteBodyProps = {
 	isLoading?: boolean;
 	inviterUsername: string;
@@ -31,7 +33,7 @@ const RoomInviteBody = ({ inviterUsername, isLoading, onAccept, onReject }: Room
 						{t('Accept')}
 					</Button>
 				</StatesActions>
-				<StatesLink href='#'>{t('Learn_more_about_Federation')}</StatesLink>
+				<StatesLink href={links.go.matrixFederation}>{t('Learn_more_about_Federation')}</StatesLink>
 			</States>
 		</Box>
 	);
