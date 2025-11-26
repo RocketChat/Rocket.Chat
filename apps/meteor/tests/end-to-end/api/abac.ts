@@ -2036,6 +2036,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	describe('LDAP integration', () => {
 		before(async () => {
 			await updateSetting('LDAP_Enable', true);
+			await updateSetting('LDAP_Host', 'openldap');
 			await updateSetting('LDAP_Authentication', true);
 			await updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air');
 			await updateSetting('LDAP_Authentication_Password', 'adminpassword');
@@ -2045,7 +2046,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '*/5 * * * * *');
 			await updateSetting(
-				'LDAP_ABAC_Attribute_Map',
+				'LDAP_ABAC_AttributeMap',
 				JSON.stringify({
 					departmentNumber: 'department',
 					telephoneNumber: 'department',
@@ -2077,6 +2078,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		after(async () => {
 			await updateSetting('LDAP_Enable', false);
+			await updateSetting('LDAP_Host', '');
 			await updateSetting('LDAP_Authentication', false);
 			await updateSetting('LDAP_Authentication_UserDN', '');
 			await updateSetting('LDAP_Authentication_Password', '');
@@ -2085,7 +2087,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await updateSetting('LDAP_AD_Username_Field', '');
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
-			await updateSetting('LDAP_ABAC_Attribute_Map', '');
+			await updateSetting('LDAP_ABAC_AttributeMap', '');
 		});
 	});
 });
