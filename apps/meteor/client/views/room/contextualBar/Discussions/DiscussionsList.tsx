@@ -1,6 +1,7 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
 import { useCallback } from 'react';
@@ -18,7 +19,6 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type DiscussionsListProps = {

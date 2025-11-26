@@ -1,12 +1,11 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Box, Palette, Tag } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,

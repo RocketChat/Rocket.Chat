@@ -10325,6 +10325,8 @@ __metadata:
     eslint-plugin-storybook: "npm:~0.11.6"
     eslint-plugin-testing-library: "npm:~6.4.0"
     jest: "npm:~30.2.0"
+    overlayscrollbars: "npm:^2.11.4"
+    overlayscrollbars-react: "npm:^0.5.6"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-hook-form: "npm:~7.45.4"
@@ -10339,6 +10341,8 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    overlayscrollbars: "*"
+    overlayscrollbars-react: "*"
     react: "*"
     react-i18next: "*"
   languageName: unknown
