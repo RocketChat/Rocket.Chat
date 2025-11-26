@@ -15,7 +15,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,6 @@ import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMul
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
