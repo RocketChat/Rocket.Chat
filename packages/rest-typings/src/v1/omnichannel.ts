@@ -513,6 +513,40 @@ const LivechatMonitorsListSchema = {
 
 export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
+type POSTLivechatMonitorCreateRequest = {
+	username: string;
+};
+
+const POSTLivechatMonitorCreateRequestSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatMonitorCreateRequest = ajv.compile<POSTLivechatMonitorCreateRequest>(POSTLivechatMonitorCreateRequestSchema);
+
+type POSTLivechatMonitorsCreateSuccess = Pick<IUser, '_id' | 'username' | 'roles'>;
+
+const POSTLivechatMonitorsCreateSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		_id: { type: 'string' },
+		username: { type: 'string' },
+		roles: { type: 'array', items: { type: 'string' } },
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatMonitorsCreateSuccessResponse = ajv.compile<POSTLivechatMonitorsCreateSuccess>(
+	POSTLivechatMonitorsCreateSuccessSchema,
+);
+
 type POSTLivechatTagsRemoveParams = {
 	id: string;
 };
@@ -4169,23 +4203,6 @@ const POSTLivechatRemoveRoomSuccessSchema = {
 
 export const POSTLivechatRemoveRoomSuccess = ajv.compile<void>(POSTLivechatRemoveRoomSuccessSchema);
 
-type POSTLivechatRemoveCustomFields = {
-	customFieldId: string;
-};
-
-const POSTLivechatRemoveCustomFieldsSchema = {
-	type: 'object',
-	properties: {
-		customFieldId: {
-			type: 'string',
-		},
-	},
-	required: ['customFieldId'],
-	additionalProperties: false,
-};
-
-export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
-
 const POSTLivechatSaveCustomFieldsSchema = {
 	type: 'object',
 	properties: {
@@ -4304,6 +4321,23 @@ const POSTLivechatSaveCustomFieldSuccessSchema = {
 export const POSTLivechatSaveCustomFieldSuccess = ajv.compile<{ customField: ILivechatCustomField }>(
 	POSTLivechatSaveCustomFieldSuccessSchema,
 );
+
+type POSTLivechatRemoveCustomFields = {
+	customFieldId: string;
+};
+
+const POSTLivechatRemoveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		customFieldId: {
+			type: 'string',
+		},
+	},
+	required: ['customFieldId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
 
 const POSTLivechatRemoveCustomFieldSuccessSchema = {
 	type: 'object',

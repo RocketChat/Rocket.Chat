@@ -179,6 +179,7 @@
 		"eslint-plugin-prettier": "~5.2.6",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
+		"eslint-plugin-storybook": "~0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"fast-glob": "^3.3.3",
