@@ -45,7 +45,7 @@ export const EnterpriseCheck: ServiceSchema = {
 						checkFails = 0;
 						return;
 					}
-				} catch (e: unknown) {
+				} catch {
 					// check failed, so continue
 				}
 

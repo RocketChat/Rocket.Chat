@@ -133,7 +133,6 @@ export type MessageMention = {
 	fname?: string; // incase of channel mentions
 };
 
- 
 export interface IMessageCustomFields {}
 
 interface IEncryptedContent {

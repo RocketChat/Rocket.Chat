@@ -37,10 +37,6 @@
 		"prettier": "~3.3.3",
 		"typescript-eslint": "^8.0.0"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
-	},
 	"devDependencies": {
 		"typescript": "~5.9.3"
 	},
