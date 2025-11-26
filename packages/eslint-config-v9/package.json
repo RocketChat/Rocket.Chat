@@ -1,0 +1,51 @@
+{
+	"name": "@rocket.chat/eslint-config-v9",
+	"version": "0.7.0",
+	"description": "Rocket.Chat's JS/TS ESLint config for ESLint 9",
+	"type": "module",
+	"main": "./standard/index.js",
+	"files": [
+		"/standard",
+		"/original",
+		"/best-practices",
+		"/errors",
+		"/es6",
+		"/imports",
+		"/node",
+		"/style",
+		"/variables",
+		"react.js"
+	],
+	"dependencies": {
+		"@babel/core": "~7.28.5",
+		"@babel/eslint-parser": "~7.28.5",
+		"@eslint/js": "^9.0.0",
+		"@types/prettier": "^2.7.3",
+		"@typescript-eslint/eslint-plugin": "^8.0.0",
+		"@typescript-eslint/parser": "^8.0.0",
+		"eslint": "^9.0.0",
+		"eslint-config-prettier": "^9.1.2",
+		"eslint-import-resolver-typescript": "~4.4.4",
+		"eslint-plugin-anti-trojan-source": "~1.1.2",
+		"eslint-plugin-import": "^2.31.0",
+		"eslint-plugin-jest": "~28.8.3",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-prettier": "~5.2.6",
+		"eslint-plugin-react": "^7.37.0",
+		"eslint-plugin-react-hooks": "^5.1.0",
+		"globals": "^15.0.0",
+		"prettier": "~3.3.3",
+		"typescript-eslint": "^8.0.0"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js .",
+		"lint:fix": "eslint --ext .js . --fix"
+	},
+	"devDependencies": {
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
+
