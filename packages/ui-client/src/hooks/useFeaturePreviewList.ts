@@ -82,7 +82,7 @@ export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
 	if (typeof setting === 'string') {
 		try {
 			return JSON.parse(setting) as FeaturePreviewProps[];
-		} catch (_) {
+		} catch {
 			return;
 		}
 	}
