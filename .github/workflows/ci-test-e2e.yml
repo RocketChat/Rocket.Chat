@@ -160,11 +160,6 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d httpbin
 
-      - name: Start ldap container and wait for it to be ready on EE API tests only
-        if: inputs.type == 'api' && inputs.release == 'ee'
-        run: |
-          docker compose -f docker-compose-ci.yml up -d openldap
-
       - name: Prepare code coverage directory
         run: |
           set -o xtrace
