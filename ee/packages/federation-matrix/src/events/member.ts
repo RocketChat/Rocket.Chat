@@ -1,7 +1,7 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, UserID, PduForType } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures, PduForType } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -35,13 +35,14 @@ export async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 }
 
 export async function getOrCreateFederatedRoom(
-	roomName: string, // matrix room ID
+	matrixRoomId: string,
+	roomName: string,
 	roomFName: string,
 	roomType: RoomType,
 	inviterUserId: string,
 ): Promise<IRoom> {
 	try {
-		const room = await Rooms.findOne({ 'federation.mrid': roomName });
+		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
 		if (room) {
 			return room;
 		}
@@ -50,7 +51,7 @@ export async function getOrCreateFederatedRoom(
 			type: roomType,
 			name: roomName,
 			options: {
-				federatedRoomId: roomName,
+				federatedRoomId: matrixRoomId,
 				creator: inviterUserId,
 			},
 			extraData: {
@@ -103,7 +104,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	// TODO: Consider refactoring to create federated rooms using the Matrix roomId as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	const roomFName = roomName;
 
-	const room = await getOrCreateFederatedRoom(roomId, roomFName, roomType, inviterUser._id as UserID);
+	const room = await getOrCreateFederatedRoom(roomId, roomName, roomFName, roomType, inviterUser._id);
 	if (!room) {
 		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
