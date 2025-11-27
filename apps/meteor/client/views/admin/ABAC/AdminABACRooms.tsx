@@ -3,7 +3,7 @@ import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rock
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACRoomMenu from './AdminABACRoomMenu';
@@ -50,6 +50,11 @@ const AdminABACRooms = () => {
 		}),
 		[debouncedText, current, itemsPerPage, filterType],
 	);
+
+	// Whenever the user changes the filter or the text, reset the pagination to the first page
+	useEffect(() => {
+		setCurrent(0);
+	}, [debouncedText, filterType, setCurrent]);
 
 	const { data, isLoading } = useQuery({
 		queryKey: ABACQueryKeys.rooms.roomsList(query),
