@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-feat: Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
+Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
