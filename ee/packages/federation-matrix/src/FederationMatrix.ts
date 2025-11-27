@@ -919,14 +919,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async handleInvite(roomId: IRoom['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void> {
-		const subscription = await Subscriptions.findOne(
-			{
-				'rid': roomId,
-				'u._id': userId,
-				'status': 'INVITED',
-			},
-			{ projection: { _id: 1 } },
-		);
+		const subscription = await Subscriptions.findInvitedSubscription(roomId, userId);
 		if (!subscription) {
 			throw new Error('User does not have a pending invite for this room');
 		}
