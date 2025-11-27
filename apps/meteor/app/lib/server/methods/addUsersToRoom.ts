@@ -1,5 +1,5 @@
-import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
+import type { IUser, SubscriptionStatus } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
@@ -107,7 +107,18 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser, user);
+				// no clear and easy way to avoid federation logic here, since we must trigger an invite
+				// and set the status to INVITED when dealing with federated users
+				let inviteOptions: { status?: SubscriptionStatus; inviterUsername?: string } = {};
+				if (isRoomNativeFederated(room) && user && newUser.username) {
+					await FederationMatrix.inviteUsersToRoom(room, [newUser.username], user);
+					inviteOptions = {
+						status: 'INVITED',
+						inviterUsername: user.username,
+					};
+				}
+
+				return addUserToRoom(data.rid, newUser, user, inviteOptions);
 			} else {
 				if (!newUser.username) {
 					return;
