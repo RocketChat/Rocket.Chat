@@ -1,7 +1,7 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { FormEvent, ReactElement } from 'react';
 import { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -24,7 +24,6 @@ import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 
 type ThreadType = 'all' | 'following' | 'unread';

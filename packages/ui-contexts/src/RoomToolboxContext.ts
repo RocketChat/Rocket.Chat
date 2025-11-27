@@ -1,8 +1,9 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 import type { ReactNode, ComponentProps, ComponentType } from 'react';
+
+import type { TranslationKey } from './TranslationContext';
 
 export type RenderToolboxItemParams = RoomToolboxActionConfig & {
 	className?: ComponentProps<typeof Box>['className'];
@@ -43,5 +44,3 @@ export const RoomToolboxContext = createContext<RoomToolboxContextValue>({
 	openTab: () => undefined,
 	closeTab: () => undefined,
 });
-
-export const useRoomToolbox = () => useContext(RoomToolboxContext);
