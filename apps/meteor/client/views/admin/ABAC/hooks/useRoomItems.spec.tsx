@@ -10,7 +10,7 @@ const mockDispatchToastMessage = jest.fn();
 
 let ABACAvailable = true;
 
-jest.mock('./hooks/useIsABACAvailable', () => jest.fn(() => ABACAvailable));
+jest.mock('./useIsABACAvailable', () => jest.fn(() => ABACAvailable));
 
 jest.mock('@rocket.chat/ui-contexts', () => {
 	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
