@@ -15,6 +15,7 @@ import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnic
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
@@ -33,24 +34,6 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
-};
-
-const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number, t: TFunction) => {
-	const title = [] as string[];
-	if (userMentions) {
-		title.push(t('mentions_counter', { count: userMentions }));
-	}
-	if (threadUnread) {
-		title.push(t('threads_counter', { count: threadUnread }));
-	}
-	if (groupMentions) {
-		title.push(t('group_mentions_counter', { count: groupMentions }));
-	}
-	const count = unread - userMentions - groupMentions;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
-	}
-	return title.join(', ');
 };
 
 type RoomListRowProps = {
@@ -110,20 +93,9 @@ function SideBarItemTemplateWithData({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const {
-		lastMessage,
-		hideUnreadStatus,
-		hideMentionStatus,
-		unread = 0,
-		alert,
-		userMentions,
-		groupMentions,
-		tunread = [],
-		tunreadUser = [],
-		rid,
-		t: type,
-		cl,
-	} = room;
+	const { lastMessage, hideUnreadStatus, unread = 0, alert, rid, t: type, cl } = room;
+
+	const { unreadCount, unreadTitle, showUnread, unreadVariant } = useUnreadDisplay(room);
 
 	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
@@ -152,26 +124,17 @@ function SideBarItemTemplateWithData({
 		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
 	) : null;
 
-	const threadUnread = tunread.length > 0;
-	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
-
-	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
-
-	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
-
 	const badges = (
 		<Margins inlineStart={8}>
-			{showBadge && isUnread && (
+			{showUnread && (
 				<Badge
 					role='status'
 					{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
-					variant={variant}
-					title={badgeTitle}
-					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title })}
+					variant={unreadVariant}
+					title={unreadTitle}
+					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
 				>
-					<span aria-hidden>{unread + tunread?.length}</span>
+					<span aria-hidden>{unreadCount.total}</span>
 				</Badge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
@@ -190,7 +153,7 @@ function SideBarItemTemplateWithData({
 			onClick={(): void => {
 				!selected && sidebar.toggle();
 			}}
-			aria-label={showBadge && isUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title }) : title}
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
@@ -204,7 +167,7 @@ function SideBarItemTemplateWithData({
 					? (): ReactElement => (
 							<RoomMenu
 								alert={alert}
-								threadUnread={threadUnread}
+								threadUnread={unreadCount.threads > 0}
 								rid={rid}
 								unread={!!unread}
 								roomOpen={selected}
