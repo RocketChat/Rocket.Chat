@@ -40,6 +40,8 @@ export async function getOrCreateFederatedRoom(
 	roomFName: string,
 	roomType: RoomType,
 	inviterUserId: string,
+	inviterUserName: string,
+	inviteeUserName?: string,
 ): Promise<IRoom> {
 	try {
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
@@ -50,6 +52,7 @@ export async function getOrCreateFederatedRoom(
 		return Room.create(inviterUserId, {
 			type: roomType,
 			name: roomName,
+			members: inviteeUserName ? [inviteeUserName, inviterUserName] : [inviterUserName],
 			options: {
 				federatedRoomId: matrixRoomId,
 				creator: inviterUserId,
@@ -104,7 +107,15 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	// TODO: Consider refactoring to create federated rooms using the Matrix roomId as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	const roomFName = roomName;
 
-	const room = await getOrCreateFederatedRoom(roomId, roomName, roomFName, roomType, inviterUser._id);
+	const room = await getOrCreateFederatedRoom(
+		roomId,
+		roomName,
+		roomFName,
+		roomType,
+		inviterUser._id,
+		inviterUser?.username as string,
+		content?.is_direct ? (inviteeUser?.username as string) : undefined,
+	);
 	if (!room) {
 		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
