@@ -113,7 +113,11 @@ export const test = baseTest.extend<BaseTest>({
 						continue;
 					}
 				}
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${uuid()}.json`), JSON.stringify(entries));
+
+				fs.writeFileSync(
+					path.join(PATH_NYC_OUTPUT, `AI_playwright_coverage_${uuid()}.json`),
+					JSON.stringify(Object.fromEntries(entries.flatMap((entry) => Object.entries(entry)))),
+				);
 
 				await page.close();
 			}),
