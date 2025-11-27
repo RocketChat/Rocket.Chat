@@ -217,6 +217,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
+		"v8-to-istanbul": "^9.3.0",
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {

@@ -76,7 +76,7 @@ jobs:
 
     env:
       # if building for production on develop branch or release, add suffix for coverage images
-      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && inputs.type != 'ui' && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
