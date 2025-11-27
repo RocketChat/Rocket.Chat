@@ -49,7 +49,7 @@
   "ABAC_Delete_room_content": "Removing <bold>{{roomName}}</bold> from ABAC management may result in unintended users gaining access.",
   "ABAC_Room_removed": "Room {{roomName}} removed from ABAC management",
   "ABAC_Add_Attribute": "Add Attribute",
-  "ABAC_Attributes_Values": "Attributes Values",
+  "ABAC_Attribute_Values": "Attribute Values",
   "ABAC_Edit_Room": "Edit Room",
   "ABAC_Add_room": "Add Room",
   "ABAC_No_repeated_attributes": "Attribute already added",

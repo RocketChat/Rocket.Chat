@@ -104,7 +104,7 @@ const AdminABACRooms = () => {
 							<GenericTableHeaderCell>{t('Room')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Members')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attributes')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('ABAC_Attributes_Values')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('ABAC_Attribute_Values')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell key='spacer' w={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
