@@ -10,7 +10,7 @@ import { createOrUpdateFederatedUser, getUsernameServername } from '../Federatio
 
 const logger = new Logger('federation-matrix:member');
 
-export async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
+async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 	try {
 		const serverName = federationSDK.getConfig('serverName');
 		const [username, userServerName, isLocal] = getUsernameServername(userId, serverName);
@@ -34,15 +34,23 @@ export async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 	}
 }
 
-export async function getOrCreateFederatedRoom(
-	matrixRoomId: string,
-	roomName: string,
-	roomFName: string,
-	roomType: RoomType,
-	inviterUserId: string,
-	inviterUserName: string,
-	inviteeUserName?: string,
-): Promise<IRoom> {
+async function getOrCreateFederatedRoom({
+	matrixRoomId,
+	roomName,
+	roomFName,
+	roomType,
+	inviterUserId,
+	inviterUserName,
+	inviteeUserName,
+}: {
+	matrixRoomId: string;
+	roomName: string;
+	roomFName: string;
+	roomType: RoomType;
+	inviterUserId: string;
+	inviterUserName: string;
+	inviteeUserName?: string;
+}): Promise<IRoom> {
 	try {
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
 		if (room) {
@@ -67,9 +75,13 @@ export async function getOrCreateFederatedRoom(
 	}
 }
 
-export async function handleInvite(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
-	const { room_id: roomId, sender: senderId, state_key: userId, content } = event;
-
+async function handleInvite({
+	sender: senderId,
+	state_key: userId,
+	room_id: roomId,
+	content,
+	unsigned,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const inviterUser = await getOrCreateFederatedUser(senderId);
 	if (!inviterUser) {
 		throw new Error(`Failed to get or create inviter user: ${senderId}`);
@@ -83,7 +95,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	// we are not handling public rooms yet - in the future we should use 'c' for public rooms
 	// as well as should rethink the canAccessRoom authorization logic
 	const roomType = content.membership === 'invite' && content?.is_direct ? 'd' : 'p';
-	const strippedState = event.unsigned?.invite_room_state;
+	const strippedState = unsigned?.invite_room_state;
 
 	const roomOriginDomain = senderId.split(':')?.pop();
 	if (!roomOriginDomain) {
@@ -95,6 +107,8 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 
 	// if is a DM, use the sender username as the room name
 	// otherwise, use the matrix room name and the room origin domain
+	// TODO: consider refactoring to create federated rooms using the Matrix room_id
+	// as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	let roomName: string;
 	if (content?.is_direct) {
 		roomName = senderId;
@@ -104,18 +118,17 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 		roomName = `${roomId}:${roomOriginDomain}`;
 	}
 
-	// TODO: Consider refactoring to create federated rooms using the Matrix roomId as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	const roomFName = roomName;
 
-	const room = await getOrCreateFederatedRoom(
-		roomId,
+	const room = await getOrCreateFederatedRoom({
+		matrixRoomId: roomId,
 		roomName,
 		roomFName,
 		roomType,
-		inviterUser._id,
-		inviterUser?.username as string,
-		content?.is_direct ? (inviteeUser?.username as string) : undefined,
-	);
+		inviterUserId: inviterUser._id,
+		inviterUserName: inviterUser.username as string, // TODO: Remove force cast
+		inviteeUserName: content?.is_direct ? inviteeUser.username : undefined,
+	});
 	if (!room) {
 		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
@@ -126,9 +139,10 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	});
 }
 
-async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
-	const { room_id: roomId, state_key: userId } = event;
-
+async function handleJoin({
+	room_id: roomId,
+	state_key: userId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
 	if (!joiningUser || !joiningUser.username) {
 		throw new Error(`Failed to get or create joining user: ${userId}`);
@@ -147,9 +161,10 @@ async function handleJoin(event: HomeserverEventSignatures['homeserver.matrix.me
 	await Room.acceptRoomInvite(room, subscription, joiningUser);
 }
 
-async function handleLeave(event: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
-	const { room_id: roomId, state_key: userId } = event;
-
+async function handleLeave({
+	room_id: roomId,
+	state_key: userId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const leavingUser = await getOrCreateFederatedUser(userId);
 	if (!leavingUser) {
 		throw new Error(`Failed to get or create leaving user: ${userId}`);
