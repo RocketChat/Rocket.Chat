@@ -44,7 +44,7 @@ export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
 	options: {
-		creator?: string;
+		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
 		federatedRoomId?: string;
 	},
@@ -157,6 +157,15 @@ export async function createDirectRoom(
 
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
+
+			const subscriptionStatus: Partial<ISubscription> =
+				roomExtraData.federated && options?.creator !== member._id
+					? {
+							status: 'INVITED',
+							inviterUsername: options?.creator, // TODO: Should use inviterId instead of inviterUsername
+						}
+					: {};
+
 			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
@@ -164,6 +173,7 @@ export async function createDirectRoom(
 					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
 						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
+						...subscriptionStatus,
 					}),
 				},
 				{ upsert: true },
