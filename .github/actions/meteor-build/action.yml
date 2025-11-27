@@ -163,8 +163,7 @@ runs:
         # Restore original package.json so meteor should not copy devDependencies
         mv apps/meteor/package.json.bak apps/meteor/package.json
 
-        # Run build with Node's HTTP/TLS/NET debug output captured in network.log
-        NODE_DEBUG=net,tls,http yarn build:ci 2> network.log
+        yarn build:ci
 
         declare -a meter_modules_to_remove=(
             "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
@@ -196,13 +195,6 @@ runs:
         # Removes 184M
         find /tmp/dist/bundle -type f -name "*.d.ts" -delete
         du -s /tmp/dist/bundle
-
-    - name: Upload network log
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: network-strace
-        path: network.log
 
     - name: Prepare build
       shell: bash
