@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Fixes an issue where new users pending approval were being shown under deactivated tab.
+feat: Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
