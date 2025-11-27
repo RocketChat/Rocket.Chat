@@ -46,11 +46,8 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 					return acc;
 				}, {}),
 			};
-			if (attributeId) {
-				await createOrUpdateABACRoom(payload);
-			} else {
-				await createOrUpdateABACRoom(payload);
-			}
+
+			await createOrUpdateABACRoom(payload);
 		},
 		onSuccess: () => {
 			if (attributeId) {
