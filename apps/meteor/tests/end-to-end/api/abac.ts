@@ -2047,7 +2047,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await updateSetting('LDAP_AD_User_Search_Field', 'uid');
 			await updateSetting('LDAP_AD_Username_Field', 'uid');
 			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '*/5 * * * * *');
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '* * * * * *');
 			await updateSetting(
 				'LDAP_ABAC_AttributeMap',
 				JSON.stringify({
@@ -2059,10 +2059,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async function () {
 			// Wait for background sync to run once before tests start
-			const response = await request.post(`${v1}/ldap.syncNow`).set(credentials);
-			console.log(response.body);
-			this.timeout(15000);
-			await new Promise((resolve) => setTimeout(resolve, 10000));
+			await request.post(`${v1}/ldap.syncNow`).set(credentials);
+			this.timeout(5000);
+
+			// Force abac attribute sync for user john.young, that way we test it too :p
+			await request.post(`${v1}/abac/users/sync`).send({ emails: ['john.young@space.air'] });
 		});
 
 		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
