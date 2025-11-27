@@ -1,6 +1,6 @@
 import type { BaseTest } from '../test';
 
-const removeMonitor = async (api: BaseTest['api'], username: string) => api.post('/v1/livechat/monitors.remove', { username });
+const deleteMonitor = async (api: BaseTest['api'], username: string) => api.post('/v1/livechat/monitors.delete', { username });
 
 export const createMonitor = async (api: BaseTest['api'], username: string) => {
 	const response = await api.post('/livechat/monitors.create', { username });
@@ -14,6 +14,6 @@ export const createMonitor = async (api: BaseTest['api'], username: string) => {
 	return {
 		response,
 		data,
-		delete: async () => removeMonitor(api, data.username),
+		delete: async () => deleteMonitor(api, data.username),
 	};
 };

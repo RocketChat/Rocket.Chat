@@ -47,7 +47,7 @@ const MonitorsTable = () => {
 
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 
-	const removeMonitor = useEndpoint('POST', '/v1/livechat/monitors.remove');
+	const deleteMonitor = useEndpoint('POST', '/v1/livechat/monitors.delete');
 	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
@@ -98,7 +98,7 @@ const MonitorsTable = () => {
 	const handleRemove = (username: string) => {
 		const onDeleteMonitor = async () => {
 			try {
-				await removeMonitor({ username });
+				await deleteMonitor({ username });
 				dispatchToastMessage({ type: 'success', message: t('Monitor_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

@@ -111,14 +111,14 @@ type TestUser = { user: IUser; credentials: Credentials };
 		});
 
 		it('should remove a monitor', async () => {
-			const { body } = await request.post(api('livechat/monitors.remove')).set(credentials).send({ username: user.username }).expect(200);
+			const { body } = await request.post(api('livechat/monitors.delete')).set(credentials).send({ username: user.username }).expect(200);
 
 			expect(body.success).to.be.true;
 		});
 
 		it('should fail when trying to remove a monitor that does not exist', async () => {
 			const { body } = await request
-				.post(api('livechat/monitors.remove'))
+				.post(api('livechat/monitors.delete'))
 				.set(credentials)
 				.send({ username: 'some-random-username' })
 				.expect(400);
