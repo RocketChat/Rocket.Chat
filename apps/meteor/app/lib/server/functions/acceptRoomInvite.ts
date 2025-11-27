@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
-export const acceptRoomInvite = async (room: IRoom, subscription: ISubscription, user: IUser): Promise<void> => {
+export const acceptRoomInvite = async (room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> => {
 	if (subscription.status !== 'INVITED') {
 		throw new Meteor.Error('error-not-invited', 'User was not invited to this room', {
 			method: 'acceptRoomInvite',

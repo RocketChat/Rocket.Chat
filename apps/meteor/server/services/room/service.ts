@@ -83,7 +83,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
-	async acceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<boolean> {
+	async acceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
 		return acceptRoomInvite(room, subscription, user);
 	}
 
