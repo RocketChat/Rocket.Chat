@@ -107,8 +107,8 @@ const AdminABACRooms = () => {
 								<GenericTableRow key={room._id}>
 									<GenericTableCell>{room.fname || room.name}</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
-									<GenericTableCell>{room.abacAttributes?.map((attribute) => attribute.key).join(', ')}</GenericTableCell>
-									<GenericTableCell>{room.abacAttributes?.map((attribute) => attribute.values?.join(', '))}</GenericTableCell>
+									<GenericTableCell>{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}</GenericTableCell>
+									<GenericTableCell>{room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}</GenericTableCell>
 									<GenericTableCell>
 										<AdminABACRoomMenu room={{ rid: room._id, name: room.fname || room.name || room._id }} />
 									</GenericTableCell>
