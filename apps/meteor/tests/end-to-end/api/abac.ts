@@ -5,6 +5,7 @@ import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
+import { sleep } from '../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
@@ -2059,12 +2060,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		before(async function () {
+			this.timeout(10000);
 			// Wait for background sync to run once before tests start
 			await request.post(`${v1}/ldap.syncNow`).set(credentials);
-			this.timeout(5000);
+			await sleep(5000);
 
 			// Force abac attribute sync for user john.young, that way we test it too :p
-			await request.post(`${v1}/abac/users/sync`).send({ emails: ['john.young@space.air'] });
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({ emails: ['john.young@space.air'] });
+
+			await sleep(2000);
 		});
 
 		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
@@ -2083,18 +2090,21 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(departmentAttr!.values).to.be.an('array').that.is.not.empty;
 		});
 
-		// after(async () => {
-		// 	await updateSetting('LDAP_Enable', false);
-		// 	await updateSetting('LDAP_Host', '');
-		// 	await updateSetting('LDAP_Authentication', false);
-		// 	await updateSetting('LDAP_Authentication_UserDN', '');
-		// 	await updateSetting('LDAP_Authentication_Password', '');
-		// 	await updateSetting('LDAP_BaseDN', '');
-		// 	await updateSetting('LDAP_AD_User_Search_Field', '');
-		// 	await updateSetting('LDAP_AD_Username_Field', '');
-		// 	await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
-		// 	await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
-		// 	await updateSetting('LDAP_ABAC_AttributeMap', '');
-		// });
+		after(async () => {
+			await updateSetting('LDAP_Enable', false);
+			await updateSetting('ABAC_Enabled', false);
+			await updateSetting('LDAP_Background_Sync', false);
+			await updateSetting('LDAP_Background_Sync_Import_New_Users', false);
+			await updateSetting('LDAP_Host', '');
+			await updateSetting('LDAP_Authentication', false);
+			await updateSetting('LDAP_Authentication_UserDN', '');
+			await updateSetting('LDAP_Authentication_Password', '');
+			await updateSetting('LDAP_BaseDN', '');
+			await updateSetting('LDAP_AD_User_Search_Field', '');
+			await updateSetting('LDAP_AD_Username_Field', '');
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
+			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
+			await updateSetting('LDAP_ABAC_AttributeMap', '');
+		});
 	});
 });
