@@ -83,7 +83,7 @@ export async function handleInvite(event: HomeserverEventSignatures['homeserver.
 	// we are not handling public rooms yet - in the future we should use 'c' for public rooms
 	// as well as should rethink the canAccessRoom authorization logic
 	const roomType = content.membership === 'invite' && content?.is_direct ? 'd' : 'p';
-	const strippedState = event.unsigned.invite_room_state;
+	const strippedState = event.unsigned?.invite_room_state;
 
 	const roomOriginDomain = senderId.split(':')?.pop();
 	if (!roomOriginDomain) {
