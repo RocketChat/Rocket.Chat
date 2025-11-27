@@ -10080,7 +10080,6 @@ __metadata:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~8.45.0"
-    jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
