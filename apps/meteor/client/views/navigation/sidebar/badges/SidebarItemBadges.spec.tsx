@@ -33,4 +33,16 @@ describe('SidebarItemBadges', () => {
 
 		expect(screen.queryByRole('status', { name: 'Test Room' })).not.toBeInTheDocument();
 	});
+
+	it('should render InvitationBadge when subscription has status INVITED', () => {
+		render(<SidebarItemBadges room={createFakeSubscription({ status: 'INVITED' })} />, { wrapper: appRoot });
+
+		expect(screen.getByRole('status', { name: 'Message request' })).toBeInTheDocument();
+	});
+
+	it('should not render InvitationBadge when subscription does not have status INVITED', () => {
+		render(<SidebarItemBadges room={createFakeSubscription()} />, { wrapper: appRoot });
+
+		expect(screen.queryByRole('status', { name: 'Message request' })).not.toBeInTheDocument();
+	});
 });
