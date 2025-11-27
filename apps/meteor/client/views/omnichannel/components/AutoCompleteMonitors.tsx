@@ -31,7 +31,7 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 			endReached={() => fetchNextPage()}
 			onBlur={onBlur}
 			onChange={onChange}
-			renderItem={({ label, value, ...props }) => (
+			renderItem={({ label, value, ref: _ref, ...props }) => (
 				<CheckOption {...props} label={label} selected={value ? selectedValues.has(value) : false} />
 			)}
 		/>

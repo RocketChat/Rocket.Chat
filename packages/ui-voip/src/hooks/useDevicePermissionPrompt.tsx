@@ -2,7 +2,7 @@ import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMedi
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import PermissionFlowModal, { type PermissionFlowModalType } from '../components/PermissionFlow/PermissionFlowModal';
+import { PermissionFlowModal, type PermissionFlowModalType } from '../views';
 
 type OnAccept = (stream: MediaStream) => void;
 type OnReject = (error?: DOMException) => void;

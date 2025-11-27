@@ -1,4 +1,3 @@
-import { parseMeteorResponse } from '../parseMeteorResponse';
 import type { BaseTest } from '../test';
 
 const removeMonitor = async (api: BaseTest['api'], id: string) =>
@@ -6,25 +5,18 @@ const removeMonitor = async (api: BaseTest['api'], id: string) =>
 		message: JSON.stringify({ msg: 'method', id: '33', method: 'livechat:removeMonitor', params: [id] }),
 	});
 
-export const createMonitor = async (api: BaseTest['api'], id: string) => {
-	const response = await api.post('/method.call/livechat:addMonitor', {
-		message: JSON.stringify({
-			msg: 'method',
-			id: '17',
-			method: 'livechat:addMonitor',
-			params: [id],
-		}),
-	});
+export const createMonitor = async (api: BaseTest['api'], username: string) => {
+	const response = await api.post('/livechat/monitors.create', { username });
 
 	if (response.status() !== 200) {
 		throw new Error(`Failed to create monitor [http status: ${response.status()}]`);
 	}
 
-	const monitor = await parseMeteorResponse<{ _id: string; username: string }>(response);
+	const data = await response.json();
 
 	return {
 		response,
-		data: monitor,
-		delete: async () => removeMonitor(api, monitor._id),
+		data,
+		delete: async () => removeMonitor(api, data.username),
 	};
 };

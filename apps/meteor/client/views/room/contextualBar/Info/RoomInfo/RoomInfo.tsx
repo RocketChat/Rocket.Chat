@@ -29,6 +29,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
+import RoomInfoABACSection from './ABAC/RoomInfoABACSection';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -128,6 +129,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
