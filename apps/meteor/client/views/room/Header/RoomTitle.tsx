@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useTranslation } from 'react-i18next';
 
 const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	useDocumentTitle(room.name, false);
@@ -36,9 +37,10 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	});
 
 	const buttonProps = useButtonPattern(handleOpenRoomInfo);
+	const { t } = useTranslation();
 
 	return (
-		<HeaderTitleButton {...buttonProps} mie={4}>
+		<HeaderTitleButton aria-label={room.encrypted ? t('Encrypted_channel_title', { roomName: room.name }) : undefined} {...buttonProps} mie={4}>
 			<HeaderIconWithRoom room={room} />
 			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
 		</HeaderTitleButton>

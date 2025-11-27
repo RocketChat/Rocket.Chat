@@ -1934,6 +1934,7 @@
   "Enabled": "Enabled",
   "Enabled_E2E_Encryption_for_this_room": "enabled E2E encryption for this room",
   "Encrypted": "Encrypted",
+  "Encrypted_channel_title": "{{roomName}} Encrypted",
   "Encrypted_RoomType": "Encrypted {{roomType}}",
   "Encrypted_channel_Description": "Messages are end-to-end encrypted, search will not work and notifications may not show message content",
   "Encrypted_content_cannot_be_searched": "Encrypted content cannot be searched.",
