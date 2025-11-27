@@ -83,7 +83,13 @@ export const test = baseTest.extend<BaseTest>({
 					const pathToSource = path.join(process.cwd(), '.meteor/local/build/programs/web.browser/dynamic/', `${entry.url}`);
 					const pathToSourceMap = `${pathToSource}.map`;
 
-					const sourceMapFile = JSON.parse(fs.readFileSync(pathToSourceMap, 'utf8'));
+					let sourceMapFile;
+					try {
+						sourceMapFile = JSON.parse(fs.readFileSync(pathToSourceMap, 'utf8'));
+					} catch (error) {
+						console.warn('Error reading source map file', pathToSourceMap);
+						continue;
+					}
 
 					// Some source maps (like .css or empty files) don't have any sources, so we skip them to avoid `v8toIstanbul` throwing an error
 					if (sourceMapFile.sources.length < 1) {
