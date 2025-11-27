@@ -58,4 +58,16 @@ describe('SidebarItemBadges', () => {
 
 		expect(screen.queryByTestId('omnichannel-badges')).not.toBeInTheDocument();
 	});
+
+	it('should render InvitationBadge when subscription has status INVITED', () => {
+		render(<SidebarItemBadges room={createRoomWithSubscription({ status: 'INVITED' })} />, { wrapper: appRoot });
+
+		expect(screen.getByRole('status', { name: 'Message request' })).toBeInTheDocument();
+	});
+
+	it('should not render InvitationBadge when subscription does not have status INVITED', () => {
+		render(<SidebarItemBadges room={createRoomWithSubscription()} />, { wrapper: appRoot });
+
+		expect(screen.queryByRole('status', { name: 'Message request' })).not.toBeInTheDocument();
+	});
 });
