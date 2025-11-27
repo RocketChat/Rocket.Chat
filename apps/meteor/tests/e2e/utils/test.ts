@@ -6,6 +6,7 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
+import v8toIstanbul from 'v8-to-istanbul';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -28,7 +29,8 @@ export type BaseTest = {
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
-		collectIstanbulCoverage: (coverageJSON: string) => void;
+		// collectIstanbulCoverage: (coverageJSON: string) => void;
+		getCoverage: () => Array<unknown>;
 		__coverage__: Record<string, unknown>;
 	}
 }
@@ -38,6 +40,15 @@ let apiContext: APIRequestContext;
 const cacheFromCredentials = new Map<string, string>();
 
 export const test = baseTest.extend<BaseTest>({
+	// TODO: if the page is created from the browser fixture, it does not trigger coverage.
+	// browser: async ({ browser }, use) => {
+	// 	browser.contexts().forEach((context) => {
+	// 		context.on('page', (page) => {
+	// 			start coverage here
+	// 		});
+	// 	});
+	// 	await use(browser);
+	// },
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
@@ -46,23 +57,58 @@ export const test = baseTest.extend<BaseTest>({
 			return;
 		}
 
-		await context.addInitScript(() =>
-			window.addEventListener('beforeunload', () => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__))),
-		);
+		context.on('page', async (page) => {
+			await page.coverage.startJSCoverage();
+		});
 
 		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
-
-		await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-			if (coverageJSON) {
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${uuid()}.json`), coverageJSON);
-			}
-		});
 
 		await use(context);
 
 		await Promise.all(
 			context.pages().map(async (page) => {
-				await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
+				const coverage = await page.coverage.stopJSCoverage();
+
+				const entries = [];
+				for await (const entry of coverage) {
+					if (!entry.url || !entry.source) {
+						continue;
+					}
+
+					// I'm not sure why but some scripts point to a server URL instead of a path.
+					if (entry.url.includes('http:') || entry.url.includes('https:') || entry.url.includes('node_modules')) {
+						continue;
+					}
+
+					const pathToSource = path.join(process.cwd(), '.meteor/local/build/programs/web.browser/dynamic/', `${entry.url}`);
+					const pathToSourceMap = `${pathToSource}.map`;
+
+					const sourceMapFile = JSON.parse(fs.readFileSync(pathToSourceMap, 'utf8'));
+
+					// Some source maps (like .css or empty files) don't have any sources, so we skip them to avoid `v8toIstanbul` throwing an error
+					if (sourceMapFile.sources.length < 1) {
+						continue;
+					}
+
+					sourceMapFile.sources = sourceMapFile.sources.map((source: string) => {
+						return source.replace('meteor://💻app', process.cwd()); // TODO: this is breaking the file path, I'm not sure why the sources property has this prefix or how to remove it during the build process
+					});
+
+					const converter = v8toIstanbul('', 0, {
+						source: entry.source,
+						sourceMap: { sourcemap: sourceMapFile },
+					});
+					try {
+						await converter.load();
+						converter.applyCoverage(entry.functions);
+						entries.push(converter.toIstanbul());
+					} catch (error) {
+						console.warn('Error generating coverage for', entry.url);
+						continue;
+					}
+				}
+				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${uuid()}.json`), JSON.stringify(entries));
+
 				await page.close();
 			}),
 		);

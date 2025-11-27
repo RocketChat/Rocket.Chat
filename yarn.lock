@@ -9559,6 +9559,7 @@ __metadata:
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
     uuid: "npm:^11.0.3"
+    v8-to-istanbul: "npm:^9.3.0"
     webdav: "npm:^4.11.5"
     webpack: "npm:~5.99.9"
     xml-crypto: "npm:~3.2.1"
@@ -36919,6 +36920,17 @@ __metadata:
     "@types/istanbul-lib-coverage": "npm:^2.0.1"
     convert-source-map: "npm:^1.6.0"
   checksum: 10/0bbaffbb344af7172884a6f9868fa55df96230caf7100fa250b63d95ad0e24848141b35731d16607ae0d0023baa064b75c8e4197f6071f3bd3b09540c98490a1
+  languageName: node
+  linkType: hard
+
+"v8-to-istanbul@npm:^9.3.0":
+  version: 9.3.0
+  resolution: "v8-to-istanbul@npm:9.3.0"
+  dependencies:
+    "@jridgewell/trace-mapping": "npm:^0.3.12"
+    "@types/istanbul-lib-coverage": "npm:^2.0.1"
+    convert-source-map: "npm:^2.0.0"
+  checksum: 10/fb1d70f1176cb9dc46cabbb3fd5c52c8f3e8738b61877b6e7266029aed0870b04140e3f9f4550ac32aebcfe1d0f38b0bac57e1e8fb97d68fec82f2b416148166
   languageName: node
   linkType: hard
 
