@@ -8,6 +8,7 @@ import { setupGitUser } from './gitUtils';
 import { publishRelease } from './publishRelease';
 import { startPatchRelease } from './startPatchRelease';
 import { updatePRDescription } from './updatePRDescription';
+import { updateReleaseToFinal } from './updateReleaseToFinal';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
@@ -48,6 +49,8 @@ import { updatePRDescription } from './updatePRDescription';
 		await startPatchRelease({ baseRef, githubToken, mainPackagePath });
 	} else if (action === 'update-pr-description') {
 		await updatePRDescription({ githubToken, mainPackagePath });
+	} else if (action === 'update-release') {
+		await updateReleaseToFinal({ githubToken, releaseTag: core.getInput('release-tag') });
 	}
 })().catch((err) => {
 	core.error(err);
