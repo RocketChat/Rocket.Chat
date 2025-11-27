@@ -60,6 +60,12 @@ class VersionCompiler {
 							handleError(err);
 						});
 					})
+					.on('error', function (err) {
+						handleError(err);
+					})
+					.on('timeout', function (err) {
+						handleError(err);
+					})
 					.end();
 			});
 
