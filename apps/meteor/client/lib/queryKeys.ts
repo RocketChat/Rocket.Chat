@@ -120,6 +120,10 @@ export const teamsQueryKeys = {
 
 export const ABACQueryKeys = {
 	all: ['abac'] as const,
+	logs: {
+		all: () => [...ABACQueryKeys.all, 'logs'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+	},
 	roomAttributes: {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
 		roomAttributesList: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), 'room-attributes-list', query] as const,
