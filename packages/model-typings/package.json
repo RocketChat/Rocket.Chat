@@ -3,14 +3,15 @@
 	"version": "1.8.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@types/node-rsa": "^1.1.4",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"build": "rm -rf dist && tsc -p tsconfig.json"
 	},
 	"main": "./dist/index.js",

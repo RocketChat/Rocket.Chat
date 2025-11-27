@@ -11,8 +11,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"typecheck": "tsc --noEmit"
 	},
@@ -23,6 +23,7 @@
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/fuselage": "~0.68.1",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
@@ -47,8 +48,7 @@
 		"@types/dompurify": "~3.2.0",
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~8.45.0",
-		"eslint-plugin-storybook": "~0.11.6",
+		"eslint": "^9.0.0",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",

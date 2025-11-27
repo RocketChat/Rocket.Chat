@@ -22,8 +22,7 @@ export const handleConnectionAndRejects = async (server: WS, ...client: Promise<
 	]);
 };
 
-const handleConnectionButNoResponse = async (server: WS, method: string, params: string[]) => {
-	return server.nextMessage.then(async (msg) => {
+const handleConnectionButNoResponse = async (server: WS, method: string, params: string[]) => server.nextMessage.then(async (msg) => {
 		if (typeof msg !== 'string') throw new Error('Expected message to be a string');
 		const message = JSON.parse(msg);
 		await expect(message).toMatchObject({
@@ -33,7 +32,6 @@ const handleConnectionButNoResponse = async (server: WS, method: string, params:
 		});
 		return message;
 	});
-};
 
 export const handleMethod = async (server: WS, method: string, params: any[], responseResult: string, ...client: Promise<unknown>[]) => {
 	const result = await handleConnectionButNoResponse(server, method, params);
@@ -51,13 +49,9 @@ export const handleSubscription = async (server: WS, id: string, streamName: str
 		server.send(`{"msg":"ready","subs":["${id}"]}`);
 	});
 };
-export const fireStream = (action: 'changed' | 'removed' | 'added') => {
-	return (server: WS, streamName: string, streamParams: string) => {
-		return server.send(
+export const fireStream = (action: 'changed' | 'removed' | 'added') => (server: WS, streamName: string, streamParams: string) => server.send(
 			`{"msg":"${action}","collection":"stream-${streamName}","id":"id","fields":{"eventName":"${streamParams}", "args":[1]}}`,
 		);
-	};
-};
 
 export const fireStreamChange = fireStream('changed');
 export const fireStreamRemove = fireStream('removed');

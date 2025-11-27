@@ -16,9 +16,7 @@ const validateRegex = (licenseURL: string, url: string) => {
 	return !!regex.exec(url);
 };
 
-const validateUrl = (licenseURL: string, url: string) => {
-	return licenseURL.toLowerCase() === url.toLowerCase();
-};
+const validateUrl = (licenseURL: string, url: string) => licenseURL.toLowerCase() === url.toLowerCase();
 
 const validateHash = (licenseURL: string, url: string) => {
 	const value = crypto.createHash('sha256').update(url).digest('hex');

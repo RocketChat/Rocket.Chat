@@ -374,9 +374,7 @@ class HandleDomElement
 		return () => unsubArray.forEach((unsub) => unsub());
 	}
 
-	public onGrab = (cb: (event: [mousePosition: IPointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler => {
-		return this.on('grab', cb);
-	};
+	public onGrab = (cb: (event: [mousePosition: IPointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler => this.on('grab', cb);
 }
 
 class BoundingDomElement
@@ -410,13 +408,9 @@ class BoundingDomElement
 		};
 	}
 
-	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
-		return this.on('resize', cb);
-	};
+	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => this.on('resize', cb);
 
-	public onChangeView = (cb: (element: IBoundingElement) => void): OffCallbackHandler => {
-		return this.on('changeView', cb);
-	};
+	public onChangeView = (cb: (element: IBoundingElement) => void): OffCallbackHandler => this.on('changeView', cb);
 
 	public getElementRect(): DOMRect | null {
 		if (!this._element) {
@@ -490,21 +484,13 @@ class DraggableDomElement extends Emitter<DraggableDomElementEvents> implements 
 		};
 	}
 
-	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
-		return this.on('resize', cb);
-	};
+	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => this.on('resize', cb);
 
-	public onChangeView = (cb: (element: IDraggableElement) => void): OffCallbackHandler => {
-		return this.on('changeView', cb);
-	};
+	public onChangeView = (cb: (element: IDraggableElement) => void): OffCallbackHandler => this.on('changeView', cb);
 
-	public onMove = (cb: (pointerPosition: IPointCoordinates) => void): OffCallbackHandler => {
-		return this.on('move', cb);
-	};
+	public onMove = (cb: (pointerPosition: IPointCoordinates) => void): OffCallbackHandler => this.on('move', cb);
 
-	public onRelease = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
-		return this.on('release', cb);
-	};
+	public onRelease = (cb: (rect: IGenericRect) => void): OffCallbackHandler => this.on('release', cb);
 
 	public getElementRect(): DOMRect | null {
 		if (!this.element) {

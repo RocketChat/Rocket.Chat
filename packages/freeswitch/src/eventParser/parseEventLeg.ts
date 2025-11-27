@@ -12,9 +12,7 @@ export function parseEventLeg(
 	const legData = filterStringList(
 		eventData,
 		(key) => key.startsWith(`${legName}-`),
-		([key, value]) => {
-			return [key.replace(`${legName}-`, ''), value];
-		},
+		([key, value]) => [key.replace(`${legName}-`, ''), value],
 	) as Record<string, string>;
 
 	const legType = legName === 'Other-Leg' ? eventData['Other-Type'] : undefined;

@@ -25,6 +25,4 @@ export default {
 	],
 } satisfies Meta<typeof NewCall>;
 
-export const NewCallStory: StoryFn<typeof NewCall> = () => {
-	return <NewCall />;
-};
+export const NewCallStory: StoryFn<typeof NewCall> = () => <NewCall />;

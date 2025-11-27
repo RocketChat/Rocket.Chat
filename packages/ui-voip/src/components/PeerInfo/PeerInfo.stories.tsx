@@ -9,8 +9,7 @@ export default {
 	decorators: [(Story) => <Story />],
 } satisfies Meta<typeof PeerInfo>;
 
-export const InternalUser: StoryFn<typeof PeerInfo> = () => {
-	return (
+export const InternalUser: StoryFn<typeof PeerInfo> = () => (
 		<PeerInfo
 			callerId='1234'
 			displayName='John Doe'
@@ -28,10 +27,8 @@ export const InternalUser: StoryFn<typeof PeerInfo> = () => {
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 		/>
 	);
-};
 
-export const InternalUserWithRemoteStatus: StoryFn<typeof PeerInfo> = () => {
-	return (
+export const InternalUserWithRemoteStatus: StoryFn<typeof PeerInfo> = () => (
 		<PeerInfo
 			callerId='1234'
 			displayName='John Doe'
@@ -59,8 +56,5 @@ export const InternalUserWithRemoteStatus: StoryFn<typeof PeerInfo> = () => {
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 		/>
 	);
-};
 
-export const ExternalUser: StoryFn<typeof PeerInfo> = () => {
-	return <PeerInfo number='1234567890' />;
-};
+export const ExternalUser: StoryFn<typeof PeerInfo> = () => <PeerInfo number='1234567890' />;

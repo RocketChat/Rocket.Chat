@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { ReactElement, useMemo } from 'react';
+import type { ReactElement} from 'react';
+import { useMemo } from 'react';
 
 type PreviewCodeBlockProps = {
 	language?: string;

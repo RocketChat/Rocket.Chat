@@ -2,7 +2,6 @@
 	"$schema": "https://www.schemastore.org/package",
 	"name": "@rocket.chat/desktop-api",
 	"version": "1.1.0",
-	"type": "module",
 	"exports": {
 		".": {
 			"default": "./dist/index.js",
@@ -16,8 +15,8 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
-		"eslint": "~8.45.0",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
+		"eslint": "^9.0.0",
 		"rimraf": "~6.0.1",
 		"typescript": "~5.9.3"
 	},

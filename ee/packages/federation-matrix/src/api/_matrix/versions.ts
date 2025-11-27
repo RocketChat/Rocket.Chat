@@ -25,8 +25,7 @@ const GetVersionsResponseSchema = {
 
 const isGetVersionsResponseProps = ajv.compile(GetVersionsResponseSchema);
 
-export const getFederationVersionsRoutes = () => {
-	return new Router('/federation').get(
+export const getFederationVersionsRoutes = () => new Router('/federation').get(
 		'/v1/version',
 		{
 			response: {
@@ -52,4 +51,3 @@ export const getFederationVersionsRoutes = () => {
 			};
 		},
 	);
-};

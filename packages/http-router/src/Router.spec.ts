@@ -604,12 +604,10 @@ describe('Router', () => {
 					}),
 				},
 			},
-			async () => {
-				return {
+			async () => ({
 					statusCode: 200,
 					body: { asda: 1 }, // This body is invalid according to the schema
-				};
-			},
+				}),
 		);
 		app.use(api.use(test).router);
 		const response = await request(app).get('/api/test');
@@ -643,14 +641,12 @@ describe('Router', () => {
 					}),
 				},
 			},
-			async () => {
-				return {
+			async () => ({
 					statusCode: 200,
 					body: {
 						customProperty: 'customProperty',
 					},
-				};
-			},
+				}),
 		);
 
 		app.use(api.use(v1.use(test)).use(v2.use(test)).router);

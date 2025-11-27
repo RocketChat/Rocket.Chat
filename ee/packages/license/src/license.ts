@@ -545,15 +545,13 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 				(await Promise.all(
 					globalLimitKinds
 						.map((limitKey) => [limitKey, getLicenseLimit(license, limitKey)] as const)
-						.map(async ([limitKey, max]) => {
-							return [
+						.map(async ([limitKey, max]) => [
 								limitKey,
 								{
 									...(loadCurrentValues && { value: await getCurrentValueForLicenseLimit.call(this, limitKey) }),
 									max,
 								},
-							];
-						}),
+							]),
 				))) ||
 				[],
 		);

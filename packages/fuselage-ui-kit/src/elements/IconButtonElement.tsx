@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import * as UiKit from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { MouseEventHandler, ReactElement } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';

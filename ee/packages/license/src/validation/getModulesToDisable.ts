@@ -3,12 +3,10 @@ import type { BehaviorWithContext, LicenseBehavior, LicenseModule } from '@rocke
 const filterValidationResult = (result: BehaviorWithContext[], expectedBehavior: LicenseBehavior) =>
 	result.filter(({ behavior }) => behavior === expectedBehavior) as BehaviorWithContext[];
 
-export const getModulesToDisable = (validationResult: BehaviorWithContext[]): LicenseModule[] => {
-	return [
+export const getModulesToDisable = (validationResult: BehaviorWithContext[]): LicenseModule[] => [
 		...new Set([
 			...filterValidationResult(validationResult, 'disable_modules')
 				.map(({ modules }) => modules || [])
 				.flat(),
 		]),
 	];
-};

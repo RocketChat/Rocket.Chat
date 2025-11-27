@@ -17,9 +17,7 @@ export const requestDevice = async ({
 	navigator.mediaDevices.getUserMedia(constraints).then(onAccept, onReject);
 };
 
-const isPermissionDenied = (state: PermissionState): state is 'denied' => {
-	return state === 'denied';
-};
+const isPermissionDenied = (state: PermissionState): state is 'denied' => state === 'denied';
 
 type DeniedReturn = { state: 'denied'; requestDevice?: never };
 type PromptOrGrantedReturn = { state: 'prompt' | 'granted'; requestDevice: typeof requestDevice };

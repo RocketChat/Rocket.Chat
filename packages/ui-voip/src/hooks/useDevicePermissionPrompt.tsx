@@ -152,8 +152,7 @@ export const useDevicePermissionPrompt2 = () => {
 		}: {
 			constraints?: MediaStreamConstraints;
 			actionType: 'outgoing' | 'incoming' | 'device-change';
-		}) => {
-			return new Promise<MediaStream>((_resolve, reject) => {
+		}) => new Promise<MediaStream>((_resolve, reject) => {
 				const resolve = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
@@ -222,8 +221,7 @@ export const useDevicePermissionPrompt2 = () => {
 					setModal(null);
 				};
 				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
-			});
-		},
+			}),
 		[selectedDeviceId, state, setModal, queryClient, setInputMediaDevice, requestDevice],
 	);
 };

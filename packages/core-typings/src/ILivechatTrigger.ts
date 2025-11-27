@@ -29,15 +29,11 @@ export interface ILivechatUseExternalServiceAction {
 
 export const isExternalServiceTrigger = (
 	trigger: ILivechatTrigger,
-): trigger is ILivechatTrigger & { actions: ILivechatUseExternalServiceAction[] } => {
-	return trigger.actions.every((action) => action.name === 'use-external-service');
-};
+): trigger is ILivechatTrigger & { actions: ILivechatUseExternalServiceAction[] } => trigger.actions.every((action) => action.name === 'use-external-service');
 
 export const isSendMessageTrigger = (
 	trigger: ILivechatTrigger,
-): trigger is ILivechatTrigger & { actions: ILivechatSendMessageAction[] } => {
-	return trigger.actions.every((action) => action.name === 'send-message');
-};
+): trigger is ILivechatTrigger & { actions: ILivechatSendMessageAction[] } => trigger.actions.every((action) => action.name === 'send-message');
 
 export type ILivechatTriggerAction = ILivechatSendMessageAction | ILivechatUseExternalServiceAction;
 

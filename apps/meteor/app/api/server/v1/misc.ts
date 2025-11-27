@@ -484,6 +484,7 @@ API.v1.addRoute(
 	'method.call/:method',
 	{
 		authRequired: true,
+		invocationMiddleware: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 	},
@@ -544,6 +545,7 @@ API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
+		invocationMiddleware: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 	},

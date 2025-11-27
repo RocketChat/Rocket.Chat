@@ -4,11 +4,9 @@ import moment from 'moment-timezone';
 import { ChatTranscript } from './ChatTranscript';
 import { invalidData, validData, newDayData, sameDayData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
 
-jest.mock('../templates/ChatTranscript', () => {
-	return {
+jest.mock('../templates/ChatTranscript', () => ({
 		exportTranscript: jest.fn(() => Promise.resolve()),
-	};
-});
+	}));
 
 beforeAll(() => {
 	i18next.init({

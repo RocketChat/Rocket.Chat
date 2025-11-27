@@ -11,8 +11,7 @@ const states = [
 
 const getWrapper =
 	(state: PermissionState | undefined, availableAudioInputDevices: any[] = [], enabled = true) =>
-	({ children }: { children: any }) => {
-		return (
+	({ children }: { children: any }) => (
 			<DeviceContext.Provider
 				value={{
 					enabled,
@@ -28,7 +27,6 @@ const getWrapper =
 				{children}
 			</DeviceContext.Provider>
 		);
-	};
 
 describe('useMediaDeviceMicrophonePermission', () => {
 	it('Should return permission state denied and requestDevice is undefined if context is disabled', async () => {

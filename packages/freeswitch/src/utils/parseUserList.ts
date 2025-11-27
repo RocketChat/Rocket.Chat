@@ -23,9 +23,7 @@ export function parseUserList(commandResponse: StringMap): Record<string, string
 			continue;
 		}
 		const user = Object.fromEntries(
-			values.map((value, index) => {
-				return [(columns.length > index && columns[index]) || `column${index}`, value];
-			}),
+			values.map((value, index) => [(columns.length > index && columns[index]) || `column${index}`, value]),
 		);
 
 		if (!user.userid || user.userid === '+OK') {

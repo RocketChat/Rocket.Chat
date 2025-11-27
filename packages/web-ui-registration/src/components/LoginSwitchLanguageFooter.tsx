@@ -21,9 +21,7 @@ const useSuggestedLanguages = ({
 		const potentialSuggestions = Array.from(potentialLanguages).map((potentialLanguageKey) =>
 			availableLanguages.find((language) => language.key === potentialLanguageKey),
 		);
-		return potentialSuggestions.filter((language): language is TranslationLanguage => {
-			return !!language && language.key !== currentLanguage;
-		});
+		return potentialSuggestions.filter((language): language is TranslationLanguage => !!language && language.key !== currentLanguage);
 	}, [serverLanguage, browserLanguage, availableLanguages, currentLanguage]);
 
 	const { i18n } = useTranslation();

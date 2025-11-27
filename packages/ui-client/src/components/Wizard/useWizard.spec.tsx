@@ -66,12 +66,16 @@ describe('useWizard', () => {
 
 		await act(() => {
 			const step3 = result.current.steps.get('step3');
-			step3 && result.current.steps.enableStep(step3);
+			if (step3) {
+				result.current.steps.enableStep(step3);
+			}
 		});
 
 		await act(() => {
 			const step3 = result.current.steps.get('step3');
-			step3 && result.current.goTo(step3);
+			if (step3) {
+				result.current.goTo(step3);
+			}
 		});
 
 		expect(result.current.currentStep?.id).toBe('step3');
@@ -84,7 +88,9 @@ describe('useWizard', () => {
 
 		await act(() => {
 			const step3 = result.current.steps.get('step3');
-			step3 && result.current.goTo(step3);
+			if (step3) {
+				result.current.goTo(step3);
+			}
 		});
 
 		expect(result.current.currentStep?.id).toBe('step1');
@@ -103,7 +109,9 @@ describe('useWizard', () => {
 		// Go back to step 1
 		await act(() => {
 			const step1 = result.current.steps.get('step1');
-			step1 && result.current.goTo(step1);
+			if (step1) {
+				result.current.goTo(step1);
+			}
 		});
 
 		// Reset

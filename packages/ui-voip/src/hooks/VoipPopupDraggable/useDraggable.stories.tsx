@@ -22,9 +22,7 @@ class BoundingBoxResizeEvent extends Event {
 	}
 }
 
-const isBoundingBoxResizeEvent = (event: unknown): event is BoundingBoxResizeEvent => {
-	return event instanceof BoundingBoxResizeEvent;
-};
+const isBoundingBoxResizeEvent = (event: unknown): event is BoundingBoxResizeEvent => event instanceof BoundingBoxResizeEvent;
 
 const BOUNDING_SIZE = 1000;
 
@@ -44,8 +42,7 @@ const DraggableElement = ({
 	backgroundColor?: string;
 	height?: number;
 	width?: number;
-}) => {
-	return (
+}) => (
 		<Box
 			display='block'
 			ref={draggableRef}
@@ -68,7 +65,6 @@ const DraggableElement = ({
 			)}
 		</Box>
 	);
-};
 
 const DraggableBase = ({
 	boundingRef,
@@ -412,8 +408,7 @@ export const ElementUpdates: Story = {
 	},
 };
 
-const getLorem = (size: number) => {
-	return Array.from({ length: size }, (_, i) => (
+const getLorem = (size: number) => Array.from({ length: size }, (_, i) => (
 		<Box display='block' pbe={12} key={i}>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
 			minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
@@ -421,7 +416,6 @@ const getLorem = (size: number) => {
 			culpa qui officia deserunt mollit anim id est laborum.
 		</Box>
 	));
-};
 
 // Mocked page with scrollable content and text
 const MockedPage = () => {

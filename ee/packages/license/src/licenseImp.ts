@@ -26,7 +26,7 @@ import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
 import { validateFormat } from './validation/validateFormat';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+ 
 export class LicenseImp extends LicenseManager {
 	constructor() {
 		super();

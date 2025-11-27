@@ -33,7 +33,9 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
 		});
 	} else {
-		data && parentKey && formData.append(parentKey, data);
+		if (data && parentKey) {
+			formData.append(parentKey, data);
+		}
 	}
 	return formData;
 }
@@ -264,7 +266,9 @@ export class RestClient implements RestClientInterface {
 				data.append(key, value, value.name);
 				return;
 			}
-			value && data.append(key, value as any);
+			if (value) {
+				data.append(key, value as any);
+			}
 		});
 
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);

@@ -345,9 +345,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
 
-	const peerInfo = useMemo(() => {
-		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
-	}, [mediaSession.peerInfo, status]);
+	const peerInfo = useMemo(() => mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined, [mediaSession.peerInfo, status]);
 
 	return {
 		...mediaSession,

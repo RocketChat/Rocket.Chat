@@ -26,6 +26,4 @@ export default {
 	],
 } satisfies Meta<typeof IncomingCallTransfer>;
 
-export const IncomingCallTransferStory: StoryFn<typeof IncomingCallTransfer> = () => {
-	return <IncomingCallTransfer />;
-};
+export const IncomingCallTransferStory: StoryFn<typeof IncomingCallTransfer> = () => <IncomingCallTransfer />;

@@ -8,7 +8,7 @@ export const validateFormat = async (encryptedLicense: string): Promise<boolean>
 
 	try {
 		await decrypt(encryptedLicense);
-	} catch (e) {
+	} catch {
 		throw new InvalidLicenseError();
 	}
 

@@ -29,9 +29,7 @@ const replaceI18nextComponentsArrayInterpolation = (translation: string) => {
 	return [undefined, Boolean(exist)] as const;
 };
 
-const replaceNullValuesInterpolation = (translation: string) => {
-	return [undefined, translation === null] as const;
-};
+const replaceNullValuesInterpolation = (translation: string) => [undefined, translation === null] as const;
 
 const generator =
 	(fn: (translation: string) => readonly [string | undefined, boolean], id: string) =>
@@ -86,9 +84,7 @@ const replaceNestedPlurals = (
 const pipe =
 	<Y, X extends any[]>(...fns: ((y: Y, ...x: X) => Y)[]) =>
 	(y: Y, ...x: X) =>
-		fns.reduce((v, f) => {
-			return f(v, ...x);
-		}, y);
+		fns.reduce((v, f) => f(v, ...x), y);
 
 export const normalizeI18nInterpolations = (
 	dictionary: Record<string, any>,

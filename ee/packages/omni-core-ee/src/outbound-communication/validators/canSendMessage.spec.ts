@@ -30,11 +30,8 @@ const findDepartmentMock = LivechatDepartment.findOne as unknown as jest.Mock;
 const findDepartmentAgentMock = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId as unknown as jest.Mock;
 const findUserAgentMock = Users.findOneAgentById as unknown as jest.Mock;
 
-const setPermissions = (map: Record<string, boolean>) => {
-	hasPermissionMock.mockImplementation(async (_userId: string, permission: string) => {
-		return Boolean(map[permission]);
-	});
-};
+const setPermissions = (map: Record<string, boolean>) =>
+	hasPermissionMock.mockImplementation(async (_userId: string, permission: string) => Boolean(map[permission]));
 
 describe('canSendOutboundMessage', () => {
 	beforeEach(() => {

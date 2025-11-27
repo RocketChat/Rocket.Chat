@@ -1,0 +1,188 @@
+import react from '@rocket.chat/eslint-config-v9/react.js';
+import standard from '@rocket.chat/eslint-config-v9/standard/index.js';
+import testingLibrary from 'eslint-plugin-testing-library';
+import youDontNeedLodashUnderscore from 'eslint-plugin-you-dont-need-lodash-underscore';
+import globals from 'globals';
+
+export default [
+	{
+		ignores: [
+			'node_modules/**',
+			'packages/**',
+			'.meteor/**',
+			'app/emoji-emojione/generateEmojiIndex.js',
+			'public/**',
+			'private/moment-locales/**',
+			'imports/**',
+			'ee/server/services/dist/**',
+			'storybook-static/**',
+			'.mocharc.js',
+			'.mocharc.*.js',
+			'.scripts/**',
+			'.storybook/**',
+			'client/.eslintrc.js',
+			'ee/client/.eslintrc.js',
+			'tests/**',
+		],
+	},
+	...standard,
+	...react,
+	{
+		plugins: {
+			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscore,
+		},
+		rules: {
+			...youDontNeedLodashUnderscore.configs.compatible.rules,
+			'import/named': 'error',
+			'react-hooks/exhaustive-deps': [
+				'warn',
+				{
+					additionalHooks: '(useComponentDidUpdate)',
+				},
+			],
+			'prefer-arrow-callback': [
+				'error',
+				{
+					allowNamedFunctions: true,
+				},
+			],
+		},
+		languageOptions: {
+			globals: {
+				__meteor_bootstrap__: false,
+				__meteor_runtime_config__: false,
+				Assets: false,
+				chrome: false,
+				jscolor: false,
+			},
+		},
+	},
+	{
+		files: ['**/*.ts', '**/*.tsx'],
+		ignores: ['.scripts/*.ts'],
+		languageOptions: {
+			parserOptions: {
+				project: ['./tsconfig.json'],
+			},
+		},
+		rules: {
+			'@typescript-eslint/naming-convention': [
+				'error',
+				{
+					selector: ['function', 'parameter', 'variable'],
+					modifiers: ['destructured'],
+					format: null,
+				},
+				{
+					selector: ['variable'],
+					format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+					leadingUnderscore: 'allowSingleOrDouble',
+				},
+				{
+					selector: ['function'],
+					format: ['camelCase', 'PascalCase'],
+					leadingUnderscore: 'allowSingleOrDouble',
+				},
+				{
+					selector: ['parameter'],
+					format: ['PascalCase'],
+					filter: {
+						regex: 'Component$',
+						match: true,
+					},
+				},
+				{
+					selector: ['parameter'],
+					format: ['camelCase'],
+					leadingUnderscore: 'allow',
+				},
+				{
+					selector: ['parameter'],
+					format: ['camelCase'],
+					modifiers: ['unused'],
+					leadingUnderscore: 'require',
+				},
+				{
+					selector: 'parameter',
+					format: null,
+					filter: {
+						regex: '^Story$',
+						match: true,
+					},
+				},
+				{
+					selector: ['interface'],
+					format: ['PascalCase'],
+					custom: {
+						regex: '^I[A-Z]',
+						match: true,
+					},
+				},
+			],
+			'@typescript-eslint/no-misused-promises': [
+				'error',
+				{
+					checksVoidReturn: {
+						arguments: false,
+					},
+				},
+			],
+			'@typescript-eslint/no-floating-promises': 'error',
+			'no-unreachable-loop': 'error',
+		},
+	},
+	{
+		files: ['**/*.tests.js', '**/*.tests.ts', '**/*.spec.ts'],
+		languageOptions: {
+			globals: {
+				...globals.mocha,
+			},
+		},
+	},
+	{
+		files: ['**/*.spec.ts', '**/*.spec.tsx'],
+		plugins: {
+			'testing-library': testingLibrary,
+		},
+		rules: {
+			...testingLibrary.configs.react.rules,
+			'testing-library/no-await-sync-events': 'warn',
+			'testing-library/no-manual-cleanup': 'warn',
+			'testing-library/prefer-explicit-assert': 'warn',
+			'testing-library/prefer-user-event': 'warn',
+			'@typescript-eslint/no-unused-expressions': 'off',
+		},
+		languageOptions: {
+			globals: {
+				...globals.mocha,
+			},
+		},
+	},
+	{
+		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
+		rules: {
+			'react/display-name': 'off',
+			'react/no-multi-comp': 'off',
+		},
+	},
+	{
+		files: ['**/*.stories.ts', '**/*.stories.tsx'],
+		rules: {
+			'@typescript-eslint/explicit-function-return-type': 'off',
+			'@typescript-eslint/explicit-module-boundary-types': 'off',
+		},
+	},
+	{
+		files: ['client/**/*.ts', 'client/**/*.tsx', 'ee/client/**/*.ts', 'ee/client/**/*.tsx'],
+		rules: {
+			'@typescript-eslint/no-misused-promises': 'off',
+			'@typescript-eslint/no-floating-promises': 'off',
+		},
+	},
+	{
+		files: ['**/*.d.ts'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'off',
+		},
+	},
+];

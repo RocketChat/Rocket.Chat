@@ -3,12 +3,13 @@
 	"version": "1.1.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "~30.0.0",
 		"@types/ws": "^8.5.13",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"jest": "~30.2.0",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.9.3"
@@ -16,8 +17,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"test": "jest",
 		"testunit": "jest"
 	},

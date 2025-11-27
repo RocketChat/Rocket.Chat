@@ -123,8 +123,7 @@ const PublicRoomsPostBodySchema = {
 
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
-export const getMatrixRoomsRoutes = () => {
-	return new Router('/federation')
+export const getMatrixRoomsRoutes = () => new Router('/federation')
 		.use(isAuthenticatedMiddleware())
 		.get(
 			'/v1/publicRooms',
@@ -205,4 +204,3 @@ export const getMatrixRoomsRoutes = () => {
 				};
 			},
 		);
-};

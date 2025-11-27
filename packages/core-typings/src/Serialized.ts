@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 type SerializablePrimitive = boolean | number | string | null;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 type UnserializablePrimitive = Function | bigint | symbol | undefined;
 
 type CustomSerializable<T> = {

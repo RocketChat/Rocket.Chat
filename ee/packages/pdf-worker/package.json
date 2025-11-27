@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",
@@ -28,6 +28,7 @@
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -42,8 +43,7 @@
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"buffer": "~6.0.3",
-		"eslint": "~8.45.0",
-		"eslint-plugin-storybook": "~0.11.6",
+		"eslint": "^9.0.0",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"react-dom": "~18.3.1",

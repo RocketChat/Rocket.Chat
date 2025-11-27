@@ -32,8 +32,7 @@ const ServerKeyResponseSchema = {
 
 const isServerKeyResponseProps = ajv.compile(ServerKeyResponseSchema);
 
-export const getKeyServerRoutes = () => {
-	return new Router('/key').get(
+export const getKeyServerRoutes = () => new Router('/key').get(
 		'/v2/server',
 		{
 			response: {
@@ -51,4 +50,3 @@ export const getKeyServerRoutes = () => {
 			};
 		},
 	);
-};

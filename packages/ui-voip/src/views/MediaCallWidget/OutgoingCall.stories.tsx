@@ -24,6 +24,4 @@ export default {
 	],
 } satisfies Meta<typeof OutgoingCall>;
 
-export const OutgoingCallStory: StoryFn<typeof OutgoingCall> = () => {
-	return <OutgoingCall />;
-};
+export const OutgoingCallStory: StoryFn<typeof OutgoingCall> = () => <OutgoingCall />;

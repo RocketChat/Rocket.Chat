@@ -3,11 +3,15 @@
 	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.45.0",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
+		"eslint": "^9.0.0",
 		"typescript": "~5.9.3"
 	},
 	"main": "./src/index.js",
 	"typings": "./dist/index.d.ts",
+	"scripts": {
+		"lint": "eslint ."
+	},
 	"volta": {
 		"extends": "../../package.json"
 	}

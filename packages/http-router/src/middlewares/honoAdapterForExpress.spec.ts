@@ -15,14 +15,12 @@ const stringToReadableStream = (str: string): ReadableStream<Uint8Array> => {
 	});
 };
 
-const bufferToReadableStream = (buffer: Buffer): ReadableStream<Uint8Array> => {
-	return new ReadableStream({
+const bufferToReadableStream = (buffer: Buffer): ReadableStream<Uint8Array> => new ReadableStream({
 		start(controller) {
 			controller.enqueue(new Uint8Array(buffer));
 			controller.close();
 		},
 	});
-};
 
 const createMockResponse = () => {
 	const passthrough = new PassThrough();

@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import util from 'util';
 
 import WS from 'jest-websocket-mock';
@@ -11,8 +10,7 @@ import { DDPSDK } from '../src/DDPSDK';
 
 export let server: WS;
 
-const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
-	return (async (...args) => {
+const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => (async (...args) => {
 		const methods = [].concat(...Array(times));
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const _ of methods) {
@@ -20,7 +18,6 @@ const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F =>
 			await fn(...args);
 		}
 	}) as F;
-};
 
 beforeEach(async () => {
 	server = new WS('ws://localhost:1234/websocket');

@@ -8,8 +8,7 @@ import type { ILicenseV2, ILicenseV3, InternalModuleName } from '@rocket.chat/co
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
 
-export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
-	return {
+export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => ({
 		version: '3.0',
 		information: {
 			autoRenew: false,
@@ -109,5 +108,4 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 				: {}),
 		},
 		cloudMeta: v2.meta,
-	};
-};
+	});

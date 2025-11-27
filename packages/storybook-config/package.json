@@ -20,12 +20,12 @@
 		"webpack": "~5.99.9"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/fuselage": "~0.68.1",
 		"@rocket.chat/icons": "~0.45.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^8.6.14",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"typescript": "~5.9.3"
@@ -37,8 +37,8 @@
 		"react": "*"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"build": "rm -rf dist && tsc && yarn run copy-svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"

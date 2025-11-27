@@ -37,13 +37,13 @@
 		"prometheus-gc-stats": "^1.1.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

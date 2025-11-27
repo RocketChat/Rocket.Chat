@@ -8,14 +8,12 @@ import { useDevicePermissionPrompt } from './useDevicePermissionPrompt';
 
 const types = ['device-change', 'outgoing', 'incoming'] as const;
 
-const modalWrapper = (children: ReactNode) => {
-	return (
+const modalWrapper = (children: ReactNode) => (
 		<ModalProvider>
 			<ModalRegion />
 			{children}
 		</ModalProvider>
 	);
-};
 
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {

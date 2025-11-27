@@ -20,20 +20,16 @@ export function convertChangeStreamPayload(
 		case 'update':
 			const diff: Record<string, any> = {
 				...event.updateDescription.updatedFields,
-				...(event.updateDescription.removedFields || []).reduce((unset, removedField) => {
-					return {
+				...(event.updateDescription.removedFields || []).reduce((unset, removedField) => ({
 						...unset,
 						[removedField]: undefined,
-					};
-				}, {}),
+					}), {}),
 			};
 
-			const unset: Record<string, number> = (event.updateDescription.removedFields || []).reduce((unset, removedField) => {
-				return {
+			const unset: Record<string, number> = (event.updateDescription.removedFields || []).reduce((unset, removedField) => ({
 					...unset,
 					[removedField]: 1,
-				};
-			}, {});
+				}), {});
 
 			return {
 				action: 'update',

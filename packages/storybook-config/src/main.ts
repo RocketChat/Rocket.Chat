@@ -6,8 +6,7 @@ function getAbsolutePath(value: any): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
-	return {
+const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => ({
 		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
@@ -24,7 +23,6 @@ const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
 			reactDocgen: 'react-docgen',
 		},
 		...customConfig,
-	};
-};
+});
 
 export default baseConfig;

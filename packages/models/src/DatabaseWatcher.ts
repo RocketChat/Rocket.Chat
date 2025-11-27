@@ -77,7 +77,7 @@ export class DatabaseWatcher extends EventEmitter {
 
 		try {
 			this.watchChangeStream();
-		} catch (err: unknown) {
+		} catch {
 			await this.watchOplog();
 		}
 	}

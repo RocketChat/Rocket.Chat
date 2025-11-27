@@ -136,7 +136,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	addRolesByUserId(uid: string, roles: string | string[]) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			if (process.env.NODE_ENV === 'development') {
+				console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+			}
 		}
 
 		const query = {

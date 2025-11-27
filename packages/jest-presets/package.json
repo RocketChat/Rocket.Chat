@@ -7,7 +7,6 @@
 		"build": "tsc",
 		"lint": "eslint ."
 	},
-	"type": "module",
 	"exports": {
 		"./server": {
 			"default": "./dist/server/index.js",
@@ -38,11 +37,11 @@
 		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/eslint-config-v9": "workspace:^",
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/jest": "~30.0.0",
 		"@types/uuid": "^10.0.0",
-		"eslint": "~8.45.0",
+		"eslint": "^9.0.0",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},

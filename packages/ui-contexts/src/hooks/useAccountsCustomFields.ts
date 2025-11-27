@@ -11,9 +11,7 @@ export const useAccountsCustomFields = (): CustomFieldMetadata[] => {
 			return [];
 		}
 		try {
-			return Object.entries(JSON.parse(accountsCustomFieldsJSON)).map(([fieldName, fieldData]) => {
-				return { ...(fieldData as any), name: fieldName };
-			});
+			return Object.entries(JSON.parse(accountsCustomFieldsJSON)).map(([fieldName, fieldData]) => ({ ...(fieldData as any), name: fieldName }));
 		} catch {
 			console.error('Invalid JSON for Accounts_CustomFields');
 		}

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+ 
 import { ServiceClass } from '../src/types/ServiceClass';
 
 describe('ServiceClass', () => {

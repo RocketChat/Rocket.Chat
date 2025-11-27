@@ -13,16 +13,14 @@ const jsonParser = (options: ExtendedFetchOptions) => {
 				'Content-Type': 'application/json', // force content type to be json
 			};
 		}
-	} catch (e) {
+	} catch {
 		// Body is not JSON, do nothing
 	}
 
 	return options as FetchOptions;
 };
 
-const urlencodedParser = (options: ExtendedFetchOptions) => {
-	return options as FetchOptions;
-};
+const urlencodedParser = (options: ExtendedFetchOptions) => options as FetchOptions;
 
 const getParser = (contentTypeHeader?: string): ((options: ExtendedFetchOptions) => FetchOptions) => {
 	switch (contentTypeHeader) {

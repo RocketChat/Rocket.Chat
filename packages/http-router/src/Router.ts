@@ -301,9 +301,7 @@ export class Router<
 
 			const contentType = (responseHeaders['content-type'] || 'application/json') as string;
 
-			const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => {
-				return [101, 204, 205, 304].includes(statusCode);
-			};
+			const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => [101, 204, 205, 304].includes(statusCode);
 
 			if (isContentLess(statusCode)) {
 				return c.status(statusCode as 101 | 204 | 205 | 304);
@@ -420,9 +418,7 @@ export class Router<
 		router.use(
 			this.base,
 			honoAdapterForExpress(
-				hono.route(this.base, this.innerRouter).options('*', (c) => {
-					return c.body('OK');
-				}),
+				hono.route(this.base, this.innerRouter).options('*', (c) => c.body('OK')),
 			),
 		);
 		return router;

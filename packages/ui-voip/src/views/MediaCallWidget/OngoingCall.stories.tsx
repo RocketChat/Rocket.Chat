@@ -19,46 +19,34 @@ export default {
 	],
 } satisfies Meta<typeof OngoingCall>;
 
-export const OngoingCallStory: StoryFn<typeof OngoingCall> = () => {
-	return <OngoingCall />;
-};
+export const OngoingCallStory: StoryFn<typeof OngoingCall> = () => <OngoingCall />;
 
-export const OngoingCallWithSlots: StoryFn<typeof OngoingCall> = () => {
-	return (
+export const OngoingCallWithSlots: StoryFn<typeof OngoingCall> = () => (
 		<MockedMediaCallProvider muted={true} held={true}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);
-};
 
-export const OngoingCallWithRemoteStatus: StoryFn<typeof OngoingCall> = () => {
-	return (
+export const OngoingCallWithRemoteStatus: StoryFn<typeof OngoingCall> = () => (
 		<MockedMediaCallProvider remoteMuted={true} remoteHeld={true}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);
-};
 
-export const OngoingCallWithRemoteStatusMuted: StoryFn<typeof OngoingCall> = () => {
-	return (
+export const OngoingCallWithRemoteStatusMuted: StoryFn<typeof OngoingCall> = () => (
 		<MockedMediaCallProvider remoteMuted={true} remoteHeld={false}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);
-};
 
-export const OngoingCallWithRemoteStatusHeld: StoryFn<typeof OngoingCall> = () => {
-	return (
+export const OngoingCallWithRemoteStatusHeld: StoryFn<typeof OngoingCall> = () => (
 		<MockedMediaCallProvider remoteMuted={false} remoteHeld={true}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);
-};
 
-export const OngoingCallWithSlotsAndRemoteStatus: StoryFn<typeof OngoingCall> = () => {
-	return (
+export const OngoingCallWithSlotsAndRemoteStatus: StoryFn<typeof OngoingCall> = () => (
 		<MockedMediaCallProvider muted={true} held={true} remoteMuted={true} remoteHeld={true}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);
-};
