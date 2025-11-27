@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import {
 	createRoom,
@@ -8,7 +8,7 @@ import {
 	addUserToRoom,
 	addUserToRoomSlashCommand,
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import { type IRequestConfig, getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
+import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
 import { createDDPListener } from '../helper/ddp-listener';
@@ -76,10 +76,15 @@ import { SynapseClient } from '../helper/synapse-client';
 			// Creating a fresh user for this test suite to avoid collisions,
 			// since DMs are unique for each user pair
 			let userRequestConfig: IRequestConfig;
+			let createdUser: IUser;
 			beforeAll(async () => {
 				const user = { username: `user-${Date.now()}`, password: '123' };
-				await createUser(user, rc1AdminRequestConfig);
+				createdUser = await createUser(user, rc1AdminRequestConfig);
 				userRequestConfig = await getRequestConfig(federationConfig.rc1.apiUrl, user.username, user.password);
+			});
+
+			afterAll(async () => {
+				await deleteUser(createdUser, {}, rc1AdminRequestConfig);
 			});
 
 			it('It should create a federated room when federated members are added', async () => {
