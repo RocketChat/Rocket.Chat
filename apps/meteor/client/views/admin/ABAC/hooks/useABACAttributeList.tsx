@@ -1,11 +1,13 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
+import { ABACQueryKeys } from '../../../../lib/queryKeys';
+
 const useABACAttributeList = (filter?: string) => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/abac/attributes'],
+		queryKey: ABACQueryKeys.roomAttributes.roomAttributesList({ key: filter ?? '' }),
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			// TODO: Check endpoint types
 			const { attributes, ...data } = await attributesAutoCompleteEndpoint({ key: filter, offset, count: 15 });
