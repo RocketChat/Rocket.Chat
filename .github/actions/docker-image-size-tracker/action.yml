@@ -258,6 +258,7 @@ runs:
         cd /tmp/history-worktree
         git add "history/${timestamp}.json"
         git commit -m "Add measurement for ${timestamp} (${commit_sha:0:7})"
+        git config --global url.https://${{ inputs.github-token }}@github.com/.insteadOf https://github.com/
         git push origin image-size-history
         cd -
 
