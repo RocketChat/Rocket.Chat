@@ -1,6 +1,9 @@
 import { Abac } from '@rocket.chat/core-services';
-import { Users } from '@rocket.chat/models';
+import type { AbacActor } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
+import { ServerEvents, Users } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import {
 	GenericSuccessSchema,
@@ -17,12 +20,23 @@ import {
 	GenericErrorSchema,
 	GETAbacRoomsListQueryValidator,
 	GETAbacRoomsResponseValidator,
+	GETAbacAuditEventsQuerySchema,
+	GETAbacAuditEventsResponseSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
 import { LDAPEE } from '../../sdk';
+
+const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
+	user?._id
+		? {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			}
+		: undefined;
 
 const abacEndpoints = API.v1
 	.post(
@@ -49,7 +63,7 @@ const abacEndpoints = API.v1
 
 			// This is a replace-all operation
 			// IF you need fine grained, use the other endpoints for removing, editing & adding single attributes
-			await Abac.setRoomAbacAttributes(rid, attributes);
+			await Abac.setRoomAbacAttributes(rid, attributes, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -71,7 +85,7 @@ const abacEndpoints = API.v1
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
 			// license check is also not required
-			await Abac.setRoomAbacAttributes(rid, {});
+			await Abac.setRoomAbacAttributes(rid, {}, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -98,7 +112,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.addRoomAbacAttributeByKey(rid, key, values);
+			await Abac.addRoomAbacAttributeByKey(rid, key, values, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -125,7 +139,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.replaceRoomAbacAttributeByKey(rid, key, values);
+			await Abac.replaceRoomAbacAttributeByKey(rid, key, values, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -145,7 +159,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { rid, key } = this.urlParams;
 
-			await Abac.removeRoomAbacAttribute(rid, key);
+			await Abac.removeRoomAbacAttribute(rid, key, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -169,12 +183,15 @@ const abacEndpoints = API.v1
 			const { key, values } = this.queryParams;
 
 			return API.v1.success(
-				await Abac.listAbacAttributes({
-					key,
-					values,
-					offset,
-					count,
-				}),
+				await Abac.listAbacAttributes(
+					{
+						key,
+						values,
+						offset,
+						count,
+					},
+					getActorFromUser(this.user),
+				),
 			);
 		},
 	)
@@ -224,7 +241,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.addAbacAttribute(this.bodyParams);
+			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -249,7 +266,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.updateAbacAttributeById(_id, this.bodyParams);
+			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -268,7 +285,7 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-			const result = await Abac.getAbacAttributeById(_id);
+			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success(result);
 		},
 	)
@@ -287,7 +304,7 @@ const abacEndpoints = API.v1
 		},
 		async function action() {
 			const { _id } = this.urlParams;
-			await Abac.deleteAbacAttributeById(_id);
+			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
 			return API.v1.success();
 		},
 	)
@@ -327,14 +344,67 @@ const abacEndpoints = API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
 			const { filter, filterType } = this.queryParams;
 
-			const result = await Abac.listAbacRooms({
-				offset,
-				count,
-				filter,
-				filterType,
-			});
+			const result = await Abac.listAbacRooms(
+				{
+					offset,
+					count,
+					filter,
+					filterType,
+				},
+				getActorFromUser(this.user),
+			);
 
 			return API.v1.success(result);
+		},
+	)
+	.get(
+		'abac/audit',
+		{
+			response: {
+				200: GETAbacAuditEventsResponseSchema,
+				400: GenericErrorSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+			query: GETAbacAuditEventsQuerySchema,
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			license: ['abac', 'auditing'],
+		},
+		async function action() {
+			const { start, end, actor } = this.queryParams;
+
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { sort } = await this.parseJsonQuery();
+			const _sort = { ts: sort?.ts ? sort?.ts : -1 };
+
+			const { cursor, totalCount } = ServerEvents.findPaginated(
+				{
+					...(actor && convertSubObjectsIntoPaths({ actor })),
+					ts: {
+						$gte: start ? new Date(start) : new Date(0),
+						$lte: end ? new Date(end) : new Date(),
+					},
+					t: {
+						$in: ['abac.attribute.changed', 'abac.object.attribute.changed', 'abac.object.attributes.removed', 'abac.action.performed'],
+					},
+				},
+				{
+					sort: _sort,
+					skip: offset,
+					limit: count,
+					allowDiskUse: true,
+				},
+			);
+
+			const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				events,
+				count: events.length,
+				offset,
+				total,
+			});
 		},
 	);
 
