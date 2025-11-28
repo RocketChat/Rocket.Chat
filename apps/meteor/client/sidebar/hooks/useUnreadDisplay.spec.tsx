@@ -198,21 +198,21 @@ it('should return correct unread data for [Thread and thread user mention]', asy
 });
 
 it('should not highlight unread if hideUnreadStatus is enabled', async () => {
-	const { result } = renderHook(() => useUnreadDisplay(hideUnreadStatus));
+	const { result } = renderHook(() => useUnreadDisplay(hideUnreadStatus), { wrapper });
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(true);
 });
 
 it('should not show unread if hideUnreadStatus and hideMentionStatus is enabled', async () => {
-	const { result } = renderHook(() => useUnreadDisplay(hideUnreadAndMention));
+	const { result } = renderHook(() => useUnreadDisplay(hideUnreadAndMention), { wrapper });
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(false);
 });
 
 it("should not show unread if there isn't any unread message", async () => {
-	const { result } = renderHook(() => useUnreadDisplay(noUnread));
+	const { result } = renderHook(() => useUnreadDisplay(noUnread), { wrapper });
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(false);
