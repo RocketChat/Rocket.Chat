@@ -9,7 +9,6 @@ declare module '@rocket.chat/ddp-client' {
 		'UserPresence:setDefaultStatus'(status: UserStatus): boolean | undefined;
 		'UserPresence:online'(): boolean | undefined;
 		'UserPresence:away'(): boolean | undefined;
-		'UserPresence:ping'(): boolean | undefined;
 	}
 }
 
@@ -34,12 +33,5 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 		return Presence.setConnectionStatus(userId, connection.id, UserStatus.AWAY);
-	},
-	'UserPresence:ping'() {
-		const { connection, userId } = this;
-		if (!userId || !connection) {
-			return;
-		}
-		return Presence.setConnectionStatus(userId, connection.id);
 	},
 });

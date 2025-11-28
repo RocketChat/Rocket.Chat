@@ -39,7 +39,9 @@ declare module 'meteor/meteor' {
 			isDesktop: () => boolean;
 		}
 
-		const server: any;
+		const server: {
+			sessions: Map<string, { userId: string; heartbeat: { _sendPing: () => void } }>;
+		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
 
@@ -47,18 +49,12 @@ declare module 'meteor/meteor' {
 			twoFactorChecked: boolean | undefined;
 		}
 
-		interface IDDPPingMessage {
-			msg: 'ping';
-		}
-
-		interface IDDPMethodMessage {
+		interface IDDPMessage {
 			msg: 'method';
 			method: string;
 			params: EJSON[];
 			id: string;
 		}
-
-		type IDDPMessage = IDDPPingMessage | IDDPMethodMessage;
 
 		interface IDDPUpdatedMessage {
 			msg: 'updated';

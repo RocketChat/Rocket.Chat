@@ -40,6 +40,13 @@ Meteor.startup(() => {
 			return;
 		}
 
+		const originalSendPing = session.heartbeat._sendPing.bind(session.heartbeat);
+
+		session.heartbeat._sendPing = function () {
+			originalSendPing();
+			void Presence.setConnectionStatus(login.user._id, login.connection.id);
+		};
+
 		void (async function () {
 			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();

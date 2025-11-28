@@ -130,13 +130,6 @@ server.methods({
 		}
 		return Presence.setConnectionStatus(userId, session, UserStatus.AWAY);
 	},
-	'UserPresence:ping'() {
-		const { userId, session } = this;
-		if (!userId) {
-			return;
-		}
-		return Presence.setConnectionStatus(userId, session);
-	},
 	'setUserStatus'(status, statusText) {
 		const { userId } = this;
 		if (!userId) {
