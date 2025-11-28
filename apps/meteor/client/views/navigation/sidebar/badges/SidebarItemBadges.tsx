@@ -1,6 +1,6 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import UnreadBadge from './UnreadBadge';
+import UnreadBadge from '../../../../sidebarv2/badges/UnreadBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarItemBadgesProps = {
