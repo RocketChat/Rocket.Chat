@@ -162,7 +162,7 @@ export async function createDirectRoom(
 				roomExtraData.federated && options?.creator !== member._id
 					? {
 							status: 'INVITED',
-							inviterUsername: options?.creator, // TODO: Should use inviterId instead of inviterUsername
+							inviterUsername: options?.creator,
 						}
 					: {};
 
