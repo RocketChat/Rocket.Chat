@@ -1,5 +1,6 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
 import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
+import { PageScrollableContent } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 
 import HomePageHeader from './HomePageHeader';
@@ -11,7 +12,6 @@ import DocumentationCard from './cards/DocumentationCard';
 import JoinRoomsCard from './cards/JoinRoomsCard';
 import MobileAppsCard from './cards/MobileAppsCard';
 import Page from '../../components/Page/Page';
-import PageScrollableContent from '../../components/Page/PageScrollableContent';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 

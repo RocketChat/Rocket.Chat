@@ -1,8 +1,8 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { useContext } from 'react';
+import { PageScrollableContent } from '@rocket.chat/ui-client';
 
 import PageContext from './PageContext';
-import PageScrollableContent from './PageScrollableContent';
 
 type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
 
