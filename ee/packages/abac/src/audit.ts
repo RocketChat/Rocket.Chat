@@ -116,11 +116,7 @@ export const Audit = {
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
-	actionPerformed: async (
-		subject: MinimalUser | undefined,
-		object: MinimalRoom | undefined,
-		reason: AbacAuditReason = 'room-attributes-change',
-	) => {
+	actionPerformed: async (subject: MinimalUser, object: MinimalRoom, reason: AbacAuditReason = 'room-attributes-change') => {
 		return audit(
 			'abac.action.performed',
 			{
