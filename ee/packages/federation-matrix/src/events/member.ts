@@ -40,16 +40,16 @@ async function getOrCreateFederatedRoom({
 	roomFName,
 	roomType,
 	inviterUserId,
-	inviterUserName,
-	inviteeUserName,
+	inviterUsername,
+	inviteeUsername,
 }: {
 	matrixRoomId: string;
 	roomName: string;
 	roomFName: string;
 	roomType: RoomType;
 	inviterUserId: string;
-	inviterUserName: string;
-	inviteeUserName?: string;
+	inviterUsername: string;
+	inviteeUsername?: string;
 }): Promise<IRoom> {
 	try {
 		const room = await Rooms.findOne({ 'federation.mrid': matrixRoomId });
@@ -60,7 +60,7 @@ async function getOrCreateFederatedRoom({
 		return Room.create(inviterUserId, {
 			type: roomType,
 			name: roomName,
-			members: inviteeUserName ? [inviteeUserName, inviterUserName] : [inviterUserName],
+			members: inviteeUsername ? [inviteeUsername, inviterUsername] : [inviterUsername],
 			options: {
 				federatedRoomId: matrixRoomId,
 				creator: inviterUserId,
@@ -126,8 +126,8 @@ async function handleInvite({
 		roomFName,
 		roomType,
 		inviterUserId: inviterUser._id,
-		inviterUserName: inviterUser.username as string, // TODO: Remove force cast
-		inviteeUserName: content?.is_direct ? inviteeUser.username : undefined,
+		inviterUsername: inviterUser.username as string, // TODO: Remove force cast
+		inviteeUsername: content?.is_direct ? inviteeUser.username : undefined,
 	});
 	if (!room) {
 		throw new Error(`Room not found or could not be created: ${roomId}`);
