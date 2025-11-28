@@ -1,4 +1,4 @@
-import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition } from '..';
+import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents } from '..';
 
 export type MinimalUser = Pick<IUser, '_id' | 'username'>;
 export type MinimalRoom = Pick<IRoom, '_id'>;
@@ -62,13 +62,6 @@ interface IServerEventAbacActionPerformed
 	t: 'abac.action.performed';
 }
 
-export type ValidAbacEvents =
-	| 'abac.subject.attribute.changed'
-	| 'abac.object.attribute.changed'
-	| 'abac.attribute.changed'
-	| 'abac.action.performed'
-	| 'abac.object.attributes.removed';
-
 declare module '../IServerEvent' {
 	interface IServerEvents {
 		'abac.subject.attribute.changed': IServerEventAbacSubjectAttributeChanged;
@@ -78,3 +71,7 @@ declare module '../IServerEvent' {
 		'abac.object.attributes.removed': IServerEventAbacObjectAttributeChanged;
 	}
 }
+
+// Utility type to extract all ABAC-related server event names
+// (ensures that only events prefixed with "abac." are included)
+export type AbacAuditServerEventKey = Extract<keyof IServerEvents, `abac.${string}`>;

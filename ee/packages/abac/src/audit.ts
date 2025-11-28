@@ -4,7 +4,7 @@ import type {
 	IAbacAttributeDefinition,
 	IAuditServerActor,
 	IServerEvents,
-	ValidAbacEvents,
+	AbacAuditServerEventKey,
 	AbacAttributeDefinitionChangeType,
 	AbacAuditReason,
 	MinimalRoom,
@@ -13,16 +13,16 @@ import type {
 import { ServerEvents } from '@rocket.chat/models';
 
 type EventParamsMap = {
-	[K in ValidAbacEvents]: ExtractDataToParams<IServerEvents[K]>;
+	[K in AbacAuditServerEventKey]: ExtractDataToParams<IServerEvents[K]>;
 };
 
-type EventPayload<K extends ValidAbacEvents> = EventParamsMap[K];
+type EventPayload<K extends AbacAuditServerEventKey> = EventParamsMap[K];
 
-export type AbacAuditEventName = ValidAbacEvents;
+export type AbacAuditEventName = AbacAuditServerEventKey;
 
 export type AbacAuditEventPayload<K extends AbacAuditEventName = AbacAuditEventName> = EventPayload<K>;
 
-async function audit<K extends ValidAbacEvents>(event: K, payload: EventPayload<K>, actor: IAuditServerActor): Promise<void> {
+async function audit<K extends AbacAuditServerEventKey>(event: K, payload: EventPayload<K>, actor: IAuditServerActor): Promise<void> {
 	return ServerEvents.createAuditServerEvent(event, payload, actor);
 }
 
