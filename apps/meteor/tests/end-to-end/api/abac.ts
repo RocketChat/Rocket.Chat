@@ -2139,7 +2139,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect((buzzDept && buzzDept.values) || []).to.be.an('array').that.is.not.empty;
 		});
 
-		it('should support /abac/users/sync with usernames and uids params', async () => {
+		it('should support /abac/users/sync with usernames as param', async () => {
 			await request
 				.post(`${v1}/abac/users/sync`)
 				.set(credentials)
