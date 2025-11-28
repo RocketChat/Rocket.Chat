@@ -9,7 +9,7 @@ import type CreateChannelModalComponent from '../../../sidebar/header/CreateChan
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function testCreateChannelModal(CreateChannelModal: typeof CreateChannelModalComponent | typeof CreateChannelModal2Component) {
 	describe('CreateChannelModal', () => {
-		describe('Encription', () => {
+		describe('Encryption', () => {
 			it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {
 				render(<CreateChannelModal onClose={() => null} />, {
 					wrapper: mockAppRoot().withSetting('E2E_Enable', false).withSetting('E2E_Enabled_Default_PrivateRooms', false).build(),
