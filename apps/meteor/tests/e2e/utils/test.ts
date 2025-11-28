@@ -12,6 +12,7 @@ import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants
 import { Users } from '../fixtures/userStates';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
+const PATH_LOG_DATA = path.join(process.cwd(), '.log_data');
 
 export type AnyObj = { [key: string]: any };
 
@@ -62,6 +63,7 @@ export const test = baseTest.extend<BaseTest>({
 		});
 
 		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
+		await fs.promises.mkdir(PATH_LOG_DATA, { recursive: true });
 
 		await use(context);
 
@@ -70,6 +72,7 @@ export const test = baseTest.extend<BaseTest>({
 				const coverage = await page.coverage.stopJSCoverage();
 
 				const entries = [];
+				const paths: Record<string, any> = {};
 				for await (const entry of coverage) {
 					if (!entry.url || !entry.source) {
 						continue;
@@ -82,6 +85,12 @@ export const test = baseTest.extend<BaseTest>({
 
 					const pathToSource = path.join(process.cwd(), '.meteor/local/build/programs/web.browser/dynamic/', `${entry.url}`);
 					const pathToSourceMap = `${pathToSource}.map`;
+
+					paths[entry.url] = {
+						cwd: process.cwd(),
+						pathToSource,
+						pathToSourceMap,
+					};
 
 					let sourceMapFile;
 					try {
@@ -115,9 +124,11 @@ export const test = baseTest.extend<BaseTest>({
 				}
 
 				fs.writeFileSync(
-					path.join(PATH_NYC_OUTPUT, `AI_playwright_coverage_${uuid()}.json`),
+					path.join(PATH_NYC_OUTPUT, `playwright_coverage_${uuid()}.json`),
 					JSON.stringify(Object.fromEntries(entries.flatMap((entry) => Object.entries(entry)))),
 				);
+
+				fs.writeFileSync(path.join(PATH_LOG_DATA, `playwright_paths_${uuid()}.json`), JSON.stringify(paths));
 
 				await page.close();
 			}),
