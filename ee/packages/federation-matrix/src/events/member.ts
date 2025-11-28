@@ -133,6 +133,11 @@ async function handleInvite({
 		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
 
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
+	if (subscription) {
+		return;
+	}
+
 	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
 		status: 'INVITED',
 		inviterUsername: inviterUser.username,
