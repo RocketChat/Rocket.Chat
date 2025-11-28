@@ -31,4 +31,3 @@ const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps
 });
 
 export default PageScrollableContent;
-

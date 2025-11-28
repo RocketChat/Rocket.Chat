@@ -1,6 +1,6 @@
+import { PageScrollableContent } from '@rocket.chat/ui-client';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useContext } from 'react';
-import { PageScrollableContent } from '@rocket.chat/ui-client';
 
 import PageContext from './PageContext';
 
