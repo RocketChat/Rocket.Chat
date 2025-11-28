@@ -105,20 +105,15 @@ async function handleInvite({
 	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
 
-	// if is a DM, use the sender username as the room name
-	// otherwise, use the matrix room name and the room origin domain
-	// TODO: consider refactoring to create federated rooms using the Matrix room_id
-	// as the Rocket.Chat room name and set the display (visual) name as the fName property.
 	let roomName: string;
+	let roomFName: string;
 	if (content?.is_direct) {
 		roomName = senderId;
-	} else if (matrixRoomName && roomOriginDomain) {
-		roomName = `${matrixRoomName}:${roomOriginDomain}`;
+		roomFName = senderId;
 	} else {
-		roomName = `${roomId}:${roomOriginDomain}`;
+		roomName = roomId.replace('!', '').replace(':', '_');
+		roomFName = `${matrixRoomName}:${roomOriginDomain}`;
 	}
-
-	const roomFName = roomName;
 
 	const room = await getOrCreateFederatedRoom({
 		matrixRoomId: roomId,
