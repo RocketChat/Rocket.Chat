@@ -230,7 +230,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			try {
-				const inviteEvent = await federationSDK.processInvite(event, eventId, roomVersion);
+				const inviteEvent = await federationSDK.processInvite(event, eventId, roomVersion, strippedStateEvents);
 
 				return {
 					body: {
