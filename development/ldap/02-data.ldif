@@ -22,29 +22,16 @@ objectClass: groupOfNames
 objectClass: top
 cn: astronauts
 member: uid=alan.bean,ou=users,dc=space,dc=air
-member: uid=alan.shepard,ou=users,dc=space,dc=air
 member: uid=buzz.aldrin,ou=users,dc=space,dc=air
-member: uid=charles.duke,ou=users,dc=space,dc=air
 member: uid=david.scott,ou=users,dc=space,dc=air
-member: uid=edgar.mitchell,ou=users,dc=space,dc=air
 member: uid=gene.cernan,ou=users,dc=space,dc=air
-member: uid=harrison.schmitt,ou=users,dc=space,dc=air
-member: uid=james.irwin,ou=users,dc=space,dc=air
 member: uid=john.young,ou=users,dc=space,dc=air
-member: uid=neil.armstrong,ou=users,dc=space,dc=air
-member: uid=pete.conrad,ou=users,dc=space,dc=air
 
 dn: cn=cosmonauts,dc=space,dc=air
 objectClass: groupOfNames
 objectClass: top
 cn: cosmonauts
-member: uid=alexei.leonov,ou=users,dc=space,dc=air
 member: uid=sergei.krikalev,ou=users,dc=space,dc=air
-member: uid=svetlana.savitskaya,ou=users,dc=space,dc=air
-member: uid=valentina.tereshkova,ou=users,dc=space,dc=air
-member: uid=valeri.polyakov,ou=users,dc=space,dc=air
-member: uid=vladimir.komarov,ou=users,dc=space,dc=air
-member: uid=yuri.gagarin,ou=users,dc=space,dc=air
 member: uid=yuri.romanenko,ou=users,dc=space,dc=air
 
 dn: uid=alan.bean,ou=users,dc=space,dc=air
@@ -147,115 +134,11 @@ userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
  1RaVHZJPQ==
 
 
-dn: uid=pete.conrad,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Pete Conrad
-sn: Pete
-mail: pete.conrad@space.air
-uid: pete.conrad
-destinationIndicator: Chile
-employeeType: fulltime
-departmentNumber: commsNet
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
 
 
-dn: uid=alan.shepard,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Alan Shepard
-sn: Alan
-mail: alan.shepard@space.air
-uid: alan.shepard
-destinationIndicator: India
-employeeType: parttime
-departmentNumber: missionPlan
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
 
 
-dn: uid=charles.duke,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Charles Duke
-sn: Charles
-mail: charles.duke@space.air
-uid: charles.duke
-destinationIndicator: Spain
-employeeType: contractor
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
 
-
-dn: uid=yuri.gagarin,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Yuri Gagarin
-sn: Yuri
-mail: yuri.gagarin@space.air
-uid: yuri.gagarin
-destinationIndicator: Morocco
-employeeType: intern
-departmentNumber: training
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=alexei.leonov,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Alexei Leonov
-sn: Alexei
-mail: alexei.leonov@space.air
-uid: alexei.leonov
-destinationIndicator: Australia
-employeeType: consultant
-departmentNumber: bioMedical
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=gherman.titov,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Gherman Titov
-sn: Gherman
-mail: gherman.titov@space.air
-uid: gherman.titov
-destinationIndicator: Sweden
-employeeType: seasonal
-departmentNumber: deepSpace
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=edgar.mitchell,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Edgar Mitchell
-sn: Edgar
-mail: edgar.mitchell@space.air
-uid: edgar.mitchell
-destinationIndicator: Argentina
-employeeType: fulltime
-departmentNumber: navControl2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
 
 
 dn: uid=neil.armstrong,ou=users,dc=space,dc=air
@@ -317,117 +200,5 @@ uid: userwithnoemail
 destinationIndicator: Portugal
 employeeType: consultant
 departmentNumber: geoScience2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=valeri.polyakov,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Valeri Polyakov
-sn: Valeri
-mail: valeri.polyakov@space.air
-uid: valeri.polyakov
-destinationIndicator: Peru
-employeeType: seasonal
-departmentNumber: dataSystems2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=harrison.schmitt,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Harrison Schmitt
-sn: Harrison
-mail: harrison.schmitt@space.air
-uid: harrison.schmitt
-destinationIndicator: SouthAfrica
-employeeType: fulltime
-departmentNumber: commsNet2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=vladimir.komarov,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Vladimir Komarov
-sn: Vladimir
-mail: vladimir.komarov@space.air
-uid: vladimir.komarov
-destinationIndicator: France
-employeeType: parttime
-departmentNumber: missionPlan2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=svetlana.savitskaya,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Svetlana Savitskaya
-sn: Svetlana
-mail: svetlana.savitskaya@space.air
-uid: svetlana.savitskaya
-destinationIndicator: Egypt
-employeeType: contractor
-departmentNumber: evaOps2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=valentina.tereshkova,ou=users,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Valentina Tereshkova
-sn: Valentina
-mail: valentina.tereshkova@space.air
-uid: valentina.tereshkova
-destinationIndicator: Switzerland
-employeeType: intern
-departmentNumber: training2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=user1,ou=others,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: User 1
-sn: 1
-mail: user1@domain.mail
-uid: user1
-destinationIndicator: Poland
-employeeType: consultant
-departmentNumber: bioMedical2
-userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
- 1RaVHZJPQ==
-
-
-dn: uid=user2,ou=others,dc=space,dc=air
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: User 2
-sn: 2
-mail: user2@domain.mail
-uid: user2
-destinationIndicator: Greece
-employeeType: seasonal
-departmentNumber: deepSpace2
 userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
  1RaVHZJPQ==
