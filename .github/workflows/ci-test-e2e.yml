@@ -215,6 +215,12 @@ jobs:
           ls -la $COVERAGE_DIR
           exit $s
 
+      - name: Log folder contents
+        if: inputs.type == 'ui'
+        run: |
+          mkdir -p ./log_data
+          tree -d . | tee ./log_data/folder_contents.txt
+
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
