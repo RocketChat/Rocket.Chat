@@ -2036,27 +2036,29 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 	describe('LDAP integration', () => {
 		before(async () => {
-			await updateSetting('LDAP_Enable', true);
-			await updateSetting('ABAC_Enabled', true);
-			await updateSetting('LDAP_Background_Sync', true);
-			await updateSetting('LDAP_Background_Sync_Import_New_Users', true);
-			await updateSetting('LDAP_Host', 'openldap');
-			await updateSetting('LDAP_Port', 1389);
-			await updateSetting('LDAP_Authentication', true);
-			await updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air');
-			await updateSetting('LDAP_Authentication_Password', 'adminpassword');
-			await updateSetting('LDAP_BaseDN', 'ou=users,dc=space,dc=air');
-			await updateSetting('LDAP_AD_User_Search_Field', 'uid');
-			await updateSetting('LDAP_AD_Username_Field', 'uid');
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *');
-			await updateSetting(
-				'LDAP_ABAC_AttributeMap',
-				JSON.stringify({
-					departmentNumber: 'department',
-					telephoneNumber: 'phone',
-				}),
-			);
+			await Promise.all([
+				updateSetting('LDAP_Enable', true),
+				updateSetting('ABAC_Enabled', true),
+				updateSetting('LDAP_Background_Sync', true),
+				updateSetting('LDAP_Background_Sync_Import_New_Users', true),
+				updateSetting('LDAP_Host', 'openldap'),
+				updateSetting('LDAP_Port', 1389),
+				updateSetting('LDAP_Authentication', true),
+				updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air'),
+				updateSetting('LDAP_Authentication_Password', 'adminpassword'),
+				updateSetting('LDAP_BaseDN', 'ou=users,dc=space,dc=air'),
+				updateSetting('LDAP_AD_User_Search_Field', 'uid'),
+				updateSetting('LDAP_AD_Username_Field', 'uid'),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes', true),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *'),
+				updateSetting(
+					'LDAP_ABAC_AttributeMap',
+					JSON.stringify({
+						departmentNumber: 'department',
+						telephoneNumber: 'phone',
+					}),
+				),
+			]);
 		});
 
 		before(async function () {
@@ -2133,10 +2135,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const buzzDept = buzzAfterAttrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
 
 			expect(alanDept).to.exist;
-			expect((alanDept && alanDept.values) || []).to.be.an('array').that.is.not.empty;
+			expect(alanDept?.values || []).to.be.an('array').that.is.not.empty;
 
 			expect(buzzDept).to.exist;
-			expect((buzzDept && buzzDept.values) || []).to.be.an('array').that.is.not.empty;
+			expect(buzzDept?.values || []).to.be.an('array').that.is.not.empty;
 		});
 
 		it('should support /abac/users/sync with usernames as param', async () => {
@@ -2220,6 +2222,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					});
 			});
 
+			after(async () => {
+				await deleteRoom({ type: 'p', roomId: roomIdWithAbac });
+			});
+
 			it('should remove users from room after LDAP sync changes their ABAC attributes', async () => {
 				const initialDept = 'navControl';
 
@@ -2264,20 +2270,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await updateSetting('LDAP_Enable', false);
-			await updateSetting('ABAC_Enabled', false);
-			await updateSetting('LDAP_Background_Sync', false);
-			await updateSetting('LDAP_Background_Sync_Import_New_Users', false);
-			await updateSetting('LDAP_Host', '');
-			await updateSetting('LDAP_Authentication', false);
-			await updateSetting('LDAP_Authentication_UserDN', '');
-			await updateSetting('LDAP_Authentication_Password', '');
-			await updateSetting('LDAP_BaseDN', '');
-			await updateSetting('LDAP_AD_User_Search_Field', '');
-			await updateSetting('LDAP_AD_Username_Field', '');
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
-			await updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '');
-			await updateSetting('LDAP_ABAC_AttributeMap', '');
+			await Promise.all([
+				updateSetting('LDAP_Enable', false),
+				updateSetting('ABAC_Enabled', false),
+				updateSetting('LDAP_Background_Sync', false),
+				updateSetting('LDAP_Background_Sync_Import_New_Users', false),
+				updateSetting('LDAP_Host', ''),
+				updateSetting('LDAP_Authentication', false),
+				updateSetting('LDAP_Authentication_UserDN', ''),
+				updateSetting('LDAP_Authentication_Password', ''),
+				updateSetting('LDAP_BaseDN', ''),
+				updateSetting('LDAP_AD_User_Search_Field', ''),
+				updateSetting('LDAP_AD_Username_Field', ''),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes', false),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', ''),
+				updateSetting('LDAP_ABAC_AttributeMap', ''),
+			]);
 		});
 	});
 });
