@@ -93,11 +93,10 @@ function SideBarItemTemplateWithData({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const { lastMessage, hideUnreadStatus, unread = 0, alert, rid, t: type, cl } = room;
+	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
-	const { unreadCount, unreadTitle, showUnread } = useUnreadDisplay(room);
+	const { unreadCount, unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
 		// TODO: Remove icon='at'
 		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
