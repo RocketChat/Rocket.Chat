@@ -29,7 +29,7 @@ describe('SidebarItemBadges', () => {
 		jest.resetAllMocks();
 	});
 
-	it('shound render UnreadBadge when there are unread messages', () => {
+	it('should render UnreadBadge when there are unread messages', () => {
 		render(
 			<SidebarItemBadges room={createRoomWithSubscription({ unread: 1, userMentions: 1, groupMentions: 0 })} roomTitle='Test Room' />,
 			{ wrapper: appRoot },
@@ -38,7 +38,7 @@ describe('SidebarItemBadges', () => {
 		expect(screen.getByRole('status', { name: '1 mention from Test Room' })).toBeInTheDocument();
 	});
 
-	it('shound not render UnreadBadge when there are no unread messages', () => {
+	it('should not render UnreadBadge when there are no unread messages', () => {
 		render(
 			<SidebarItemBadges room={createRoomWithSubscription({ unread: 0, userMentions: 0, groupMentions: 0 })} roomTitle='Test Room' />,
 			{ wrapper: appRoot },
