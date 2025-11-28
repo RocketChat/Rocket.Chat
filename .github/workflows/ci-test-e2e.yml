@@ -219,7 +219,7 @@ jobs:
         if: inputs.type == 'ui'
         working-directory: .
         run: |
-          mkdir -p .apps/meteor/log_data
+          mkdir -p ./apps/meteor/log_data
           pwd
           tree -a . | tee ./apps/meteor/log_data/folder_contents.txt
 
