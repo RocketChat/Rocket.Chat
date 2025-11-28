@@ -158,7 +158,6 @@ export const createRoom = async <T extends RoomType>(
 			federated: true,
 			federation: {
 				version: 1,
-				...(options?.federatedRoomId && { mrid: options.federatedRoomId }),
 				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
 			},
 		}),
@@ -182,7 +181,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
 	}
 
 	if (!onlyUsernames(members)) {
