@@ -217,9 +217,11 @@ jobs:
 
       - name: Log folder contents
         if: inputs.type == 'ui'
+        working-directory: .
         run: |
-          mkdir -p ./log_data
-          tree -a . | tee ./log_data/folder_contents.txt
+          mkdir -p .apps/meteor/log_data
+          pwd
+          tree -a . | tee ./apps/meteor/log_data/folder_contents.txt
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
