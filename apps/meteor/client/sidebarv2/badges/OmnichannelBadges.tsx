@@ -5,7 +5,7 @@ import RoomActivityIcon from '../../views/omnichannel/components/RoomActivityIco
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../views/omnichannel/priorities/PriorityIcon';
 
-export const OmnichannelBadges = ({ room }: { room: ISubscription & IRoom }) => {
+const OmnichannelBadges = ({ room }: { room: ISubscription & IRoom }) => {
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	if (!isOmnichannelRoom(room)) {
@@ -19,3 +19,5 @@ export const OmnichannelBadges = ({ room }: { room: ISubscription & IRoom }) => 
 		</>
 	);
 };
+
+export default OmnichannelBadges;
