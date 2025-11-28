@@ -50,6 +50,8 @@
 		"eslint-plugin-storybook": "~0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"jest": "~30.2.0",
+		"overlayscrollbars": "^2.11.4",
+		"overlayscrollbars-react": "^0.5.6",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
@@ -65,6 +67,8 @@
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
+		"overlayscrollbars": "*",
+		"overlayscrollbars-react": "*",
 		"react": "*",
 		"react-i18next": "*"
 	},
