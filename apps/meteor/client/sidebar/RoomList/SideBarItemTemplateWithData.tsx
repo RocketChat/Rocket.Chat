@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
+import { Sidebar, SidebarItemAction, SidebarItemActions } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { TFunction } from 'i18next';
@@ -13,7 +13,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
-import OmnichannelBadges from '../badges/OmnichannelBadges';
+import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -95,7 +95,7 @@ function SideBarItemTemplateWithData({
 
 	const { lastMessage, hideUnreadStatus, unread = 0, alert, rid, t: type, cl } = room;
 
-	const { unreadCount, unreadTitle, showUnread, unreadVariant } = useUnreadDisplay(room);
+	const { unreadCount, unreadTitle, showUnread } = useUnreadDisplay(room);
 
 	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
@@ -124,23 +124,6 @@ function SideBarItemTemplateWithData({
 		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
 	) : null;
 
-	const badges = (
-		<Margins inlineStart={8}>
-			{showUnread && (
-				<Badge
-					role='status'
-					{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
-					variant={unreadVariant}
-					title={unreadTitle}
-					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
-				>
-					<span aria-hidden>{unreadCount.total}</span>
-				</Badge>
-			)}
-			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-		</Margins>
-	);
-
 	return (
 		<SideBarItemTemplate
 			is='a'
@@ -159,7 +142,7 @@ function SideBarItemTemplateWithData({
 			subtitle={subtitle}
 			icon={icon}
 			style={style}
-			badges={badges}
+			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
