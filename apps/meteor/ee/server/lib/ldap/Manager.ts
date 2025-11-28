@@ -752,7 +752,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			await Abac.addSubjectAttributes(user, ldapUser, mapping);
+			await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
 		}
 	}
 
@@ -768,7 +768,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		await Abac.addSubjectAttributes(user, ldapUser, mapping);
+		await Abac.addSubjectAttributes(user, ldapUser, mapping, undefined);
 	}
 
 	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
