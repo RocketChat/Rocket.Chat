@@ -185,6 +185,7 @@ export function testCreateChannelModal(CreateChannelModal: typeof CreateChannelM
 					wrapper: mockAppRoot().build(),
 				});
 
+				await userEvent.click(screen.getByText('Advanced_settings'));
 				const federated = screen.getByLabelText('Federation_Matrix_Federated');
 				expect(federated).toHaveAccessibleDescription('error-this-is-a-premium-feature');
 				expect(federated).toBeInTheDocument();
