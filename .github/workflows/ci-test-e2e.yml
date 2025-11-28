@@ -247,6 +247,7 @@ jobs:
         working-directory: ./apps/meteor
         run: |
           npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
+          cp .nyc_output/* ${COVERAGE_DIR}/.
           ls -la $COVERAGE_DIR || true
 
       - name: Store playwright test trace
