@@ -1,5 +1,5 @@
-import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser, RoomID } from '@rocket.chat/core-typings';
-import type { EventID, EventStore, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
+import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { EventStore } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
 	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
@@ -25,11 +25,7 @@ export interface IFederationMatrixService {
 		userId: string,
 		role: 'moderator' | 'owner' | 'leader' | 'user',
 	): Promise<void>;
-	inviteUsersToRoom(
-		room: IRoomFederated,
-		usersUserName: string[],
-		inviter: IUser,
-	): Promise<{ event_id: EventID; event: PersistentEventBase<RoomVersion, 'm.room.member'>; room_id: RoomID }[]>;
+	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
 	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
