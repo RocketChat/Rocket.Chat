@@ -1,5 +1,6 @@
 import './ServerAudit/IAuditServerSettingEvent';
 import './ServerAudit/IAuditUserChangedEvent';
+import './ServerAudit/IAuditServerAbacAction';
 
 export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
@@ -150,5 +151,6 @@ export * from './mediaCalls';
 export * from './ICallHistoryItem';
 export * from './IAbacAttribute';
 export * from './Abac';
+export * from './ServerAudit/IAuditServerAbacAction';
 
 export { schemas } from './Ajv';
