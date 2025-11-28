@@ -120,6 +120,7 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	AbacAttributesRaw,
+	ServerEventsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -264,6 +265,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 }
 
 if (!dbWatchersDisabled) {
