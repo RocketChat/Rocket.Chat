@@ -216,7 +216,7 @@ export function testCreateChannelModal(CreateChannelModal: typeof CreateChannelM
 				expect(federated).toHaveAccessibleDescription('Federation_Matrix_Federated_Description_disabled');
 			});
 
-			it.only('should render with federated option disabled when user lacks permission', async () => {
+			it('should render with federated option disabled when user lacks permission', async () => {
 				render(<CreateChannelModal onClose={() => null} />, {
 					wrapper: mockAppRoot()
 						.withJohnDoe()
