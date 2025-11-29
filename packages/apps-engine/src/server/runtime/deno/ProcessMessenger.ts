@@ -12,7 +12,7 @@ export class ProcessMessenger {
 
 	private _sendStrategy: (message: JsonRpc) => void;
 
-	constructor(private readonly debug: debug.Debugger) {
+	constructor() {
 		this._sendStrategy = this.strategyError;
 	}
 
@@ -49,7 +49,6 @@ export class ProcessMessenger {
 	}
 
 	private strategySend(message: JsonRpc) {
-		this.debug('Sending message to subprocess %o', message);
 		this.deno.stdin.write(this.encoder.encode(message));
 	}
 }

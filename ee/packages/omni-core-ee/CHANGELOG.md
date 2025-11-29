@@ -1,5 +1,93 @@
 # @rocket.chat/omni-core-ee
 
+## 0.0.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.6
+  - @rocket.chat/models@1.7.3
+  - @rocket.chat/omni-core@0.0.8
+  </details>
+
+## 0.0.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8cbd9bfd0566cbd7d86d8b40ea7d58d6ef382742]:</summary>
+
+  - @rocket.chat/models@1.7.2
+  - @rocket.chat/core-services@0.10.5
+  - @rocket.chat/omni-core@0.0.7
+  </details>
+
+## 0.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4
+  - @rocket.chat/models@1.7.1
+  - @rocket.chat/omni-core@0.0.6
+  </details>
+
+## 0.0.6-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4-rc.4
+  - @rocket.chat/models@1.7.1-rc.4
+  - @rocket.chat/omni-core@0.0.6-rc.4
+  </details>
+
+## 0.0.6-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4-rc.3
+  - @rocket.chat/models@1.7.1-rc.3
+  - @rocket.chat/omni-core@0.0.6-rc.3
+  </details>
+
+## 0.0.6-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4-rc.2
+  - @rocket.chat/models@1.7.1-rc.2
+  - @rocket.chat/omni-core@0.0.6-rc.2
+  </details>
+
+## 0.0.6-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4-rc.1
+  - @rocket.chat/models@1.7.1-rc.1
+  - @rocket.chat/omni-core@0.0.6-rc.1
+  </details>
+
+## 0.0.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.10.4-rc.0
+  - @rocket.chat/models@1.7.1-rc.0
+  - @rocket.chat/omni-core@0.0.6-rc.0
+  </details>
+
 ## 0.0.5
 
 ### Patch Changes

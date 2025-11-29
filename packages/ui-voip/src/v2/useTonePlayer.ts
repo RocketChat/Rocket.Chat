@@ -26,8 +26,8 @@ class TonePlayer {
 
 		// This filter makes the sound more natural
 		this.filter = this.audioContext.createBiquadFilter();
-		this.filter.type = 'lowpass';
-		this.filter.frequency.value = 8000;
+		this.filter.type = 'bandpass';
+		this.filter.frequency.value = 4000;
 
 		this.gainNode.connect(this.filter);
 		this.filter.connect(this.destination);
@@ -54,8 +54,10 @@ class TonePlayer {
 		lowFrequencyOscillator.frequency.value = lowFreq;
 		highFrequencyOscillator.frequency.value = highFreq;
 
-		lowFrequencyOscillator.start();
-		highFrequencyOscillator.start();
+		const startTime = this.audioContext.currentTime;
+
+		lowFrequencyOscillator.start(startTime);
+		highFrequencyOscillator.start(startTime);
 
 		// Ensure audio element is playing
 		if (this.audioElement.paused) {
@@ -64,12 +66,8 @@ class TonePlayer {
 			});
 		}
 
-		setTimeout(() => {
-			lowFrequencyOscillator.stop();
-			highFrequencyOscillator.stop();
-			highFrequencyOscillator.disconnect();
-			lowFrequencyOscillator.disconnect();
-		}, durationMs ?? 400);
+		highFrequencyOscillator.stop(startTime + (durationMs ?? 400) / 1000);
+		lowFrequencyOscillator.stop(startTime + (durationMs ?? 400) / 1000);
 	}
 
 	public destroy() {
