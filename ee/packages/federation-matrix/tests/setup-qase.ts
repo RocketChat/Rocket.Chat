@@ -101,7 +101,21 @@ function describeImpl(name: string, fn: () => void): void {
 if (process.env.QASE_TESTOPS_JEST_API_TOKEN) {
 	// Replace global describe with our wrapper
 	(global as any).describe = Object.assign(describeImpl, {
-		skip: (name: string, fn: () => void) => originalDescribe.skip(name, fn),
-		only: (name: string, fn: () => void) => originalDescribe.only(name, fn),
+		skip: (name: string, fn: () => void) => {
+			suitePathStack.push(name);
+			try {
+				originalDescribe.skip(name, fn);
+			} finally {
+				suitePathStack.pop();
+			}
+		},
+		only: (name: string, fn: () => void) => {
+			suitePathStack.push(name);
+			try {
+				originalDescribe.only(name, fn);
+			} finally {
+				suitePathStack.pop();
+			}
+		},
 	}) as typeof global.describe;
 }
