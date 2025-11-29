@@ -1,4 +1,4 @@
-import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,6 @@ import {
 	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import { useRoom } from '../../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 
 const PATH = 'live';
 

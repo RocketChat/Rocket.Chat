@@ -10080,7 +10080,6 @@ __metadata:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~8.45.0"
-    jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -10295,7 +10294,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
@@ -10326,6 +10324,8 @@ __metadata:
     eslint-plugin-storybook: "npm:~0.11.6"
     eslint-plugin-testing-library: "npm:~6.4.0"
     jest: "npm:~30.2.0"
+    overlayscrollbars: "npm:^2.11.4"
+    overlayscrollbars-react: "npm:^0.5.6"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-hook-form: "npm:~7.45.4"
@@ -10340,6 +10340,8 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    overlayscrollbars: "*"
+    overlayscrollbars-react: "*"
     react: "*"
     react-i18next: "*"
   languageName: unknown
@@ -10396,9 +10398,11 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:~0.68.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
+    "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"

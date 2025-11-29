@@ -81,77 +81,33 @@ type TestUser = { user: IUser; credentials: Credentials };
 		});
 
 		it('should properly create a new monitor', async () => {
-			const { body } = await request
-				.post(methodCall(`livechat:addMonitor`))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:addMonitor',
-						params: [user.username],
-						id: '101',
-						msg: 'method',
-					}),
-				})
-				.expect(200);
+			const { body } = await request.post(api('livechat/monitors.create')).send({ username: user.username }).set(credentials).expect(200);
 
 			expect(body.success).to.be.true;
 		});
 
 		it('should not fail when trying to create a monitor that already exists', async () => {
-			const { body } = await request
-				.post(methodCall(`livechat:addMonitor`))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:addMonitor',
-						params: [user.username],
-						id: '101',
-						msg: 'method',
-					}),
-				})
-				.expect(200);
+			const { body } = await request.post(api('livechat/monitors.create')).send({ username: user.username }).set(credentials).expect(200);
 
 			expect(body.success).to.be.true;
 		});
 
 		it('should fail when trying to create a monitor with an invalid username', async () => {
 			const { body } = await request
-				.post(methodCall(`livechat:addMonitor`))
+				.post(api('livechat/monitors.create'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:addMonitor',
-						params: ['invalid-username'],
-						id: '101',
-						msg: 'method',
-					}),
-				})
-				.expect(200);
+				.send({ username: 'invalid-username' })
+				.expect(400);
 
-			expect(body.success).to.be.true;
-			const parsedBody = JSON.parse(body.message);
-
-			expect(parsedBody.error).to.have.property('error').to.be.equal('error-invalid-user');
+			expect(body.success).to.be.false;
+			expect(body).to.have.property('error').to.be.equal('Invalid user [error-invalid-user]');
 		});
 
 		it('should fail when trying to create a monitor with an empty username', async () => {
-			const { body } = await request
-				.post(methodCall(`livechat:addMonitor`))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:addMonitor',
-						params: [''],
-						id: '101',
-						msg: 'method',
-					}),
-				})
-				.expect(200);
+			const { body } = await request.post(api('livechat/monitors.create')).set(credentials).send({ username: '' }).expect(400);
 
-			expect(body.success).to.be.true;
-			const parsedBody = JSON.parse(body.message);
-
-			expect(parsedBody.error).to.have.property('error').to.be.equal('error-invalid-user');
+			expect(body.success).to.be.false;
+			expect(body).to.have.property('error').to.be.equal('Invalid user [error-invalid-user]');
 		});
 
 		it('should remove a monitor', async () => {
