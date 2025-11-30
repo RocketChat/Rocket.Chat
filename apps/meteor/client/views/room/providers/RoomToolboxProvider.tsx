@@ -1,11 +1,17 @@
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useSetting, useRouter, useRouteParameter, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import {
+	useUserId,
+	useSetting,
+	useRouter,
+	useRouteParameter,
+	useLayoutHiddenActions,
+	RoomToolboxContext,
+	type RoomToolboxContextValue,
+} from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
-import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
-import type { RoomToolboxContextValue } from '../contexts/RoomToolboxContext';
 import { getRoomGroup } from '../lib/getRoomGroup';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';

@@ -1,5 +1,5 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
@@ -12,7 +12,6 @@ import MessageHighlightProvider from './MessageList/providers/MessageHighlightPr
 import RoomBody from './body/RoomBody';
 import RoomBodyV2 from './body/RoomBodyV2';
 import { useRoom } from './contexts/RoomContext';
-import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';

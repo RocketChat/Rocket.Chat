@@ -1,4 +1,5 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +15,6 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const MessageSearchTab = () => {
 	const providerQuery = useMessageSearchProviderQuery();

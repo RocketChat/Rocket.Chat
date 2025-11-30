@@ -1,5 +1,5 @@
 import { Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useRef } from 'react';
 
 type TooltipComponentProps = {
@@ -7,7 +7,7 @@ type TooltipComponentProps = {
 	anchor: Element;
 };
 
-export const TooltipComponent = ({ title, anchor }: TooltipComponentProps): ReactElement => {
+export const TooltipComponent = ({ title, anchor }: TooltipComponentProps) => {
 	const ref = useRef(anchor);
 
 	return (

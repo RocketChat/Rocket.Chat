@@ -1,4 +1,3 @@
-// import type { EnterpriseEndpoints } from "@rocket.chat/core-typings";
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
