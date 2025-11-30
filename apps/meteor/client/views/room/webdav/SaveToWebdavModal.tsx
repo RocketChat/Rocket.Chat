@@ -57,7 +57,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		return value?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]) ?? [];
 	}, [value]);
 
-	useEffect(() => fileRequest.current?.abort, []);
+	useEffect(() => () => fileRequest.current?.abort(), []);
 
 	const handleSaveFile = ({ accountId }: { accountId: IWebdavAccount['_id'] }): void => {
 		setIsLoading(true);
