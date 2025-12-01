@@ -44,7 +44,6 @@ export const useAppSlashCommands = () => {
 	const { data } = useQuery({
 		queryKey: ['apps', 'slashCommands'] as const,
 		enabled: !!uid,
-		structuralSharing: false,
 		queryFn: async () => {
 			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
 				const count = 50;
@@ -63,5 +62,5 @@ export const useAppSlashCommands = () => {
 		},
 	});
 
-	data?.forEach((command) => slashCommands.add(command));
+	useEffect(() => data?.forEach((command) => slashCommands.add(command)));
 };
