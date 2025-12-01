@@ -18,7 +18,7 @@ export const createTag = async (api: BaseTest['api'], { id = null, name, descrip
 			name,
 			description,
 		},
-		tagDepartments: departments,
+		...(departments.length > 0 && { tagDepartments: departments }),
 	});
 
 	if (response.status() !== 200) {
