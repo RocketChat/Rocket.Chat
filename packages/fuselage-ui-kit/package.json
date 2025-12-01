@@ -31,7 +31,7 @@
 		"build": "run-s .:build:clean .:build:esm .:build:cjs",
 		"build-preview": "yarn build-storybook",
 		"build-storybook": "NODE_ENV=production storybook build",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig-esm.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.esm.json",
 		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
