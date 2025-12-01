@@ -59,7 +59,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			await saveTag({
 				_id,
 				tagData: { name, description },
-				...(departmentsId.length > 0 && { tagDepartments: departmentsId })
+				...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
