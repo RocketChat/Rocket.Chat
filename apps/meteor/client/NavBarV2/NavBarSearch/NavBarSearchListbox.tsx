@@ -1,5 +1,6 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import type { OverlayTriggerAria } from 'react-aria';
 import { useFormContext } from 'react-hook-form';
@@ -10,7 +11,6 @@ import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
 import { useSearchItems } from './hooks/useSearchItems';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
-import { CustomScrollbars } from '../../components/CustomScrollbars';
 
 type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;

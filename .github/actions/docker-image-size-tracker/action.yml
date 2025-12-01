@@ -6,6 +6,9 @@ inputs:
   github-token:
     description: 'GitHub token for commenting on PRs'
     required: true
+  ci-pat:
+    description: 'GitHub token for committing to history branch'
+    required: true
   registry:
     description: 'Container registry (e.g., ghcr.io)'
     required: false
@@ -258,6 +261,9 @@ runs:
         cd /tmp/history-worktree
         git add "history/${timestamp}.json"
         git commit -m "Add measurement for ${timestamp} (${commit_sha:0:7})"
+        git config --global user.email "ci@rocket.chat"
+        git config --global user.name "rocketchat-ci[bot]"
+        git config --global url.https://${{ inputs.ci-pat }}@github.com/.insteadOf https://github.com/
         git push origin image-size-history
         cd -
 

@@ -67,7 +67,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
 	const subscribe = useStream('notify-logged');

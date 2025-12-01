@@ -1,7 +1,7 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
@@ -14,7 +14,6 @@ import ComposerContainer from '../../../composer/ComposerContainer';
 import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
 
 type ThreadChatProps = {

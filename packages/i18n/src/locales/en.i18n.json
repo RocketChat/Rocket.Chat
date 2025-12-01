@@ -6288,6 +6288,7 @@
   "error-room-is-not-closed": "Room is not closed",
   "error-room-not-on-hold": "Error! Room is not On Hold",
   "error-room-onHold": "Error! Room is On Hold",
+  "error-adding-monitor": "Error adding monitor",
   "error-saving-sla": "An error ocurred while saving the SLA",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",
   "error-starring-message": "Message could not be stared",
