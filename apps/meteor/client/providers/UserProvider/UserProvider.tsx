@@ -73,7 +73,14 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	});
 
 	const previousUserId = useRef(userId);
-	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
+	const previousUserLanguage = useRef(user?.language);
+	const syncedLoginPreference = useRef(false);
+
+	if (previousUserId.current !== userId) {
+		previousUserId.current = userId;
+		syncedLoginPreference.current = false;
+	}
+	const [, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 	const [, setSamlInviteToken] = useSamlInviteToken();
 	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
@@ -157,16 +164,22 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	);
 
 	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
+		if (!!userId && !syncedLoginPreference.current) {
+			if (preferedLanguage) {
+				if (user?.language !== preferedLanguage) {
+					setUserPreferences({ data: { language: preferedLanguage } });
+				}
+				setUserLanguage(preferedLanguage);
+			}
+			syncedLoginPreference.current = true;
 		}
 
-		if (user?.language !== undefined && user.language !== userLanguage) {
+		if (user?.language !== undefined && user.language !== previousUserLanguage.current) {
+			previousUserLanguage.current = user.language;
 			setUserLanguage(user.language);
 			setPreferedLanguage(user.language);
 		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userId, setUserPreferences]);
 
 	useEffect(() => {
 		if (!samlCredentialToken && !inviteTokenHash) {
