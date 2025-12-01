@@ -7,10 +7,10 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { acceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { acceptRoomInvite, performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
+import { addUserToRoom, performAddUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -79,12 +79,35 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(roomId, user, inviter, options);
 	}
 
+	async performAddUserToRoom(
+		roomId: string,
+		user: Pick<IUser, '_id' | 'username'>,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		options?: {
+			skipSystemMessage?: boolean;
+			skipAlertSound?: boolean;
+			createAsHidden?: boolean;
+			status?: ISubscription['status'];
+			inviterUsername?: string;
+		},
+	): Promise<boolean | undefined> {
+		return performAddUserToRoom(roomId, user, inviter, options);
+	}
+
 	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
+	async performUserRemoval(roomId: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+		return performUserRemoval(roomId, user, options);
+	}
+
 	async acceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
 		return acceptRoomInvite(room, subscription, user);
+	}
+
+	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
+		return performAcceptRoomInvite(room, subscription, user);
 	}
 
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {

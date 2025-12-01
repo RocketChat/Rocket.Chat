@@ -206,7 +206,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	}
 
-	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }> {
+	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
 		if (room.t !== 'c' && room.t !== 'p') {
 			throw new Error('Room is not a public or private room');
 		}
@@ -222,16 +222,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
-			const federatedRoom = await Rooms.findOneById(room._id);
-			if (!federatedRoom || !isRoomNativeFederated(federatedRoom)) {
-				throw new Error(`Federated room not found: ${room._id}`);
-			}
-
-			await this.inviteUsersToRoom(
-				federatedRoom,
-				members.filter((m) => m !== owner.username),
-				owner,
-			);
+			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
 
 			this.logger.debug('Room creation completed successfully', room._id);
 

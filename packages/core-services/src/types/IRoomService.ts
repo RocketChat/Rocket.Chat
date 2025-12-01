@@ -43,8 +43,22 @@ export interface IRoomService {
 			inviterUsername?: string;
 		},
 	): Promise<boolean | undefined>;
+	performAddUserToRoom(
+		roomId: string,
+		user: Pick<IUser, '_id' | 'username'>,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		options?: {
+			skipSystemMessage?: boolean;
+			skipAlertSound?: boolean;
+			createAsHidden?: boolean;
+			status?: SubscriptionStatus;
+			inviterUsername?: string;
+		},
+	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
+	performUserRemoval(roomId: string, user: IUser, options?: { byUser?: IUser }): Promise<void>;
 	acceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,

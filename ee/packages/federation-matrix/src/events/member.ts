@@ -133,7 +133,7 @@ async function handleInvite({
 		return;
 	}
 
-	await Room.addUserToRoom(room._id, inviteeUser, inviterUser, {
+	await Room.performAddUserToRoom(room._id, inviteeUser, inviterUser, {
 		status: 'INVITED',
 		inviterUsername: inviterUser.username,
 	});
@@ -158,7 +158,7 @@ async function handleJoin({
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
 
-	await Room.acceptRoomInvite(room, subscription, joiningUser);
+	await Room.performAcceptRoomInvite(room, subscription, joiningUser);
 }
 
 async function handleLeave({
@@ -175,7 +175,7 @@ async function handleLeave({
 		throw new Error(`Room not found while leaving user ${userId} from room ${roomId}`);
 	}
 
-	await Room.removeUserFromRoom(room._id, leavingUser);
+	await Room.performUserRemoval(room._id, leavingUser);
 }
 
 export function member(emitter: Emitter<HomeserverEventSignatures>) {

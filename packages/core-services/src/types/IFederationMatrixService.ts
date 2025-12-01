@@ -2,7 +2,7 @@ import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUs
 import type { EventStore } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
-	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
+	createRoom(room: IRoomFederated, owner: IUser): Promise<{ room_id: string; event_id: string }>;
 	ensureFederatedUsersExistLocally(members: string[]): Promise<void>;
 	createDirectMessageRoom(room: IRoomFederated, members: IUser[], creatorId: IUser['_id']): Promise<void>;
 	sendMessage(message: IMessage, room: IRoomFederated, user: IUser): Promise<void>;
