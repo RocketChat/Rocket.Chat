@@ -16,8 +16,9 @@ type FindUsersParam = {
 	extraQuery?: Document[];
 };
 
-type UserWithRoleData = IUser & {
+type UserWithRoleAndSubscriptionData = IUser & {
 	roles: IRole['_id'][];
+	subscription?: { status: string; createdAt: string };
 };
 
 export async function findUsersOfRoomOrderedByRole({
@@ -29,7 +30,7 @@ export async function findUsersOfRoomOrderedByRole({
 	sort = {},
 	exceptions = [],
 	extraQuery = [],
-}: FindUsersParam): Promise<{ members: UserWithRoleData[]; total: number }> {
+}: FindUsersParam): Promise<{ members: UserWithRoleAndSubscriptionData[]; total: number }> {
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
@@ -62,7 +63,7 @@ export async function findUsersOfRoomOrderedByRole({
 		],
 	};
 
-	const membersResult = Users.col.aggregate<UserWithRoleData>(
+	const membersResult = Users.col.aggregate<UserWithRoleAndSubscriptionData>(
 		[
 			{
 				$match: matchUserFilter,
@@ -102,19 +103,34 @@ export async function findUsersOfRoomOrderedByRole({
 								},
 							},
 						},
-						{ $project: { roles: 1, status: 1 } },
+						{ $project: { roles: 1, status: 1, ts: 1 } },
 					],
 				},
 			},
 			{
 				$addFields: {
 					roles: { $arrayElemAt: ['$subscription.roles', 0] },
-					status: { $arrayElemAt: ['$subscription.status', 0] },
+					subscription: {
+						$let: {
+							vars: {
+								sub: { $arrayElemAt: ['$subscription', 0] },
+							},
+							in: {
+								$cond: {
+									if: { $ifNull: ['$$sub.status', false] },
+									then: {
+										status: '$$sub.status',
+										createdAt: '$$sub.ts',
+									},
+									else: '$$REMOVE',
+								},
+							},
+						},
+					},
 				},
 			},
 			{
 				$project: {
-					subscription: 0,
 					statusSortKey: 0,
 				},
 			},
