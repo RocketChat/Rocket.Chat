@@ -1,5 +1,5 @@
 import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
-import { isEditedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isEditedMessage, isUserNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -12,14 +12,14 @@ import { FederationActions } from '../../../../server/services/room/hooks/Before
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
 
 // TODO: move this to the hooks folder
-callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members, options }) => {
-	if (FederationActions.shouldPerformFederationAction(room)) {
-		const federatedRoomId = options?.federatedRoomId;
 
+// Called BEFORE subscriptions are created - creates Matrix room so invites can be sent.
+// The invites are sent by beforeAddUserToRoom callback.
+callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner }) => {
+	if (FederationActions.shouldPerformFederationAction(room)) {
+		const federatedRoomId = room?.federation?.mrid;
 		if (!federatedRoomId) {
-			// if room exists, we don't want to create it again
-			// adds bridge record
-			await FederationMatrix.createRoom(room, owner, members);
+			await FederationMatrix.createRoom(room, owner);
 		} else {
 			// matrix room was already created and passed
 			const fromServer = federatedRoomId.split(':')[1];
@@ -86,6 +86,13 @@ beforeAddUserToRoom.add(
 			if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
 				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 			}
+
+			// If inviter is federated, the invite came from an external transaction.
+			// Don't propagate back to Matrix (it was already processed at origin server).
+			if (isUserNativeFederated(inviter)) {
+				return;
+			}
+
 			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
 		}
 	},

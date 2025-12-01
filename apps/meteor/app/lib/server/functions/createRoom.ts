@@ -7,6 +7,7 @@ import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { performAddUserToRoom } from './addUserToRoom';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
@@ -57,6 +58,21 @@ async function createUsersSubscriptions({
 		if (insertedId) {
 			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
 			await notifyOnRoomChanged(room, 'inserted');
+		}
+
+		// Invite federated members to the room SYNCRONOUSLY,
+		// since we do not use to invite lots of users at once, this is acceptable.
+		const membersToInvite = members.filter((m) => m !== owner.username);
+		for await (const memberUsername of membersToInvite) {
+			const member = await Users.findOneByUsername(memberUsername);
+			if (!member) {
+				continue;
+			}
+
+			await performAddUserToRoom(room._id, member, owner, {
+				status: 'INVITED',
+				inviterUsername: owner.username,
+			});
 		}
 
 		return;
@@ -238,6 +254,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
+		...(options?.federatedRoomId && { federation: { mrid: options.federatedRoomId, origin: options.federatedRoomId.split(':').pop() } }),
 	};
 
 	if (teamId) {
@@ -286,6 +303,13 @@ export const createRoom = async <T extends RoomType>(
 
 	void notifyOnRoomChanged(room, 'inserted');
 
+	// If federated, we must create Matrix room BEFORE subscriptions so invites can be sent.
+	if (shouldBeHandledByFederation) {
+		// Reusing unused callback to create Matrix room.
+		// We should discuss the opportunity to rename it to something with "before" prefix.
+		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
+	}
+
 	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
 
 	if (type === 'c') {
@@ -300,10 +324,6 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
-
-	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
-	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
