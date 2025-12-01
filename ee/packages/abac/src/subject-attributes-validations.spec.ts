@@ -36,8 +36,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 
 const makeUser = (overrides: Partial<IUser> = {}): IUser =>
 	({
-		_id: 'u1',
-		username: 'user1',
+		_id: `user-${Math.random().toString(36).substring(2, 15)}`,
+		username: `user${Math.random().toString(36).substring(2, 15)}`,
 		roles: [],
 		type: 'user',
 		active: true,
@@ -55,7 +55,6 @@ describe('AbacService.addSubjectAttributes (unit)', () => {
 	let service: AbacService;
 
 	beforeEach(async () => {
-		await Users.deleteMany({});
 		service = new AbacService();
 	});
 
