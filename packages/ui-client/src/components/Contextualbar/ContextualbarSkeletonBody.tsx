@@ -20,4 +20,3 @@ const ContextualbarSkeletonBody = (): ReactElement => (
 );
 
 export default ContextualbarSkeletonBody;
-

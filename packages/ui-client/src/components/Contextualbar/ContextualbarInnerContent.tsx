@@ -7,4 +7,3 @@ const ContextualbarInnerContent = (props: ComponentProps<typeof Box>): ReactElem
 );
 
 export default memo(ContextualbarInnerContent);
-

@@ -1,8 +1,9 @@
 import { Margins } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
-import { PageScrollableContent } from '../Page';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { PageScrollableContent } from '../Page';
 
 const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof PageScrollableContent>>(
 	function ContextualbarScrollableContent({ children, ...props }, ref) {
@@ -24,4 +25,3 @@ const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<ty
 );
 
 export default memo(ContextualbarScrollableContent);
-

@@ -1,7 +1,8 @@
 import { ContextualbarV2Section, ContextualbarSection as ContextualbarSectionComponent } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 
 const ContextualbarSection = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarSectionComponent>>(
 	function ContextualbarSection(props, ref) {
@@ -19,4 +20,3 @@ const ContextualbarSection = forwardRef<HTMLElement, ComponentProps<typeof Conte
 );
 
 export default memo(ContextualbarSection);
-

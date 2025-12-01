@@ -1,6 +1,7 @@
 import { ContextualbarV2Title, ContextualbarTitle as ContextualbarTitleComponent } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 import type { ComponentProps } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 
 const ContextualbarTitle = (props: ComponentProps<typeof ContextualbarTitleComponent>) => (
 	<FeaturePreview feature='newNavigation'>
@@ -14,4 +15,3 @@ const ContextualbarTitle = (props: ComponentProps<typeof ContextualbarTitleCompo
 );
 
 export default ContextualbarTitle;
-

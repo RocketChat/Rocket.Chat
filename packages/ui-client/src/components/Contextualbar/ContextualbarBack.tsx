@@ -12,4 +12,3 @@ const ContextualbarBack = (props: ContextualbarBackProps): ReactElement => {
 };
 
 export default memo(ContextualbarBack);
-

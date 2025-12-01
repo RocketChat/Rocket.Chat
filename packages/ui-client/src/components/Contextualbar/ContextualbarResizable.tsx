@@ -39,4 +39,3 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 };
 
 export default ContextualbarResizable;
-

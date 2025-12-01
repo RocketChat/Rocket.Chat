@@ -12,4 +12,3 @@ const ContextualbarClose = (props: ContextualbarCloseProps): ReactElement => {
 };
 
 export default memo(ContextualbarClose);
-

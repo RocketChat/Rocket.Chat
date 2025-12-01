@@ -8,4 +8,3 @@ const ContextualbarSkeleton = ({ onClose }: { onClose?: () => void }) => (
 );
 
 export default ContextualbarSkeleton;
-
