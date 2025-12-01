@@ -1,6 +1,8 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,8 +18,6 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
 type CannedResponseListProps = {

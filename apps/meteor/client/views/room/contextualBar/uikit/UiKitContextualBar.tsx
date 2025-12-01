@@ -6,6 +6,7 @@ import {
 	contextualBarParser,
 	UiKitContext,
 } from '@rocket.chat/fuselage-ui-kit';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
@@ -25,7 +26,6 @@ import { useContextualBarContextValue } from '../../../../uikit/hooks/useContext
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes

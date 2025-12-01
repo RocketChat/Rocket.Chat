@@ -2,17 +2,27 @@
 	"name": "@rocket.chat/ui-avatar",
 	"version": "20.0.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.4",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "~0.66.4",
-		"@rocket.chat/fuselage-hooks": "~0.37.2",
-		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage": "~0.68.1",
+		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.44.0",
+		"@rocket.chat/icons": "~0.45.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/react": "~18.3.24",
+		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.37.5",
@@ -24,18 +34,6 @@
 		"react-virtuoso": "^4.12.0",
 		"typescript": "~5.9.3"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"build": "rm -rf dist && tsc -p tsconfig-build.json",
-		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/ui-contexts": "workspace:^",

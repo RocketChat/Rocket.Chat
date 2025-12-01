@@ -2,7 +2,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import {
+	useLayoutContextualBarExpanded,
+	useToastMessageDispatch,
+	useTranslation,
+	useUserId,
+	useRoomToolbox,
+} from '@rocket.chat/ui-contexts';
 
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
@@ -19,7 +25,6 @@ import {
 	ContextualbarInnerContent,
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 
