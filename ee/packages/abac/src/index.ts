@@ -430,7 +430,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], 'key-updated', actor);
+		void Audit.objectAttributeChanged(
+			{ _id: room._id, name: room.name },
+			room.abacAttributes || [],
+			[{ key, values }],
+			'key-updated',
+			actor,
+		);
 
 		if (this.wereAttributeValuesAdded(prevValues, values)) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
