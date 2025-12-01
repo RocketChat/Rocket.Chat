@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import {
 	useToastMessageDispatch,
@@ -17,7 +18,6 @@ import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';

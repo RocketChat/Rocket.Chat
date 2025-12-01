@@ -11,13 +11,12 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';

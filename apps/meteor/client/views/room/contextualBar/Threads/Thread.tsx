@@ -3,6 +3,16 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarAction,
+	ContextualbarActions,
+	ContextualbarClose,
+	ContextualbarBack,
+	ContextualbarInnerContent,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import {
 	useLayoutContextualBarExpanded,
 	useToastMessageDispatch,
 	useTranslation,
@@ -15,16 +25,6 @@ import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarAction,
-	ContextualbarActions,
-	ContextualbarClose,
-	ContextualbarBack,
-	ContextualbarInnerContent,
-	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 

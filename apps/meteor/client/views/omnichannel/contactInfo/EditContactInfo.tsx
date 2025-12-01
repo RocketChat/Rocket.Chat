@@ -1,6 +1,16 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import {
+	CustomFieldsForm,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarSkeleton,
+} from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -13,16 +23,6 @@ import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-	ContextualbarSkeleton,
-} from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
