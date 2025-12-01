@@ -14,7 +14,7 @@ const businessHours: Record<string, IBusinessHourBehavior> = {
 
 export const useLivechatEnterprise = () => {
 	const businessHourType = useSetting('Livechat_business_hour_type') as string;
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	useEffect(() => {
 		if (businessHourType && hasLicense) {

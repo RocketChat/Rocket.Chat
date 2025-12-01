@@ -136,6 +136,7 @@ export const createRoom = async <T extends RoomType>(
 > => {
 	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
 
+	// TODO: use a shared helper to check whether a user is federated
 	const hasFederatedMembers = members.some((member) => {
 		if (typeof member === 'string') {
 			return member.includes(':') && member.includes('@');

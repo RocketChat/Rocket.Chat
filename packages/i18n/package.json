@@ -9,10 +9,8 @@
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
-		"./dist/resources": {
-			"types": "./dist/resources.d.ts",
-			"import": "./dist/resources.js",
-			"require": "./dist/resources.cjs"
+		"./dist/resources/*": {
+			"default": "./dist/resources/*"
 		},
 		"./dist/languages": {
 			"types": "./dist/languages.d.ts",

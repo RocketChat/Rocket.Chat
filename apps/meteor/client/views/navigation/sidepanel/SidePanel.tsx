@@ -1,5 +1,6 @@
 import { isLivechatInquiryRecord, type ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { Virtuoso } from 'react-virtuoso';
 import SidePanelNoResults from './SidePanelNoResults';
 import RoomSidePanelItem from './SidepanelItem/RoomSidePanelItem';
 import SidepanelListWrapper from './SidepanelListWrapper';
-import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';

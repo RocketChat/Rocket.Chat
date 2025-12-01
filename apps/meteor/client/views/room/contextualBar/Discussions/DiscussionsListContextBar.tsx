@@ -1,6 +1,6 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -9,7 +9,6 @@ import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const DiscussionListContextBar = (): ReactElement | null => {
 	const userId = useUserId();

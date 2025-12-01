@@ -14,7 +14,7 @@ type ComposerFederationProps = ComposerMessageProps & {
 
 const ComposerFederation = ({ children, blocked, ...props }: ComposerFederationProps): ReactElement => {
 	const federationEnabled = useIsFederationEnabled();
-	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+	const { data: federationModuleEnabled = false } = useHasLicenseModule('federation');
 
 	if (blocked) {
 		return <ComposerFederationInvalidVersion />;
