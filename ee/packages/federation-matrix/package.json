@@ -42,7 +42,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "^0.31.25",
-		"@rocket.chat/federation-sdk": "0.3.0",
+		"@rocket.chat/federation-sdk": "0.3.2",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
