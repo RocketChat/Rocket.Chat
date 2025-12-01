@@ -1,7 +1,7 @@
 import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents } from '..';
 
 export type MinimalUser = Pick<IUser, '_id' | 'username'>;
-export type MinimalRoom = Pick<IRoom, '_id'>;
+export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
 export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval';
 
