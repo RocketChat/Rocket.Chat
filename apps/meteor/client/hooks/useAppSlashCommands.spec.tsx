@@ -1,7 +1,7 @@
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { mockAppRoot, type StreamControllerRef } from '@rocket.chat/mock-providers';
 import { QueryClient } from '@tanstack/react-query';
-import { renderHook, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
 import { slashCommands } from '../../app/utils/client/slashCommand';
