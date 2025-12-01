@@ -8,6 +8,7 @@ import { getMatrixMediaRoutes } from './_matrix/media';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './_matrix/send-join';
+import { getMatrixSendLeaveRoutes } from './_matrix/send-leave';
 import { getMatrixTransactionsRoutes } from './_matrix/transactions';
 import { getFederationVersionsRoutes } from './_matrix/versions';
 import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationDomainAllowed';
@@ -30,6 +31,7 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 		.use(getMatrixSendJoinRoutes())
 		.use(getMatrixTransactionsRoutes())
 		.use(getMatrixMediaRoutes())
+		.use(getMatrixSendLeaveRoutes())
 		.use(getMatrixMakeLeaveRoutes());
 
 	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes());
