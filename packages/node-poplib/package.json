@@ -3,7 +3,6 @@
 	"version": "0.0.2",
 	"private": true,
 	"main": "./src/index.js",
-	"typings": "./dist/index.d.ts",
 	"devDependencies": {
 		"eslint": "~8.45.0",
 		"typescript": "~5.9.3"
