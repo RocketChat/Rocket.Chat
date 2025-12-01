@@ -18,14 +18,16 @@ const RoomsContextualBarWithData = ({ id, onClose }: RoomsContextualBarWithDataP
 		staleTime: 0,
 	});
 
-	const attributesData = data?.abacAttributes;
-
 	if (isLoading || isFetching) {
 		return <ContextualbarSkeletonBody />;
 	}
 
 	return (
-		<RoomsContextualBar roomInfo={{ rid: id, name: data?.fname || data?.name || id }} attributesData={attributesData} onClose={onClose} />
+		<RoomsContextualBar
+			roomInfo={{ rid: id, name: data?.fname || data?.name || id }}
+			attributesData={data?.abacAttributes}
+			onClose={onClose}
+		/>
 	);
 };
 
