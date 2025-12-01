@@ -29,10 +29,11 @@ export const useAppSlashCommands = () => {
 			return;
 		}
 		return apps('apps', ([key, [command]]) => {
-			if (['command/added', 'command/updated', 'command/removed'].includes(key)) {
-				if (typeof command === 'string') {
+			if (key.startsWith('command/')) {
+				if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
 					delete slashCommands.commands[command];
 				}
+
 				invalidate();
 			}
 		});
@@ -42,6 +43,8 @@ export const useAppSlashCommands = () => {
 
 	const { data } = useQuery({
 		queryKey: ['apps', 'slashCommands'] as const,
+		enabled: !!uid,
+		structuralSharing: false,
 		queryFn: async () => {
 			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
 				const count = 50;
@@ -58,14 +61,7 @@ export const useAppSlashCommands = () => {
 
 			return fetchBatch(0);
 		},
-		enabled: !!uid,
 	});
 
-	useEffect(() => {
-		if (!data) {
-			return;
-		}
-
-		data.forEach((command) => slashCommands.add(command));
-	}, [data]);
+	data?.forEach((command) => slashCommands.add(command));
 };
