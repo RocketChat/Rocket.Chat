@@ -5,6 +5,7 @@ import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
+import { sleep } from '../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
@@ -2030,6 +2031,261 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			after(async () => {
 				await deleteTeam(credentials, teamListName);
 			});
+		});
+	});
+
+	describe('LDAP integration', () => {
+		before(async () => {
+			await Promise.all([
+				updateSetting('LDAP_Enable', true),
+				updateSetting('ABAC_Enabled', true),
+				updateSetting('LDAP_Background_Sync', true),
+				updateSetting('LDAP_Background_Sync_Import_New_Users', true),
+				updateSetting('LDAP_Host', 'openldap'),
+				updateSetting('LDAP_Port', 1389),
+				updateSetting('LDAP_Authentication', true),
+				updateSetting('LDAP_Authentication_UserDN', 'cn=admin,dc=space,dc=air'),
+				updateSetting('LDAP_Authentication_Password', 'adminpassword'),
+				updateSetting('LDAP_BaseDN', 'ou=users,dc=space,dc=air'),
+				updateSetting('LDAP_AD_User_Search_Field', 'uid'),
+				updateSetting('LDAP_AD_Username_Field', 'uid'),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes', true),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *'),
+				updateSetting(
+					'LDAP_ABAC_AttributeMap',
+					JSON.stringify({
+						departmentNumber: 'department',
+						telephoneNumber: 'phone',
+					}),
+				),
+			]);
+		});
+
+		before(async function () {
+			this.timeout(10000);
+			// Wait for background sync to run once before tests start
+			await request.post(`${v1}/ldap.syncNow`).set(credentials);
+			await sleep(5000);
+
+			// Force abac attribute sync for user john.young, that way we test it too :p
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({ emails: ['john.young@space.air'] });
+
+			await sleep(2000);
+		});
+
+		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
+			const res = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'john.young' }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('user');
+			const user = res.body.user as IUser;
+
+			expect(user).to.have.property('abacAttributes');
+			expect(user.abacAttributes).to.be.an('array');
+
+			const departmentAttr = user?.abacAttributes?.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+
+			expect(departmentAttr).to.exist;
+			expect(departmentAttr?.values || []).to.be.an('array').that.is.not.empty;
+		});
+
+		it('should sync ABAC attributes for SOME users via /abac/users/sync', async () => {
+			// Users already imported from LDAP, but without ABAC attributes.
+			// We now sync only SOME users, identified by their emails.
+			const resAlan = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'alan.bean' }).expect(200);
+			const resBuzz = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'buzz.aldrin' }).expect(200);
+
+			const alanBefore = resAlan.body.user as IUser;
+			const buzzBefore = resBuzz.body.user as IUser;
+
+			// Ensure they start without ABAC attributes (or with an empty array)
+			expect(alanBefore).to.have.property('username', 'alan.bean');
+			const alanBeforeAttrs = alanBefore.abacAttributes || [];
+			expect(alanBeforeAttrs).to.be.an('array').that.has.lengthOf(0);
+
+			expect(buzzBefore).to.have.property('username', 'buzz.aldrin');
+			const buzzBeforeAttrs = buzzBefore.abacAttributes || [];
+			expect(buzzBeforeAttrs).to.be.an('array').that.has.lengthOf(0);
+
+			// Sync SOME users by email
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					emails: ['alan.bean@space.air', 'buzz.aldrin@space.air'],
+				})
+				.expect(200);
+
+			const resAlanAfter = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'alan.bean' }).expect(200);
+			const resBuzzAfter = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'buzz.aldrin' }).expect(200);
+
+			const alanAfter = resAlanAfter.body.user as IUser;
+			const buzzAfter = resBuzzAfter.body.user as IUser;
+
+			const alanAfterAttrs = alanAfter.abacAttributes || [];
+			const buzzAfterAttrs = buzzAfter.abacAttributes || [];
+
+			expect(alanAfterAttrs).to.be.an('array').that.is.not.empty;
+			expect(buzzAfterAttrs).to.be.an('array').that.is.not.empty;
+
+			const alanDept = alanAfterAttrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+			const buzzDept = buzzAfterAttrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+
+			expect(alanDept).to.exist;
+			expect(alanDept?.values || []).to.be.an('array').that.is.not.empty;
+
+			expect(buzzDept).to.exist;
+			expect(buzzDept?.values || []).to.be.an('array').that.is.not.empty;
+		});
+
+		it('should support /abac/users/sync with usernames as param', async () => {
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					usernames: ['david.scott', 'gene.cernan'],
+				})
+				.expect(200);
+
+			const usersToCheck = ['david.scott', 'gene.cernan'];
+
+			const results = await Promise.all(
+				usersToCheck.map(async (username) => {
+					const res = await request.get(`${v1}/users.info`).set(credentials).query({ username }).expect(200);
+					return res.body.user as IUser;
+				}),
+			);
+
+			for (const user of results) {
+				const attrs = user.abacAttributes || [];
+				expect(attrs).to.be.an('array').that.is.not.empty;
+
+				const dept = attrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+				expect(dept).to.exist;
+				expect(dept?.values || []).to.be.an('array').that.is.not.empty;
+			}
+		});
+
+		describe('LDAP ABAC room membership sync', () => {
+			let roomIdWithAbac: string;
+
+			before(async () => {
+				// Ensure the ABAC attribute definition for department exists
+				const attrsRes = await request.get(`${v1}/abac/attributes`).set(credentials).expect(200);
+				const attrs = attrsRes.body.attributes as IAbacAttributeDefinition[];
+				const existingDept = attrs.find((attr) => attr.key === 'department');
+
+				if (!existingDept) {
+					await request
+						.post(`${v1}/abac/attributes`)
+						.set(credentials)
+						.send({
+							key: 'department',
+							values: ['lifeSupport', 'lifeSupport2', 'navControl'],
+						})
+						.expect(200);
+				}
+
+				// Create a private room and add LDAP users that will later lose ABAC compliance
+				const roomRes = await createRoom({
+					type: 'p',
+					name: `ldapAbacRoom-${Date.now()}`,
+				});
+
+				roomIdWithAbac = roomRes.body.group._id;
+
+				const davidUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'david.scott' }).expect(200);
+				const sergeiUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'sergei.krikalev' }).expect(200);
+
+				await addAbacAttributesToUserDirectly(davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
+
+				await request
+					.post(`${v1}/abac/rooms/${roomIdWithAbac}/attributes/department`)
+					.set(credentials)
+					.send({
+						values: ['navControl'],
+					})
+					.expect(200);
+
+				// Invite two LDAP users that will initially match the room attributes
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({
+						roomId: roomIdWithAbac,
+						usernames: ['david.scott', 'sergei.krikalev'],
+					});
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'p', roomId: roomIdWithAbac });
+			});
+
+			it('should remove users from room after LDAP sync changes their ABAC attributes', async () => {
+				const initialDept = 'navControl';
+
+				const davidInitialAttrs = [{ key: 'department', values: [initialDept] }];
+				const sergeiInitialAttrs = [{ key: 'department', values: [initialDept] }];
+
+				expect(davidInitialAttrs[0].values).to.include(initialDept);
+				expect(sergeiInitialAttrs[0].values).to.include(initialDept);
+
+				await request
+					.post(`${v1}/abac/users/sync`)
+					.set(credentials)
+					.send({
+						usernames: ['david.scott', 'sergei.krikalev'],
+					})
+					.expect(200);
+
+				const afterMembersRes = await request.get(`${v1}/groups.members`).set(credentials).query({ roomId: roomIdWithAbac }).expect(200);
+
+				const afterMembers = afterMembersRes.body.members as IUser[];
+				const afterUsernames = afterMembers.map((u) => u.username);
+
+				expect(afterUsernames).to.not.include('david.scott');
+				expect(afterUsernames).to.not.include('sergei.krikalev');
+
+				const userInfoDavidAfter = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'david.scott' }).expect(200);
+				const userInfoSergeiAfter = await request
+					.get(`${v1}/users.info`)
+					.set(credentials)
+					.query({ username: 'sergei.krikalev' })
+					.expect(200);
+
+				const davidAfter = userInfoDavidAfter.body.user as IUser;
+				const sergeiAfter = userInfoSergeiAfter.body.user as IUser;
+
+				const davidDeptAfter = (davidAfter.abacAttributes || []).find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+				const sergeiDeptAfter = (sergeiAfter.abacAttributes || []).find((attr: IAbacAttributeDefinition) => attr.key === 'department');
+
+				expect(davidDeptAfter?.values || []).to.not.deep.equal(davidInitialAttrs[0].values);
+				expect(sergeiDeptAfter?.values || []).to.not.deep.equal(sergeiInitialAttrs[0].values);
+			});
+		});
+
+		after(async () => {
+			await Promise.all([
+				updateSetting('LDAP_Enable', false),
+				updateSetting('ABAC_Enabled', false),
+				updateSetting('LDAP_Background_Sync', false),
+				updateSetting('LDAP_Background_Sync_Import_New_Users', false),
+				updateSetting('LDAP_Host', ''),
+				updateSetting('LDAP_Authentication', false),
+				updateSetting('LDAP_Authentication_UserDN', ''),
+				updateSetting('LDAP_Authentication_Password', ''),
+				updateSetting('LDAP_BaseDN', ''),
+				updateSetting('LDAP_AD_User_Search_Field', ''),
+				updateSetting('LDAP_AD_Username_Field', ''),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes', false),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', ''),
+				updateSetting('LDAP_ABAC_AttributeMap', ''),
+			]);
 		});
 	});
 });
