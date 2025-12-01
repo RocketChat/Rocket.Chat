@@ -3,6 +3,7 @@ import { Router } from '@rocket.chat/http-router';
 import { getWellKnownRoutes } from './.well-known/server';
 import { getMatrixInviteRoutes } from './_matrix/invite';
 import { getKeyServerRoutes } from './_matrix/key/server';
+import { getMatrixMakeLeaveRoutes } from './_matrix/make-leave';
 import { getMatrixMediaRoutes } from './_matrix/media';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
@@ -28,7 +29,8 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 		.use(getMatrixRoomsRoutes())
 		.use(getMatrixSendJoinRoutes())
 		.use(getMatrixTransactionsRoutes())
-		.use(getMatrixMediaRoutes());
+		.use(getMatrixMediaRoutes())
+		.use(getMatrixMakeLeaveRoutes());
 
 	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes());
 
