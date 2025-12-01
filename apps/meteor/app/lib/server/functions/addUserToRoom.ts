@@ -15,11 +15,11 @@ import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscri
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 /**
- * This function adds user to the given room.
- * Caution - It does not validates if the user has permission to join room
+ * Adds a user to a room when triggered by internal events such as federation
+ * or third-party callbacks. Performs the required database operations and fires
+ * only safe callbacks to avoid propagation loops during external event handling.
  */
-
-export const addUserToRoom = async (
+export const performAddUserToRoom = async (
 	rid: string,
 	user: Pick<IUser, '_id' | 'username'>,
 	inviter?: Pick<IUser, '_id' | 'username'>,
@@ -42,7 +42,7 @@ export const addUserToRoom = async (
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'addUserToRoom',
+			method: 'performAddUserToRoom',
 		});
 	}
 
@@ -51,6 +51,11 @@ export const addUserToRoom = async (
 
 	if (!userToBeAdded) {
 		throw new Meteor.Error('user-not-found');
+	}
+
+	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (existingSubscription || !userToBeAdded) {
+		return;
 	}
 
 	if (
@@ -69,12 +74,6 @@ export const addUserToRoom = async (
 	// TODO: are we calling this twice?
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
-
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription || !userToBeAdded) {
-		return;
-	}
 
 	try {
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
@@ -144,6 +143,54 @@ export const addUserToRoom = async (
 		}
 	}
 
+
+	if (room.teamMain && room.teamId) {
+		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
+	}
+
+	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
+		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
+	}
+
+	void notifyOnRoomChangedById(rid);
+
+	return true;
+};
+
+/**
+ * Adds a user to the specified room by performing database updates and triggering
+ * all standard callbacks. Note: This function does not validate whether the user
+ * has permission to join the room.
+ */
+export const addUserToRoom = async (
+	rid: string,
+	user: Pick<IUser, '_id' | 'username'>,
+	inviter?: Pick<IUser, '_id' | 'username'>,
+	options: {
+		skipSystemMessage?: boolean;
+		skipAlertSound?: boolean;
+		createAsHidden?: boolean;
+		status?: SubscriptionStatus;
+		inviterUsername?: string;
+	} = {},
+): Promise<boolean | undefined> => {
+	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUserToRoom',
+		});
+	}
+
+	const userToBeAdded = await Users.findOneById(user._id);
+	if (!userToBeAdded) {
+		throw new Meteor.Error('user-not-found');
+	}
+
+	const result = await performAddUserToRoom(rid, user, inviter, options);
+	if (!result) {
+		return;
+	}
+
 	if (room.t === 'c' || room.t === 'p') {
 		process.nextTick(async () => {
 			// Add a new event, with an optional inviter
@@ -156,15 +203,5 @@ export const addUserToRoom = async (
 		});
 	}
 
-	if (room.teamMain && room.teamId) {
-		// if user is joining to main team channel, create a membership
-		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
-	}
-
-	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
-		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
-	}
-
-	void notifyOnRoomChangedById(rid);
-	return true;
+	return result;
 };
