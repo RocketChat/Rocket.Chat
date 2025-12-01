@@ -283,13 +283,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
-			rid,
-			'p',
-			{
-				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
-			},
-		);
+		const room = await Rooms.findOneByIdAndType<
+			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
+		>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -299,7 +297,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributesRemoved({ _id: room._id }, room.abacAttributes, actor);
+			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
 			return;
 		}
 
@@ -308,7 +306,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensureAttributeDefinitionsExist(normalized);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], normalized, 'updated', actor);
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (this.didAttributesChange(previous, normalized)) {
@@ -387,13 +385,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default'>>(
-			rid,
-			'p',
-			{
-				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
-			},
-		);
+		const room = await Rooms.findOneByIdAndType<
+			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
+		>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -414,7 +410,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
-			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], [{ key, values }], 'key-added', actor);
+			void Audit.objectAttributeChanged(
+				{ _id: room._id, name: room.name },
+				room.abacAttributes || [],
+				[{ key, values }],
+				'key-added',
+				actor,
+			);
 			const next = [...previous, { key, values }];
 
 			await this.onRoomAttributesChanged(room, next);
@@ -442,8 +444,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default'>>(rid, 'p', {
-			projection: { abacAttributes: 1, default: 1, teamDefault: 1 },
+		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default' | 'name'>>(rid, 'p', {
+			projection: { abacAttributes: 1, default: 1, teamDefault: 1, name: 1 },
 		});
 		if (!room) {
 			throw new Error('error-room-not-found');
@@ -469,7 +471,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
 		void Audit.objectAttributeRemoved(
-			{ _id: room._id },
+			{ _id: room._id, name: room.name },
 			previous,
 			previous.filter((a) => a.key !== key),
 			'key-removed',
@@ -480,13 +482,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
-			rid,
-			'p',
-			{
-				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
-			},
-		);
+		const room = await Rooms.findOneByIdAndType<
+			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
+		>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -507,7 +507,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
 		const next = updated?.abacAttributes || [...previous, { key, values }];
 
-		void Audit.objectAttributeChanged({ _id: room._id }, previous, next, 'key-added', actor);
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, previous, next, 'key-added', actor);
 
 		await this.onRoomAttributesChanged(room, next);
 	}
@@ -515,13 +515,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault'>>(
-			rid,
-			'p',
-			{
-				projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1 },
-			},
-		);
+		const room = await Rooms.findOneByIdAndType<
+			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
+		>(rid, 'p', {
+			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+		});
 		if (!room) {
 			throw new Error('error-room-not-found');
 		}
@@ -536,7 +534,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
 
-			void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], 'key-updated', actor);
+			void Audit.objectAttributeChanged(
+				{ _id: room._id, name: room.name },
+				room.abacAttributes || [],
+				updated?.abacAttributes || [],
+				'key-updated',
+				actor,
+			);
 			if (this.wereAttributeValuesAdded(prevValues, values)) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
@@ -549,7 +553,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
-		void Audit.objectAttributeChanged({ _id: room._id }, room.abacAttributes || [], updated?.abacAttributes || [], 'key-added', actor);
+		void Audit.objectAttributeChanged(
+			{ _id: room._id, name: room.name },
+			room.abacAttributes || [],
+			updated?.abacAttributes || [],
+			'key-added',
+			actor,
+		);
 
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
