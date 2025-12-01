@@ -537,7 +537,6 @@ const POSTLivechatTagsSaveParamsSchema = {
 				},
 				description: {
 					type: 'string',
-					nullable: true,
 				},
 			},
 		},
