@@ -1,8 +1,8 @@
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';
-import { useRoomToolbox } from '../room/contexts/RoomToolboxContext';
 
 type OutlookCalendarRoutes = 'list' | 'settings';
 
