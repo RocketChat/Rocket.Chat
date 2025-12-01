@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
 import './methods/removeMonitor';
-import './methods/saveTag';
 import './methods/removeBusinessHour';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
