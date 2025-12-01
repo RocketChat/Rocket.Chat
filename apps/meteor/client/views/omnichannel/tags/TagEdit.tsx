@@ -56,7 +56,11 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		const departmentsId = departments?.map((dep) => dep.value) || [''];
 
 		try {
-			await saveTag({ _id, tagData: { name, description }, tagDepartments: departmentsId });
+			await saveTag({
+				_id,
+				tagData: { name, description },
+				...(departmentsId.length > 0 && { tagDepartments: departmentsId })
+			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-tags'],

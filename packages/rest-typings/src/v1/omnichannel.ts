@@ -615,6 +615,7 @@ const POSTLivechatTagsSaveSuccessResponseSchema = {
 			enum: [true],
 		},
 	},
+	required: ['_id', 'name', 'description', 'numDepartments', 'departments', 'success'],
 	additionalProperties: false,
 };
 
