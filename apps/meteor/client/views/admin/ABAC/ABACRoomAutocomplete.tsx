@@ -4,7 +4,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps, Dispatch, ReactElement, SetStateAction } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 
 const generateQuery = (
 	term = '',
@@ -15,10 +15,10 @@ const generateQuery = (
 
 type ABACRoomAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
-	setSelectedRoom?: Dispatch<SetStateAction<IRoom | undefined>>;
+	setSelectedRoomLabel: Dispatch<SetStateAction<string>>;
 };
 
-const ABACRoomAutocomplete = ({ value, onChange, renderRoomIcon, setSelectedRoom, ...props }: ABACRoomAutocompleteProps) => {
+const ABACRoomAutocomplete = ({ value, renderRoomIcon, setSelectedRoomLabel, ...props }: ABACRoomAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms');
@@ -28,36 +28,24 @@ const ABACRoomAutocomplete = ({ value, onChange, renderRoomIcon, setSelectedRoom
 		queryKey: ['roomsAdminRooms', filterDebounced],
 		queryFn: () => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
 		placeholderData: keepPreviousData,
+		select: (data) =>
+			data.rooms
+				.filter((room) => !room.abacAttributes || room.abacAttributes.length === 0)
+				.map((room) => ({
+					value: room._id,
+					label: { name: room.fname || room.name },
+				})),
 	});
-
-	const options = useMemo(
-		() =>
-			result.isSuccess && result.data?.rooms?.length > 0
-				? result.data.rooms
-						// Exclude rooms that are already managed by ABAC
-						.filter((room) => !room.abacAttributes || room.abacAttributes.length === 0)
-						.map((room) => {
-							return {
-								value: room._id,
-								label: { name: room.fname || room.name },
-							};
-						})
-				: [],
-		[result.data?.rooms, result.isSuccess],
-	);
 
 	return (
 		<AutoComplete
 			{...props}
-			value={value}
 			onChange={(val) => {
-				onChange(val);
-
-				if (setSelectedRoom && typeof setSelectedRoom === 'function') {
-					const selectedRoom = result?.data?.rooms.find(({ _id }) => _id === val) as unknown as IRoom;
-					setSelectedRoom(selectedRoom);
-				}
+				props.onChange(val);
+				console.log(val);
+				setSelectedRoomLabel(result.data?.find(({ value }) => value === val)?.label?.name || '');
 			}}
+			value={value}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { label } }) => (
@@ -69,7 +57,7 @@ const ABACRoomAutocomplete = ({ value, onChange, renderRoomIcon, setSelectedRoom
 				</>
 			)}
 			renderItem={({ label, ...props }) => <Option {...props} label={label.name} />}
-			options={options}
+			options={result.data}
 		/>
 	);
 };

@@ -1,6 +1,7 @@
 import { ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +32,9 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 		mode: 'onChange',
 	});
 
-	const { getValues, watch } = methods;
+	const { watch } = methods;
+
+	const [selectedRoomLabel, setSelectedRoomLabel] = useState<string>('');
 
 	const attributeId = useRouteParameter('id');
 	const createOrUpdateABACRoom = useEndpoint('POST', '/v1/abac/rooms/:rid/attributes', { rid: watch('room') });
@@ -51,9 +54,9 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 		},
 		onSuccess: () => {
 			if (attributeId) {
-				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_updated', { attributeName: getValues('room') }) });
+				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_updated', { roomName: selectedRoomLabel }) });
 			} else {
-				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_created', { attributeName: getValues('room') }) });
+				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_created', { roomName: selectedRoomLabel }) });
 			}
 			onClose();
 		},
@@ -72,7 +75,12 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<FormProvider {...methods}>
-				<AdminABACRoomForm roomInfo={roomInfo} onSave={(values) => saveMutation.mutateAsync(values)} onClose={onClose} />
+				<AdminABACRoomForm
+					roomInfo={roomInfo}
+					onSave={(values) => saveMutation.mutateAsync(values)}
+					onClose={onClose}
+					setSelectedRoomLabel={setSelectedRoomLabel}
+				/>
 			</FormProvider>
 		</>
 	);

@@ -2,6 +2,7 @@ import { Box, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Cont
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
+import type { Dispatch, SetStateAction } from 'react';
 import { useId } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -15,6 +16,7 @@ type AdminABACRoomFormProps = {
 	onClose: () => void;
 	onSave: (data: AdminABACRoomFormData) => void;
 	roomInfo?: { rid: string; name: string };
+	setSelectedRoomLabel: Dispatch<SetStateAction<string>>;
 };
 
 export type AdminABACRoomFormData = {
@@ -22,7 +24,7 @@ export type AdminABACRoomFormData = {
 	attributes: { key: string; values: string[] }[];
 };
 
-const AdminABACRoomForm = ({ onClose, onSave, roomInfo }: AdminABACRoomFormProps) => {
+const AdminABACRoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: AdminABACRoomFormProps) => {
 	const {
 		control,
 		handleSubmit,
@@ -87,7 +89,14 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo }: AdminABACRoomFormProps
 									name='room'
 									control={control}
 									rules={{ required: t('Required_field', { field: t('ABAC_Room_to_be_managed') }) }}
-									render={({ field }) => <ABACRoomAutocomplete {...field} error={!!errors.room?.message} aria-labelledby={nameField} />}
+									render={({ field }) => (
+										<ABACRoomAutocomplete
+											{...field}
+											error={!!errors.room?.message}
+											aria-labelledby={nameField}
+											setSelectedRoomLabel={setSelectedRoomLabel}
+										/>
+									)}
 								/>
 							)}
 						</FieldRow>
