@@ -260,6 +260,13 @@ export class MockedAppRootBuilder {
 		permissionStatus: undefined,
 	};
 
+	private queryClient = new QueryClient({
+		defaultOptions: {
+			queries: { retry: false },
+			mutations: { retry: false },
+		},
+	})
+
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
 		return this;
@@ -634,15 +641,13 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): JSXElementConstructor<{ children: ReactNode }> {
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+	withQueryClient(client: QueryClient): this {
+		this.queryClient = client;
+		return this;
+	}
 
-		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
+	build(): JSXElementConstructor<{ children: ReactNode }> {
+		const { queryClient, server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
