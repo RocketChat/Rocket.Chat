@@ -8540,7 +8540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
+"@rocket.chat/freeswitch@workspace:packages/freeswitch":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/freeswitch@workspace:packages/freeswitch"
   dependencies:
@@ -9188,7 +9188,6 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.2"
-    "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.69.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
@@ -10639,7 +10638,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
-    "@rocket.chat/ui-contexts": 25.0.0
+    "@rocket.chat/ui-contexts": 25.0.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
