@@ -120,3 +120,61 @@ We're hiring developers, technical support, and product managers all the time. C
 # 🗒️ Credits
 
 - Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+
+
+
+Title:
+feat(i18n): Add base folder structure and initial English JSON strings
+
+Description:
+
+This PR introduces the initial setup for the internationalization (i18n) system for Rocket.Chat’s UI enhancement project.
+It includes:
+
+A new /i18n directory inside the client module
+
+Base en.json file containing default key–value text strings
+
+Standardized key naming convention using lower_case_underscored_format
+
+Initial integration in the UI components to load translation strings
+
+Changes Included:
+
+Added i18n/ folder with structure:
+
+/i18n
+ ├── en.json
+ ├── hi.json (empty placeholder)
+ ├── es.json (empty placeholder)
+
+
+ TITLE - 
+
+feat(i18n): Add Hindi and Spanish translations for core UI screens
+
+Description:
+
+This PR adds full translation support for Hindi (hi.json) and Spanish (es.json) for key Rocket.Chat UI components including:
+
+Login screen
+
+Register screen
+
+Sidebar navigation
+
+Message composer
+
+Settings page
+
+All translation keys fully match the base English file to ensure consistency.
+
+Changes Included:
+
+Fully populated hi.json and es.json
+
+Verified 100% key coverage compared to en.json
+
+Added script to detect missing or extra keys in translation files
+
+Updated UI components to dynamically switch language based on user preference
