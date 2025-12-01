@@ -34,8 +34,6 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
-	"main": "index",
-	"typings": "index",
 	"files": [
 		"client/**",
 		"definition/**",
