@@ -11,8 +11,8 @@ const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) 
 
 		queryFn: async () => {
 			const payload: UsersListStatusParamsGET = {
-				hasLoggedIn: false,
 				status: 'deactivated',
+				inactiveReason: ['pending_approval'],
 				type: 'user',
 				count: 1,
 			};
