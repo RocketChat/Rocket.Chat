@@ -20,7 +20,8 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 
-	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
+	const firstChannelAfterLogin = useSetting<string>('First_Channel_After_Login', '');
+	const roomName = firstChannelAfterLogin.startsWith('#') ? firstChannelAfterLogin.slice(1) : firstChannelAfterLogin;
 
 	const redirected = useRef(false);
 
@@ -31,7 +32,7 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 			return;
 		}
 
-		if (!firstChannelAfterLogin || typeof firstChannelAfterLogin !== 'string') {
+		if (!roomName) {
 			return;
 		}
 
@@ -40,8 +41,8 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 		}
 		redirected.current = true;
 
-		router.navigate({ name: `/channel/${firstChannelAfterLogin}` as keyof IRouterPaths });
-	}, [router, currentRoutePath, firstChannelAfterLogin]);
+		router.navigate({ name: `/channel/${roomName}` as keyof IRouterPaths });
+	}, [router, currentRoutePath, roomName]);
 
 	return (
 		<>
