@@ -41,6 +41,9 @@ declare module 'meteor/meteor' {
 
 		const server: {
 			sessions: Map<string, { userId: string; heartbeat: { _sendPing: () => void } }>;
+			publish_handlers: {
+				meteor_autoupdate_clientVersions(): void;
+			};
 		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
