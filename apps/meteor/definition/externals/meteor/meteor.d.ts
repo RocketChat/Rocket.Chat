@@ -1,6 +1,6 @@
 import 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
@@ -40,7 +40,7 @@ declare module 'meteor/meteor' {
 		}
 
 		const server: {
-			sessions: Map<string, { userId: string; heartbeat: { _sendPing: () => void } }>;
+			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat }>;
 			publish_handlers: {
 				meteor_autoupdate_clientVersions(): void;
 			};

@@ -4,6 +4,22 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
+const lastWrite = new Map<string, number>();
+
+// throttle presence updates to avoid excessive writes
+const updateConnectionStatus = (userId: string, connectionId: string) => {
+	const key = `${userId}-${connectionId}`;
+	const now = Date.now();
+	const last = lastWrite.get(key) || 0;
+
+	if (now - last > 60000) {
+		lastWrite.set(key, now);
+		return Presence.setConnectionStatus(userId, connectionId);
+	}
+
+	return Promise.resolve();
+};
+
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
 	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
@@ -29,7 +45,7 @@ Meteor.startup(() => {
 		await Presence.removeLostConnections(nodeId);
 	});
 
-	Accounts.onLogin((login: any): void => {
+	Accounts.onLogin((login: { connection: { id: string }; user: { _id: string } }): void => {
 		if (!login.connection.id) {
 			return;
 		}
@@ -40,11 +56,10 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const originalSendPing = session.heartbeat._sendPing.bind(session.heartbeat);
-
-		session.heartbeat._sendPing = function () {
-			originalSendPing();
-			void Presence.setConnectionStatus(login.user._id, login.connection.id);
+		const _messageReceived = session.heartbeat.messageReceived.bind(session.heartbeat);
+		session.heartbeat.messageReceived = function messageReceived() {
+			void updateConnectionStatus(login.user._id, login.connection.id);
+			return _messageReceived();
 		};
 
 		void (async function () {
