@@ -74,7 +74,7 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo }: AdminABACRoomFormProps
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box is='form' onSubmit={handleSubmit(onSave)} id={formId}>
+				<Box is='form' onSubmit={handleSubmit(handleSave)} id={formId}>
 					<Field mb={16}>
 						<FieldLabel id={nameField} required>
 							{t('ABAC_Room_to_be_managed')}
@@ -120,7 +120,9 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo }: AdminABACRoomFormProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={handleSave}>{t('Save')}</Button>
+					<Button type='submit' form={formId} disabled={!!errors.room?.message} primary>
+						{t('Save')}
+					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
