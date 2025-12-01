@@ -1,4 +1,3 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -61,16 +60,6 @@ const AdminABACRooms = () => {
 		queryFn: () => getRooms(query),
 	});
 
-	const filterOptions: SelectOption[] = useMemo(
-		() => [
-			['all', t('All'), true],
-			['roomName', t('Rooms'), false],
-			['attribute', t('Attributes'), false],
-			['value', t('Values'), false],
-		],
-		[t],
-	);
-
 	return (
 		<>
 			<Margins block={24}>
@@ -83,7 +72,12 @@ const AdminABACRooms = () => {
 					/>
 					<Box pis={8} maxWidth={200}>
 						<Select
-							options={filterOptions}
+							options={[
+								['all', t('All'), true],
+								['roomName', t('Rooms'), false],
+								['attribute', t('Attributes'), false],
+								['value', t('Values'), false],
+							]}
 							value={filterType}
 							onChange={(value) => setFilterType(value as 'all' | 'roomName' | 'attribute' | 'value')}
 						/>
