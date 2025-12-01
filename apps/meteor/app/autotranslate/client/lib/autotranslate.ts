@@ -21,8 +21,11 @@ let username = '';
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const user = watchUser();
-		if (!user) return;
-
+		if (!user) {
+			userLanguage = 'en';
+			username = '';
+			return;
+		}
 		userLanguage = user.language || 'en';
 		username = user.username || '';
 	});
