@@ -120,6 +120,7 @@ async function createUsersSubscriptions({
 	await Rooms.incUsersCountById(room._id, subs.length);
 }
 
+// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,

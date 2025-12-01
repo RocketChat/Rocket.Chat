@@ -176,8 +176,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					console.log('response', response.body);
-
 					expect(response.body).toHaveProperty('success', true);
 					expect(response.body).toHaveProperty('message');
 
