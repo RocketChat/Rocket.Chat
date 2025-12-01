@@ -569,6 +569,7 @@ const POSTLivechatMonitorsDeleteSuccessSchema = {
 	properties: {
 		success: { type: 'boolean', enum: [true] },
 	},
+	required: ['success'],
 	additionalProperties: false,
 };
 
