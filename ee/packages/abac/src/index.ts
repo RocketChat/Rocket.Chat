@@ -12,10 +12,8 @@ import { Audit } from './audit';
 import {
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
-	AbacCannotConvertDefaultRoomToAbacError,
 	AbacDuplicateAttributeKeyError,
 	AbacInvalidAttributeValuesError,
-	AbacRoomNotFoundError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
 } from './errors';
