@@ -20,7 +20,7 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 	return (
 		<Resizable
 			{...props}
-			onResize={(_e, _dir, elRef) => {
+			onResize={(_e: any, _dir: any, elRef: HTMLElement) => {
 				setContextualbarWidth(elRef.style.width);
 			}}
 			defaultSize={{

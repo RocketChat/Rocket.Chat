@@ -1,6 +1,6 @@
+import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import { ContextualbarDialog } from '../Contextualbar';
 import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 import { UserCardRole } from '../UserCard';

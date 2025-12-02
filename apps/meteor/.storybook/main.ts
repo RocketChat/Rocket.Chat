@@ -28,6 +28,7 @@ export default {
 				'react$': require.resolve('../../../node_modules/react'),
 				// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
 				'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
+				'@rocket.chat/fuselage$': require.resolve('../../../node_modules/@rocket.chat/fuselage'),
 				'swiper/swiper.css$': 'swiper/css',
 				'swiper/modules/navigation/navigation.min.css$': 'swiper/css/navigation',
 				'swiper/modules/keyboard/keyboard.min.css$': 'swiper/css/keyboard',

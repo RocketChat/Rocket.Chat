@@ -1,10 +1,10 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
 
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
 
