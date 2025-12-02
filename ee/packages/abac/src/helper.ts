@@ -105,18 +105,49 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 	const keyPattern = /^[A-Za-z0-9_-]+$/;
 	const normalized: IAbacAttributeDefinition[] = [];
 
-	if (Object.keys(attributes).length > 10) {
+	const entries = Object.entries(attributes);
+
+	const aggregated = new Map<string, Set<string>>();
+
+	for (const [rawKey, values] of entries) {
+		const key = rawKey.trim();
+
+		if (!key.length || !keyPattern.test(key)) {
+			throw new Error('error-invalid-attribute-key');
+		}
+
+		const bucket = aggregated.get(key) ?? new Set<string>();
+		if (!aggregated.has(key)) {
+			if (aggregated.size >= 10) {
+				throw new Error('error-invalid-attribute-values');
+			}
+			aggregated.set(key, bucket);
+		}
+
+		for (const value of values) {
+			if (typeof value !== 'string') {
+				continue;
+			}
+			const trimmed = value.trim();
+			if (!trimmed.length) {
+				continue;
+			}
+			if (bucket.size >= 10 && !bucket.has(trimmed)) {
+				throw new Error('error-invalid-attribute-values');
+			}
+			bucket.add(trimmed);
+		}
+	}
+
+	if (aggregated.size > 10) {
 		throw new Error('error-invalid-attribute-values');
 	}
 
-	for (const [key, values] of Object.entries(attributes)) {
-		if (!keyPattern.test(key)) {
-			throw new Error('error-invalid-attribute-key');
-		}
-		if (values.length > 10) {
+	for (const [key, valueSet] of aggregated.entries()) {
+		if (!valueSet.size) {
 			throw new Error('error-invalid-attribute-values');
 		}
-		normalized.push({ key, values });
+		normalized.push({ key, values: Array.from(valueSet) });
 	}
 
 	return normalized;

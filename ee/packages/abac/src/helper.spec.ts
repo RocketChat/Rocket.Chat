@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { didSubjectLoseAttributes } from './helper';
+import { didSubjectLoseAttributes, validateAndNormalizeAttributes } from './helper';
 
 describe('didSubjectLoseAttributes', () => {
 	const call = (prev: { key: string; values: string[] }[], next: { key: string; values: string[] }[]) =>
@@ -345,6 +345,43 @@ describe('didSubjectLoseAttributes', () => {
 		];
 
 		expect(call(prev, next)).to.be.true;
+	});
+});
+
+describe('validateAndNormalizeAttributes', () => {
+	it('normalizes keys and merges duplicate values from multiple entries', () => {
+		const result = validateAndNormalizeAttributes({
+			' dept ': [' sales ', 'marketing', 'sales', '', 'marketing '],
+			'role': [' admin ', 'user', 'user '],
+			'dept': ['engineering'],
+		});
+
+		expect(result).to.deep.equal([
+			{ key: 'dept', values: ['sales', 'marketing', 'engineering'] },
+			{ key: 'role', values: ['admin', 'user'] },
+		]);
+	});
+
+	it('throws when a key has no remaining sanitized values', () => {
+		expect(() =>
+			validateAndNormalizeAttributes({
+				role: ['   ', '\n', '\t'],
+			}),
+		).to.throw('error-invalid-attribute-values');
+	});
+
+	it('throws when a key exceeds the maximum number of unique values', () => {
+		const values = Array.from({ length: 11 }, (_, i) => `value-${i}`);
+		expect(() =>
+			validateAndNormalizeAttributes({
+				role: values,
+			}),
+		).to.throw('error-invalid-attribute-values');
+	});
+
+	it('throws when total unique attribute keys exceeds limit', () => {
+		const attributes = Object.fromEntries(Array.from({ length: 11 }, (_, i) => [`key-${i}`, ['value']]));
+		expect(() => validateAndNormalizeAttributes(attributes)).to.throw('error-invalid-attribute-values');
 	});
 });
 
