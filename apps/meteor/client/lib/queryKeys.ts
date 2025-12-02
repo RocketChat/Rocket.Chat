@@ -50,6 +50,7 @@ export const omnichannelQueryKeys = {
 	livechat: {
 		appearance: () => [...omnichannelQueryKeys.all, 'livechat', 'appearance'] as const,
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
+		customFieldsMetadata: (scope: 'visitor' | 'room') => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields', scope] as const,
 	},
 	visitorInfo: (uid: string) => [...omnichannelQueryKeys.all, 'visitor-info', uid] as const,
 	analytics: {
