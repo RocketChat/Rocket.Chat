@@ -7,7 +7,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { acceptRoomInvite, performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
+import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom, performAddUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
@@ -100,10 +100,6 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async performUserRemoval(roomId: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
 		return performUserRemoval(roomId, user, options);
-	}
-
-	async acceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
-		return acceptRoomInvite(room, subscription, user);
 	}
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {

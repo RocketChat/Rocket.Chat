@@ -18,9 +18,7 @@ export const performAcceptRoomInvite = async (
 	user: IUser & { username: string },
 ): Promise<void> => {
 	if (subscription.status !== 'INVITED') {
-		throw new Meteor.Error('error-not-invited', 'User was not invited to this room', {
-			method: 'acceptRoomInvite',
-		});
+		throw new Meteor.Error('error-not-invited', 'User was not invited to this room');
 	}
 
 	await callbacks.run('beforeJoinRoom', user, room);
