@@ -85,7 +85,7 @@ describe('useAppSlashCommands', () => {
 
 		// Mock API to return commands without the removed one
 		mockGetSlashCommands.mockResolvedValue({
-			commands: [mockSlashCommands.find((cmd) => cmd.command === '/weather')!],
+			commands: mockSlashCommands.filter((cmd) => cmd.command === '/weather'),
 			total: 1,
 		});
 
@@ -123,7 +123,7 @@ describe('useAppSlashCommands', () => {
 
 		// Mock API to return commands without the disabled one
 		mockGetSlashCommands.mockResolvedValue({
-			commands: [mockSlashCommands.find((cmd) => cmd.command === '/weather')!],
+			commands: mockSlashCommands.filter((cmd) => cmd.command === '/weather'),
 			total: 1,
 		});
 
