@@ -9,7 +9,18 @@ import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
-import { diffAttributes, extractAttribute } from './helper';
+import {
+	diffAttributes,
+	extractAttribute,
+	didAttributesChange,
+	didSubjectLoseAttributes,
+	wereAttributeValuesAdded,
+	buildCompliantConditions,
+	buildNonCompliantConditions,
+	validateAndNormalizeAttributes,
+	ensureAttributeDefinitionsExist,
+	buildRoomNonCompliantConditionsFromSubject,
+} from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -61,7 +72,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
-		if (this.didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
+		if (didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
 			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
 		}
 
@@ -301,86 +312,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const normalized = this.validateAndNormalizeAttributes(attributes);
+		const normalized = validateAndNormalizeAttributes(attributes);
 
-		await this.ensureAttributeDefinitionsExist(normalized);
+		await ensureAttributeDefinitionsExist(normalized);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (this.didAttributesChange(previous, normalized)) {
+		if (didAttributesChange(previous, normalized)) {
 			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
-		}
-	}
-
-	private didAttributesChange(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
-		let added = false;
-		const prevMap = new Map(current.map((a) => [a.key, new Set(a.values)]));
-		for (const { key, values } of next) {
-			const prevValues = prevMap.get(key);
-			if (!prevValues) {
-				added = true;
-				break;
-			}
-			for (const v of values) {
-				if (!prevValues.has(v)) {
-					added = true;
-					break;
-				}
-			}
-			if (added) {
-				break;
-			}
-		}
-
-		return added;
-	}
-
-	private validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
-		const keyPattern = /^[A-Za-z0-9_-]+$/;
-		const normalized: IAbacAttributeDefinition[] = [];
-
-		if (Object.keys(attributes).length > 10) {
-			throw new Error('error-invalid-attribute-values');
-		}
-
-		for (const [key, values] of Object.entries(attributes)) {
-			if (!keyPattern.test(key)) {
-				throw new Error('error-invalid-attribute-key');
-			}
-			if (values.length > 10) {
-				throw new Error('error-invalid-attribute-values');
-			}
-			normalized.push({ key, values });
-		}
-
-		return normalized;
-	}
-
-	private async ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
-		if (!normalized.length) {
-			return;
-		}
-
-		const keys = normalized.map((a) => a.key);
-		const attributeDefinitions = await AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
-
-		const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
-		if (definitionValuesMap.size !== keys.length) {
-			throw new Error('error-attribute-definition-not-found');
-		}
-
-		for (const a of normalized) {
-			const allowed = definitionValuesMap.get(a.key);
-			if (!allowed) {
-				throw new Error('error-attribute-definition-not-found');
-			}
-			for (const v of a.values) {
-				if (!allowed.has(v)) {
-					throw new Error('error-invalid-attribute-values');
-				}
-			}
 		}
 	}
 
@@ -406,7 +347,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-invalid-attribute-values');
 		}
 
-		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
@@ -438,15 +379,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			actor,
 		);
 
-		if (this.wereAttributeValuesAdded(prevValues, values)) {
+		if (wereAttributeValuesAdded(prevValues, values)) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
 			await this.onRoomAttributesChanged(room, next);
 		}
-	}
-
-	private wereAttributeValuesAdded(prevValues: string[], newValues: string[]) {
-		const prevSet = new Set(prevValues);
-		return newValues.some((v) => !prevSet.has(v));
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
@@ -486,7 +422,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
-		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await Rooms.findOneByIdAndType<
 			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
@@ -519,7 +455,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
-		await this.ensureAttributeDefinitionsExist([{ key, values }]);
+		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await Rooms.findOneByIdAndType<
 			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
@@ -547,7 +483,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 				'key-updated',
 				actor,
 			);
-			if (this.wereAttributeValuesAdded(prevValues, values)) {
+			if (wereAttributeValuesAdded(prevValues, values)) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
 
@@ -570,40 +506,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
-	private buildNonCompliantConditions(newAttributes: IAbacAttributeDefinition[]) {
-		return newAttributes.map(({ key, values }) => ({
-			abacAttributes: {
-				$not: {
-					$elemMatch: {
-						key,
-						values: { $all: values },
-					},
-				},
-			},
-		}));
-	}
-
-	private buildCompliantConditions(attributes: IAbacAttributeDefinition[]) {
-		return attributes.map(({ key, values }) => ({
-			abacAttributes: {
-				$elemMatch: {
-					key,
-					values: { $all: values },
-				},
-			},
-		}));
-	}
-
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
 		}
 
-		const nonComplianceConditions = this.buildNonCompliantConditions(attributes);
 		const nonCompliantUsersFromList = await Users.find(
 			{
 				username: { $in: usernames },
-				$or: nonComplianceConditions,
+				$or: buildNonCompliantConditions(attributes),
 			},
 			{ projection: { username: 1 } },
 		)
@@ -624,64 +535,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 			msg: 'User list complied with ABAC attributes for room',
 			usernames,
 		});
-	}
-
-	protected async onRoomAttributesChanged(
-		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
-		newAttributes: IAbacAttributeDefinition[],
-	): Promise<void> {
-		const rid = room._id;
-		if (!newAttributes?.length) {
-			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
-			this.logger.warn({
-				msg: 'Room ABAC attributes removed. Room is not abac managed anymore',
-				rid,
-			});
-
-			return;
-		}
-
-		try {
-			const nonCompliantConditions = this.buildNonCompliantConditions(newAttributes);
-
-			if (!nonCompliantConditions.length) {
-				return;
-			}
-
-			const query = {
-				__rooms: rid,
-				$or: nonCompliantConditions,
-			};
-
-			const cursor = Users.find(query, { projection: { __rooms: 0 } });
-
-			const usersToRemove: string[] = [];
-			const userRemovalPromises = [];
-			for await (const doc of cursor) {
-				usersToRemove.push(doc._id);
-				void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change');
-				userRemovalPromises.push(
-					limit(() =>
-						Room.removeUserFromRoom(rid, doc, {
-							skipAppPreEvents: true,
-							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}),
-					),
-				);
-			}
-
-			if (!usersToRemove.length) {
-				return;
-			}
-
-			await Promise.all(userRemovalPromises);
-		} catch (err) {
-			this.logger.error({
-				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
-				rid,
-				err,
-			});
-		}
 	}
 
 	async canAccessObject(
@@ -726,7 +579,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const isUserCompliant = await Users.findOne(
 			{
 				_id: user._id,
-				$and: this.buildCompliantConditions(room.abacAttributes),
+				$and: buildCompliantConditions(room.abacAttributes),
 			},
 			{ projection: { _id: 1 } },
 		);
@@ -752,23 +605,60 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return true;
 	}
 
-	private didSubjectLoseAttributes(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
-		if (!previous.length) {
-			return false;
+	protected async onRoomAttributesChanged(
+		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
+		newAttributes: IAbacAttributeDefinition[],
+	): Promise<void> {
+		const rid = room._id;
+		if (!newAttributes?.length) {
+			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
+			this.logger.warn({
+				msg: 'Room ABAC attributes removed. Room is not abac managed anymore',
+				rid,
+			});
+
+			return;
 		}
-		const nextMap = new Map(next.map((a) => [a.key, new Set(a.values)]));
-		for (const prevAttr of previous) {
-			const nextValues = nextMap.get(prevAttr.key);
-			if (!nextValues) {
-				return true;
+
+		try {
+			if (!newAttributes.length) {
+				return;
 			}
-			for (const v of prevAttr.values) {
-				if (!nextValues.has(v)) {
-					return true;
-				}
+
+			const query = {
+				__rooms: rid,
+				$or: buildNonCompliantConditions(newAttributes),
+			};
+
+			const cursor = Users.find(query, { projection: { __rooms: 0 } });
+
+			const usersToRemove: string[] = [];
+			const userRemovalPromises = [];
+			for await (const doc of cursor) {
+				usersToRemove.push(doc._id);
+				void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change');
+				userRemovalPromises.push(
+					limit(() =>
+						Room.removeUserFromRoom(rid, doc, {
+							skipAppPreEvents: true,
+							customSystemMessage: 'abac-removed-user-from-room' as const,
+						}),
+					),
+				);
 			}
+
+			if (!usersToRemove.length) {
+				return;
+			}
+
+			await Promise.all(userRemovalPromises);
+		} catch (err) {
+			this.logger.error({
+				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
+				rid,
+				err,
+			});
 		}
-		return false;
 	}
 
 	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
@@ -808,20 +698,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const query = {
 				_id: { $in: roomIds },
-				$or: this.buildRoomNonCompliantConditionsFromSubject(_next),
+				$or: buildRoomNonCompliantConditionsFromSubject(_next),
 			};
 
 			const cursor = Rooms.find(query, { projection: { _id: 1 } });
 
 			const removalPromises: Promise<unknown>[] = [];
 			for await (const room of cursor) {
-				void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync');
 				removalPromises.push(
 					limit(() =>
 						Room.removeUserFromRoom(room._id, user, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}),
+						}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
 					),
 				);
 			}
@@ -833,31 +722,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 				err,
 			});
 		}
-	}
-
-	private buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IAbacAttributeDefinition[]) {
-		const map = new Map(subjectAttributes.map((a) => [a.key, new Set(a.values)]));
-		const userKeys = Array.from(map.keys());
-		const conditions = [];
-		conditions.push({
-			abacAttributes: {
-				$elemMatch: {
-					key: { $nin: userKeys },
-				},
-			},
-		});
-		for (const [key, valuesSet] of map.entries()) {
-			const valuesArr = Array.from(valuesSet);
-			conditions.push({
-				abacAttributes: {
-					$elemMatch: {
-						key,
-						values: { $elemMatch: { $nin: valuesArr } },
-					},
-				},
-			});
-		}
-		return conditions;
 	}
 }
 
