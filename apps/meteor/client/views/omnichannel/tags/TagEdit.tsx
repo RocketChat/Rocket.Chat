@@ -1,6 +1,13 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -8,13 +15,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveTag } from './useRemoveTag';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarTitle,
-	ContextualbarHeader,
-	ContextualbarClose,
-} from '../../../components/Contextualbar';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {

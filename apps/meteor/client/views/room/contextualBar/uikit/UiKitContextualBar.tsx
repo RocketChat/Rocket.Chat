@@ -6,13 +6,6 @@ import {
 	contextualBarParser,
 	UiKitContext,
 } from '@rocket.chat/fuselage-ui-kit';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type * as UiKit from '@rocket.chat/ui-kit';
-import { BlockContext } from '@rocket.chat/ui-kit';
-import type { FormEvent, UIEvent } from 'react';
-import { memo } from 'react';
-
-import { getURL } from '../../../../../app/utils/client';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -20,7 +13,14 @@ import {
 	ContextualbarDialog,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type * as UiKit from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
+import type { FormEvent, UIEvent } from 'react';
+import { memo } from 'react';
+
+import { getURL } from '../../../../../app/utils/client';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
