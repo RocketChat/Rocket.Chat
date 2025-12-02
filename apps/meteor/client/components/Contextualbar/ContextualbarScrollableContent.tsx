@@ -1,9 +1,7 @@
 import { Margins } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, PageScrollableContent } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
-
-import { PageScrollableContent } from '../Page';
 
 const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof PageScrollableContent>>(
 	function ContextualbarScrollableContent({ children, ...props }, ref) {
