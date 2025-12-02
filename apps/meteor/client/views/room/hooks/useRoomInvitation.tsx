@@ -1,6 +1,7 @@
 import { useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { useRoomRejectInvitationModal } from './useRoomRejectInvitationModal';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
@@ -9,6 +10,8 @@ export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
 	const queryClient = useQueryClient();
 	const user = useUser();
 	const router = useRouter();
+
+	const { open: openConfirmationModal } = useRoomRejectInvitationModal(room);
 
 	const replyInvite = useEndpointMutation('POST', '/v1/rooms.invite', {
 		onSuccess: async (_, { action }) => {
@@ -30,7 +33,9 @@ export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
 
 	return {
 		...replyInvite,
-		acceptInvite: () => replyInvite.mutate({ roomId: room._id, action: 'accept' }),
-		rejectInvite: () => replyInvite.mutate({ roomId: room._id, action: 'reject' }),
+		acceptInvite: async () => replyInvite.mutate({ roomId: room._id, action: 'accept' }),
+		rejectInvite: async () => {
+			if (await openConfirmationModal()) replyInvite.mutate({ roomId: room._id, action: 'reject' });
+		},
 	};
 };
