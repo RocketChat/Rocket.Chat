@@ -15,7 +15,6 @@ API.v1.addRoute(
 	'voip-freeswitch.extension.list',
 	{
 		authRequired: true,
-		permissionsRequired: ['manage-voip-extensions'],
 		validateParams: isVoipFreeSwitchExtensionListProps,
 		license: ['voip-enterprise'],
 	},
@@ -66,7 +65,6 @@ API.v1.addRoute(
 	'voip-freeswitch.extension.assign',
 	{
 		authRequired: true,
-		permissionsRequired: ['manage-voip-extensions'],
 		validateParams: isVoipFreeSwitchExtensionAssignProps,
 		deprecation: {
 			version: '8.0.0',
@@ -110,7 +108,6 @@ API.v1.addRoute(
 	'voip-freeswitch.extension.getDetails',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-voip-extension-details'],
 		validateParams: isVoipFreeSwitchExtensionGetDetailsProps,
 		license: ['voip-enterprise'],
 	},
@@ -145,7 +142,6 @@ API.v1.addRoute(
 	'voip-freeswitch.extension.getRegistrationInfoByUserId',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-user-voip-extension'],
 		validateParams: isVoipFreeSwitchExtensionGetInfoProps,
 		license: ['voip-enterprise'],
 	},
