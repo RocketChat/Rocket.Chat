@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { didSubjectLoseAttributes, validateAndNormalizeAttributes } from './helper';
+import { didSubjectLoseAttributes, validateAndNormalizeAttributes, MAX_ABAC_ATTRIBUTE_KEYS, MAX_ABAC_ATTRIBUTE_VALUES } from './helper';
 
 describe('didSubjectLoseAttributes', () => {
 	const call = (prev: { key: string; values: string[] }[], next: { key: string; values: string[] }[]) =>
@@ -371,7 +371,7 @@ describe('validateAndNormalizeAttributes', () => {
 	});
 
 	it('throws when a key exceeds the maximum number of unique values', () => {
-		const values = Array.from({ length: 11 }, (_, i) => `value-${i}`);
+		const values = Array.from({ length: MAX_ABAC_ATTRIBUTE_VALUES + 1 }, (_, i) => `value-${i}`);
 		expect(() =>
 			validateAndNormalizeAttributes({
 				role: values,
@@ -380,7 +380,7 @@ describe('validateAndNormalizeAttributes', () => {
 	});
 
 	it('throws when total unique attribute keys exceeds limit', () => {
-		const attributes = Object.fromEntries(Array.from({ length: 11 }, (_, i) => [`key-${i}`, ['value']]));
+		const attributes = Object.fromEntries(Array.from({ length: MAX_ABAC_ATTRIBUTE_KEYS + 1 }, (_, i) => [`key-${i}`, ['value']]));
 		expect(() => validateAndNormalizeAttributes(attributes)).to.throw('error-invalid-attribute-values');
 	});
 });

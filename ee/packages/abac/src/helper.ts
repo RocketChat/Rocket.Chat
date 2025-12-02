@@ -1,6 +1,9 @@
 import type { ILDAPEntry, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { AbacAttributes } from '@rocket.chat/models';
 
+export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
+export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
+
 export const extractAttribute = (ldapUser: ILDAPEntry, ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
 	if (!ldapKey || !abacKey) {
 		return;
@@ -118,7 +121,7 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 
 		const bucket = aggregated.get(key) ?? new Set<string>();
 		if (!aggregated.has(key)) {
-			if (aggregated.size >= 10) {
+			if (aggregated.size >= MAX_ABAC_ATTRIBUTE_KEYS) {
 				throw new Error('error-invalid-attribute-values');
 			}
 			aggregated.set(key, bucket);
@@ -132,14 +135,14 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 			if (!trimmed.length) {
 				continue;
 			}
-			if (bucket.size >= 10 && !bucket.has(trimmed)) {
+			if (bucket.size >= MAX_ABAC_ATTRIBUTE_VALUES && !bucket.has(trimmed)) {
 				throw new Error('error-invalid-attribute-values');
 			}
 			bucket.add(trimmed);
 		}
 	}
 
-	if (aggregated.size > 10) {
+	if (aggregated.size > MAX_ABAC_ATTRIBUTE_KEYS) {
 		throw new Error('error-invalid-attribute-values');
 	}
 

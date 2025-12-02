@@ -20,6 +20,7 @@ import {
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	buildRoomNonCompliantConditionsFromSubject,
+	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -343,7 +344,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const existingIndex = previous.findIndex((a) => a.key === key);
 		const isNewKey = existingIndex === -1;
-		if (isNewKey && previous.length >= 10) {
+		if (isNewKey && previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
 			throw new Error('error-invalid-attribute-values');
 		}
 
@@ -442,7 +443,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new Error('error-duplicate-attribute-key');
 		}
 
-		if (previous.length >= 10) {
+		if (previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
 			throw new Error('error-invalid-attribute-values');
 		}
 
@@ -490,7 +491,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		if (room?.abacAttributes?.length === 10) {
+		if (room?.abacAttributes?.length === MAX_ABAC_ATTRIBUTE_KEYS) {
 			throw new Error('error-invalid-attribute-values');
 		}
 
