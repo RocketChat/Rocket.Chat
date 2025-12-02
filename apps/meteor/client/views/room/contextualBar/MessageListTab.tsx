@@ -2,15 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
-import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
-import { useCallback } from 'react';
-import { Virtuoso } from 'react-virtuoso';
-
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import {
+	VirtualizedScrollbars,
 	ContextualbarContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -18,7 +11,14 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement, ReactNode } from 'react';
+import { useCallback } from 'react';
+import { Virtuoso } from 'react-virtuoso';
+
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';

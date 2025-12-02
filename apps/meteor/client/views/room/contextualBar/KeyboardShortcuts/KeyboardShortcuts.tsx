@@ -1,8 +1,3 @@
-import type { ReactElement } from 'react';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import KeyboardShortcutSection from './KeyboardShortcutSection';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -10,7 +5,12 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import KeyboardShortcutSection from './KeyboardShortcutSection';
 
 const keyboardShortcutItems = [
 	{ titleKey: 'Keyboard_Shortcuts_Open_Channel_Slash_User_Search', commandKey: 'Keyboard_Shortcuts_Keys_1' },

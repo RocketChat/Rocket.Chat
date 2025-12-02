@@ -1,7 +1,8 @@
 import { ContextualbarAction as ContextualbarActionComponent, ContextualbarV2Action } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 
 const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionComponent>) => (
 	<FeaturePreview feature='newNavigation'>
