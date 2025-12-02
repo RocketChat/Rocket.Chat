@@ -92,7 +92,7 @@ echo "📦 @rocket.chat/emitter [UPDATING to $targetVersion version...]
 📦 @rocket.chat/memo [UPDATING to $targetVersion version...]
 📦 @rocket.chat/onboarding-ui [UPDATING to $targetVersion version...]
 📦 @rocket.chat/string-helpers [UPDATING to $targetVersion version...]
-📦 @rocket.chat/layout [UPDATING to $targetVersion version...]
+📦 @rocket.chat/layout [UPDATING to $targetVersion version...]"
 
     eval "yarn up @rocket.chat/emitter@$targetVersion @rocket.chat/fuselage-toastbar@$targetVersion @rocket.chat/fuselage-tokens@$targetVersion @rocket.chat/css-in-js@$targetVersion @rocket.chat/styled@$targetVersion @rocket.chat/fuselage@$targetVersion @rocket.chat/fuselage-hooks@$targetVersion @rocket.chat/icons@$targetVersion @rocket.chat/logo@$targetVersion @rocket.chat/memo@$targetVersion @rocket.chat/onboarding-ui@$targetVersion @rocket.chat/string-helpers@$targetVersion @rocket.chat/layout@$targetVersion"
     exit 1
