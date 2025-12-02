@@ -83,15 +83,22 @@ describe('useAppSlashCommands', () => {
 		// Initial fetch call
 		expect(mockGetSlashCommands).toHaveBeenCalledTimes(1);
 
-		streamRef.controller?.emit('apps', [['command/removed', ['/test']]]);
+		// Mock API to return commands without the removed one
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [mockSlashCommands[1]], // Only /weather
+			total: 1,
+		});
 
-		// Command should be removed immediately
-		expect(slashCommands.commands['/test']).toBeUndefined();
+		streamRef.controller?.emit('apps', [['command/removed', ['/test']]]);
 
 		// Mutation should be triggered again to refetch
 		await waitFor(() => {
 			expect(mockGetSlashCommands).toHaveBeenCalledTimes(2);
 		});
+
+		// After refetch, removed command should not be present
+		expect(slashCommands.commands['/test']).toBeUndefined();
+		expect(slashCommands.commands['/weather']).toBeDefined();
 	});
 
 	it('should handle command/disabled event by refetching commands', async () => {
@@ -114,15 +121,22 @@ describe('useAppSlashCommands', () => {
 		// Initial fetch call
 		expect(mockGetSlashCommands).toHaveBeenCalledTimes(1);
 
-		streamRef.controller?.emit('apps', [['command/disabled', ['/test']]]);
+		// Mock API to return commands without the disabled one
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [mockSlashCommands[1]], // Only /weather
+			total: 1,
+		});
 
-		// Command should be removed immediately
-		expect(slashCommands.commands['/test']).toBeUndefined();
+		streamRef.controller?.emit('apps', [['command/disabled', ['/test']]]);
 
 		// Mutation should be triggered again to refetch
 		await waitFor(() => {
 			expect(mockGetSlashCommands).toHaveBeenCalledTimes(2);
 		});
+
+		// After refetch, disabled command should not be present
+		expect(slashCommands.commands['/test']).toBeUndefined();
+		expect(slashCommands.commands['/weather']).toBeDefined();
 	});
 
 	it('should handle command/added event by refetching commands', async () => {
