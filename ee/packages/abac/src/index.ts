@@ -641,7 +641,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 						Room.removeUserFromRoom(rid, doc, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}).then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change')),
+						})
+							.then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change'))
+							.catch((err) => {
+								this.logger.error({
+									msg: 'Failed to remove user from ABAC room after room attributes changed',
+									rid,
+									err,
+								});
+							}),
 					),
 				);
 			}
@@ -685,7 +693,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 							Room.removeUserFromRoom(room._id, user, {
 								skipAppPreEvents: true,
 								customSystemMessage: 'abac-removed-user-from-room' as const,
-							}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
+							})
+								.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
+								.catch((err) => {
+									this.logger.error({
+										msg: 'Failed to remove user from ABAC room after room attributes changed',
+										rid: room._id,
+										err,
+									});
+								}),
 						),
 					);
 				}
@@ -708,7 +724,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 						Room.removeUserFromRoom(room._id, user, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
+						})
+							.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
+							.catch((err) => {
+								this.logger.error({
+									msg: 'Failed to remove user from ABAC room after room attributes changed',
+									rid: room._id,
+									err,
+								});
+							}),
 					),
 				);
 			}
