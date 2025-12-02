@@ -205,4 +205,31 @@ describe('useAppSlashCommands', () => {
 		expect(streamRef.controller).toBeDefined();
 		expect(streamRef.controller?.has('apps')).toBe(false);
 	});
+
+	it('should fetch all commands in batches if total exceeds count', async () => {
+		const largeMockCommands: SlashCommand[] = Array.from({ length: 120 }, (_, i) => ({
+			command: `/command${i + 1}`,
+			description: `Description for command ${i + 1}`,
+			params: '',
+			clientOnly: false,
+			providesPreview: false,
+			appId: `app-${i + 1}`,
+			permission: undefined,
+		}));
+
+		mockGetSlashCommands.mockImplementation(({ offset, count }) => {
+			return Promise.resolve({
+				commands: largeMockCommands.slice(offset, offset + count),
+				total: largeMockCommands.length,
+			});
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withJohnDoe().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).build(),
+		});
+
+		await waitFor(() => {
+			expect(Object.keys(slashCommands.commands)).toHaveLength(largeMockCommands.length);
+		});
+	});
 });
