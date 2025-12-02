@@ -38,7 +38,7 @@ describe('ABACRoomAutocomplete', () => {
 	});
 
 	it('should populate select options correctly', async () => {
-		render(<ABACRoomAutocomplete value='' onChange={jest.fn()} renderRoomIcon={() => null} setSelectedRoom={jest.fn()} />, {
+		render(<ABACRoomAutocomplete value='' onSelectedRoom={jest.fn()} />, {
 			wrapper: appRoot,
 		});
 

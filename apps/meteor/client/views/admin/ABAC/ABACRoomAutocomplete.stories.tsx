@@ -32,9 +32,8 @@ const meta: Meta<typeof ABACRoomAutocomplete> = {
 	],
 	args: {
 		value: '',
-		onChange: action('onChange'),
+		onSelectedRoom: action('onChange'),
 		renderRoomIcon: () => null,
-		setSelectedRoom: action('setSelectedRoom'),
 	},
 };
 

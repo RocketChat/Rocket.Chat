@@ -94,7 +94,10 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: 
 											{...field}
 											error={!!errors.room?.message}
 											aria-labelledby={nameField}
-											setSelectedRoomLabel={setSelectedRoomLabel}
+											onSelectedRoom={(value: string, label: string) => {
+												field.onChange(value);
+												setSelectedRoomLabel(label);
+											}}
 										/>
 									)}
 								/>

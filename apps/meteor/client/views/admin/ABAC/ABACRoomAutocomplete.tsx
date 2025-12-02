@@ -3,8 +3,10 @@ import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps, Dispatch, ReactElement, SetStateAction } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo, useState } from 'react';
+
+import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 const generateQuery = (
 	term = '',
@@ -13,19 +15,18 @@ const generateQuery = (
 	types: string[];
 } => ({ filter: term, types: ['p'] });
 
-type ABACRoomAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+type ABACRoomAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
-	setSelectedRoomLabel: Dispatch<SetStateAction<string>>;
+	onSelectedRoom: (value: string, label: string) => void;
 };
 
-const ABACRoomAutocomplete = ({ value, renderRoomIcon, setSelectedRoomLabel, ...props }: ABACRoomAutocompleteProps) => {
+const ABACRoomAutocomplete = ({ value, renderRoomIcon, onSelectedRoom, ...props }: ABACRoomAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms');
 
 	const result = useQuery({
-		// TODO use querykeys object
-		queryKey: ['roomsAdminRooms', filterDebounced],
+		queryKey: ABACQueryKeys.rooms.roomsAutocomplete(generateQuery(filterDebounced)),
 		queryFn: () => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
 		placeholderData: keepPreviousData,
 		select: (data) =>
@@ -41,9 +42,7 @@ const ABACRoomAutocomplete = ({ value, renderRoomIcon, setSelectedRoomLabel, ...
 		<AutoComplete
 			{...props}
 			onChange={(val) => {
-				props.onChange(val);
-				console.log(val);
-				setSelectedRoomLabel(result.data?.find(({ value }) => value === val)?.label?.name || '');
+				onSelectedRoom(val as string, result.data?.find(({ value }) => value === val)?.label?.name || '');
 			}}
 			value={value}
 			filter={filter}
