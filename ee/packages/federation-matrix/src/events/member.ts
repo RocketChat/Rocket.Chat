@@ -75,6 +75,36 @@ async function getOrCreateFederatedRoom({
 	}
 }
 
+// get the join rule type from the stripped state stored in the unsigned section of the event
+// as per the spec, we must support several types but we only support invite and public for now.
+// in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
+function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' | 'c' | 'd' {
+	const joinRulesState = strippedState?.find((state: PduForType<'m.room.join_rules'>) => state.type === 'm.room.join_rules');
+
+	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
+	if (!joinRulesState) {
+		return 'p';
+	}
+
+	const joinRule = joinRulesState?.content?.join_rule;
+	switch (joinRule) {
+		case 'invite':
+			return 'p';
+		case 'public':
+			return 'c';
+		case 'knock':
+			throw new Error(`Knock join rule is not supported`);
+		case 'knock_restricted':
+			throw new Error(`Knock restricted join rule is not supported`);
+		case 'restricted':
+			throw new Error(`Restricted join rule is not supported`);
+		case 'private':
+			throw new Error(`Private join rule is not supported`);
+		default:
+			throw new Error(`Unknown join rule type: ${joinRule}`);
+	}
+}
+
 async function handleInvite({
 	sender: senderId,
 	state_key: userId,
@@ -92,10 +122,13 @@ async function handleInvite({
 		throw new Error(`Failed to get or create invitee user: ${userId}`);
 	}
 
-	// we are not handling public rooms yet - in the future we should use 'c' for public rooms
-	// as well as should rethink the canAccessRoom authorization logic
-	const roomType = content.membership === 'invite' && content?.is_direct ? 'd' : 'p';
-	const strippedState = unsigned?.invite_room_state;
+	const strippedState = unsigned.invite_room_state;
+
+	const joinRuleType = getJoinRuleType(strippedState);
+
+	// DMs do not have a join rule type (they are treated as invite only rooms),
+	// so we use 'd' for direct messages translation to RC.
+	const roomType = content?.is_direct ? 'd' : joinRuleType;
 
 	const roomOriginDomain = senderId.split(':')?.pop();
 	if (!roomOriginDomain) {
