@@ -1,8 +1,8 @@
+import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import RoomsContextualBar from './RoomsContextualBar';
-import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 type RoomsContextualBarWithDataProps = {

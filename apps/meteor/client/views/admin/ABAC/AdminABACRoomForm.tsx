@@ -1,6 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId } from 'react';
@@ -10,7 +10,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import ABACAttributeField from './ABACAttributeField';
 import ABACRoomAutocomplete from './ABACRoomAutocomplete';
 import ABACRoomAutocompleteDummy from './ABACRoomAutocompleteDummy';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
 type AdminABACRoomFormProps = {
 	onClose: () => void;

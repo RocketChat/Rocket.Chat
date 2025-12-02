@@ -1,4 +1,5 @@
 import { ContextualbarTitle } from '@rocket.chat/fuselage';
+import { ContextualbarClose, ContextualbarHeader } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -6,7 +7,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACRoomForm from './AdminABACRoomForm';
-import { ContextualbarClose, ContextualbarHeader } from '../../../components/Contextualbar';
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 type RoomsContextualBarProps = {

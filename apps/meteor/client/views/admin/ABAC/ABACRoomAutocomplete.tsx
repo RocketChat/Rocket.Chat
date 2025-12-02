@@ -1,9 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 
 import { ABACQueryKeys } from '../../../lib/queryKeys';
@@ -16,11 +15,10 @@ const generateQuery = (
 } => ({ filter: term, types: ['p'] });
 
 type ABACRoomAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
-	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
 	onSelectedRoom: (value: string, label: string) => void;
 };
 
-const ABACRoomAutocomplete = ({ value, renderRoomIcon, onSelectedRoom, ...props }: ABACRoomAutocompleteProps) => {
+const ABACRoomAutocomplete = ({ value, onSelectedRoom, ...props }: ABACRoomAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms');
@@ -52,7 +50,6 @@ const ABACRoomAutocomplete = ({ value, renderRoomIcon, onSelectedRoom, ...props 
 					<Box margin='none' mi={2}>
 						{label?.name}
 					</Box>
-					{renderRoomIcon?.({ ...label })}
 				</>
 			)}
 			renderItem={({ label, ...props }) => <Option {...props} label={label.name} />}
