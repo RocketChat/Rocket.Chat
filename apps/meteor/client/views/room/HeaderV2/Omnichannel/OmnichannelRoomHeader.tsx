@@ -20,7 +20,7 @@ const OmnichannelRoomHeader = () => {
 
 	const slots = useMemo(
 		() => ({
-			start: (currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
+			start: currentRouteName === 'omnichannel-directory' && (
 				<HeaderToolbar>
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>

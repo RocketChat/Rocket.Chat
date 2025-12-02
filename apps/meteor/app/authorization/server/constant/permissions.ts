@@ -157,10 +157,6 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 	},
 	{
-		_id: 'view-livechat-current-chats',
-		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
-	},
-	{
 		_id: 'view-livechat-real-time-monitoring',
 		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 	},

@@ -4,12 +4,12 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import RemoveChatButton from './RemoveChatButton';
 import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
 import RoomActivityIcon from '../../../components/RoomActivityIcon';
-import RemoveChatButton from '../../../currentChats/RemoveChatButton';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import { PriorityIcon } from '../../../priorities/PriorityIcon';

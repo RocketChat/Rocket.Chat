@@ -56,10 +56,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/omnichannel/triggers/:context?/:id?';
 			pathname: `/omnichannel/triggers${`/${string}` | ''}${`/${string}` | ''}`;
 		};
-		'omnichannel-current-chats': {
-			pattern: '/omnichannel/current/:id?/:tab?/:context?';
-			pathname: `/omnichannel/current${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
-		};
 		'omnichannel-departments': {
 			pattern: '/omnichannel/departments/:context?/:id?/:tab?';
 			pathname: `/omnichannel/departments${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
@@ -153,11 +149,6 @@ registerOmnichannelRoute('/tags/:context?/:id?', {
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
 	component: lazy(() => import('./triggers/TriggersRoute')),
-});
-
-registerOmnichannelRoute('/current/:id?/:tab?/:context?', {
-	name: 'omnichannel-current-chats',
-	component: lazy(() => import('./currentChats/CurrentChatsRoute')),
 });
 
 registerOmnichannelRoute('/departments/:context?/:id?/:tab?', {

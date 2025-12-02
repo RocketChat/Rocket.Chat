@@ -8,12 +8,6 @@ export const {
 	subscribeToSidebarItems: subscribeToOmnichannelSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/omnichannel/current',
-		icon: 'message',
-		i18nLabel: 'Current_Chats',
-		permissionGranted: (): boolean => hasPermission('view-livechat-current-chats'),
-	},
-	{
 		href: '/omnichannel/analytics',
 		icon: 'dashboard',
 		i18nLabel: 'Analytics',

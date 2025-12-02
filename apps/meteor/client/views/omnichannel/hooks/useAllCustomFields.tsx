@@ -3,6 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+// TODO: this should be used across all omnichannel custom fields usages
 export const useAllCustomFields = (): UseQueryResult<OperationResult<'GET', '/v1/livechat/custom-fields'>> => {
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 

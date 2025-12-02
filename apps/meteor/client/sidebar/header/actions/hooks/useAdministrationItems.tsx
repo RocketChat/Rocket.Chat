@@ -43,7 +43,7 @@ export const useAdministrationItems = (): GenericMenuItemProps[] => {
 		id: 'omnichannel',
 		content: t('Omnichannel'),
 		icon: 'headset',
-		onClick: () => router.navigate('/omnichannel/current'),
+		onClick: () => router.navigate('/omnichannel'),
 	};
 
 	const workspaceItem: GenericMenuItemProps = {

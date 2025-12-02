@@ -39,7 +39,7 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
+			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
 				<HeaderToolbar>
 					{isMobile && <SidebarToggler />}
 					<BackButton routeName={currentRouteName} />

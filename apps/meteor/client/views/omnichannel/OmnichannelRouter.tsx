@@ -20,7 +20,7 @@ const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement =
 					return;
 				}
 
-				router.navigate({ name: 'omnichannel-current-chats' }, { replace: true });
+				router.navigate({ name: 'omnichannel-analytics' }, { replace: true });
 			}),
 		[router],
 	);
