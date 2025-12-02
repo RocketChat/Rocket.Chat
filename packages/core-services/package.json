@@ -35,7 +35,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.3.2",
+		"@rocket.chat/federation-sdk": "0.3.3",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/icons": "~0.45.0",
 		"@rocket.chat/media-signaling": "workspace:^",
