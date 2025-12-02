@@ -1,7 +1,16 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
-import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
+import {
+	VirtualizedScrollbars,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarEmptyContent,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +19,6 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
-import {
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarContent,
-	ContextualbarEmptyContent,
-	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
 
 type RoomFilesProps = {
 	loading: boolean;

@@ -1,7 +1,8 @@
 import { ContextualbarV2Footer, ContextualbarFooter as ContextualbarFooterComponent } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
 
 const ContextualbarFooter = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarFooterComponent>>(
 	function ContextualbarFooter(props, ref) {

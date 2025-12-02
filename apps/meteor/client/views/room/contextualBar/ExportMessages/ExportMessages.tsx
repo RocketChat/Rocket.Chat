@@ -15,6 +15,15 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import {
+	ContextualbarHeader,
+	ContextualbarScrollableContent,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarFooter,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -24,15 +33,6 @@ import { useDownloadExportMutation } from './useDownloadExportMutation';
 import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
-import {
-	ContextualbarHeader,
-	ContextualbarScrollableContent,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarFooter,
-	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
