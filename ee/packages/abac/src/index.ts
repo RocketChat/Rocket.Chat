@@ -10,6 +10,16 @@ import pLimit from 'p-limit';
 
 import { Audit } from './audit';
 import {
+	AbacAttributeInUseError,
+	AbacAttributeNotFoundError,
+	AbacCannotConvertDefaultRoomToAbacError,
+	AbacDuplicateAttributeKeyError,
+	AbacInvalidAttributeValuesError,
+	AbacRoomNotFoundError,
+	AbacUnsupportedObjectTypeError,
+	AbacUnsupportedOperationError,
+} from './errors';
+import {
 	diffAttributes,
 	extractAttribute,
 	didAttributesChange,
@@ -85,7 +95,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor): Promise<void> {
 		if (!attribute.values.length) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		try {
@@ -93,7 +103,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			void Audit.attributeCreated(attribute, actor);
 		} catch (e) {
 			if (e instanceof Error && e.message.includes('E11000')) {
-				throw new Error('error-duplicate-attribute-key');
+				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;
 		}
@@ -205,11 +215,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		if (update.values && !update.values.length) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const newKey = update.key ?? existing.key;
@@ -223,7 +233,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (keyChanged || valuesToCheck.length) {
 			const inUse = await Rooms.isAbacAttributeInUse(existing.key, valuesToCheck.length ? valuesToCheck : existing.values);
 			if (inUse) {
-				throw new Error('error-attribute-in-use');
+				throw new AbacAttributeInUseError();
 			}
 		}
 
@@ -244,7 +254,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			void Audit.attributeUpdated(existing, modifier as IAbacAttributeDefinition, actor);
 		} catch (e) {
 			if (e instanceof Error && e.message.includes('E11000')) {
-				throw new Error('error-duplicate-attribute-key');
+				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;
 		}
@@ -253,12 +263,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async deleteAbacAttributeById(_id: string, actor: AbacActor): Promise<void> {
 		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		const inUse = await Rooms.isAbacAttributeInUse(existing.key, existing.values);
 		if (inUse) {
-			throw new Error('error-attribute-in-use');
+			throw new AbacAttributeInUseError();
 		}
 
 		await AbacAttributes.removeById(_id);
@@ -268,7 +278,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }> {
 		const attribute = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!attribute) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		const usageEntries = await Promise.all(
@@ -301,10 +311,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
 		});
 		if (!room) {
-			throw new Error('error-room-not-found');
+			throw new AbacRoomNotFoundError();
 		}
 		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
+			throw new AbacCannotConvertDefaultRoomToAbacError();
 		}
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
@@ -333,11 +343,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
 		});
 		if (!room) {
-			throw new Error('error-room-not-found');
+			throw new AbacRoomNotFoundError();
 		}
 
 		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
+			throw new AbacCannotConvertDefaultRoomToAbacError();
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
@@ -345,7 +355,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const existingIndex = previous.findIndex((a) => a.key === key);
 		const isNewKey = existingIndex === -1;
 		if (isNewKey && previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		await ensureAttributeDefinitionsExist([{ key, values }]);
@@ -391,11 +401,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			projection: { abacAttributes: 1, default: 1, teamDefault: 1, name: 1 },
 		});
 		if (!room) {
-			throw new Error('error-room-not-found');
+			throw new AbacRoomNotFoundError();
 		}
 
 		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
+			throw new AbacCannotConvertDefaultRoomToAbacError();
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
@@ -431,20 +441,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
 		});
 		if (!room) {
-			throw new Error('error-room-not-found');
+			throw new AbacRoomNotFoundError();
 		}
 
 		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
+			throw new AbacCannotConvertDefaultRoomToAbacError();
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
-			throw new Error('error-duplicate-attribute-key');
+			throw new AbacDuplicateAttributeKeyError();
 		}
 
 		if (previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
@@ -464,11 +474,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
 		});
 		if (!room) {
-			throw new Error('error-room-not-found');
+			throw new AbacRoomNotFoundError();
 		}
 
 		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
+			throw new AbacCannotConvertDefaultRoomToAbacError();
 		}
 
 		const exists = room?.abacAttributes?.some((a) => a.key === key);
@@ -492,7 +502,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		if (room?.abacAttributes?.length === MAX_ABAC_ATTRIBUTE_KEYS) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
@@ -546,11 +556,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	) {
 		// We may need this flex for phase 2, but for now only ROOM/READ is supported
 		if (objectType !== AbacObjectType.ROOM) {
-			throw new Error('error-abac-unsupported-object-type');
+			throw new AbacUnsupportedObjectTypeError();
 		}
 
 		if (action !== AbacAccessOperation.READ) {
-			throw new Error('error-abac-unsupported-operation');
+			throw new AbacUnsupportedOperationError();
 		}
 
 		if (!user?._id || !room?.abacAttributes?.length) {

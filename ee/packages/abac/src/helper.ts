@@ -1,6 +1,8 @@
 import type { ILDAPEntry, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { AbacAttributes } from '@rocket.chat/models';
 
+import { AbacAttributeDefinitionNotFoundError, AbacInvalidAttributeKeyError, AbacInvalidAttributeValuesError } from './errors';
+
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
 
@@ -116,13 +118,13 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 		const key = rawKey.trim();
 
 		if (!key.length || !keyPattern.test(key)) {
-			throw new Error('error-invalid-attribute-key');
+			throw new AbacInvalidAttributeKeyError();
 		}
 
 		const bucket = aggregated.get(key) ?? new Set<string>();
 		if (!aggregated.has(key)) {
 			if (aggregated.size >= MAX_ABAC_ATTRIBUTE_KEYS) {
-				throw new Error('error-invalid-attribute-values');
+				throw new AbacInvalidAttributeValuesError();
 			}
 			aggregated.set(key, bucket);
 		}
@@ -136,19 +138,19 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 				continue;
 			}
 			if (bucket.size >= MAX_ABAC_ATTRIBUTE_VALUES && !bucket.has(trimmed)) {
-				throw new Error('error-invalid-attribute-values');
+				throw new AbacInvalidAttributeValuesError();
 			}
 			bucket.add(trimmed);
 		}
 	}
 
 	if (aggregated.size > MAX_ABAC_ATTRIBUTE_KEYS) {
-		throw new Error('error-invalid-attribute-values');
+		throw new AbacInvalidAttributeValuesError();
 	}
 
 	for (const [key, valueSet] of aggregated.entries()) {
 		if (!valueSet.size) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 		normalized.push({ key, values: Array.from(valueSet) });
 	}
@@ -166,17 +168,17 @@ export async function ensureAttributeDefinitionsExist(normalized: IAbacAttribute
 
 	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
 	if (definitionValuesMap.size !== uniqueKeys.length) {
-		throw new Error('error-attribute-definition-not-found');
+		throw new AbacAttributeDefinitionNotFoundError();
 	}
 
 	for (const a of normalized) {
 		const allowed = definitionValuesMap.get(a.key);
 		if (!allowed) {
-			throw new Error('error-attribute-definition-not-found');
+			throw new AbacAttributeDefinitionNotFoundError();
 		}
 		for (const v of a.values) {
 			if (!allowed.has(v)) {
-				throw new Error('error-invalid-attribute-values');
+				throw new AbacInvalidAttributeValuesError();
 			}
 		}
 	}
