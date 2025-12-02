@@ -167,7 +167,6 @@ export async function findPaginatedUsersByStatus({
 	}
 
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
-	const canSeeExtension = canSeeAllUserInfo || (await hasPermissionAsync(uid, 'view-user-voip-extension'));
 
 	const projection = {
 		name: 1,
@@ -181,7 +180,7 @@ export async function findPaginatedUsersByStatus({
 		type: 1,
 		reason: 1,
 		federated: 1,
-		...(canSeeExtension ? { freeSwitchExtension: 1 } : {}),
+		freeSwitchExtension: 1,
 	};
 
 	if (searchTerm?.trim()) {

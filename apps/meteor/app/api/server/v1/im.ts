@@ -385,12 +385,6 @@ API.v1.addRoute(
 				...(status && { status: { $in: status } }),
 			};
 
-			const canSeeExtension = await hasAtLeastOnePermissionAsync(
-				this.userId,
-				['view-full-other-user-info', 'view-user-voip-extension'],
-				room._id,
-			);
-
 			const options: FindOptions<IUser> = {
 				projection: {
 					_id: 1,
@@ -400,7 +394,7 @@ API.v1.addRoute(
 					statusText: 1,
 					utcOffset: 1,
 					federated: 1,
-					...(canSeeExtension && { freeSwitchExtension: 1 }),
+					freeSwitchExtension: 1,
 				},
 				skip: offset,
 				limit: count,

@@ -17,10 +17,6 @@ export const canEditExtension = async (userId: string, newExtension?: string) =>
 		return false;
 	}
 
-	if (!(await hasPermissionAsync(userId, 'manage-voip-extensions'))) {
-		return false;
-	}
-
 	if (newExtension && (await Users.findOneByFreeSwitchExtension(newExtension, { projection: { _id: 1 } }))) {
 		throw new MeteorError('error-extension-not-available', 'Extension is already assigned to another user');
 	}

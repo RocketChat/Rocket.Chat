@@ -21,7 +21,7 @@ import {
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
-import { useVoipExtensionPermission } from '../useVoipExtensionPermission';
+import { useShowVoipExtension } from '../useShowVoipExtension';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;
@@ -59,7 +59,7 @@ const UsersTable = ({
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const showVoipExtension = useShowVoipExtension();
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
@@ -138,7 +138,7 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			tab === 'all' && canManageVoipExtension && (
+			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
 					w='x180'
 					key='freeSwitchExtension'
@@ -154,7 +154,7 @@ const UsersTable = ({
 				{t('Actions')}
 			</GenericTableHeaderCell>,
 		],
-		[sortData, t, isLaptop, tab, isMobile, canManageVoipExtension],
+		[sortData, t, isLaptop, tab, isMobile, showVoipExtension],
 	);
 
 	return (
@@ -196,7 +196,7 @@ const UsersTable = ({
 									isMobile={isMobile}
 									isLaptop={isLaptop}
 									isSeatsCapExceeded={isSeatsCapExceeded}
-									showVoipExtension={canManageVoipExtension}
+									showVoipExtension={showVoipExtension}
 									onReload={onReload}
 									onClick={handleClickOrKeyDown}
 								/>
