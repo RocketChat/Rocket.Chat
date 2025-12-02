@@ -143,7 +143,6 @@ export const performAddUserToRoom = async (
 		}
 	}
 
-
 	if (room.teamMain && room.teamId) {
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
 	}
