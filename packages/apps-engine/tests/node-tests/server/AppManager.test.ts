@@ -2,7 +2,7 @@ import * as assert from 'node:assert';
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 
 import { AppManager } from '../../../src/server/AppManager';
-import type { AppBridges } from '../../../src/server/bridges';
+import { AppBridges } from '../../../src/server/bridges';
 import { AppCompiler, AppPackageParser } from '../../../src/server/compiler';
 import {
 	AppAccessorManager,
@@ -152,9 +152,7 @@ describe('AppManager', () => {
 		// Mock the apps Map to return our mock app
 		(manager as any).apps = new Map([['test-app', TestData.getMockApp(TestData.getAppStorageItem(), manager)]]);
 
-		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () =>
-			Promise.resolve(),
-		);
+		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () => Promise.resolve());
 
 		// Should not throw and complete successfully
 		await manager.updateAppsMarketplaceInfo(appsOverview);
@@ -176,9 +174,7 @@ describe('AppManager', () => {
 		// Mock the apps Map to return our mock app
 		(manager as any).apps = new Map([['test-app', TestData.getMockApp(TestData.getAppStorageItem(), manager)]]);
 
-		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () =>
-			Promise.resolve(),
-		);
+		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () => Promise.resolve());
 
 		// Should not throw and complete successfully
 		await manager.updateAppsMarketplaceInfo(appsOverview);
@@ -214,9 +210,7 @@ describe('AppManager', () => {
 			}),
 		);
 
-		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () =>
-			Promise.resolve(),
-		);
+		const updatePartialAndReturnDocumentSpy = mock.method(manager.getStorage(), 'updatePartialAndReturnDocument', () => Promise.resolve());
 
 		// Should not throw and complete successfully
 		await manager.updateAppsMarketplaceInfo(appsOverview);
