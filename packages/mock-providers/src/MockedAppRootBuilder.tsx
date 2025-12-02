@@ -50,7 +50,7 @@ import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
-import type { ObjectId } from 'mongodb';
+import type { Filter, ObjectId } from 'mongodb';
 import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
 import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
@@ -149,7 +149,10 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
+		querySubscription: (query: Filter<Pick<ISubscription, 'rid' | 'name'>>) => [
+			() => () => undefined,
+			() => this.subscriptions?.find((sub) => sub.rid === query.rid || sub.name === query.name),
+		],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions ?? []], // apply query and option
 		user: null,
 		userId: undefined,
