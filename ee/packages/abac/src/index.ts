@@ -636,13 +636,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const userRemovalPromises = [];
 			for await (const doc of cursor) {
 				usersToRemove.push(doc._id);
-				void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change');
 				userRemovalPromises.push(
 					limit(() =>
 						Room.removeUserFromRoom(rid, doc, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}),
+						}).then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change')),
 					),
 				);
 			}
@@ -681,13 +680,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 				const removalPromises: Promise<void>[] = [];
 				for await (const room of cursor) {
-					void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync');
 					removalPromises.push(
 						limit(() =>
 							Room.removeUserFromRoom(room._id, user, {
 								skipAppPreEvents: true,
 								customSystemMessage: 'abac-removed-user-from-room' as const,
-							}),
+							}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
 						),
 					);
 				}
