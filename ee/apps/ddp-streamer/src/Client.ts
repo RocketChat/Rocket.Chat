@@ -201,6 +201,7 @@ export class Client extends EventEmitter {
 		try {
 			const packet = server.parse(payload, isBinary);
 			this.emit('message', packet);
+			server.emit(DDP_EVENTS.MESSAGE, this);
 			if (this.wait) {
 				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
 			}

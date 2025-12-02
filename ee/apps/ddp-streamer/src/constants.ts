@@ -16,6 +16,7 @@ export const DDP_EVENTS = {
 	CHANGED: 'changed',
 	REMOVED: 'removed',
 	RESUME: 'resume',
+	MESSAGE: 'message',
 	RESULT: 'result',
 	METHOD: 'method',
 	UPDATED: 'updated',

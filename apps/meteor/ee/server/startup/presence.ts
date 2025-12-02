@@ -4,20 +4,25 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
-const lastWrite = new Map<string, number>();
+const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
+const lastConnectionStatusUpdate = new Map<string, number>();
 
-// throttle presence updates to avoid excessive writes
-const updateConnectionStatus = (userId: string, connectionId: string) => {
+const shouldUpdateConnectionStatus = (userId: string, connectionId: string): boolean => {
 	const key = `${userId}-${connectionId}`;
 	const now = Date.now();
-	const last = lastWrite.get(key) || 0;
-
-	if (now - last > 60000) {
-		lastWrite.set(key, now);
-		return Presence.setConnectionStatus(userId, connectionId);
+	const last = lastConnectionStatusUpdate.get(key) ?? 0;
+	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
+		return false;
 	}
+	lastConnectionStatusUpdate.set(key, now);
+	return true;
+};
 
-	return Promise.resolve();
+const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
+	if (!shouldUpdateConnectionStatus(userId, connectionId)) {
+		return;
+	}
+	await Presence.setConnectionStatus(userId, connectionId);
 };
 
 // update connections count every 30 seconds

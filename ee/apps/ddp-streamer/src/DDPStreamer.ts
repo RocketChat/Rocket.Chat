@@ -18,6 +18,27 @@ import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer
 
 const { PORT = 4000 } = process.env;
 
+const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
+const lastConnectionStatusUpdate = new Map<string, number>();
+
+const shouldUpdateConnectionStatus = (userId: string, connectionId: string): boolean => {
+	const key = `${userId}-${connectionId}`;
+	const now = Date.now();
+	const last = lastConnectionStatusUpdate.get(key) ?? 0;
+	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
+		return false;
+	}
+	lastConnectionStatusUpdate.set(key, now);
+	return true;
+};
+
+const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
+	if (!shouldUpdateConnectionStatus(userId, connectionId)) {
+		return;
+	}
+	await Presence.setConnectionStatus(userId, connectionId);
+};
+
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -216,12 +237,12 @@ export class DDPStreamer extends ServiceClass {
 			this.api?.broadcast('socket.connected', connection);
 		});
 
-		server.on(DDP_EVENTS.PING, (client: Client): void => {
+		server.on(DDP_EVENTS.MESSAGE, (client: Client): void => {
 			const { connection, userId } = client;
 			if (!userId) {
 				return;
 			}
-			Presence.setConnectionStatus(userId, connection.id);
+			void updateConnectionStatus(userId, connection.id);
 		});
 	}
 
