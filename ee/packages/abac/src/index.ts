@@ -1,7 +1,7 @@
 import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry, ISubscription } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -31,6 +31,7 @@ import {
 	ensureAttributeDefinitionsExist,
 	buildRoomNonCompliantConditionsFromSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
+	getAbacRoom,
 } from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -305,17 +306,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new AbacRoomNotFoundError();
-		}
-		if (room.default || room.teamDefault) {
-			throw new AbacCannotConvertDefaultRoomToAbacError();
-		}
+		const room = await getAbacRoom(rid);
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
@@ -337,18 +328,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new AbacRoomNotFoundError();
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new AbacCannotConvertDefaultRoomToAbacError();
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
@@ -397,16 +377,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default' | 'name'>>(rid, 'p', {
-			projection: { abacAttributes: 1, default: 1, teamDefault: 1, name: 1 },
-		});
-		if (!room) {
-			throw new AbacRoomNotFoundError();
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new AbacCannotConvertDefaultRoomToAbacError();
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
@@ -435,18 +406,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new AbacRoomNotFoundError();
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new AbacCannotConvertDefaultRoomToAbacError();
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
@@ -468,18 +428,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new AbacRoomNotFoundError();
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new AbacCannotConvertDefaultRoomToAbacError();
-		}
+		const room = await getAbacRoom(rid);
 
 		const exists = room?.abacAttributes?.some((a) => a.key === key);
 
@@ -548,6 +497,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
+	private shouldUseCache(decisionCacheTimeout: number, userSub: ISubscription) {
+		// Cases:
+		// 1) Never checked before -> check now
+		// 2) Checked before, but cache expired -> check now
+		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
+		// 4) Cache disabled (0) -> always check
+		return (
+			decisionCacheTimeout > 0 &&
+			userSub.abacLastTimeChecked &&
+			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
+		);
+	}
+
 	async canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
@@ -573,16 +535,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
-		// Cases:
-		// 1) Never checked before -> check now
-		// 2) Checked before, but cache expired -> check now
-		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
-		// 4) Cache disabled (0) -> always check
-		if (
-			decisionCacheTimeout > 0 &&
-			userSub.abacLastTimeChecked &&
-			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
-		) {
+		if (this.shouldUseCache(decisionCacheTimeout, userSub)) {
 			this.logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
 			return !!userSub;
 		}

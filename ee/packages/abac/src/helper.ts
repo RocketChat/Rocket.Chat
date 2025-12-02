@@ -1,7 +1,13 @@
-import type { ILDAPEntry, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { AbacAttributes } from '@rocket.chat/models';
+import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import { AbacAttributes, Rooms } from '@rocket.chat/models';
 
-import { AbacAttributeDefinitionNotFoundError, AbacInvalidAttributeKeyError, AbacInvalidAttributeValuesError } from './errors';
+import {
+	AbacAttributeDefinitionNotFoundError,
+	AbacCannotConvertDefaultRoomToAbacError,
+	AbacInvalidAttributeKeyError,
+	AbacInvalidAttributeValuesError,
+	AbacRoomNotFoundError,
+} from './errors';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
@@ -166,7 +172,7 @@ export async function ensureAttributeDefinitionsExist(normalized: IAbacAttribute
 	const uniqueKeys = [...new Set(normalized.map((a) => a.key))];
 	const attributeDefinitions = await AbacAttributes.find({ key: { $in: uniqueKeys } }, { projection: { key: 1, values: 1 } }).toArray();
 
-	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
+	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def) => [def.key, new Set(def.values)]));
 	if (definitionValuesMap.size !== uniqueKeys.length) {
 		throw new AbacAttributeDefinitionNotFoundError();
 	}
@@ -255,4 +261,22 @@ export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IA
 		});
 	}
 	return conditions;
+}
+
+export async function getAbacRoom(
+	rid: string,
+): Promise<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>> {
+	const room = await Rooms.findOneByIdAndType<
+		Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
+	>(rid, 'p', {
+		projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+	});
+	if (!room) {
+		throw new AbacRoomNotFoundError();
+	}
+	if (room.default || room.teamDefault) {
+		throw new AbacCannotConvertDefaultRoomToAbacError();
+	}
+
+	return room;
 }

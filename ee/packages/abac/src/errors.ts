@@ -74,12 +74,6 @@ export class AbacCannotConvertDefaultRoomToAbacError extends AbacError {
 	}
 }
 
-export class AbacUsernamesNotMatchingAttributesError extends AbacError {
-	constructor(details?: unknown) {
-		super(AbacErrorCode.UsernamesNotMatchingAbacAttributes, details);
-	}
-}
-
 export class AbacUnsupportedObjectTypeError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.AbacUnsupportedObjectType, details);
