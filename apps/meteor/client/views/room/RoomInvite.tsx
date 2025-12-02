@@ -1,12 +1,12 @@
-import type { ComponentProps } from 'react';
 import type { ISubscription } from '@rocket.chat/core-typings';
+import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import RoomHeader from './RoomHeader';
 import RoomInviteBody from './body/RoomInviteBody';
+import type { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
 import RoomLayout from './layout/RoomLayout';
-import { useTranslation } from 'react-i18next';
-import { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 
 type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
 	room: IRoomWithFederationOriginalName;
