@@ -127,11 +127,11 @@ export async function ensureAttributeDefinitionsExist(normalized: IAbacAttribute
 		return;
 	}
 
-	const keys = normalized.map((a) => a.key);
-	const attributeDefinitions = await AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
+	const uniqueKeys = [...new Set(normalized.map((a) => a.key))];
+	const attributeDefinitions = await AbacAttributes.find({ key: { $in: uniqueKeys } }, { projection: { key: 1, values: 1 } }).toArray();
 
 	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
-	if (definitionValuesMap.size !== keys.length) {
+	if (definitionValuesMap.size !== uniqueKeys.length) {
 		throw new Error('error-attribute-definition-not-found');
 	}
 
