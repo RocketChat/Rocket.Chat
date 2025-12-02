@@ -81,43 +81,6 @@ export function addSettings(): Promise<void> {
 						enableQuery,
 					});
 				});
-
-				await this.section('VoIP_TeamCollab_FreeSwitch', async function () {
-					await this.add('VoIP_TeamCollab_FreeSwitch_Host', '', {
-						type: 'string',
-						public: false,
-						invalidValue: '',
-						enableQuery,
-					});
-
-					await this.add('VoIP_TeamCollab_FreeSwitch_Port', 8021, {
-						type: 'int',
-						public: false,
-						invalidValue: 8021,
-						enableQuery,
-					});
-
-					await this.add('VoIP_TeamCollab_FreeSwitch_Password', '', {
-						type: 'password',
-						secret: true,
-						invalidValue: '',
-						enableQuery,
-					});
-
-					await this.add('VoIP_TeamCollab_FreeSwitch_Timeout', 3000, {
-						type: 'int',
-						public: true,
-						invalidValue: 3000,
-						enableQuery,
-					});
-
-					await this.add('VoIP_TeamCollab_FreeSwitch_WebSocket_Path', '', {
-						type: 'string',
-						public: true,
-						invalidValue: '',
-						enableQuery,
-					});
-				});
 			},
 		);
 	});
