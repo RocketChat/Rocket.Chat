@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 
-import type { AppOutboundCommunicationProviderManager } from '../../../../server/managers/AppOutboundCommunicationProviderManager';
+import type { AppOutboundCommunicationProviderManager } from '../../../../src/server/managers/AppOutboundCommunicationProviderManager';
 import type { AppManager } from '../../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../../src/server/bridges';
@@ -53,6 +53,10 @@ describe('AppAccessorManager', () => {
 				return {} as AppOutboundCommunicationProviderManager;
 			},
 		} as unknown as AppManager;
+	});
+
+	afterEach(() => {
+		mock.restoreAll();
 	});
 
 	it('basicAppAccessorManager', () => {
