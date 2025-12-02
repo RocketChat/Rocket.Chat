@@ -2,11 +2,12 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import GenericModal from '@rocket.chat/ui-client/dist/components/Modal/GenericModal';
-import { useRouter, useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
 import useIsABACAvailable from './useIsABACAvailable';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps[] => {
@@ -14,7 +15,6 @@ const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps
 	const router = useRouter();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
-	const deleteRoom = useEndpoint('DELETE', '/v1/abac/rooms/:rid/attributes', { rid: room.rid });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isABACAvailable = useIsABACAvailable();
 
@@ -32,8 +32,8 @@ const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps
 		);
 	});
 
-	const deleteMutation = useMutation({
-		mutationFn: deleteRoom,
+	const deleteMutation = useEndpointMutation('DELETE', '/v1/abac/rooms/:rid/attributes', {
+		keys: { rid: room.rid },
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_removed', { roomName: room.name }) });
 		},
