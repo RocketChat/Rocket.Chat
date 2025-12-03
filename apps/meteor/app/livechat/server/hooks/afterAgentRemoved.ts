@@ -21,7 +21,6 @@ callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
 				operator: false,
 				livechat: null,
 				statusLivechat: null,
-				extension: null,
 				openBusinessHours: null,
 			},
 		});

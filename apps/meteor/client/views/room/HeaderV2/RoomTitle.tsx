@@ -22,10 +22,6 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 				openTab('room-info');
 				break;
 
-			case 'v':
-				openTab('voip-room-info');
-				break;
-
 			case 'd':
 				(room.uids?.length ?? 0) > 2 ? openTab('user-info-group') : openTab('user-info');
 				break;

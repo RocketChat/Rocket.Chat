@@ -22,17 +22,6 @@ export type MessageUrl = {
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
-const VoipMessageTypesValues = [
-	'voip-call-started',
-	'voip-call-declined',
-	'voip-call-on-hold',
-	'voip-call-unhold',
-	'voip-call-ended',
-	'voip-call-duration',
-	'voip-call-wrapup',
-	'voip-call-ended-unexpectedly',
-] as const;
-
 const TeamMessageTypesValues = [
 	'removed-user-from-team',
 	'added-user-to-team',
@@ -100,7 +89,6 @@ const MessageTypes = [
 	'discussion-created',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
-	...VoipMessageTypesValues,
 ] as const;
 export type MessageTypesValues = (typeof MessageTypes)[number];
 
@@ -393,13 +381,6 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	comment?: string;
 }
 
-export type IVoipMessage = IMessage & {
-	voipData: {
-		callDuration?: number;
-		callStarted?: string;
-		callWaitingTime?: string;
-	};
-};
 export interface IMessageDiscussion extends IMessage {
 	drid: RoomID;
 }
@@ -418,7 +399,6 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
-export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
 
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
