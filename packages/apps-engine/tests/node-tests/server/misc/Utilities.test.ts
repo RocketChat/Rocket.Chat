@@ -91,7 +91,7 @@ describe('Utilities', () => {
 		assert.deepStrictEqual(info, testInfo);
 		assert.notStrictEqual(info, testInfo);
 		assert.strictEqual(info.author.name, testInfo.author.name);
-		assert.strictEqual(info.author.name, 'Bradley H'); // was changed on testDeepFreeze
+		assert.strictEqual(info.author.name, 'Bradley H');
 		assert.throws(() => {
 			info.author.name = 'Bradley Hilton';
 		});
