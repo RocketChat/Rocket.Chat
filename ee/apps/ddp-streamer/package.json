@@ -28,7 +28,6 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
-		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",

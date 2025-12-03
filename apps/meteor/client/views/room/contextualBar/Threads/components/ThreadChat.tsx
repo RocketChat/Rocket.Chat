@@ -1,12 +1,12 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { ContextualbarContent } from '@rocket.chat/ui-client';
 import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { callbacks } from '../../../../../../lib/callbacks';
-import { ContextualbarContent } from '../../../../../components/Contextualbar';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
