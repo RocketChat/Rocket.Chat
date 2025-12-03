@@ -20,7 +20,7 @@ async function _setStatusText(
 		updater?: Updater<IUser>;
 		session?: ClientSession;
 		emit?: boolean;
-	},
+	} = {},
 ): Promise<boolean> {
 	if (!userId) {
 		return false;
