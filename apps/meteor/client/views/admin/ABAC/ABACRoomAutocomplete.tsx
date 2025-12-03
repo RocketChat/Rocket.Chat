@@ -46,11 +46,9 @@ const ABACRoomAutocomplete = ({ value, onSelectedRoom, ...props }: ABACRoomAutoc
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { label } }) => (
-				<>
-					<Box margin='none' mi={2}>
-						{label?.name}
-					</Box>
-				</>
+				<Box margin='none' mi={2}>
+					{label?.name}
+				</Box>
 			)}
 			renderItem={({ label, ...props }) => <Option {...props} label={label.name} />}
 			options={result.data}
