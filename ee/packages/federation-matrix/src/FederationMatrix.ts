@@ -896,7 +896,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async handleInvite(roomId: IRoom['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void> {
 		const subscription = await Subscriptions.findInvitedSubscription(roomId, userId);
 		if (!subscription) {
-			throw new Error('User does not have a pending invite for this room');
+			throw new Error('No subscription found or user does not have permission to accept or reject this invite');
 		}
 
 		const room = await Rooms.findOneById(roomId);
