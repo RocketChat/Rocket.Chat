@@ -10,11 +10,10 @@ import {
 	IconButton,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useCallback, useId, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
 export type AdminABACRoomAttributesFormFormData = {
 	name: string;

@@ -1,9 +1,9 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomMembers from './RoomMembers';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	component: RoomMembers,

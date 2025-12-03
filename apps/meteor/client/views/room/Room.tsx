@@ -1,4 +1,4 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
@@ -17,7 +17,6 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 

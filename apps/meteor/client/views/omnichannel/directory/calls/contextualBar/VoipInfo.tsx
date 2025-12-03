@@ -1,13 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import moment from 'moment';
-import type { ReactElement } from 'react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { InfoField } from './InfoField';
-import { VoipInfoCallButton } from './VoipInfoCallButton';
 import {
 	ContextualbarIcon,
 	ContextualbarHeader,
@@ -16,7 +9,14 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import moment from 'moment';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { InfoField } from './InfoField';
+import { VoipInfoCallButton } from './VoipInfoCallButton';
 import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useIsCallReady } from '../../../../../contexts/CallContext';

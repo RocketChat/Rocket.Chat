@@ -1,15 +1,8 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement } from 'react';
-import { useMemo, useState, useCallback } from 'react';
-import { Virtuoso } from 'react-virtuoso';
-
-import ThreadListItem from './components/ThreadListItem';
-import { useThreadsList } from './hooks/useThreadsList';
 import {
+	VirtualizedScrollbars,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarHeader,
@@ -18,7 +11,14 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { FormEvent, ReactElement } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+import { Virtuoso } from 'react-virtuoso';
+
+import ThreadListItem from './components/ThreadListItem';
+import { useThreadsList } from './hooks/useThreadsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { getErrorMessage } from '../../../../lib/errorHandling';
