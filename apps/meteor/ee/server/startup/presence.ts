@@ -7,19 +7,18 @@ import { throttle } from 'underscore';
 const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
 const lastConnectionStatusUpdate = new Map<string, number>();
 
-const shouldUpdateConnectionStatus = (userId: string, connectionId: string): boolean => {
-	const key = `${userId}-${connectionId}`;
+const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
 	const now = Date.now();
-	const last = lastConnectionStatusUpdate.get(key) ?? 0;
+	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
 	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
 		return false;
 	}
-	lastConnectionStatusUpdate.set(key, now);
+	lastConnectionStatusUpdate.set(connectionId, now);
 	return true;
 };
 
 const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
-	if (!shouldUpdateConnectionStatus(userId, connectionId)) {
+	if (!shouldUpdateConnectionStatus(connectionId)) {
 		return;
 	}
 	await Presence.setConnectionStatus(userId, connectionId);
@@ -41,6 +40,7 @@ Meteor.startup(() => {
 				return;
 			}
 
+			lastConnectionStatusUpdate.delete(connection.id);
 			await Presence.removeConnection(session.userId, connection.id, nodeId);
 			updateConns();
 		});
@@ -74,6 +74,7 @@ Meteor.startup(() => {
 	});
 
 	Accounts.onLogout((login): void => {
+		lastConnectionStatusUpdate.delete(login.connection.id);
 		void Presence.removeConnection(login.user?._id, login.connection.id, nodeId);
 
 		updateConns();

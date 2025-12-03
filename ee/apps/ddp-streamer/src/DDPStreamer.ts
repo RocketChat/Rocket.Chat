@@ -21,19 +21,18 @@ const { PORT = 4000 } = process.env;
 const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
 const lastConnectionStatusUpdate = new Map<string, number>();
 
-const shouldUpdateConnectionStatus = (userId: string, connectionId: string): boolean => {
-	const key = `${userId}-${connectionId}`;
+const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
 	const now = Date.now();
-	const last = lastConnectionStatusUpdate.get(key) ?? 0;
+	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
 	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
 		return false;
 	}
-	lastConnectionStatusUpdate.set(key, now);
+	lastConnectionStatusUpdate.set(connectionId, now);
 	return true;
 };
 
 const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
-	if (!shouldUpdateConnectionStatus(userId, connectionId)) {
+	if (!shouldUpdateConnectionStatus(connectionId)) {
 		return;
 	}
 	await Presence.setConnectionStatus(userId, connectionId);
@@ -217,6 +216,7 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
+			lastConnectionStatusUpdate.delete(connection.id);
 			Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
@@ -230,6 +230,7 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
+			lastConnectionStatusUpdate.delete(connection.id);
 			Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
