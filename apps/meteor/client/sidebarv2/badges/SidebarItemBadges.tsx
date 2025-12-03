@@ -20,7 +20,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 
-			{isInviteSubscription(room) && <InvitationBadge />}
+			{isInviteSubscription(room) && <InvitationBadge inviteDate={room.ts.toISOString()} />}
 		</>
 	);
 };

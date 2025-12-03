@@ -20,7 +20,7 @@ const RoomSidePanelItemBadges = ({ room, roomTitle }: RoomSidePanelItemBadgesPro
 
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 
-			{isInviteSubscription(room) && <InvitationBadge />}
+			{isInviteSubscription(room) && <InvitationBadge inviteDate={room.ts.toISOString()} />}
 		</>
 	);
 };
