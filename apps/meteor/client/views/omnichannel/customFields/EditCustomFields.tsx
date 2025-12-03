@@ -14,18 +14,18 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { FormProvider, useForm, Controller } from 'react-hook-form';
-
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarScrollableContent,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { FormProvider, useForm, Controller } from 'react-hook-form';
+
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
 

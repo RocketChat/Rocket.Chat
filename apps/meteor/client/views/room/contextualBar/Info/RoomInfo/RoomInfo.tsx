@@ -1,11 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from 'react-i18next';
-
-import RoomInfoActions from './RoomInfoActions';
 import {
+	GenericMenu,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarBack,
@@ -13,7 +10,10 @@ import {
 	ContextualbarClose,
 	ContextualbarTitle,
 	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import RoomInfoActions from './RoomInfoActions';
 import {
 	InfoPanel,
 	InfoPanelActionGroup,

@@ -2,19 +2,19 @@ import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } 
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
-
-import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
+
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
