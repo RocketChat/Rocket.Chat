@@ -42,14 +42,7 @@ export type useRoomsGroupsReturnType = {
 	};
 };
 
-const updateGroupUnreadInfo = (
-	room: SubscriptionWithRoom | ILivechatInquiryRecord,
-	current: GroupedUnreadInfoData,
-): GroupedUnreadInfoData => {
-	if (isLivechatInquiryRecord(room)) {
-		return getEmptyUnreadInfo();
-	}
-
+const updateGroupUnreadInfo = (room: SubscriptionWithRoom, current: GroupedUnreadInfoData): GroupedUnreadInfoData => {
 	return {
 		...current,
 		userMentions: current.userMentions + (room.userMentions || 0),
@@ -85,9 +78,9 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
 
-			const setGroupRoom = (key: AllGroupsKeys, room: SubscriptionWithRoom | ILivechatInquiryRecord) => {
+			const setGroupRoom = (key: AllGroupsKeys, room: SubscriptionWithRoom) => {
 				const getGroupSet = (key: AllGroupsKeysWithUnread) => {
-					const roomSet = groups.get(key) || new Set<SubscriptionWithRoom | ILivechatInquiryRecord>();
+					const roomSet = groups.get(key) || new Set<SubscriptionWithRoom>();
 					if (!groups.has(key)) {
 						groups.set(key, roomSet);
 					}
