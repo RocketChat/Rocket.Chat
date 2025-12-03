@@ -1,12 +1,4 @@
-import {
-	isDirectMessageRoom,
-	isDiscussion,
-	isLivechatInquiryRecord,
-	isOmnichannelRoom,
-	isPrivateRoom,
-	isPublicRoom,
-	isTeamRoom,
-} from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -19,7 +11,12 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { Rooms } from '../../../stores';
 import { useOmnichannelEnabled } from '../../omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../omnichannel/hooks/useQueuedInquiries';
-import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
+import type {
+	GroupedUnreadInfoData,
+	AllGroupsKeys,
+	AllGroupsKeysWithUnread,
+	RoomsNavigationGroup,
+} from '../contexts/RoomsNavigationContext';
 import {
 	RoomsNavigationContext,
 	getEmptyUnreadInfo,
@@ -56,10 +53,9 @@ const updateGroupUnreadInfo = (room: SubscriptionWithRoom, current: GroupedUnrea
 const hasMention = (room: SubscriptionWithRoom) =>
 	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
 
-type GroupMap = Map<AllGroupsKeysWithUnread, Set<SubscriptionWithRoom | ILivechatInquiryRecord>>;
 type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 
-const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
+const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
@@ -73,7 +69,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 	return useDebouncedValue(
 		useMemo(() => {
-			const groups: GroupMap = new Map();
+			const groups: RoomsNavigationGroup = new Map();
 			showOmnichannel && groups.set('queue', new Set(queue));
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
