@@ -73,6 +73,7 @@ test.describe.serial('Presence', () => {
 
 			await poHomeChannel.sidenav.btnUserProfileMenu.click();
 			await expect(async () => expect(poHomeChannel.sidenav.userProfileMenu).not.toContainText(customStatus)).toPass();
+			throw new Error('test');
 		});
 	});
 
