@@ -12,7 +12,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
-import { useAllCustomFields } from './hooks/useAllCustomFields';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -29,6 +28,7 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { links } from '../../../lib/links';
 import RoomActivityIcon from '../components/RoomActivityIcon';
+import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
 import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../priorities/PriorityIcon';
@@ -138,7 +138,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const { data: allCustomFields } = useAllCustomFields();
+	const { data: allCustomFields } = useCustomFieldsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
