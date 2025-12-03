@@ -1928,7 +1928,7 @@
   "Extra_CSP_Domains": "Extra CSP Domains",
   "Extra_CSP_Domains_Description": "Extra domains to add to the Content-Security-Policy",
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
-  "Enable_encryption" : "Enable encryption",
+  "Enable_encryption": "Enable encryption",
   "Enable_inquiry_fetch_by_stream": "Enable inquiry data fetch from server using a stream",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
   "Enable_Password_History": "Enable Password History",
@@ -6476,5 +6476,15 @@
   "Previous_image": "Previous image",
   "Image_gallery": "Image gallery",
   "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
-  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline"
+  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline",
+  "TeamChats": {
+    "title": "Team Chats",
+    "createRoom": "Create New Room",
+    "sendMessage": "Send Message",
+    "searchMembers": "Search Members",
+    "addParticipant": "Add Participant",
+    "removeParticipant": "Remove Participant",
+    "noMessages": "No messages yet",
+    "typeMessage": "Type a message..."
+  }
 }

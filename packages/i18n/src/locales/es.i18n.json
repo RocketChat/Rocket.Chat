@@ -5082,5 +5082,15 @@
   "Unlock_premium_capabilities": "Desbloquea características premium",
   "Unlimited_seats": "Puestos ilimitados",
   "Unlimited_MACs": "Contactos Activos por Mes (MAC) ilimitados",
-  "Unlimited_seats_MACs": "Puestos y Contactos Activos por Mes (MAC) ilimitados"
+  "Unlimited_seats_MACs": "Puestos y Contactos Activos por Mes (MAC) ilimitados",
+  "TeamChats": {
+    "title": "Chats de Equipo",
+    "createRoom": "Crear Nueva Sala",
+    "sendMessage": "Enviar Mensaje",
+    "searchMembers": "Buscar Miembros",
+    "addParticipant": "Agregar Participante",
+    "removeParticipant": "Eliminar Participante",
+    "noMessages": "Aún no hay mensajes",
+    "typeMessage": "Escribe un mensaje..."
+  }
 }

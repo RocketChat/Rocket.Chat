@@ -213,5 +213,15 @@
   "User_left": "उपयोगकर्ता छोड़ दिया",
   "We_are_offline_Sorry_for_the_inconvenience": "हम ऑफ़लाइन हैं। असुविधा के लिए खेद है।",
   "Yes": "हाँ",
-  "You": "आप"
+  "You": "आप",
+  "TeamChats": {
+    "title": "टीम चैट",
+    "createRoom": "नई रूम बनाएँ",
+    "sendMessage": "संदेश भेजें",
+    "searchMembers": "सदस्यों को खोजें",
+    "addParticipant": "प्रतिभागी जोड़ें",
+    "removeParticipant": "प्रतिभागी हटाएँ",
+    "noMessages": "अभी तक कोई संदेश नहीं",
+    "typeMessage": "संदेश टाइप करें..."
+  }
 }
