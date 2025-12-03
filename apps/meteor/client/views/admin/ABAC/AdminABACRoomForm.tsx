@@ -27,7 +27,7 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: 
 	const {
 		control,
 		handleSubmit,
-		formState: { errors },
+		formState: { isValid, errors },
 	} = useFormContext<AdminABACRoomFormData>();
 
 	const { t } = useTranslation();
@@ -131,7 +131,7 @@ const AdminABACRoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: 
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={!!errors.room?.message} primary>
+					<Button type='submit' form={formId} disabled={!isValid} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
