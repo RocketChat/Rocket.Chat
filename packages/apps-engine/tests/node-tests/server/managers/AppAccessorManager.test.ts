@@ -19,6 +19,18 @@ import { TestsAppBridges } from '../../../test-data/bridges/appBridges';
 describe('AppAccessorManager', () => {
 	let bridges: AppBridges;
 	let manager: AppManager;
+	let spies: {
+		getServerSettingBridge: any;
+		getEnvironmentalVariableBridge: any;
+		getMessageBridge: any;
+		getPersistenceBridge: any;
+		getRoomBridge: any;
+		getUserBridge: any;
+		getBridges: any;
+		getCommandManager: any;
+		getExternalComponentManager: any;
+		getApiManager: any;
+	};
 
 	beforeEach(() => {
 		bridges = new TestsAppBridges();
@@ -55,16 +67,18 @@ describe('AppAccessorManager', () => {
 		} as unknown as AppManager;
 
 		// Set up spies before each test
-		mock.method(bridges, 'getServerSettingBridge');
-		mock.method(bridges, 'getEnvironmentalVariableBridge');
-		mock.method(bridges, 'getMessageBridge');
-		mock.method(bridges, 'getPersistenceBridge');
-		mock.method(bridges, 'getRoomBridge');
-		mock.method(bridges, 'getUserBridge');
-		mock.method(manager, 'getBridges');
-		mock.method(manager, 'getCommandManager');
-		mock.method(manager, 'getExternalComponentManager');
-		mock.method(manager, 'getApiManager');
+		spies = {
+			getServerSettingBridge: mock.method(bridges, 'getServerSettingBridge'),
+			getEnvironmentalVariableBridge: mock.method(bridges, 'getEnvironmentalVariableBridge'),
+			getMessageBridge: mock.method(bridges, 'getMessageBridge'),
+			getPersistenceBridge: mock.method(bridges, 'getPersistenceBridge'),
+			getRoomBridge: mock.method(bridges, 'getRoomBridge'),
+			getUserBridge: mock.method(bridges, 'getUserBridge'),
+			getBridges: mock.method(manager, 'getBridges'),
+			getCommandManager: mock.method(manager, 'getCommandManager'),
+			getExternalComponentManager: mock.method(manager, 'getExternalComponentManager'),
+			getApiManager: mock.method(manager, 'getApiManager'),
+		};
 	});
 
 	afterEach(() => {
@@ -89,9 +103,9 @@ describe('AppAccessorManager', () => {
 		);
 		assert.ok(acm.getConfigurationExtend('testing'));
 
-		assert.strictEqual((manager.getExternalComponentManager as any).mock.calls.length, 1);
-		assert.strictEqual((manager.getCommandManager as any).mock.calls.length, 1);
-		assert.strictEqual((manager.getApiManager as any).mock.calls.length, 1);
+		assert.strictEqual(spies.getExternalComponentManager.mock.calls.length, 1);
+		assert.strictEqual(spies.getCommandManager.mock.calls.length, 1);
+		assert.strictEqual(spies.getApiManager.mock.calls.length, 1);
 	});
 
 	it('environmentRead', () => {
@@ -107,8 +121,8 @@ describe('AppAccessorManager', () => {
 		);
 		assert.ok(acm.getEnvironmentRead('testing'));
 
-		assert.strictEqual((bridges.getServerSettingBridge as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getEnvironmentalVariableBridge as any).mock.calls.length, 1);
+		assert.strictEqual(spies.getServerSettingBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getEnvironmentalVariableBridge.mock.calls.length, 1);
 	});
 
 	it('configurationModify', () => {
@@ -117,8 +131,8 @@ describe('AppAccessorManager', () => {
 		assert.ok(acm.getConfigurationModify('testing'));
 		assert.ok(acm.getConfigurationModify('testing'));
 
-		assert.strictEqual((bridges.getServerSettingBridge as any).mock.calls.length, 1);
-		assert.strictEqual((manager.getCommandManager as any).mock.calls.length, 1);
+		assert.strictEqual(spies.getServerSettingBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getCommandManager.mock.calls.length, 1);
 	});
 
 	it('reader', () => {
@@ -127,12 +141,12 @@ describe('AppAccessorManager', () => {
 		assert.ok(acm.getReader('testing'));
 		assert.ok(acm.getReader('testing'));
 
-		assert.strictEqual((bridges.getServerSettingBridge as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getEnvironmentalVariableBridge as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getPersistenceBridge as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getRoomBridge as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getUserBridge as any).mock.calls.length, 2);
-		assert.strictEqual((bridges.getMessageBridge as any).mock.calls.length, 2);
+		assert.strictEqual(spies.getServerSettingBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getEnvironmentalVariableBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getPersistenceBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getRoomBridge.mock.calls.length, 1);
+		assert.strictEqual(spies.getUserBridge.mock.calls.length, 2);
+		assert.strictEqual(spies.getMessageBridge.mock.calls.length, 2);
 	});
 
 	it('modifier', () => {
@@ -141,8 +155,8 @@ describe('AppAccessorManager', () => {
 		assert.ok(acm.getModifier('testing'));
 		assert.ok(acm.getModifier('testing'));
 
-		assert.strictEqual((manager.getBridges as any).mock.calls.length, 1);
-		assert.strictEqual((bridges.getMessageBridge as any).mock.calls.length, 1);
+		assert.strictEqual(spies.getBridges.mock.calls.length, 1);
+		assert.strictEqual(spies.getMessageBridge.mock.calls.length, 1);
 	});
 
 	it('persistence', () => {
@@ -151,7 +165,7 @@ describe('AppAccessorManager', () => {
 		assert.ok(acm.getPersistence('testing'));
 		assert.ok(acm.getPersistence('testing'));
 
-		assert.strictEqual((bridges.getPersistenceBridge as any).mock.calls.length, 1);
+		assert.strictEqual(spies.getPersistenceBridge.mock.calls.length, 1);
 	});
 
 	it('http', () => {
