@@ -1,7 +1,6 @@
 import * as assert from 'node:assert';
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 
-import type { AppOutboundCommunicationProviderManager } from '../../../../src/server/managers/AppOutboundCommunicationProviderManager';
 import type { AppManager } from '../../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../../src/server/bridges';
@@ -13,6 +12,7 @@ import type {
 	AppVideoConfProviderManager,
 } from '../../../../src/server/managers';
 import { AppAccessorManager } from '../../../../src/server/managers';
+import type { AppOutboundCommunicationProviderManager } from '../../../../src/server/managers/AppOutboundCommunicationProviderManager';
 import type { UIActionButtonManager } from '../../../../src/server/managers/UIActionButtonManager';
 import { TestsAppBridges } from '../../../test-data/bridges/appBridges';
 
@@ -94,13 +94,10 @@ describe('AppAccessorManager', () => {
 		const acm = new AppAccessorManager(manager);
 
 		assert.ok(acm.getConfigurationExtend('testing'));
-		assert.throws(
-			() => acm.getConfigurationExtend('fake'),
-			{
-				name: 'Error',
-				message: 'No App found by the provided id: fake',
-			},
-		);
+		assert.throws(() => acm.getConfigurationExtend('fake'), {
+			name: 'Error',
+			message: 'No App found by the provided id: fake',
+		});
 		assert.ok(acm.getConfigurationExtend('testing'));
 
 		assert.strictEqual(spies.getExternalComponentManager.mock.calls.length, 1);
@@ -112,13 +109,10 @@ describe('AppAccessorManager', () => {
 		const acm = new AppAccessorManager(manager);
 
 		assert.ok(acm.getEnvironmentRead('testing'));
-		assert.throws(
-			() => acm.getEnvironmentRead('fake'),
-			{
-				name: 'Error',
-				message: 'No App found by the provided id: fake',
-			},
-		);
+		assert.throws(() => acm.getEnvironmentRead('fake'), {
+			name: 'Error',
+			message: 'No App found by the provided id: fake',
+		});
 		assert.ok(acm.getEnvironmentRead('testing'));
 
 		assert.strictEqual(spies.getServerSettingBridge.mock.calls.length, 1);
