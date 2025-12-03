@@ -16,9 +16,6 @@ const useABACDeleteRoomModal = (room: { rid: string; name: string }) => {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_removed', { roomName: room.name }) });
 		},
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
 		onSettled: () => {
 			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.rooms.all() });
 			setModal(null);
