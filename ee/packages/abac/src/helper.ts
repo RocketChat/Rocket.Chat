@@ -147,6 +147,7 @@ const getAttributeDefinitionsFromDb = async (keys: string[]) =>
 
 const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
 	maxAge: 30_000,
+	cacheKey: JSON.stringify,
 });
 
 export async function ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {

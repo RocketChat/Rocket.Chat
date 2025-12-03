@@ -69,6 +69,10 @@ jest.mock('@rocket.chat/core-services', () => {
 	};
 });
 
+jest.mock('mem', () => {
+	return jest.fn((fn: any) => fn);
+});
+
 describe('AbacService (unit)', () => {
 	let service: AbacService;
 
