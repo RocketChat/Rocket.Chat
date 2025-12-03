@@ -186,7 +186,11 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>): bool
 	);
 };
 
-export const useSidePanelRoomsListTab = <K extends AllGroupsKeys>(tab: K): Array<RecordTypeBySidebarKey<K>> => {
+export const useSidePanelQueueListTab = (): Array<ILivechatInquiryRecord> => {
+	return Array.from(useRoomsListContext().groups.get('queue') || []);
+};
+
+export const useSidePanelRoomsListTab = <K extends Exclude<AllGroupsKeys, 'queue'>>(tab: K): Array<RecordTypeBySidebarKey<K>> => {
 	const [, unread] = useSidePanelFilter();
 	const roomSet = useRoomsListContext().groups.get(tab);
 
@@ -214,7 +218,7 @@ export const useSidePanelRoomsListTab = <K extends AllGroupsKeys>(tab: K): Array
 			)
 			.flat();
 	}, [roomSet, unread]);
-	return roomsList as Array<RecordTypeBySidebarKey<K>>;
+	return roomsList;
 };
 
 export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread, (filter: AllGroupsKeysWithUnread) => void] => {
