@@ -67,7 +67,7 @@ export class HomeContent {
 	}
 
 	getUserMention(username: string): Locator {
-		return this.page.locator('[data-uid]', { hasText: username });
+		return this.page.locator('[title="Mentions user"]', { hasText: username });
 	}
 
 	getChannelMention(channelName: string): Locator {
