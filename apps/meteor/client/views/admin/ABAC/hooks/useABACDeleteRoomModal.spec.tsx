@@ -134,4 +134,36 @@ describe('useABACDeleteRoomModal', () => {
 			});
 		});
 	});
+
+	// When  in CE, the admins should be able to remove rooms from ABAC management
+	it('should allow deletion even when ABAC is not available', async () => {
+		ABACAvailable = false;
+		const deleteEndpointMock = jest.fn().mockResolvedValue(null);
+
+		let confirmHandler: (() => void) | undefined;
+
+		mockSetModal.mockImplementation((modal) => {
+			if (modal?.props?.onConfirm) {
+				confirmHandler = modal.props.onConfirm;
+			}
+		});
+
+		const { result } = renderHook(() => useABACDeleteRoomModal(mockRoom), {
+			wrapper: baseAppRoot.withEndpoint('DELETE', '/v1/abac/rooms/:rid/attributes', deleteEndpointMock).build(),
+		});
+
+		result.current();
+
+		await waitFor(() => {
+			expect(mockSetModal).toHaveBeenCalled();
+		});
+
+		if (confirmHandler) {
+			confirmHandler();
+		}
+
+		await waitFor(() => {
+			expect(deleteEndpointMock).toHaveBeenCalled();
+		});
+	});
 });
