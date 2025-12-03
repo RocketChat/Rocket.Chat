@@ -4,26 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
-const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
-const lastConnectionStatusUpdate = new Map<string, number>();
-
-const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
-	const now = Date.now();
-	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
-	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
-		return false;
-	}
-	lastConnectionStatusUpdate.set(connectionId, now);
-	return true;
-};
-
-const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
-	if (!shouldUpdateConnectionStatus(connectionId)) {
-		return;
-	}
-	await Presence.setConnectionStatus(userId, connectionId);
-};
-
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
 	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
@@ -40,7 +20,6 @@ Meteor.startup(() => {
 				return;
 			}
 
-			lastConnectionStatusUpdate.delete(connection.id);
 			await Presence.removeConnection(session.userId, connection.id, nodeId);
 			updateConns();
 		});
@@ -63,7 +42,7 @@ Meteor.startup(() => {
 
 		const _messageReceived = session.heartbeat.messageReceived.bind(session.heartbeat);
 		session.heartbeat.messageReceived = function messageReceived() {
-			void updateConnectionStatus(login.user._id, login.connection.id);
+			void Presence.setConnectionStatus(login.user._id, login.connection.id);
 			return _messageReceived();
 		};
 
@@ -74,7 +53,6 @@ Meteor.startup(() => {
 	});
 
 	Accounts.onLogout((login): void => {
-		lastConnectionStatusUpdate.delete(login.connection.id);
 		void Presence.removeConnection(login.user?._id, login.connection.id, nodeId);
 
 		updateConns();

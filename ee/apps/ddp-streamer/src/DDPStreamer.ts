@@ -18,26 +18,6 @@ import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer
 
 const { PORT = 4000 } = process.env;
 
-const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
-const lastConnectionStatusUpdate = new Map<string, number>();
-
-const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
-	const now = Date.now();
-	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
-	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
-		return false;
-	}
-	lastConnectionStatusUpdate.set(connectionId, now);
-	return true;
-};
-
-const updateConnectionStatus = async (userId: string, connectionId: string): Promise<void> => {
-	if (!shouldUpdateConnectionStatus(connectionId)) {
-		return;
-	}
-	await Presence.setConnectionStatus(userId, connectionId);
-};
-
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -216,7 +196,6 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			lastConnectionStatusUpdate.delete(connection.id);
 			Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
@@ -230,7 +209,6 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			lastConnectionStatusUpdate.delete(connection.id);
 			Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
@@ -243,7 +221,7 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			void updateConnectionStatus(userId, connection.id);
+			void Presence.setConnectionStatus(userId, connection.id);
 		});
 	}
 

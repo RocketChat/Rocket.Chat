@@ -7,6 +7,18 @@ import { Settings, Users, UsersSessions } from '@rocket.chat/models';
 import { processPresenceAndStatus } from './processPresenceAndStatus';
 
 const MAX_CONNECTIONS = 200;
+const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
+const lastConnectionStatusUpdate = new Map<string, number>();
+
+const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
+	const now = Date.now();
+	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
+	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
+		return false;
+	}
+	lastConnectionStatusUpdate.set(connectionId, now);
+	return true;
+};
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -20,6 +32,8 @@ export class Presence extends ServiceClass implements IPresence {
 	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
+
+	private staleConInterval?: NodeJS.Timeout;
 
 	private connsPerInstance = new Map<string, number>();
 
@@ -78,6 +92,11 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
 
+		this.staleConInterval = setInterval(async () => {
+			const affectedUsers = await this.removeStaleConnections();
+			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+		}, 10000);
+
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
 
@@ -90,10 +109,12 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async stopped(): Promise<void> {
-		if (!this.lostConTimeout) {
-			return;
+		if (this.lostConTimeout) {
+			clearTimeout(this.lostConTimeout);
 		}
-		clearTimeout(this.lostConTimeout);
+		if (this.staleConInterval) {
+			clearInterval(this.staleConInterval);
+		}
 	}
 
 	async toggleBroadcast(enabled: boolean): Promise<void> {
@@ -141,6 +162,9 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!uid || !session) {
 			return;
 		}
+
+		lastConnectionStatusUpdate.delete(session);
+
 		await UsersSessions.removeConnectionByConnectionId(session);
 
 		await this.updateUserPresence(uid);
@@ -149,6 +173,34 @@ export class Presence extends ServiceClass implements IPresence {
 			uid,
 			session,
 		};
+	}
+
+	async removeStaleConnections(): Promise<string[]> {
+		const cutoff = new Date(Date.now() - CONNECTION_STATUS_UPDATE_INTERVAL);
+		const users = UsersSessions.find({ 'connections._updatedAt': { $lt: cutoff } });
+		const affectedUsers = new Set<string>();
+		for await (const userSession of users) {
+			const staleConnectionIds = userSession.connections.filter((conn) => conn._updatedAt < cutoff).map((conn) => conn.id);
+			if (staleConnectionIds.length === 0) {
+				continue;
+			}
+			const result = await UsersSessions.updateOne(
+				{ _id: userSession._id },
+				{
+					$pull: {
+						connections: { id: { $in: staleConnectionIds } },
+					},
+				},
+			);
+			if (result.modifiedCount > 0) {
+				for (const id of staleConnectionIds) {
+					lastConnectionStatusUpdate.delete(id);
+				}
+				affectedUsers.add(userSession._id);
+			}
+		}
+
+		return Array.from(affectedUsers);
 	}
 
 	async removeLostConnections(nodeID?: string): Promise<string[]> {
@@ -204,6 +256,9 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async setConnectionStatus(uid: string, session: string, status?: UserStatus): Promise<boolean> {
+		if (!status && !shouldUpdateConnectionStatus(session)) {
+			return false;
+		}
 		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
 		await this.updateUserPresence(uid);
