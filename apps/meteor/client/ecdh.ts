@@ -31,30 +31,8 @@ async function initEncryptedSession(): Promise<void> {
 	}
 	const { ClientSession } = await import('../app/ecdh/client/ClientSession');
 	const session = new ClientSession();
-	const clientPublicKey = await session.init();
-
 	try {
-		const response = await fetch('/api/ecdh_proxy/initEncryptedSession', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ clientPublicKey }),
-		});
-
-		if (response.status !== 200) {
-			resolveSession();
-			return Meteor.connection._stream.allowConnection();
-		}
-
-		const data = await response.json();
-
-		if (data.success === false) {
-			resolveSession();
-			return Meteor.connection._stream.allowConnection();
-		}
-
-		await session.setServerKey(data.publicKeyString);
+		await session.init();
 		resolveSession(session);
 		init(session);
 	} catch (e) {
