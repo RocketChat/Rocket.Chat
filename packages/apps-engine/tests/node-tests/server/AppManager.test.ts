@@ -1,5 +1,5 @@
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import { describe, it, afterEach, mock } from 'node:test';
 
 import { AppManager } from '../../../src/server/AppManager';
 import { AppBridges } from '../../../src/server/bridges';
@@ -18,11 +18,7 @@ import type { AppLogStorage, AppMetadataStorage, AppSourceStorage } from '../../
 import { SimpleClass, TestData, TestInfastructureSetup } from '../../test-data/utilities';
 
 describe('AppManager', () => {
-	let testingInfastructure: TestInfastructureSetup;
-
-	beforeEach(() => {
-		testingInfastructure = new TestInfastructureSetup();
-	});
+	const testingInfastructure = new TestInfastructureSetup();
 
 	afterEach(() => {
 		AppManager.Instance = undefined;
