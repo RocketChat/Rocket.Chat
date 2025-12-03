@@ -7,7 +7,7 @@ import {
 	useSidePanelRoomsListTab,
 	useUnreadOnlyToggle,
 } from '../../../contexts/RoomsNavigationContext';
-import SidePanel from '../../SidePanel';
+import SidePanelInquiry from '../../SidePanelInquiry';
 
 const SidePanelQueue = () => {
 	const { t } = useTranslation();
@@ -23,7 +23,7 @@ const SidePanelQueue = () => {
 	}
 
 	return (
-		<SidePanel
+		<SidePanelInquiry
 			title={t(sidePanelFiltersConfig.queue.title)}
 			currentTab='queue'
 			unreadOnly={unreadOnly}
