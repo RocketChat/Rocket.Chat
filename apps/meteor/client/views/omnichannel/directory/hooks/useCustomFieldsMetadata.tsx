@@ -10,10 +10,10 @@ type UseCustomFieldsMetadataOptions = {
 };
 
 export const useCustomFieldsMetadata = ({ enabled = true, scope }: UseCustomFieldsMetadataOptions) => {
-	const { data } = useCustomFieldsQuery();
+	const { data, isSuccess } = useCustomFieldsQuery();
 	return useQuery({
 		queryKey: omnichannelQueryKeys.livechat.customFieldsMetadata(scope),
 		queryFn: async () => formatCustomFieldsMetadata(data?.customFields, scope),
-		enabled,
+		enabled: enabled && isSuccess,
 	});
 };
