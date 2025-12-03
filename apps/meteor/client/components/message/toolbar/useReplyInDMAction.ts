@@ -53,7 +53,7 @@ export const useReplyInDMAction = (
 		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return false;
 		}
-		if (!!user && user._id !== message.u._id && canCreateDM) {
+		if (!!user && user._id !== message.u._id && !canCreateDM) {
 			if (!dmRoom || !dmSubs) {
 				return false;
 			}
