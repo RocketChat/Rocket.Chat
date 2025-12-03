@@ -1,5 +1,6 @@
 import { Box, Button, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -9,7 +10,6 @@ import AdminABACTabs from './AdminABACTabs';
 import RoomAttributesContextualBar from './RoomAttributesContextualBar';
 import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
 import useIsABACAvailable from './hooks/useIsABACAvailable';
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';
