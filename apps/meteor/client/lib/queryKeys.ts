@@ -118,3 +118,8 @@ export const teamsQueryKeys = {
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
 };
+
+export const appsQueryKeys = {
+	all: ['apps'] as const,
+	slashCommands: ['apps', 'slashCommands'] as const,
+};

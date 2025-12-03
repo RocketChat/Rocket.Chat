@@ -5,6 +5,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { slashCommands } from '../../app/utils/client/slashCommand';
+import { appsQueryKeys } from '../lib/queryKeys';
 
 type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
 
@@ -42,7 +43,7 @@ export const useAppSlashCommands = () => {
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
 	const { data } = useQuery({
-		queryKey: ['apps', 'slashCommands'] as const,
+		queryKey: appsQueryKeys.slashCommands,
 		enabled: !!uid,
 		structuralSharing: false,
 		queryFn: async () => {
