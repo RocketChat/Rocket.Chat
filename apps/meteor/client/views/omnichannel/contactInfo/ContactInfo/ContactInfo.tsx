@@ -1,17 +1,17 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
-
-import ReviewContactModal from './ReviewContactModal';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
+
+import ReviewContactModal from './ReviewContactModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';

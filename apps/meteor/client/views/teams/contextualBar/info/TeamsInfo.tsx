@@ -1,19 +1,19 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTeamActions } from './useTeamActions';
 import {
+	GenericMenu,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useTeamActions } from './useTeamActions';
 import {
 	InfoPanel,
 	InfoPanelAction,

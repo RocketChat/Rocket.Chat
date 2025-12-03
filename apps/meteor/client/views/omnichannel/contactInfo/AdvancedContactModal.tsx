@@ -16,7 +16,7 @@ type AdvancedContactModalProps = {
 const AdvancedContactModal = ({ onCancel }: AdvancedContactModalProps) => {
 	const { t } = useTranslation();
 	const isAdmin = useRole('admin');
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasLicense);
 	const openExternalLink = useExternalLink();
 	const eventStats = useEndpoint('POST', '/v1/statistics.telemetry');

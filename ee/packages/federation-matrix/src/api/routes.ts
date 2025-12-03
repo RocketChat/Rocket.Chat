@@ -13,7 +13,7 @@ import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationD
 import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled';
 
-export const getFederationRoutes = (): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
+export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
 	const matrix = new Router('/_matrix');
 	const wellKnown = new Router('/.well-known');
 
@@ -21,7 +21,7 @@ export const getFederationRoutes = (): { matrix: Router<'/_matrix'>; wellKnown: 
 		.use(isFederationEnabledMiddleware)
 		.use(isLicenseEnabledMiddleware)
 		.use(getKeyServerRoutes())
-		.use(getFederationVersionsRoutes())
+		.use(getFederationVersionsRoutes(version))
 		.use(isFederationDomainAllowedMiddleware)
 		.use(getMatrixInviteRoutes())
 		.use(getMatrixProfilesRoutes())

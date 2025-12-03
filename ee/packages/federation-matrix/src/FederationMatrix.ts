@@ -882,7 +882,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 									errcode: string;
 									error: string;
 							  }
-						>({ homeserverUrl, userId });
+						>({ homeserverUrl, userId: matrixId });
 
 						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {
 							return [matrixId, 'UNVERIFIED'];

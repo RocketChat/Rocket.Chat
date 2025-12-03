@@ -75,7 +75,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const userTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const transcriptPDFPermission = usePermission('request-pdf-transcript');
 	const transcriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 

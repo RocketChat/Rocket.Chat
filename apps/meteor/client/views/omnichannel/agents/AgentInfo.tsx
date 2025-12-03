@@ -1,16 +1,16 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { HTMLAttributes } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarSkeletonBody,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { HTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
