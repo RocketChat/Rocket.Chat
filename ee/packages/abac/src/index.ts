@@ -18,18 +18,16 @@ import {
 	AbacUnsupportedOperationError,
 } from './errors';
 import {
+	getAbacRoom,
 	diffAttributes,
 	extractAttribute,
-	wereAttributesAdded,
-	didSubjectLoseAttributes,
-	wereAttributeValuesAdded,
+	diffAttributeSets,
 	buildCompliantConditions,
 	buildNonCompliantConditions,
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	buildRoomNonCompliantConditionsFromSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
-	getAbacRoom,
 } from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -82,7 +80,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
-		if (didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
+		if (diffAttributeSets(user?.abacAttributes || [], finalAttributes).removed) {
 			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
 		}
 
@@ -320,7 +318,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (wereAttributesAdded(previous, normalized)) {
+		if (diffAttributeSets(previous, normalized).added) {
 			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
 		}
 	}
@@ -368,7 +366,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			actor,
 		);
 
-		if (wereAttributeValuesAdded(prevValues, values)) {
+		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
 			await this.onRoomAttributesChanged(room, next);
 		}
@@ -428,11 +426,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const room = await getAbacRoom(rid);
 
-		const exists = room?.abacAttributes?.some((a) => a.key === key);
+		const exists = room?.abacAttributes?.find((a) => a.key === key);
 
 		if (exists) {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
-			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
 
 			void Audit.objectAttributeChanged(
 				{ _id: room._id, name: room.name },
@@ -441,7 +438,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 				'key-updated',
 				actor,
 			);
-			if (wereAttributeValuesAdded(prevValues, values)) {
+			if (diffAttributeSets([exists], [{ key, values }]).added) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
 

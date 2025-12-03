@@ -1,352 +1,6 @@
 import { expect } from 'chai';
 
-import { didSubjectLoseAttributes, validateAndNormalizeAttributes, MAX_ABAC_ATTRIBUTE_KEYS, MAX_ABAC_ATTRIBUTE_VALUES } from './helper';
-
-describe('didSubjectLoseAttributes', () => {
-	const call = (prev: { key: string; values: string[] }[], next: { key: string; values: string[] }[]) =>
-		didSubjectLoseAttributes(prev, next);
-
-	it('returns false if previous is empty (no attributes to lose)', () => {
-		const prev: { key: string; values: string[] }[] = [];
-		const next: { key: string; values: string[] }[] = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns false if all previous attributes and values are preserved', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns false if previous values are a subset of next values (nothing lost)', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns true if an entire previous attribute key is missing in next', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns true if any previous value is missing from corresponding next attribute', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns true if multiple attributes exist and one loses a value', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns true when next is empty but previous had attributes (all lost)', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const next: { key: string; values: string[] }[] = [];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns true if one attribute key remains but all its values are lost', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: [],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns true on first detected loss even if multiple losses exist', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-			{
-				key: 'dept',
-				values: ['sales', 'marketing'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('does not mutate input arrays (pure function)', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const prevClone = JSON.parse(JSON.stringify(prev));
-		const nextClone = JSON.parse(JSON.stringify(next));
-
-		call(prev, next);
-
-		expect(prev).to.deep.equal(prevClone);
-		expect(next).to.deep.equal(nextClone);
-	});
-
-	it('returns false if ordering of values changes but values remain (order-insensitive)', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'user'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['user', 'admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns true if previous attribute key replaced with a different key only', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'dept',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-
-	it('returns false when next adds a new attribute without removing previous ones', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns false when attribute keys are reordered but unchanged', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'dept',
-				values: ['sales'],
-			},
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns false when duplicate values are present but no unique value is lost', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'admin'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns false when previous attribute has an empty values array (nothing to lose)', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: [],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.false;
-	});
-
-	it('returns true when duplicate previous values include one that is lost', () => {
-		const prev = [
-			{
-				key: 'role',
-				values: ['admin', 'admin', 'user'],
-			},
-		];
-
-		const next = [
-			{
-				key: 'role',
-				values: ['admin'],
-			},
-		];
-
-		expect(call(prev, next)).to.be.true;
-	});
-});
+import { validateAndNormalizeAttributes, MAX_ABAC_ATTRIBUTE_KEYS, MAX_ABAC_ATTRIBUTE_VALUES, diffAttributeSets } from './helper';
 
 describe('validateAndNormalizeAttributes', () => {
 	it('normalizes keys and merges duplicate values from multiple entries', () => {
@@ -408,6 +62,149 @@ describe('buildNonCompliantConditions', () => {
 	it('returns empty array for empty attributes list', () => {
 		const result = buildNonCompliantConditions([]);
 		expect(result).to.deep.equal([]);
+	});
+
+	describe('diffAttributeSets', () => {
+		it('returns false/false when both sets are empty', () => {
+			const result = diffAttributeSets([], []);
+
+			expect(result).to.deep.equal({ added: false, removed: false });
+		});
+
+		it('detects only additions when moving from empty to non-empty', () => {
+			const current: { key: string; values: string[] }[] = [];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'role', values: ['admin'] },
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: false });
+		});
+
+		it('detects only removals when moving from non-empty to empty', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: { key: string; values: string[] }[] = [];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: false, removed: true });
+		});
+
+		it('returns false/false when sets are identical (same keys and values)', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'role', values: ['admin'] },
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: false, removed: false });
+		});
+
+		it('ignores value ordering and still treats sets as identical', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'role', values: ['admin', 'user'] },
+			];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'role', values: ['user', 'admin'] },
+				{ key: 'dept', values: ['sales', 'eng'] },
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: false, removed: false });
+		});
+
+		it('detects added values for an existing key', () => {
+			const current: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng'] }];
+			const next: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng', 'sales'] }];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: false });
+		});
+
+		it('detects removed values for an existing key', () => {
+			const current: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng', 'sales'] }];
+			const next: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng'] }];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: false, removed: true });
+		});
+
+		it('detects added and removed values on the same key', () => {
+			const current: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng', 'sales'] }];
+			const next: { key: string; values: string[] }[] = [{ key: 'dept', values: ['support'] }];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: true });
+		});
+
+		it('detects newly added keys as additions', () => {
+			const current: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng'] }];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'role', values: ['admin'] },
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: false });
+		});
+
+		it('detects removed keys as removals', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'role', values: ['admin'] },
+			];
+			const next: { key: string; values: string[] }[] = [{ key: 'dept', values: ['eng'] }];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: false, removed: true });
+		});
+
+		it('detects both added and removed keys across sets', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'region', values: ['us'] },
+			];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng'] },
+				{ key: 'role', values: ['admin'] },
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: true });
+		});
+
+		it('handles mixed changes: new key, removed key, added and removed values', () => {
+			const current: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng', 'sales'] },
+				{ key: 'region', values: ['us', 'eu'] },
+			];
+			const next: { key: string; values: string[] }[] = [
+				{ key: 'dept', values: ['eng', 'support'] }, // sales removed, support added
+				{ key: 'role', values: ['admin'] }, // new key
+			];
+
+			const result = diffAttributeSets(current, next);
+
+			expect(result).to.deep.equal({ added: true, removed: true });
+		});
 	});
 
 	it('maps single attribute to $not $elemMatch query', () => {

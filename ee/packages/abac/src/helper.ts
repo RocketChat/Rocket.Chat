@@ -90,29 +90,6 @@ export function diffAttributes(a: IAbacAttributeDefinition[] = [], b: IAbacAttri
 	return diff;
 }
 
-export function wereAttributesAdded(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
-	let added = false;
-	const prevMap = new Map(current.map((a) => [a.key, new Set(a.values)]));
-	for (const { key, values } of next) {
-		const prevValues = prevMap.get(key);
-		if (!prevValues) {
-			added = true;
-			break;
-		}
-		for (const v of values) {
-			if (!prevValues.has(v)) {
-				added = true;
-				break;
-			}
-		}
-		if (added) {
-			break;
-		}
-	}
-
-	return added;
-}
-
 export function validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
 	const keyPattern = /^[A-Za-z0-9_-]+$/;
 	const normalized: IAbacAttributeDefinition[] = [];
@@ -198,11 +175,6 @@ export async function ensureAttributeDefinitionsExist(normalized: IAbacAttribute
 	}
 }
 
-export function wereAttributeValuesAdded(prevValues: string[], newValues: string[]) {
-	const prevSet = new Set(prevValues);
-	return newValues.some((v) => !prevSet.has(v));
-}
-
 export function buildNonCompliantConditions(newAttributes: IAbacAttributeDefinition[]) {
 	return newAttributes.map(({ key, values }) => ({
 		abacAttributes: {
@@ -225,25 +197,6 @@ export function buildCompliantConditions(attributes: IAbacAttributeDefinition[])
 			},
 		},
 	}));
-}
-
-export function didSubjectLoseAttributes(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
-	if (!previous.length) {
-		return false;
-	}
-	const nextMap = new Map(next.map((a) => [a.key, new Set(a.values)]));
-	for (const prevAttr of previous) {
-		const nextValues = nextMap.get(prevAttr.key);
-		if (!nextValues) {
-			return true;
-		}
-		for (const v of prevAttr.values) {
-			if (!nextValues.has(v)) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IAbacAttributeDefinition[]) {
@@ -287,4 +240,84 @@ export async function getAbacRoom(
 	}
 
 	return room;
+}
+
+export function diffAttributeSets(
+	current: IAbacAttributeDefinition[] = [],
+	next: IAbacAttributeDefinition[] = [],
+): { added: boolean; removed: boolean } {
+	const currentMap = new Map<string, Set<string>>(current.map((attr) => [attr.key, new Set(attr.values)]));
+	const nextMap = new Map<string, Set<string>>(next.map((attr) => [attr.key, new Set(attr.values)]));
+
+	let added = false;
+	let removed = false;
+
+	// Check removals and per-key value changes
+	for (const [key, currentValues] of currentMap) {
+		const nextValues = nextMap.get(key);
+
+		if (!nextValues) {
+			// Key was completely removed
+			removed = true;
+		} else {
+			// Check removed values
+			for (const v of currentValues) {
+				if (!nextValues.has(v)) {
+					removed = true;
+					break;
+				}
+			}
+		}
+
+		if (removed) {
+			break;
+		}
+	}
+
+	// Check additions (new keys or new values on existing keys)
+	if (!removed) {
+		for (const [key, nextValues] of nextMap) {
+			const currentValues = currentMap.get(key);
+
+			if (!currentValues) {
+				// New key added
+				added = true;
+				break;
+			}
+
+			for (const v of nextValues) {
+				if (!currentValues.has(v)) {
+					added = true;
+					break;
+				}
+			}
+
+			if (added) {
+				break;
+			}
+		}
+	} else {
+		// Even if we've already seen removals, we might still want to know if additions happened too
+		for (const [key, nextValues] of nextMap) {
+			const currentValues = currentMap.get(key);
+
+			if (!currentValues) {
+				added = true;
+				break;
+			}
+
+			for (const v of nextValues) {
+				if (!currentValues.has(v)) {
+					added = true;
+					break;
+				}
+			}
+
+			if (added) {
+				break;
+			}
+		}
+	}
+
+	return { added, removed };
 }
