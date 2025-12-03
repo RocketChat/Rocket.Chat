@@ -1,7 +1,9 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 import {
 	isPOSTLivechatMonitorCreateRequest,
+	isPOSTLivechatMonitorsDeleteRequest,
 	POSTLivechatMonitorsCreateSuccessResponse,
+	POSTLivechatMonitorsDeleteSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -60,28 +62,62 @@ API.v1.addRoute(
 	},
 );
 
-const livechatMonitorsEndpoints = API.v1.post(
-	'livechat/monitors.create',
-	{
-		response: {
-			200: POSTLivechatMonitorsCreateSuccessResponse,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
+const livechatMonitorsEndpoints = API.v1
+	.post(
+		'livechat/monitors.create',
+		{
+			response: {
+				200: POSTLivechatMonitorsCreateSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-livechat-monitors'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatMonitorCreateRequest,
 		},
-		authRequired: true,
-		permissionsRequired: ['manage-livechat-monitors'],
-		license: ['livechat-enterprise'],
-		body: isPOSTLivechatMonitorCreateRequest,
-	},
-	async function action() {
-		const { username } = this.bodyParams;
+		async function action() {
+			const { username } = this.bodyParams;
 
-		const result = await LivechatEnterprise.addMonitor(username);
+			const result = await LivechatEnterprise.addMonitor(username);
 
-		return API.v1.success(result);
-	},
-);
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'livechat/monitors.delete',
+		{
+			response: {
+				200: POSTLivechatMonitorsDeleteSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-livechat-monitors'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatMonitorsDeleteRequest,
+		},
+		async function action() {
+			const { username } = this.bodyParams;
+
+			try {
+				const result = await LivechatEnterprise.removeMonitor(username);
+				if (!result) {
+					return API.v1.failure('error-removing-monitor');
+				}
+
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
+				return API.v1.failure('error-removing-monitor');
+			}
+		},
+	);
 
 type LivechatMonitorsEndpoints = ExtractRoutesFromAPI<typeof livechatMonitorsEndpoints>;
 
