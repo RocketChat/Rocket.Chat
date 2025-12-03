@@ -8099,7 +8099,6 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
@@ -8234,7 +8233,6 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
@@ -8415,7 +8413,6 @@ __metadata:
     colorette: "npm:^1.4.0"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     jaeger-client: "npm:^3.19.0"
     mem: "npm:^8.1.1"
@@ -9766,7 +9763,6 @@ __metadata:
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     i18next: "npm:~23.4.9"
     i18next-sprintf-postprocessor: "npm:^0.2.2"
@@ -9917,7 +9913,6 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
@@ -9983,7 +9978,6 @@ __metadata:
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
@@ -10169,7 +10163,6 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
@@ -21606,16 +21599,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"event-loop-stats@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "event-loop-stats@npm:1.4.1"
-  dependencies:
-    nan: "npm:^2.14.0"
-    node-gyp: "npm:latest"
-  checksum: 10/f8d0a9246abf2738bde4e1a1e700f2b8a85d77637c3551ce74ad8964e2d64005776f8ba7100e49814512999f9ca0e24d13015bd420313ba5542006b8f5ff6f63
-  languageName: node
-  linkType: hard
-
 "event-stream@npm:=3.3.4":
   version: 3.3.4
   resolution: "event-stream@npm:3.3.4"
@@ -28515,15 +28498,6 @@ __metadata:
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: 10/a2d2e79dde87e3424ffc8c334472c7f3d17b072137734ca46e6f221131f1b014201cc593b69a38062e974fb2394d3d1cb4349f80f012bbf8b8ac1b28033e515f
-  languageName: node
-  linkType: hard
-
-"nan@npm:^2.14.0":
-  version: 2.20.0
-  resolution: "nan@npm:2.20.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10/5f16e4c9953075d9920229c703c1d781c0b74118ce3d9e926b448a4eef92b7d8be5ac6adc748a13a5fafb594436cbfe63250e3471aefdd78e3a0cd14603b9ba7
   languageName: node
   linkType: hard
 
