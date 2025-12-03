@@ -8287,6 +8287,7 @@ __metadata:
     "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
+    mem: "npm:^8.1.1"
     mongodb: "npm:6.10.0"
     mongodb-memory-server: "npm:^10.1.4"
     p-limit: "npm:3.1.0"

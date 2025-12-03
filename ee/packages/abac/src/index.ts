@@ -20,7 +20,7 @@ import {
 import {
 	diffAttributes,
 	extractAttribute,
-	didAttributesChange,
+	wereAttributesAdded,
 	didSubjectLoseAttributes,
 	wereAttributeValuesAdded,
 	buildCompliantConditions,
@@ -320,7 +320,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (didAttributesChange(previous, normalized)) {
+		if (wereAttributesAdded(previous, normalized)) {
 			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
 		}
 	}

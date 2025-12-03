@@ -1,5 +1,6 @@
 import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms } from '@rocket.chat/models';
+import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
@@ -89,7 +90,7 @@ export function diffAttributes(a: IAbacAttributeDefinition[] = [], b: IAbacAttri
 	return diff;
 }
 
-export function didAttributesChange(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
+export function wereAttributesAdded(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
 	let added = false;
 	const prevMap = new Map(current.map((a) => [a.key, new Set(a.values)]));
 	for (const { key, values } of next) {
@@ -164,13 +165,20 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 	return normalized;
 }
 
+const getAttributeDefinitionsFromDb = async (keys: string[]) =>
+	AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
+
+const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
+	maxAge: 30_000,
+});
+
 export async function ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
 	if (!normalized.length) {
 		return;
 	}
 
 	const uniqueKeys = [...new Set(normalized.map((a) => a.key))];
-	const attributeDefinitions = await AbacAttributes.find({ key: { $in: uniqueKeys } }, { projection: { key: 1, values: 1 } }).toArray();
+	const attributeDefinitions = await getAttributeDefinitionsCached(uniqueKeys);
 
 	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def) => [def.key, new Set(def.values)]));
 	if (definitionValuesMap.size !== uniqueKeys.length) {
