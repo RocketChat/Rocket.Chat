@@ -30,8 +30,7 @@ type Keys =
 	| 'banners'
 	| 'oauth.authorizedClients'
 	| '_updatedAt'
-	| 'avatarETag'
-	| 'extension';
+	| 'avatarETag';
 
 export type MeEndpoints = {
 	'/v1/me': {

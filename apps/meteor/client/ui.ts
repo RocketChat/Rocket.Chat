@@ -34,7 +34,6 @@ import { useCannedResponsesRoomAction } from './views/omnichannel/hooks/useCanne
 import { useContactProfileRoomAction } from './views/omnichannel/hooks/useContactProfileRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './views/omnichannel/hooks/useOmnichannelExternalFrameRoomAction';
 import { useRoomInfoRoomAction } from './views/omnichannel/hooks/useRoomInfoRoomAction';
-import { useVoIPRoomInfoRoomAction } from './views/omnichannel/hooks/useVoIPRoomInfoRoomAction';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [
@@ -64,7 +63,6 @@ export const roomActionHooks = [
 	useStarredMessagesRoomAction,
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
-	useVoIPRoomInfoRoomAction,
 	useAppsRoomStarActions,
 	useVideoCallRoomAction,
 	useMediaCallRoomAction,

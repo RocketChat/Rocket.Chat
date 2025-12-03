@@ -4,7 +4,6 @@ import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
-import CallTab from './calls/CallTab';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import ChatsProvider from './providers/ChatsProvider';
@@ -47,14 +46,10 @@ const OmnichannelDirectoryPage = () => {
 						<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
 							{t('Contacts')}
 						</Tabs.Item>
-						<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
-							{t('Calls')}
-						</Tabs.Item>
 					</Tabs>
 					<PageContent>
 						{tab === 'chats' && <ChatsTab />}
 						{tab === 'contacts' && <ContactTab />}
-						{tab === 'calls' && <CallTab />}
 					</PageContent>
 				</Page>
 				{context && <ContextualBarRouter />}
