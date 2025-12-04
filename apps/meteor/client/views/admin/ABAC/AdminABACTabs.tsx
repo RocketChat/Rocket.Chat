@@ -20,6 +20,9 @@ const AdminABACTabs = () => {
 			<TabsItem selected={tab === 'room-attributes'} onClick={() => handleTabClick('room-attributes')}>
 				{t('ABAC_Room_Attributes')}
 			</TabsItem>
+			<TabsItem selected={tab === 'logs'} onClick={() => handleTabClick('logs')}>
+				{t('ABAC_Logs')}
+			</TabsItem>
 		</Tabs>
 	);
 };
