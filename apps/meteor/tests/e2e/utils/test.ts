@@ -83,7 +83,7 @@ export const test = baseTest.extend<BaseTest>({
 						continue;
 					}
 
-					const pathToSource = path.join(process.cwd(), '.meteor/local/build/programs/web.browser/dynamic/', `${entry.url}`);
+					const pathToSource = path.join(process.cwd(), 'bundle/programs/web.browser/dynamic/', `${entry.url}`);
 					const pathToSourceMap = `${pathToSource}.map`;
 
 					paths[entry.url] = {
