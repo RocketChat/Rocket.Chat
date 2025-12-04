@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.1
   - @rocket.chat/gazzodown@25.0.0-rc.1
   - @rocket.chat/ui-avatar@21.0.0-rc.1
@@ -30,6 +29,32 @@
   - @rocket.chat/gazzodown@25.0.0-rc.0
   - @rocket.chat/ui-avatar@21.0.0-rc.0
   - @rocket.chat/ui-video-conf@25.0.0-rc.0
+
+## 24.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/gazzodown@24.0.2
+  - @rocket.chat/ui-avatar@20.0.2
+  - @rocket.chat/ui-contexts@24.0.2
+  - @rocket.chat/ui-video-conf@24.0.2
+  </details>
+
+## 24.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e6cc073a99e1aaa7936ef9b29e7bfa31dab86aa3]:</summary>
+
+  - @rocket.chat/apps-engine@1.57.1
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/gazzodown@24.0.1
+  - @rocket.chat/ui-avatar@20.0.1
+  - @rocket.chat/ui-contexts@24.0.1
+  - @rocket.chat/ui-video-conf@24.0.1
   </details>
 
 ## 24.0.0

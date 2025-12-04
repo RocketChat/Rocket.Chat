@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.5.21-rc.1",
+	"version": "0.5.23-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",

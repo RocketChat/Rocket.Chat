@@ -1,6 +1,6 @@
 # @rocket.chat/ddp-client
 
-## 0.3.42-rc.1
+## 0.3.44-rc.1
 
 ### Patch Changes
 
@@ -11,7 +11,7 @@
   - @rocket.chat/api-client@0.2.42-rc.1
   </details>
 
-## 0.3.42-rc.0
+## 0.3.44-rc.0
 
 ### Patch Changes
 
@@ -21,6 +21,28 @@
   - @rocket.chat/media-signaling@0.1.0-rc.0
   - @rocket.chat/rest-typings@7.13.0-rc.0
   - @rocket.chat/api-client@0.2.42-rc.0
+  </details>
+
+## 0.3.43
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/rest-typings@7.12.2
+  - @rocket.chat/api-client@0.2.43
+  </details>
+
+## 0.3.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/rest-typings@7.12.1
+  - @rocket.chat/api-client@0.2.42
   </details>
 
 ## 0.3.41

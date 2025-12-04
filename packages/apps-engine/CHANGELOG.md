@@ -20,6 +20,12 @@
 
 - ([#37152](https://github.com/RocketChat/Rocket.Chat/pull/37152)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
 
+## 1.57.1
+
+### Patch Changes
+
+- ([#37440](https://github.com/RocketChat/Rocket.Chat/pull/37440) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
 ## 1.57.0
 
 ### Minor Changes

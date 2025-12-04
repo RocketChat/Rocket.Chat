@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.1
   - @rocket.chat/rest-typings@7.13.0-rc.1
   - @rocket.chat/http-router@7.9.9-rc.1
@@ -28,6 +27,30 @@
   - @rocket.chat/media-signaling@0.1.0-rc.0
   - @rocket.chat/rest-typings@7.13.0-rc.0
   - @rocket.chat/http-router@7.9.9-rc.0
+  </details>
+
+## 0.10.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/rest-typings@7.12.2
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/models@1.7.3
+  </details>
+
+## 0.10.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8cbd9bfd0566cbd7d86d8b40ea7d58d6ef382742]:</summary>
+
+  - @rocket.chat/models@1.7.2
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/rest-typings@7.12.1
+  - @rocket.chat/http-router@7.9.9
   </details>
 
 ## 0.10.4

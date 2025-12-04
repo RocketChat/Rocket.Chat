@@ -26,6 +26,28 @@
   - @rocket.chat/rest-typings@7.13.0-rc.0
   </details>
 
+## 1.7.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.12.2
+  - @rocket.chat/model-typings@1.8.3
+  </details>
+
+## 1.7.2
+
+### Patch Changes
+
+- ([#37436](https://github.com/RocketChat/Rocket.Chat/pull/37436) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.12.1
+  - @rocket.chat/model-typings@1.8.2
+  </details>
+
 ## 1.7.1
 
 ### Patch Changes

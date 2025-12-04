@@ -19,6 +19,10 @@
   - @rocket.chat/ui-kit@0.38.0-rc.0
   </details>
 
+## 7.12.2
+
+## 7.12.1
+
 ## 7.12.0
 
 ### Minor Changes
