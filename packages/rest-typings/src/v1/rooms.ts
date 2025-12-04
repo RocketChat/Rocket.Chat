@@ -759,20 +759,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.upload/:rid': {
-		POST: (params: {
-			file: File;
-			description?: string;
-			avatar?: string;
-			emoji?: string;
-			alias?: string;
-			groupable?: boolean;
-			msg?: string;
-			tmid?: string;
-			customFields?: string;
-		}) => { message: IMessage | null };
-	};
-
 	'/v1/rooms.media/:rid': {
 		POST: (params: { file: File }) => { file: { url: string } };
 	};

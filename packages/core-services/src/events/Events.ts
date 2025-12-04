@@ -33,7 +33,6 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
-	IOTRMessage,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -310,7 +309,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
-	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 	'media-call.updated'(data: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 };

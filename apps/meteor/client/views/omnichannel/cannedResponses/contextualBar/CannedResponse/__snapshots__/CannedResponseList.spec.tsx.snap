@@ -4,18 +4,18 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-1kmfepv"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
     >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
       <div
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-8umsxh"
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
       >
-        <span
-          data-focus-scope-start="true"
-          hidden=""
-        />
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-qtw00q"
           role="dialog"
           tabindex="-1"
         >
@@ -157,11 +157,49 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
             </div>
           </div>
         </div>
-        <span
-          data-focus-scope-end="true"
-          hidden=""
-        />
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-h2r2vg"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
       </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
     </div>
   </div>
 </body>

@@ -37,7 +37,6 @@ import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
 
 import { ajv } from './Ajv';
-import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -284,35 +283,6 @@ const LivechatVisitorTokenRoomSchema = {
 };
 
 export const isLivechatVisitorTokenRoomProps = ajv.compile<LivechatVisitorTokenRoom>(LivechatVisitorTokenRoomSchema);
-
-type LivechatVisitorCallStatus = {
-	token: string;
-	callStatus: string;
-	rid: string;
-	callId: string;
-};
-
-const LivechatVisitorCallStatusSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-		callStatus: {
-			type: 'string',
-		},
-		rid: {
-			type: 'string',
-		},
-		callId: {
-			type: 'string',
-		},
-	},
-	required: ['token', 'callStatus', 'rid', 'callId'],
-	additionalProperties: false,
-};
-
-export const isLivechatVisitorCallStatusProps = ajv.compile<LivechatVisitorCallStatus>(LivechatVisitorCallStatusSchema);
 
 type LivechatVisitorStatus = {
 	token: string;
@@ -2868,13 +2838,13 @@ const POSTLivechatRoomCloseByUserParamsSchema = {
 
 export const isPOSTLivechatRoomCloseByUserParams = ajv.compile<POSTLivechatRoomCloseByUserParams>(POSTLivechatRoomCloseByUserParamsSchema);
 
-type POSTLivechatRoomTransferParams = {
+type POSTLivechatVisitorDepartmentTransferParams = {
 	token: string;
 	rid: string;
 	department: string;
 };
 
-const POSTLivechatRoomTransferParamsSchema = {
+const POSTLivechatVisitorDepartmentTransferParamsSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -2891,7 +2861,9 @@ const POSTLivechatRoomTransferParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatRoomTransferParams = ajv.compile<POSTLivechatRoomTransferParams>(POSTLivechatRoomTransferParamsSchema);
+export const isPOSTLivechatVisitorDepartmentTransferParams = ajv.compile<POSTLivechatVisitorDepartmentTransferParams>(
+	POSTLivechatVisitorDepartmentTransferParamsSchema,
+);
 
 type POSTLivechatRoomSurveyParams = {
 	token: string;
@@ -4406,7 +4378,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LiveChatRoomJoin) => void;
 	};
 	'/v1/livechat/room.forward': {
-		POST: (params: LiveChatRoomForward) => void;
+		POST: (params: LiveChatRoomForward) => { success: boolean };
 	};
 	'/v1/livechat/room.saveInfo': {
 		POST: (params: LiveChatRoomSaveInfo) => void;
@@ -4588,13 +4560,6 @@ export type OmnichannelEndpoints = {
 		GET: (params: LivechatVisitorTokenRoom) => { rooms: IOmnichannelRoom[] };
 	};
 
-	'/v1/livechat/visitor.callStatus': {
-		POST: (params: LivechatVisitorCallStatus) => {
-			token: string;
-			callStatus: string;
-		};
-	};
-
 	'/v1/livechat/visitor.status': {
 		POST: (params: LivechatVisitorStatus) => {
 			token: string;
@@ -4624,14 +4589,6 @@ export type OmnichannelEndpoints = {
 
 	'/v1/canned-responses.get': {
 		GET: () => { responses: IOmnichannelCannedResponse[] };
-	};
-
-	'/v1/livechat/webrtc.call': {
-		GET: (params: GETWebRTCCall) => { videoCall: { rid: string; provider: string; callStatus: 'ringing' | 'ongoing' } };
-	};
-
-	'/v1/livechat/webrtc.call/:callId': {
-		PUT: (params: PUTWebRTCCallId) => { status: string | undefined };
 	};
 
 	'/v1/livechat/sla': {
@@ -4751,8 +4708,8 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.closeByUser': {
 		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
-	'/v1/livechat/room.transfer': {
-		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;
+	'/v1/livechat/visitor/department.transfer': {
+		POST: (params: POSTLivechatVisitorDepartmentTransferParams) => { success: boolean };
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };

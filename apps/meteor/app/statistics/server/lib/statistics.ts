@@ -415,9 +415,9 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
+		const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
-		statistics.oplogEnabled = oplogEnabled;
+		statistics.oplogEnabled = false;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
@@ -540,8 +540,6 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await Rooms.countByCreatedOTR({ readPreference });
-		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
@@ -603,11 +601,6 @@ export const statistics = {
 		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
-
-		// Omnichannel call stats
-		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
-		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

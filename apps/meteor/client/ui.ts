@@ -18,7 +18,6 @@ import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboa
 import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
-import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
 import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
@@ -31,7 +30,6 @@ import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedF
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
-import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import { useCannedResponsesRoomAction } from './views/omnichannel/hooks/useCannedResponsesRoomAction';
 import { useContactProfileRoomAction } from './views/omnichannel/hooks/useContactProfileRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './views/omnichannel/hooks/useOmnichannelExternalFrameRoomAction';
@@ -57,7 +55,6 @@ export const roomActionHooks = [
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,
-	useOTRRoomAction,
 	useOmnichannelExternalFrameRoomAction,
 	useOutlookCalenderRoomAction,
 	usePinnedMessagesRoomAction,
@@ -68,7 +65,6 @@ export const roomActionHooks = [
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
-	useWebRTCVideoRoomAction,
 	useAppsRoomStarActions,
 	useVideoCallRoomAction,
 	useMediaCallRoomAction,

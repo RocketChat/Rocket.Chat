@@ -1,18 +1,9 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { CannedResponse } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		removeCannedResponse(_id: string): Promise<void>;
-	}
-}
 
 export const removeCannedResponse = async (uid: string, _id: string): Promise<void> => {
 	if (!(await hasPermissionAsync(uid, 'remove-canned-responses'))) {
@@ -34,18 +25,3 @@ export const removeCannedResponse = async (uid: string, _id: string): Promise<vo
 
 	await CannedResponse.removeById(_id);
 };
-
-Meteor.methods<ServerMethods>({
-	async removeCannedResponse(_id) {
-		methodDeprecationLogger.method('removeCannedResponse', '8.0.0', 'DELETE /v1/canned-responses/:_id');
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'removeCannedResponse',
-			});
-		}
-
-		return removeCannedResponse(uid, _id);
-	},
-});

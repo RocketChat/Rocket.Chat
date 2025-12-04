@@ -23,7 +23,6 @@ type Keys =
 	| 'requirePasswordChangeReason'
 	| 'services.github'
 	| 'services.gitlab'
-	| 'services.tokenpass'
 	| 'services.password.bcrypt'
 	| 'services.totp.enabled'
 	| 'services.email2fa.enabled'
