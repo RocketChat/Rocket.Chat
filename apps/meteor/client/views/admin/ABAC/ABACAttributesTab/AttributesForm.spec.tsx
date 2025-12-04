@@ -23,13 +23,7 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-const FormProviderWrapper = ({
-	children,
-	defaultValues,
-}: {
-	children: ReactNode;
-	defaultValues?: Partial<AttributesFormFormData>;
-}) => {
+const FormProviderWrapper = ({ children, defaultValues }: { children: ReactNode; defaultValues?: Partial<AttributesFormFormData> }) => {
 	const methods = useForm<AttributesFormFormData>({
 		defaultValues: {
 			name: '',
