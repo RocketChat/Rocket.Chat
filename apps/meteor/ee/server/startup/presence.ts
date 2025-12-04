@@ -42,7 +42,9 @@ Meteor.startup(() => {
 
 		const _messageReceived = session.heartbeat.messageReceived.bind(session.heartbeat);
 		session.heartbeat.messageReceived = function messageReceived() {
-			void Presence.updateConnection(login.user._id, login.connection.id);
+			if (this._seenPacket === false) {
+				void Presence.updateConnection(login.user._id, login.connection.id);
+			}
 			return _messageReceived();
 		};
 
