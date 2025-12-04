@@ -40,7 +40,7 @@ const Header = ({ room, subscription }: HeaderProps<IRoom>): ReactElement | null
 		return null;
 	}
 
-	if (isInviteSubscription(subscription)) {
+	if (subscription && isInviteSubscription(subscription)) {
 		return <RoomInviteHeader room={room} slots={slots} />;
 	}
 

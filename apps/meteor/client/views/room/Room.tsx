@@ -35,7 +35,7 @@ const Room = (): ReactElement => {
 	const roomLabel =
 		room.t === 'd' ? t('Conversation_with__roomName__', { roomName: room.name }) : t('Channel__roomName__', { roomName: room.name });
 
-	if (isInviteSubscription(subscription)) {
+	if (subscription && isInviteSubscription(subscription)) {
 		return (
 			<FocusScope>
 				<RoomInvite room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />

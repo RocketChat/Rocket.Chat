@@ -92,7 +92,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 
-		return isInviteSubscription(subscription);
+		return subscription !== null && isInviteSubscription(subscription);
 	},
 ];
 

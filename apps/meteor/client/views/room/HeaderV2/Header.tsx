@@ -25,7 +25,7 @@ const Header = ({ room, subscription }: HeaderProps): ReactElement | null => {
 		return null;
 	}
 
-	if (isInviteSubscription(subscription)) {
+	if (subscription && isInviteSubscription(subscription)) {
 		return <RoomInviteHeader room={room} />;
 	}
 
