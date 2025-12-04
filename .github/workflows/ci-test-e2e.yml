@@ -203,7 +203,7 @@ jobs:
         uses: actions/download-artifact@v6
         if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
         with:
-          name: build-${{ inputs.type }}
+          name: build-coverage
           path: /tmp/build
   
       - name: Unpack meteor build
