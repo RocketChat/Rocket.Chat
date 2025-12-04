@@ -1,4 +1,4 @@
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
@@ -21,9 +21,8 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
+import type { RoomMemberUser } from './types';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-
-export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];

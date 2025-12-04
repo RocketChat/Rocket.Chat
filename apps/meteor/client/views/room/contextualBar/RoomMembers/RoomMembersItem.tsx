@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Option,
 	OptionAvatar,
@@ -16,22 +16,25 @@ import type { ReactElement, MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
+import InvitationBadge from './badges/InvitationBadge';
+import type { RoomMemberUser } from './types';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 
-type RoomMembersItemProps = {
+type RoomMembersItemProps = RoomMemberUser & {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
 	rid: IRoom['_id'];
 	reload: () => void;
 	useRealName: boolean;
-} & Pick<IUser, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'>;
+};
 
 const RoomMembersItem = ({
 	_id,
 	name,
 	username,
 	federated,
+	status,
 	freeSwitchExtension,
 	onClickView,
 	rid,
@@ -57,6 +60,11 @@ const RoomMembersItem = ({
 			<OptionContent data-qa={`MemberItem-${username}`}>
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
+			{status === 'INVITED' && (
+				<OptionColumn>
+					<InvitationBadge />
+				</OptionColumn>
+			)}
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
 					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />

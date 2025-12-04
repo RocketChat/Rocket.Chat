@@ -1,11 +1,12 @@
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo } from 'react';
 
 import RoomMembersItem from './RoomMembersItem';
+import type { RoomMemberUser } from './types';
 
 type RoomMembersRowProps = {
-	user: Pick<IUser, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'>;
+	user: RoomMemberUser;
 	data: {
 		onClickView: (e: MouseEvent<HTMLElement>) => void;
 		rid: IRoom['_id'];
@@ -25,6 +26,7 @@ const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRe
 			key={index}
 			useRealName={useRealName}
 			username={user.username}
+			status={user.status}
 			_id={user._id}
 			rid={rid}
 			name={user.name}
