@@ -217,6 +217,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
+		"v8-to-istanbul": "^9.3.0",
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
@@ -451,7 +452,7 @@
 		"tweetnacl": "^1.0.3",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "~9.7.2",
+		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",
@@ -465,14 +466,15 @@
 		"zustand": "~5.0.8"
 	},
 	"meteor": {
+		"disableLegacyBuild": true,
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.ts"
-		}
+		},
+		"modern": true
 	},
 	"browserslist": [
-		"last 2 versions",
-		"Firefox ESR"
+		"defaults"
 	],
 	"volta": {
 		"extends": "../../package.json"

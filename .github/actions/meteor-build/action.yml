@@ -152,13 +152,13 @@ runs:
       if: steps.cache-build.outputs.cache-hit != 'true'
       env:
         METEOR_PROFILE: 1000
-        BABEL_ENV: ${{ inputs.type }}
+        # BABEL_ENV: ${{ inputs.type }}
       run: |
         # check if BABEL_ENV is set to coverage
-        if [[ $BABEL_ENV == "coverage" ]]; then
-          echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
-          echo "Coverage enabled"
-        fi
+        # if [[ $BABEL_ENV == "coverage" ]]; then
+        #   echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
+        #   echo "Coverage enabled"
+        # fi
 
         # Restore original package.json so meteor should not copy devDependencies
         mv apps/meteor/package.json.bak apps/meteor/package.json
