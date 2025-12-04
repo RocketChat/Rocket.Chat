@@ -55,7 +55,7 @@ export class MatrixMediaService {
 
 			return mxcUri;
 		} catch (error) {
-			logger.error('Error preparing file for Matrix:', error);
+			logger.error(error, 'Error preparing file for Matrix');
 			throw error;
 		}
 	}
@@ -74,7 +74,7 @@ export class MatrixMediaService {
 
 			return file;
 		} catch (error) {
-			logger.error('Error retrieving local file:', error);
+			logger.error(error, 'Error retrieving local file');
 			return null;
 		}
 	}
@@ -130,7 +130,7 @@ export class MatrixMediaService {
 
 			return uploadedFile._id;
 		} catch (error) {
-			logger.error('Error downloading and storing remote file:', error);
+			logger.error(error, 'Error downloading and storing remote file');
 			throw error;
 		}
 	}

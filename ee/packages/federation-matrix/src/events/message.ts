@@ -413,7 +413,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 
 			await Message.deleteMessage(user, rcMessage);
 		} catch (error) {
-			logger.error('Failed to process Matrix removal redaction:', error);
+			logger.error(error, 'Failed to process Matrix removal redaction');
 		}
 	});
 }

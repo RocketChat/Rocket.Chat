@@ -231,7 +231,7 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 					logger.warn(`Unknown membership type: ${event.content.membership}`);
 			}
 		} catch (error) {
-			logger.error('Failed to process Matrix membership event:', error);
+			logger.error(error, 'Failed to process Matrix membership event');
 		}
 	});
 }

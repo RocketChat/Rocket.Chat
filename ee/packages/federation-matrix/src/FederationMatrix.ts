@@ -228,7 +228,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return matrixRoomResult;
 		} catch (error) {
-			this.logger.error('Failed to create room:', error);
+			this.logger.error(error, 'Failed to create room');
 			throw error;
 		}
 	}
@@ -302,7 +302,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 							userIdSchema.parse(actualMatrixUserId),
 						);
 					} catch (error) {
-						this.logger.error('Error creating or updating bridged user for DM:', error);
+						this.logger.error(error, 'Error creating or updating bridged user for DM');
 					}
 				}
 			}
@@ -311,9 +311,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				mrid: matrixRoomResult.room_id,
 				origin: this.serverName,
 			});
-			this.logger.debug('Direct message room creation completed successfully', room._id);
+			this.logger.debug(room._id, 'Direct message room creation completed successfully');
 		} catch (error) {
-			this.logger.error('Failed to create direct message room:', error);
+			this.logger.error(error, 'Failed to create direct message room');
 			throw error;
 		}
 	}
@@ -367,9 +367,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return lastEventId;
 		} catch (error) {
-			this.logger.error('Failed to handle file message', {
+			this.logger.error({
+				msg: 'Failed to handle file message',
 				messageId: message._id,
-				error,
+				err: error,
 			});
 			throw error;
 		}
@@ -464,7 +465,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
-			this.logger.error('Failed to send message to Matrix:', error);
+			this.logger.error(error, 'Failed to send message to Matrix');
 			throw error;
 		}
 	}
@@ -526,7 +527,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
-			this.logger.error('Failed to send redaction to Matrix:', error);
+			this.logger.error(error, 'Failed to send redaction to Matrix');
 			throw error;
 		}
 	}
@@ -560,7 +561,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}),
 			);
 		} catch (error) {
-			this.logger.error('Failed to invite a user to Matrix:', error);
+			this.logger.error(error, 'Failed to invite a user to Matrix');
 			throw error;
 		}
 	}
@@ -597,7 +598,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Reaction sent to Matrix successfully:', eventId);
 		} catch (error) {
-			this.logger.error('Failed to send reaction to Matrix:', error);
+			this.logger.error(error, 'Failed to send reaction to Matrix');
 			throw error;
 		}
 	}
@@ -651,7 +652,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				break;
 			}
 		} catch (error) {
-			this.logger.error('Failed to remove reaction from Matrix:', error);
+			this.logger.error(error, 'Failed to remove reaction from Matrix');
 			throw error;
 		}
 	}
@@ -679,7 +680,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
 		} catch (error) {
-			this.logger.error('Failed to leave room in Matrix:', error);
+			this.logger.error(error, 'Failed to leave room in Matrix');
 			throw error;
 		}
 	}
@@ -703,7 +704,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${room.federation.mrid} by ${userWhoRemoved.username}`);
 		} catch (error) {
-			this.logger.error('Failed to kick user from Matrix room:', error);
+			this.logger.error(error, 'Failed to kick user from Matrix room');
 			throw error;
 		}
 	}
@@ -738,7 +739,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
 		} catch (error) {
-			this.logger.error('Failed to update message in Matrix:', error);
+			this.logger.error(error, 'Failed to update message in Matrix');
 			throw error;
 		}
 	}

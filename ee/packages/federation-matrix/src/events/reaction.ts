@@ -43,7 +43,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
 		} catch (error) {
-			logger.error('Failed to process Matrix reaction:', error);
+			logger.error(error, 'Failed to process Matrix reaction');
 		}
 	});
 
@@ -87,7 +87,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
 		} catch (error) {
-			logger.error('Failed to process Matrix reaction redaction:', error);
+			logger.error(error, 'Failed to process Matrix reaction redaction');
 		}
 	});
 }
