@@ -8,9 +8,9 @@ const mockNavigate = jest.fn();
 const mockSetModal = jest.fn();
 const mockDispatchToastMessage = jest.fn();
 
-let ABACAvailable = true;
+const useIsABACAvailableMock = jest.fn(() => true);
 
-jest.mock('./useIsABACAvailable', () => jest.fn(() => ABACAvailable));
+jest.mock('./useIsABACAvailable', () => useIsABACAvailableMock);
 
 jest.mock('@rocket.chat/ui-contexts', () => {
 	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
@@ -57,7 +57,7 @@ describe('useABACDeleteRoomModal', () => {
 		mockNavigate.mockClear();
 		mockSetModal.mockClear();
 		mockDispatchToastMessage.mockClear();
-		ABACAvailable = true;
+		useIsABACAvailableMock.mockReturnValue(true);
 	});
 
 	it('should show delete confirmation modal when hook is called', async () => {
@@ -137,7 +137,7 @@ describe('useABACDeleteRoomModal', () => {
 
 	// When  in CE, the admins should be able to remove rooms from ABAC management
 	it('should allow deletion even when ABAC is not available', async () => {
-		ABACAvailable = false;
+		useIsABACAvailableMock.mockReturnValue(false);
 		const deleteEndpointMock = jest.fn().mockResolvedValue(null);
 
 		let confirmHandler: (() => void) | undefined;
