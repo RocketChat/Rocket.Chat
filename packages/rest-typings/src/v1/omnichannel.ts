@@ -3313,17 +3313,7 @@ const POSTLivechatBusinessHoursSaveParamsSchema = {
 			},
 		},
 	},
-	required: [
-		'name',
-		'timezoneName',
-		'daysOpen',
-		'daysTime',
-		'departmentsToApplyBusinessHour',
-		'active',
-		'type',
-		'timezone',
-		'workHours',
-	],
+	required: ['name', 'timezoneName', 'daysOpen', 'daysTime', 'departmentsToApplyBusinessHour', 'active', 'type', 'timezone', 'workHours'],
 	additionalProperties: false,
 };
 
