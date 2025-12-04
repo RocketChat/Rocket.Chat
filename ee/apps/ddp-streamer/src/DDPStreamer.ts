@@ -221,7 +221,7 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			void Presence.setConnectionStatus(userId, connection.id);
+			void Presence.updateConnection(userId, connection.id);
 		});
 	}
 

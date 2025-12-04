@@ -1,24 +1,12 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IUserSession } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, UsersSessions } from '@rocket.chat/models';
+import type { AnyBulkWriteOperation } from 'mongodb';
 
-import { processPresenceAndStatus } from './processPresenceAndStatus';
-
-const MAX_CONNECTIONS = 200;
-const CONNECTION_STATUS_UPDATE_INTERVAL = 60000;
-const lastConnectionStatusUpdate = new Map<string, number>();
-
-const shouldUpdateConnectionStatus = (connectionId: string): boolean => {
-	const now = Date.now();
-	const last = lastConnectionStatusUpdate.get(connectionId) ?? 0;
-	if (now - last < CONNECTION_STATUS_UPDATE_INTERVAL) {
-		return false;
-	}
-	lastConnectionStatusUpdate.set(connectionId, now);
-	return true;
-};
+import { UPDATE_INTERVAL, STALE_THRESHOLD, MAX_CONNECTIONS } from './lib/constants';
+import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -38,6 +26,21 @@ export class Presence extends ServiceClass implements IPresence {
 	private connsPerInstance = new Map<string, number>();
 
 	private peakConnections = 0;
+
+	private lastUpdate = new Map<string, number>();
+
+	shouldUpdateConnectionStatus(session: string): boolean {
+		const lastUpdated = this.lastUpdate.get(session);
+		if (!lastUpdated) {
+			this.lastUpdate.set(session, Date.now());
+			return true;
+		}
+		if (Date.now() - lastUpdated > UPDATE_INTERVAL) {
+			this.lastUpdate.set(session, Date.now());
+			return true;
+		}
+		return false;
+	}
 
 	constructor() {
 		super();
@@ -95,7 +98,7 @@ export class Presence extends ServiceClass implements IPresence {
 		this.staleConInterval = setInterval(async () => {
 			const affectedUsers = await this.removeStaleConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
-		}, 10000);
+		}, UPDATE_INTERVAL);
 
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
@@ -109,12 +112,8 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async stopped(): Promise<void> {
-		if (this.lostConTimeout) {
-			clearTimeout(this.lostConTimeout);
-		}
-		if (this.staleConInterval) {
-			clearInterval(this.staleConInterval);
-		}
+		clearTimeout(this.lostConTimeout);
+		clearInterval(this.staleConInterval);
 	}
 
 	async toggleBroadcast(enabled: boolean): Promise<void> {
@@ -158,13 +157,99 @@ export class Presence extends ServiceClass implements IPresence {
 		};
 	}
 
-	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
-		if (!uid || !session) {
+	async updateConnection(uid: string, session: string): Promise<{ uid: string; session: string } | undefined> {
+		if (!this.shouldUpdateConnectionStatus(session)) {
+			return;
+		}
+		console.debug(`Updating connection for user ${uid} and session ${session}`);
+		const result = await UsersSessions.updateConnectionById(uid, session);
+		if (result.modifiedCount === 0) {
 			return;
 		}
 
-		lastConnectionStatusUpdate.delete(session);
+		await this.updateUserPresence(uid);
 
+		return { uid, session };
+	}
+
+	/**
+	 * Runs the cleanup job to remove stale connections and sync user status.
+	 */
+	async removeStaleConnections() {
+		console.debug('[Cleanup] Starting stale connections cleanup job.');
+		const cutoffDate = new Date(Date.now() - STALE_THRESHOLD);
+
+		// STEP 1: Find users who have AT LEAST one stale connection
+		// We project the whole connections array because we need to inspect it in memory
+		const cursor = UsersSessions.find({ 'connections._updatedAt': { $lte: cutoffDate } }, { projection: { _id: 1, connections: 1 } });
+
+		const bulkSessionOps: AnyBulkWriteOperation<IUserSession>[] = [];
+		const bulkUserOps: AnyBulkWriteOperation<IUser>[] = [];
+		const processedUserIds = [];
+
+		// STEP 2: Iterate and Calculate
+		for await (const sessionDoc of cursor) {
+			const userId = sessionDoc._id;
+			const allConnections = sessionDoc.connections || [];
+
+			// Separate valid vs stale based on the cutoff
+			const staleConnections = allConnections.filter((c) => c._updatedAt <= cutoffDate);
+			const validConnections = allConnections.filter((c) => c._updatedAt > cutoffDate);
+
+			if (staleConnections.length === 0) continue; // Should not happen due to query, but safe to check
+
+			// Collect the IDs of the connections we want to remove
+			const staleConnectionIds = staleConnections.map((c) => c.id);
+
+			// OPERATION A: Remove specific connections from usersSessions
+			// We use the unique IDs to be surgically precise
+			bulkSessionOps.push({
+				updateOne: {
+					filter: { _id: userId },
+					update: {
+						$pull: {
+							connections: { id: { $in: staleConnectionIds } },
+						},
+					},
+				},
+			});
+
+			// OPERATION B: Update user status if they will have NO connections left
+			if (validConnections.length === 0) {
+				bulkUserOps.push({
+					updateOne: {
+						filter: { _id: userId },
+						update: { $set: { status: UserStatus.OFFLINE } },
+					},
+				});
+				processedUserIds.push(userId);
+			}
+		}
+
+		// STEP 3: Execute the operations
+		if (bulkSessionOps.length > 0) {
+			await UsersSessions.col.bulkWrite(bulkSessionOps);
+			console.log(`[Cleanup] Removed stale connections for ${bulkSessionOps.length} users.`);
+		}
+
+		if (bulkUserOps.length > 0) {
+			await Users.col.bulkWrite(bulkUserOps);
+			console.log(`[Cleanup] Marked ${bulkUserOps.length} users as OFFLINE.`);
+		}
+
+		console.debug(`[Cleanup] Finished stale connections cleanup job.`);
+
+		return processedUserIds;
+	}
+
+	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
+		if (uid === 'rocketchat.internal.admin.test') {
+			console.log('Admin detected, skipping removal of connection for testing purposes.');
+			return;
+		}
+		if (!uid || !session) {
+			return;
+		}
 		await UsersSessions.removeConnectionByConnectionId(session);
 
 		await this.updateUserPresence(uid);
@@ -173,34 +258,6 @@ export class Presence extends ServiceClass implements IPresence {
 			uid,
 			session,
 		};
-	}
-
-	async removeStaleConnections(): Promise<string[]> {
-		const cutoff = new Date(Date.now() - CONNECTION_STATUS_UPDATE_INTERVAL);
-		const users = UsersSessions.find({ 'connections._updatedAt': { $lt: cutoff } });
-		const affectedUsers = new Set<string>();
-		for await (const userSession of users) {
-			const staleConnectionIds = userSession.connections.filter((conn) => conn._updatedAt < cutoff).map((conn) => conn.id);
-			if (staleConnectionIds.length === 0) {
-				continue;
-			}
-			const result = await UsersSessions.updateOne(
-				{ _id: userSession._id },
-				{
-					$pull: {
-						connections: { id: { $in: staleConnectionIds } },
-					},
-				},
-			);
-			if (result.modifiedCount > 0) {
-				for (const id of staleConnectionIds) {
-					lastConnectionStatusUpdate.delete(id);
-				}
-				affectedUsers.add(userSession._id);
-			}
-		}
-
-		return Array.from(affectedUsers);
 	}
 
 	async removeLostConnections(nodeID?: string): Promise<string[]> {
@@ -255,10 +312,7 @@ export class Presence extends ServiceClass implements IPresence {
 		return !!result.modifiedCount;
 	}
 
-	async setConnectionStatus(uid: string, session: string, status?: UserStatus): Promise<boolean> {
-		if (!status && !shouldUpdateConnectionStatus(session)) {
-			return false;
-		}
+	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
 		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
 		await this.updateUserPresence(uid);

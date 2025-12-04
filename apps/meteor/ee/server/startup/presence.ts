@@ -29,7 +29,7 @@ Meteor.startup(() => {
 		await Presence.removeLostConnections(nodeId);
 	});
 
-	Accounts.onLogin((login: { connection: { id: string }; user: { _id: string } }): void => {
+	Accounts.onLogin((login: any): void => {
 		if (!login.connection.id) {
 			return;
 		}
@@ -42,7 +42,7 @@ Meteor.startup(() => {
 
 		const _messageReceived = session.heartbeat.messageReceived.bind(session.heartbeat);
 		session.heartbeat.messageReceived = function messageReceived() {
-			void Presence.setConnectionStatus(login.user._id, login.connection.id);
+			void Presence.updateConnection(login.user._id, login.connection.id);
 			return _messageReceived();
 		};
 

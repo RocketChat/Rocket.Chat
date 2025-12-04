@@ -25,13 +25,13 @@ Meteor.methods<ServerMethods>({
 		if (!userId || !connection) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, connection.id, UserStatus.ONLINE);
+		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, connection.id);
 	},
 	'UserPresence:away'() {
 		const { userId, connection } = this;
 		if (!userId || !connection) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, connection.id, UserStatus.AWAY);
+		return Presence.setConnectionStatus(userId, UserStatus.AWAY, connection.id);
 	},
 });

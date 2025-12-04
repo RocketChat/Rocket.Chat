@@ -5,7 +5,9 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
 	clearConnectionsFromInstanceId(instanceId: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>;
-	updateConnectionStatusById(uid: string, connectionId: string, status?: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
+	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
+	updateConnectionById(uid: string, connectionId: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
+	findStaleConnections(cutoff: Date): FindCursor<IUserSession>;
 	removeConnectionsFromInstanceId(instanceId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	removeConnectionByConnectionId(connectionId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	findByInstanceId(instanceId: string): FindCursor<IUserSession>;
