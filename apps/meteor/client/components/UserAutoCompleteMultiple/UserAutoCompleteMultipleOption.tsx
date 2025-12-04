@@ -1,16 +1,26 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Option, OptionDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 type UserAutoCompleteMultipleOptionProps = {
-	label: {
-		_federated?: boolean;
-	} & Pick<IUser, 'username' | 'name'>;
+	label: ReactNode;
+	value: string | number;
+	selected?: boolean;
+	focus?: boolean;
+	role?: string;
 };
 
-const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps): ReactElement => {
-	const { name, username, _federated } = label;
+type UserLabel = {
+	_federated?: boolean;
+} & Pick<IUser, 'username' | 'name'>;
+
+const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps) => {
+	if (!label || typeof label !== 'object' || !('username' in label)) {
+		return null;
+	}
+
+	const { name, username, _federated } = label as UserLabel;
 
 	return (
 		<Option
@@ -20,11 +30,9 @@ const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMul
 			icon={_federated ? 'globe' : undefined}
 			key={username}
 			label={
-				(
-					<>
-						{name || username} {!_federated && <OptionDescription>({username})</OptionDescription>}
-					</>
-				) as any
+				<>
+					{name || username} {!_federated && <OptionDescription>({username})</OptionDescription>}
+				</>
 			}
 			children={undefined}
 		/>
