@@ -236,7 +236,7 @@ jobs:
         run: |
           mkdir -p ./apps/meteor/.log_data
           pwd
-          tree -a . | tee ./apps/meteor/.log_data/folder_contents.txt
+          tree -a -L 4 ./apps/meteor/bundle | tee ./apps/meteor/.log_data/folder_contents.txt
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'

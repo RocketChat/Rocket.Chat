@@ -73,6 +73,7 @@ export const test = baseTest.extend<BaseTest>({
 
 				const entries = [];
 				const paths: Record<string, any> = {};
+				const errors: Record<string, any> = [];
 				for await (const entry of coverage) {
 					if (!entry.url || !entry.source) {
 						continue;
@@ -97,6 +98,7 @@ export const test = baseTest.extend<BaseTest>({
 						sourceMapFile = JSON.parse(fs.readFileSync(pathToSourceMap, 'utf8'));
 					} catch (error) {
 						console.warn('Error reading source map file', pathToSourceMap);
+						errors.push({ error, pathToSourceMap, cwd: process.cwd() });
 						continue;
 					}
 
@@ -129,6 +131,7 @@ export const test = baseTest.extend<BaseTest>({
 				);
 
 				fs.writeFileSync(path.join(PATH_LOG_DATA, `playwright_paths_${uuid()}.json`), JSON.stringify(paths));
+				fs.writeFileSync(path.join(PATH_LOG_DATA, `playwright_errors_${uuid()}.json`), JSON.stringify(errors));
 
 				await page.close();
 			}),
