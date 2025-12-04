@@ -4,15 +4,15 @@ import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
-import AdminABACLogs from './AdminABACLogs';
-import AdminABACRoomAttributes from './AdminABACRoomAttributes';
-import AdminABACRooms from './AdminABACRooms';
-import AdminABACSettings from './AdminABACSettings';
+import AttributesContextualBar from './ABACAttributesTab/AttributesContextualBar';
+import AttributesContextualBarWithData from './ABACAttributesTab/AttributesContextualBarWithData';
+import AttributesPage from './ABACAttributesTab/AttributesPage';
+import LogsPage from './ABACLogsTab/LogsPage';
+import RoomsContextualBar from './ABACRoomsTab/RoomsContextualBar';
+import RoomsContextualBarWithData from './ABACRoomsTab/RoomsContextualBarWithData';
+import RoomsPage from './ABACRoomsTab/RoomsPage';
+import SettingsPage from './ABACSettingTab/SettingsPage';
 import AdminABACTabs from './AdminABACTabs';
-import RoomAttributesContextualBar from './RoomAttributesContextualBar';
-import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
-import RoomsContextualBar from './RoomsContextualBar';
-import RoomsContextualBarWithData from './RoomsContextualBarWithData';
 import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -67,19 +67,19 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 				)}
 				<AdminABACTabs />
 				<PageContent>
-					{tab === 'settings' && <AdminABACSettings />}
-					{tab === 'room-attributes' && <AdminABACRoomAttributes />}
-					{tab === 'rooms' && <AdminABACRooms />}
-					{tab === 'logs' && <AdminABACLogs />}
+					{tab === 'settings' && <SettingsPage />}
+					{tab === 'room-attributes' && <AttributesPage />}
+					{tab === 'rooms' && <RoomsPage />}
+					{tab === 'logs' && <LogsPage />}
 				</PageContent>
 			</Page>
 			{tab !== undefined && context !== undefined && (
 				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
 					{tab === 'room-attributes' && (
 						<>
-							{context === 'new' && isABACAvailable === true && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
+							{context === 'new' && isABACAvailable === true && <AttributesContextualBar onClose={() => handleCloseContextualbar()} />}
 							{context === 'edit' && _id && isABACAvailable === true && (
-								<RoomAttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
+								<AttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
 							)}
 						</>
 					)}

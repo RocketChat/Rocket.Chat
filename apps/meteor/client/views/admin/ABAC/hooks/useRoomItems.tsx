@@ -4,13 +4,13 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useABACDeleteRoomModal } from './useABACDeleteRoomModal';
+import { useDeleteRoomModal } from './useDeleteRoomModal';
 import { useIsABACAvailable } from './useIsABACAvailable';
 
 export const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const setABACDeleteRoomModal = useABACDeleteRoomModal(room);
+	const setDeleteRoomModal = useDeleteRoomModal(room);
 	const isABACAvailable = useIsABACAvailable();
 
 	const editAction = useEffectEvent(() => {
@@ -34,7 +34,7 @@ export const useRoomItems = (room: { rid: string; name: string }): GenericMenuIt
 			iconColor: 'danger',
 			icon: 'cross' as const,
 			content: <Box color='danger'>{t('Remove')}</Box>,
-			onClick: setABACDeleteRoomModal,
+			onClick: setDeleteRoomModal,
 		},
 	];
 };
