@@ -30,20 +30,22 @@ export const useAppSlashCommands = () => {
 			return;
 		}
 		return apps('apps', ([key, [command]]) => {
-			if (key.startsWith('command/')) {
-				if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
-					delete slashCommands.commands[command];
-				}
-
-				invalidate();
+			if (!key.startsWith('command/')) {
+				return;
 			}
+
+			if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
+				delete slashCommands.commands[command];
+			}
+
+			invalidate();
 		});
 	}, [apps, uid, invalidate]);
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
 	const { data } = useQuery({
-		queryKey: appsQueryKeys.slashCommands,
+		queryKey: appsQueryKeys.slashCommands(),
 		enabled: !!uid,
 		structuralSharing: false,
 		queryFn: async () => {
