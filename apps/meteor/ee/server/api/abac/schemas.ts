@@ -1,4 +1,4 @@
-import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom, IServerEvent } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IAuditServerActor, IRoom, IServerEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
 
@@ -226,7 +226,12 @@ const GetAbacAuditEventsResponseSchemaObject = {
 };
 
 export const GETAbacAuditEventsResponseSchema = ajv.compile<{
-	events: IServerEvent[];
+	events: (
+		| IServerEvents['abac.action.performed']
+		| IServerEvents['abac.attribute.changed']
+		| IServerEvents['abac.object.attribute.changed']
+		| IServerEvents['abac.object.attributes.removed']
+	)[];
 	count: number;
 	offset: number;
 	total: number;

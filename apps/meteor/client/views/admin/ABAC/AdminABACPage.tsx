@@ -4,6 +4,7 @@ import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
+import AdminABACLogs from './AdminABACLogs';
 import AdminABACRoomAttributes from './AdminABACRoomAttributes';
 import AdminABACSettings from './AdminABACSettings';
 import AdminABACTabs from './AdminABACTabs';
@@ -65,6 +66,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 				<PageContent>
 					{tab === 'settings' && <AdminABACSettings />}
 					{tab === 'room-attributes' && <AdminABACRoomAttributes />}
+					{tab === 'logs' && <AdminABACLogs />}
 				</PageContent>
 			</Page>
 			{tab === 'room-attributes' && context !== undefined && (

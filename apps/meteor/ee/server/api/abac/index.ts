@@ -1,6 +1,6 @@
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents, Users } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -400,7 +400,12 @@ const abacEndpoints = API.v1
 			const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				events,
+				events: events as (
+					| IServerEvents['abac.action.performed']
+					| IServerEvents['abac.attribute.changed']
+					| IServerEvents['abac.object.attribute.changed']
+					| IServerEvents['abac.object.attributes.removed']
+				)[],
 				count: events.length,
 				offset,
 				total,
