@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACRoomAttributeMenu from './AdminABACRoomAttributeMenu';
-import useIsABACAvailable from './hooks/useIsABACAvailable';
+import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -49,7 +49,7 @@ const AdminABACRoomAttributes = () => {
 	);
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.roomAttributes.roomAttributesList(query),
+		queryKey: ABACQueryKeys.roomAttributes.list(query),
 		queryFn: () => getAttributes(query),
 	});
 
@@ -68,9 +68,9 @@ const AdminABACRoomAttributes = () => {
 					</Button>
 				</Box>
 			</Margins>
-			{(!data || data.attributes.length === 0) && !isLoading ? (
+			{(!data || data.attributes?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
-					<GenericNoResults icon='list-alt' title={t('No_attributes')} description={t('No_attributes_description')} />
+					<GenericNoResults icon='list-alt' title={t('ABAC_No_attributes')} description={t('ABAC_No_attributes_description')} />
 				</Box>
 			) : (
 				<>
@@ -81,7 +81,7 @@ const AdminABACRoomAttributes = () => {
 							<GenericTableHeaderCell key='spacer' w={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
-							{data?.attributes.map((attribute) => (
+							{data?.attributes?.map((attribute) => (
 								<GenericTableRow key={attribute._id}>
 									<GenericTableCell>{attribute.key}</GenericTableCell>
 									<GenericTableCell>{attribute.values.join(', ')}</GenericTableCell>
