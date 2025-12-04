@@ -24,7 +24,7 @@ const mockAttribute3 = {
 	values: ['US', 'EU', 'APAC'],
 };
 
-jest.mock('./hooks/useAttributeList', () => ({
+jest.mock('../hooks/useAttributeList', () => ({
 	useAttributeList: jest.fn(() => ({
 		data: [mockAttribute1, mockAttribute2, mockAttribute3],
 		fetchNextPage: jest.fn(),

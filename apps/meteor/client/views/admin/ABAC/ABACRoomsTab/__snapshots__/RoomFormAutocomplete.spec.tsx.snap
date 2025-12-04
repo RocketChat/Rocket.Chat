@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`ABACRoomAutocomplete renders Default without crashing 1`] = `
+exports[`RoomFormAutocomplete renders Default without crashing 1`] = `
 <body>
   <div>
     <div

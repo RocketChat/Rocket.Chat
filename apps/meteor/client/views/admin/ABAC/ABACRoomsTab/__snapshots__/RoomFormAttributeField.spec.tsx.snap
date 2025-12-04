@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`ABACAttributeField renders Default without crashing 1`] = `
+exports[`RoomFormAttributeField renders Default without crashing 1`] = `
 <body>
   <div>
     <div

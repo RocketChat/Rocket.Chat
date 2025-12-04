@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] = `
+exports[`AttributesForm renders NewAttribute without crashing 1`] = `
 <body>
   <div>
     <div
@@ -173,7 +173,7 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
 </body>
 `;
 
-exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashing 1`] = `
+exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
 <body>
   <div>
     <div

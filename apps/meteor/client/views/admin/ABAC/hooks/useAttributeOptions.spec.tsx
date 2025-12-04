@@ -9,7 +9,7 @@ const mockSetModal = jest.fn();
 const mockDispatchToastMessage = jest.fn();
 const useIsABACAvailableMock = jest.fn(() => true);
 
-jest.mock('./hooks/useIsABACAvailable', () => ({
+jest.mock('./useIsABACAvailable', () => ({
 	useIsABACAvailable: () => useIsABACAvailableMock(),
 }));
 

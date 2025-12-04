@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`AdminABACSettingToggle should be disabled when abac license is not installed 1`] = `
+exports[`SettingToggle should be disabled when abac license is not installed 1`] = `
 <body>
   <div>
     <div
@@ -68,7 +68,7 @@ exports[`AdminABACSettingToggle should be disabled when abac license is not inst
 </body>
 `;
 
-exports[`AdminABACSettingToggle should render the setting toggle when setting exists 1`] = `
+exports[`SettingToggle should render the setting toggle when setting exists 1`] = `
 <body>
   <div>
     <div
@@ -135,7 +135,7 @@ exports[`AdminABACSettingToggle should render the setting toggle when setting ex
 </body>
 `;
 
-exports[`AdminABACSettingToggle should show skeleton when loading 1`] = `
+exports[`SettingToggle should show skeleton when loading 1`] = `
 <body>
   <div>
     <div

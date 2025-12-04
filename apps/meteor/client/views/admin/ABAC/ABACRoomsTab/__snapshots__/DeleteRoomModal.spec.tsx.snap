@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`ABACDeleteRoomModal should render without crashing 1`] = `
+exports[`DeleteRoomModal should render without crashing 1`] = `
 <body>
   <div>
     <dialog
