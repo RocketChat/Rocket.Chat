@@ -155,6 +155,8 @@ export async function createDirectRoom(
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
 		).toArray();
 
+		const creatorUser = options?.creator ? roomMembers.find((member) => member._id === options?.creator) : undefined;
+
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 
@@ -162,7 +164,7 @@ export async function createDirectRoom(
 				roomExtraData.federated && options?.creator !== member._id
 					? {
 							status: 'INVITED',
-							inviterUsername: options?.creator,
+							inviterUsername: creatorUser?.username,
 						}
 					: {};
 
