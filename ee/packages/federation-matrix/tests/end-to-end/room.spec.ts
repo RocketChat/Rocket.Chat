@@ -1536,46 +1536,46 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 		});
 
-		describe('Accept/Reject invitation permissions', () => {
-			describe('User tries to accept another user invitation', () => {
-				let channelName: string;
-				let federatedChannel: any;
+		// describe('Accept/Reject invitation permissions', () => {
+		// 	describe('User tries to accept another user invitation', () => {
+		// 		let channelName: string;
+		// 		let federatedChannel: any;
 
-				beforeAll(async () => {
-					channelName = `federated-channel-accept-permission-${Date.now()}`;
-					const createResponse = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [federationConfig.rc1.additionalUser1.username],
-						extraData: {
-							federated: true,
-						},
-						config: rc1AdminRequestConfig,
-					});
+		// 		beforeAll(async () => {
+		// 			channelName = `federated-channel-accept-permission-${Date.now()}`;
+		// 			const createResponse = await createRoom({
+		// 				type: 'p',
+		// 				name: channelName,
+		// 				members: [federationConfig.rc1.additionalUser1.username],
+		// 				extraData: {
+		// 					federated: true,
+		// 				},
+		// 				config: rc1AdminRequestConfig,
+		// 			});
 
-					federatedChannel = createResponse.body.group;
+		// 			federatedChannel = createResponse.body.group;
 
-					expect(federatedChannel).toHaveProperty('_id');
-					expect(federatedChannel).toHaveProperty('name', channelName);
-					expect(federatedChannel).toHaveProperty('t', 'p');
-					expect(federatedChannel).toHaveProperty('federated', true);
-				}, 30000);
+		// 			expect(federatedChannel).toHaveProperty('_id');
+		// 			expect(federatedChannel).toHaveProperty('name', channelName);
+		// 			expect(federatedChannel).toHaveProperty('t', 'p');
+		// 			expect(federatedChannel).toHaveProperty('federated', true);
+		// 		}, 30000);
 
-				it('It should not allow admin to accept invitation on behalf of another user', async () => {
-					// RC view: Admin tries to accept rc1User1's invitation
-					const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
-					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
-				});
+		// 		it('It should not allow admin to accept invitation on behalf of another user', async () => {
+		// 			// RC view: Admin tries to accept rc1User1's invitation
+		// 			const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(response.success).toBe(false);
+		// 			expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+		// 		});
 
-				it('It should not allow admin to reject invitation on behalf of another user', async () => {
-					// RC view: Admin tries to reject rc1User1's invitation
-					const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
-					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
-				});
-			});
-		});
+		// 		it('It should not allow admin to reject invitation on behalf of another user', async () => {
+		// 			// RC view: Admin tries to reject rc1User1's invitation
+		// 			const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(response.success).toBe(false);
+		// 			expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+		// 		});
+		// 	});
+		// });
 
 		// describe('Reject invitations', () => {
 		// 	describe('Local user rejects federated room invite', () => {

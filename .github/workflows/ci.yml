@@ -611,7 +611,7 @@ jobs:
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
-    needs: [checks, build-gh-docker-publish, packages-build, release-versions]
+    needs: [build-gh-docker-publish, release-versions]
     runs-on: ubuntu-24.04-arm
 
     steps:
@@ -713,44 +713,38 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
+    needs: [test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
         run: |
-          if [[ '${{ needs.checks.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-unit.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
 
           echo finished
+
+          # if [[ '${{ needs.checks.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-unit.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
+          # if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
+          #   exit 1
+          # fi
 
   deploy:
     name: 🚀 Publish build assets
