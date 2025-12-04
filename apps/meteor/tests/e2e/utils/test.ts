@@ -95,7 +95,11 @@ export const test = baseTest.extend<BaseTest>({
 
 					let sourceMapFile;
 					try {
-						const file = fs.readFileSync(pathToSourceMap, 'utf8');
+						let file = fs.readFileSync(pathToSourceMap, 'utf8');
+						// Strip XSSI protection prefix if present ()]}' at the start of the file)
+						if (file.startsWith(")]}'")) {
+							file = file.slice(5);
+						}
 						sourceMapFile = JSON.parse(file);
 					} catch (error) {
 						console.warn('Error reading source map file', pathToSourceMap, error);
