@@ -1,28 +1,26 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import useRoomAttributeItems from './useRoomAttributeOptions';
+import { useRoomAttributeItems } from './useRoomAttributeOptions';
 import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 const mockNavigate = jest.fn();
 const mockSetModal = jest.fn();
 const mockDispatchToastMessage = jest.fn();
+const useIsABACAvailableMock = jest.fn(() => true);
 
-let ABACAvailable = true;
+jest.mock('./hooks/useIsABACAvailable', () => ({
+	useIsABACAvailable: () => useIsABACAvailableMock(),
+}));
 
-jest.mock('./hooks/useIsABACAvailable', () => jest.fn(() => ABACAvailable));
-
-jest.mock('@rocket.chat/ui-contexts', () => {
-	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
-	return {
-		...originalModule,
-		useRouter: () => ({
-			navigate: mockNavigate,
-		}),
-		useSetModal: () => mockSetModal,
-		useToastMessageDispatch: () => mockDispatchToastMessage,
-	};
-});
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	...jest.requireActual('@rocket.chat/ui-contexts'),
+	useRouter: () => ({
+		navigate: mockNavigate,
+	}),
+	useSetModal: () => mockSetModal,
+	useToastMessageDispatch: () => mockDispatchToastMessage,
+}));
 
 const mockAttribute = {
 	_id: 'attribute-1',
@@ -124,7 +122,7 @@ describe('useRoomAttributeItems', () => {
 	});
 
 	it('should disable edit when ABAC is not available', () => {
-		ABACAvailable = false;
+		useIsABACAvailableMock.mockReturnValue(false);
 		const { result } = renderHook(() => useRoomAttributeItems(mockAttribute), {
 			wrapper: baseAppRoot
 				.withSetting('ABAC_Enabled', false, {

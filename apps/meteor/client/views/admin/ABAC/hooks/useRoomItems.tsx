@@ -4,10 +4,10 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import useABACDeleteRoomModal from './useABACDeleteRoomModal';
-import useIsABACAvailable from './useIsABACAvailable';
+import { useABACDeleteRoomModal } from './useABACDeleteRoomModal';
+import { useIsABACAvailable } from './useIsABACAvailable';
 
-const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps[] => {
+export const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const setABACDeleteRoomModal = useABACDeleteRoomModal(room);
@@ -38,5 +38,3 @@ const useRoomItems = (room: { rid: string; name: string }): GenericMenuItemProps
 		},
 	];
 };
-
-export default useRoomItems;

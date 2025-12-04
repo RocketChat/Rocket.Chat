@@ -13,7 +13,7 @@ import RoomAttributesContextualBar from './RoomAttributesContextualBar';
 import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
 import RoomsContextualBar from './RoomsContextualBar';
 import RoomsContextualBarWithData from './RoomsContextualBarWithData';
-import useIsABACAvailable from './hooks/useIsABACAvailable';
+import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';

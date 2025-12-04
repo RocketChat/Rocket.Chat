@@ -1,10 +1,10 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import useIsABACAvailable from './useIsABACAvailable';
+import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-const useABACAttributeList = (filter?: string) => {
+export const useABACAttributeList = (filter?: string) => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
@@ -37,5 +37,3 @@ const useABACAttributeList = (filter?: string) => {
 		}),
 	});
 };
-
-export default useABACAttributeList;

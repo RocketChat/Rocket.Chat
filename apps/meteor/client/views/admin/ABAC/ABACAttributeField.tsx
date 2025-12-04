@@ -5,7 +5,7 @@ import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AdminABACRoomFormData } from './AdminABACRoomForm';
-import useABACAttributeList from './hooks/useABACAttributeList';
+import { useABACAttributeList } from './hooks/useABACAttributeList';
 
 type ABACAttributeAutocompleteProps = {
 	onRemove: () => void;

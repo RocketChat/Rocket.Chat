@@ -1,7 +1,7 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import useRoomAttributeItems from './useRoomAttributeOptions';
+import { useRoomAttributeItems } from './useRoomAttributeOptions';
 
 type AdminABACRoomAttributeMenuProps = {
 	attribute: { _id: string; key: string };

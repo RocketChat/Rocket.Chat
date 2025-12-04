@@ -25,8 +25,7 @@ const mockAttribute3 = {
 };
 
 jest.mock('./hooks/useABACAttributeList', () => ({
-	__esModule: true,
-	default: jest.fn(() => ({
+	useABACAttributeList: jest.fn(() => ({
 		data: [mockAttribute1, mockAttribute2, mockAttribute3],
 		fetchNextPage: jest.fn(),
 		isLoading: false,

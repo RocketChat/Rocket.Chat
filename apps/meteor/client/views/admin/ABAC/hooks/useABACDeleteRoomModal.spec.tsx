@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import useABACDeleteRoomModal from './useABACDeleteRoomModal';
+import { useABACDeleteRoomModal } from './useABACDeleteRoomModal';
 
 const mockSetModal = jest.fn();
 

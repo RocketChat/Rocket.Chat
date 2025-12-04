@@ -6,7 +6,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminABACRoomMenu from './AdminABACRoomMenu';
-import useIsABACAvailable from './hooks/useIsABACAvailable';
+import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
