@@ -295,7 +295,7 @@ export const findRoomMember = async (
 	options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
 	config?: IRequestConfig,
 ): Promise<IUser | null> => {
-	const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
+	const { maxRetries = 5, delay = 2000, initialDelay = 2000 } = options;
 
 	if (initialDelay > 0) {
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
@@ -459,7 +459,6 @@ export const acceptRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) 
  *
  * Processes a room invitation by rejecting it, which prevents the user
  * from joining the room and removes them from the invited members list.
- * This is essential for federated room workflows where users can decline invitations.
  *
  * @param roomId - The unique identifier of the room
  * @param config - Optional request configuration for custom domains

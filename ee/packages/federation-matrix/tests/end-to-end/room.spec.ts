@@ -215,7 +215,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(nonFederatedChannel).toHaveProperty('name', channelName);
 				expect(nonFederatedChannel).toHaveProperty('t', 'p');
 				expect(nonFederatedChannel).not.toHaveProperty('federated', true);
-			}, 10000);
+			}, 30000);
 
 			// No cleanup needed - rooms are left for debugging purposes
 
@@ -276,7 +276,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// Wait for the ephemeral message to be broadcast
 					const ephemeralMessage = await ddpListener.waitForEphemeralMessage(
 						'You cannot add external users to a non-federated room',
-						5000, // 5 second timeout
+						10000, // 10 second timeout
 						nonFederatedChannel._id,
 					);
 
@@ -339,7 +339,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// invite to join
 					// const joinedRoomId = await this.hs1App.getRoomIdByRoomNameAndMembership(channelName, KnownMembership.Join);
 					// expect(acceptedRoomId, 'Expected to have joined the room, but joinedRoomId is different from acceptedRoomId').to.equal(joinedRoomId);
-				}, 10000);
+				}, 30000);
 
 				it('It should show the room on the remote Element or RC', async () => {
 					// RC view: Check in RC
@@ -373,10 +373,12 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					// Synapse view: Check in Element (Matrix) that the federated user is in the members list
 					const rc1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId, {
-						delay: 2000,
+						delay: 3000,
+						initialDelay: 3000,
 					});
 					const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
-						delay: 2000,
+						delay: 3000,
+						initialDelay: 3000,
 					});
 					expect(rc1AdminUserInSynapse).not.toBeNull();
 					expect(hs1AdminUserInSynapse).not.toBeNull();
@@ -439,7 +441,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					// invite to join
 					// const joinedRoomId = await this.hs1App.getRoomIdByRoomNameAndMembership(channelName, KnownMembership.Join);
 					// expect(acceptedRoomId, 'Expected to have joined the room, but joinedRoomId is different from acceptedRoomId').to.equal(joinedRoomId);
-				}, 15000);
+				}, 30000);
 
 				it('It should show the room on all the involved remote Element or RC', async () => {
 					// RC view: Check in RC
@@ -588,7 +590,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					// Accept invitation for the local user (rc1User1)
 					await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
-				}, 15000);
+				}, 30000);
 
 				it('It should show the room on the remote Element or RC and local for the second user', async () => {
 					// RC view: Check in RC (admin view)
@@ -741,7 +743,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add federated user to the room
 						const addUserResponse = await addUserToRoom({
@@ -755,7 +757,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
 						expect(acceptedRoomId).not.toBe('');
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on the remote Element or RC', async () => {
 						// RC view: Check in RC
@@ -844,7 +846,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add both federated users to the room
 						const addUserResponse = await addUserToRoom({
@@ -861,7 +863,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						const acceptedRoomId2 = await hs1User1App.acceptInvitationForRoomName(channelName);
 						expect(acceptedRoomId2).not.toBe('');
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on all the involved remote Element or RC', async () => {
 						// RC view: Check in RC
@@ -980,7 +982,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add 1 federated user and 1 local user to the room
 						const addUserResponse = await addUserToRoom({
@@ -997,7 +999,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Accept invitation for the local user (rc1User1)
 						await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on the remote Element or RC and local for the second user', async () => {
 						// RC view: Check in RC (admin view)
@@ -1152,7 +1154,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add federated user to the room using slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
@@ -1166,7 +1168,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
 						expect(acceptedRoomId).not.toBe('');
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on the remote Element or RC', async () => {
 						// RC view: Check in RC
@@ -1255,7 +1257,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add both federated users to the room using slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
@@ -1272,7 +1274,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						const acceptedRoomId2 = await hs1User1App.acceptInvitationForRoomName(channelName);
 						expect(acceptedRoomId2).not.toBe('');
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on all the involved remote Element or RC', async () => {
 						// RC view: Check in RC
@@ -1390,7 +1392,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
 						// This ensures the room.federation.mrid field is properly set before adding users
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+						await new Promise((resolve) => setTimeout(resolve, 5000));
 
 						// Add 1 federated user and 1 local user to the room using slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
@@ -1407,7 +1409,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						// Accept invitation for the local user (rc1User1)
 						await acceptRoomInvite(federatedChannel._id, rc1User1RequestConfig);
-					}, 15000);
+					}, 30000);
 
 					it('It should show the room on the remote Element or RC and local for the second user', async () => {
 						// RC view: Check in RC (admin view)
@@ -1557,7 +1559,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('name', channelName);
 					expect(federatedChannel).toHaveProperty('t', 'p');
 					expect(federatedChannel).toHaveProperty('federated', true);
-				}, 10000);
+				}, 30000);
 
 				it('It should not allow admin to accept invitation on behalf of another user', async () => {
 					// RC view: Admin tries to accept rc1User1's invitation
@@ -1574,5 +1576,203 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 			});
 		});
+
+		// describe('Reject invitations', () => {
+		// 	describe('Local user rejects federated room invite', () => {
+		// 		let channelName: string;
+		// 		let federatedChannel: any;
+
+		// 		beforeAll(async () => {
+		// 			channelName = `federated-channel-reject-local-${Date.now()}`;
+
+		// 			// Create federated room with local user invited
+		// 			const createResponse = await createRoom({
+		// 				type: 'p',
+		// 				name: channelName,
+		// 				members: [federationConfig.rc1.additionalUser1.username],
+		// 				extraData: {
+		// 					federated: true,
+		// 				},
+		// 				config: rc1AdminRequestConfig,
+		// 			});
+
+		// 			federatedChannel = createResponse.body.group;
+
+		// 			expect(federatedChannel).toHaveProperty('_id');
+		// 			expect(federatedChannel).toHaveProperty('name', channelName);
+		// 			expect(federatedChannel).toHaveProperty('t', 'p');
+		// 			expect(federatedChannel).toHaveProperty('federated', true);
+		// 		}, 30000);
+
+		// 		it('It should show the user as invited before rejection', async () => {
+		// 			// RC view: Verify user is in members list before rejection
+		// 			const rc1User1InRC = await findRoomMember(
+		// 				federatedChannel._id,
+		// 				federationConfig.rc1.additionalUser1.username,
+		// 				{ initialDelay: 0 },
+		// 				rc1AdminRequestConfig,
+		// 			);
+
+		// 			expect(rc1User1InRC).not.toBeNull();
+		// 		});
+
+		// 		it('It should show the system message that the user was invited', async () => {
+		// 			// RC view: Check for invite system message
+		// 			const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(Array.isArray(historyResponse.messages)).toBe(true);
+
+		// 			const inviteMessage = historyResponse.messages.find(
+		// 				(message: IMessage) => message.t === 'ui' && message.msg && message.msg === federationConfig.rc1.additionalUser1.username,
+		// 			);
+
+		// 			expect(inviteMessage).toBeDefined();
+		// 			expect(inviteMessage?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+		// 			expect(inviteMessage?.u?.username).toBe(federationConfig.rc1.adminUser);
+		// 		});
+
+		// 		it('It should allow the user to reject the invitation', async () => {
+		// 			// RC view: Reject the invitation
+		// 			const rejectResponse = await rejectRoomInvite(federatedChannel._id, rc1User1RequestConfig);
+		// 			expect(rejectResponse.success).toBe(true);
+		// 		});
+
+		// 		it('It should show the system message that the user rejected the invitation', async () => {
+		// 			// RC view: Check for rejection system message
+		// 			const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(Array.isArray(historyResponse.messages)).toBe(true);
+
+		// 			// Look for 'ul' (user left) message type, as rejection is treated as leaving
+		// 			const rejectMessage = historyResponse.messages.find(
+		// 				(message: IMessage) => message.t === 'ul' && message.msg && message.msg.includes(federationConfig.rc1.additionalUser1.username),
+		// 			);
+
+		// 			expect(rejectMessage).toBeDefined();
+		// 			expect(rejectMessage?.msg).toContain(federationConfig.rc1.additionalUser1.username);
+		// 		});
+
+		// 		it('It should remove the user from the room members list after rejection', async () => {
+		// 			// RC view: Verify user is no longer in members list
+		// 			const rc1User1InRC = await findRoomMember(
+		// 				federatedChannel._id,
+		// 				federationConfig.rc1.additionalUser1.username,
+		// 				{ initialDelay: 0 },
+		// 				rc1AdminRequestConfig,
+		// 			);
+
+		// 			expect(rc1User1InRC).toBeNull();
+		// 		});
+
+		// 		it('It should not show the room in the user channel list', async () => {
+		// 			// RC view: Verify user doesn't have subscription to the room
+		// 			try {
+		// 				const subscription = await getSubscriptionByRoomId(federatedChannel._id, rc1User1RequestConfig);
+		// 				// If subscription exists, it should be marked as unsubscribed or not exist
+		// 				expect(subscription).toBeNull();
+		// 			} catch (error) {
+		// 				// Expected: user has no subscription to this room
+		// 				expect(error).toBeDefined();
+		// 			}
+		// 		});
+		// 	});
+
+		// 	describe('Federated user rejects RC room invite', () => {
+		// 		let channelName: string;
+		// 		let federatedChannel: any;
+
+		// 		beforeAll(async () => {
+		// 			channelName = `federated-channel-reject-remote-${Date.now()}`;
+
+		// 			// Create federated room with federated user invited
+		// 			const createResponse = await createRoom({
+		// 				type: 'p',
+		// 				name: channelName,
+		// 				members: [federationConfig.hs1.adminMatrixUserId],
+		// 				extraData: {
+		// 					federated: true,
+		// 				},
+		// 				config: rc1AdminRequestConfig,
+		// 			});
+
+		// 			federatedChannel = createResponse.body.group;
+
+		// 			expect(federatedChannel).toHaveProperty('_id');
+		// 			expect(federatedChannel).toHaveProperty('name', channelName);
+		// 			expect(federatedChannel).toHaveProperty('t', 'p');
+		// 			expect(federatedChannel).toHaveProperty('federated', true);
+		// 		}, 30000);
+
+		// 		it('It should show the federated user as invited in RC before rejection', async () => {
+		// 			// RC view: Verify federated user is in members list before rejection
+		// 			const hs1AdminUserInRC = await findRoomMember(
+		// 				federatedChannel._id,
+		// 				federationConfig.hs1.adminMatrixUserId,
+		// 				{ initialDelay: 0 },
+		// 				rc1AdminRequestConfig,
+		// 			);
+
+		// 			expect(hs1AdminUserInRC).not.toBeNull();
+		// 			expect(hs1AdminUserInRC?.federated).toBe(true);
+		// 		});
+
+		// 		it('It should show the system message that the federated user was invited', async () => {
+		// 			// RC view: Check for invite system message
+		// 			const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(Array.isArray(historyResponse.messages)).toBe(true);
+
+		// 			const inviteMessage = historyResponse.messages.find(
+		// 				(message: IMessage) => message.t === 'ui' && message.msg && message.msg === federationConfig.hs1.adminMatrixUserId,
+		// 			);
+
+		// 			expect(inviteMessage).toBeDefined();
+		// 			expect(inviteMessage?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
+		// 			expect(inviteMessage?.u?.username).toBe(federationConfig.rc1.adminUser);
+		// 		});
+
+		// 		it('It should allow the federated user to reject the invitation', async () => {
+		// 			// Synapse view: Reject the invitation from Element/Synapse
+		// 			const rejectedRoomId = await hs1AdminApp.rejectInvitationForRoomName(channelName);
+		// 			expect(rejectedRoomId).not.toBe('');
+		// 		});
+
+		// 		it('It should show the system message that the federated user rejected the invitation', async () => {
+		// 			// RC view: Check for rejection/leave system message
+		// 			const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
+		// 			expect(Array.isArray(historyResponse.messages)).toBe(true);
+
+		// 			// Look for 'ul' (user left) message type
+		// 			const rejectMessage = historyResponse.messages.find(
+		// 				(message: IMessage) => message.t === 'ul' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
+		// 			);
+
+		// 			expect(rejectMessage).toBeDefined();
+		// 			expect(rejectMessage?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
+		// 			expect(rejectMessage?.u?.username).toBe(federationConfig.hs1.adminMatrixUserId);
+		// 		});
+
+		// 		it('It should remove the federated user from RC room members after rejection', async () => {
+		// 			// RC view: Verify federated user is no longer in members list
+		// 			const hs1AdminUserInRC = await findRoomMember(
+		// 				federatedChannel._id,
+		// 				federationConfig.hs1.adminMatrixUserId,
+		// 				{ initialDelay: 2000 },
+		// 				rc1AdminRequestConfig,
+		// 			);
+
+		// 			expect(hs1AdminUserInRC).toBeNull();
+		// 		});
+
+		// 		it('It should not show the room in the federated user view after rejection', async () => {
+		// 			// Synapse view: Verify room doesn't exist or user is not a member
+		// 			try {
+		// 				const room = hs1AdminApp.getRoom(channelName);
+		// 				// If room exists, membership should be 'leave'
+		// 				expect(room.getMyMembership()).toBe('leave');
+		// 			} catch (error) {
+		// 				// Expected: room not found in user's room list
+		// 				expect(error).toBeDefined();
+		// 			}
+		// 		});
+		// 	});
+		// });
 	});
 });

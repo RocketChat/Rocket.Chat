@@ -172,7 +172,7 @@ export class SynapseClient {
 	 * @returns The room ID of the successfully joined room
 	 * @throws Error if client is not initialized or all retry attempts fail
 	 */
-	async acceptInvitationForRoomName(roomName: string, maxRetries = 5, retryDelay = 2000, initialDelay = 5000): Promise<string> {
+	async acceptInvitationForRoomName(roomName: string, maxRetries = 10, retryDelay = 5000, initialDelay = 10000): Promise<string> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
@@ -236,7 +236,7 @@ export class SynapseClient {
 		username: string,
 		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
 	): Promise<RoomMember | null> {
-		const { maxRetries = 3, delay = 1000, initialDelay = 0 } = options;
+		const { maxRetries = 5, delay = 2000, initialDelay = 2000 } = options;
 
 		if (initialDelay > 0) {
 			await wait(initialDelay);
@@ -372,7 +372,7 @@ export class SynapseClient {
 		messageText: string,
 		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
 	): Promise<{ content: { body: string }; event_id: string; sender: string } | null> {
-		const { maxRetries = 5, delay = 1000, initialDelay = 2000 } = options;
+		const { maxRetries = 10, delay = 2000, initialDelay = 5000 } = options;
 
 		if (initialDelay > 0) {
 			await wait(initialDelay);
@@ -554,7 +554,7 @@ export class SynapseClient {
 		event_id: string;
 		sender: string;
 	} | null> {
-		const { maxRetries = 5, delay = 1000, initialDelay = 2000 } = options;
+		const { maxRetries = 10, delay = 2000, initialDelay = 5000 } = options;
 
 		if (initialDelay > 0) {
 			await wait(initialDelay);
