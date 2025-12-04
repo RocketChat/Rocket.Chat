@@ -67,7 +67,7 @@
 		"@rocket.chat/ui-video-conf": "workspace:^",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-styling-webpack": "^1.0.1",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/blocks": "^8.6.14",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
