@@ -27,7 +27,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				roomId: matrixRoom._id,
 			});
 		} catch (error) {
-			logger.error('Error handling Matrix typing event:', error);
+			logger.error(error, 'Error handling Matrix typing event');
 		}
 	});
 
@@ -79,7 +79,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 			});
 			logger.debug(`Updated presence for user ${matrixUser._id} to ${status} from Matrix federation`);
 		} catch (error) {
-			logger.error('Error handling Matrix presence event:', error);
+			logger.error(error, 'Error handling Matrix presence event');
 		}
 	});
 };

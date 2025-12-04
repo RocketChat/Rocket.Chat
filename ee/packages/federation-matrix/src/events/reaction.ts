@@ -17,14 +17,14 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const [userPart, domain] = event.sender.split(':');
 			if (!userPart || !domain) {
-				logger.error('Invalid Matrix sender ID format:', event.sender);
+				logger.error({ sender: event.sender, msg: 'Invalid Matrix sender ID format' });
 				return;
 			}
 
 			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${internalUsername}`);
+				logger.error({ reactionTargetEventId, internalUsername, msg: 'No RC user mapping found for Matrix event' });
 				return;
 			}
 
@@ -43,7 +43,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
 		} catch (error) {
-			logger.error('Failed to process Matrix reaction:', error);
+			logger.error(error, 'Failed to process Matrix reaction');
 		}
 	});
 
@@ -87,7 +87,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
 		} catch (error) {
-			logger.error('Failed to process Matrix reaction redaction:', error);
+			logger.error(error, 'Failed to process Matrix reaction redaction');
 		}
 	});
 }
