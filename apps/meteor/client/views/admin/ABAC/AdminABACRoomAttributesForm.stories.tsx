@@ -13,7 +13,18 @@ export default {
 	args: {
 		description: 'Create an attribute that can later be assigned to rooms.',
 	},
-	decorators: [mockAppRoot().buildStoryDecorator()],
+	decorators: [
+		mockAppRoot()
+			.withTranslations('en', 'core', {
+				Name: 'Name',
+				Values: 'Values',
+				Add_Value: 'Add Value',
+				Cancel: 'Cancel',
+				Save: 'Save',
+				Required_field: '{{field}} is required',
+			})
+			.buildStoryDecorator(),
+	],
 } satisfies Meta<typeof AdminABACRoomAttributesForm>;
 
 const Template: StoryFn<typeof AdminABACRoomAttributesForm> = (args) => <AdminABACRoomAttributesForm {...args} />;

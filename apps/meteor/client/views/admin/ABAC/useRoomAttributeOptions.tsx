@@ -6,10 +6,10 @@ import { useRouter, useSetModal, useEndpoint, useToastMessageDispatch } from '@r
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
-import useIsABACAvailable from './hooks/useIsABACAvailable';
+import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
-const useRoomAttributeItems = (attribute: { _id: string; key: string }): GenericMenuItemProps[] => {
+export const useRoomAttributeItems = (attribute: { _id: string; key: string }): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
@@ -99,5 +99,3 @@ const useRoomAttributeItems = (attribute: { _id: string; key: string }): Generic
 		},
 	];
 };
-
-export default useRoomAttributeItems;
