@@ -401,12 +401,10 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('Add 2 or more federated users in the creation modal', () => {
-				let channelName: string;
+				const channelName = `federated-channel-multi-${Date.now()}`;
 				let federatedChannel: any;
 
-				beforeAll(async () => {
-					channelName = `federated-channel-multi-${Date.now()}`;
-
+				it('should create the room', async () => {
 					// Create room with both federated users
 					const createResponse = await createRoom({
 						type: 'p',
@@ -427,19 +425,18 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 					expect(federatedChannel).toHaveProperty('federation');
 					expect((federatedChannel as any).federation).toHaveProperty('version', 1);
+				});
 
+				it('should accept invitation for the first user', async () => {
 					// Accept invitations for both users
 					const acceptedRoomId1 = await hs1AdminApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId1).not.toBe('');
+				});
 
+				it('should accept invitation for the second user', async () => {
 					const acceptedRoomId2 = await hs1User1App.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId2).not.toBe('');
-
-					// TODO: Figure out why syncing events are not working and uncomment this when we get the state change from
-					// invite to join
-					// const joinedRoomId = await this.hs1App.getRoomIdByRoomNameAndMembership(channelName, KnownMembership.Join);
-					// expect(acceptedRoomId, 'Expected to have joined the room, but joinedRoomId is different from acceptedRoomId').to.equal(joinedRoomId);
-				}, 15000);
+				});
 
 				it('It should show the room on all the involved remote Element or RC', async () => {
 					// RC view: Check in RC
@@ -1563,14 +1560,18 @@ import { SynapseClient } from '../helper/synapse-client';
 					// RC view: Admin tries to accept rc1User1's invitation
 					const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+					expect(response.error).toBe(
+						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+					);
 				});
 
 				it('It should not allow admin to reject invitation on behalf of another user', async () => {
 					// RC view: Admin tries to reject rc1User1's invitation
 					const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+					expect(response.error).toBe(
+						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+					);
 				});
 			});
 		});
