@@ -211,7 +211,6 @@ jobs:
         shell: bash
         working-directory: ./apps/meteor
         run: |
-          mkdir bundle && cd bundle
           tar xzf /tmp/build/Rocket.Chat.tar.gz
           rm /tmp/build/Rocket.Chat.tar.gz
 
