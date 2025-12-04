@@ -1,7 +1,5 @@
 import { UserStatus, type IUserSessionConnection } from '@rocket.chat/core-typings';
 
-import { STALE_THRESHOLD } from './constants';
-
 /**
  * Defines new connection status compared to a previous connection status
  */
@@ -30,10 +28,6 @@ export const processStatus = (statusConnection: UserStatus, statusDefault: UserS
 	return statusDefault;
 };
 
-const isFresh = (updatedAt: Date): boolean => {
-	return Date.now() - updatedAt.getTime() <= STALE_THRESHOLD;
-};
-
 /**
  * Defines user's status and connection status based on user's connections and default status
  */
@@ -41,10 +35,7 @@ export const processPresenceAndStatus = (
 	userSessions: IUserSessionConnection[] = [],
 	statusDefault = UserStatus.ONLINE,
 ): { status: UserStatus; statusConnection: UserStatus } => {
-	const statusConnection = userSessions
-		.filter((c) => isFresh(c._updatedAt))
-		.map((s) => s.status)
-		.reduce(processConnectionStatus, UserStatus.OFFLINE);
+	const statusConnection = userSessions.map((s) => s.status).reduce(processConnectionStatus, UserStatus.OFFLINE);
 
 	const status = processStatus(statusConnection, statusDefault);
 
