@@ -147,7 +147,13 @@ export const ABACQueryKeys = {
 	},
 	roomAttributes: {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
-		roomAttributesList: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), 'room-attributes-list', query] as const,
-		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), 'attribute', attributeId] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
+	},
+	rooms: {
+		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
+		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
 };
