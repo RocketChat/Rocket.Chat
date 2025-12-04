@@ -18,7 +18,7 @@ export const useAppSlashCommands = () => {
 	const invalidate = useDebouncedCallback(
 		() => {
 			queryClient.invalidateQueries({
-				queryKey: ['apps', 'slashCommands'],
+				queryKey: appsQueryKeys.slashCommands(),
 			});
 		},
 		100,
