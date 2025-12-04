@@ -10,7 +10,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 		const {
 			room_id: roomId,
 			content: { name },
-			state_key: userId,
+			sender: userId,
 		} = event;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
