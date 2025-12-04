@@ -165,6 +165,9 @@ export async function createDirectRoom(
 					? {
 							status: 'INVITED',
 							inviterUsername: creatorUser?.username,
+							open: true,
+							unread: 1,
+							userMentions: 1,
 						}
 					: {};
 
