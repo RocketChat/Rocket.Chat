@@ -95,9 +95,10 @@ export const test = baseTest.extend<BaseTest>({
 
 					let sourceMapFile;
 					try {
-						sourceMapFile = JSON.parse(fs.readFileSync(pathToSourceMap, 'utf8'));
+						const file = fs.readFileSync(pathToSourceMap, 'utf8');
+						sourceMapFile = JSON.parse(file);
 					} catch (error) {
-						console.warn('Error reading source map file', pathToSourceMap);
+						console.warn('Error reading source map file', pathToSourceMap, error);
 						errors.push({ error, pathToSourceMap, cwd: process.cwd() });
 						continue;
 					}
