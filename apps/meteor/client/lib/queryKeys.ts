@@ -118,3 +118,22 @@ export const teamsQueryKeys = {
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
 };
+
+export const ABACQueryKeys = {
+	all: ['abac'] as const,
+	logs: {
+		all: () => [...ABACQueryKeys.all, 'logs'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+	},
+	roomAttributes: {
+		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
+	},
+	rooms: {
+		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
+		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
+	},
+};

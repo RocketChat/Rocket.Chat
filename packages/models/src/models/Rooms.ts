@@ -110,7 +110,29 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 					},
 				},
 			},
+			{
+				key: { 'abacAttributes.key': 1, 'abacAttributes.values': 1 },
+				partialFilterExpression: { abacAttributes: { $exists: true } },
+			},
 		];
+	}
+
+	async isAbacAttributeInUse(key: string, values: string[]): Promise<boolean> {
+		if (!values.length) {
+			return false;
+		}
+		const room = await this.findOne(
+			{
+				abacAttributes: {
+					$elemMatch: {
+						key,
+						values: { $in: values },
+					},
+				},
+			},
+			{ projection: { _id: 1 } },
+		);
+		return !!room;
 	}
 
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
@@ -1246,6 +1268,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
+	findPrivateRoomsByIdsWithAbacAttributes(ids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			_id: { $in: ids },
+			t: 'p',
+			abacAttributes: { $exists: true, $ne: [] },
+		};
+
+		return this.find(query, options);
+	}
+
 	async findBySubscriptionUserId(userId: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<FindCursor<IRoom>> {
 		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
@@ -1923,6 +1955,64 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	updateAbacConfigurationById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				abac: value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAbacAttributesById(_id: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null> {
+		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
+	}
+
+	unsetAbacAttributesById(_id: IRoom['_id']): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $unset: { abacAttributes: 1 } });
+	}
+
+	updateSingleAbacAttributeValuesById(_id: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id, 'abacAttributes.key': key };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'abacAttributes.$.values': values,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	insertAbacAttributeIfNotExistsById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
+		return this.findOneAndUpdate(
+			{ _id, 'abacAttributes.key': { $ne: key } },
+			{ $push: { abacAttributes: { key, values } } },
+			{ returnDocument: 'after', projection: { abacAttributes: 1 } },
+		) as unknown as Promise<IRoom | null>;
+	}
+
+	updateAbacAttributeValuesArrayFilteredById(_id: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null> {
+		return this.findOneAndUpdate(
+			{ _id },
+			{ $set: { 'abacAttributes.$[attr].values': values } },
+			{ arrayFilters: [{ 'attr.key': key }], returnDocument: 'after' },
+		);
+	}
+
+	removeAbacAttributeByRoomIdAndKey(_id: IRoom['_id'], key: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				abacAttributes: { key },
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			t: 'd',
@@ -2221,5 +2311,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	async countDistinctFederationRoomsExcluding(_serverNames: string[] = []): Promise<string[]> {
 		// TODO implement
 		return [];
+	}
+
+	countAbacEnabled(): Promise<number> {
+		return this.countDocuments({ abacAttributes: { $exists: true }, archived: { $ne: true } });
 	}
 }

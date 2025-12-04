@@ -31,6 +31,10 @@ export const links = {
 		trial: `${GO_ROCKET_CHAT_PREFIX}/i/docs-trial`,
 		versionSupport: `${GO_ROCKET_CHAT_PREFIX}/i/version-support`,
 		updateProduct: `${GO_ROCKET_CHAT_PREFIX}/i/update-product`,
+		// TODO: implement abac links when available
+		abacDocs: `${GO_ROCKET_CHAT_PREFIX}/i/TODO-ABAC-DOCS`,
+		abacLicenseRenewalUrl: `${GO_ROCKET_CHAT_PREFIX}/i/TODO-ABAC-LICENSE-RENEWAL-URL`,
+		abacLDAPDocs: `${GO_ROCKET_CHAT_PREFIX}/i/TODO-ABAC-LDAP-DOCS`,
 	},
 	/** @deprecated use `go.rocket.chat` links */
 	desktopAppDownload: 'https://rocket.chat/download',

@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -62,9 +63,15 @@ const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWit
 	'retention' in room && room.retention !== undefined;
 
 const validators: RoomSettingsValidators = {
-	async default({ userId }) {
+	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Viewing_room_administration',
+			});
+		}
+		if (settings.get('ABAC_Enabled') && value && room?.abacAttributes?.length) {
+			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -98,6 +105,13 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
+		if (settings.get('ABAC_Enabled') && room.t === 'p' && value !== 'p' && room?.abacAttributes?.length) {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
 		if (!room.teamId) {
 			return;
 		}
@@ -112,6 +126,13 @@ const validators: RoomSettingsValidators = {
 
 		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
 			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (settings.get('ABAC_Enabled') && team?.type === TEAM_TYPE.PRIVATE && value !== 'p' && room?.abacAttributes?.length) {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
