@@ -211,7 +211,7 @@ jobs:
         shell: bash
         working-directory: ./apps/meteor
         run: |
-          tar xzf /tmp/build/Rocket.Chat.tar.gz
+          tar xzf /tmp/build/Rocket.Chat.tar.gz .
           rm /tmp/build/Rocket.Chat.tar.gz
 
       - name: E2E Test API
@@ -234,9 +234,9 @@ jobs:
         if: inputs.type == 'ui'
         working-directory: .
         run: |
-          mkdir -p ./apps/meteor/log_data
+          mkdir -p ./apps/meteor/.log_data
           pwd
-          tree -a . | tee ./apps/meteor/log_data/folder_contents.txt
+          tree -a . | tee ./apps/meteor/.log_data/folder_contents.txt
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
