@@ -211,7 +211,7 @@ jobs:
         shell: bash
         working-directory: ./apps/meteor
         run: |
-          tar xzf /tmp/build/Rocket.Chat.tar.gz .
+          tar xzf /tmp/build/Rocket.Chat.tar.gz -C .
           rm /tmp/build/Rocket.Chat.tar.gz
 
       - name: E2E Test API
