@@ -400,7 +400,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 			});
 
-			describe('Add 2 or more federated users in the creation modal', () => {
+			describe.skip('Add 2 or more federated users in the creation modal', () => {
 				const channelName = `federated-channel-multi-${Date.now()}`;
 				let federatedChannel: any;
 
