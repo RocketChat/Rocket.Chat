@@ -28,6 +28,7 @@ import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 export type EditCustomFieldsFormData = {
 	field: string;
@@ -86,7 +87,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
-				queryKey: ['livechat-customFields'],
+				queryKey: omnichannelQueryKeys.livechat.customFields(),
 			});
 			onClose();
 		} catch (error) {
