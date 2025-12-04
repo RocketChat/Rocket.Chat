@@ -10,7 +10,7 @@ const useABACAttributeList = (filter?: string) => {
 
 	return useInfiniteQuery({
 		enabled: isABACAvailable,
-		queryKey: ABACQueryKeys.roomAttributes.roomAttributesList({ key: filter ?? '' }),
+		queryKey: ABACQueryKeys.roomAttributes.list({ key: filter ?? '' }),
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			// TODO: Check endpoint types
 			const { attributes, ...data } = await attributesAutoCompleteEndpoint({ key: filter, offset, count: 15 });

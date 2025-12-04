@@ -49,7 +49,7 @@ const AdminABACRoomAttributes = () => {
 	);
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.roomAttributes.roomAttributesList(query),
+		queryKey: ABACQueryKeys.roomAttributes.list(query),
 		queryFn: () => getAttributes(query),
 	});
 

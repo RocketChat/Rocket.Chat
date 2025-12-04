@@ -56,7 +56,7 @@ const AdminABACRooms = () => {
 	}, [debouncedText, filterType, setCurrent]);
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.rooms.roomsList(query),
+		queryKey: ABACQueryKeys.rooms.list(query),
 		queryFn: () => getRooms(query),
 	});
 

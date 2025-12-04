@@ -24,7 +24,7 @@ const ABACRoomAutocomplete = ({ value, onSelectedRoom, ...props }: ABACRoomAutoc
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms');
 
 	const result = useQuery({
-		queryKey: ABACQueryKeys.rooms.roomsAutocomplete(generateQuery(filterDebounced)),
+		queryKey: ABACQueryKeys.rooms.autocomplete(generateQuery(filterDebounced)),
 		queryFn: () => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
 		placeholderData: keepPreviousData,
 		select: (data) =>
