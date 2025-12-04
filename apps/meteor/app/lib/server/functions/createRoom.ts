@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
@@ -63,10 +63,13 @@ async function createUsersSubscriptions({
 		// Invite federated members to the room SYNCRONOUSLY,
 		// since we do not use to invite lots of users at once, this is acceptable.
 		const membersToInvite = members.filter((m) => m !== owner.username);
+
+		await FederationMatrix.ensureFederatedUsersExistLocally(membersToInvite);
+
 		for await (const memberUsername of membersToInvite) {
 			const member = await Users.findOneByUsername(memberUsername);
 			if (!member) {
-				continue;
+				throw new Error('Federated user not found locally');
 			}
 
 			await performAddUserToRoom(room._id, member, owner, {

@@ -1,5 +1,12 @@
 import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
-import { isEditedMessage, isUserNativeFederated, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import {
+	isEditedMessage,
+	isRoomNativeFederated,
+	isUserNativeFederated,
+	type IMessage,
+	type IRoom,
+	type IUser,
+} from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -15,21 +22,36 @@ import { FederationActions } from '../../../../server/services/room/hooks/Before
 
 // Called BEFORE subscriptions are created - creates Matrix room so invites can be sent.
 // The invites are sent by beforeAddUserToRoom callback.
-callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner }) => {
-	if (FederationActions.shouldPerformFederationAction(room)) {
-		const federatedRoomId = room?.federation?.mrid;
-		if (!federatedRoomId) {
-			await FederationMatrix.createRoom(room, owner);
-		} else {
-			// matrix room was already created and passed
-			const fromServer = federatedRoomId.split(':')[1];
-
-			await Rooms.setAsFederated(room._id, {
-				mrid: federatedRoomId,
-				origin: fromServer,
-			});
-		}
+callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members }) => {
+	if (!FederationActions.shouldPerformFederationAction(room)) {
+		return;
 	}
+
+	const federatedRoomId = room?.federation?.mrid;
+	if (!federatedRoomId) {
+		await FederationMatrix.createRoom(room, owner);
+	} else {
+		// TODO unify how to get server
+		// matrix room was already created and passed
+		const fromServer = federatedRoomId.split(':')[1];
+
+		await Rooms.setAsFederated(room._id, {
+			mrid: federatedRoomId,
+			origin: fromServer,
+		});
+	}
+
+	const federationRoom = await Rooms.findOneById(room._id);
+	if (!federationRoom || !isRoomNativeFederated(federationRoom)) {
+		throw new MeteorError('error-invalid-room', 'Invalid room');
+	}
+
+	// TODO this won't be neeeded once we receive all state events at ee/packages/federation-matrix/src/events/member.ts
+	await FederationMatrix.inviteUsersToRoom(
+		federationRoom,
+		members.filter((member) => member !== owner.username),
+		owner,
+	);
 });
 
 callbacks.add(
