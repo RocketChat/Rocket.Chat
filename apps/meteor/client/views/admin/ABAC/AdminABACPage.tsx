@@ -6,11 +6,14 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import AdminABACLogs from './AdminABACLogs';
 import AdminABACRoomAttributes from './AdminABACRoomAttributes';
+import AdminABACRooms from './AdminABACRooms';
 import AdminABACSettings from './AdminABACSettings';
 import AdminABACTabs from './AdminABACTabs';
 import RoomAttributesContextualBar from './RoomAttributesContextualBar';
 import RoomAttributesContextualBarWithData from './RoomAttributesContextualBarWithData';
-import useIsABACAvailable from './hooks/useIsABACAvailable';
+import RoomsContextualBar from './RoomsContextualBar';
+import RoomsContextualBarWithData from './RoomsContextualBarWithData';
+import { useIsABACAvailable } from './hooks/useIsABACAvailable';
 import { Page, PageContent, PageHeader } from '../../../components/Page';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';
@@ -66,14 +69,27 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 				<PageContent>
 					{tab === 'settings' && <AdminABACSettings />}
 					{tab === 'room-attributes' && <AdminABACRoomAttributes />}
+					{tab === 'rooms' && <AdminABACRooms />}
 					{tab === 'logs' && <AdminABACLogs />}
 				</PageContent>
 			</Page>
-			{tab === 'room-attributes' && context !== undefined && (
+			{tab !== undefined && context !== undefined && (
 				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
-					{context === 'new' && isABACAvailable && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
-					{context === 'edit' && _id && isABACAvailable && (
-						<RoomAttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
+					{tab === 'room-attributes' && (
+						<>
+							{context === 'new' && isABACAvailable === true && <RoomAttributesContextualBar onClose={() => handleCloseContextualbar()} />}
+							{context === 'edit' && _id && isABACAvailable === true && (
+								<RoomAttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
+							)}
+						</>
+					)}
+					{tab === 'rooms' && (
+						<>
+							{context === 'new' && isABACAvailable === true && <RoomsContextualBar onClose={() => handleCloseContextualbar()} />}
+							{context === 'edit' && _id && isABACAvailable === true && (
+								<RoomsContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
+							)}
+						</>
 					)}
 				</ContextualbarDialog>
 			)}
