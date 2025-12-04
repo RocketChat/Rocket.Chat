@@ -66,5 +66,16 @@ export const useAppSlashCommands = () => {
 		},
 	});
 
+	/**
+	 * We're deliberately not using `useEffect` here because we want the forEach to run on every call
+	 *
+	 * What we considered:
+	 *
+	 * 1. Slash command list is really small (< 100 items)
+	 * 2. `slashCommands.add` is idempotent
+	 * 3. `slashCommands.add` doesn't trigger re-renders
+	 *
+	 * @TODO the `slashCommands` singleton should be refactored to fit the React data flow
+	 */
 	data?.forEach((command) => slashCommands.add(command));
 };
