@@ -15,7 +15,7 @@ import type {
 	IOutboundMessage,
 	IOutboundPhoneMessageProvider,
 	ProviderMetadata,
-} from '../../src/definition/outboundComunication';
+} from '../../src/definition/outboundCommunication';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
