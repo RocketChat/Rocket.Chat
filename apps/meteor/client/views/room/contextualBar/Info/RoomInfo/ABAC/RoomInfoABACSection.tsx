@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Divider, Tag } from '@rocket.chat/fuselage';
+import { InfoPanelField, InfoPanelLabel } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { InfoPanelField, InfoPanelLabel } from '../../../../../../components/InfoPanel';
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 
 // TODO: Remove type union when ABAC is implemented
