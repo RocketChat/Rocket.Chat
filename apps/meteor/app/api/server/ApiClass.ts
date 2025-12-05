@@ -170,7 +170,7 @@ export class APIClass<
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
-	public authMethods: ((...args: any[]) => any)[];
+	public authMethods: ((req: Request) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
@@ -252,7 +252,7 @@ export class APIClass<
 		return parseJsonQuery(this);
 	}
 
-	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
+	public addAuthMethod(func: (req: Request) => Promise<IUser | undefined>): void {
 		this.authMethods.push(func);
 	}
 
@@ -823,7 +823,7 @@ export class APIClass<
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute.call(this, this.request);
+							const user = await api.authenticatedRoute.call(api, this.request);
 							this.user = user!;
 							this.userId = this.user?._id;
 							const authToken = this.request.headers.get('x-auth-token');
@@ -973,11 +973,8 @@ export class APIClass<
 	}
 
 	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const headers = Object.fromEntries(req.headers.entries());
-
-		const { 'x-user-id': userId } = headers;
-
-		const userToken = String(headers['x-auth-token']);
+		const userId = req.headers.get('x-user-id');
+		const userToken = req.headers.get('x-auth-token');
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -990,6 +987,16 @@ export class APIClass<
 				},
 			);
 		}
+
+		for (const method of this.authMethods) {
+			// eslint-disable-next-line no-await-in-loop -- we want serial execution
+			const user = await method(req);
+
+			if (user) {
+				return user;
+			}
+		}
+
 		return null;
 	}
 
