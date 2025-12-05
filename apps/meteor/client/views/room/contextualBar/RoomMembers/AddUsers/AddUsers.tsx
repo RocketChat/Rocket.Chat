@@ -51,8 +51,21 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
-			await saveAction({ rid, users });
-			dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
+			const result = await saveAction({ rid, users });
+			
+			// Determine the appropriate message based on the results
+			let message: string;
+			if (result.added === 0 && result.alreadyInRoom > 0) {
+				message = t('All_users_are_already_in_this_room');
+			} else if (result.added > 0 && result.alreadyInRoom > 0) {
+				message = t('Some_users_added_others_already_in_room', { added: result.added, total: result.total });
+			} else if (result.added > 0) {
+				message = t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added');
+			} else {
+				message = t('Users_added');
+			}
+			
+			dispatchToastMessage({ type: 'success', message });
 			onClickBack();
 			reload();
 		} catch (error) {
