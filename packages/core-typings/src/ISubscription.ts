@@ -85,3 +85,7 @@ export interface IOmnichannelSubscription extends ISubscription {
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }
+
+export const isInviteSubscription = (subscription: ISubscription): subscription is ISubscription & { status: 'INVITED' } => {
+	return subscription?.status === 'INVITED';
+};

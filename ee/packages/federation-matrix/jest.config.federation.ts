@@ -36,9 +36,9 @@ export default {
 							testops: {
 								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
 								project: 'RC',
-								run: { complete: true },
+								run: { complete: true, title: `Federation (PR: ${process.env.PR_NUMBER})` },
 							},
-							debug: true,
+							debug: false,
 						},
 					] as [string, { [x: string]: unknown }],
 				]
