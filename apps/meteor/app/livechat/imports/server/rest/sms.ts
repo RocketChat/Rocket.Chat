@@ -33,13 +33,15 @@ const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => 
 		throw new Meteor.Error('error-invalid-url', 'Invalid URL');
 	}
 
-	const response = await fetch(fileUrl, { redirect: 'error' });
+	// Follow redirects to support Twilio media URLs that redirect to actual media location
+	const response = await fetch(fileUrl, { redirect: 'follow' });
 
 	const content = Buffer.from(await response.arrayBuffer());
 
 	const contentSize = content.length;
 
 	if (response.status !== 200 || contentSize === 0) {
+		logger.warn(`Failed to fetch file from ${fileUrl}: status ${response.status}, size ${contentSize}`);
 		throw new Meteor.Error('error-invalid-file-uploaded', 'Invalid file uploaded');
 	}
 
