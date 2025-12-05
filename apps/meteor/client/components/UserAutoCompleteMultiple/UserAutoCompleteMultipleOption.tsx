@@ -1,26 +1,22 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Option, OptionDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactNode } from 'react';
+
+import type { UserLabel } from './UserAutoCompleteMultipleOptions';
 
 type UserAutoCompleteMultipleOptionProps = {
-	label: ReactNode;
+	label: UserLabel;
 	value: string | number;
 	selected?: boolean;
 	focus?: boolean;
 	role?: string;
 };
 
-type UserLabel = {
-	_federated?: boolean;
-} & Pick<IUser, 'username' | 'name'>;
-
 const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps) => {
 	if (!label || typeof label !== 'object' || !('username' in label)) {
 		return null;
 	}
 
-	const { name, username, _federated } = label as UserLabel;
+	const { name, username, _federated } = label;
 
 	return (
 		<Option
