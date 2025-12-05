@@ -9,15 +9,10 @@ type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'>
 	workHours: { day: string; start: string; finish: string; open: boolean }[];
 } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
 
-// TODO: Migrate to an API call and return the business hour updated/created
 export const saveBusinessHour = async (businessHour: ISaveBhApiWorkHour) => {
-	const { body } = await request
-		.post(methodCall('livechat:saveBusinessHour'))
-		.set(credentials)
-		.send({ message: JSON.stringify({ params: [businessHour], msg: 'method', method: 'livechat:saveBusinessHour', id: '101' }) })
-		.expect(200);
+	const { body } = await request.post(api('livechat/business-hours.save')).set(credentials).send(businessHour).expect(200);
 
-	return JSON.parse(body.message);
+	return body;
 };
 
 export const createCustomBusinessHour = async (departments: string[], open = true): Promise<ILivechatBusinessHour> => {
@@ -70,17 +65,7 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		workHours: allEnabledWorkHours,
 	};
 
-	await request
-		.post(methodCall('livechat:saveBusinessHour'))
-		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				method: 'livechat:saveBusinessHour',
-				params: [enabledBusinessHour],
-				id: 'id',
-				msg: 'method',
-			}),
-		});
+	await request.post(api('livechat/business-hours.save')).set(credentials).send(enabledBusinessHour).expect(200);
 };
 
 export const disableDefaultBusinessHour = async () => {
@@ -107,17 +92,7 @@ export const disableDefaultBusinessHour = async () => {
 		workHours: allDisabledWorkHours,
 	};
 
-	await request
-		.post(methodCall('livechat:saveBusinessHour'))
-		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				method: 'livechat:saveBusinessHour',
-				params: [disabledBusinessHour],
-				id: 'id',
-				msg: 'method',
-			}),
-		});
+	await request.post(api('livechat/business-hours.save')).set(credentials).send(disabledBusinessHour).expect(200);
 };
 
 const removeCustomBusinessHour = async (businessHourId: string) => {
