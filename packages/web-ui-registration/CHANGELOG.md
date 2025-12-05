@@ -1,5 +1,57 @@
 # @rocket.chat/web-ui-registration
 
+## 25.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 99255057f27b9d854a89da815681a03d0776f846]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  </details>
+
+## 25.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 25.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 25.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 99255057f27b9d854a89da815681a03d0776f846]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  </details>
+
+## 24.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@24.0.2
+  </details>
+
+## 24.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.1
+  </details>
+
 ## 24.0.0
 
 ### Patch Changes

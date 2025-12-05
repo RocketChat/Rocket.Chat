@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage-ui-kit",
-	"version": "24.0.0",
+	"version": "25.0.0",
 	"private": true,
 	"description": "UiKit elements for Rocket.Chat Apps built under Fuselage design system",
 	"homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
@@ -24,20 +24,20 @@
 		"/dist"
 	],
 	"scripts": {
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig-esm.json",
-		"build": "run-s .:build:clean .:build:esm .:build:cjs",
+		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
+		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		".:build:clean": "rimraf dist",
 		".:build:esm": "tsc -p tsconfig.esm.json",
-		".:build:cjs": "tsc -p tsconfig.cjs.json",
-		"test": "jest",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit",
-		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
-		"storybook": "storybook dev -p 6006 --no-version-updates",
-		"build-storybook": "NODE_ENV=production storybook build",
+		"build": "run-s .:build:clean .:build:esm .:build:cjs",
 		"build-preview": "yarn build-storybook",
-		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit"
+		"build-storybook": "NODE_ENV=production storybook build",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.esm.json",
+		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
