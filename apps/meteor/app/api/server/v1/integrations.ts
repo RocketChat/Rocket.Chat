@@ -1,12 +1,21 @@
-import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import type {
+	IIntegration,
+	INewIncomingIntegration,
+	INewOutgoingIntegration,
+	OutgoingIntegrationEvent,
+	IntegrationScriptEngine,
+} from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
-	isIntegrationsCreateProps,
+	ajv,
 	isIntegrationsHistoryProps,
 	isIntegrationsRemoveProps,
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 	isIntegrationsListProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -22,24 +31,248 @@ import { updateIncomingIntegration } from '../../../integrations/server/methods/
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
 import { updateOutgoingIntegration } from '../../../integrations/server/methods/outgoing/updateOutgoingIntegration';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
 
-API.v1.addRoute(
-	'integrations.create',
-	{ authRequired: true, validateParams: isIntegrationsCreateProps },
-	{
-		async post() {
-			switch (this.bodyParams.type) {
-				case 'webhook-outgoing':
-					return API.v1.success({ integration: await addOutgoingIntegration(this.userId, this.bodyParams as INewOutgoingIntegration) });
-				case 'webhook-incoming':
-					return API.v1.success({ integration: await addIncomingIntegration(this.userId, this.bodyParams as INewIncomingIntegration) });
-			}
+export type IntegrationsCreateProps =
+	| {
+			type: 'webhook-incoming';
+			username: string;
+			channel: string;
+			overrideDestinationChannelEnabled?: boolean;
+			scriptEnabled: boolean;
+			script?: string;
+			name: string;
+			enabled: boolean;
+			alias?: string;
+			avatar?: string;
+			emoji?: string;
+			scriptEngine?: IntegrationScriptEngine;
+	  }
+	| {
+			type: 'webhook-outgoing';
+			username: string;
+			channel: string;
+			event: OutgoingIntegrationEvent;
+			targetRoom?: string;
+			urls?: string[];
+			triggerWords?: string[];
+			triggerWordAnywhere?: boolean;
+			token?: string;
+			scriptEnabled: boolean;
+			script?: string;
+			runOnEdits?: boolean;
+			retryFailedCalls?: boolean;
+			retryCount?: number;
+			retryDelay?: string;
+			impersonateUser?: boolean;
+			name: string;
+			enabled: boolean;
+			alias?: string;
+			avatar?: string;
+			emoji?: string;
+			scriptEngine?: IntegrationScriptEngine;
+	  };
 
-			return API.v1.failure('Invalid integration type.');
+const integrationsCreateSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				type: {
+					type: 'string',
+					pattern: 'webhook-incoming',
+					nullable: false,
+				},
+				username: {
+					type: 'string',
+					nullable: false,
+				},
+				channel: {
+					type: 'string',
+					nullable: false,
+				},
+				scriptEnabled: {
+					type: 'boolean',
+					nullable: false,
+				},
+				overrideDestinationChannelEnabled: {
+					type: 'boolean',
+					nullable: true,
+				},
+				script: {
+					type: 'string',
+					nullable: true,
+				},
+				name: {
+					type: 'string',
+					nullable: false,
+				},
+				enabled: {
+					type: 'boolean',
+					nullable: false,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				scriptEngine: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['type', 'username', 'channel', 'scriptEnabled', 'name', 'enabled'],
+			additionalProperties: false,
 		},
+		{
+			type: 'object',
+			properties: {
+				type: {
+					type: 'string',
+					pattern: 'webhook-outgoing',
+					nullable: false,
+				},
+				username: {
+					type: 'string',
+					nullable: false,
+				},
+				channel: {
+					type: 'string',
+					nullable: false,
+				},
+				event: {
+					type: 'string',
+					nullable: false,
+				},
+				targetRoom: {
+					type: 'string',
+					nullable: true,
+				},
+				urls: {
+					type: 'array',
+					items: {
+						type: 'string',
+						minLength: 1,
+					},
+					nullable: true,
+				},
+				triggerWords: {
+					type: 'array',
+					items: {
+						type: 'string',
+						minLength: 1,
+					},
+					nullable: true,
+				},
+				triggerWordAnywhere: {
+					type: 'boolean',
+					nullable: true,
+				},
+				token: {
+					type: 'string',
+					nullable: true,
+				},
+				scriptEnabled: {
+					type: 'boolean',
+					nullable: false,
+				},
+				script: {
+					type: 'string',
+					nullable: true,
+				},
+				runOnEdits: {
+					type: 'boolean',
+					nullable: true,
+				},
+				retryFailedCalls: {
+					type: 'boolean',
+					nullable: true,
+				},
+				retryCount: {
+					type: 'number',
+					nullable: true,
+				},
+				retryDelay: {
+					type: 'string',
+					nullable: true,
+				},
+				impersonateUser: {
+					type: 'boolean',
+					nullable: true,
+				},
+				name: {
+					type: 'string',
+					nullable: false,
+				},
+				enabled: {
+					type: 'boolean',
+					nullable: false,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				scriptEngine: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['type', 'username', 'channel', 'event', 'scriptEnabled', 'name', 'enabled'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isIntegrationsCreateProps = ajv.compile<IntegrationsCreateProps>(integrationsCreateSchema);
+
+const integrationsEndpoints = API.v1.post(
+	'integrations.create',
+	{
+		authRequired: true,
+		body: isIntegrationsCreateProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			200: ajv.compile<{ integration: IIntegration }>({
+				type: 'object',
+				properties: {
+					integration: { $ref: '#/components/schemas/IIntegration' },
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['integration', 'success'],
+			}),
+		},
+	},
+	async function action() {
+		switch (this.bodyParams.type) {
+			case 'webhook-outgoing':
+				return API.v1.success({ integration: await addOutgoingIntegration(this.userId, this.bodyParams as INewOutgoingIntegration) });
+			case 'webhook-incoming':
+				return API.v1.success({ integration: await addIncomingIntegration(this.userId, this.bodyParams as INewIncomingIntegration) });
+		}
+
+		return API.v1.failure('Invalid integration type.');
 	},
 );
 
@@ -272,3 +505,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type IntegrationsEndpoints = ExtractRoutesFromAPI<typeof integrationsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends IntegrationsEndpoints {}
+}
