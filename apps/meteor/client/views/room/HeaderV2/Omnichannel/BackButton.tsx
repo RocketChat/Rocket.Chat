@@ -12,20 +12,14 @@ const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const back = useEffectEvent(() => {
-		switch (routeName) {
-			case 'omnichannel-directory':
-				router.navigate({
-					name: 'omnichannel-directory',
-					params: {
-						...router.getRouteParameters(),
-						bar: 'info',
-					},
-				});
-				break;
-
-			case 'omnichannel-current-chats':
-				router.navigate({ name: 'omnichannel-current-chats' });
-				break;
+		if (routeName === 'omnichannel-directory') {
+			router.navigate({
+				name: 'omnichannel-directory',
+				params: {
+					...router.getRouteParameters(),
+					bar: 'info',
+				},
+			});
 		}
 	});
 

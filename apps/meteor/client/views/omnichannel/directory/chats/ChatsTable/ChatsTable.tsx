@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
+import { useCurrentChats } from './hooks/useCurrentChats';
 import { useChatsQuery } from './useChatsQuery';
 import GenericNoResults from '../../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { links } from '../../../../../lib/links';
-import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 

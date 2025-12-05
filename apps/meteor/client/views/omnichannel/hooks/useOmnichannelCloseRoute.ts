@@ -12,8 +12,8 @@ export const useOmnichannelCloseRoute = () => {
 
 		const routeName = router.getRouteName();
 
-		if (routeName === 'omnichannel-current-chats') {
-			router.navigate({ name: 'omnichannel-current-chats' });
+		if (routeName === 'omnichannel-directory') {
+			router.navigate({ name: 'omnichannel-directory' });
 		} else {
 			router.navigate({ name: 'home' });
 		}
