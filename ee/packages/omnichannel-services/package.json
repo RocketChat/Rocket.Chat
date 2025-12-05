@@ -1,15 +1,19 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.38",
+	"version": "0.3.41",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"eslint": "~8.45.0",
-		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -36,19 +40,15 @@
 		"mongodb": "6.16.0",
 		"pino": "^8.21.0"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../../package.json"
 	}

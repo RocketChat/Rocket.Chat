@@ -18,7 +18,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 			borderRadius='x4'
 			borderColor='extra-light'
 			maxWidth='345px'
-			backgroundColor='surface-neutral'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			color='default'
 		>
