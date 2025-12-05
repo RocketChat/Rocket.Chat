@@ -12,7 +12,7 @@ export abstract class Toolbar {
 }
 
 export class RoomToolbar extends Toolbar {
-	constructor(page: Page) {
+	constructor(private page: Page) {
 		super(page.getByRole('toolbar', { name: 'Primary Room actions' }));
 	}
 
@@ -65,19 +65,19 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get menuItemMentions(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Mentions' });
+		return this.page.getByRole('menuitem', { name: 'Mentions' });
 	}
 
 	get menuItemStarredMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Starred Messages' });
+		return this.page.getByRole('menuitem', { name: 'Starred Messages' });
 	}
 
 	get menuItemPinnedMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Pinned Messages' });
+		return this.page.getByRole('menuitem', { name: 'Pinned Messages' });
 	}
 
 	get menuItemPruneMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Prune Messages' });
+		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
 	}
 
 	async openRoomInfo() {
