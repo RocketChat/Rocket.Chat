@@ -26,9 +26,9 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
 		"check": "node --experimental-transform-types ./src/scripts/check.mts",
-		"replace-sprintf": "node --experimental-transform-types ./src/scripts/replace-sprintf.mts",
 		"lint": "eslint . && node --experimental-transform-types ./src/scripts/check.mts",
 		"lint:fix": "eslint . --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",
+		"replace-sprintf": "node --experimental-transform-types ./src/scripts/replace-sprintf.mts",
 		"test": "jest",
 		"testunit": "jest"
 	},

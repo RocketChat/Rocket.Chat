@@ -1,6 +1,25 @@
 {
 	"name": "@rocket.chat/ddp-client",
 	"version": "0.3.44",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest"
+	},
+	"dependencies": {
+		"@rocket.chat/api-client": "workspace:^",
+		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/media-signaling": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^"
+	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -15,26 +34,7 @@
 	"peerDependencies": {
 		"@rocket.chat/emitter": "*"
 	},
-	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"dependencies": {
-		"@rocket.chat/api-client": "workspace:^",
-		"@rocket.chat/core-typings": "workspace:~",
-		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^"
 	}
 }

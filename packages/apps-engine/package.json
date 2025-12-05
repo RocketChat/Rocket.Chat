@@ -2,49 +2,20 @@
 	"name": "@rocket.chat/apps-engine",
 	"version": "1.58.0",
 	"description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
-	"main": "index",
-	"typings": "index",
-	"scripts": {
-		"start": "run-s .:build:clean .:build:watch",
-		"testunit": "run-p .:test:node .:test:deno",
-		".:test:node": "NODE_ENV=test ts-node --transpileOnly ./tests/runner.ts",
-		".:test:deno": "cd deno-runtime && deno task test",
-		".:lint:eslint": "eslint .",
-		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
-		"lint": "yarn .:lint:eslint && yarn .:lint:deno",
-		"fix-lint": "yarn .:eslint:fix && yarn .:deno-fmt:fix",
-		".:eslint:fix": "eslint . --fix",
-		".:deno-fmt:fix": "cd deno-runtime && deno fmt",
-		"build": "run-s .:build:clean .:build:default .:build:deno-cache",
-		".:build:clean": "rimraf client definition server",
-		".:build:default": "tsc -p tsconfig.json",
-		".:build:deno-cache": "node scripts/deno-cache.js",
-		"dev": "yarn .:build:default --watch",
-		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"bundle": "node scripts/bundle.js",
-		"gen-doc": "typedoc",
-		"prepack": "yarn bundle"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.Apps-engine.git"
-	},
 	"keywords": [
 		"rocket.chat",
 		"team chat",
 		"apps engine"
 	],
-	"files": [
-		"client/**",
-		"definition/**",
-		"deno-runtime/**",
-		"lib/**",
-		"scripts/**",
-		"server/**"
-	],
-	"publishConfig": {
-		"access": "public"
+	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.Apps-engine.git"
+	},
+	"license": "MIT",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -63,11 +34,62 @@
 			"email": "douglas.gubert@rocket.chat"
 		}
 	],
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
+	"files": [
+		"client/**",
+		"definition/**",
+		"deno-runtime/**",
+		"lib/**",
+		"scripts/**",
+		"server/**"
+	],
+	"scripts": {
+		".:build:clean": "rimraf client definition server",
+		".:build:default": "tsc -p tsconfig.json",
+		".:build:deno-cache": "node scripts/deno-cache.js",
+		".:deno-fmt:fix": "cd deno-runtime && deno fmt",
+		".:eslint:fix": "eslint . --fix",
+		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
+		".:lint:eslint": "eslint .",
+		".:test:deno": "cd deno-runtime && deno task test",
+		".:test:node": "NODE_ENV=test ts-node --transpileOnly ./tests/runner.ts",
+		"build": "run-s .:build:clean .:build:default .:build:deno-cache",
+		"bundle": "node scripts/bundle.js",
+		"dev": "yarn .:build:default --watch",
+		"fix-lint": "yarn .:eslint:fix && yarn .:deno-fmt:fix",
+		"gen-doc": "typedoc",
+		"lint": "yarn .:lint:eslint && yarn .:lint:deno",
+		"prepack": "yarn bundle",
+		"start": "run-s .:build:clean .:build:watch",
+		"testunit": "run-p .:test:node .:test:deno",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
-	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
+	"nyc": {
+		"all": true,
+		"extension": [
+			".ts"
+		],
+		"include": [
+			"src/*.ts",
+			"src/server/**/*.ts"
+		],
+		"reporter": [
+			"lcov",
+			"json",
+			"html"
+		]
+	},
+	"dependencies": {
+		"@msgpack/msgpack": "3.0.0-beta2",
+		"adm-zip": "^0.5.16",
+		"debug": "^4.3.7",
+		"esbuild": "~0.25.12",
+		"jose": "^4.15.9",
+		"jsonrpc-lite": "^2.2.0",
+		"lodash.clonedeep": "^4.5.0",
+		"semver": "^7.6.3",
+		"stack-trace": "0.0.10",
+		"uuid": "~11.0.5"
+	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
@@ -93,35 +115,11 @@
 		"typescript": "~5.9.3",
 		"uglify-es": "^3.3.10"
 	},
-	"dependencies": {
-		"@msgpack/msgpack": "3.0.0-beta2",
-		"adm-zip": "^0.5.16",
-		"debug": "^4.3.7",
-		"esbuild": "~0.25.12",
-		"jose": "^4.15.9",
-		"jsonrpc-lite": "^2.2.0",
-		"lodash.clonedeep": "^4.5.0",
-		"semver": "^7.6.3",
-		"stack-trace": "0.0.10",
-		"uuid": "~11.0.5"
-	},
-	"nyc": {
-		"include": [
-			"src/*.ts",
-			"src/server/**/*.ts"
-		],
-		"extension": [
-			".ts"
-		],
-		"reporter": [
-			"lcov",
-			"json",
-			"html"
-		],
-		"all": true
-	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"

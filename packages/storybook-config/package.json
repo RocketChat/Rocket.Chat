@@ -2,6 +2,22 @@
 	"name": "@rocket.chat/storybook-config",
 	"version": "0.0.2",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist",
+		"/main.js",
+		"/main.d.ts",
+		"/preview.js",
+		"/preview.d.ts"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc && yarn run copy-svg",
+		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix"
+	},
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
@@ -36,22 +52,6 @@
 		"@storybook/react": "*",
 		"react": "*"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
-		"build": "rm -rf dist && tsc && yarn run copy-svg",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist",
-		"/main.js",
-		"/main.d.ts",
-		"/preview.js",
-		"/preview.d.ts"
-	],
 	"volta": {
 		"extends": "../../package.json"
 	}
