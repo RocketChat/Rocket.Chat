@@ -8,6 +8,7 @@ import { useDolphinOAuth } from './hooks/customOAuth/useDolphinOAuth';
 import { useDrupalOAuth } from './hooks/customOAuth/useDrupalOAuth';
 import { useGitHubEnterpriseOAuth } from './hooks/customOAuth/useGitHubEnterpriseOAuth';
 import { useGitLabOAuth } from './hooks/customOAuth/useGitLabOAuth';
+import { useGithubOAuth } from './hooks/customOAuth/useGithubOAuth';
 import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
 import { useTokenpassOAuth } from './hooks/customOAuth/useTokenpassOAuth';
 import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
@@ -55,6 +56,7 @@ const AppLayout = () => {
 	useLivechatEnterprise();
 	useNextcloudOAuth();
 	useGitLabOAuth();
+	useGithubOAuth();
 	useGitHubEnterpriseOAuth();
 	useDrupalOAuth();
 	useDolphinOAuth();
