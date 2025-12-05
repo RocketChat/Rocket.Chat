@@ -90,6 +90,7 @@ import type {
 	IFreeSwitchChannelEventDeltaModel,
 	IMediaCallsModel,
 	IMediaCallChannelsModel,
+	IMediaCallChannelLogsModel,
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 } from '@rocket.chat/model-typings';
@@ -185,6 +186,7 @@ export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
 export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
 export const MediaCallChannels = proxify<IMediaCallChannelsModel>('IMediaCallChannelsModel');
+export const MediaCallChannelLogs = proxify<IMediaCallChannelLogsModel>('IMediaCallChannelLogsModel');
 export const MediaCallNegotiations = proxify<IMediaCallNegotiationsModel>('IMediaCallNegotiationsModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
