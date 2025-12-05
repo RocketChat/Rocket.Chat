@@ -199,6 +199,21 @@ jobs:
       - name: Remove unused Docker images
         run: docker system prune -af
 
+      - name: Restore meteor build
+        uses: actions/download-artifact@v6
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
+        with:
+          name: build-coverage
+          path: /tmp/build
+  
+      - name: Unpack meteor build
+        if: inputs.coverage == matrix.mongodb-version && inputs.type == 'ui'
+        shell: bash
+        working-directory: ./apps/meteor
+        run: |
+          tar xzf /tmp/build/Rocket.Chat.tar.gz -C .
+          rm /tmp/build/Rocket.Chat.tar.gz
+
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -214,6 +229,14 @@ jobs:
 
           ls -la $COVERAGE_DIR
           exit $s
+
+      - name: Log folder contents
+        if: inputs.type == 'ui'
+        working-directory: .
+        run: |
+          mkdir -p ./apps/meteor/.log_data
+          pwd
+          tree -a -L 4 ./apps/meteor/bundle | tee ./apps/meteor/.log_data/folder_contents.txt
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
@@ -247,6 +270,8 @@ jobs:
         working-directory: ./apps/meteor
         run: |
           npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
+          cp .nyc_output/* ${COVERAGE_DIR}/.
+          cp .log_data/* ${COVERAGE_DIR}/.
           ls -la $COVERAGE_DIR || true
 
       - name: Store playwright test trace
