@@ -82,9 +82,6 @@ exports[`renders Default without crashing 1`] = `
           </div>
         </div>
       </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-6jv9ad"
-      />
     </div>
   </div>
 </body>
