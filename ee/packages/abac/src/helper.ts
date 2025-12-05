@@ -1,5 +1,17 @@
-import type { ILDAPEntry, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { AbacAttributes } from '@rocket.chat/models';
+import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import { AbacAttributes, Rooms } from '@rocket.chat/models';
+import mem from 'mem';
+
+import {
+	AbacAttributeDefinitionNotFoundError,
+	AbacCannotConvertDefaultRoomToAbacError,
+	AbacInvalidAttributeKeyError,
+	AbacInvalidAttributeValuesError,
+	AbacRoomNotFoundError,
+} from './errors';
+
+export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
+export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
 
 export const extractAttribute = (ldapUser: ILDAPEntry, ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
 	if (!ldapKey || !abacKey) {
@@ -78,79 +90,90 @@ export function diffAttributes(a: IAbacAttributeDefinition[] = [], b: IAbacAttri
 	return diff;
 }
 
-export function didAttributesChange(current: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]) {
-	let added = false;
-	const prevMap = new Map(current.map((a) => [a.key, new Set(a.values)]));
-	for (const { key, values } of next) {
-		const prevValues = prevMap.get(key);
-		if (!prevValues) {
-			added = true;
-			break;
-		}
-		for (const v of values) {
-			if (!prevValues.has(v)) {
-				added = true;
-				break;
-			}
-		}
-		if (added) {
-			break;
-		}
-	}
-
-	return added;
-}
-
 export function validateAndNormalizeAttributes(attributes: Record<string, string[]>): IAbacAttributeDefinition[] {
 	const keyPattern = /^[A-Za-z0-9_-]+$/;
 	const normalized: IAbacAttributeDefinition[] = [];
 
-	if (Object.keys(attributes).length > 10) {
-		throw new Error('error-invalid-attribute-values');
+	const entries = Object.entries(attributes);
+
+	const aggregated = new Map<string, Set<string>>();
+
+	for (const [rawKey, values] of entries) {
+		const key = rawKey.trim();
+
+		if (!key.length || !keyPattern.test(key)) {
+			throw new AbacInvalidAttributeKeyError();
+		}
+
+		const bucket = aggregated.get(key) ?? new Set<string>();
+		if (!aggregated.has(key)) {
+			if (aggregated.size >= MAX_ABAC_ATTRIBUTE_KEYS) {
+				throw new AbacInvalidAttributeValuesError();
+			}
+			aggregated.set(key, bucket);
+		}
+
+		for (const value of values) {
+			if (typeof value !== 'string') {
+				continue;
+			}
+			const trimmed = value.trim();
+			if (!trimmed.length) {
+				continue;
+			}
+			if (bucket.size >= MAX_ABAC_ATTRIBUTE_VALUES && !bucket.has(trimmed)) {
+				throw new AbacInvalidAttributeValuesError();
+			}
+			bucket.add(trimmed);
+		}
 	}
 
-	for (const [key, values] of Object.entries(attributes)) {
-		if (!keyPattern.test(key)) {
-			throw new Error('error-invalid-attribute-key');
+	if (aggregated.size > MAX_ABAC_ATTRIBUTE_KEYS) {
+		throw new AbacInvalidAttributeValuesError();
+	}
+
+	for (const [key, valueSet] of aggregated.entries()) {
+		if (!valueSet.size) {
+			throw new AbacInvalidAttributeValuesError();
 		}
-		if (values.length > 10) {
-			throw new Error('error-invalid-attribute-values');
-		}
-		normalized.push({ key, values });
+		normalized.push({ key, values: Array.from(valueSet) });
 	}
 
 	return normalized;
 }
+
+const getAttributeDefinitionsFromDb = async (keys: string[]) =>
+	AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
+
+const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
+	maxAge: 30_000,
+	cacheKey: JSON.stringify,
+});
 
 export async function ensureAttributeDefinitionsExist(normalized: IAbacAttributeDefinition[]): Promise<void> {
 	if (!normalized.length) {
 		return;
 	}
 
-	const keys = normalized.map((a) => a.key);
-	const attributeDefinitions = await AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
+	const uniqueKeys = [...new Set(normalized.map((a) => a.key))];
+	const attributeDefinitions = await getAttributeDefinitionsCached(uniqueKeys);
 
-	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def: any) => [def.key, new Set(def.values)]));
-	if (definitionValuesMap.size !== keys.length) {
-		throw new Error('error-attribute-definition-not-found');
+	const definitionValuesMap = new Map<string, Set<string>>(attributeDefinitions.map((def) => [def.key, new Set(def.values)]));
+	if (definitionValuesMap.size !== uniqueKeys.length) {
+		throw new AbacAttributeDefinitionNotFoundError();
 	}
 
 	for (const a of normalized) {
 		const allowed = definitionValuesMap.get(a.key);
 		if (!allowed) {
-			throw new Error('error-attribute-definition-not-found');
+			throw new AbacAttributeDefinitionNotFoundError();
 		}
 		for (const v of a.values) {
 			if (!allowed.has(v)) {
-				throw new Error('error-invalid-attribute-values');
+				throw new AbacInvalidAttributeValuesError();
 			}
 		}
 	}
-}
-
-export function wereAttributeValuesAdded(prevValues: string[], newValues: string[]) {
-	const prevSet = new Set(prevValues);
-	return newValues.some((v) => !prevSet.has(v));
 }
 
 export function buildNonCompliantConditions(newAttributes: IAbacAttributeDefinition[]) {
@@ -177,25 +200,6 @@ export function buildCompliantConditions(attributes: IAbacAttributeDefinition[])
 	}));
 }
 
-export function didSubjectLoseAttributes(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
-	if (!previous.length) {
-		return false;
-	}
-	const nextMap = new Map(next.map((a) => [a.key, new Set(a.values)]));
-	for (const prevAttr of previous) {
-		const nextValues = nextMap.get(prevAttr.key);
-		if (!nextValues) {
-			return true;
-		}
-		for (const v of prevAttr.values) {
-			if (!nextValues.has(v)) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IAbacAttributeDefinition[]) {
 	const map = new Map(subjectAttributes.map((a) => [a.key, new Set(a.values)]));
 	const userKeys = Array.from(map.keys());
@@ -219,4 +223,102 @@ export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IA
 		});
 	}
 	return conditions;
+}
+
+export async function getAbacRoom(
+	rid: string,
+): Promise<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>> {
+	const room = await Rooms.findOneByIdAndType<
+		Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
+	>(rid, 'p', {
+		projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+	});
+	if (!room) {
+		throw new AbacRoomNotFoundError();
+	}
+	if (room.default || room.teamDefault) {
+		throw new AbacCannotConvertDefaultRoomToAbacError();
+	}
+
+	return room;
+}
+
+export function diffAttributeSets(
+	current: IAbacAttributeDefinition[] = [],
+	next: IAbacAttributeDefinition[] = [],
+): { added: boolean; removed: boolean } {
+	const currentMap = new Map<string, Set<string>>(current.map((attr) => [attr.key, new Set(attr.values)]));
+	const nextMap = new Map<string, Set<string>>(next.map((attr) => [attr.key, new Set(attr.values)]));
+
+	let added = false;
+	let removed = false;
+
+	// Check removals and per-key value changes
+	for (const [key, currentValues] of currentMap) {
+		const nextValues = nextMap.get(key);
+
+		if (!nextValues) {
+			// Key was completely removed
+			removed = true;
+		} else {
+			// Check removed values
+			for (const v of currentValues) {
+				if (!nextValues.has(v)) {
+					removed = true;
+					break;
+				}
+			}
+		}
+
+		if (removed) {
+			break;
+		}
+	}
+
+	// Check additions (new keys or new values on existing keys)
+	if (!removed) {
+		for (const [key, nextValues] of nextMap) {
+			const currentValues = currentMap.get(key);
+
+			if (!currentValues) {
+				// New key added
+				added = true;
+				break;
+			}
+
+			for (const v of nextValues) {
+				if (!currentValues.has(v)) {
+					added = true;
+					break;
+				}
+			}
+
+			if (added) {
+				break;
+			}
+		}
+	} else {
+		// Even if we've already seen removals, we might still want to know if additions happened too
+		for (const [key, nextValues] of nextMap) {
+			const currentValues = currentMap.get(key);
+
+			if (!currentValues) {
+				added = true;
+				break;
+			}
+
+			for (const v of nextValues) {
+				if (!currentValues.has(v)) {
+					added = true;
+					break;
+				}
+			}
+
+			if (added) {
+				break;
+			}
+		}
+	}
+
+	return { added, removed };
 }
