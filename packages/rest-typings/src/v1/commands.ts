@@ -4,11 +4,6 @@ import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type CommandsEndpoints = {
-	'/v1/commands.get': {
-		GET: (params: { command: string }) => {
-			command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
-		};
-	};
 	'/v1/commands.list': {
 		GET: (
 			params?: PaginatedRequest<{
