@@ -1,7 +1,7 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -39,7 +39,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const saveBusinessHour = useMethod('livechat:saveBusinessHour');
+	const saveBusinessHour = useEndpoint('POST', '/v1/livechat/business-hours.save');
 	const handleRemove = useRemoveBusinessHour();
 
 	const router = useRouter();
