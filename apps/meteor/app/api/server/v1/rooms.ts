@@ -15,6 +15,8 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -381,26 +383,6 @@ API.v1.addRoute(
 					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.favorite',
-	{ authRequired: true },
-	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -1021,6 +1003,16 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -1029,49 +1021,111 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
-export const roomEndpoints = API.v1.get(
-	'rooms.roles',
-	{
-		authRequired: true,
-		query: ajv.compile<{
-			rid: string;
-		}>(isRoomGetRolesPropsSchema),
-		response: {
-			200: ajv.compile<{
-				roles: RoomRoles[];
-			}>({
-				type: 'object',
-				properties: {
-					roles: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								u: {
-									type: 'object',
-									properties: { _id: { type: 'string' }, username: { type: 'string' } },
-									required: ['_id', 'username'],
+
+const RoomsFavoriteSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajv.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
 								},
-								roles: { type: 'array', items: { type: 'string' } },
+								required: ['rid', 'u', 'roles'],
 							},
-							required: ['rid', 'u', 'roles'],
 						},
 					},
-				},
-				required: ['roles'],
-			}),
+					required: ['roles'],
+				}),
+			},
 		},
-	},
-	async function () {
-		const { rid } = this.queryParams;
-		const roles = await executeGetRoomRoles(rid, this.userId);
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.userId);
 
-		return API.v1.success({
-			roles,
-		});
-	},
-);
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { favorite } = this.bodyParams;
+
+			if (!this.bodyParams.hasOwnProperty('favorite')) {
+				return API.v1.failure("The 'favorite' param is required");
+			}
+
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
