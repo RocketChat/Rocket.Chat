@@ -1,24 +1,30 @@
-import { useUserId, useStream } from '@rocket.chat/ui-contexts';
+import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { Users } from '../../../stores';
+import { Messages, Users } from '../../../stores';
 
 export const useUpdateAvatar = () => {
 	const notify = useStream('notify-logged');
-	const uid = useUserId();
+
 	useEffect(() => {
-		if (!uid) {
-			return;
-		}
 		return notify('updateAvatar', (data) => {
 			if ('username' in data) {
 				const { username, etag } = data;
-				username &&
+				if (username) {
 					Users.state.update(
 						(record) => record.username === username,
 						(record) => ({ ...record, avatarETag: etag }),
 					);
+					Messages.state.update(
+						(message) => message.u && message.u.username === username,
+						(message) => ({
+							...message,
+							u: { ...message.u, avatarETag: etag },
+							avatar: etag ? `/avatar/${username}?etag=${etag}` : `/avatar/${username}`,
+						}),
+					);
+				}
 			}
 		});
-	}, [notify, uid]);
+	}, [notify]);
 };
