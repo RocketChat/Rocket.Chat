@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { FederationMatrix, Message, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
@@ -72,9 +72,12 @@ async function createUsersSubscriptions({
 				throw new Error('Federated user not found locally');
 			}
 
-			await performAddUserToRoom(room._id, member, owner, {
+			await Room.createUserSubscription({
+				ts: new Date(),
+				room,
+				userToBeAdded: member,
+				inviter: owner,
 				status: 'INVITED',
-				inviterUsername: owner.username,
 			});
 		}
 

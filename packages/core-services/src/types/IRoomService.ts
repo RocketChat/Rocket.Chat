@@ -43,18 +43,6 @@ export interface IRoomService {
 			inviterUsername?: string;
 		},
 	): Promise<boolean | undefined>;
-	performAddUserToRoom(
-		roomId: string,
-		user: Pick<IUser, '_id' | 'username'>,
-		inviter?: Pick<IUser, '_id' | 'username'>,
-		options?: {
-			skipSystemMessage?: boolean;
-			skipAlertSound?: boolean;
-			createAsHidden?: boolean;
-			status?: SubscriptionStatus;
-			inviterUsername?: string;
-		},
-	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
 	performUserRemoval(roomId: string, user: IUser, options?: { byUser?: IUser }): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
@@ -73,4 +61,14 @@ export interface IRoomService {
 	beforeTopicChange(room: IRoom): Promise<void>;
 	saveRoomName(roomId: string, userId: string, name: string): Promise<void>;
 	addUserRoleRoomScoped(fromUserId: string, userId: string, roomId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
+	createUserSubscription(params: {
+		room: IRoom;
+		ts: Date;
+		userToBeAdded: IUser;
+		inviter?: Pick<IUser, '_id' | 'username'>;
+		createAsHidden?: boolean;
+		skipAlertSound?: boolean;
+		skipSystemMessage?: boolean;
+		status?: 'INVITED';
+	}): Promise<string | undefined>;
 }

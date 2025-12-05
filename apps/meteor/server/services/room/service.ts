@@ -1,4 +1,4 @@
-import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import { isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import type { ISubscription, AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
@@ -8,11 +8,14 @@ import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
-import { addUserToRoom, performAddUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
@@ -77,21 +80,6 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		},
 	): Promise<boolean | undefined> {
 		return addUserToRoom(roomId, user, inviter, options);
-	}
-
-	async performAddUserToRoom(
-		roomId: string,
-		user: Pick<IUser, '_id' | 'username'>,
-		inviter?: Pick<IUser, '_id' | 'username'>,
-		options?: {
-			skipSystemMessage?: boolean;
-			skipAlertSound?: boolean;
-			createAsHidden?: boolean;
-			status?: ISubscription['status'];
-			inviterUsername?: string;
-		},
-	): Promise<boolean | undefined> {
-		return performAddUserToRoom(roomId, user, inviter, options);
 	}
 
 	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
@@ -230,5 +218,73 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 				return;
 			}
 		}
+	}
+
+	async createUserSubscription({
+		room,
+		ts,
+		userToBeAdded,
+		inviter,
+		createAsHidden = false,
+		skipAlertSound = false,
+		skipSystemMessage = false,
+		status,
+	}: {
+		room: IRoom;
+		ts: Date;
+		userToBeAdded: IUser;
+		inviter?: Pick<IUser, '_id' | 'username'>;
+		createAsHidden?: boolean;
+		skipAlertSound?: boolean;
+		skipSystemMessage?: boolean;
+		status?: 'INVITED';
+	}): Promise<string | undefined> {
+		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
+			ts,
+			open: !createAsHidden,
+			alert: createAsHidden ? false : !skipAlertSound,
+			unread: 1,
+			userMentions: 1,
+			groupMentions: 0,
+			...(status && { status }),
+			...(inviter && { inviterUsername: inviter?.username }),
+			...autoTranslateConfig,
+			...getDefaultSubscriptionPref(userToBeAdded),
+		});
+
+		if (insertedId) {
+			void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+		}
+
+		if (!skipSystemMessage && userToBeAdded.username) {
+			if (inviter) {
+				const extraData = {
+					ts,
+					u: {
+						_id: inviter._id,
+						username: inviter.username,
+					},
+				};
+				if (room.teamMain) {
+					await Message.saveSystemMessage('added-user-to-team', room._id, userToBeAdded.username, userToBeAdded, extraData);
+				} else if (status === 'INVITED') {
+					await Message.saveSystemMessage('ui', room._id, userToBeAdded.username, userToBeAdded, {
+						u: { _id: inviter._id, username: inviter.username },
+					});
+				} else {
+					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData);
+				}
+			} else if (room.prid) {
+				await Message.saveSystemMessage('ut', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			} else if (room.teamMain) {
+				await Message.saveSystemMessage('ujt', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			} else {
+				await Message.saveSystemMessage('uj', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			}
+		}
+
+		return insertedId;
 	}
 }
