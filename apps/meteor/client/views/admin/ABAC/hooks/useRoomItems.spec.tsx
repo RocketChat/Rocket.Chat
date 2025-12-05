@@ -5,14 +5,14 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useRoomItems } from './useRoomItems';
 
 const navigateMock = jest.fn();
-const setABACDeleteRoomModalMock = jest.fn();
+const setDeleteRoomModalMock = jest.fn();
 const useIsABACAvailableMock = jest.fn(() => true);
 
 jest.mock('./useIsABACAvailable', () => ({
 	useIsABACAvailable: () => useIsABACAvailableMock(),
 }));
-jest.mock('./useABACDeleteRoomModal', () => ({
-	useABACDeleteRoomModal: () => setABACDeleteRoomModalMock,
+jest.mock('./useDeleteRoomModal', () => ({
+	useDeleteRoomModal: () => setDeleteRoomModalMock,
 }));
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
@@ -118,7 +118,7 @@ describe('useRoomItems', () => {
 		}
 
 		await waitFor(() => {
-			expect(setABACDeleteRoomModalMock).toHaveBeenCalled();
+			expect(setDeleteRoomModalMock).toHaveBeenCalled();
 		});
 	});
 });
