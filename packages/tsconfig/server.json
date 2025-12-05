@@ -6,6 +6,7 @@
 		"lib": ["es2020"],
 		"module": "commonjs",
 		"sourceMap": true,
+		"declaration": true,
 		"declarationMap": true
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"],
