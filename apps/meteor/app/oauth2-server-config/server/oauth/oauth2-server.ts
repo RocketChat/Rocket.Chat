@@ -19,13 +19,18 @@ async function getAccessToken(accessToken: string) {
 }
 
 export async function oAuth2ServerAuth(partialRequest: {
-	headers: Record<string, any>;
-	query: Record<string, any>;
-}): Promise<{ user: IUser } | undefined> {
+	headers: Record<string, string | undefined>;
+	query: Record<string, string | undefined>;
+}): Promise<IUser | undefined> {
 	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
 	const queryToken = partialRequest.query.access_token;
+	const incomingToken = headerToken || queryToken;
 
-	const accessToken = await getAccessToken(headerToken || queryToken);
+	if (!incomingToken) {
+		return;
+	}
+
+	const accessToken = await getAccessToken(incomingToken);
 
 	// If there is no token available or the token has expired, return undefined
 	if (!accessToken || (accessToken.expires != null && accessToken.expires < new Date())) {
@@ -38,7 +43,7 @@ export async function oAuth2ServerAuth(partialRequest: {
 		return;
 	}
 
-	return { user };
+	return user;
 }
 
 oauth2server.app.disable('x-powered-by');
@@ -69,8 +74,13 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
-API.v1.addAuthMethod(async function () {
-	return oAuth2ServerAuth(this.request);
+API.v1.addAuthMethod((request: globalThis.Request) => {
+	const url = new URL(request.url);
+	const headers = Object.fromEntries(request.headers.entries());
+	const query = Object.fromEntries(url.searchParams.entries());
+
+	return oAuth2ServerAuth({ headers, query });
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
+
