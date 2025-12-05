@@ -1,7 +1,7 @@
 import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry } from '@rocket.chat/core-typings';
+import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry, ISubscription } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -10,16 +10,24 @@ import pLimit from 'p-limit';
 
 import { Audit } from './audit';
 import {
+	AbacAttributeInUseError,
+	AbacAttributeNotFoundError,
+	AbacDuplicateAttributeKeyError,
+	AbacInvalidAttributeValuesError,
+	AbacUnsupportedObjectTypeError,
+	AbacUnsupportedOperationError,
+} from './errors';
+import {
+	getAbacRoom,
 	diffAttributes,
 	extractAttribute,
-	didAttributesChange,
-	didSubjectLoseAttributes,
-	wereAttributeValuesAdded,
+	diffAttributeSets,
 	buildCompliantConditions,
 	buildNonCompliantConditions,
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	buildRoomNonCompliantConditionsFromSubject,
+	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -72,7 +80,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
-		if (didSubjectLoseAttributes(user?.abacAttributes || [], finalAttributes)) {
+		if (diffAttributeSets(user?.abacAttributes || [], finalAttributes).removed) {
 			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
 		}
 
@@ -84,7 +92,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor): Promise<void> {
 		if (!attribute.values.length) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		try {
@@ -92,7 +100,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			void Audit.attributeCreated(attribute, actor);
 		} catch (e) {
 			if (e instanceof Error && e.message.includes('E11000')) {
-				throw new Error('error-duplicate-attribute-key');
+				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;
 		}
@@ -204,11 +212,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		if (update.values && !update.values.length) {
-			throw new Error('error-invalid-attribute-values');
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const newKey = update.key ?? existing.key;
@@ -222,7 +230,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (keyChanged || valuesToCheck.length) {
 			const inUse = await Rooms.isAbacAttributeInUse(existing.key, valuesToCheck.length ? valuesToCheck : existing.values);
 			if (inUse) {
-				throw new Error('error-attribute-in-use');
+				throw new AbacAttributeInUseError();
 			}
 		}
 
@@ -243,7 +251,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			void Audit.attributeUpdated(existing, modifier as IAbacAttributeDefinition, actor);
 		} catch (e) {
 			if (e instanceof Error && e.message.includes('E11000')) {
-				throw new Error('error-duplicate-attribute-key');
+				throw new AbacDuplicateAttributeKeyError();
 			}
 			throw e;
 		}
@@ -252,12 +260,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async deleteAbacAttributeById(_id: string, actor: AbacActor): Promise<void> {
 		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		const inUse = await Rooms.isAbacAttributeInUse(existing.key, existing.values);
 		if (inUse) {
-			throw new Error('error-attribute-in-use');
+			throw new AbacAttributeInUseError();
 		}
 
 		await AbacAttributes.removeById(_id);
@@ -267,7 +275,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async getAbacAttributeById(_id: string): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }> {
 		const attribute = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!attribute) {
-			throw new Error('error-attribute-not-found');
+			throw new AbacAttributeNotFoundError();
 		}
 
 		const usageEntries = await Promise.all(
@@ -294,17 +302,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
-		}
+		const room = await getAbacRoom(rid);
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
 			await Rooms.unsetAbacAttributesById(rid);
@@ -320,31 +318,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (didAttributesChange(previous, normalized)) {
+		if (diffAttributeSets(previous, normalized).added) {
 			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
 		}
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
 		const existingIndex = previous.findIndex((a) => a.key === key);
 		const isNewKey = existingIndex === -1;
-		if (isNewKey && previous.length >= 10) {
-			throw new Error('error-invalid-attribute-values');
+		if (isNewKey && previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		await ensureAttributeDefinitionsExist([{ key, values }]);
@@ -379,23 +366,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			actor,
 		);
 
-		if (wereAttributeValuesAdded(prevValues, values)) {
+		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
 			await this.onRoomAttributesChanged(room, next);
 		}
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
-		const room = await Rooms.findOneByIdAndType<Pick<IRoom, '_id' | 'abacAttributes' | 'teamDefault' | 'default' | 'name'>>(rid, 'p', {
-			projection: { abacAttributes: 1, default: 1, teamDefault: 1, name: 1 },
-		});
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
@@ -424,26 +402,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-
-		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
-		}
+		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
-			throw new Error('error-duplicate-attribute-key');
+			throw new AbacDuplicateAttributeKeyError();
 		}
 
-		if (previous.length >= 10) {
-			throw new Error('error-invalid-attribute-values');
+		if (previous.length >= MAX_ABAC_ATTRIBUTE_KEYS) {
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
@@ -457,24 +424,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
-		const room = await Rooms.findOneByIdAndType<
-			Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'default' | 'teamDefault' | 'name'>
-		>(rid, 'p', {
-			projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
-		});
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
+		const room = await getAbacRoom(rid);
 
-		if (room.default || room.teamDefault) {
-			throw new Error('error-cannot-convert-default-room-to-abac');
-		}
-
-		const exists = room?.abacAttributes?.some((a) => a.key === key);
+		const exists = room?.abacAttributes?.find((a) => a.key === key);
 
 		if (exists) {
 			const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
-			const prevValues = room.abacAttributes?.find((a) => a.key === key)?.values ?? [];
 
 			void Audit.objectAttributeChanged(
 				{ _id: room._id, name: room.name },
@@ -483,15 +438,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 				'key-updated',
 				actor,
 			);
-			if (wereAttributeValuesAdded(prevValues, values)) {
+			if (diffAttributeSets([exists], [{ key, values }]).added) {
 				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 			}
 
 			return;
 		}
 
-		if (room?.abacAttributes?.length === 10) {
-			throw new Error('error-invalid-attribute-values');
+		if (room?.abacAttributes?.length === MAX_ABAC_ATTRIBUTE_KEYS) {
+			throw new AbacInvalidAttributeValuesError();
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
@@ -537,6 +492,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
+	private shouldUseCache(decisionCacheTimeout: number, userSub: ISubscription) {
+		// Cases:
+		// 1) Never checked before -> check now
+		// 2) Checked before, but cache expired -> check now
+		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
+		// 4) Cache disabled (0) -> always check
+		return (
+			decisionCacheTimeout > 0 &&
+			userSub.abacLastTimeChecked &&
+			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
+		);
+	}
+
 	async canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
@@ -545,11 +513,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	) {
 		// We may need this flex for phase 2, but for now only ROOM/READ is supported
 		if (objectType !== AbacObjectType.ROOM) {
-			throw new Error('error-abac-unsupported-object-type');
+			throw new AbacUnsupportedObjectTypeError();
 		}
 
 		if (action !== AbacAccessOperation.READ) {
-			throw new Error('error-abac-unsupported-operation');
+			throw new AbacUnsupportedOperationError();
 		}
 
 		if (!user?._id || !room?.abacAttributes?.length) {
@@ -562,16 +530,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
-		// Cases:
-		// 1) Never checked before -> check now
-		// 2) Checked before, but cache expired -> check now
-		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
-		// 4) Cache disabled (0) -> always check
-		if (
-			decisionCacheTimeout > 0 &&
-			userSub.abacLastTimeChecked &&
-			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
-		) {
+		if (this.shouldUseCache(decisionCacheTimeout, userSub)) {
 			this.logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
 			return !!userSub;
 		}
@@ -641,7 +600,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 						Room.removeUserFromRoom(rid, doc, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}).then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change')),
+						})
+							.then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change'))
+							.catch((err) => {
+								this.logger.error({
+									msg: 'Failed to remove user from ABAC room after room attributes changed',
+									rid,
+									err,
+								});
+							}),
 					),
 				);
 			}
@@ -685,7 +652,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 							Room.removeUserFromRoom(room._id, user, {
 								skipAppPreEvents: true,
 								customSystemMessage: 'abac-removed-user-from-room' as const,
-							}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
+							})
+								.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
+								.catch((err) => {
+									this.logger.error({
+										msg: 'Failed to remove user from ABAC room after room attributes changed',
+										rid: room._id,
+										err,
+									});
+								}),
 						),
 					);
 				}
@@ -708,7 +683,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 						Room.removeUserFromRoom(room._id, user, {
 							skipAppPreEvents: true,
 							customSystemMessage: 'abac-removed-user-from-room' as const,
-						}).then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync')),
+						})
+							.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
+							.catch((err) => {
+								this.logger.error({
+									msg: 'Failed to remove user from ABAC room after room attributes changed',
+									rid: room._id,
+									err,
+								});
+							}),
 					),
 				);
 			}

@@ -25,6 +25,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
+		"mem": "^8.1.1",
 		"mongodb": "6.10.0",
 		"p-limit": "3.1.0"
 	},
