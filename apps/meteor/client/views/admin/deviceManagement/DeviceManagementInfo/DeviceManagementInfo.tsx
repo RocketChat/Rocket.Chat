@@ -7,13 +7,16 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
+	InfoPanel,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelText,
 } from '@rocket.chat/ui-client';
 import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
