@@ -12,10 +12,6 @@ type UserAutoCompleteMultipleOptionProps = {
 };
 
 const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps) => {
-	if (!label || typeof label !== 'object' || !('username' in label)) {
-		return null;
-	}
-
 	const { name, username, _federated } = label;
 
 	return (
