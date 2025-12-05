@@ -26,7 +26,6 @@ const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMul
 					{name || username} {!_federated && <OptionDescription>({username})</OptionDescription>}
 				</>
 			}
-			children={undefined}
 		/>
 	);
 };
