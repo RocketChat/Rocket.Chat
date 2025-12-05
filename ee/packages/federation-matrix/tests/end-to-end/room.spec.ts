@@ -9,6 +9,8 @@ import {
 	addUserToRoomSlashCommand,
 	acceptRoomInvite,
 	rejectRoomInvite,
+	getRoomMembers,
+	getSubscriptions,
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -1563,14 +1565,58 @@ import { SynapseClient } from '../helper/synapse-client';
 					// RC view: Admin tries to accept rc1User1's invitation
 					const response = await acceptRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+					expect(response.error).toBe(
+						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+					);
 				});
 
 				it('It should not allow admin to reject invitation on behalf of another user', async () => {
 					// RC view: Admin tries to reject rc1User1's invitation
 					const response = await rejectRoomInvite(federatedChannel._id, rc1AdminRequestConfig);
 					expect(response.success).toBe(false);
-					expect(response.error).toBe('Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite');
+					expect(response.error).toBe(
+						'Failed to handle invite: No subscription found or user does not have permission to accept or reject this invite',
+					);
+				});
+			});
+		});
+
+		describe('Inviting a RC user from Synapse', () => {
+			describe('Room that already contains previous events', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+				let rid: string;
+				beforeAll(async () => {
+					channelName = `federated-channel-from-synapse-${Date.now()}`;
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					await hs1AdminApp.matrixClient.sendTextMessage(matrixRoomId, 'Message from admin');
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.hs1.additionalUser1.matrixUserId);
+					await hs1User1App.matrixClient.joinRoom(matrixRoomId);
+					await hs1User1App.matrixClient.sendTextMessage(matrixRoomId, 'Message from user1');
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+					const pendingInvitation = subscriptions.update.find((subscription) => subscription.status === 'INVITED');
+
+					expect(pendingInvitation).not.toBeUndefined();
+
+					rid = pendingInvitation?.rid!;
+
+					await acceptRoomInvite(rid, rc1AdminRequestConfig);
+				}, 15000);
+
+				describe('It should reflect all the members and messagens on the rocket.chat side', () => {
+					it('It should show all the three users in the members list', async () => {
+						const members = await getRoomMembers(rid, rc1AdminRequestConfig);
+						expect(members.members.length).toBe(3);
+						expect(members.members.find((member: IUser) => member.username === federationConfig.rc1.adminUser)).not.toBeNull();
+						expect(
+							members.members.find((member: IUser) => member.username === federationConfig.rc1.additionalUser1.username),
+						).not.toBeNull();
+						expect(members.members.find((member: IUser) => member.username === federationConfig.hs1.adminMatrixUserId)).not.toBeNull();
+					});
 				});
 			});
 		});
