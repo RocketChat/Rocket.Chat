@@ -83,7 +83,7 @@ describe('LDAP', function () {
 		it('should not allow testing LDAP connection if user does NOT have the test-admin-options permission', async () => {
 			await updatePermission('test-admin-options', []);
 			await request
-				.post(api('ldap.testConnection'))
+				.get(api('ldap.testConnection'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403)
