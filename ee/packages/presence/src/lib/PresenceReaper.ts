@@ -1,3 +1,5 @@
+import { setInterval } from 'node:timers';
+
 import type { IUserSession } from '@rocket.chat/core-typings';
 import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
 
@@ -8,7 +10,18 @@ type ReaperPlan = {
 	cutoffDate: Date;
 };
 
-type ReaperCallback = (userIds: string[]) => void;
+type NonEmptyArray<T> = [T, ...T[]];
+
+const isNonEmptyArray = <T>(arr: T[]): arr is NonEmptyArray<T> => arr.length > 0;
+
+type ReaperCallback = (userIds: NonEmptyArray<string>) => void;
+
+type ReaperOptions = {
+	usersSessions: IUsersSessionsModel;
+	onUpdate: ReaperCallback;
+	staleThresholdMs: number;
+	batchSize: number;
+};
 
 export class PresenceReaper {
 	private usersSessions: IUsersSessionsModel;
@@ -21,13 +34,13 @@ export class PresenceReaper {
 
 	private onUpdate: ReaperCallback;
 
-	constructor(usersSessions: IUsersSessionsModel, onUpdate: ReaperCallback) {
-		this.usersSessions = usersSessions;
-		this.onUpdate = onUpdate;
+	private intervalId?: NodeJS.Timeout;
 
-		// Configuration: 5 minutes stale, process 500 users at a time
-		this.staleThresholdMs = 5 * 60 * 1000;
-		this.batchSize = 500;
+	constructor(options: ReaperOptions) {
+		this.usersSessions = options.usersSessions;
+		this.onUpdate = options.onUpdate;
+		this.staleThresholdMs = options.staleThresholdMs;
+		this.batchSize = options.batchSize;
 		this.running = false;
 	}
 
@@ -36,11 +49,23 @@ export class PresenceReaper {
 		this.running = true;
 
 		// Run every 1 minute
-		setInterval(() => {
+		this.intervalId = setInterval(() => {
 			this.run().catch((err) => console.error('[PresenceReaper] Error:', err));
 		}, 60 * 1000);
 
 		console.log('[PresenceReaper] Service started.');
+	}
+
+	public stop() {
+		if (!this.running) return;
+		this.running = false;
+
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+			this.intervalId = undefined;
+		}
+
+		console.log('[PresenceReaper] Service stopped.');
 	}
 
 	public async run(): Promise<void> {
@@ -123,8 +148,8 @@ export class PresenceReaper {
 			await this.usersSessions.col.bulkWrite(sessionOps);
 		}
 
-		// Step B: EMIT the event instead of calling a method directly
-		if (usersToUpdate.length > 0) {
+		// Step B: Notify Presence Service
+		if (isNonEmptyArray(usersToUpdate)) {
 			this.onUpdate(usersToUpdate);
 		}
 	}

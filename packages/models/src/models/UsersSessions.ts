@@ -45,45 +45,6 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 		return this.updateOne(query, update);
 	}
 
-	updateConnectionById(uid: string, connectionId: string): ReturnType<BaseRaw<IUserSession>['updateOne']> {
-		const query = {
-			'_id': uid,
-			'connections.id': connectionId,
-		};
-
-		const update = {
-			$set: {
-				'connections.$._updatedAt': new Date(),
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	findStaleConnections(cutoff: Date): FindCursor<IUserSession> {
-		return this.find(
-			{
-				'connections._updatedAt': { $lt: cutoff },
-			},
-			{ projection: { _id: 1 } },
-		);
-	}
-
-	removeConnectionsByConnectionIds(connectionIds: string[]): ReturnType<BaseRaw<IUserSession>['updateMany']> {
-		return this.updateMany(
-			{
-				'connections.id': { $in: connectionIds },
-			},
-			{
-				$pull: {
-					connections: {
-						id: { $in: connectionIds },
-					},
-				},
-			},
-		);
-	}
-
 	async removeConnectionsFromInstanceId(instanceId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {
 		return this.updateMany(
 			{

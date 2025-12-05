@@ -13,7 +13,7 @@ export interface IPresence extends IServiceClass {
 		session: string | undefined,
 		nodeId: string,
 	): Promise<{ uid: string; session: string } | undefined>;
-	updateConnection(uid: string, session: string): Promise<{ uid: string; session: string } | undefined>;
+	updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined>;
 	removeLostConnections(nodeID: string): Promise<string[]>;
 	setStatus(uid: string, status: UserStatus, statusText?: string): Promise<boolean>;
 	setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean>;

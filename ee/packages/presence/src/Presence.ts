@@ -31,6 +31,13 @@ export class Presence extends ServiceClass implements IPresence {
 	constructor() {
 		super();
 
+		this.reaper = new PresenceReaper({
+			usersSessions: UsersSessions,
+			batchSize: 500,
+			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
+			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
+		});
+
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
 				this.connsPerInstance.delete(id);
@@ -76,13 +83,11 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async started(): Promise<void> {
+		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
-
-		this.reaper = new PresenceReaper(UsersSessions, (userIds) => this.handleReaperUpdates(userIds));
-		this.reaper.start();
 
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
@@ -96,16 +101,12 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
-		if (userIds.length === 0) {
-			return;
-		}
-
 		console.log(`[PresenceReaper] Updating presence for ${userIds.length} users due to stale connections.`);
-
 		await Promise.all(userIds.map((uid) => this.updateUserPresence(uid)));
 	}
 
 	async stopped(): Promise<void> {
+		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;
 		}
@@ -153,16 +154,28 @@ export class Presence extends ServiceClass implements IPresence {
 		};
 	}
 
-	async updateConnection(uid: string, session: string): Promise<{ uid: string; session: string } | undefined> {
-		console.debug(`Updating connection for user ${uid} and session ${session}`);
-		const result = await UsersSessions.updateConnectionById(uid, session);
+	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
+		console.debug(`Updating connection for user ${uid} and connection ${connectionId}`);
+
+		const query = {
+			'_id': uid,
+			'connections.id': connectionId,
+		};
+
+		const update = {
+			$set: {
+				'connections.$._updatedAt': new Date(),
+			},
+		};
+
+		const result = await UsersSessions.updateOne(query, update);
 		if (result.modifiedCount === 0) {
 			return;
 		}
 
 		await this.updateUserPresence(uid);
 
-		return { uid, session };
+		return { uid, connectionId };
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {

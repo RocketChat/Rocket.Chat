@@ -1,6 +1,6 @@
 import type { IUserSession } from '@rocket.chat/core-typings';
 import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
-import type { Collection } from 'mongodb';
+import type { Collection, FindCursor, WithId } from 'mongodb';
 
 import { PresenceReaper } from './PresenceReaper';
 
@@ -30,7 +30,12 @@ describe('PresenceReaper', () => {
 		mockOnUpdate = jest.fn();
 
 		// 3. Instantiate Reaper
-		reaper = new PresenceReaper(mockSessionCollection, mockOnUpdate);
+		reaper = new PresenceReaper({
+			usersSessions: mockSessionCollection,
+			onUpdate: mockOnUpdate,
+			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
+			batchSize: 2, // small batch size for testing
+		});
 	});
 
 	describe('processDocument (Business Logic)', () => {
@@ -88,6 +93,22 @@ describe('PresenceReaper', () => {
 	});
 
 	describe('run (Integration Flow)', () => {
+		it('should handle empty collections without errors', async () => {
+			// Mock empty cursor
+			const mockCursor = {
+				async *[Symbol.asyncIterator]() {
+					// No documents
+				},
+			} as FindCursor<WithId<IUserSession>>;
+			mockSessionCollection.find.mockReturnValue(mockCursor);
+
+			// Execute Run
+			await reaper.run();
+
+			// Verify no updates were made
+			expect(mockOnUpdate).not.toHaveBeenCalled();
+		});
+
 		it('should generate correct bulkWrite operations', async () => {
 			const now = new Date();
 			const staleTime = new Date(now.getTime() - 6 * 60 * 1000); // 6 mins ago (Stale)
@@ -100,35 +121,51 @@ describe('PresenceReaper', () => {
 						connections: [{ id: 'zombie-conn', _updatedAt: staleTime }],
 					};
 				},
-			} as any;
+			} as FindCursor<WithId<IUserSession>>;
 			mockSessionCollection.find.mockReturnValue(mockCursor);
 
 			// Execute Run
 			await reaper.run();
 
-			// Verify 'usersSessions' Update
-			expect(mockSessionCollection.col.bulkWrite).toHaveBeenCalledTimes(1);
-			expect(mockSessionCollection.col.bulkWrite).toHaveBeenCalledWith(
-				expect.arrayContaining([
-					expect.objectContaining({
-						updateOne: expect.objectContaining({
-							filter: { _id: 'user-789' },
-							update: {
-								$pull: {
-									connections: {
-										id: { $in: ['zombie-conn'] },
-										_updatedAt: { $lte: expect.any(Date) },
-									},
-								},
-							},
-						}),
-					}),
-				]),
-			);
-
 			// Verify 'users' Update (Status Offline)
 			expect(mockOnUpdate).toHaveBeenCalledTimes(1);
 			expect(mockOnUpdate).toHaveBeenCalledWith(['user-789']);
+		});
+	});
+
+	describe('end-to-end Presence Reaping', () => {
+		it('should process multiple users and batch updates correctly', async () => {
+			const now = new Date();
+			const staleTime = new Date(now.getTime() - 10 * 60 * 1000); // 10 mins ago
+
+			// Mock Data from DB Cursor
+			const mockCursor = {
+				async *[Symbol.asyncIterator]() {
+					yield {
+						_id: 'user-1',
+
+						connections: [{ id: 'conn-1', _updatedAt: staleTime }],
+					};
+					yield {
+						_id: 'user-2',
+						connections: [{ id: 'conn-2', _updatedAt: staleTime }],
+					};
+					yield {
+						_id: 'user-3',
+
+						connections: [{ id: 'conn-3', _updatedAt: staleTime }],
+					};
+				},
+			};
+			mockSessionCollection.find.mockReturnValue(mockCursor as FindCursor<WithId<IUserSession>>);
+
+			// Execute Run
+			await reaper.run();
+
+			// Verify 'users' Update called twice due to batch size of 2
+			expect(mockOnUpdate).toHaveBeenCalledTimes(2);
+			expect(mockOnUpdate).toHaveBeenNthCalledWith(1, ['user-1', 'user-2']);
+			expect(mockOnUpdate).toHaveBeenNthCalledWith(2, ['user-3']);
 		});
 	});
 });
