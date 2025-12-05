@@ -8,8 +8,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -20,6 +19,7 @@ import { CurrentChatTags } from '../../additionalForms';
 import AutoCompleteUnits from '../../additionalForms/AutoCompleteUnits';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMultipleAgent from '../../components/AutoCompleteMultipleAgent';
+import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 
@@ -33,8 +33,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
-	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });
+	const { data } = useCustomFieldsQuery();
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
