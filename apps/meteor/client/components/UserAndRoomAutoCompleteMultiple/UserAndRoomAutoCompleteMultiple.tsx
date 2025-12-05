@@ -10,7 +10,18 @@ import { memo, useMemo, useState } from 'react';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { Rooms } from '../../stores';
 
-type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { limit?: number };
+type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+	limit?: number;
+};
+
+type OptionType = {
+	value: string;
+	label: {
+		name: string | undefined;
+		avatarETag: string | undefined;
+		type: RoomType;
+	};
+}[];
 
 const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: UserAndRoomAutoCompleteMultipleProps) => {
 	const user = useUser();
@@ -37,7 +48,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 
 	const options = useMemo(
 		() =>
-			rooms.reduce<Exclude<UserAndRoomAutoCompleteMultipleProps['options'], undefined>>((acc, room) => {
+			rooms.reduce<OptionType>((acc, room) => {
 				if (acc.length === limit) return acc;
 
 				if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
@@ -59,14 +70,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 				];
 			}, []),
 		[limit, rooms, user],
-	) as {
-		value: string;
-		label: {
-			name: string | undefined;
-			avatarETag: string | undefined;
-			type: RoomType;
-		};
-	}[];
+	);
 
 	return (
 		<AutoComplete
