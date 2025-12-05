@@ -32,6 +32,33 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
+	const validateAvatarUrl = (value: string) => {
+		if (!value) return true;
+		try {
+			const url = new URL(value);
+			if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+				return t('The_URL_is_invalid', { url: value });
+			}
+			return true;
+		} catch (error) {
+			return t('The_URL_is_invalid', { url: value });
+		}
+	};
+
+	const validateEmoji = (value: string) => {
+		if (!value) return true;
+
+		if (/^:.+:$/.test(value)) {
+		return true;
+	}
+
+	if ([...value.trim()].length === 1 && /\p{Extended_Pictographic}/u.test(value)) {
+		return true;
+	}
+
+	return t('Invalid_emoji_format_Must_be_in_colon_format', { example: ':ghost:' });
+	};
+
 	const {
 		control,
 		watch,
@@ -236,47 +263,67 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							</FieldRow>
 							<FieldHint id={`${aliasField}-hint`}>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</FieldHint>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={avatarField}>{t('Avatar_URL')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='avatar'
 									control={control}
-									render={({ field }) => (
+									rules={{ validate: validateAvatarUrl }}
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											id={avatarField}
 											{...field}
-											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
+											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2 ${avatarField}-error`}
 											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											aria-invalid={Boolean(error)}
 										/>
 									)}
 								/>
 							</FieldRow>
+							{errors?.avatar && (
+								<FieldError aria-live='assertive' id={`${avatarField}-error`}>
+									{errors.avatar.message}
+								</FieldError>
+							)}
+
 							<FieldHint id={`${avatarField}-hint-1`}>{t('You_can_change_a_different_avatar_too')}</FieldHint>
 							<FieldHint id={`${avatarField}-hint-2`}>{t('Should_be_a_URL_of_an_image')}</FieldHint>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={emojiField}>{t('Emoji')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='emoji'
 									control={control}
-									render={({ field }) => (
+									rules={{ validate: validateEmoji }}
+									render={({ field, fieldState: { error } }) => (
 										<TextInput
 											id={emojiField}
 											{...field}
-											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
+											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2 ${emojiField}-error`}
 											addon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											aria-invalid={Boolean(error)}
 										/>
 									)}
 								/>
 							</FieldRow>
+
+							{errors?.emoji && (
+								<FieldError aria-live='assertive' id={`${emojiField}-error`}>
+									{errors.emoji.message}
+								</FieldError>
+							)}
+
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
 							<FieldHint
 								id={`${emojiField}-hint-2`}
 								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
 							/>
 						</Field>
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={overrideDestinationChannelEnabledField}>{t('Override_Destination_Channel')}</FieldLabel>
