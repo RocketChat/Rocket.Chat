@@ -18,6 +18,7 @@ export interface IGoogleTranslation {
 export interface ISupportedLanguage {
 	language: string;
 	name: string;
+	bcp47?: string;
 }
 export interface ISupportedLanguages {
 	[language: string]: ISupportedLanguage[];
