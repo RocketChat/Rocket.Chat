@@ -31,7 +31,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputUsername.fill(newUsername);
 			await poAccountProfile.btnSubmit.click();
 			await poAccountProfile.btnClose.click();
-			await poHomeChannel.sidenav.openChat('general');
+			await poHomeChannel.navbar.openChat('general');
 			await poHomeChannel.content.sendMessage('any_message');
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);

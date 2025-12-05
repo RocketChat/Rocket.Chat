@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { FederationHomeContent } from './fragments/home-content';
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
-import { RoomToolbar, ToastMessages } from '../../page-objects/fragments';
+import { Navbar, RoomToolbar, ToastMessages } from '../../page-objects/fragments';
 
 export class FederationChannel {
 	private readonly page: Page;
@@ -11,6 +11,8 @@ export class FederationChannel {
 	readonly content: FederationHomeContent;
 
 	readonly sidenav: FederationSidenav;
+
+	readonly navbar: Navbar;
 
 	readonly tabs: FederationHomeFlextab;
 
@@ -22,6 +24,7 @@ export class FederationChannel {
 		this.page = page;
 		this.content = new FederationHomeContent(page);
 		this.sidenav = new FederationSidenav(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new FederationHomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
 		this.toastMessage = new ToastMessages(page);

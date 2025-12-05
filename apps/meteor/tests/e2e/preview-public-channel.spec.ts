@@ -46,7 +46,7 @@ test.describe('Preview public channel', () => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 			await createDirectMessage(api);
 
-			await poHomeChannel.sidenav.openChat(Users.user2.data.username);
+			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 
 			await expect(poHomeChannel.content.btnJoinChannel).not.toBeVisible();
 			await expect(poHomeChannel.composer).toBeEnabled();
