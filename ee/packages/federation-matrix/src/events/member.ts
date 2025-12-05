@@ -98,7 +98,7 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 
 			logger.debug(`Ignoring membership event with membership: ${event.content.membership}`);
 		} catch (error) {
-			logger.error('Failed to process Matrix membership event:', error);
+			logger.error(error, 'Failed to process Matrix membership event');
 		}
 	});
 }
