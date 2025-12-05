@@ -552,6 +552,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
