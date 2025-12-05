@@ -167,7 +167,7 @@ export class ListenersModule {
 				id: _id,
 				diff: {
 					status,
-					statusText,
+					...(statusText ? { statusText } : { statusText: '' }),
 				},
 				unset: {},
 			});
