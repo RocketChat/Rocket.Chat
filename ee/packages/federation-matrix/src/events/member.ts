@@ -105,6 +105,8 @@ function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' 
 	}
 }
 
+// TODO on invite we may only want to create the subscription with INVITED status
+// everything else should be created on join
 async function handleInvite({
 	sender: senderId,
 	state_key: userId,
@@ -166,9 +168,12 @@ async function handleInvite({
 		return;
 	}
 
-	await Room.performAddUserToRoom(room._id, inviteeUser, inviterUser, {
+	await Room.createUserSubscription({
+		ts: new Date(),
+		room,
+		userToBeAdded: inviteeUser,
+		inviter: inviterUser,
 		status: 'INVITED',
-		inviterUsername: inviterUser.username,
 	});
 }
 
@@ -177,7 +182,7 @@ async function handleJoin({
 	state_key: userId,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
-	if (!joiningUser || !joiningUser.username) {
+	if (!joiningUser?.username) {
 		throw new Error(`Failed to get or create joining user: ${userId}`);
 	}
 
@@ -189,6 +194,11 @@ async function handleJoin({
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
+	}
+
+	if (!subscription.status) {
+		logger.info('User is already joined to the room, skipping...');
+		return;
 	}
 
 	await Room.performAcceptRoomInvite(room, subscription, joiningUser);

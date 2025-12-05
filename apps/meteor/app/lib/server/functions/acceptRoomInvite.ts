@@ -1,6 +1,8 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message } from '@rocket.chat/core-services';
 import type { IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -17,32 +19,40 @@ export const performAcceptRoomInvite = async (
 	subscription: ISubscription,
 	user: IUser & { username: string },
 ): Promise<void> => {
-	if (subscription.status !== 'INVITED') {
-		throw new Meteor.Error('error-not-invited', 'User was not invited to this room');
+	if (subscription.status !== 'INVITED' || !subscription.inviterUsername) {
+		throw new Meteor.Error('error-not-invited', `User was not invited to this room ${subscription.status}`);
 	}
+	const inviter = await Users.findOneByUsername(subscription.inviterUsername);
 
 	await callbacks.run('beforeJoinRoom', user, room);
+
+	await callbacks.run('beforeAddedToRoom', { user, inviter }, room);
+
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
 
 	await Subscriptions.markInviteAsAccepted(subscription._id);
 
 	void notifyOnSubscriptionChangedById(subscription._id, 'updated');
 
 	await Message.saveSystemMessage('uj', room._id, user.username, user);
-};
 
-/**
- * Accepts a room invite initiated locally - via UI or API calls - performing full
- * database updates and triggering all standard callbacks. These callbacks are
- * expected to propagate normally to other parts of the system.
- */
-export const acceptRoomInvite = async (room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> => {
-	if (subscription.status !== 'INVITED') {
-		throw new Meteor.Error('error-not-invited', 'User was not invited to this room', {
-			method: 'acceptRoomInvite',
+	if (room.t === 'c' || room.t === 'p') {
+		process.nextTick(async () => {
+			// Add a new event, with an optional inviter
+			await callbacks.run('afterAddedToRoom', { user, inviter }, room);
+
+			// Keep the current event
+			await callbacks.run('afterJoinRoom', user, room);
+
+			void Apps.self?.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
 		});
 	}
-
-	await performAcceptRoomInvite(room, subscription, user);
-
-	await callbacks.run('afterJoinRoom', user, room);
 };
