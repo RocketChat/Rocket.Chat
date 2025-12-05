@@ -60,12 +60,11 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		return workHour;
 	});
 
-	// removing additional propeties to follow endpoint schema
-	delete businessHour._updatedAt;
-	delete businessHour.ts;
+	// Remove properties not accepted by the endpoint schema
+	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
 
 	const enabledBusinessHour = {
-		...businessHour,
+		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
 		workHours: allEnabledWorkHours,
@@ -93,12 +92,11 @@ export const disableDefaultBusinessHour = async () => {
 		return workHour;
 	});
 
-	// removing additional propeties to follow endpoint schema
-	delete businessHour._updatedAt;
-	delete businessHour.ts;
+	// Remove properties not accepted by the endpoint schema
+	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
 
 	const disabledBusinessHour = {
-		...businessHour,
+		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
 		workHours: allDisabledWorkHours,
