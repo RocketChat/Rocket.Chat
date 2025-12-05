@@ -161,6 +161,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			rid,
 			'u._id': uid,
+			'status': { $exists: false },
 		};
 
 		return this.countDocuments(query);
@@ -2084,5 +2085,35 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				},
 			},
 		]);
+	}
+
+	async findInvitedSubscription(
+		roomId: ISubscription['rid'],
+		userId: ISubscription['u']['_id'],
+	): Promise<Pick<ISubscription, '_id'> | null> {
+		return this.findOne(
+			{
+				'rid': roomId,
+				'u._id': userId,
+				'status': 'INVITED',
+			},
+			{ projection: { _id: 1 } },
+		);
+	}
+
+	async markInviteAsAccepted(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					status: 1,
+					inviterUsername: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
 	}
 }
