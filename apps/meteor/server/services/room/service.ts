@@ -19,6 +19,10 @@ import { createDirectMessage } from '../../methods/createDirectMessage';
 import { removeRoomLeader } from '../../methods/removeRoomLeader';
 import { removeRoomModerator } from '../../methods/removeRoomModerator';
 import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { Meteor } from 'meteor/meteor';
+import { Button } from '@rocket.chat/fuselage';
+
+
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -64,6 +68,25 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		return true;
 	}
+
+	const AddAllButton = ({ roomId }) => {
+    const handleClick = () => {
+        Meteor.call('discussion:addAllParentMembers', roomId, (err) => {
+            if (err) {
+                return alert(Error: ${err.message});
+            }
+            alert('All parent members added successfully!');
+        });
+    };
+
+    return (
+        <Button primary onClick={handleClick}>
+            Add All Members
+        </Button>
+    );
+};
+export default AddAllButton;
+
 
 	async addUserToRoom(
 		roomId: string,
