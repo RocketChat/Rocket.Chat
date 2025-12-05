@@ -90,7 +90,7 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { counts, titles } = useMemo(() => {
+	const { counts, titles, sortedMembers } = useMemo(() => {
 		const owners: RoomMemberUser[] = [];
 		const leaders: RoomMemberUser[] = [];
 		const moderators: RoomMemberUser[] = [];
@@ -131,7 +131,9 @@ const RoomMembers = ({
 			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
 		}
 
-		return { counts, titles };
+		const sortedMembers = [...owners, ...leaders, ...moderators, ...normalMembers];
+
+		return { counts, titles, sortedMembers };
 	}, [members]);
 
 	return (
@@ -189,7 +191,7 @@ const RoomMembers = ({
 									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										<RowComponent useRealName={useRealName} data={itemData} user={sortedMembers[index]} index={index} reload={reload} />
 									)}
 								/>
 							</VirtualizedScrollbars>
