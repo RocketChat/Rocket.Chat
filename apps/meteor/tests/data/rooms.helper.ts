@@ -455,6 +455,30 @@ export const acceptRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) 
 };
 
 /**
+ * Retrieves the subscriptions for the authenticated user.
+ *
+ * Fetches the complete list of subscriptions for the authenticated user, which is essential
+ * for verifying federation subscription synchronization and member synchronization.
+ *
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the subscriptions response
+ */
+
+export const getSubscriptions = (config?: IRequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/subscriptions.get']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('subscriptions.get'))
+			.set(credentialsInstance)
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+/**
  * Rejects a room invite for the authenticated user.
  *
  * Processes a room invitation by rejecting it, which prevents the user
