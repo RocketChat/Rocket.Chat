@@ -60,12 +60,18 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		return workHour;
 	});
 
+	// removing additional propeties to follow endpoint schema
+	delete businessHour._updatedAt;
+	delete businessHour.ts;
+
 	const enabledBusinessHour = {
 		...businessHour,
+		timezoneName: 'America/Sao_Paulo',
+		timezone: 'America/Sao_Paulo',
 		workHours: allEnabledWorkHours,
 	};
 
-	await request.post(api('livechat/business-hours.save')).set(credentials).send(enabledBusinessHour).expect(200);
+	return request.post(api('livechat/business-hours.save')).set(credentials).send(enabledBusinessHour);
 };
 
 export const disableDefaultBusinessHour = async () => {
@@ -87,8 +93,14 @@ export const disableDefaultBusinessHour = async () => {
 		return workHour;
 	});
 
+	// removing additional propeties to follow endpoint schema
+	delete businessHour._updatedAt;
+	delete businessHour.ts;
+
 	const disabledBusinessHour = {
 		...businessHour,
+		timezoneName: 'America/Sao_Paulo',
+		timezone: 'America/Sao_Paulo',
 		workHours: allDisabledWorkHours,
 	};
 
