@@ -76,7 +76,7 @@ jobs:
 
     env:
       # if building for production on develop branch or release, add suffix for coverage images
-      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
@@ -108,7 +108,7 @@ jobs:
           sudo sysctl -p
 
       - name: Login to GitHub Container Registry
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io

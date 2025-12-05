@@ -94,6 +94,7 @@ export async function bumpNextVersion({
 		tag_name: newVersion,
 		body: prBody,
 		prerelease: newVersion.includes('-'),
+		draft: true,
 		...github.context.repo,
 	});
 }
