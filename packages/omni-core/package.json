@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.0.9-rc.2",
+	"version": "0.0.9",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",

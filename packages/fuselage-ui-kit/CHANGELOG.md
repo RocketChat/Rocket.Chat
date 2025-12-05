@@ -1,5 +1,24 @@
 # Change Log
 
+## 25.0.0
+
+### Minor Changes
+
+- ([#37398](https://github.com/RocketChat/Rocket.Chat/pull/37398)) Adds new elements for building apps (ui-kit): `icon` (block element), `icon_button` (block element) and `info_card` (layout block).
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 5f075eabe1ed1292e3eda2bcca58b5323936dd13, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 99255057f27b9d854a89da815681a03d0776f846, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/apps-engine@1.58.0
+  - @rocket.chat/core-typings@7.13.0
+  - @rocket.chat/ui-kit@0.38.0
+  - @rocket.chat/gazzodown@25.0.0
+  - @rocket.chat/ui-avatar@21.0.0
+  - @rocket.chat/ui-video-conf@25.0.0
+  </details>
+
 ## 25.0.0-rc.2
 
 ### Patch Changes

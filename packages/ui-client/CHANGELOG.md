@@ -1,5 +1,21 @@
 # @rocket.chat/ui-client
 
+## 25.0.0
+
+### Minor Changes
+
+- ([#37327](https://github.com/RocketChat/Rocket.Chat/pull/37327)) Adds complexity requirements to end-to-end encryption passphrase
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 99255057f27b9d854a89da815681a03d0776f846]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/ui-avatar@21.0.0
+  </details>
+
 ## 25.0.0-rc.2
 
 ### Patch Changes

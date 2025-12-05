@@ -1,5 +1,23 @@
 # @rocket.chat/core-services
 
+## 0.11.0
+
+### Minor Changes
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Adds a `deletedRooms` field to the `users.delete` endpoint response, indicating which rooms were deleted as part of the user deletion process.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 65fbcbed9f64004b953dd9d4182b3fccb8147339, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd, 035e0c7c387d6c99703513c7c00bf37e86538b71]:</summary>
+
+  - @rocket.chat/models@1.8.0
+  - @rocket.chat/core-typings@7.13.0
+  - @rocket.chat/ui-kit@0.38.0
+  - @rocket.chat/media-signaling@0.1.0
+  - @rocket.chat/rest-typings@7.13.0
+  - @rocket.chat/http-router@7.9.11
+  </details>
+
 ## 0.11.0-rc.2
 
 ### Patch Changes

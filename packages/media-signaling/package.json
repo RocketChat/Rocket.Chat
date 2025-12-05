@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/media-signaling",
-	"version": "0.1.0-rc.0",
+	"version": "0.1.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
