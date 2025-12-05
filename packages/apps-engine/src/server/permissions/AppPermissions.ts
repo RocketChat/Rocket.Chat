@@ -123,7 +123,7 @@ export const AppPermissions = {
 		provide: { name: 'outbound-communication.provide' },
 	},
 	'experimental': {
-		getUserRoomIds: { name: 'experimental.getUserRoomIds' },
+		default: { name: 'experimental.default' },
 	},
 };
 

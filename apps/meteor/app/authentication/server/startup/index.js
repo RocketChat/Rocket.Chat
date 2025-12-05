@@ -307,7 +307,11 @@ Accounts.insertUserDoc = async function (options, user) {
 		user.type = 'user';
 	}
 
-	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+	if (
+		settings.get('Accounts_TwoFactorAuthentication_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')
+	) {
 		user.services = user.services || {};
 		user.services.email2fa = {
 			enabled: true,

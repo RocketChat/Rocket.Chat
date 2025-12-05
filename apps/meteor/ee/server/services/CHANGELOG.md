@@ -1,5 +1,49 @@
 # rocketchat-services
 
+## 2.0.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  - @rocket.chat/rest-typings@7.13.0-rc.2
+  - @rocket.chat/core-services@0.11.0-rc.2
+  - @rocket.chat/model-typings@1.9.0-rc.2
+  - @rocket.chat/models@1.8.0-rc.2
+  - @rocket.chat/network-broker@0.2.23-rc.2
+  </details>
+
+## 2.0.33-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  - @rocket.chat/rest-typings@7.13.0-rc.1
+  - @rocket.chat/core-services@0.11.0-rc.1
+  - @rocket.chat/model-typings@1.9.0-rc.1
+  - @rocket.chat/models@1.8.0-rc.1
+  - @rocket.chat/network-broker@0.2.21-rc.1
+  </details>
+
+## 2.0.33-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8596daf01ac84864caa63dd937971e557933d401, 5f075eabe1ed1292e3eda2bcca58b5323936dd13, 83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2, 035e0c7c387d6c99703513c7c00bf37e86538b71]:</summary>
+
+  - @rocket.chat/core-services@0.11.0-rc.0
+  - @rocket.chat/apps-engine@1.58.0-rc.0
+  - @rocket.chat/models@1.8.0-rc.0
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  - @rocket.chat/model-typings@1.9.0-rc.0
+  - @rocket.chat/ui-kit@0.38.0-rc.0
+  - @rocket.chat/rest-typings@7.13.0-rc.0
+  - @rocket.chat/network-broker@0.2.21-rc.0
+  </details>
+
 ## 2.0.34
 
 ### Patch Changes

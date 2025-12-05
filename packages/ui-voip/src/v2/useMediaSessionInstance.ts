@@ -15,16 +15,20 @@ interface BaseSession {
 	transferredBy: string | undefined;
 	muted: boolean;
 	held: boolean;
+	remoteMuted: boolean;
+	remoteHeld: boolean;
 	startedAt: Date | null; // todo not sure if I need this
 	hidden: boolean;
 }
 
 interface EmptySession extends BaseSession {
 	state: Extract<State, 'closed' | 'new'>;
+	callId: undefined;
 }
 
 interface CallSession extends BaseSession {
 	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	callId: string;
 	peerInfo: PeerInfo;
 }
 

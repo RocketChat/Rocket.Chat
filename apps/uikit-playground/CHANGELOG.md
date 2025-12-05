@@ -1,11 +1,48 @@
 # @rocket.chat/uikit-playground
 
-## 0.6.34
+## 0.7.0-rc.2
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
 
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.2
+  - @rocket.chat/ui-avatar@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 0.7.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.1
+  - @rocket.chat/ui-avatar@21.0.0-rc.1
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 0.7.0-rc.0
+
+### Minor Changes
+
+- ([#37398](https://github.com/RocketChat/Rocket.Chat/pull/37398)) Adds new elements for building apps (ui-kit): `icon` (block element), `icon_button` (block element) and `info_card` (layout block).
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 99255057f27b9d854a89da815681a03d0776f846, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.0
+  - @rocket.chat/ui-avatar@21.0.0-rc.0
+
+## 0.6.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
   - @rocket.chat/core-typings@7.12.2
   - @rocket.chat/fuselage-ui-kit@24.0.2
   - @rocket.chat/ui-avatar@20.0.2

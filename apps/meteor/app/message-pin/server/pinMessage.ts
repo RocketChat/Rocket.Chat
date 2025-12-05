@@ -119,6 +119,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				text: originalMessage.msg,
 				author_name: originalMessage.u.username,
 				author_icon: getUserAvatarURL(originalMessage.u.username),
+				content: originalMessage.content,
 				ts: originalMessage.ts,
 				attachments: attachments.map(recursiveRemove),
 			},

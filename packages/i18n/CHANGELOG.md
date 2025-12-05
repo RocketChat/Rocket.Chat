@@ -1,5 +1,19 @@
 # @rocket.chat/i18n
 
+## 1.13.0-rc.0
+
+### Minor Changes
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37492](https://github.com/RocketChat/Rocket.Chat/pull/37492)) Introduces native desktop notifications for voice calls when using the desktop app.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#36308](https://github.com/RocketChat/Rocket.Chat/pull/36308) by [@sandranymark](https://github.com/sandranymark)) Improves inline error in report message modal to meet WCAG compliance.
+
 ## 1.12.0
 
 ### Minor Changes

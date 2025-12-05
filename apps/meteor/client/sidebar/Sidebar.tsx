@@ -8,7 +8,7 @@ import SidebarFooter from './footer';
 import SidebarHeader from './header';
 import BannerSection from './sections/BannerSection';
 import OmnichannelSection from './sections/OmnichannelSection';
-import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelEnabled } from '../views/omnichannel/hooks/useOmnichannelEnabled';
 
 // TODO unit test airgappedbanner
 const Sidebar = () => {

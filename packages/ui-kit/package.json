@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "0.37.0",
+	"version": "0.38.0-rc.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
 	"author": {
@@ -35,12 +35,12 @@
 		"test": "jest"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.4",
-		"@babel/eslint-parser": "~7.28.4",
-		"@babel/plugin-transform-runtime": "~7.28.3",
-		"@babel/preset-env": "~7.28.3",
+		"@babel/core": "~7.28.5",
+		"@babel/eslint-parser": "~7.28.5",
+		"@babel/plugin-transform-runtime": "~7.28.5",
+		"@babel/preset-env": "~7.28.5",
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/icons": "~0.44.0",
+		"@rocket.chat/icons": "^0.45.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
@@ -49,7 +49,7 @@
 		"npm-run-all": "~4.1.5",
 		"prettier": "~3.3.3",
 		"rimraf": "~6.0.1",
-		"ts-jest": "~29.4.4",
+		"ts-jest": "~29.4.5",
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"
 	},

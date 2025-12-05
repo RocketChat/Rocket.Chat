@@ -416,29 +416,24 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 	}
 
-	async unsetTeamIdOfRooms(uid: string, teamId: string): Promise<void> {
-		if (!teamId) {
-			throw new Error('missing-teamId');
-		}
-
-		const team = await Team.findOneById<Pick<ITeam, 'roomId'>>(teamId, { projection: { roomId: 1 } });
+	async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+
 		if (!room) {
 			throw new Error('invalid-room');
 		}
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { username: 1, name: 1 } });
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
 		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 
-		await Rooms.unsetTeamId(teamId);
+		await Rooms.unsetTeamId(team._id);
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {

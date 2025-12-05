@@ -52,7 +52,7 @@ describe('2fa:enable', function () {
 			});
 	});
 
-	it('should return error when user is not verified', async () => {
+	it('should return secret and qr code url even when user has unverified email', async () => {
 		await request
 			.post(methodCall('2fa:enable'))
 			.set(user3Credentials)
@@ -66,10 +66,14 @@ describe('2fa:enable', function () {
 			})
 			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('message');
-				const result = JSON.parse(res.body.message);
-				expect(result).to.have.property('error');
-				expect(result.error).to.not.have.property('errpr', 'error-invalid-user');
+				expect(res.body).to.have.property('success', true);
+				const parsedBody = JSON.parse(res.body.message);
+				expect(parsedBody).to.have.property('result');
+				expect(parsedBody.result).to.have.property('secret').of.a('string');
+				expect(parsedBody.result)
+					.to.have.property('url')
+					.of.a('string')
+					.match(/^otpauth:\/\//);
 			});
 	});
 

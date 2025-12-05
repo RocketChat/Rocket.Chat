@@ -19,6 +19,7 @@ import {
 	createLivechatRoom,
 	bulkCreateLivechatRooms,
 	startANewLivechatRoomAndTakeIt,
+	makeAgentAvailable,
 } from '../../../data/livechat/rooms';
 import {
 	addPermissions,
@@ -294,6 +295,10 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 	});
 
 	describe('livechat/inquiry.setSLA', () => {
+		before(async () => {
+			await createAgent();
+			await makeAgentAvailable();
+		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);
 			const response = await request
@@ -349,7 +354,6 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		it('should fail if sla is not valid', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await createAgent();
 
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))

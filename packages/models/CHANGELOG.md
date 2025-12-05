@@ -1,5 +1,41 @@
 # @rocket.chat/models
 
+## 1.8.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.13.0-rc.2
+  - @rocket.chat/model-typings@1.9.0-rc.2
+  </details>
+
+## 1.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.13.0-rc.1
+  - @rocket.chat/model-typings@1.9.0-rc.1
+  </details>
+
+## 1.8.0-rc.0
+
+### Minor Changes
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+### Patch Changes
+
+- ([#36835](https://github.com/RocketChat/Rocket.Chat/pull/36835)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 035e0c7c387d6c99703513c7c00bf37e86538b71]:</summary>
+
+  - @rocket.chat/model-typings@1.9.0-rc.0
+  - @rocket.chat/rest-typings@7.13.0-rc.0
+  </details>
+
 ## 1.7.3
 
 ### Patch Changes
