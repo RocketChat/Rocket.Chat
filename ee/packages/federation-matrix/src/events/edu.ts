@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 
@@ -9,11 +9,6 @@ const logger = new Logger('federation-matrix:edu');
 
 export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	emitter.on('homeserver.matrix.typing', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processTyping) {
-			return;
-		}
-
 		try {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
@@ -32,11 +27,6 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 	});
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processPresence) {
-			return;
-		}
-
 		try {
 			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
