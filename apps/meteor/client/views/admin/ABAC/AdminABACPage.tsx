@@ -58,7 +58,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 						<Callout type='warning' title={t('ABAC_automatically_disabled_callout')}>
 							<Trans i18nKey='ABAC_automatically_disabled_callout_description'>
 								Renew your license to continue using all{' '}
-								<a href={links.go.abacLicenseRenewalUrl} rel='noopener noreferrer' target='_blank'>
+								<a href={links.go.abacDocs} rel='noopener noreferrer' target='_blank'>
 									ABAC capabilities without restriction.
 								</a>
 							</Trans>
