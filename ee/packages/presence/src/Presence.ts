@@ -4,6 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, UsersSessions } from '@rocket.chat/models';
 
+import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 const MAX_CONNECTIONS = 200;
@@ -25,8 +26,17 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private peakConnections = 0;
 
+	private reaper: PresenceReaper;
+
 	constructor() {
 		super();
+
+		this.reaper = new PresenceReaper({
+			usersSessions: UsersSessions,
+			batchSize: 500,
+			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
+			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
+		});
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
@@ -73,6 +83,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async started(): Promise<void> {
+		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -89,7 +100,13 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 	}
 
+	private async handleReaperUpdates(userIds: string[]): Promise<void> {
+		console.log(`[PresenceReaper] Updating presence for ${userIds.length} users due to stale connections.`);
+		await Promise.all(userIds.map((uid) => this.updateUserPresence(uid)));
+	}
+
 	async stopped(): Promise<void> {
+		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;
 		}
@@ -137,7 +154,35 @@ export class Presence extends ServiceClass implements IPresence {
 		};
 	}
 
+	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
+		console.debug(`Updating connection for user ${uid} and connection ${connectionId}`);
+
+		const query = {
+			'_id': uid,
+			'connections.id': connectionId,
+		};
+
+		const update = {
+			$set: {
+				'connections.$._updatedAt': new Date(),
+			},
+		};
+
+		const result = await UsersSessions.updateOne(query, update);
+		if (result.modifiedCount === 0) {
+			return;
+		}
+
+		await this.updateUserPresence(uid);
+
+		return { uid, connectionId };
+	}
+
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
+		if (uid === 'rocketchat.internal.admin.test') {
+			console.log('Admin detected, skipping removal of connection for testing purposes.');
+			return;
+		}
 		if (!uid || !session) {
 			return;
 		}

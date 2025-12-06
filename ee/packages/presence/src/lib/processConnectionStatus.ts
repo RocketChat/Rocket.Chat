@@ -1,5 +1,4 @@
-import type { IUserSessionConnection } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { UserStatus, type IUserSessionConnection } from '@rocket.chat/core-typings';
 
 /**
  * Defines new connection status compared to a previous connection status
