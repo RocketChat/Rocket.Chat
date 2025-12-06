@@ -35,7 +35,7 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	get inputMessage(): Locator {
+	override get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
 

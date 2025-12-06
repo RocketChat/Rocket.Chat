@@ -27,7 +27,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		super(db, 'video_conference', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },

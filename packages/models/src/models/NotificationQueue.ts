@@ -9,7 +9,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 		super(db, 'notification_queue', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { uid: 1 } },
 			{ key: { ts: 1 }, expireAfterSeconds: 2 * 60 * 60 },

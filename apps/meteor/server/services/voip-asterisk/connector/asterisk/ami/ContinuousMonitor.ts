@@ -382,7 +382,7 @@ export class ContinuousMonitor extends Command {
 		this.connection.off('dialstate', this);
 	}
 
-	initMonitor(_data: any): boolean {
+	override initMonitor(_data: any): boolean {
 		/**
 		 * See the implementation of |call| function in CallbackContext to understand
 		 * why we are using regex here.
@@ -392,7 +392,7 @@ export class ContinuousMonitor extends Command {
 		return true;
 	}
 
-	cleanMonitor(): boolean {
+	override cleanMonitor(): boolean {
 		this.resetEventHandlers();
 		return true;
 	}

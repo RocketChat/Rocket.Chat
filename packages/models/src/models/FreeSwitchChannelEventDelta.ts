@@ -9,7 +9,7 @@ export class FreeSwitchChannelEventDeltaRaw extends BaseRaw<IFreeSwitchChannelEv
 		super(db, 'freeswitch_channel_event_deltas', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
 

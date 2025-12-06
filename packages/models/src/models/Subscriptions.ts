@@ -41,7 +41,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		super(db, 'subscription', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		// Add all indexes from constructor to here
 		return [
 			{ key: { E2EKey: 1 }, unique: true, sparse: true },

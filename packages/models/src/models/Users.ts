@@ -72,7 +72,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// Move index from constructor to here
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { __rooms: 1 }, sparse: true },
 			{ key: { roles: 1 }, sparse: true },
@@ -2404,7 +2404,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
+	override findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
@@ -3240,7 +3240,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// REMOVE
-	removeById(_id: IUser['_id']) {
+	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
 	}
 

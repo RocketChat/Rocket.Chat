@@ -305,7 +305,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		});
 	}
 
-	emit(eventName: string | symbol, ...args: any[]): boolean {
+	override emit(eventName: string | symbol, ...args: any[]): boolean {
 		return this._emit(eventName as string, args, undefined, true);
 	}
 
