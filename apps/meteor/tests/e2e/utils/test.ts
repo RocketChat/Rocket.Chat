@@ -16,7 +16,7 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		recreateContext(): Promise<void>;
+		recreateContext(credentials?: Credentials): Promise<void>;
 		login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
 		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
@@ -25,6 +25,12 @@ export type BaseTest = {
 	};
 	makeAxeBuilder: () => AxeBuilder;
 };
+
+type Credentials = {
+	username: string;
+	password: string;
+};
+
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
@@ -78,7 +84,7 @@ export const test = baseTest.extend<BaseTest>({
 				},
 			});
 
-		const login = async (credentials: { username: string; password: string }): Promise<APIRequestContext> => {
+		const login = async (credentials: Credentials): Promise<APIRequestContext> => {
 			if (credentials.username === Users.admin.data.username) {
 				return newContext(Users.admin.data.loginToken, Users.admin.data.username);
 			}
@@ -96,8 +102,8 @@ export const test = baseTest.extend<BaseTest>({
 			return newContext(json.data.authToken, json.data.userId);
 		};
 
-		const recreateContext = async () => {
-			apiContext = await login(ADMIN_CREDENTIALS);
+		const recreateContext = async (credentials: Credentials = ADMIN_CREDENTIALS) => {
+			apiContext = await login(credentials);
 		};
 
 		await recreateContext();
