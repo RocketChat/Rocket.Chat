@@ -3,11 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
+import 'highlight.js/styles/github.css';
 
 Meteor.startup(() => {
 	fireGlobalEvent('startup', true);
