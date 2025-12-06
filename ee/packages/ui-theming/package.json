@@ -16,7 +16,7 @@
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "~0.68.1",
+		"@rocket.chat/fuselage": "^0.69.0",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.45.0",
