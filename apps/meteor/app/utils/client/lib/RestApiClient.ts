@@ -6,7 +6,7 @@ import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faRetur
 import { baseURI } from '../../../../client/lib/baseURI';
 
 class RestApiClient extends RestClient {
-	getCredentials():
+	override getCredentials():
 		| {
 				'X-User-Id': string;
 				'X-Auth-Token': string;

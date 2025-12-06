@@ -145,7 +145,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private readonly logger = new Logger(this.name);
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		// although this is async function, it is not awaited, so we need to register the listeners before everything else
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction === 'removed') {

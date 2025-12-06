@@ -9,7 +9,7 @@ export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuth
 		super(db, 'oauth_auth_codes', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { authCode: 1 } }, { key: { expires: 1 }, expireAfterSeconds: 60 * 5 }];
 	}
 

@@ -17,21 +17,19 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/esm/index.d.ts",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
-		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		".:build:clean": "rimraf dist",
-		".:build:esm": "tsc -p tsconfig.esm.json",
-		"build": "run-s .:build:clean .:build:esm .:build:cjs",
+		".:build:tsc": "tsc -p tsconfig.build.json",
+		"build": "run-s .:build:clean .:build:tsc",
 		"build-preview": "yarn build-storybook",
 		"build-storybook": "NODE_ENV=production storybook build",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.esm.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
 		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
@@ -45,10 +43,6 @@
 		"@rocket.chat/ui-kit": "workspace:~"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/preset-env": "~7.28.5",
-		"@babel/preset-react": "~7.27.1",
-		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
@@ -78,7 +72,6 @@
 		"@testing-library/user-event": "~14.6.1",
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
-		"babel-loader": "~10.0.0",
 		"cross-env": "^7.0.3",
 		"eslint": "~8.45.0",
 		"eslint-plugin-storybook": "~0.11.6",

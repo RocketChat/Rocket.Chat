@@ -152,5 +152,7 @@ server.methods({
 				await MeteorService.notifyGuestStatusChanged(token, 'offline');
 			});
 		}
+
+		return undefined;
 	},
 });

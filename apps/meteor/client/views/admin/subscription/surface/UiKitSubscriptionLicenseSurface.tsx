@@ -22,9 +22,9 @@ export class SubscriptionLicenseSurfaceRenderer extends FuselageSurfaceRenderer 
 		super(['context', 'divider', 'image', 'section', 'callout']);
 	}
 
-	plain_text = renderTextObject;
+	override plain_text = renderTextObject;
 
-	mrkdwn = renderTextObject;
+	override mrkdwn = renderTextObject;
 }
 
 export default SubscriptionLicenseSurface;

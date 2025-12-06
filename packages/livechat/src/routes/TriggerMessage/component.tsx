@@ -19,7 +19,7 @@ type TriggerMessageProps = {
 };
 
 class TriggerMessage extends Component<TriggerMessageProps> {
-	state = {};
+	override state = {};
 
 	ref: RefObject<any>;
 
@@ -28,7 +28,7 @@ class TriggerMessage extends Component<TriggerMessageProps> {
 		this.ref = createRef();
 	}
 
-	componentDidUpdate() {
+	override componentDidUpdate() {
 		let height = 0;
 
 		for (const el of this.ref.current.base.children) {
