@@ -179,10 +179,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
-		if (uid === 'rocketchat.internal.admin.test') {
-			console.log('Admin detected, skipping removal of connection for testing purposes.');
-			return;
-		}
 		if (!uid || !session) {
 			return;
 		}
