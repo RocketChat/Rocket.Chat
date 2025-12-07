@@ -21,7 +21,7 @@ import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'> & {
+type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -36,11 +36,14 @@ const RoomMembersItem = ({
 	freeSwitchExtension,
 	onClickView,
 	rid,
+	subscription,
 	reload,
 	useRealName,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const isInvited = subscription?.status === 'INVITED';
+	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
@@ -50,7 +53,14 @@ const RoomMembersItem = ({
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	return (
-		<Option data-username={username} data-userid={_id} onClick={onClickView} style={{ paddingInline: 24 }} {...handleMenuEvent}>
+		<Option
+			data-username={username}
+			data-userid={_id}
+			data-invitationdate={invitationDate}
+			onClick={onClickView}
+			style={{ paddingInline: 24 }}
+			{...handleMenuEvent}
+		>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
