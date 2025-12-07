@@ -1,8 +1,8 @@
 {
-    "name": "@rocket.chat/tsconfig",
-    "version": "0.0.0",
-    "private": true,
-    "volta": {
-        "extends": "../../package.json"
-    }
+	"name": "@rocket.chat/tsconfig",
+	"version": "0.0.0",
+	"private": true,
+	"volta": {
+		"extends": "../../package.json"
+	}
 }
