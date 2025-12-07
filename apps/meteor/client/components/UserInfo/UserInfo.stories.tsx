@@ -45,3 +45,8 @@ WithABACAttributes.args = {
 	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
 	abacAttributes: ['Classified', 'Top Secret', 'Confidential'],
 };
+
+export const InvitedUser = Template.bind({});
+InvitedUser.args = {
+	invitationDate: '2025-01-01T12:00:00Z',
+};
