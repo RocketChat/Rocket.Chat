@@ -70,7 +70,15 @@ const RoomMembersItem = ({
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
-					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
+					<UserActions
+						username={username}
+						name={name}
+						rid={rid}
+						_id={_id}
+						freeSwitchExtension={freeSwitchExtension}
+						isInvited={isInvited}
+						reload={reload}
+					/>
 				) : (
 					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} />
 				)}
