@@ -83,4 +83,3 @@ API.v1.addAuthMethod((request: globalThis.Request) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
-
