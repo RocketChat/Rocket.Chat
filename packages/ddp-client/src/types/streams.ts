@@ -9,7 +9,6 @@ import type {
 	IEmoji,
 	ICustomSound,
 	INotificationDesktop,
-	VoipEventDataSignature,
 	IUser,
 	IOmnichannelRoom,
 	VideoConference,
@@ -172,7 +171,6 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
-		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
 		{ key: `${string}/uiInteraction`; args: [UiKit.ServerInteraction] },
 		{
@@ -257,7 +255,6 @@ export interface StreamerEvents {
 			args: [{ username: IUser['username']; etag: IUser['avatarETag'] } | { rid: IRoom['_id']; etag: IRoom['avatarETag'] }];
 		},
 
-		{ key: 'voip.statuschanged'; args: [boolean] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
 

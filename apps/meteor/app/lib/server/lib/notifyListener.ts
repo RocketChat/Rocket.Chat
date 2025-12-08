@@ -7,7 +7,6 @@ import type {
 	IRole,
 	IPermission,
 	IIntegration,
-	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
 	ILivechatInquiryRecord,
 	ILivechatPriority,
@@ -28,7 +27,6 @@ import {
 	LivechatRooms,
 	Permissions,
 	Settings,
-	PbxEvents,
 	Roles,
 	Integrations,
 	LoginServiceConfiguration,
@@ -126,18 +124,6 @@ export const notifyOnPermissionChangedById = async (pid: IPermission['_id'], cli
 	}
 
 	return notifyOnPermissionChanged(permission, clientAction);
-};
-
-export const notifyOnPbxEventChangedById = async <T extends IPbxEvent>(
-	id: T['_id'],
-	clientAction: ClientAction = 'updated',
-): Promise<void> => {
-	const item = await PbxEvents.findOneById(id);
-	if (!item) {
-		return;
-	}
-
-	void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
 };
 
 export const notifyOnRoleChanged = async <T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> => {

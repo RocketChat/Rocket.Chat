@@ -9496,7 +9496,6 @@ __metadata:
     semver: "npm:^7.6.3"
     sharp: "npm:^0.33.5"
     sinon: "npm:^19.0.5"
-    sip.js: "npm:^0.21.2"
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
     source-map: "npm:~0.7.6"
@@ -10129,41 +10128,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
-  dependencies:
-    "@rocket.chat/core-services": "workspace:^"
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/model-typings": "workspace:^"
-    "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/network-broker": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
-    "@rocket.chat/tracing": "workspace:^"
-    "@rocket.chat/tsconfig": "workspace:*"
-    "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.5"
-    "@types/polka": "npm:^0.5.8"
-    "@types/prometheus-gc-stats": "npm:^0.6.4"
-    ejson: "npm:^2.2.3"
-    eslint: "npm:~8.45.0"
-    eventemitter3: "npm:^5.0.1"
-    mem: "npm:^8.1.1"
-    moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
-    polka: "npm:^0.5.2"
-    prometheus-gc-stats: "npm:^1.1.0"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/string-helpers@npm:~0.32.0":
   version: 0.32.0
   resolution: "@rocket.chat/string-helpers@npm:0.32.0"
@@ -10558,7 +10522,6 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
-    sip.js: "npm:^0.21.2"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -33671,13 +33634,6 @@ __metadata:
   version: 0.1.0
   resolution: "sip-status@npm:0.1.0"
   checksum: 10/6f63c78d9df22f3b3039a885a77cc23b8443eabb4b2a371e7c6b1230b17e2bbef00520b6ed36f96140d2bfa435cbcdbe82069fc2ef99a1b498bd75133339baa5
-  languageName: node
-  linkType: hard
-
-"sip.js@npm:^0.21.2":
-  version: 0.21.2
-  resolution: "sip.js@npm:0.21.2"
-  checksum: 10/ccddbf7e297b8f0517a6c59fa3e6e56b1fed84f10c518fdda3e84d99178295f1710448d0e6bd0c964c4f23bbf6288795cfcf3fa1224cfb2d75e9341f34ec077a
   languageName: node
   linkType: hard
 
