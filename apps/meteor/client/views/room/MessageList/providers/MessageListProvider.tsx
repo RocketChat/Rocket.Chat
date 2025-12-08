@@ -40,7 +40,7 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const { isMobile } = useLayout();
 
 	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false);
+	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && !room.federated;
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
 	const showRealName = useSetting('UI_Use_Real_Name', false);
