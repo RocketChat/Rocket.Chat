@@ -57,6 +57,23 @@ export class Navbar {
 		return this.workspaceGroup.getByRole('button', { name: 'Manage' });
 	}
 
+	get btnUserMenu(): Locator {
+		return this.workspaceGroup.getByRole('button', { name: 'User menu' });
+	}
+
+	get userMenu(): Locator {
+		return this.root.getByRole('menu', { name: 'User menu' });
+	}
+
+	get btnLogout(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
+	async logout(): Promise<void> {
+		await this.btnUserMenu.click();
+		return this.btnLogout.click();
+	}
+
 	btnSidebarToggler(closeSidebar?: boolean): Locator {
 		return this.root.getByRole('button', { name: closeSidebar ? 'Close sidebar' : 'Open sidebar' });
 	}
