@@ -11,6 +11,10 @@ callbacks.add(
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
+		// Rooms federated are not supported yet
+		if (room.federated) {
+			return;
+		}
 		const { uid, lastSeen, tmid } = params;
 
 		if (tmid) {
