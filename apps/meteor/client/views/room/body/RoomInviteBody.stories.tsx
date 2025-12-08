@@ -19,13 +19,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		inviterUsername: 'rocket.cat',
+		inviter: {
+			username: 'rocket.cat',
+			name: 'Rocket Cat',
+			_id: 'rocket.cat',
+		},
 	},
 };
 
 export const Loading: Story = {
 	args: {
-		inviterUsername: 'rocket.cat',
 		isLoading: true,
+		inviter: {
+			username: 'rocket.cat',
+			name: 'Rocket Cat',
+			_id: 'rocket.cat',
+		},
 	},
 };
