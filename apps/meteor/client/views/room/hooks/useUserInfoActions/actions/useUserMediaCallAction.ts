@@ -1,5 +1,5 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { isRoomFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { useUserAvatarPath, useUserId, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
@@ -14,8 +14,13 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 	const getAvatarUrl = useUserAvatarPath();
 
 	const currentSubscription = useUserSubscription(rid);
+	const room = useUserRoom(rid);
 
 	const blocked = currentSubscription?.blocked || currentSubscription?.blocker;
+
+	if (room && isRoomFederated(room)) {
+		return undefined;
+	}
 
 	if (state === 'unauthorized') {
 		return undefined;
