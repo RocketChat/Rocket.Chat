@@ -80,7 +80,7 @@ describe('[Call History]', () => {
 				});
 		});
 
-		it('should nost list history entries from other users', async () => {
+		it('should not list history entries from other users', async () => {
 			await request
 				.get(api('call-history.list'))
 				.set(userCredentials)
