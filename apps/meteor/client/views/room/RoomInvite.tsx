@@ -1,4 +1,4 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, type ISubscription } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import RoomInviteBody from './body/RoomInviteBody';
 import type { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
 import RoomLayout from './layout/RoomLayout';
+import { links } from '../../lib/links';
 
 type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
 	room: IRoomWithFederationOriginalName;
@@ -18,6 +19,8 @@ type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body'
 const RoomInvite = ({ room, subscription, ...props }: RoomInviteProps) => {
 	const { t } = useTranslation();
 	const { acceptInvite, rejectInvite, isPending } = useRoomInvitation(room);
+
+	const infoLink = isRoomFederated(room) ? { label: t('Learn_more_about_Federation'), href: links.go.matrixFederation } : undefined;
 
 	return (
 		<RoomLayout
@@ -34,6 +37,7 @@ const RoomInvite = ({ room, subscription, ...props }: RoomInviteProps) => {
 			}
 			body={
 				<RoomInviteBody
+					infoLink={infoLink}
 					isLoading={isPending}
 					inviterUsername={subscription?.inviter?.username ?? t('unknown')}
 					onAccept={acceptInvite}
