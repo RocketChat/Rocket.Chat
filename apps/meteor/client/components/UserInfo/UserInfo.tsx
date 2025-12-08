@@ -41,6 +41,7 @@ type UserInfoDataProps = Serialized<
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
+		| 'abacAttributes'
 	>
 >;
 
@@ -73,8 +74,7 @@ const UserInfo = ({
 	actions,
 	reason,
 	freeSwitchExtension,
-	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
-	abacAttributes = null,
+	abacAttributes,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -189,10 +189,10 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{abacAttributes?.length > 0 && (
+					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
-							<UserInfoABACAttributes abacAttributes={abacAttributes} />
+							<UserInfoABACAttributes abacAttributes={abacAttributes.map((attribute) => attribute.key)} />
 						</InfoPanelField>
 					)}
 					{userCustomFields?.map(
