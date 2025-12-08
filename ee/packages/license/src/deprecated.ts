@@ -34,4 +34,6 @@ export function getUnmodifiedLicenseAndModules(this: LicenseManager) {
 			modules: getModules.call(this),
 		};
 	}
+
+	return undefined;
 }
