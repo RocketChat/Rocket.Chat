@@ -4874,5 +4874,53 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salons vides seront supprimés automatiquement.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> salons vides seront supprimés automatiquement : <br/>  {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{user_by}} a retiré le rôle {{role}} à {{username}}",
-  "__username__was_set__role__by__user_by_": "{{user_by}} a donné le rôle {{role}} à {{username}}"
+  "__username__was_set__role__by__user_by_": "{{user_by}} a donné le rôle {{role}} à {{username}}",
+  
+  "teamchats_sidebar_home": "Accueil",
+  "teamchats_sidebar_channels": "Canaux",
+  "teamchats_sidebar_direct_messages": "Messages directs",
+  "teamchats_sidebar_threads": "Fils de discussion",
+  "teamchats_sidebar_unread": "Non lus",
+  "teamchats_sidebar_pinned": "Épinglés",
+  "teamchats_sidebar_starred": "Favoris",
+  "teamchats_sidebar_recent": "Récents",
+
+  "teamchats_header_title": "TeamChats",
+  "teamchats_header_search_placeholder": "Rechercher des messages ou des canaux",
+  "teamchats_header_profile_menu": "Compte et profil",
+  "teamchats_header_sign_out": "Se déconnecter",
+  "teamchats_button_new_channel": "Nouveau canal",
+  "teamchats_button_new_dm": "Nouveau message direct",
+  "teamchats_button_invite_people": "Inviter des personnes",
+
+  "teamchats_message_input_placeholder": "Écrire un message…",
+  "teamchats_message_reply_placeholder": "Répondre dans le fil…",
+  "teamchats_message_edited": "modifié",
+  "teamchats_message_deleted": "Message supprimé",
+  "teamchats_message_empty_state_title": "Aucun message pour l’instant",
+  "teamchats_message_empty_state_body": "Commencez la conversation avec votre équipe.",
+
+  "teamchats_toast_message_sent": "Message envoyé",
+  "teamchats_toast_message_failed": "Échec de l’envoi du message. Réessayez.",
+  "teamchats_toast_copied_link": "Lien copié dans le presse-papier",
+  "teamchats_notification_new_message": "{{username}} a envoyé un nouveau message dans {{room}}",
+  "teamchats_notification_mention": "Vous avez été mentionné dans {{room}}",
+
+  "teamchats_modal_confirm_leave_channel_title": "Quitter le canal",
+  "teamchats_modal_confirm_leave_channel_body": "Voulez-vous vraiment quitter {{channel}} ?",
+  "teamchats_modal_confirm_leave_channel_confirm": "Quitter",
+  "teamchats_modal_confirm_leave_channel_cancel": "Annuler",
+
+  "teamchats_modal_delete_message_title": "Supprimer le message",
+  "teamchats_modal_delete_message_body": "Ce message sera supprimé pour tous les utilisateurs.",
+  "teamchats_modal_delete_message_confirm": "Supprimer",
+  "teamchats_modal_delete_message_cancel": "Annuler",
+
+  "teamchats_settings_title": "Paramètres",
+  "teamchats_settings_profile_section": "Profil",
+  "teamchats_settings_notifications_section": "Notifications",
+  "teamchats_settings_language_section": "Langue",
+
+  
 }
+
