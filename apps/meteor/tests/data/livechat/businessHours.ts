@@ -61,14 +61,7 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		body: { businessHour },
 	} = await request.get(api('livechat/business-hour')).query({ type: 'default' }).set(credentials).send();
 
-	// TODO: Refactor this to use openOrCloseBusinessHour() instead
-	const workHours = businessHour.workHours as { start: string; finish: string; day: string; open: boolean }[];
-	const allEnabledWorkHours = workHours.map((workHour) => {
-		workHour.open = true;
-		workHour.start = '00:00';
-		workHour.finish = '00:01'; // if a job runs between 00:00 and 00:01, then this test will fail :P
-		return workHour;
-	});
+	const { workHours } = businessHour;
 
 	// Remove properties not accepted by the endpoint schema
 	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
@@ -77,10 +70,24 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
-		workHours: allEnabledWorkHours,
+		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+		daysTime: workHours.map((workHour: { open: boolean; start: { time: string }; finish: { time: string }; day: string }) => {
+			return {
+				open: workHour.open,
+				start: { time: workHour.start.time },
+				finish: { time: workHour.finish.time },
+				day: workHour.day,
+			};
+		}),
+		workHours: workHours.map((workHour: { open: boolean; start: string; finish: string; day: string }) => {
+			workHour.open = true;
+			workHour.start = '00:00';
+			workHour.finish = '00:01'; // if a job runs between 00:00 and 00:01, then this test will fail :P
+			return workHour;
+		}),
 	};
 
-	return request.post(api('livechat/business-hours.save')).set(credentials).send(enabledBusinessHour);
+	return request.post(api('livechat/business-hours.save')).set(credentials).send(enabledBusinessHour).expect(200);
 };
 
 export const disableDefaultBusinessHour = async () => {
@@ -93,14 +100,7 @@ export const disableDefaultBusinessHour = async () => {
 		body: { businessHour },
 	} = await request.get(api('livechat/business-hour')).query({ type: 'default' }).set(credentials).send();
 
-	// TODO: Refactor this to use openOrCloseBusinessHour() instead
-	const workHours = businessHour.workHours as { start: string; finish: string; day: string; open: boolean }[];
-	const allDisabledWorkHours = workHours.map((workHour) => {
-		workHour.open = false;
-		workHour.start = '00:00';
-		workHour.finish = '23:59';
-		return workHour;
-	});
+	const { workHours } = businessHour;
 
 	// Remove properties not accepted by the endpoint schema
 	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
@@ -109,10 +109,24 @@ export const disableDefaultBusinessHour = async () => {
 		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
-		workHours: allDisabledWorkHours,
+		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+		daysTime: workHours.map((workHour: { open: boolean; start: { time: string }; finish: { time: string }; day: string }) => {
+			return {
+				open: workHour.open,
+				start: { time: workHour.start.time },
+				finish: { time: workHour.finish.time },
+				day: workHour.day,
+			};
+		}),
+		workHours: workHours.map((workHour: { open: boolean; start: string; finish: string; day: string }) => {
+			workHour.open = false;
+			workHour.start = '00:00';
+			workHour.finish = '23:59';
+			return workHour;
+		}),
 	};
 
-	return saveBusinessHour(disabledBusinessHour);
+	return request.post(api('livechat/business-hours.save')).set(credentials).send(disabledBusinessHour).expect(200);
 };
 
 const removeCustomBusinessHour = async (businessHourId: string) => {
