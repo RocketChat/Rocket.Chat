@@ -8,7 +8,7 @@ export class AbacAttributesRaw extends BaseRaw<IAbacAttribute> {
 		super(db, 'abac_attributes');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { key: 1 }, unique: true }, { key: { values: 1 } }];
 	}
 
