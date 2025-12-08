@@ -240,8 +240,9 @@ export class MediaCallServer implements IMediaCallServer {
 				return {
 					preferredType: 'sip',
 				};
-		}
 
-		return {};
+			default:
+				return {};
+		}
 	}
 }

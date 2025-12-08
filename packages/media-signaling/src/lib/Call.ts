@@ -1178,5 +1178,5 @@ export class ClientMediaCall implements IClientMediaCall {
 }
 
 export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
-	public abstract webrtcProcessor: IWebRTCProcessor;
+	public abstract override webrtcProcessor: IWebRTCProcessor;
 }
