@@ -2,6 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
 import { Email } from 'meteor/email';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +10,6 @@ import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
-import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';

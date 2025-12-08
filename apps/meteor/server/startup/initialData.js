@@ -1,4 +1,5 @@
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
+import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,6 @@ import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUser
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
-import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
 export async function insertAdminUserFromEnv() {
