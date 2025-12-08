@@ -23,7 +23,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     name: Unit Tests
 
@@ -34,7 +34,7 @@ jobs:
           theme: dark
           job_summary: true
           comment_on_pr: false
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node

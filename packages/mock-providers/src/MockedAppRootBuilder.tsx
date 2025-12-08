@@ -150,7 +150,7 @@ export class MockedAppRootBuilder {
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptions ?? []], // apply query and option
 		user: null,
 		userId: undefined,
 	};
@@ -203,7 +203,7 @@ export class MockedAppRootBuilder {
 
 	private room: IRoom | undefined = undefined;
 
-	private subscriptions: SubscriptionWithRoom[] = [];
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -259,6 +259,20 @@ export class MockedAppRootBuilder {
 		setAudioInputDevice: () => undefined,
 		permissionStatus: undefined,
 	};
+
+	private _providedQueryClient: QueryClient | undefined;
+
+	private get queryClient(): QueryClient {
+		return (
+			this._providedQueryClient ||
+			new QueryClient({
+				defaultOptions: {
+					queries: { retry: false },
+					mutations: { retry: false },
+				},
+			})
+		);
+	}
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -634,15 +648,26 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): JSXElementConstructor<{ children: ReactNode }> {
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+	withQueryClient(client: QueryClient): this {
+		this._providedQueryClient = client;
+		return this;
+	}
 
-		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
+	build(): JSXElementConstructor<{ children: ReactNode }> {
+		const {
+			queryClient,
+			server,
+			router,
+			settings,
+			user,
+			userPresence,
+			videoConf,
+			i18n,
+			authorization,
+			wrappers,
+			deviceContext,
+			authentication,
+		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {

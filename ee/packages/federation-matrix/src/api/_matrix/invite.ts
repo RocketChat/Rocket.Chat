@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { Authorization, Room } from '@rocket.chat/core-services';
 import { isUserNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { PduMembershipEventContent, PersistentEventBase, RoomVersion } from '@rocket.chat/federation-sdk';
 import { eventIdSchema, roomIdSchema, NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
@@ -9,6 +9,8 @@ import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { createOrUpdateFederatedUser, getUsernameServername } from '../../FederationMatrix';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+
+const logger = new Logger('federation-matrix:invite');
 
 const EventBaseSchema = {
 	type: 'object',
@@ -139,8 +141,14 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	try {
 		await fn();
 	} catch (e) {
+		// don't retry on authorization/validation errors - they won't succeed on retry
+		if (e instanceof NotAllowedError) {
+			logger.error(e, 'Authorization error, not retrying');
+			return;
+		}
+
 		const delay = Math.min(625, delaySec ** 2);
-		console.error(`error occurred, retrying in ${delay}s`, e);
+		logger.error(e, `error occurred, retrying in ${delay}s`);
 		setTimeout(() => {
 			runWithBackoff(fn, delay);
 		}, delay * 1000);
@@ -344,6 +352,19 @@ export const getMatrixInviteRoutes = () => {
 
 			if (!ourUser) {
 				throw new Error('user not found not processing invite');
+			}
+
+			// check federation permission before processing the invite
+			if (!(await Authorization.hasPermission(ourUser._id, 'access-federation'))) {
+				logger.info(`User ${userToCheck} denied federation access, rejecting invite to room ${roomId}`);
+
+				return {
+					body: {
+						errcode: 'M_FORBIDDEN',
+						error: 'User does not have permission to access federation',
+					},
+					statusCode: 403,
+				};
 			}
 
 			try {

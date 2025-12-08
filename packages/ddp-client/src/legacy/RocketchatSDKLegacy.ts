@@ -253,7 +253,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return Promise.all(Object.entries(this.client.subscriptions).map(([, subscription]) => this.client.unsubscribe(subscription)));
 	}
 
-	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
+	static override create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
@@ -265,7 +265,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
 		const rest = new (class RestApiClient extends RestClient {
-			getCredentials() {
+			override getCredentials() {
 				if (!account.uid || !account.user?.token) {
 					return;
 				}

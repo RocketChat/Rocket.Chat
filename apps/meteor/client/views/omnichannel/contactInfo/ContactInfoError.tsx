@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -7,7 +5,8 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
 const ContactInfoError = ({ onClose }: { onClose: () => void }) => {
 	const { t } = useTranslation();

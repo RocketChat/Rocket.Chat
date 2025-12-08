@@ -3,7 +3,7 @@ import { Avatar, Box, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
-import { ComponentProps, ComponentType } from 'react';
+import type { ComponentPropsWithoutRef, ComponentType } from 'react';
 
 import {
 	HeaderV2 as Header,
@@ -87,7 +87,7 @@ const room: IRoom = {
 	_updatedAt: new Date(),
 } as const;
 
-const CustomAvatar = (props: Omit<ComponentProps<typeof Avatar>, 'url'>) => <Avatar size='x28' url={avatarUrl} {...props} />;
+const CustomAvatar = (props: Omit<ComponentPropsWithoutRef<typeof Avatar>, 'url'>) => <Avatar size='x28' url={avatarUrl} {...props} />;
 const icon = { name: 'hash' } as const;
 
 export const Default = () => (

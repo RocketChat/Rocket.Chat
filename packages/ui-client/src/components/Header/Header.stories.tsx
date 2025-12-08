@@ -3,7 +3,7 @@ import { Avatar, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 import {
 	Header,

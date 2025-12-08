@@ -27,7 +27,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	private rids: string[] = [];
 
-	async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
+	override async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
 		this.rids = [];
 		await super.convertData(callbacks);
 
@@ -76,7 +76,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 	}
 
-	protected async convertRecord(record: IImportMessageRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportMessageRecord): Promise<boolean> {
 		await this.insertMessage(record.data);
 		return true;
 	}
@@ -257,7 +257,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 	}
 
-	protected getDataType(): 'message' {
+	protected override getDataType(): 'message' {
 		return 'message';
 	}
 }

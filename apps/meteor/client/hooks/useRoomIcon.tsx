@@ -8,6 +8,14 @@ import { ReactiveUserStatus } from '../components/UserStatus';
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
 ): ComponentProps<typeof Icon> | ReactElement | null => {
+	// @ts-expect-error TODO: Implement ABAC attributes in rooms
+	if (room.abacAttributes) {
+		if (room.teamMain) {
+			return { name: 'team-shield' };
+		}
+		return { name: 'hash-shield' };
+	}
+
 	if (isRoomFederated(room)) {
 		return { name: 'globe' };
 	}
