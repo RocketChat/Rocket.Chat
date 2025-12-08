@@ -1620,5 +1620,39 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 			});
 		});
+
+		describe('Rejecting an invitation from Synapse', () => {
+			let matrixRoomId: string;
+			let channelName: string;
+			let rid: string;
+
+			beforeAll(async () => {
+				channelName = `federated-channel-reject-from-synapse-${Date.now()}`;
+				matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+				await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const pendingInvitation = subscriptions.update.find((subscription) => subscription.status === 'INVITED');
+
+				expect(pendingInvitation).not.toBeUndefined();
+
+				rid = pendingInvitation?.rid!;
+			}, 15000);
+
+			it('It should allow RC user to reject the invite', async () => {
+				const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
+				expect(rejectResponse.success).toBe(true);
+			});
+
+			it.failing('It should remove the subscription after rejection', async () => {
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+
+				expect(invitedSub).toBeFalsy();
+			});
+		});
 	});
 });
