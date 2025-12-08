@@ -54,8 +54,6 @@ export const useMediaCallRoomAction = () => {
 
 	const blocked = subscription?.blocked || subscription?.blocker;
 
-	console.log(subscription);
-
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!peerId || !callAction || blocked || federated) {
 			return undefined;
