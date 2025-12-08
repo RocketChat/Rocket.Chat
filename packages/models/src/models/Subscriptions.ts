@@ -2087,18 +2087,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		]);
 	}
 
-	async findInvitedSubscription(
-		roomId: ISubscription['rid'],
-		userId: ISubscription['u']['_id'],
-	): Promise<Pick<ISubscription, '_id'> | null> {
-		return this.findOne(
-			{
-				'rid': roomId,
-				'u._id': userId,
-				'status': 'INVITED',
-			},
-			{ projection: { _id: 1 } },
-		);
+	async findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED',
+		});
 	}
 
 	async acceptInvitationById(subscriptionId: string): Promise<UpdateResult> {

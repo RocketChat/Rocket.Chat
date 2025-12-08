@@ -336,6 +336,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
 	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
-	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<Pick<ISubscription, '_id'> | null>;
+	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
 	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
 }

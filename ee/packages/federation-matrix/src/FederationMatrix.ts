@@ -1,4 +1,4 @@
-import { type IFederationMatrixService, ServiceClass } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -919,6 +919,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		if (action === 'accept') {
 			await federationSDK.acceptInvite(room.federation.mrid, matrixUserId);
+
+			await Room.performAcceptRoomInvite(room, subscription, user);
 		}
 		if (action === 'reject') {
 			await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
