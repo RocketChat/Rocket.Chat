@@ -381,7 +381,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					storeState: false,
 				});
 				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				await poFederationChannelServer1.sidenav.logout();
+				await poFederationChannelServer1.navbar.logout();
 				await createChannelAndInviteRemoteUserToCreateLocalUser({
 					page,
 					poFederationChannelServer: poFederationChannelServer1,
@@ -458,7 +458,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer2.roomToolbar.openUserInfo();
 				await poFederationChannelServer2.content.sendMessage('hello world');
 
-				await poFederationChannelServer1.sidenav.logout();
+				await poFederationChannelServer1.navbar.logout();
 				await doLogin({
 					page,
 					server: {
@@ -496,7 +496,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					storeState: false,
 				});
 				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				await poFederationChannelServer1.sidenav.logout();
+				await poFederationChannelServer1.navbar.logout();
 				await createChannelAndInviteRemoteUserToCreateLocalUser({
 					page,
 					poFederationChannelServer: poFederationChannelServer1,
