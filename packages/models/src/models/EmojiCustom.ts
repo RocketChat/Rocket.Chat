@@ -9,7 +9,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		super(db, 'custom_emoji', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 } }, { key: { aliases: 1 } }, { key: { extension: 1 } }];
 	}
 

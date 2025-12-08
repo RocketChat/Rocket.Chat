@@ -69,7 +69,7 @@ export class DDPStreamer extends ServiceClass {
 		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
 	}, 30000);
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
@@ -217,7 +217,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
 		try {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
@@ -265,7 +265,7 @@ export class DDPStreamer extends ServiceClass {
 		}
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.wss?.clients.forEach(function (client) {
 			client.terminate();
 		});

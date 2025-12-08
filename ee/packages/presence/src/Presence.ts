@@ -82,7 +82,7 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
@@ -105,7 +105,7 @@ export class Presence extends ServiceClass implements IPresence {
 		await Promise.all(userIds.map((uid) => this.updateUserPresence(uid)));
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;

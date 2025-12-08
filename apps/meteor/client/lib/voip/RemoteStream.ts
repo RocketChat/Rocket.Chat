@@ -65,7 +65,7 @@ export default class RemoteStream extends Stream {
 		this.renderingMediaElement?.pause();
 	}
 
-	clear(): void {
+	override clear(): void {
 		super.clear();
 		if (this.renderingMediaElement) {
 			this.renderingMediaElement.pause();
