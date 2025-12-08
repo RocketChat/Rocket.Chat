@@ -3,8 +3,9 @@ import { faker } from '@faker-js/faker';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
+import { CreateNewChannel } from '../page-objects/create-new-room';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
-import { Navbar, HomeSidenav } from '../page-objects/fragments';
+import { Navbar } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
 import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom } from '../utils';
@@ -20,7 +21,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	let loginPage: LoginPage;
 	let navbar: Navbar;
 	let encryptedRoomPage: EncryptedRoomPage;
-	let sidenav: HomeSidenav;
+	let createNewChannel: CreateNewChannel;
 
 	test.use({ storageState: Users.admin.state });
 
@@ -33,7 +34,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		loginPage = new LoginPage(page);
 		navbar = new Navbar(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
-		sidenav = new HomeSidenav(page);
+		createNewChannel = new CreateNewChannel(page);
 
 		await api.post('/method.call/e2e.resetOwnE2EKey', {
 			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
@@ -50,7 +51,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await setupE2EEPassword(page);
 
-		await sidenav.createEncryptedChannel(channelName);
+		await createNewChannel.createEncrypted(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -61,7 +62,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(messageText);
 
 		// Log out
-		await sidenav.logout();
+		await navbar.logout();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
@@ -88,7 +89,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await setupE2EEPassword(page);
 
 		// Create an encrypted channel
-		await sidenav.createEncryptedChannel(channelName);
+		await createNewChannel.createEncrypted(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -129,12 +130,12 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		});
 
 		// Log out
-		await sidenav.logout();
+		await navbar.logout();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
-		await expect(sidenav.btnCreateNew).toBeVisible();
+		await expect(navbar.btnCreateNew).toBeVisible();
 
 		await navbar.openChat(channelName);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -164,10 +165,9 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			api,
 		}) => {
 			const encryptedRoomPage = new EncryptedRoomPage(page);
-			const sidenav = new HomeSidenav(page);
 			targetChannelName = faker.string.uuid();
 
-			await sidenav.createEncryptedChannel(targetChannelName);
+			await createNewChannel.createEncrypted(targetChannelName);
 
 			await expect(page).toHaveURL(`/group/${targetChannelName}`);
 			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
