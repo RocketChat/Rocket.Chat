@@ -112,7 +112,9 @@ export const disableDefaultBusinessHour = async () => {
 		workHours: allDisabledWorkHours,
 	};
 
-	await request.post(api('livechat/business-hours.save')).set(credentials).send(disabledBusinessHour).expect(200);
+	const response = await request.post(api('livechat/business-hours.save')).set(credentials).send(disabledBusinessHour).expect(200);
+	console.log('disableDefaultBusinessHour -> response.body: ', response.body);
+	return response;
 };
 
 const removeCustomBusinessHour = async (businessHourId: string) => {
