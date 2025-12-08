@@ -16,7 +16,6 @@ const RoomSidePanelItemBadges = ({ room, roomTitle }: RoomSidePanelItemBadgesPro
 	return (
 		<>
 			{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
-
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 		</>
 	);
