@@ -78,7 +78,7 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poFederationChannelServer1.sidenav.logout();
+		await poFederationChannelServer1.navbar.logout();
 		await page.close();
 	});
 

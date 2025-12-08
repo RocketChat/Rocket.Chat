@@ -724,7 +724,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			});
 
 			test('expect to unreact a message from Server A to Server B', async ({ page, apiServer2 }) => {
-				await poFederationChannelServer2.sidenav.logout();
+				await poFederationChannelServer2.navbar.logout();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -809,7 +809,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 			});
 
 			test('expect to unreact a message from Server B to Server A', async ({ page, apiServer2 }) => {
-				await poFederationChannelServer2.sidenav.logout();
+				await poFederationChannelServer2.navbar.logout();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
