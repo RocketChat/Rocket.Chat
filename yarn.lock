@@ -8620,10 +8620,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-react": "npm:~7.27.1"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
@@ -8654,7 +8650,6 @@ __metadata:
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/react": "npm:~18.3.26"
     "@types/react-dom": "npm:~18.3.7"
-    babel-loader: "npm:~10.0.0"
     cross-env: "npm:^7.0.3"
     eslint: "npm:~8.45.0"
     eslint-plugin-storybook: "npm:~0.11.6"
@@ -8926,6 +8921,7 @@ __metadata:
     "@babel/core": "npm:~7.28.5"
     "@babel/eslint-parser": "npm:~7.28.5"
     "@babel/preset-env": "npm:~7.28.5"
+    "@babel/preset-react": "npm:~7.27.1"
     "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
@@ -9060,7 +9056,6 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9068,7 +9063,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     eslint: "npm:~8.45.0"
-    jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
