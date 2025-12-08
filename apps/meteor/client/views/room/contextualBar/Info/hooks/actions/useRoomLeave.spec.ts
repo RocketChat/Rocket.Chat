@@ -25,7 +25,7 @@ jest.mock('../../../../../../../client/lib/rooms/roomCoordinator', () => ({
 it('should return leave function if user has subscription', () => {
 	const wrapper = mockAppRoot()
 		.withPermission('leave-c')
-		.withSubscriptions([{ ...mockSubscription, rid: 'room1' }] as unknown as SubscriptionWithRoom[])
+		.withSubscription({ ...mockSubscription, rid: 'room1' })
 		.build();
 
 	const { result } = renderHook(() => useRoomLeave(mockRoom), { wrapper });
