@@ -337,5 +337,5 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
 	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
 	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<Pick<ISubscription, '_id'> | null>;
-	markInviteAsAccepted(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
+	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
 }

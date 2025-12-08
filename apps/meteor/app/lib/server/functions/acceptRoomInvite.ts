@@ -14,6 +14,9 @@ import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
  * safe callbacks, ensuring no propagation loops are created during external event
  * processing.
  */
+
+// TODO this funcion is pretty much the same as the one in addUserToRoom.ts, we should probably
+// unify them at some point
 export const performAcceptRoomInvite = async (
 	room: IRoom,
 	subscription: ISubscription,
@@ -38,7 +41,7 @@ export const performAcceptRoomInvite = async (
 		throw error;
 	}
 
-	await Subscriptions.markInviteAsAccepted(subscription._id);
+	await Subscriptions.acceptInvitationById(subscription._id);
 
 	void notifyOnSubscriptionChangedById(subscription._id, 'updated');
 

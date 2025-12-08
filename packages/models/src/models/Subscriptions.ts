@@ -2101,7 +2101,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
-	async markInviteAsAccepted(subscriptionId: string): Promise<UpdateResult> {
+	async acceptInvitationById(subscriptionId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: subscriptionId },
 			{
