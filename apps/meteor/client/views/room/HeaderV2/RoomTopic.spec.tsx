@@ -172,24 +172,4 @@ describe('RoomTopic', () => {
 
 		expect(screen.queryByText('Add_topic')).not.toBeInTheDocument();
 	});
-
-	it('should not render Add Topic for voip rooms', () => {
-		const room = createFakeRoom({ topic: '', t: 'v' });
-		const subscription = createFakeSubscription({ t: 'v', rid: room._id });
-
-		render(
-			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} />
-			</FakeRoomProvider>,
-			{
-				wrapper: mockAppRoot()
-					.withSubscriptions([{ ...subscription, ...room }] as unknown as SubscriptionWithRoom[])
-					.withUser(user)
-					.withPermission('edit-room')
-					.build(),
-			},
-		);
-
-		expect(screen.queryByText('Add_topic')).not.toBeInTheDocument();
-	});
 });

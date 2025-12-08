@@ -1,11 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, memo } from 'react';
 
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
-const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
@@ -25,10 +23,6 @@ const Header = ({ room }: HeaderProps): ReactElement | null => {
 
 	if (room.t === 'l') {
 		return <OmnichannelRoomHeader />;
-	}
-
-	if (isVoipRoom(room)) {
-		return <VoipRoomHeader room={room} />;
 	}
 
 	if (shouldDisplayE2EESetup) {
