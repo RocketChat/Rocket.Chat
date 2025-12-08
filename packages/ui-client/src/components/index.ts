@@ -20,3 +20,4 @@ export * from './Modal';
 export * from './Wizard';
 export * from './CustomScrollbars';
 export * from './Page';
+export * from './InfoPanel';
