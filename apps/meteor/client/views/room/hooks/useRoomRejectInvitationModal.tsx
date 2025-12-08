@@ -15,9 +15,9 @@ export const useRoomRejectInvitationModal = (room: IRoomWithFederationOriginalNa
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const roomName = useRoomName(room) || t('unknown');
-	const { inviterUsername = t('unknown') } = useUserSubscription(room._id) ?? {};
+	const { inviter = { username: t('unknown') } } = useUserSubscription(room._id) ?? {};
 
-	const username = inviterUsername.startsWith('@') ? inviterUsername : `@${inviterUsername}`;
+	const username = inviter.username?.startsWith('@') ? inviter.username : `@${inviter.username}`;
 	const description =
 		room.t === 'd'
 			? t('Reject_dm_invitation_description', { username })

@@ -24,7 +24,7 @@ const RoomInvite = ({ room, subscription, ...props }: RoomInviteProps) => {
 			body={
 				<RoomInviteBody
 					isLoading={isPending}
-					inviterUsername={subscription?.inviterUsername ?? t('unknown')}
+					inviterUsername={subscription?.inviter?.username ?? t('unknown')}
 					onAccept={acceptInvite}
 					onReject={rejectInvite}
 				/>
