@@ -1,8 +1,10 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import RoomHeader from './RoomHeader';
+import Header from './Header';
+import { HeaderV2 } from './HeaderV2';
 import RoomInviteBody from './body/RoomInviteBody';
 import type { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 import { useRoomInvitation } from './hooks/useRoomInvitation';
@@ -20,7 +22,16 @@ const RoomInvite = ({ room, subscription, ...props }: RoomInviteProps) => {
 	return (
 		<RoomLayout
 			{...props}
-			header={<RoomHeader room={room} subscription={subscription} />}
+			header={
+				<FeaturePreview feature='newNavigation'>
+					<FeaturePreviewOn>
+						<HeaderV2 room={room} subscription={subscription} />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<Header room={room} subscription={subscription} />
+					</FeaturePreviewOff>
+				</FeaturePreview>
+			}
 			body={
 				<RoomInviteBody
 					isLoading={isPending}
