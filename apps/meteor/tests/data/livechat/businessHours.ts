@@ -1,5 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { POSTLivechatBusinessHoursSaveParams } from '@rocket.chat/rest-typings';
 import moment from 'moment';
 
 import { api, credentials, methodCall, request } from '../api-data';
@@ -9,21 +10,30 @@ type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'>
 	workHours: { day: string; start: string; finish: string; open: boolean }[];
 } & { departmentsToApplyBusinessHour?: string } & { timezoneName: string };
 
-export const saveBusinessHour = async (businessHour: ISaveBhApiWorkHour) => {
-	const { body } = await request.post(api('livechat/business-hours.save')).set(credentials).send(businessHour).expect(200);
+export const saveBusinessHour = async (businessHour: POSTLivechatBusinessHoursSaveParams) => {
+	const { body } = await request.post(api('livechat/business-hours.save')).set(credentials).send(businessHour);
 
 	return body;
 };
 
 export const createCustomBusinessHour = async (departments: string[], open = true): Promise<ILivechatBusinessHour> => {
 	const name = `business-hour-${Date.now()}`;
-	const businessHour: ISaveBhApiWorkHour = {
+	const businessHour: POSTLivechatBusinessHoursSaveParams = {
 		name,
 		active: true,
 		type: LivechatBusinessHourTypes.CUSTOM,
 		workHours: getWorkHours(open),
 		timezoneName: 'Asia/Calcutta',
+		timezone: 'Asia/Calcutta',
 		departmentsToApplyBusinessHour: '',
+		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+		daysTime: [
+			{ day: 'Monday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+			{ day: 'Tuesday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+			{ day: 'Wednesday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+			{ day: 'Thursday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+			{ day: 'Friday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+		],
 	};
 
 	if (departments.length) {
@@ -152,10 +162,15 @@ export const getCustomBusinessHourById = async (businessHourId: string): Promise
 	return response.body.businessHour;
 };
 
+// TODO: Refactor logic so object passed is of the correct type for POST /livechat/business-hours.save. See: CORE-1552
 export const openOrCloseBusinessHour = async (businessHour: ILivechatBusinessHour, open: boolean) => {
+	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
+	const timezoneName = businessHour.timezone.name;
+
 	const enabledBusinessHour = {
-		...businessHour,
-		timezoneName: businessHour.timezone.name,
+		...cleanedBusinessHour,
+		timezoneName,
+		timezone: timezoneName,
 		workHours: getWorkHours().map((workHour) => {
 			return {
 				...workHour,
