@@ -55,23 +55,33 @@ test.describe.serial('Global Search', () => {
 		]),
 	);
 
-	test('opens correct message when jumping from global search in group to channel thread', async ({ page }) => {
-		await page.goto(`/group/${targetGroup.name}/rocket-search`);
+	test(
+		'opens correct message when jumping from global search in group to channel thread',
+		{
+			tag: '@channel',
+			annotation: {
+				type: 'issue',
+				description: 'https://rocketchat.atlassian.net/browse/SUP-858',
+			},
+		},
+		async ({ page }) => {
+			await page.goto(`/group/${targetGroup.name}/rocket-search`);
 
-		await expect(page.getByText('Global search')).toBeVisible();
-		await page.getByText('Global search').click();
+			await expect(page.getByText('Global search')).toBeVisible();
+			await page.getByText('Global search').click();
 
-		await expect(page.getByPlaceholder('Search Messages')).toBeVisible();
-		await page.getByPlaceholder('Search Messages').fill(threadMessage.msg.slice(10)); // fill partial text to match search
+			await expect(page.getByPlaceholder('Search Messages')).toBeVisible();
+			await page.getByPlaceholder('Search Messages').fill(threadMessage.msg.slice(10)); // fill partial text to match search
 
-		const message = page.getByRole('listitem').filter({ hasText: threadMessage.msg });
-		await expect(message).toBeVisible();
-		await message.hover();
-		const jumpToMessageButton = message.getByTitle('Jump to message');
-		await expect(jumpToMessageButton).toBeVisible();
-		await jumpToMessageButton.click();
+			const message = page.getByRole('listitem').filter({ hasText: threadMessage.msg });
+			await expect(message).toBeVisible();
+			await message.hover();
+			const jumpToMessageButton = message.getByTitle('Jump to message');
+			await expect(jumpToMessageButton).toBeVisible();
+			await jumpToMessageButton.click();
 
-		await expect(page.locator('header').getByRole('button').filter({ hasText: targetChannel.name })).toBeVisible(); // match channel name in room header
-		await expect(page.getByText(threadMessage.msg)).toBeVisible();
-	});
+			await expect(page.locator('header').getByRole('button').filter({ hasText: targetChannel.name })).toBeVisible(); // match channel name in room header
+			await expect(page.getByText(threadMessage.msg)).toBeVisible();
+		},
+	);
 });
