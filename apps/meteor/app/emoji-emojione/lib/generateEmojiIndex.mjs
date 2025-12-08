@@ -7,17 +7,30 @@ import fs from 'fs';
 import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
+import { createRequire } from 'module';
 
+// Let Node resolve emoji-toolkit from any workspace node_modules
+const require = createRequire(import.meta.url);
+
+let emojiJsonFile;
+try {
+	emojiJsonFile = require.resolve('emoji-toolkit/emoji.json');
+} catch (e) {
+	console.error('Could not resolve emoji-toolkit/emoji.json.');
+	console.error("Make sure you've run `yarn` at the repo root so emoji-toolkit is installed.");
+	process.exit(1);
+}
+
+// Still use old emojione image assets for sprites (for now)
 const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${assetFolder}/emoji.json`;
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${emojiJsonFile} doesn't exist.`);
-	console.error("Maybe you need to run 'meteor npm install emojione-assets' or 'meteor npm install'?");
 } else {
 	const emojiJson = fs.readFileSync(emojiJsonFile);
 	generateEmojiPicker(emojiJson);
 }
+
 
 function generateEmojiPicker(data) {
 	const emojiList = JSON.parse(data);

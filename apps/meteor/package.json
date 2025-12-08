@@ -169,7 +169,7 @@
 		"chai-spies": "~1.1.0",
 		"cross-env": "^7.0.3",
 		"docker-compose": "^0.24.8",
-		"emojione-assets": "^4.5.0",
+		"emoji-toolkit": "^7.0.1",
 		"eslint": "~8.45.0",
 		"eslint-config-prettier": "~9.1.2",
 		"eslint-plugin-anti-trojan-source": "~1.1.2",
