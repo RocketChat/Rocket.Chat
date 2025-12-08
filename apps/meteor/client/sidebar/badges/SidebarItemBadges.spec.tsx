@@ -12,7 +12,7 @@ jest.mock('../../views/omnichannel/components/OmnichannelBadges', () => ({
 describe('SidebarItemBadges', () => {
 	const appRoot = mockAppRoot()
 		.withTranslations('en', 'core', {
-			Message_request: 'Message request',
+			Invited__date__: 'Invited {{date}}',
 			mentions_counter_one: '{{count}} mention',
 			mentions_counter_other: '{{count}} mentions',
 			__unreadTitle__from__roomTitle__: '{{unreadTitle}} from {{roomTitle}}',
@@ -52,14 +52,16 @@ describe('SidebarItemBadges', () => {
 	});
 
 	it('should render InvitationBadge when subscription has status INVITED', () => {
-		render(<SidebarItemBadges room={createRoomWithSubscription({ status: 'INVITED' })} />, { wrapper: appRoot });
+		render(<SidebarItemBadges room={createRoomWithSubscription({ status: 'INVITED', ts: new Date('2025-01-01T00:00:00.000Z') })} />, {
+			wrapper: appRoot,
+		});
 
-		expect(screen.getByRole('status', { name: 'Message request' })).toBeInTheDocument();
+		expect(screen.getByRole('status', { name: 'Invited January 1, 2025' })).toBeInTheDocument();
 	});
 
 	it('should not render InvitationBadge when subscription does not have status INVITED', () => {
 		render(<SidebarItemBadges room={createRoomWithSubscription()} />, { wrapper: appRoot });
 
-		expect(screen.queryByRole('status', { name: 'Message request' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('status', { name: /Invited/ })).not.toBeInTheDocument();
 	});
 });

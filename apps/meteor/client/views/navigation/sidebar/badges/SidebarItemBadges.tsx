@@ -1,7 +1,7 @@
 import { isInviteSubscription } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import InvitationBadge from './InvitationBadge';
+import InvitationBadge from '../../../../components/InvitationBadge';
 import UnreadBadge from '../../../../sidebarv2/badges/UnreadBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -17,7 +17,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 
-			{isInviteSubscription(room) && <InvitationBadge inviteDate={room.ts.toISOString()} />}
+			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
 		</>
 	);
 };
