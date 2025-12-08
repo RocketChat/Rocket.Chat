@@ -6,7 +6,7 @@ import { createFakeSubscription } from '../../../../../tests/mocks/data';
 
 jest.mock('../omnichannel/SidePanelOmnichannelBadges', () => ({
 	__esModule: true,
-	default: () => <div data-testid='omnichannel-badges'>OmnichannelBadges</div>,
+	default: () => <i role='status' aria-label='OmnichannelBadges' />,
 }));
 
 describe('RoomSidePanelItemBadges', () => {
@@ -44,12 +44,12 @@ describe('RoomSidePanelItemBadges', () => {
 	it('should render OmnichannelBadges when the room is an omnichannel room', () => {
 		render(<RoomSidePanelItemBadges room={createFakeSubscription({ t: 'l' })} />, { wrapper: appRoot });
 
-		expect(screen.getByTestId('omnichannel-badges')).toBeInTheDocument();
+		expect(screen.getByRole('status', { name: 'OmnichannelBadges' })).toBeInTheDocument();
 	});
 
 	it('should not render OmnichannelBadges when the room is not an omnichannel room', () => {
 		render(<RoomSidePanelItemBadges room={createFakeSubscription({ t: 'p' })} />, { wrapper: appRoot });
 
-		expect(screen.queryByTestId('omnichannel-badges')).not.toBeInTheDocument();
+		expect(screen.queryByRole('status', { name: 'OmnichannelBadges' })).not.toBeInTheDocument();
 	});
 });
