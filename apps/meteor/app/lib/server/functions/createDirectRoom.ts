@@ -155,19 +155,22 @@ export async function createDirectRoom(
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
 		).toArray();
 
-		const creatorUser = options?.creator ? roomMembers.find((member) => member._id === options?.creator) : undefined;
-
-		// TODO wtf creatorUser can be undefined here?
+		const creatorUser = roomMembers.find((member) => member._id === options?.creator);
+		if (roomExtraData.federated && !creatorUser) {
+			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
+		}
 
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 
 			const subscriptionStatus: Partial<ISubscription> =
-				roomExtraData.federated && options?.creator !== member._id
+				roomExtraData.federated && options.creator !== member._id && creatorUser
 					? {
 							status: 'INVITED',
 							inviter: {
-								_id: creatorUser?._id,
+								_id: creatorUser._id,
+								username: creatorUser.username,
+								name: creatorUser.name,
 							},
 							open: true,
 							unread: 1,

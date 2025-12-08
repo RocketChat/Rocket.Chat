@@ -7,7 +7,6 @@ import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { performAddUserToRoom } from './addUserToRoom';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
@@ -203,7 +202,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
 	}
 
 	if (!onlyUsernames(members)) {
