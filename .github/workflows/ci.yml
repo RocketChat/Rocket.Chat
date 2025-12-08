@@ -172,7 +172,7 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
+          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}-test
 
       - name: Debug cache-hit
         run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
