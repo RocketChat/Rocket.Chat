@@ -553,7 +553,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						return;
 					}
 
-					await federationSDK.inviteUserToRoom(
+					return federationSDK.inviteUserToRoom(
 						userIdSchema.parse(`@${username}:${this.serverName}`),
 						roomIdSchema.parse(room.federation.mrid),
 						userIdSchema.parse(inviterUserId),

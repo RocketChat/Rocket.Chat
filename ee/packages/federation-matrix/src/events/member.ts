@@ -30,7 +30,8 @@ async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 			origin: userServerName,
 		});
 	} catch (error) {
-		throw new Error(`Error getting or creating federated user ${userId}: ${error}`);
+		logger.error(error, `Error getting or creating federated user ${userId}`);
+		throw new Error(`Error getting or creating federated user ${userId}`);
 	}
 }
 
@@ -57,6 +58,8 @@ async function getOrCreateFederatedRoom({
 			return room;
 		}
 
+		// TODO room creator is not always the inviter
+
 		return Room.create(inviterUserId, {
 			type: roomType,
 			name: roomName,
@@ -71,7 +74,8 @@ async function getOrCreateFederatedRoom({
 			},
 		});
 	} catch (error) {
-		throw new Error(`Error getting or creating federated room ${roomName}: ${error}`);
+		logger.error(error, `Error getting or creating federated room ${roomName}`);
+		throw new Error(`Error getting or creating federated room ${roomName}`);
 	}
 }
 
@@ -219,6 +223,8 @@ async function handleLeave({
 	}
 
 	await Room.performUserRemoval(room._id, leavingUser);
+
+	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
 
 export function member(emitter: Emitter<HomeserverEventSignatures>) {
