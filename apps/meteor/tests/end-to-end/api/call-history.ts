@@ -112,7 +112,7 @@ describe('[Call History]', () => {
 					expect(res.body).to.have.property('item').that.is.an('object');
 					expect(res.body).to.have.property('call').that.is.an('object');
 
-					const item = res.body.item;
+					const { item, call } = res.body;
 					expect(item).to.have.property('_id', 'rocketchat.internal.history.test');
 					expect(item).to.have.property('callId', 'rocketchat.internal.call.test');
 					expect(item).to.have.property('state', 'ended');
@@ -124,7 +124,6 @@ describe('[Call History]', () => {
 					expect(item).to.have.property('ts');
 					expect(item).to.have.property('endedAt');
 
-					const call = res.body.call;
 					expect(call).to.have.property('_id', 'rocketchat.internal.call.test');
 					expect(call).to.have.property('service', 'webrtc');
 					expect(call).to.have.property('kind', 'direct');
@@ -158,7 +157,7 @@ describe('[Call History]', () => {
 					expect(res.body).to.have.property('item').that.is.an('object');
 					expect(res.body).to.have.property('call').that.is.an('object');
 
-					const item = res.body.item;
+					const { item, call } = res.body;
 					expect(item).to.have.property('_id', 'rocketchat.internal.history.test.2');
 					expect(item).to.have.property('callId', 'rocketchat.internal.call.test.2');
 					expect(item).to.have.property('state', 'ended');
@@ -170,7 +169,6 @@ describe('[Call History]', () => {
 					expect(item).to.have.property('ts');
 					expect(item).to.have.property('endedAt');
 
-					const call = res.body.call;
 					expect(call).to.have.property('_id', 'rocketchat.internal.call.test.2');
 					expect(call).to.have.property('service', 'webrtc');
 					expect(call).to.have.property('kind', 'direct');
