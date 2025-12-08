@@ -30,7 +30,7 @@ import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import useStartupEvent from './hooks/useStartupEvent';
+import { useStartupEvent } from './hooks/useStartupEvent';
 import { appLayout } from '../../lib/appLayout';
 
 const AppLayout = () => {
