@@ -7,7 +7,7 @@ import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadRec
 
 callbacks.add(
 	'afterReadMessages',
-	async (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
+	async (room: IRoom, params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -16,7 +16,7 @@ callbacks.add(
 		if (tmid) {
 			await MessageReads.readThread(uid, tmid);
 		} else if (lastSeen) {
-			await ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
+			await ReadReceipt.markMessagesAsRead(room._id, uid, lastSeen);
 		}
 	},
 	callbacks.priority.MEDIUM,
