@@ -7,7 +7,7 @@ import { validators } from './roomAccessValidator.compatibility';
 export class AuthorizationLivechat extends ServiceClassInternal implements IAuthorizationLivechat {
 	protected name = 'authorization-livechat';
 
-	protected internal = true;
+	protected override internal = true;
 
 	async canAccessRoom(room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: object): Promise<boolean> {
 		for await (const validator of validators) {
