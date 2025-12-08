@@ -28,11 +28,11 @@ export const createCustomBusinessHour = async (departments: string[], open = tru
 		departmentsToApplyBusinessHour: '',
 		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
 		daysTime: [
-			{ day: 'Monday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
-			{ day: 'Tuesday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
-			{ day: 'Wednesday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
-			{ day: 'Thursday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
-			{ day: 'Friday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true },
+			{ day: 'Monday', start: { time: '08:00' }, finish: { time: '18:00' }, open },
+			{ day: 'Tuesday', start: { time: '08:00' }, finish: { time: '18:00' }, open },
+			{ day: 'Wednesday', start: { time: '08:00' }, finish: { time: '18:00' }, open },
+			{ day: 'Thursday', start: { time: '08:00' }, finish: { time: '18:00' }, open },
+			{ day: 'Friday', start: { time: '08:00' }, finish: { time: '18:00' }, open },
 		],
 	};
 
@@ -112,9 +112,7 @@ export const disableDefaultBusinessHour = async () => {
 		workHours: allDisabledWorkHours,
 	};
 
-	const response = await request.post(api('livechat/business-hours.save')).set(credentials).send(disabledBusinessHour).expect(200);
-	console.log('disableDefaultBusinessHour -> response.body: ', response.body);
-	return response;
+	return saveBusinessHour(disabledBusinessHour);
 };
 
 const removeCustomBusinessHour = async (businessHourId: string) => {
