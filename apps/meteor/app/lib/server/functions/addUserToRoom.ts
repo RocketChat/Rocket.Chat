@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Team, Room } from '@rocket.chat/core-services';
-import { type IUser } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -79,6 +79,12 @@ export const addUserToRoom = async (
 
 		throw error;
 	}
+
+	// for federation rooms we stop here since everything else will be handled by the federation invite flow
+	if (isRoomNativeFederated(room)) {
+		return;
+	}
+
 	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter

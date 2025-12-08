@@ -1,4 +1,4 @@
-import { FederationMatrix, Authorization, MeteorError } from '@rocket.chat/core-services';
+import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
 import {
 	isEditedMessage,
 	isRoomNativeFederated,
@@ -92,10 +92,13 @@ callbacks.add(
 	'native-federation-after-delete-message',
 );
 
-beforeAddUsersToRoom.add(async ({ usernames }, room) => {
-	if (FederationActions.shouldPerformFederationAction(room)) {
-		await FederationMatrix.ensureFederatedUsersExistLocally(usernames);
+beforeAddUsersToRoom.add(async ({ usernames, inviter }, room) => {
+	if (!FederationActions.shouldPerformFederationAction(room) && inviter) {
+		return;
 	}
+
+	// we create local users before adding them to the room
+	await FederationMatrix.ensureFederatedUsersExistLocally(usernames);
 });
 
 beforeAddUserToRoom.add(
@@ -104,19 +107,32 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
-				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
-			}
-
-			// If inviter is federated, the invite came from an external transaction.
-			// Don't propagate back to Matrix (it was already processed at origin server).
-			if (isUserNativeFederated(inviter)) {
-				return;
-			}
-
-			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
 		}
+
+		// TODO should we really check for "user" here? it is potentially an external user
+		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+		}
+
+		// If inviter is federated, the invite came from an external transaction.
+		// Don't propagate back to Matrix (it was already processed at origin server).
+		if (isUserNativeFederated(inviter)) {
+			return;
+		}
+
+		await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
+
+		// after invite is sent we create the invite subscriptions
+		// TODO this may be not needed if we receive the emit for the invite event from matrix
+		await Room.createUserSubscription({
+			ts: new Date(),
+			room,
+			userToBeAdded: user,
+			inviter,
+			status: 'INVITED',
+		});
 	},
 	callbacks.priority.MEDIUM,
 	'native-federation-on-before-add-users-to-room',
