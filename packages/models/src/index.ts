@@ -51,7 +51,6 @@ import type {
 	IOAuthAccessTokensModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
-	IPbxEventsModel,
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
@@ -72,7 +71,6 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
-	IVoipRoomModel,
 	IWebdavAccountsModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
@@ -106,7 +104,6 @@ import {
 	IntegrationHistoryRaw,
 	IntegrationsRaw,
 	EmailInboxRaw,
-	PbxEventsRaw,
 	LivechatRoomsRaw,
 	LivechatPriorityRaw,
 	UploadsRaw,
@@ -189,7 +186,6 @@ export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesMode
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
-export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
@@ -210,7 +206,6 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
-export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
@@ -250,7 +245,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
-	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
 	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
