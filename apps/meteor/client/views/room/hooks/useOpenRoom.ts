@@ -112,7 +112,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	useEffect(() => {
 		if (error) {
-			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
+			if (type === 'l' && error instanceof RoomNotFoundError) {
 				Rooms.state.remove((record) => Object.values(record).includes(reference));
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
 				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });

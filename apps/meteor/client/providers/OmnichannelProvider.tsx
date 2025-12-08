@@ -59,14 +59,12 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const user = useUser() as IOmnichannelAgent;
 
 	const agentAvailable = user?.statusLivechat === 'available';
-	const voipCallAvailable = true; // TODO: use backend check;
 
 	const getRoutingConfig = useEndpoint('GET', '/v1/livechat/config/routing');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
 	const accessible = hasAccess && omniChannelEnabled;
-	const iceServersSetting: any = useSetting('WebRTC_Servers');
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
@@ -119,7 +117,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
+	}, [accessible, getRoutingConfig, omnichannelRouting, setRouteConfig]);
 
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
@@ -185,7 +183,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				enabled: true,
 				isEnterprise,
 				agentAvailable,
-				voipCallAvailable,
 				routeConfig,
 				livechatPriorities,
 				isOverMacLimit,
@@ -197,7 +194,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			enabled: true,
 			isEnterprise,
 			agentAvailable,
-			voipCallAvailable,
 			routeConfig,
 			inquiries: queue
 				? {
@@ -218,7 +214,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		manuallySelected,
 		isEnterprise,
 		agentAvailable,
-		voipCallAvailable,
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
