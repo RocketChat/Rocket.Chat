@@ -8799,7 +8799,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~8.45.0"
     express: "npm:^4.21.2"
-    hono: "npm:^4.10.6"
+    hono: "npm:^4.8.12"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.0"
     supertest: "npm:~7.1.4"
@@ -23400,6 +23400,13 @@ __metadata:
   version: 4.10.6
   resolution: "hono@npm:4.10.6"
   checksum: 10/a94a3780b934d2b9c9eb3d94bfd096717cd65beda007da2790db4af95ee49b6a8365fdc087c456ca749280b0d804381b51575d57169601042210f2401ba32f85
+  languageName: node
+  linkType: hard
+
+"hono@npm:^4.8.12":
+  version: 4.10.7
+  resolution: "hono@npm:4.10.7"
+  checksum: 10/564be57c7e037ad1237b5451cee52b3d39d89fb7cefa00976ccb4650e1c4eeb37b928e87b85255b1595eb28f18e80ea5effdb1998b8464b742b434bee3e1dda7
   languageName: node
   linkType: hard
 
