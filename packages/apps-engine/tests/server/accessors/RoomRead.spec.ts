@@ -35,6 +35,7 @@ export class RoomReadAccessorTestFixture {
 		const theUnreadMsg = this.messages;
 		const { unreadRoomId } = this;
 		const { unreadUserId } = this;
+		const theRooms = [this.room];
 		this.mockRoomBridgeWithRoom = {
 			doGetById(id, appId): Promise<IRoom> {
 				return Promise.resolve(theRoom);
@@ -53,6 +54,9 @@ export class RoomReadAccessorTestFixture {
 			},
 			doGetMembers(name, appId): Promise<Array<IUser>> {
 				return Promise.resolve([theUser]);
+			},
+			doGetAllRooms(filter, appId): Promise<Array<IRoom>> {
+				return Promise.resolve(theRooms);
 			},
 			doGetMessages(roomId, options, appId): Promise<IMessageRaw[]> {
 				return Promise.resolve(theMessages);
@@ -84,6 +88,8 @@ export class RoomReadAccessorTestFixture {
 		Expect(await rr.getDirectByUsernames([this.user.username])).toBe(this.room);
 		Expect(await rr.getMessages('testing')).toBeDefined();
 		Expect(await rr.getMessages('testing')).toBe(this.messages);
+		Expect(await rr.getAllRooms()).toBeDefined();
+		Expect(await rr.getAllRooms()).toEqual([this.room]);
 		Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toBeDefined();
 		Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toEqual(this.messages);
 

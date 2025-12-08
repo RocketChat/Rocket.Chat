@@ -3,7 +3,7 @@ import type { IMessageRaw } from '../../definition/messages';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { RoomBridge } from '../bridges';
-import { type GetMessagesOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
+import { type GetMessagesOptions, type GetRoomsFilter, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
 	constructor(
@@ -44,6 +44,28 @@ export class RoomRead implements IRoomRead {
 
 	public getMembers(roomId: string): Promise<Array<IUser>> {
 		return this.roomBridge.doGetMembers(roomId, this.appId);
+	}
+
+	public getAllRooms(filter: Partial<GetRoomsFilter> = {}): Promise<Array<IRoom>> {
+		if (typeof filter.limit !== 'undefined' && (!Number.isFinite(filter.limit) || filter.limit <= 0)) {
+			throw new Error(`Invalid limit provided. Expected number > 0, got ${filter.limit}`);
+		}
+
+		if (typeof filter.skip !== 'undefined' && (!Number.isFinite(filter.skip) || filter.skip < 0)) {
+			throw new Error(`Invalid skip provided. Expected number >= 0, got ${filter.skip}`);
+		}
+
+		if (filter.onlyDiscussions && filter.includeDiscussions === false) {
+			throw new Error('Invalid filter: onlyDiscussions cannot be used with includeDiscussions set to false');
+		}
+
+		return this.roomBridge.doGetAllRooms(
+			{
+				...filter,
+				skip: filter.skip ?? 0,
+			},
+			this.appId,
+		);
 	}
 
 	public getDirectByUsernames(usernames: Array<string>): Promise<IRoom> {

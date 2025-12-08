@@ -3,11 +3,11 @@ import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilter } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions, Sort } from 'mongodb';
+import type { FindOptions, Filter, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -149,6 +149,53 @@ export class AppRoomBridge extends RoomBridge {
 		);
 
 		return promises as Promise<IUser[]>;
+	}
+
+	protected async getAllRooms(filter: GetRoomsFilter, appId: string): Promise<Array<IRoom>> {
+		this.orch.debugLog(`The App ${appId} is getting all rooms with filter`, filter);
+
+		const { types, limit, skip = 0, includeDiscussions = true, onlyDiscussions = false, teamMainOnly = false } = filter || {};
+
+		const query: Filter<ICoreRoom> = {};
+
+		if (types?.length) {
+			query.t = { $in: types };
+		}
+
+		if (onlyDiscussions) {
+			query.prid = { $exists: true };
+		} else if (includeDiscussions === false) {
+			query.prid = { $exists: false };
+		}
+
+		if (teamMainOnly) {
+			query.teamMain = true;
+		}
+
+		const findOptions: FindOptions<ICoreRoom> = {
+			sort: { _updatedAt: -1 },
+			skip,
+		};
+
+		if (typeof limit === 'number') {
+			findOptions.limit = limit;
+		}
+
+		const roomConverter = this.orch.getConverters()?.get('rooms');
+		if (!roomConverter) {
+			throw new Error('Room converter not found');
+		}
+
+		const rooms: IRoom[] = [];
+
+		for await (const room of Rooms.find(query, findOptions)) {
+			const converted = await roomConverter.convertRoom(room);
+			if (converted) {
+				rooms.push(converted);
+			}
+		}
+
+		return rooms;
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
