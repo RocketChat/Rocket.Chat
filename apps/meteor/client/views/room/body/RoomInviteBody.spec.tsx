@@ -12,9 +12,13 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 const appRoot = mockAppRoot().build();
 
 describe('RoomInvite', () => {
-	const inviterUsername = 'rocket.cat';
 	const onAccept = jest.fn();
 	const onReject = jest.fn();
+	const inviter = {
+		username: 'rocket.cat',
+		name: 'Rocket Cat',
+		_id: 'rocket.cat',
+	};
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -33,7 +37,7 @@ describe('RoomInvite', () => {
 	});
 
 	it('should call onAccept when accept button is clicked', async () => {
-		render(<RoomInvite inviterUsername={inviterUsername} onAccept={onAccept} onReject={onReject} />, { wrapper: appRoot });
+		render(<RoomInvite inviter={inviter} onAccept={onAccept} onReject={onReject} />, { wrapper: appRoot });
 
 		await userEvent.click(screen.getByRole('button', { name: 'Accept' }));
 
@@ -42,7 +46,7 @@ describe('RoomInvite', () => {
 	});
 
 	it('should call onReject when reject button is clicked', async () => {
-		render(<RoomInvite inviterUsername={inviterUsername} onAccept={onAccept} onReject={onReject} />, { wrapper: appRoot });
+		render(<RoomInvite inviter={inviter} onAccept={onAccept} onReject={onReject} />, { wrapper: appRoot });
 
 		await userEvent.click(screen.getByRole('button', { name: 'Reject' }));
 
