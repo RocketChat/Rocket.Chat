@@ -1,20 +1,20 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useRemoveTag } from './useRemoveTag';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useRemoveTag } from './useRemoveTag';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {
@@ -35,7 +35,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 	const handleDeleteTag = useRemoveTag();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const saveTag = useMethod('livechat:saveTag');
+	const saveTag = useEndpoint('POST', '/v1/livechat/tags.save');
 
 	const { _id, name, description } = tagData || {};
 
@@ -56,7 +56,11 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		const departmentsId = departments?.map((dep) => dep.value) || [''];
 
 		try {
-			await saveTag(_id as unknown as string, { name, description }, departmentsId);
+			await saveTag({
+				_id,
+				tagData: { name, description },
+				...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
+			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-tags'],

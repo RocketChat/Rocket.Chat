@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.13.0-develop",
+	"version": "7.14.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -21,6 +21,7 @@
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
+		"jest-qase-reporter": "^2.1.3",
 		"ts-node": "^10.9.2",
 		"turbo": "~2.6.1",
 		"typescript": "~5.9.3"

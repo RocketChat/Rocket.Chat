@@ -1,8 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
+	"version": "7.14.0-develop",
 	"private": true,
-	"version": "7.13.0-develop",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

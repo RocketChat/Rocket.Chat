@@ -3,6 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue, useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -13,7 +14,6 @@ import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import Row from './Row';
-import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';

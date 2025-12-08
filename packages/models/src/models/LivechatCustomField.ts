@@ -9,7 +9,7 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		super(db, 'livechat_custom_field', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { scope: 1 } }];
 	}
 

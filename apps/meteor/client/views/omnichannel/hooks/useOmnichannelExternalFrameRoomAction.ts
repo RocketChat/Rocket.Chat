@@ -1,7 +1,6 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
-
-import type { RoomToolboxActionConfig } from '../../room/contexts/RoomToolboxContext';
 
 const ExternalFrameContainer = lazy(() => import('../ExternalFrameContainer'));
 

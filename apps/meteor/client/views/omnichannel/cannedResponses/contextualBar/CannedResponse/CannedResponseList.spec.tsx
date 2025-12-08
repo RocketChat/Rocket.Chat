@@ -9,7 +9,8 @@ import * as stories from './CannedResponseList.stories';
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 // Mock the useRoomToolbox hook
-jest.mock('../../../../room/contexts/RoomToolboxContext', () => ({
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useRoomToolbox: () => ({
 		context: undefined,
 	}),
