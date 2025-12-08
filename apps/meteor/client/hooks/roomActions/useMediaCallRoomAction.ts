@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
 import type { TranslationKey, RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
@@ -23,9 +24,11 @@ const getPeerId = (uids: string[], ownUserId: string | undefined) => {
 };
 
 export const useMediaCallRoomAction = () => {
-	const { uids = [] } = useRoom();
+	const room = useRoom();
+	const { uids = [] } = room;
 	const subscription = useRoomSubscription();
 	const ownUserId = useUserId();
+	const federated = isRoomFederated(room);
 
 	const getAvatarUrl = useUserAvatarPath();
 
@@ -51,8 +54,10 @@ export const useMediaCallRoomAction = () => {
 
 	const blocked = subscription?.blocked || subscription?.blocker;
 
+	console.log(subscription);
+
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!peerId || !callAction || blocked) {
+		if (!peerId || !callAction || blocked || federated) {
 			return undefined;
 		}
 
@@ -66,5 +71,5 @@ export const useMediaCallRoomAction = () => {
 			action: () => action(),
 			groups: ['direct'] as const,
 		};
-	}, [peerId, callAction, blocked]);
+	}, [peerId, callAction, blocked, federated]);
 };
