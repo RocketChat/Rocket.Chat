@@ -1,30 +1,35 @@
-import { Box, Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, MessageBlock } from '@rocket.chat/fuselage';
+import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import {
 	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarClose,
-	// ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarIcon,
-	ContextualbarSection,
-	ContextualbarInnerContent,
 	ContextualbarScrollableContent,
-	ContextualbarButton,
+	InfoPanel,
+	InfoPanelSection,
+	InfoPanelLabel,
+	InfoPanelText,
 } from '@rocket.chat/ui-client';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+
+import CallHistoryExternalUser from './CallHistoryExternalUser';
+import CallHistoryInternalUser from './CallHistoryInternalUser';
+import { useFullStartDate } from './useFullStartDate';
 
 type InternalCallHistoryContact = {
 	_id: string;
 	name?: string;
 	username: string;
+	voiceCallExtension?: string;
 };
 
 type ExternalCallHistoryContact = {
 	number: string;
 };
-
-type CallHistoryContact = undefined;
 
 type CallHistoryData = {
 	callId: string;
@@ -33,7 +38,6 @@ type CallHistoryData = {
 	startedAt: Date;
 	state: 'ended' | 'not-answered' | 'failed' | 'error' | 'transferred';
 	messageId?: string;
-	contact: InternalCallHistoryContact | ExternalCallHistoryContact;
 };
 
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
@@ -44,6 +48,7 @@ type CallHistoryContextualBarProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
 	contact: InternalCallHistoryContact | ExternalCallHistoryContact;
+	data: CallHistoryData;
 };
 
 const isInternalCallHistoryContact = (
@@ -52,11 +57,37 @@ const isInternalCallHistoryContact = (
 	return '_id' in contact;
 };
 
-const CallHistoryContextualBar = ({ onClose, actions, contact }: CallHistoryContextualBarProps) => {
+const contextValue = {
+	action: () => undefined,
+	rid: '',
+	values: {},
+};
+
+// TODO use the same function that generates the message-block payload on the server. Duration will also be displayed here.
+const getBlocks = (t: TFunction) => {
+	return [
+		{
+			type: 'info_card' as const,
+			rows: [
+				{
+					background: 'default' as const,
+					elements: [
+						{ type: 'icon', icon: 'phone-off', variant: 'default' },
+						{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: t('Call_ended') },
+					] as const,
+				},
+			],
+		},
+	];
+};
+
+const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHistoryContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { voiceCall, videoCall, jumpToMessage, directMessage, userInfo } = actions;
+	const { voiceCall, /* videoCall, jumpToMessage, */ directMessage, userInfo /* voiceCallExtension, direction */ } = actions;
+	const { duration, callId, direction, startedAt } = data;
 
+	const date = useFullStartDate(startedAt);
 	return (
 		<Contextualbar>
 			<ContextualbarHeader>
@@ -65,22 +96,44 @@ const CallHistoryContextualBar = ({ onClose, actions, contact }: CallHistoryCont
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				{/* <CallHistoryContactInfo />
-                <CallHistoryDirection />
-                <CallHistoryMessageBlock /> */}
-				<Box mb={-16}>
-					<Margins block={16}>
-						<Box>
-							test
+				<InfoPanel>
+					<InfoPanelSection>
+						{isInternalCallHistoryContact(contact) ? (
+							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} onUserClick={userInfo} />
+						) : (
+							<CallHistoryExternalUser number={contact.number} />
+						)}
+					</InfoPanelSection>
+					<InfoPanelSection>
+						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1m'>
+							{/* TODO use `arrow-up-right` and `arrow-down-left` icons when available */}
+							<Icon name={direction === 'inbound' ? 'phone-in' : 'phone-out'} size='x20' mie='x4' />
+							{direction === 'inbound' ? t('Incoming_voice_call') : t('Outgoing_voice_call')}
 						</Box>
-                        <Box>
-							test
-						</Box>
-                        <Box>
-							test
-						</Box>
-					</Margins>
-				</Box>
+					</InfoPanelSection>
+					<InfoPanelSection>
+						<MessageBlock fixedWidth>
+							<UiKitContext.Provider value={contextValue}>
+								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getBlocks(t)} />
+							</UiKitContext.Provider>
+						</MessageBlock>
+						<Box mbs={-8}>{date}</Box>
+					</InfoPanelSection>
+					<InfoPanelSection>
+						<InfoPanelLabel>{t('Duration')}</InfoPanelLabel>
+						<InfoPanelText>{duration}</InfoPanelText>
+					</InfoPanelSection>
+					<InfoPanelSection>
+						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>
+						<InfoPanelText>{callId}</InfoPanelText>
+					</InfoPanelSection>
+					{isInternalCallHistoryContact(contact) && contact.voiceCallExtension && (
+						<InfoPanelSection>
+							<InfoPanelLabel>{t('Voice_Call_Extension')}</InfoPanelLabel>
+							<InfoPanelText>{contact.voiceCallExtension}</InfoPanelText>
+						</InfoPanelSection>
+					)}
+				</InfoPanel>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

@@ -15,7 +15,14 @@ const meta = {
 				Call_info: 'Call info',
 				Direct_message: 'Direct message',
 				Call: 'Call',
+				Call_ended_bold: '*Voice call ended*',
+				Incoming_voice_call: 'Incoming voice call',
+				Outgoing_voice_call: 'Outgoing voice call',
+				Duration: 'Duration',
+				Voice_Call_Extension: 'Voice call extension',
+				Call_ID: 'Call ID',
 			})
+			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
 		(Story): ReactElement => <Story />,
 	],
@@ -33,6 +40,7 @@ const internalContact = {
 	_id: '1234567890',
 	name: 'John Doe',
 	username: 'john.doe',
+	voiceCallExtension: '0000',
 };
 
 export const Default: Story = {
@@ -46,6 +54,13 @@ export const Default: Story = {
 			userInfo: noop,
 		},
 		contact: internalContact,
+		data: {
+			callId: '1234567890',
+			direction: 'inbound',
+			duration: 100,
+			startedAt: new Date(),
+			state: 'ended',
+		},
 	},
 };
 
@@ -59,32 +74,13 @@ export const ExternalContact: Story = {
 			directMessage: noop,
 			userInfo: noop,
 		},
+		data: {
+			callId: '1234567890',
+			direction: 'inbound',
+			duration: 100,
+			startedAt: new Date(),
+			state: 'ended',
+		},
 		contact: externalContact,
 	},
 };
-
-// export const WithCallHistory: Story = {
-// 	args: {
-// 		onClose: noop,
-// 		actions: {
-// 			voiceCall: noop,
-// 			videoCall: noop,
-// 			jumpToMessage: noop,
-// 			directMessage: noop,
-// 			userInfo: noop,
-// 		},
-// 	},
-// };
-
-// export const Empty: Story = {
-// 	args: {
-// 		onClose: noop,
-// 		actions: {
-// 			voiceCall: noop,
-// 			videoCall: noop,
-// 			jumpToMessage: noop,
-// 			directMessage: noop,
-// 			userInfo: noop,
-// 		},
-// 	},
-// };
