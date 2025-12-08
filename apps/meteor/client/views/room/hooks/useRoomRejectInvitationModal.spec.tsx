@@ -14,7 +14,7 @@ const mockedSubscription = createFakeSubscription({
 	t: 'c',
 	rid: mockedRoom._id,
 	status: 'INVITED',
-	inviterUsername,
+	inviter: { _id: 'inviterId', username: inviterUsername },
 	name: mockedRoom.name,
 	fname: mockedRoom.fname,
 });
