@@ -1,7 +1,10 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
+
+
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -27,7 +30,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
@@ -171,9 +174,9 @@ API.v1.addRoute(
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-					};
+					twoFactorCode: userData.typedPassword,
+					twoFactorMethod: 'password',
+				};
 
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -536,10 +539,10 @@ API.v1.addRoute(
 			const limit =
 				count !== 0
 					? [
-							{
-								$limit: count,
-							},
-						]
+						{
+							$limit: count,
+						},
+					]
 					: [];
 
 			const result = await Users.col
@@ -879,24 +882,54 @@ const usersEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'users.getPreferences',
-	{ authRequired: true },
-	{
-		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
+const UserPreferencesResponseSchema = {
+	type: 'object',
+	properties: {
+		preferences: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['preferences', 'success'],
+	additionalProperties: false,
+};
 
-				return API.v1.success({
-					preferences,
-				});
-			}
-			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+const isUserPreferencesResponse = ajv.compile(UserPreferencesResponseSchema);
+
+const usersEndpoints = API.v1.get(
+	'users.getPreferences',
+	{
+		authRequired: true,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: isUserPreferencesResponse,
 		},
 	},
+	async function action() {
+		const user = await Users.findOneById(this.userId);
+
+		if (user?.settings) {
+			const { preferences = {} } = user.settings;
+			preferences.language = user.language;
+
+			return API.v1.success({ preferences });
+		}
+
+		throw new Meteor.Error(
+			'error-preferences-not-found',
+			i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase(),
+		);
+	},
 );
+
+export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	interface Endpoints extends UsersEndpoints { }
+}
+
 
 API.v1.addRoute(
 	'users.forgotPassword',
@@ -1558,5 +1591,5 @@ type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints {}
+	interface Endpoints extends UsersEndpoints { }
 }
