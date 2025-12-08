@@ -1,5 +1,5 @@
+import { isDirectMessageRoom, isInviteSubscription } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isVoipRoom, isInviteSubscription } from '@rocket.chat/core-typings';
 import { HeaderToolbar, SidebarToggler } from '@rocket.chat/ui-client';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -7,7 +7,6 @@ import { lazy, memo, useMemo } from 'react';
 
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
-const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
 const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
@@ -44,10 +43,6 @@ const Header = ({ room, subscription }: HeaderProps<IRoom>): ReactElement | null
 
 	if (room.t === 'l') {
 		return <OmnichannelRoomHeader slots={slots} />;
-	}
-
-	if (isVoipRoom(room)) {
-		return <VoipRoomHeader slots={slots} room={room} />;
 	}
 
 	if (shouldDisplayE2EESetup) {

@@ -19,7 +19,6 @@ export const defaultFields = {
 	reason: 1,
 	statusText: 1,
 	avatarETag: 1,
-	extension: 1,
 	federated: 1,
 	statusLivechat: 1,
 	abacAttributes: 1,
