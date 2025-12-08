@@ -11,19 +11,23 @@ export class AdminRooms extends Admin {
 		this.editRoom = new EditRoomFlexTab(page);
 	}
 
+	get adminPageContent(): Locator {
+		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Rooms' }) });
+	}
+
 	get inputSearchRooms(): Locator {
-		return this.page.getByPlaceholder('Search rooms');
+		return this.adminPageContent.getByPlaceholder('Search rooms');
 	}
 
 	getRoomRow(name?: string): Locator {
-		return this.page.getByRole('link', { name });
+		return this.adminPageContent.getByRole('link', { name });
 	}
 
 	get btnEdit(): Locator {
-		return this.page.getByRole('button', { name: 'Edit' });
+		return this.adminPageContent.getByRole('button', { name: 'Edit' });
 	}
 
 	dropdownFilterRoomType(text = 'All rooms'): Locator {
-		return this.page.getByRole('button', { name: text });
+		return this.adminPageContent.getByRole('button', { name: text });
 	}
 }
