@@ -10,6 +10,17 @@ type AuthenticationMiddlewareConfig = {
 	cookies?: boolean;
 };
 
+/**
+ * Creates an Express middleware that authenticates requests using header/cookie tokens or OAuth2.
+ *
+ * The middleware sets `req.user` when authentication succeeds and `req.userId` to the authenticated user's `_id`.
+ * If `rejectUnauthorized` is true and no user is authenticated, the middleware responds with HTTP 401 and stops the request.
+ *
+ * @param config - Configuration for the middleware.
+ *   - `rejectUnauthorized` (default: `true`): If true, unauthenticated requests are rejected with HTTP 401.
+ *   - `cookies` (default: `false`): If true, authentication values are read from cookies when available.
+ * @returns An Express middleware function that enforces authentication and populates `req.user` and `req.userId`.
+ */
 export function authenticationMiddleware(
 	config: AuthenticationMiddlewareConfig = {
 		rejectUnauthorized: true,

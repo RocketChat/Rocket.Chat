@@ -13,11 +13,21 @@ const oauth2server = new OAuth2Server({
 	debug: false,
 });
 
-// https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
+/**
+ * Fetches an access token record by its token string.
+ *
+ * @returns The access token record matching `accessToken`, or `undefined` if none is found.
+ */
 async function getAccessToken(accessToken: string) {
 	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }
 
+/**
+ * Authenticate a request using an OAuth2 access token and return the corresponding user.
+ *
+ * @param partialRequest - Object containing `headers` and `query` used to locate the access token (`Authorization: Bearer <token>` header or `access_token` query parameter)
+ * @returns The authenticated `IUser` when the token is present, valid, and maps to an existing user; `undefined` if the token is missing, invalid, expired, or the user is not found
+ */
 export async function oAuth2ServerAuth(partialRequest: {
 	headers: Record<string, string | undefined>;
 	query: Record<string, string | undefined>;
