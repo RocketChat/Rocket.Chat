@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -15,17 +15,11 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/not
  * Executes only the necessary database operations, with no callbacks, to prevent
  * propagation loops during external event processing.
  */
-export const performUserRemoval = async function (rid: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+export const performUserRemoval = async function (room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1, status: 1 },
 	});
 	if (!subscription) {
-		return;
-	}
-
-	const room = await Rooms.findOneById(rid);
-
-	if (!room) {
 		return;
 	}
 
@@ -40,24 +34,24 @@ export const performUserRemoval = async function (rid: string, user: IUser, opti
 			};
 
 			if (room.teamMain) {
-				await Message.saveSystemMessage('removed-user-from-team', rid, user.username || '', user, extraData);
+				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username || '', user, extraData);
 			} else {
-				await Message.saveSystemMessage('ru', rid, user.username || '', user, extraData);
+				await Message.saveSystemMessage('ru', room._id, user.username || '', user, extraData);
 			}
 		} else if (subscription.status === 'INVITED') {
-			await Message.saveSystemMessage('uir', rid, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('uir', room._id, removedUser.username || '', removedUser);
 		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ult', rid, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ult', room._id, removedUser.username || '', removedUser);
 		} else {
-			await Message.saveSystemMessage('ul', rid, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ul', room._id, removedUser.username || '', removedUser);
 		}
 	}
 
 	if (room.t === 'l') {
-		await Message.saveSystemMessage('command', rid, 'survey', user);
+		await Message.saveSystemMessage('command', room._id, 'survey', user);
 	}
 
-	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(room._id, user._id);
 	if (deletedSubscription) {
 		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
 	}
@@ -70,7 +64,7 @@ export const performUserRemoval = async function (rid: string, user: IUser, opti
 		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [user._id]);
 	}
 
-	void notifyOnRoomChangedById(rid);
+	void notifyOnRoomChangedById(room._id);
 };
 
 /**
@@ -96,7 +90,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 
 	await Room.beforeLeave(room);
 
-	await performUserRemoval(rid, user, options);
+	await performUserRemoval(room, user, options);
 
 	await afterLeaveRoomCallback.run({ user, kicker: options?.byUser }, room);
 

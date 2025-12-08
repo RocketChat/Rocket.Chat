@@ -44,7 +44,7 @@ export interface IRoomService {
 		},
 	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
-	performUserRemoval(roomId: string, user: IUser, options?: { byUser?: IUser }): Promise<void>;
+	performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(

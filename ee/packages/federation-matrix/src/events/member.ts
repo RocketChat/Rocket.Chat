@@ -212,9 +212,12 @@ async function handleLeave({
 	room_id: roomId,
 	state_key: userId,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
-	const leavingUser = await getOrCreateFederatedUser(userId);
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(userId, serverName);
+
+	const leavingUser = await Users.findOneByUsername(username);
 	if (!leavingUser) {
-		throw new Error(`Failed to get or create leaving user: ${userId}`);
+		return;
 	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
@@ -222,7 +225,7 @@ async function handleLeave({
 		throw new Error(`Room not found while leaving user ${userId} from room ${roomId}`);
 	}
 
-	await Room.performUserRemoval(room._id, leavingUser);
+	await Room.performUserRemoval(room, leavingUser);
 
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
