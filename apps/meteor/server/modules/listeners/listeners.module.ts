@@ -393,10 +393,6 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 
-		service.onEvent('voip.events', (userId, data): void => {
-			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
-		});
-
 		service.onEvent('call.callerhangup', (userId, data): void => {
 			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});
@@ -450,9 +446,6 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('connector.statuschanged', (enabled): void => {
-			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
-		});
 		service.onEvent('omnichannel.room', (roomId, data): void => {
 			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});

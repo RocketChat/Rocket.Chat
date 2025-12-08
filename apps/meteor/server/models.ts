@@ -57,7 +57,6 @@ import {
 	OAuthAuthCodesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
-	PbxEventsRaw,
 	PermissionsRaw,
 	PushTokenRaw,
 	ReadReceiptsDummy,
@@ -78,7 +77,6 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	VideoConferenceRaw,
-	VoipRoomRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
@@ -151,7 +149,6 @@ registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
-registerModel('IPbxEventsModel', new PbxEventsRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
 registerModel('IPushTokenModel', new PushTokenRaw(db));
 registerModel('IReadReceiptsModel', new ReadReceiptsDummy(), false);
@@ -171,7 +168,6 @@ registerModel('IUserDataFilesModel', new UserDataFilesRaw(db));
 registerModel('IUsersModel', new UsersRaw(db, trashCollection));
 registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
-registerModel('IVoipRoomModel', new VoipRoomRaw(db, trashCollection));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
