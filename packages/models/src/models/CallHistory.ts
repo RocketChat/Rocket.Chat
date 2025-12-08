@@ -9,7 +9,7 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 		super(db, 'call_history');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { uid: 1, callId: 1 }, unique: true }, { key: { uid: 1, ts: -1 } }];
 	}
 
