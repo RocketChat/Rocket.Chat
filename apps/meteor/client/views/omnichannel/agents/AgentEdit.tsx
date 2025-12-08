@@ -9,7 +9,7 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
@@ -27,7 +27,6 @@ type AgentEditFormData = {
 	departments: { label: string; value: string }[];
 	status: ILivechatAgentStatus;
 	maxNumberSimultaneousChat: number;
-	voipExtension: string;
 };
 
 type AgentEditProps = {
@@ -40,7 +39,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const voipEnabled = useSetting('VoIP_Enabled');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { name, username, livechat, statusLivechat } = agentData;
@@ -68,7 +66,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 			departments: initialDepartmentValue,
 			status: statusLivechat,
 			maxNumberSimultaneousChat: livechat?.maxNumberSimultaneousChat || 0,
-			voipExtension: '',
 		},
 	});
 
@@ -106,7 +103,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const emailField = useId();
 	const departmentsFieldId = useId();
 	const statusField = useId();
-	const voipExtensionField = useId();
 
 	return (
 		<>
@@ -184,18 +180,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 								</FieldRow>
 							</Field>
 							{MaxChatsPerAgent && <MaxChatsPerAgent />}
-							{voipEnabled && (
-								<Field>
-									<FieldLabel htmlFor={voipExtensionField}>{t('VoIP_Extension')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='voipExtension'
-											control={control}
-											render={({ field }) => <TextInput id={voipExtensionField} {...field} />}
-										/>
-									</FieldRow>
-								</Field>
-							)}
 						</FieldGroup>
 					</form>
 				</FormProvider>
