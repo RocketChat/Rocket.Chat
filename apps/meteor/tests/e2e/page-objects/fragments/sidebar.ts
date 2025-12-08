@@ -5,6 +5,10 @@ import { expect } from '../../utils/test';
 export abstract class Sidebar {
 	constructor(protected root: Locator) {}
 
+	get btnClose(): Locator {
+		return this.root.getByRole('button', { name: 'Close' });
+	}
+
 	waitForDismissal() {
 		return expect(this.root).not.toBeVisible();
 	}
@@ -96,12 +100,7 @@ export class RoomSidebar extends Sidebar {
 
 export class AdminSidebar extends Sidebar {
 	constructor(page: Page) {
-		// TODO: This locator should be more specific
-		super(page.getByRole('navigation'));
-	}
-
-	get btnClose(): Locator {
-		return this.root.getByRole('button', { name: 'Close' });
+		super(page.getByRole('navigation', { name: 'Administration' }));
 	}
 
 	async close(): Promise<void> {

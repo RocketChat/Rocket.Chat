@@ -226,7 +226,7 @@ export class DatabaseWatcher extends EventEmitter {
 		this.emit(collection, doc);
 	}
 
-	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
+	override on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
 		return super.on(collection, callback);
 	}
 

@@ -42,7 +42,11 @@ export async function createDirectMessage(
 	const users = await Promise.all(usernames.filter((username) => username !== me.username));
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
-	const federated = false;
+
+	// TODO: use a shared helper to check whether a user is federated
+	// since the DM creation API doesn't tell us if the room is federated (unlike normal channels),
+	// we're currently inferring it: if any participant has a Matrix-style ID (@user:server), we treat the DM as federated
+	const hasFederatedMembers = roomUsers.some((user) => typeof user === 'string' && user.includes(':') && user.includes('@'));
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
@@ -91,7 +95,7 @@ export async function createDirectMessage(
 		false,
 		undefined,
 		{
-			federated,
+			...(hasFederatedMembers && { federated: true }),
 		},
 		options,
 	);

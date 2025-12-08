@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,9 +16,10 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveTag'(_id, tagData, tagDepartments) {
+		methodDeprecationLogger.method('livechat:saveTag', '8.0.0', 'POST /v1/livechat/tags.save');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-tags'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTags' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTag' });
 		}
 
 		check(_id, Match.Maybe(String));

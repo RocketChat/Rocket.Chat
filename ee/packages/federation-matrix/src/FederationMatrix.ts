@@ -145,7 +145,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private readonly logger = new Logger(this.name);
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		// although this is async function, it is not awaited, so we need to register the listeners before everything else
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction === 'removed') {
@@ -237,7 +237,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return matrixRoomResult;
 		} catch (error) {
-			this.logger.error('Failed to create room:', error);
+			this.logger.error(error, 'Failed to create room');
 			throw error;
 		}
 	}
@@ -260,7 +260,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				});
 			}
 		} catch (error) {
-			this.logger.error({ msg: 'Failed to ensure federated users exist locally', error });
+			this.logger.error(error, 'Failed to ensure federated users exist locally');
 			throw error;
 		}
 	}
@@ -311,7 +311,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 							userIdSchema.parse(actualMatrixUserId),
 						);
 					} catch (error) {
-						this.logger.error('Error creating or updating bridged user for DM:', error);
+						this.logger.error(error, 'Error creating or updating bridged user for DM');
 					}
 				}
 			}
@@ -320,9 +320,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				mrid: matrixRoomResult.room_id,
 				origin: this.serverName,
 			});
-			this.logger.debug('Direct message room creation completed successfully', room._id);
+			this.logger.debug({ roomId: room._id, msg: 'Direct message room creation completed successfully' });
 		} catch (error) {
-			this.logger.error('Failed to create direct message room:', error);
+			this.logger.error(error, 'Failed to create direct message room');
 			throw error;
 		}
 	}
@@ -376,9 +376,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return lastEventId;
 		} catch (error) {
-			this.logger.error('Failed to handle file message', {
+			this.logger.error({
+				msg: 'Failed to handle file message',
 				messageId: message._id,
-				error,
+				err: error,
 			});
 			throw error;
 		}
@@ -473,7 +474,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
-			this.logger.error('Failed to send message to Matrix:', error);
+			this.logger.error(error, 'Failed to send message to Matrix');
 			throw error;
 		}
 	}
@@ -535,7 +536,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
-			this.logger.error('Failed to send redaction to Matrix:', error);
+			this.logger.error(error, 'Failed to send redaction to Matrix');
 			throw error;
 		}
 	}
@@ -571,7 +572,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}),
 			);
 		} catch (error) {
-			this.logger.error({ msg: 'Failed to invite an user to Matrix:', err: error });
+			this.logger.error(error, 'Failed to invite a user to Matrix');
 			throw error;
 		}
 	}
@@ -606,9 +607,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
-			this.logger.debug('Reaction sent to Matrix successfully:', eventId);
+			this.logger.debug({ eventId, msg: 'Reaction sent to Matrix successfully' });
 		} catch (error) {
-			this.logger.error('Failed to send reaction to Matrix:', error);
+			this.logger.error(error, 'Failed to send reaction to Matrix');
 			throw error;
 		}
 	}
@@ -617,7 +618,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			const message = await Messages.findOneById(messageId);
 			if (!message) {
-				this.logger.error(`Message ${messageId} not found`);
+				this.logger.error({ messageId, msg: 'Message not found' });
 				return;
 			}
 
@@ -629,7 +630,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const room = await Rooms.findOneById(message.rid);
 			if (!room || !isRoomNativeFederated(room)) {
-				this.logger.error(`No Matrix room mapping found for room ${message.rid}`);
+				this.logger.error({ rid: message.rid, msg: 'No Matrix room mapping found for room' });
 				return;
 			}
 
@@ -662,7 +663,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				break;
 			}
 		} catch (error) {
-			this.logger.error('Failed to remove reaction from Matrix:', error);
+			this.logger.error(error, 'Failed to remove reaction from Matrix');
 			throw error;
 		}
 	}
@@ -690,7 +691,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
 		} catch (error) {
-			this.logger.error('Failed to leave room in Matrix:', error);
+			this.logger.error(error, 'Failed to leave room in Matrix');
 			throw error;
 		}
 	}
@@ -714,7 +715,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${room.federation.mrid} by ${userWhoRemoved.username}`);
 		} catch (error) {
-			this.logger.error('Failed to kick user from Matrix room:', error);
+			this.logger.error(error, 'Failed to kick user from Matrix room');
 			throw error;
 		}
 	}
@@ -728,7 +729,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const user = await Users.findOneById(message.u._id, { projection: { _id: 1, username: 1, federation: 1, federated: 1 } });
 			if (!user) {
-				this.logger.error(`No user found for ID ${message.u._id}`);
+				this.logger.error({ userId: message.u._id, msg: 'No user found for ID' });
 				return;
 			}
 
@@ -749,7 +750,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
 		} catch (error) {
-			this.logger.error('Failed to update message in Matrix:', error);
+			this.logger.error(error, 'Failed to update message in Matrix');
 			throw error;
 		}
 	}
@@ -882,7 +883,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 									errcode: string;
 									error: string;
 							  }
-						>({ homeserverUrl, userId });
+						>({ homeserverUrl, userId: matrixId });
 
 						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {
 							return [matrixId, 'UNVERIFIED'];

@@ -6,6 +6,7 @@ export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContex
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export * from './RouterContext';
+export { RoomToolboxContext, RoomToolboxContextValue, RoomToolboxActionConfig, RenderToolboxItemParams } from './RoomToolboxContext';
 export { ServerContext, ServerContextValue } from './ServerContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
@@ -57,6 +58,7 @@ export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRol
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useRoomToolbox } from './hooks/useRoomToolbox';
 export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';

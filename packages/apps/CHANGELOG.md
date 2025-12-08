@@ -1,5 +1,67 @@
 # @rocket.chat/apps
 
+## 0.5.23
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f075eabe1ed1292e3eda2bcca58b5323936dd13, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2]:</summary>
+
+  - @rocket.chat/apps-engine@1.58.0
+  - @rocket.chat/core-typings@7.13.0
+  - @rocket.chat/model-typings@1.9.0
+  </details>
+
+## 0.5.23-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  - @rocket.chat/model-typings@1.9.0-rc.2
+  </details>
+
+## 0.5.23-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  - @rocket.chat/model-typings@1.9.0-rc.1
+  </details>
+
+## 0.5.23-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5f075eabe1ed1292e3eda2bcca58b5323936dd13, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2]:</summary>
+
+  - @rocket.chat/apps-engine@1.58.0-rc.0
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  - @rocket.chat/model-typings@1.9.0-rc.0
+  </details>
+
+## 0.5.22
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/model-typings@1.8.3
+  </details>
+
+## 0.5.21
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e6cc073a99e1aaa7936ef9b29e7bfa31dab86aa3]:</summary>
+
+  - @rocket.chat/apps-engine@1.57.1
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/model-typings@1.8.2
+  </details>
+
 ## 0.5.20
 
 ### Patch Changes

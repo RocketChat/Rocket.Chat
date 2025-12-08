@@ -1,7 +1,30 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.8",
+	"version": "7.9.11",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"ajv": "^8.17.1",
+		"express": "^4.21.2",
+		"hono": "^4.6.19",
+		"qs": "^6.14.0"
+	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:^",
@@ -14,29 +37,6 @@
 		"supertest": "~7.1.4",
 		"ts-jest": "~29.4.5",
 		"typescript": "~5.9.3"
-	},
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"testunit": "jest",
-		"test": "jest"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"dependencies": {
-		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/logger": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^",
-		"ajv": "^8.17.1",
-		"express": "^4.21.2",
-		"hono": "^4.6.19",
-		"qs": "^6.14.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

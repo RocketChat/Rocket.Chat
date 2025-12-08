@@ -13,7 +13,7 @@ export class PbxEventsRaw extends BaseRaw<IPbxEvent> implements IPbxEventsModel 
 		});
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { uniqueId: 1 }, unique: true }];
 	}
 

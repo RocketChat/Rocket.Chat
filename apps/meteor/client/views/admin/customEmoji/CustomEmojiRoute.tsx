@@ -1,4 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
+import { ContextualbarHeader, ContextualbarClose, ContextualbarDialog, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback, useRef } from 'react';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
-import { ContextualbarHeader, ContextualbarClose, ContextualbarDialog, ContextualbarTitle } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 

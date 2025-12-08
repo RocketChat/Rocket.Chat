@@ -1,11 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Throbber } from '@rocket.chat/fuselage';
-import type { MouseEventHandler, ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import OTREstablished from './components/OTREstablished';
-import OTRStates from './components/OTRStates';
-import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -13,7 +7,13 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { MouseEventHandler, ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import OTREstablished from './components/OTREstablished';
+import OTRStates from './components/OTRStates';
+import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { useRoom } from '../../contexts/RoomContext';
 
 type OTRProps = {

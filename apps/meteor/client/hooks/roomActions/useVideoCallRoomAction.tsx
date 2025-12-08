@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -11,7 +12,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useVideoCallRoomAction = () => {

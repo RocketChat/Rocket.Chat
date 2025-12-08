@@ -454,6 +454,7 @@ jobs:
         uses: ./.github/actions/docker-image-size-tracker
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          ci-pat: ${{ secrets.CI_PAT }}
           registry: ghcr.io
           repository: ${{ needs.release-versions.outputs.lowercase-repo }}
           tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -654,6 +655,7 @@ jobs:
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
+          QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
 
   report-coverage:

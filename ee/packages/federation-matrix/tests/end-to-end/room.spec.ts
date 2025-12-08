@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import {
 	createRoom,
@@ -8,7 +8,7 @@ import {
 	addUserToRoom,
 	addUserToRoomSlashCommand,
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import { getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
+import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
 import { createDDPListener } from '../helper/ddp-listener';
@@ -18,8 +18,8 @@ import { SynapseClient } from '../helper/synapse-client';
 // import { t } from 'i18next';
 
 (IS_EE ? describe : describe.skip)('Federation', () => {
-	let rc1AdminRequestConfig: any;
-	let rc1User1RequestConfig: any;
+	let rc1AdminRequestConfig: IRequestConfig;
+	let rc1User1RequestConfig: IRequestConfig;
 	let hs1AdminApp: SynapseClient;
 	let hs1User1App: SynapseClient;
 
@@ -72,6 +72,56 @@ import { SynapseClient } from '../helper/synapse-client';
 	});
 
 	describe('Rooms', () => {
+		describe('Create direct message rooms', () => {
+			// Creating a fresh user for this test suite to avoid collisions,
+			// since DMs are unique for each user pair
+			let userRequestConfig: IRequestConfig;
+			let createdUser: IUser;
+			beforeAll(async () => {
+				const user = { username: `user-${Date.now()}`, password: '123' };
+				createdUser = await createUser(user, rc1AdminRequestConfig);
+				userRequestConfig = await getRequestConfig(federationConfig.rc1.apiUrl, user.username, user.password);
+			});
+
+			afterAll(async () => {
+				await deleteUser(createdUser, {}, rc1AdminRequestConfig);
+			});
+
+			it('It should create a federated room when federated members are added', async () => {
+				const response = await createRoom({
+					type: 'd',
+					username: federationConfig.hs1.adminMatrixUserId,
+					config: userRequestConfig,
+				});
+
+				expect(response.status).toBe(200);
+				expect(response.body).toHaveProperty('success', true);
+				expect(response.body).toHaveProperty('room');
+				expect(response.body.room).toHaveProperty('_id');
+				expect(response.body.room).toHaveProperty('t', 'd');
+
+				const roomInfo = await getRoomInfo(response.body.room._id, userRequestConfig);
+				expect(roomInfo.room).toHaveProperty('federated', true);
+			});
+
+			it('It should create a non-federated room when only local members are added', async () => {
+				const response = await createRoom({
+					type: 'd',
+					username: federationConfig.rc1.additionalUser1.username,
+					config: userRequestConfig,
+				});
+
+				expect(response.status).toBe(200);
+				expect(response.body).toHaveProperty('success', true);
+				expect(response.body).toHaveProperty('room');
+				expect(response.body.room).toHaveProperty('_id');
+				expect(response.body.room).toHaveProperty('t', 'd');
+
+				const roomInfo = await getRoomInfo(response.body.room._id, userRequestConfig);
+				expect(roomInfo.room).not.toHaveProperty('federated');
+			});
+		});
+
 		describe('Create a room on RC as private, explicitly not federated, with federated users in creation modal', () => {
 			describe('Add 1 federated user in the creation modal', () => {
 				it('It should not allow the creation of the room', async () => {
@@ -175,8 +225,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						rid: nonFederatedChannel._id,
 						config: rc1AdminRequestConfig,
 					});
-
-					console.log('response', response.body);
 
 					expect(response.body).toHaveProperty('success', true);
 					expect(response.body).toHaveProperty('message');

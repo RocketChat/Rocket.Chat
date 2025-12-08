@@ -1,17 +1,16 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, Select } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { ReactElement, Dispatch, SetStateAction } from 'react';
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-
 import {
 	ContextualbarScrollableContent,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarDialog,
 	ContextualbarTitle,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 type CustomFieldsListProps = {
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;

@@ -1,8 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
-import { ContextualbarEmptyContent, ContextualbarFooter } from '../../../components/Contextualbar';
 
 const AdminUserCreated = ({ uid }: { uid: string }) => {
 	const { t } = useTranslation();

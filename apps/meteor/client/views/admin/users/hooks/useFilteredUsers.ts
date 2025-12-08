@@ -29,16 +29,16 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 		const listUsersPayload: Partial<Record<AdminUsersTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
-				hasLoggedIn: false,
 				type: 'user',
-				status: 'active',
+				status: 'deactivated',
+				inactiveReason: ['pending_approval'],
 			},
 			active: {
-				hasLoggedIn: true,
 				status: 'active',
 			},
 			deactivated: {
 				status: 'deactivated',
+				inactiveReason: ['deactivated', 'idle_too_long'],
 			},
 		};
 

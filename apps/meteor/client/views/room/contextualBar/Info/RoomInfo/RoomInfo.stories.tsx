@@ -1,10 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomInfo from './RoomInfo';
 import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	component: RoomInfo,

@@ -164,7 +164,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug('Received edited message from Matrix, updating existing message');
 				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', relation.event_id);
+					logger.error({ event_id: relation.event_id, msg: 'Original message not found for edit' });
 					return;
 				}
 				if (originalMessage.federation?.eventId !== relation.event_id) {
@@ -216,7 +216,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
-					logger.error('Original message not found for quote:', quoteMessageEventId);
+					logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 					return;
 				}
 				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
@@ -311,7 +311,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug('Received edited message from Matrix, updating existing message');
 				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', relation.event_id);
+					logger.error({ event_id: relation.event_id, msg: 'Original message not found for edit' });
 					return;
 				}
 				if (originalMessage.federation?.eventId !== relation.event_id) {
@@ -354,7 +354,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
-					logger.error('Original message not found for quote:', quoteMessageEventId);
+					logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 					return;
 				}
 				await Message.saveMessageFromFederation({
@@ -413,7 +413,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 
 			await Message.deleteMessage(user, rcMessage);
 		} catch (error) {
-			logger.error('Failed to process Matrix removal redaction:', error);
+			logger.error(error, 'Failed to process Matrix removal redaction');
 		}
 	});
 }

@@ -101,17 +101,12 @@ export function configureFederationMatrixSettings(settings: {
 }
 
 export async function setupFederationMatrix() {
-	// TODO are these required?
-	const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
-	const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
-
 	const eventHandler = new Emitter<HomeserverEventSignatures>();
 
 	await init({
 		emitter: eventHandler,
 		dbConfig: {
-			uri: mongoUri,
-			name: dbName,
+			uri: process.env.MONGO_URL || 'mongodb://localhost:3001/meteor',
 			poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
 		},
 	});

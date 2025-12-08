@@ -1,7 +1,7 @@
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 
 import { roomActionHooks } from '../../../../ui';
-import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 export const useCoreRoomActions = () => {
 	return useStableArray(

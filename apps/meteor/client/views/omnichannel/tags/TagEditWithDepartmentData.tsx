@@ -1,10 +1,10 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
+import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import TagEdit from './TagEdit';
-import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: ILivechatTag; onClose: () => void }) => {
 	const t = useTranslation();
