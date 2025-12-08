@@ -1,7 +1,12 @@
 import type { CallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
 import { CallHistory, MediaCalls } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { ajv, validateNotFoundErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateNotFoundErrorResponse,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -14,15 +19,12 @@ const CallHistoryListSchema = {
 	properties: {
 		count: {
 			type: 'number',
-			nullable: true,
 		},
 		offset: {
 			type: 'number',
-			nullable: true,
 		},
 		sort: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: [],
@@ -68,6 +70,8 @@ const callHistoryListEndpoints = API.v1.get(
 				},
 				required: ['count', 'offset', 'total', 'items', 'success'],
 			}),
+			400: validateBadRequestErrorResponse,
+			403: validateUnauthorizedErrorResponse,
 		},
 		query: isCallHistoryListProps,
 		authRequired: true,
@@ -158,6 +162,7 @@ const callHistoryInfoEndpoints = API.v1.get(
 				required: ['item', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
+			403: validateUnauthorizedErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 		query: isCallHistoryInfoProps,
@@ -191,8 +196,6 @@ const callHistoryInfoEndpoints = API.v1.get(
 );
 
 type CallHistoryInfoEndpoints = ExtractRoutesFromAPI<typeof callHistoryInfoEndpoints>;
-
-export type CallHistoryEndpoints = CallHistoryListEndpoints | CallHistoryInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
