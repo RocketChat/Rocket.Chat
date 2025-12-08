@@ -217,7 +217,7 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
           tar -czf /tmp/RocketChat-packages-build.tar.gz \
-            $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.deno-cache/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
+            $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
         uses: actions/upload-artifact@v5
