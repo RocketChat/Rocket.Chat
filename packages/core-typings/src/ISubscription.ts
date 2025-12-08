@@ -75,7 +75,7 @@ export interface ISubscription extends IRocketChatRecord {
 	suggestedOldRoomKeys?: OldKey[];
 
 	status?: SubscriptionStatus;
-	inviterUsername?: string;
+	inviter?: Pick<IUser, '_id' | 'username' | 'name'>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

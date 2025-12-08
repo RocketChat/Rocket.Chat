@@ -233,7 +233,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		room: IRoom;
 		ts: Date;
 		userToBeAdded: IUser;
-		inviter?: Pick<IUser, '_id' | 'username'>;
+		inviter?: Pick<IUser, '_id' | 'username' | 'name'>;
 		createAsHidden?: boolean;
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
@@ -249,7 +249,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			userMentions: 1,
 			groupMentions: 0,
 			...(status && { status }),
-			...(inviter && { inviterUsername: inviter?.username }),
+			...(inviter && { inviter: { _id: inviter._id, username: inviter.username, name: inviter.name } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
 		});

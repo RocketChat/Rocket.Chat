@@ -2107,7 +2107,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{
 				$unset: {
 					status: 1,
-					inviterUsername: 1,
+					inviter: 1,
 				},
 				$set: {
 					open: true,

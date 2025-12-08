@@ -157,6 +157,8 @@ export async function createDirectRoom(
 
 		const creatorUser = options?.creator ? roomMembers.find((member) => member._id === options?.creator) : undefined;
 
+		// TODO wtf creatorUser can be undefined here?
+
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 
@@ -164,7 +166,9 @@ export async function createDirectRoom(
 				roomExtraData.federated && options?.creator !== member._id
 					? {
 							status: 'INVITED',
-							inviterUsername: creatorUser?.username,
+							inviter: {
+								_id: creatorUser?._id,
+							},
 							open: true,
 							unread: 1,
 							userMentions: 1,
