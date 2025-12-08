@@ -12,8 +12,8 @@ import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-ca
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
+import { getHistoryMessagePayload } from '@rocket.chat/ui-voip';
 
-import { getHistoryMessagePayload } from './getHistoryMessagePayload';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { createDirectMessage } from '../../methods/createDirectMessage';
