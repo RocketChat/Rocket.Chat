@@ -1,4 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { validateEmail } from '@rocket.chat/tools';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -14,7 +15,6 @@ import type { ReactElement, ContextType } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { validateEmail } from '../../../../lib/emailValidator';
 import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
