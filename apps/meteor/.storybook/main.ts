@@ -46,7 +46,6 @@ export default {
 		config.plugins?.push(
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
-			new webpack.NormalModuleReplacementPlugin(/^sip.js/, require.resolve('./mocks/empty.ts')),
 		);
 
 		return config;

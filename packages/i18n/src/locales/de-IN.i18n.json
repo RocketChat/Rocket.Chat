@@ -2581,8 +2581,6 @@
   "WebRTC_Enable_Channel": "Für öffentliche Kanäle aktivieren",
   "WebRTC_Enable_Direct": "Für Direktnachrichten aktivieren",
   "WebRTC_Enable_Private": "Für private Kanäle aktivieren",
-  "WebRTC_Servers": "STUN/TURN-Server",
-  "WebRTC_Servers_Description": "Kommaseparierte Liste von STUN- und TURN-Servern.  \n Benutzernamen, Passwörter und Ports sind in diesen Formaten erlaubt: `username:password@stun:host:port` oder `username:password@turn:host:port",
   "WebRTC_direct_audio_call_from_%s": "Direkter Anruf von%s",
   "WebRTC_direct_video_call_from_%s": "Direkter Videoanruf von%s",
   "WebRTC_group_audio_call_from_%s": "Gruppenanruf von %s",

@@ -2,22 +2,6 @@
  * Usually, normal messages won't have a type, but system messages will, end those are the types that are available.
  */
 export type MessageType =
-	/** Sent when a voip call has started  */
-	| 'voip-call-started'
-	/** Sent when a voip call has been declined */
-	| 'voip-call-declined'
-	/** Sent when a voip call is put on hold */
-	| 'voip-call-on-hold'
-	/** Sent when a voip call is unhold */
-	| 'voip-call-unhold'
-	/** Sent when a voip call is paused */
-	| 'voip-call-ended'
-	/** Sent when a voip call is over, contains the duration of the call */
-	| 'voip-call-duration'
-	/** Sent when a voip call is ended */
-	| 'voip-call-wrapup'
-	/** Sent when a voip call is ended unexpectedly */
-	| 'voip-call-ended-unexpectedly'
 	/** Sent when a user is removed from main room of a team */
 	| 'removed-user-from-team'
 	/** Sent when a user is added to a team */

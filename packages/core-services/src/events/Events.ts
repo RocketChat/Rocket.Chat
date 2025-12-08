@@ -11,7 +11,6 @@ import type {
 	ILoginServiceConfiguration,
 	IMessage,
 	INotificationDesktop,
-	IPbxEvent,
 	IRole,
 	IRoom,
 	ISetting,
@@ -20,7 +19,6 @@ import type {
 	IUser,
 	IInvite,
 	ICustomSound,
-	VoipEventDataSignature,
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
@@ -293,9 +291,7 @@ export type EventSignatures = {
 	): void;
 
 	// Send all events from here
-	'voip.events'(userId: string, data: VoipEventDataSignature): void;
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
-	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;

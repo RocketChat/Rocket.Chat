@@ -5,7 +5,6 @@ import type { IUser, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
-import { canAccessRoomVoip } from './canAccessRoomVoip';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -92,7 +91,6 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	canAccessRoomLivechat,
-	canAccessRoomVoip,
 ];
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {

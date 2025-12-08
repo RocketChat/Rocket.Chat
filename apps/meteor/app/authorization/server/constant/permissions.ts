@@ -211,16 +211,6 @@ export const permissions = [
 	{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 
-	// VOIP Permissions
-	// allows to manage voip calls configuration
-	{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
-	{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
-	// allows agent-extension association.
-	{ _id: 'manage-agent-extension-association', roles: ['admin'] },
-	{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
-	// allows to receive a voip call
-	{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
-
 	// Allow managing team collab voip extensions
 	{ _id: 'manage-voip-extensions', roles: ['admin'] },
 	// Allow viewing the extension number of other users

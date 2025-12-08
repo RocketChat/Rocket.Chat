@@ -4,8 +4,6 @@ import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarControlsMenu from './NavBarControlsMenu';
-import NavbarControlsWithCall from './NavBarControlsWithCall';
-import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelContactAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelContactAction';
 import { useOmnichannelLivechatToggle } from '../NavBarOmnichannelGroup/hooks/useOmnichannelLivechatToggle';
 import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelQueueAction';
@@ -14,8 +12,6 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
-	const isCallEnabled = useIsCallEnabled();
-
 	const callAction = useMediaCallAction();
 
 	const {
@@ -78,18 +74,6 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	].filter(Boolean) as GenericMenuItemProps[];
 
 	const isPressed = isQueuePressed || isContactPressed;
-
-	if (isCallEnabled) {
-		return (
-			<NavbarControlsWithCall
-				callItem={callItem}
-				callHistoryItem={callHistoryItem}
-				omnichannelItems={omnichannelItems}
-				isPressed={isPressed}
-				{...props}
-			/>
-		);
-	}
 
 	return (
 		<NavBarControlsMenu

@@ -33,7 +33,7 @@ const handleAgentCreated = async (user: IUser) => {
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
+		await Users.makeAgentUnavailable(user._id);
 	}
 };
 

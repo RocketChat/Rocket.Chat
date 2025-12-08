@@ -18,7 +18,6 @@ import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import { useIsCallReady } from '../../../../contexts/CallContext';
 import { links } from '../../../../lib/links';
 
 function ContactTable() {
@@ -26,7 +25,6 @@ function ContactTable() {
 
 	const [term, setTerm] = useState('');
 	const directoryRoute = useRoute('omnichannel-directory');
-	const isCallReady = useIsCallReady();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
@@ -88,7 +86,6 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			{isCallReady && <GenericTableHeaderCell key='call' width={44} />}
 			<GenericTableHeaderCell key='spacer' w={40} />
 		</>
 	);

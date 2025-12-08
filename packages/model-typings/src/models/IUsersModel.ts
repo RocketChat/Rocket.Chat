@@ -206,24 +206,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
 
-	findOneByAgentUsername(username: any, options: any): any;
-
-	findOneByExtension(extension: any, options?: any): any;
-
-	findByExtensions(extensions: any, options?: any): FindCursor<IUser>;
-
-	getVoipExtensionByUserId(userId: any, options: any): any;
-
-	setExtension(userId: any, extension: any): any;
-
-	unsetExtension(userId: any): any;
-
-	getAvailableAgentsIncludingExt<T extends Document = ILivechatAgent>(
-		includeExt?: string,
-		text?: string,
-		options?: FindOptions<IUser>,
-	): FindPaginated<FindCursor<WithId<T>>>;
-
 	findActiveUsersTOTPEnable(options: any): any;
 
 	countActiveUsersTOTPEnable(options: any): Promise<number>;
@@ -314,7 +296,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
-	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
+	makeAgentUnavailable(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	getAgentInfo(
 		agentId: IUser['_id'],

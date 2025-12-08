@@ -20,8 +20,6 @@ describe('Apps - Video Conferences', () => {
 			type: 'p',
 			name: roomName,
 			username: undefined,
-			token: undefined,
-			agentId: undefined,
 			members: undefined,
 			credentials: undefined,
 			extraData: undefined,

@@ -245,43 +245,6 @@ export const statistics = {
 			}),
 		);
 
-		// VoIP Enabled
-		statistics.voipEnabled = settings.get('VoIP_Enabled');
-
-		// Amount of VoIP Calls
-		statsPms.push(
-			Rooms.countByType('v').then((count) => {
-				statistics.voipCalls = count;
-			}),
-		);
-
-		// Amount of VoIP Extensions connected
-		statsPms.push(
-			Users.countDocuments({ extension: { $exists: true } }).then((count) => {
-				statistics.voipExtensions = count;
-			}),
-		);
-
-		// Amount of Calls that ended properly
-		statsPms.push(
-			Messages.countByType('voip-call-wrapup', { readPreference }).then((count) => {
-				statistics.voipSuccessfulCalls = count;
-			}),
-		);
-
-		// Amount of Calls that ended with an error
-		statsPms.push(
-			Messages.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
-				statistics.voipErrorCalls = count;
-			}),
-		);
-		// Amount of Calls that were put on hold
-		statsPms.push(
-			Messages.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
-				statistics.voipOnHoldCalls = count;
-			}),
-		);
-
 		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
 		const billablePeriod = moment.utc().format('YYYY-MM');
 		statsPms.push(
