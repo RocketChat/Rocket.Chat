@@ -154,7 +154,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getAllRooms(filter: GetRoomsFilter, appId: string): Promise<Array<IRoom>> {
 		this.orch.debugLog(`The App ${appId} is getting all rooms with filter`, filter);
 
-		const { types, limit, skip = 0, includeDiscussions = true, onlyDiscussions = false, teamMainOnly = false } = filter || {};
+		const { types, limit = 100, skip = 0, includeDiscussions = true, onlyDiscussions = false, teamMainOnly = false } = filter || {};
 
 		const query: Filter<ICoreRoom> = {};
 
@@ -173,13 +173,10 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		const findOptions: FindOptions<ICoreRoom> = {
-			sort: { _updatedAt: -1 },
+			sort: { ts: -1 },
 			skip,
+			limit: Math.min(limit, 100),
 		};
-
-		if (typeof limit === 'number') {
-			findOptions.limit = limit;
-		}
 
 		const roomConverter = this.orch.getConverters()?.get('rooms');
 		if (!roomConverter) {
@@ -189,7 +186,7 @@ export class AppRoomBridge extends RoomBridge {
 		const rooms: IRoom[] = [];
 
 		for await (const room of Rooms.find(query, findOptions)) {
-			const converted = await roomConverter.convertRoom(room);
+			const converted = await roomConverter.convertRoom(room, { lightweight: true });
 			if (converted) {
 				rooms.push(converted);
 			}

@@ -1,4 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
@@ -176,9 +177,13 @@ export class AppRoomsConverter {
 		return newRoom;
 	}
 
-	async convertRoom(originalRoom) {
+	async convertRoom(originalRoom, { lightweight = false } = {}) {
 		if (!originalRoom) {
 			return undefined;
+		}
+
+		if (lightweight) {
+			return this.convertRoomWithoutLookups(originalRoom);
 		}
 
 		const map = {
@@ -335,6 +340,67 @@ export class AppRoomsConverter {
 		};
 
 		return transformMappedData(originalRoom, map);
+	}
+
+	convertRoomWithoutLookups(room) {
+		const creatorFromRoom = room.u
+			? {
+					id: room.u._id,
+					username: room.u.username,
+					name: room.u.name || room.u.username || 'Unknown',
+					emails: [],
+					type: UserType.UNKNOWN,
+					isEnabled: true,
+					roles: room.u.roles || [],
+					bio: room.u.bio,
+					status: room.u.status || 'offline',
+					statusConnection: room.u.statusConnection || UserStatusConnection.OFFLINE,
+					statusText: room.u.statusText,
+					utcOffset: room.u.utcOffset ?? 0,
+					createdAt: room.u.createdAt || room.ts || new Date(0),
+					updatedAt: room.u._updatedAt || room._updatedAt || room.ts || new Date(0),
+					lastLoginAt: room.u.lastLogin || room._updatedAt || room.ts || new Date(0),
+					settings: room.u.settings,
+					appId: room.u.appId,
+					customFields: room.u.customFields,
+				}
+			: undefined;
+
+		const fallbackUser = {
+			id: 'unknown',
+			username: 'unknown',
+			name: 'Unknown',
+			emails: [],
+			type: UserType.UNKNOWN,
+			isEnabled: true,
+			roles: [],
+			status: 'offline',
+			statusConnection: UserStatusConnection.OFFLINE,
+			utcOffset: 0,
+			createdAt: room.ts || new Date(0),
+			updatedAt: room._updatedAt || room.ts || new Date(0),
+			lastLoginAt: room._updatedAt || room.ts || new Date(0),
+		};
+
+		return {
+			id: room._id,
+			displayName: room.fname,
+			slugifiedName: room.name || room.fname || room._id,
+			type: this._convertTypeToApp(room.t),
+			creator: creatorFromRoom || fallbackUser,
+			usernames: room.usernames || [],
+			userIds: room.uids || [],
+			isDefault: !!room.default,
+			isReadOnly: !!room.ro,
+			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
+			messageCount: room.msgs,
+			createdAt: room.ts,
+			updatedAt: room._updatedAt,
+			lastModifiedAt: room.lm,
+			description: room.description,
+			customFields: room.customFields,
+			livechatData: room.livechatData,
+		};
 	}
 
 	_convertTypeToApp(typeChar) {

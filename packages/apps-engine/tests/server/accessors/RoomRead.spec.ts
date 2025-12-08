@@ -76,6 +76,14 @@ export class RoomReadAccessorTestFixture {
 
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 
+		let caught = false;
+		try {
+			await rr.getAllRooms({ limit: 200 });
+		} catch (e) {
+			caught = true;
+		}
+
+		Expect(caught).toBeTruthy();
 		Expect(await rr.getById('fake')).toBeDefined();
 		Expect(await rr.getById('fake')).toBe(this.room);
 		Expect(await rr.getByName('testing-room')).toBeDefined();

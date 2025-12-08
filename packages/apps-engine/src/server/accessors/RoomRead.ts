@@ -47,8 +47,10 @@ export class RoomRead implements IRoomRead {
 	}
 
 	public getAllRooms(filter: Partial<GetRoomsFilter> = {}): Promise<Array<IRoom>> {
-		if (typeof filter.limit !== 'undefined' && (!Number.isFinite(filter.limit) || filter.limit <= 0)) {
-			throw new Error(`Invalid limit provided. Expected number > 0, got ${filter.limit}`);
+		const limit = filter.limit ?? 100;
+
+		if (!Number.isFinite(limit) || limit <= 0 || limit > 100) {
+			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${filter.limit}`);
 		}
 
 		if (typeof filter.skip !== 'undefined' && (!Number.isFinite(filter.skip) || filter.skip < 0)) {
@@ -62,6 +64,7 @@ export class RoomRead implements IRoomRead {
 		return this.roomBridge.doGetAllRooms(
 			{
 				...filter,
+				limit,
 				skip: filter.skip ?? 0,
 			},
 			this.appId,
