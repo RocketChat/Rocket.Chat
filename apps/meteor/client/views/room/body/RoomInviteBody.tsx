@@ -1,10 +1,11 @@
+import type { ISubscriptionInvite } from '@rocket.chat/core-typings';
 import { Box, Button, Chip, States, StatesActions, StatesIcon, StatesLink, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
 type RoomInviteBodyProps = {
 	isLoading?: boolean;
-	inviterUsername: string;
+	inviter: ISubscriptionInvite['inviter'];
 	infoLink?: {
 		label: string;
 		href: string;
@@ -13,8 +14,9 @@ type RoomInviteBodyProps = {
 	onReject: () => void;
 };
 
-const RoomInviteBody = ({ inviterUsername, infoLink, isLoading, onAccept, onReject }: RoomInviteBodyProps) => {
+const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: RoomInviteBodyProps) => {
 	const { t } = useTranslation();
+	const { name, username = t('unknown') } = inviter;
 
 	return (
 		<Box m='auto'>
@@ -24,7 +26,7 @@ const RoomInviteBody = ({ inviterUsername, infoLink, isLoading, onAccept, onReje
 				<StatesSubtitle>
 					<Box mbe={8}>{t('You_have_been_invited_to_have_a_conversation_with')}</Box>
 					<Chip>
-						<UserAvatar username={inviterUsername} size='x16' /> {inviterUsername}
+						<UserAvatar username={username} size='x16' /> {name || username}
 					</Chip>
 				</StatesSubtitle>
 				<StatesActions>
