@@ -4,7 +4,7 @@ import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-context
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 export const useAuditItems = (): GenericMenuItemProps[] => {
-	const hasAuditLicense = useHasLicenseModule('auditing') === true;
+	const { data: hasAuditLicense = false } = useHasLicenseModule('auditing');
 
 	const hasAuditPermission = usePermission('can-audit') && hasAuditLicense;
 	const hasAuditLogPermission = usePermission('can-audit-log') && hasAuditLicense;

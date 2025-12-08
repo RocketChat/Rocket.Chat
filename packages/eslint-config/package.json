@@ -2,6 +2,23 @@
 	"name": "@rocket.chat/eslint-config",
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
+	"main": "./standard/index.js",
+	"files": [
+		"/standard",
+		"/original",
+		"/best-practices",
+		"/errors",
+		"/es6",
+		"/imports",
+		"/node",
+		"/style",
+		"/variables",
+		"react.js"
+	],
+	"scripts": {
+		"lint": "eslint --ext .js .",
+		"lint:fix": "eslint --ext .js . --fix"
+	},
 	"dependencies": {
 		"@babel/core": "~7.28.5",
 		"@babel/eslint-parser": "~7.28.5",
@@ -19,23 +36,6 @@
 		"eslint-plugin-prettier": "~5.2.6",
 		"prettier": "~3.3.3"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
-	},
-	"main": "./standard/index.js",
-	"files": [
-		"/standard",
-		"/original",
-		"/best-practices",
-		"/errors",
-		"/es6",
-		"/imports",
-		"/node",
-		"/style",
-		"/variables",
-		"react.js"
-	],
 	"devDependencies": {
 		"typescript": "~5.9.3"
 	},

@@ -9,7 +9,7 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 		super(db, 'media_call_negotiations', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { callId: 1, requestTimestamp: -1 }, unique: false }];
 	}
 

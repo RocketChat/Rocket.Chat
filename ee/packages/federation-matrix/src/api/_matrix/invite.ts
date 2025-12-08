@@ -143,12 +143,12 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	} catch (e) {
 		// don't retry on authorization/validation errors - they won't succeed on retry
 		if (e instanceof NotAllowedError) {
-			logger.error('Authorization error, not retrying:', e);
+			logger.error(e, 'Authorization error, not retrying');
 			return;
 		}
 
 		const delay = Math.min(625, delaySec ** 2);
-		logger.error(`error occurred, retrying in ${delay}s`, e);
+		logger.error(e, `error occurred, retrying in ${delay}s`);
 		setTimeout(() => {
 			runWithBackoff(fn, delay);
 		}, delay * 1000);

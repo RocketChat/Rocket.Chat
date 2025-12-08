@@ -46,7 +46,7 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         # with:
         #   sparse-checkout: |
         #     package.json
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             package.json
@@ -172,7 +172,7 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-          key: ${{ runner.OS }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
+          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
 
       - name: Debug cache-hit
         run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
@@ -183,7 +183,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
@@ -202,9 +202,9 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
-          key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
+          key: vite-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
-            vite-local-cache-${{ runner.os }}-
+            vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
       - uses: rharkor/caching-for-turbo@v1.8
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
@@ -257,7 +257,7 @@ jobs:
           job_summary: true
           comment_on_pr: false
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -298,7 +298,7 @@ jobs:
             type: coverage
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Restore packages build
         uses: actions/download-artifact@v6
@@ -378,7 +378,7 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         with:
           sparse-checkout: |
@@ -448,12 +448,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          ci-pat: ${{ secrets.CI_PAT }}
           registry: ghcr.io
           repository: ${{ needs.release-versions.outputs.lowercase-repo }}
           tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
@@ -614,7 +615,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -654,6 +655,7 @@ jobs:
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
+          QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
 
   report-coverage:
@@ -662,7 +664,7 @@ jobs:
     needs: [release-versions, test-api-ee, test-ui-ee, test-ui-ee-watcher]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Use Node.js
         uses: actions/setup-node@v6.0.0
@@ -757,7 +759,7 @@ jobs:
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             package.json
@@ -814,7 +816,7 @@ jobs:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             docker-compose-ci.yml
@@ -927,7 +929,7 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             package.json
