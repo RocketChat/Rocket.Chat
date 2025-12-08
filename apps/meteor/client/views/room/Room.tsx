@@ -19,7 +19,6 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
-import { isInviteSubscription } from './utils/isInviteSubscription';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
