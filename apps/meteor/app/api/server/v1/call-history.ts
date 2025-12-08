@@ -150,8 +150,12 @@ const callHistoryInfoEndpoints = API.v1.get(
 						description: 'The call information for the requested call history item.',
 						nullable: true,
 					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
 				},
-				required: ['item'],
+				required: ['item', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
 			404: validateNotFoundErrorResponse,
