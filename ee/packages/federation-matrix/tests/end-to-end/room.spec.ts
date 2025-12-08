@@ -1598,10 +1598,13 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
-					const pendingInvitation = subscriptions.update.find((subscription) => subscription.status === 'INVITED');
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
 
 					expect(pendingInvitation).not.toBeUndefined();
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation?.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
@@ -1634,10 +1637,13 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
-				const pendingInvitation = subscriptions.update.find((subscription) => subscription.status === 'INVITED');
+				const pendingInvitation = subscriptions.update.find(
+					(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+				);
 
 				expect(pendingInvitation).not.toBeUndefined();
 
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				rid = pendingInvitation?.rid!;
 			}, 15000);
 
