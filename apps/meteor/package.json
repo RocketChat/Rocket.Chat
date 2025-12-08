@@ -282,7 +282,6 @@
 		"sanitize-html": "~2.16.0",
 		"semver": "^7.6.3",
 		"sharp": "^0.33.5",
-		"sip.js": "^0.21.2",
 		"sodium-native": "^4.3.3",
 		"sodium-plus": "^0.9.0",
 		"speakeasy": "^2.0.0",
