@@ -37,6 +37,14 @@ export class Navbar {
 		return this.root.getByRole('menu', { name: 'Display' });
 	}
 
+	get btnCreateNew(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Create new' });
+	}
+
+	get createNewMenu(): Locator {
+		return this.root.getByRole('menu', { name: 'Create new' });
+	}
+
 	get navbarSearchSection(): Locator {
 		return this.root.getByRole('search');
 	}
@@ -67,6 +75,15 @@ export class Navbar {
 
 	get btnLogout(): Locator {
 		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
+	createNewMenuItem(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Outbound message'): Locator {
+		return this.createNewMenu.getByRole('menuitem', { name });
+	}
+
+	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
+		await this.btnCreateNew.click();
+		await this.createNewMenuItem(name).click();
 	}
 
 	async logout(): Promise<void> {
