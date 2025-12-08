@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { CreateNewChannel } from '../page-objects/create-new-room';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
@@ -21,7 +20,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	let loginPage: LoginPage;
 	let navbar: Navbar;
 	let encryptedRoomPage: EncryptedRoomPage;
-	let createNewChannel: CreateNewChannel;
 
 	test.use({ storageState: Users.admin.state });
 
@@ -34,7 +32,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		loginPage = new LoginPage(page);
 		navbar = new Navbar(page);
 		encryptedRoomPage = new EncryptedRoomPage(page);
-		createNewChannel = new CreateNewChannel(page);
 
 		await api.post('/method.call/e2e.resetOwnE2EKey', {
 			message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
@@ -51,7 +48,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await setupE2EEPassword(page);
 
-		await createNewChannel.createEncrypted(channelName);
+		await navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -89,7 +86,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await setupE2EEPassword(page);
 
 		// Create an encrypted channel
-		await createNewChannel.createEncrypted(channelName);
+		await navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
@@ -167,7 +164,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			const encryptedRoomPage = new EncryptedRoomPage(page);
 			targetChannelName = faker.string.uuid();
 
-			await createNewChannel.createEncrypted(targetChannelName);
+			await navbar.createEncryptedChannel(targetChannelName);
 
 			await expect(page).toHaveURL(`/group/${targetChannelName}`);
 			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();

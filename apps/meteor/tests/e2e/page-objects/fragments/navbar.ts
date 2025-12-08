@@ -1,9 +1,24 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { expect } from '../../utils/test';
+import { CreateNewChannelModal, CreateNewDiscussionModal, CreateNewDMModal, CreateNewTeamModal } from '../create-new-modal';
 
 export class Navbar {
-	constructor(private readonly root: Page) {}
+	private readonly modals: {
+		'Channel': CreateNewChannelModal;
+		'Team': CreateNewTeamModal;
+		'Discussion': CreateNewDiscussionModal;
+		'Direct message': CreateNewDMModal;
+	};
+
+	constructor(private readonly root: Page) {
+		this.modals = {
+			'Channel': new CreateNewChannelModal(root),
+			'Team': new CreateNewTeamModal(root),
+			'Discussion': new CreateNewDiscussionModal(root),
+			'Direct message': new CreateNewDMModal(root),
+		};
+	}
 
 	get btnVoiceAndOmnichannel(): Locator {
 		return this.root.getByRole('button', { name: 'Voice and omnichannel' });
@@ -128,5 +143,27 @@ export class Navbar {
 		await this.btnDisplay.click();
 		await this.menuDisplay.getByRole('menuitemcheckbox', { name: mode }).click();
 		await this.root.keyboard.press('Escape');
+	}
+
+	async createNew(type: 'Channel' | 'Team' | 'Discussion' | 'Direct message', name: string): Promise<void> {
+		await this.openCreate(type);
+		await this.modals[type].inputName.fill(name);
+		await this.modals[type].btnCreate.click();
+	}
+
+	async createNewChannel(name: string): Promise<void> {
+		return this.createNew('Channel', name);
+	}
+
+	async createEncrypted(type: 'Channel' | 'Team', name: string): Promise<void> {
+		await this.openCreate(type);
+		await this.modals[type].inputName.fill(name);
+		await this.modals[type].advancedSettingsAccordion.click();
+		await this.modals[type].checkboxEncrypted.click();
+		await this.modals[type].btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string): Promise<void> {
+		await this.createEncrypted('Channel', name);
 	}
 }
