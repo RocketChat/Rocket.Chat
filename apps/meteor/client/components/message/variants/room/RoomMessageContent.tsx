@@ -38,7 +38,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
-	const isFederationMessage = Boolean(message?.federation);
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const chat = useChat();
 	const t = useTranslation();
@@ -120,7 +119,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{!isFederationMessage && readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };

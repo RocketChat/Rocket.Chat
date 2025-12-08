@@ -9,9 +9,8 @@ export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionCo
 	const setModal = useSetModal();
 
 	const { enabled: readReceiptsEnabled, storeUsers: readReceiptsStoreUsers } = useMessageListReadReceipts();
-	const isFederationMessage = Boolean(message?.federation);
 
-	if (!readReceiptsEnabled || !readReceiptsStoreUsers || isFederationMessage) {
+	if (!readReceiptsEnabled || !readReceiptsStoreUsers) {
 		return null;
 	}
 

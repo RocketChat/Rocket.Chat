@@ -3,7 +3,6 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import RoomMessage from './RoomMessage';
-import type { MessageListContextValue } from '../list/MessageListContext';
 import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 const message: IMessage = {
@@ -122,11 +121,8 @@ it('should show read receipt', () => {
 		/>,
 		{
 			wrapper: mockAppRoot()
-				.withSetting('Message_Read_Receipt_Enabled', true)
 				.wrap((children) => (
-					<MessageListContext.Provider
-						value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } } as MessageListContextValue}
-					>
+					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } }}>
 						{children}
 					</MessageListContext.Provider>
 				))
@@ -137,10 +133,10 @@ it('should show read receipt', () => {
 	expect(screen.getByRole('status', { name: 'Message_viewed' })).toBeInTheDocument();
 });
 
-it('should not show read receipt for federation message', () => {
+it('should not show read receipt if receipt is disabled', () => {
 	render(
 		<RoomMessage
-			message={{ ...message, federation: { version: 1, eventId: '' } }}
+			message={message}
 			sequential={false}
 			all={false}
 			mention={false}
@@ -150,11 +146,8 @@ it('should not show read receipt for federation message', () => {
 		/>,
 		{
 			wrapper: mockAppRoot()
-				.withSetting('Message_Read_Receipt_Enabled', true)
 				.wrap((children) => (
-					<MessageListContext.Provider
-						value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } } as MessageListContextValue}
-					>
+					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: false, storeUsers: false } }}>
 						{children}
 					</MessageListContext.Provider>
 				))

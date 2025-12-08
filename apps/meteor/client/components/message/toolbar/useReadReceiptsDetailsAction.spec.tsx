@@ -34,15 +34,6 @@ describe('useReadReceiptsDetailsAction', () => {
 		expect(result.current).toBeNull();
 	});
 
-	it('should return null for a federation message', () => {
-		useMessageListReadReceiptsMocked.mockReturnValue({ enabled: true, storeUsers: true });
-		const federatedMessage = { ...message, federation: { eventId: '' } };
-
-		const { result } = renderHook(() => useReadReceiptsDetailsAction(federatedMessage), { wrapper: mockAppRoot().build() });
-
-		expect(result.current).toBeNull();
-	});
-
 	it('should return a message action config', () => {
 		useMessageListReadReceiptsMocked.mockReturnValue({ enabled: true, storeUsers: true });
 
