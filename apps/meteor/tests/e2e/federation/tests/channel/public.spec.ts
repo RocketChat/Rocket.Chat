@@ -52,7 +52,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poFederationChannelServer1.sidenav.logout();
+		await poFederationChannelServer1.navbar.logout();
 		await page.close();
 	});
 

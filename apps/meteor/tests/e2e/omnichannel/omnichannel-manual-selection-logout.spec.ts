@@ -31,7 +31,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		poOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/home');
 
-		await poOmnichannel.sidenav.logout();
+		await poOmnichannel.navbar.logout();
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').waitFor({ state: 'visible' });
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').fill('user1');
 		await poOmnichannel.page.locator('[name=password]').fill(DEFAULT_USER_CREDENTIALS.password);

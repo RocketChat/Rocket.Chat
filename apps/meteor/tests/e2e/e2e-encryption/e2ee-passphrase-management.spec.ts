@@ -4,7 +4,7 @@ import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
-import { HomeSidenav } from '../page-objects/fragments';
+import { Navbar } from '../page-objects/fragments';
 import {
 	E2EEKeyDecodeFailureBanner,
 	EnterE2EEPasswordBanner,
@@ -59,12 +59,12 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
-			const sidenav = new HomeSidenav(page);
+			const navbar = new Navbar(page);
 
 			const password = await setupE2EEPassword(page);
 
 			// Log out
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -89,7 +89,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('should reset e2e password from the modal', async ({ page }) => {
-			const sidenav = new HomeSidenav(page);
+			const navbar = new Navbar(page);
 			const loginPage = new LoginPage(page);
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
@@ -98,7 +98,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			await setupE2EEPassword(page);
 
 			// Logout
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -118,7 +118,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
-			const sidenav = new HomeSidenav(page);
+			const navbar = new Navbar(page);
 
 			const newPassword = faker.internet.password({
 				length: 30,
@@ -137,7 +137,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			await accountSecurityPage.close();
 
 			// Log out
-			await sidenav.logout();
+			await navbar.logout();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -159,8 +159,9 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 				await page.goto('/home');
 				await injectInitialData();
 				await restoreState(page, Users.userE2EE);
-				const sidenav = new HomeSidenav(page);
-				await sidenav.logout();
+				const navbar = new Navbar(page);
+
+				await navbar.logout();
 
 				const loginPage = new LoginPage(page);
 				await loginPage.loginByUserState(Users.userE2EE, { except: ['private_key', 'public_key'] });
@@ -254,7 +255,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await page.goto('/home');
 
 		// Logout to remove e2ee keys
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
