@@ -31,6 +31,9 @@ export type RoomHeaderProps = {
 			pos?: ReactNode;
 		};
 	};
+	/**
+	 * @deprecated Use slots.toolbox instead
+	 */
 	roomToolbox?: JSX.Element;
 };
 
@@ -64,13 +67,15 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderPro
 				)}
 			</HeaderContent>
 			{slots?.posContent}
-			<Suspense fallback={null}>
-				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
-					{slots?.toolbox?.pre}
-					{slots?.toolbox?.content || roomToolbox || <RoomToolbox />}
-					{slots?.toolbox?.pos}
-				</HeaderToolbar>
-			</Suspense>
+			{slots.toolbox && (
+				<Suspense fallback={null}>
+					<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
+						{slots?.toolbox?.pre}
+						{slots?.toolbox?.content || roomToolbox || <RoomToolbox />}
+						{slots?.toolbox?.pos}
+					</HeaderToolbar>
+				</Suspense>
+			)}
 			{slots?.end}
 		</Header>
 	);
