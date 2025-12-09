@@ -106,7 +106,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	return (
 		<>
-			<VisuallyHidden role='status' aria-live='assertive' aria-atomic='true'>
+			<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
 				{announcementText}
 			</VisuallyHidden>
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />

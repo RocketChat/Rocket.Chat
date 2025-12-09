@@ -106,7 +106,7 @@ const ChannelsTable = () => {
 
 	return (
 		<>
-			<VisuallyHidden role='status' aria-live='assertive' aria-atomic='true'>
+			<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
 				{announcementText}
 			</VisuallyHidden>
 			<FilterByText placeholder={t('Search_Channels')} value={text} onChange={(event) => setText(event.target.value)} />
