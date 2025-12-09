@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import SidebarItemBadges from './SidebarItemBadges';
 import { createFakeSubscription } from '../../../tests/mocks/data';
 
-jest.mock('./OmnichannelBadges', () => ({
+jest.mock('../../views/omnichannel/components/OmnichannelBadges', () => ({
 	__esModule: true,
 	default: () => <div data-testid='omnichannel-badges'>OmnichannelBadges</div>,
 }));

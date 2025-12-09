@@ -1,8 +1,8 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import OmnichannelBadges from './OmnichannelBadges';
 import UnreadBadge from './UnreadBadge';
+import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarItemBadgesProps = {
