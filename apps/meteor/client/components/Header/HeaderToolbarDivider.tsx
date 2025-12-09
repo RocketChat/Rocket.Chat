@@ -3,14 +3,14 @@ import {
 	FeaturePreviewOff,
 	FeaturePreviewOn,
 	HeaderV2ToolbarDivider,
-	HeaderToolbarDivider as HeaderToolbarDividerComponent,
+	HeaderV1ToolbarDivider,
 } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 
 const HeaderToolbarDivider = () => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderToolbarDividerComponent />
+			<HeaderV1ToolbarDivider />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<HeaderV2ToolbarDivider />

@@ -1,17 +1,11 @@
-import {
-	FeaturePreview,
-	FeaturePreviewOff,
-	FeaturePreviewOn,
-	HeaderV2TagIcon,
-	HeaderTagIcon as HeaderTagIconComponent,
-} from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2TagIcon, HeaderV1TagIcon } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 
-const HeaderTagIcon = (props: ComponentProps<typeof HeaderTagIconComponent>) => (
+const HeaderTagIcon = (props: ComponentProps<typeof HeaderV1TagIcon>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderTagIconComponent {...props} />
+			<HeaderV1TagIcon {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<HeaderV2TagIcon {...props} />

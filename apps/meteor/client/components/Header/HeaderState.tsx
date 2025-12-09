@@ -1,17 +1,11 @@
-import {
-	FeaturePreview,
-	FeaturePreviewOff,
-	FeaturePreviewOn,
-	HeaderV2State,
-	HeaderState as HeaderStateComponent,
-} from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2State, HeaderV1State } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 
-const HeaderState = (props: ComponentProps<typeof HeaderStateComponent>) => (
+const HeaderState = (props: ComponentProps<typeof HeaderV1State>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderStateComponent {...props} />
+			<HeaderV1State {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<HeaderV2State {...props} />

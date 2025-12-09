@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, Header, HeaderToolbar } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -28,11 +28,11 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 				isMobile && (
 					<FeaturePreview feature='newNavigation'>
 						<FeaturePreviewOff>
-							<Header justifyContent='start'>
-								<HeaderToolbar>
+							<HeaderV1 justifyContent='start'>
+								<HeaderV1Toolbar>
 									<SidebarToggler />
-								</HeaderToolbar>
-							</Header>
+								</HeaderV1Toolbar>
+							</HeaderV1>
 						</FeaturePreviewOff>
 						<FeaturePreviewOn>{null}</FeaturePreviewOn>
 					</FeaturePreview>
