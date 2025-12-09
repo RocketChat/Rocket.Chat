@@ -305,19 +305,13 @@ test.describe.serial('channel-management', () => {
 
 		test('should readOnlyChannel show join button', async () => {
 			const channelName = faker.string.uuid();
-
-			await poHomeChannel.sidenav.openNewByLabel('Channel');
-			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
-			await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-			await poHomeChannel.sidenav.checkboxReadOnly.click();
-			await poHomeChannel.sidenav.btnCreate.click();
+			await poHomeChannel.navbar.createNew('Channel', channelName, { private: false, readOnly: true });
 
 			const channel = new HomeChannel(user1Page);
 
 			await user1Page.goto(`/channel/${channelName}`);
 			await channel.content.waitForChannel();
-			await expect(user1Page.locator('button >> text="Join"')).toBeVisible();
+			await expect(user1Page.getByRole('button', { name: 'Join', exact: true })).toBeVisible();
 		});
 	});
 });
