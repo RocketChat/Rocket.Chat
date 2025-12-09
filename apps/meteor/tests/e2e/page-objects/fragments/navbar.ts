@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { expect } from '../../utils/test';
 import { CreateNewChannelModal, CreateNewDiscussionModal, CreateNewDMModal, CreateNewTeamModal } from '../create-new-modal';
+import { EditStatusModal } from './edit-status-modal';
 
 export class Navbar {
 	private readonly modals: {
@@ -9,6 +10,7 @@ export class Navbar {
 		'Team': CreateNewTeamModal;
 		'Discussion': CreateNewDiscussionModal;
 		'Direct message': CreateNewDMModal;
+		'editStatus': EditStatusModal;
 	};
 
 	constructor(private readonly root: Page) {
@@ -17,6 +19,7 @@ export class Navbar {
 			'Team': new CreateNewTeamModal(root),
 			'Discussion': new CreateNewDiscussionModal(root),
 			'Direct message': new CreateNewDMModal(root),
+			'editStatus': new EditStatusModal(root),
 		};
 	}
 
@@ -97,6 +100,10 @@ export class Navbar {
 		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
 	}
 
+	getUserProfileMenuOption(name: string): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name });
+	}
+
 	createNewMenuItem(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team' | 'Outbound message'): Locator {
 		return this.createNewMenu.getByRole('menuitem', { name });
 	}
@@ -135,17 +142,12 @@ export class Navbar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		const hasUnreadLabel = this.searchList.getByRole('option', { name }).filter({ hasText: 'unread' });
-
-		if (hasUnreadLabel) {
-			// if item has unread label, do not use exact match
-			return this.searchList.getByRole('option', { name });
-		}
-		return this.searchList.getByRole('option', { name, exact: true });
+		return this.searchList.getByRole('option', { name }).filter({ has: this.root.getByText(name, { exact: true }) });
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
+		await this.getSearchRoomByName(name).waitFor();
 		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
@@ -206,5 +208,11 @@ export class Navbar {
 
 	async createEncryptedChannel(name: string): Promise<void> {
 		await this.createNew('Channel', name, { encrypted: true });
+	}
+
+	async changeUserCustomStatus(text: string): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.getUserProfileMenuOption('Custom Status').click();
+		await this.modals.editStatus.changeStatusMessage(text);
 	}
 }
