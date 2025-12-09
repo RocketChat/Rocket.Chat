@@ -1,5 +1,5 @@
 import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
-import type { IconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
+import type { IconButtonElement, IconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
 import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
 const APP_ID = 'media-call-core';
@@ -54,9 +54,20 @@ export const getFormattedCallDuration = (callDuration: number | undefined): Text
 	} as const;
 };
 
+const getHistoryAction = (callId: string): IconButtonElement => {
+	return {
+		type: 'icon_button',
+		icon: { type: 'icon', icon: 'info', variant: 'default' },
+		actionId: 'open-history',
+		appId: APP_ID,
+		blockId: callId,
+	};
+};
+
 export const getHistoryMessagePayload = (
 	callState: CallHistoryItemState,
 	callDuration: number | undefined,
+	callId?: string,
 ): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
 	const callStateTranslationKey = callStateToTranslationKey(callState);
 	const icon = callStateToIcon(callState);
@@ -73,6 +84,7 @@ export const getHistoryMessagePayload = (
 					{
 						background: 'default',
 						elements: [icon, callStateTranslationKey],
+						...(callId && { action: getHistoryAction(callId) }),
 					},
 					...(callDurationFormatted
 						? [
