@@ -1652,7 +1652,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(rejectResponse.success).toBe(true);
 			});
 
-			it.failing('It should remove the subscription after rejection', async () => {
+			it('It should remove the subscription after rejection', async () => {
 				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
 				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
