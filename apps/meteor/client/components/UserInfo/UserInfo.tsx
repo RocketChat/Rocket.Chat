@@ -192,7 +192,7 @@ const UserInfo = ({
 					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
-							<UserInfoABACAttributes abacAttributes={abacAttributes.map((attribute) => attribute.key)} />
+							<UserInfoABACAttributes abacAttributes={abacAttributes} />
 						</InfoPanelField>
 					)}
 					{userCustomFields?.map(
