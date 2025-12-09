@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.41",
+	"version": "0.3.42",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
