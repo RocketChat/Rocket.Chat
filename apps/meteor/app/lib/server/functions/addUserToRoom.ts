@@ -97,6 +97,7 @@ export const addUserToRoom = async (
 	await Room.createUserSubscription({
 		room,
 		ts: now,
+		inviter,
 		userToBeAdded,
 		createAsHidden,
 		skipAlertSound,
