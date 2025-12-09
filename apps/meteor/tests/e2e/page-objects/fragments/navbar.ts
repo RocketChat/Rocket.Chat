@@ -76,8 +76,13 @@ export class Navbar {
 		return this.root.getByRole('group', { name: 'Workspace and user preferences' });
 	}
 
-	get manageWorkspaceButton(): Locator {
+	get btnManageWorkspace(): Locator {
 		return this.workspaceGroup.getByRole('button', { name: 'Manage' });
+	}
+
+	async openManageMenuItem(name: 'Workspace' | 'Omnichannel'): Promise<void> {
+		await this.btnManageWorkspace.click();
+		await this.root.getByRole('menu', { name: 'Manage' }).getByRole('menuitem', { name }).click();
 	}
 
 	get btnUserMenu(): Locator {
@@ -111,7 +116,7 @@ export class Navbar {
 	}
 
 	async openAdminPanel(): Promise<void> {
-		await this.manageWorkspaceButton.click();
+		await this.btnManageWorkspace.click();
 		await this.root.getByRole('menuitem', { name: 'Workspace' }).click();
 		await this.root.waitForURL(/\/admin/);
 	}
