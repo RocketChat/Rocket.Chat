@@ -180,6 +180,16 @@ export class Navbar {
 		await this.modals[type].btnCreate.click();
 	}
 
+	async createNewDM(username: string): Promise<void> {
+		await this.openCreate('Direct message');
+		await this.modals['Direct message'].dmListbox.click();
+		await this.modals['Direct message'].dmListbox.pressSequentially(username);
+		await this.root.waitForTimeout(600);
+		await this.root.keyboard.press('Enter');
+
+		await this.modals['Direct message'].btnCreate.click();
+	}
+
 	async createEncryptedChannel(name: string): Promise<void> {
 		await this.createNew('Channel', name, { encrypted: true });
 	}
