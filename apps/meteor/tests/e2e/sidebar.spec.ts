@@ -32,7 +32,7 @@ test.describe.serial('Sidebar', () => {
 		});
 
 		test('should display home and directory button', async () => {
-			await expect(poHomeChannel.navbar.homeButton).toBeVisible();
+			await expect(poHomeChannel.navbar.btnHome).toBeVisible();
 			await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
 		});
 
@@ -63,7 +63,7 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.navbar.btnCreateNew).toBeEnabled();
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
-			await poHomeChannel.navbar.homeButton.focus();
+			await poHomeChannel.navbar.btnHome.focus();
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');

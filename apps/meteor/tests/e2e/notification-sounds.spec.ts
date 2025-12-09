@@ -57,7 +57,7 @@ test.describe.serial('Notification Sounds', () => {
 		const user1PoHomeChannel = new HomeChannel(user1Page);
 		await user1PoHomeChannel.content.waitForChannel();
 
-		await poHomeChannel.sidenav.sidebarHomeAction.click();
+		await poHomeChannel.navbar.btnHome.click();
 
 		await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
 

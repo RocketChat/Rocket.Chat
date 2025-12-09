@@ -305,7 +305,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.waitForChannel();
 			await poHomeChannel.content.sendMessage('test thread message');
 
-			await poHomeChannel.navbar.homeButton.click();
+			await poHomeChannel.navbar.btnHome.click();
 			await poHomeChannel.sidebar.allTeamCollabFilter.click();
 			await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
@@ -369,7 +369,7 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
 			});
 
-			await poHomeChannel.navbar.homeButton.click();
+			await poHomeChannel.navbar.btnHome.click();
 
 			await test.step('send a mention message from another user', async () => {
 				await user1Page.goto(`/channel/${targetChannel}`);

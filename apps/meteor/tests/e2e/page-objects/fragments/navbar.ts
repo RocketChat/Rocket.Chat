@@ -32,7 +32,7 @@ export class Navbar {
 		return this.root.getByRole('group', { name: 'Pages and actions' });
 	}
 
-	get homeButton(): Locator {
+	get btnHome(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Home' });
 	}
 
