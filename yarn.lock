@@ -8719,23 +8719,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/freeswitch@workspace:packages/freeswitch"
-  dependencies:
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/tools": "workspace:^"
-    "@rocket.chat/tsconfig": "workspace:*"
-    "@types/jest": "npm:~30.0.0"
-    esl: "github:pierre-lehnen-rc/esl"
-    eslint: "npm:~8.45.0"
-    jest: "npm:~30.2.0"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/fuselage-forms@npm:~0.1.1":
   version: 0.1.1
   resolution: "@rocket.chat/fuselage-forms@npm:0.1.1"
@@ -9360,7 +9343,6 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.5"
-    "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
@@ -21134,13 +21116,6 @@ __metadata:
   version: 2.0.0
   resolution: "escape-string-regexp@npm:2.0.0"
   checksum: 10/9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
-  languageName: node
-  linkType: hard
-
-"esl@github:pierre-lehnen-rc/esl":
-  version: 11.1.1
-  resolution: "esl@https://github.com/pierre-lehnen-rc/esl.git#commit=22f2167a4acaa129d214592cfb0d46a419d08663"
-  checksum: 10/6a67c2e77b292d1dc419f753d67ef0114b8509d1c21a8b4509233d09d0e69d603a2451feae36f7bc380875587a6826cd7d9e7608e8d64b937cf2711546e6cbed
   languageName: node
   linkType: hard
 

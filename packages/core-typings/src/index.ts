@@ -110,7 +110,6 @@ export * from './ILivechatMonitorRecord';
 export * from './ILivechatDepartment';
 export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
-export * from './voip';
 export * from './IInquiry';
 export * from './ILivechatPriority';
 export * from './ILogs';
