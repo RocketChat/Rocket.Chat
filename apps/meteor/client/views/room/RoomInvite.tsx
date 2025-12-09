@@ -1,4 +1,4 @@
-import { isRoomFederated, type ISubscriptionInvite } from '@rocket.chat/core-typings';
+import { isRoomFederated, type IInviteSubscription } from '@rocket.chat/core-typings';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import { links } from '../../lib/links';
 
 type RoomInviteProps = Omit<ComponentProps<typeof RoomLayout>, 'header' | 'body' | 'aside'> & {
 	room: IRoomWithFederationOriginalName;
-	subscription: ISubscriptionInvite;
+	subscription: IInviteSubscription;
 };
 
 const RoomInvite = ({ room, subscription, ...props }: RoomInviteProps) => {
