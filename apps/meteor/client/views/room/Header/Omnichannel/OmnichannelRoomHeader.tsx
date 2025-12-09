@@ -1,8 +1,8 @@
+import { HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import { HeaderToolbar } from '../../../../components/Header';
 import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
