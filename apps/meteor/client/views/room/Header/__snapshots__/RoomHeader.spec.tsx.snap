@@ -1,0 +1,483 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RoomHeader Toolbox should not render toolbox if roomToolbox is null and no slots are provided 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`RoomHeader Toolbox should prioritize slots.toolbox.content over roomToolbox 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          aria-label="Toolbox_room_actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <div
+            class="rcx-button-group__item"
+          >
+            Slotted Toolbox
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`RoomHeader Toolbox should render custom toolbox content from roomToolbox prop 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          aria-label="Toolbox_room_actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <div
+            class="rcx-button-group__item"
+          >
+            Custom Toolbox
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`RoomHeader Toolbox should render custom toolbox content from slots.toolbox.content 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          aria-label="Toolbox_room_actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <div
+            class="rcx-button-group__item"
+          >
+            Slotted Toolbox
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`RoomHeader Toolbox should render toolbox by default 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          aria-label="Toolbox_room_actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <div>
+            RoomToolbox
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`RoomHeader Toolbox should render toolbox if slots.toolbox is provided 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              aria-hidden="true"
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-v5o1rw"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hashtag-lock rcx-icon rcx-css-1t9h2ff"
+                >
+                  
+                </i>
+              </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              />
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite undefined"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          aria-label="Toolbox_room_actions"
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <div>
+            RoomToolbox
+          </div>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
