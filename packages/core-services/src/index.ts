@@ -47,7 +47,6 @@ import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from '.
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
-import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 
 export { AppStatusReport } from './types/IAppsEngineService';
 export { IAbacService, AbacActor } from './types/IAbacService';
@@ -123,7 +122,6 @@ export {
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 	IVideoConfService,
-	IVoipFreeSwitchService,
 	NPSCreatePayload,
 	NPSVotePayload,
 	proxify,
@@ -164,7 +162,6 @@ export const MessageReads = proxify<IMessageReadsService>('message-reads');
 export const Room = proxify<IRoomService>('room');
 export const Media = proxify<IMediaService>('media');
 export const MediaCall = proxify<IMediaCallService>('media-call');
-export const VoipFreeSwitch = proxify<IVoipFreeSwitchService>('voip-freeswitch');
 export const Analytics = proxify<IAnalyticsService>('analytics');
 export const LDAP = proxify<ILDAPService>('ldap');
 export const SAUMonitor = proxify<ISAUMonitorService>('sau-monitor');
