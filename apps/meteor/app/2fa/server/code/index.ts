@@ -9,6 +9,7 @@ import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
+import { normalizeHeaders } from '../../../lib/server/functions/getModifiedHttpHeaders';
 import { settings } from '../../../settings/server';
 
 export interface ITwoFactorOptions {
@@ -184,12 +185,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
 	}
 
-	let headers: { [k: string]: string };
-	if (connection?.httpHeaders instanceof Headers) {
-		headers = { ...Object.fromEntries(connection?.httpHeaders.entries()) };
-	} else {
-		headers = { ...connection?.httpHeaders };
-	}
+	const headers = normalizeHeaders(connection?.httpHeaders);
 
 	if (!code && !method && headers?.['x-2fa-code'] && headers['x-2fa-method']) {
 		code = headers['x-2fa-code'];
