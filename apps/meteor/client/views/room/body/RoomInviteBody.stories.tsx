@@ -27,6 +27,20 @@ export const Default: Story = {
 	},
 };
 
+export const WithInfoLink: Story = {
+	args: {
+		infoLink: {
+			label: 'Learn more',
+			href: 'https://rocket.chat',
+		},
+		inviter: {
+			username: 'rocket.cat',
+			name: 'Rocket Cat',
+			_id: 'rocket.cat',
+		},
+	},
+};
+
 export const Loading: Story = {
 	args: {
 		isLoading: true,
