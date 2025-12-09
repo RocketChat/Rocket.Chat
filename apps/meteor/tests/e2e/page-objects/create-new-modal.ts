@@ -8,7 +8,7 @@ export class CreateNewModal extends Modal {
 	}
 
 	get checkboxEncrypted(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Encrypted' }) });
+		return this.root.locator('label').filter({ has: this.root.getByRole('checkbox', { name: 'Encrypted' }) });
 	}
 
 	get btnCreate(): Locator {
