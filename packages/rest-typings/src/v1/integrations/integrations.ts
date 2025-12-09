@@ -1,7 +1,6 @@
 import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 
 import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
-import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
 import type { IntegrationsListProps } from './IntegrationsListProps';
 import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps';
@@ -31,10 +30,6 @@ export type IntegrationsEndpoints = {
 		POST: (params: IntegrationsRemoveProps) => {
 			integration: IIntegration;
 		};
-	};
-
-	'/v1/integrations.get': {
-		GET: (params: IntegrationsGetProps) => { integration: IIntegration };
 	};
 
 	'/v1/integrations.update': {

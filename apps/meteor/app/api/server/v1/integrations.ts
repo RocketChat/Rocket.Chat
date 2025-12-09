@@ -1,10 +1,18 @@
-import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import type {
+	IIntegration,
+	INewIncomingIntegration,
+	INewOutgoingIntegration,
+	IIncomingIntegration,
+	IOutgoingIntegration,
+} from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 	isIntegrationsCreateProps,
 	isIntegrationsHistoryProps,
 	isIntegrationsRemoveProps,
-	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 	isIntegrationsListProps,
 } from '@rocket.chat/rest-typings';
@@ -22,9 +30,69 @@ import { updateIncomingIntegration } from '../../../integrations/server/methods/
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
 import { updateOutgoingIntegration } from '../../../integrations/server/methods/outgoing/updateOutgoingIntegration';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
+
+type IntegrationsGetProps = { integrationId: string; createdBy?: string };
+
+const integrationsGetSchema = {
+	type: 'object',
+	properties: {
+		integrationId: {
+			type: 'string',
+			nullable: false,
+		},
+		createdBy: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['integrationId'],
+};
+
+const isIntegrationsGetProps = ajv.compile<IntegrationsGetProps>(integrationsGetSchema);
+
+const integrationsEndpoints = API.v1.get(
+	'integrations.get',
+	{
+		authRequired: true,
+		query: isIntegrationsGetProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ integration: IIncomingIntegration | IOutgoingIntegration }>({
+				type: 'object',
+				properties: {
+					integration: {
+						anyOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+					},
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['integration', 'success'],
+			}),
+		},
+	},
+
+	async function action() {
+		const { integrationId, createdBy } = this.queryParams;
+		if (!integrationId) {
+			return API.v1.failure('The query parameter "integrationId" is required.');
+		}
+
+		const integration = await findOneIntegration({
+			userId: this.userId,
+			integrationId,
+			createdBy,
+		});
+
+		// TODO : remove this line if the database doesnt return null value for script. since script should never be null
+		if (!integration.script) integration.script = '';
+
+		return API.v1.success({ integration });
+	},
+);
 
 API.v1.addRoute(
 	'integrations.create',
@@ -209,27 +277,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'integrations.get',
-	{ authRequired: true, validateParams: isIntegrationsGetProps },
-	{
-		async get() {
-			const { integrationId, createdBy } = this.queryParams;
-			if (!integrationId) {
-				return API.v1.failure('The query parameter "integrationId" is required.');
-			}
-
-			return API.v1.success({
-				integration: await findOneIntegration({
-					userId: this.userId,
-					integrationId,
-					createdBy,
-				}),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'integrations.update',
 	{ authRequired: true, validateParams: isIntegrationsUpdateProps },
 	{
@@ -272,3 +319,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type IntegrationsEndpoints = ExtractRoutesFromAPI<typeof integrationsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends IntegrationsEndpoints {}
+}
