@@ -109,8 +109,6 @@ function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' 
 	}
 }
 
-// TODO on invite we may only want to create the subscription with INVITED status
-// everything else should be created on join
 async function handleInvite({
 	sender: senderId,
 	state_key: userId,
