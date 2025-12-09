@@ -16,7 +16,6 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 	return (
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
-
 			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
 		</>
 	);
