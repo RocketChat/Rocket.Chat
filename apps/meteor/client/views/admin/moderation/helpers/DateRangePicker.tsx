@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 type DateRangePickerProps = {
 	onChange(range: { start: string; end: string }): void;
+	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
 };
 
 const formatToDateInput = (date: Moment) => date.locale('en').format('YYYY-MM-DD');
@@ -23,7 +24,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
 });
 
-const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
+const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRangePickerProps) => {
 	const { t } = useTranslation();
 
 	const handleRange = useEffectEvent((range: { start: string; end: string }) => {
@@ -40,13 +41,6 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 			['alldates', t('All')],
 		].map(([value, label]) => [value, label] as SelectOption);
 	}, [t]);
-
-	useEffect(() => {
-		handleRange({
-			start: formatToDateInput(moment(0)),
-			end: todayDate,
-		});
-	}, [handleRange]);
 
 	const handleOptionClick = useEffectEvent((action: Key) => {
 		switch (action) {
@@ -76,9 +70,13 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 		}
 	});
 
+	useEffect(() => {
+		handleOptionClick(defaultSelectedKey);
+	});
+
 	return (
 		<Box flexGrow={0}>
-			<Select defaultSelectedKey='alldates' width='100%' options={timeOptions} onChange={handleOptionClick} />
+			<Select defaultSelectedKey={defaultSelectedKey} width='100%' options={timeOptions} onChange={handleOptionClick} />
 		</Box>
 	);
 };
