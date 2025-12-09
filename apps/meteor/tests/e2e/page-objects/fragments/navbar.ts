@@ -130,6 +130,12 @@ export class Navbar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
+		const hasUnreadLabel = this.searchList.getByRole('option', { name }).filter({ hasText: 'unread' });
+
+		if (hasUnreadLabel) {
+			// if item has unread label, do not use exact match
+			return this.searchList.getByRole('option', { name });
+		}
 		return this.searchList.getByRole('option', { name, exact: true });
 	}
 
