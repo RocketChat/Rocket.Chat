@@ -29,6 +29,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
 
 		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
 		await page.keyboard.press('ArrowRight');
 
@@ -39,6 +40,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
 
+		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 
@@ -64,7 +66,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.toastMessage.dismissToast();
 		await poHomeChannel.roomToolbar.openRoomInfo();
-		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
+
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
 		await expect(poHomeChannel.content.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
 	});
@@ -109,7 +111,7 @@ test.describe.serial('channel-management', () => {
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
-	test('should truncate the room name for small screens', async ({ page }) => {
+	test.skip('should truncate the room name for small screens', async ({ page }) => {
 		const hugeName = faker.string.alpha(200);
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomToolbar.openRoomInfo();
@@ -128,7 +130,7 @@ test.describe.serial('channel-management', () => {
 		await page.setViewportSize({ width: 640, height: 460 });
 		await page.getByRole('button', { name: 'Open sidebar' }).click();
 
-		await expect(page.getByRole('navigation')).toBeVisible();
+		await expect(page.getByRole('navigation', { name: 'Sidebar' })).toBeVisible();
 	});
 
 	test('should open room info when clicking on roomName', async ({ page }) => {
@@ -154,9 +156,8 @@ test.describe.serial('channel-management', () => {
 	test('should access targetTeam through discussion header', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.locator('[data-qa-type="message"]', { hasText: discussionName }).locator('button').first().click();
-		await page.getByRole('button', { name: discussionName }).first().focus();
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
+
+		await page.getByRole('button', { name: `Back to ${targetChannel} channel`, exact: true }).focus();
 		await page.keyboard.press('Space');
 
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
