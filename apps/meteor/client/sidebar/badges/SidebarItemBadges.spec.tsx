@@ -52,9 +52,18 @@ describe('SidebarItemBadges', () => {
 	});
 
 	it('should render InvitationBadge when subscription has status INVITED', () => {
-		render(<SidebarItemBadges room={createRoomWithSubscription({ status: 'INVITED', ts: new Date('2025-01-01T00:00:00.000Z') })} />, {
-			wrapper: appRoot,
-		});
+		render(
+			<SidebarItemBadges
+				room={createRoomWithSubscription({
+					status: 'INVITED',
+					inviter: { name: 'Rocket Cat', username: 'rocket.cat', _id: 'rocket.cat' },
+					ts: new Date('2025-01-01T00:00:00.000Z'),
+				})}
+			/>,
+			{
+				wrapper: appRoot,
+			},
+		);
 
 		expect(screen.getByRole('status', { name: 'Invited January 1, 2025' })).toBeInTheDocument();
 	});
