@@ -39,6 +39,18 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
                 rocket.cat
               </h1>
             </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="Favorite rocket.cat"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
           </div>
         </div>
       </div>
