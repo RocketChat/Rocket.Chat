@@ -32,7 +32,6 @@ export class Presence extends ServiceClass implements IPresence {
 		super();
 
 		this.reaper = new PresenceReaper({
-			usersSessions: UsersSessions,
 			batchSize: 500,
 			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
 			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
@@ -101,8 +100,20 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
-		console.log(`[PresenceReaper] Updating presence for ${userIds.length} users due to stale connections.`);
-		await Promise.all(userIds.map((uid) => this.updateUserPresence(uid)));
+		const results = await Promise.allSettled(userIds.map((uid) => this.updateUserPresence(uid)));
+		const fulfilled = results.filter((result) => result.status === 'fulfilled');
+		const rejected = results.filter((result) => result.status === 'rejected');
+
+		if (fulfilled.length > 0) {
+			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+		}
+
+		if (rejected.length > 0) {
+			console.error(
+				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
+				rejected.map(({ reason }) => reason),
+			);
+		}
 	}
 
 	override async stopped(): Promise<void> {

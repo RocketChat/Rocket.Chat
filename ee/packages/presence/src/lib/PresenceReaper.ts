@@ -1,9 +1,10 @@
 import { setInterval } from 'node:timers';
 
 import type { IUserSession } from '@rocket.chat/core-typings';
-import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
+import { UsersSessions } from '@rocket.chat/models';
+import type { AnyBulkWriteOperation } from 'mongodb';
 
-type ReaperPlan = {
+export type ReaperPlan = {
 	userId: string;
 	removeIds: string[];
 	shouldMarkOffline: boolean;
@@ -17,15 +18,12 @@ const isNonEmptyArray = <T>(arr: T[]): arr is NonEmptyArray<T> => arr.length > 0
 type ReaperCallback = (userIds: NonEmptyArray<string>) => void;
 
 type ReaperOptions = {
-	usersSessions: IUsersSessionsModel;
 	onUpdate: ReaperCallback;
 	staleThresholdMs: number;
 	batchSize: number;
 };
 
 export class PresenceReaper {
-	private usersSessions: IUsersSessionsModel;
-
 	private staleThresholdMs: number;
 
 	private batchSize: number;
@@ -37,7 +35,6 @@ export class PresenceReaper {
 	private intervalId?: NodeJS.Timeout;
 
 	constructor(options: ReaperOptions) {
-		this.usersSessions = options.usersSessions;
 		this.onUpdate = options.onUpdate;
 		this.staleThresholdMs = options.staleThresholdMs;
 		this.batchSize = options.batchSize;
@@ -69,11 +66,10 @@ export class PresenceReaper {
 	}
 
 	public async run(): Promise<void> {
-		console.log('[PresenceReaper] Running presence reaper job...');
 		const cutoffDate = new Date(Date.now() - this.staleThresholdMs);
 
 		// 1. Find users with potentially stale connections
-		const cursor = this.usersSessions.find(
+		const cursor = UsersSessions.find(
 			{ 'connections._updatedAt': { $lte: cutoffDate } },
 			{
 				projection: { _id: 1, connections: 1 },
@@ -94,10 +90,9 @@ export class PresenceReaper {
 		if (userChangeSet.size > 0) {
 			await this.flushBatch(userChangeSet);
 		}
-		console.log('[PresenceReaper] Presence reaper job completed.');
 	}
 
-	private processDocument(sessionDoc: IUserSession, cutoffDate: Date, changeMap: Map<string, ReaperPlan>): void {
+	processDocument(sessionDoc: IUserSession, cutoffDate: Date, changeMap: Map<string, ReaperPlan>): void {
 		const userId = sessionDoc._id;
 		const allConnections = sessionDoc.connections || [];
 
@@ -116,7 +111,7 @@ export class PresenceReaper {
 	}
 
 	private async flushBatch(changeMap: Map<string, ReaperPlan>): Promise<void> {
-		const sessionOps = [];
+		const sessionOps: AnyBulkWriteOperation<IUserSession>[] = [];
 		const usersToUpdate: string[] = [];
 
 		for (const plan of changeMap.values()) {
@@ -137,15 +132,12 @@ export class PresenceReaper {
 				});
 			}
 
-			// 2. Identify potential offline users
-			if (plan.shouldMarkOffline) {
-				usersToUpdate.push(plan.userId);
-			}
+			usersToUpdate.push(plan.userId);
 		}
 
 		// Step A: Clean the Database
 		if (sessionOps.length > 0) {
-			await this.usersSessions.col.bulkWrite(sessionOps);
+			await UsersSessions.col.bulkWrite(sessionOps);
 		}
 
 		// Step B: Notify Presence Service
