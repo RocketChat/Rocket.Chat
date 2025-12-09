@@ -54,8 +54,8 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
-	getSearchRoomByName(name: string) {
-		return this.channelsList.getByRole('button', { name, exact: true });
+	getSidebarItemByName(name: string) {
+		return this.channelsList.getByRole('link', { name, exact: true });
 	}
 
 	get firstCollapser(): Locator {
