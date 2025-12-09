@@ -15,8 +15,9 @@ export const roomsQueryKeys = {
 	room: (rid: IRoom['_id']) => ['rooms', rid] as const,
 	roomReference: (reference: string, type: RoomType, uid?: IUser['_id'], username?: IUser['username']) => [
 		...roomsQueryKeys.all,
-		{ reference, type },
-		{ uid, username },
+		reference,
+		type,
+		uid ?? username,
 	],
 	starredMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'starred-messages'] as const,
 	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
