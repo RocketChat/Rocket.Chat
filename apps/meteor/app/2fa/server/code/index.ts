@@ -184,9 +184,16 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
 	}
 
-	if (!code && !method && connection?.httpHeaders?.['x-2fa-code'] && connection.httpHeaders['x-2fa-method']) {
-		code = connection.httpHeaders['x-2fa-code'];
-		method = connection.httpHeaders['x-2fa-method'];
+	let headers: { [k: string]: string };
+	if (connection?.httpHeaders instanceof Headers) {
+		headers = { ...Object.fromEntries(connection?.httpHeaders.entries()) };
+	} else {
+		headers = { ...connection?.httpHeaders };
+	}
+
+	if (!code && !method && headers?.['x-2fa-code'] && headers['x-2fa-method']) {
+		code = headers['x-2fa-code'];
+		method = headers['x-2fa-method'];
 	}
 
 	if (connection && isAuthorizedForToken(connection, existingUser, options)) {
