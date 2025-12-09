@@ -22,7 +22,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The query param "command" must be provided.');
+					expect(res.body.error).to.be.equal(`must have required property 'command'`);
 				})
 				.end(done);
 		});
