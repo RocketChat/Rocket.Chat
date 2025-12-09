@@ -44,7 +44,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },

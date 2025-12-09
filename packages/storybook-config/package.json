@@ -25,7 +25,7 @@
 		"@storybook/addon-a11y": "^8.6.14",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-styling-webpack": "^1.0.1",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/blocks": "^8.6.14",
 		"@storybook/preview-api": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
@@ -37,7 +37,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/fuselage": "~0.68.1",
+		"@rocket.chat/fuselage": "^0.69.0",
 		"@rocket.chat/icons": "~0.45.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^8.6.14",

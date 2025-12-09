@@ -9,7 +9,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		super(db, 'email_inbox', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { email: 1 }, unique: true }];
 	}
 

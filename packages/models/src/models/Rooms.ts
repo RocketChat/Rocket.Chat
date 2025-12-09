@@ -37,7 +37,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		super(db, 'room', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { name: 1 },
@@ -1979,13 +1979,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// REMOVE
-	removeById(_id: IRoom['_id']): Promise<DeleteResult> {
+	override removeById(_id: IRoom['_id']): Promise<DeleteResult> {
 		const query: Filter<IRoom> = { _id };
 
 		return this.deleteOne(query);
 	}
 
-	removeByIds(ids: Array<IRoom['_id']>): Promise<DeleteResult> {
+	override removeByIds(ids: Array<IRoom['_id']>): Promise<DeleteResult> {
 		return this.deleteMany({ _id: { $in: ids } });
 	}
 
