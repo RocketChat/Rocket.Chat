@@ -9,7 +9,7 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 		super(db, 'freeswitch_channel_events', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
 			// Allow 3 days of events to be saved

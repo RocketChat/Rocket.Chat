@@ -16,7 +16,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 		super(db, 'import_data', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { dataType: 1 } }];
 	}
 

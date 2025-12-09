@@ -33,7 +33,7 @@ class TonePlayer {
 		this.filter.connect(this.destination);
 	}
 
-	public setSinkId(sinkId: string) {
+	public async setSinkId(sinkId: string) {
 		if (this.audioElement.setSinkId) {
 			return this.audioElement.setSinkId(sinkId);
 		}

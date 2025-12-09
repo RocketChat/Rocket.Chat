@@ -246,7 +246,7 @@ export class PJSIPEndpoint extends Command {
 		}
 	}
 
-	async executeCommand(data: any): Promise<IVoipConnectorResult> {
+	override async executeCommand(data: any): Promise<IVoipConnectorResult> {
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
 		if (this.commandText === Commands.extension_list.toString()) {
