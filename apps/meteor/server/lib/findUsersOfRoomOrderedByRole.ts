@@ -1,4 +1,4 @@
-import { type IUser, type IRole, ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
+import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FilterOperators } from 'mongodb';
@@ -17,8 +17,7 @@ type FindUsersParam = {
 };
 
 type UserWithRoleAndSubscriptionData = IUser & {
-	roles: IRole['_id'][];
-	subscription?: { status: string; createdAt: string };
+	subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
 };
 
 export async function findUsersOfRoomOrderedByRole({
@@ -110,23 +109,12 @@ export async function findUsersOfRoomOrderedByRole({
 			{
 				$addFields: {
 					roles: { $arrayElemAt: ['$subscription.roles', 0] },
-					subscription: {
-						$let: {
-							vars: {
-								sub: { $arrayElemAt: ['$subscription', 0] },
-							},
-							in: {
-								$cond: {
-									if: { $ifNull: ['$$sub.status', false] },
-									then: {
-										status: '$$sub.status',
-										createdAt: '$$sub.ts',
-									},
-									else: '$$REMOVE',
-								},
-							},
-						},
-					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$subscription',
+					preserveNullAndEmptyArrays: true,
 				},
 			},
 			{

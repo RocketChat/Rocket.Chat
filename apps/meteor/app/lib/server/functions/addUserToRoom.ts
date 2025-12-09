@@ -49,7 +49,7 @@ export const addUserToRoom = async (
 
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription || !userToBeAdded) {
+	if (subscription) {
 		return;
 	}
 
