@@ -46,7 +46,6 @@ export async function createDirectRoom(
 	options: {
 		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
-		federatedRoomId?: string;
 	},
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
@@ -203,7 +202,6 @@ export async function createDirectRoom(
 		await callbacks.run('afterCreateDirectRoom', insertedRoom, {
 			members: roomMembers,
 			creatorId: options?.creator,
-			mrid: options?.federatedRoomId,
 		});
 
 		void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);

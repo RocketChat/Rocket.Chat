@@ -1,5 +1,5 @@
 import { Room } from '@rocket.chat/core-services';
-import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { HomeserverEventSignatures, PduForType } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
@@ -58,18 +58,27 @@ async function getOrCreateFederatedRoom({
 			return room;
 		}
 
+		const origin = matrixRoomId.split(':').pop();
+		if (!origin) {
+			throw new Error(`Room origin not found for Matrix ID: ${matrixRoomId}`);
+		}
+
 		// TODO room creator is not always the inviter
 
-		return Room.create(inviterUserId, {
+		return Room.create<IRoomNativeFederated>(inviterUserId, {
 			type: roomType,
 			name: roomName,
 			members: inviteeUsername ? [inviteeUsername, inviterUsername] : [inviterUsername],
 			options: {
-				federatedRoomId: matrixRoomId,
 				creator: inviterUserId,
 			},
 			extraData: {
 				federated: true,
+				federation: {
+					version: 1,
+					mrid: matrixRoomId,
+					origin,
+				},
 				fname: roomFName,
 			},
 		});

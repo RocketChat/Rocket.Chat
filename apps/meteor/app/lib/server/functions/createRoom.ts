@@ -259,7 +259,6 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
-		...(options?.federatedRoomId && { federation: { mrid: options.federatedRoomId, origin: options.federatedRoomId.split(':').pop() } }),
 	};
 
 	if (teamId) {

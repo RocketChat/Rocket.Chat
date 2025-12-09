@@ -10,25 +10,19 @@ export interface ISubscriptionExtraData {
 export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
-	federatedRoomId?: string;
 }
 
-export interface ICreateRoomExtraData extends Record<string, string | boolean> {
-	teamId: string;
-	teamMain: boolean;
-}
-
-export interface ICreateRoomParams {
+export interface ICreateRoomParams<T extends IRoom = IRoom> {
 	type: IRoom['t'];
 	name: IRoom['name'];
 	members?: Array<string>; // member's usernames
 	readOnly?: boolean;
-	extraData?: Partial<ICreateRoomExtraData>;
+	extraData?: Partial<T>;
 	options?: ICreateRoomOptions;
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
