@@ -51,7 +51,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 		await encryptedRoomPage.sendMessage(messageText);
@@ -67,7 +67,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		// Navigate to the encrypted channel WITHOUT entering the password
 
 		await navbar.openChat(channelName);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).toBeVisible();
 
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
@@ -89,7 +89,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 		await test.step('upload the file with encryption', async () => {
@@ -107,7 +107,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await test.step('disable encryption in the room', async () => {
 			await encryptedRoomPage.disableEncryption();
-			await expect(encryptedRoomPage.encryptedIcon).not.toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).not.toBeVisible();
 		});
 
 		await test.step('upload the file without encryption', async () => {
@@ -123,7 +123,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await test.step('enable encryption in the room', async () => {
 			await encryptedRoomPage.enableEncryption();
-			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		});
 
 		// Log out
@@ -135,7 +135,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(navbar.btnCreateNew).toBeVisible();
 
 		await navbar.openChat(channelName);
-		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 
 		await expect(encryptedRoomPage.lastNthMessage(1).body).toHaveText(
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
@@ -167,7 +167,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			await navbar.createEncryptedChannel(targetChannelName);
 
 			await expect(page).toHaveURL(`/group/${targetChannelName}`);
-			await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
+			await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 			await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 
 			await encryptedRoomPage.sendMessage('First encrypted message.');

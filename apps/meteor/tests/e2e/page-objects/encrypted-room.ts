@@ -3,8 +3,8 @@ import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragmen
 import { Message } from './fragments/message';
 
 export class EncryptedRoomPage extends HomeContent {
-	get encryptedIcon() {
-		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
+	get encryptedTitle() {
+		return this.page.getByRole('button').filter({ hasText: '- encrypted' });
 	}
 
 	get encryptionNotReadyIndicator() {
