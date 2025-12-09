@@ -159,24 +159,28 @@ export class Navbar {
 	async createNew(
 		type: 'Channel' | 'Team',
 		name: string,
-		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; parentRoom?: string },
+		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; federated?: boolean },
 	): Promise<void> {
 		await this.openCreate(type);
 		await this.modals[type].inputName.fill(name);
+
 		if (options?.private === false) {
 			await this.modals[type].checkboxPrivate.click();
 		}
 
-		if (type === 'Channel' || type === 'Team') {
-			if (options?.encrypted) {
-				await this.modals[type].advancedSettingsAccordion.click();
-				await this.modals[type].checkboxEncrypted.click();
-			}
-			if (options?.readOnly) {
-				await this.modals[type].advancedSettingsAccordion.click();
-				await this.modals[type].checkboxReadOnly.click();
-			}
+		if (options && ('encrypted' in options || 'readOnly' in options || 'federated' in options)) {
+			await this.modals[type].advancedSettingsAccordion.click();
 		}
+		if (options?.encrypted) {
+			await this.modals[type].checkboxEncrypted.click();
+		}
+		if (options?.readOnly) {
+			await this.modals[type].checkboxReadOnly.click();
+		}
+		if (options?.federated) {
+			await this.modals[type].checkboxFederated.click();
+		}
+
 		await this.modals[type].btnCreate.click();
 	}
 
