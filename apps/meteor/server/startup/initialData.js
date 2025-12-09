@@ -3,6 +3,7 @@ import colors from 'colors/safe';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { addCallHistoryTestData } from './callHistoryTestData';
 import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
@@ -251,6 +252,9 @@ Meteor.startup(async () => {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 
-		return addUserToDefaultChannels(adminUser, true);
+		await addUserToDefaultChannels(adminUser, true);
+
+		// Create sample call history for API tests
+		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
 	}
 });
