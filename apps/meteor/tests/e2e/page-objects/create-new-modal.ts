@@ -38,6 +38,10 @@ export class CreateNewDMModal extends CreateNewModal {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'New direct message' }));
 	}
+
+	get dmListbox(): Locator {
+		return this.root.getByRole('listbox');
+	}
 }
 
 export class CreateNewTeamModal extends CreateNewModal {
