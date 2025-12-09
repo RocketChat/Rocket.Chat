@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-12-09T15:01:29Z",
+  "tag": "develop",
+  "total": 1613980861,
+  "services": {
+    "account-service": 118225962,
+    "authorization-service": 115504952,
+    "ddp-streamer-service": 131888773,
+    "omnichannel-transcript-service": 137745362,
+    "presence-service": 115500451,
+    "queue-worker-service": 137717731,
+    "rocketchat": 365043054,
+    "rocketchat-cov": 376841579,
+    "stream-hub-service": 115512997
+  },
+  "commit": "9b3fa8d7b17a337052f36dc0e8ce81f765c0c7c5"
+}
