@@ -7,11 +7,10 @@ type CreateBusinessHoursParams = {
 	departments?: { departmentId: string }[];
 };
 
-export const createBusinessHour = async (api: BaseTest['api'], { id = null, name, departments = [] }: CreateBusinessHoursParams = {}) => {
+export const createBusinessHour = async (api: BaseTest['api'], { name, departments = [] }: CreateBusinessHoursParams = {}) => {
 	const departmentIds = departments.join(',');
 
 	return api.post('/livechat/business-hours.save', {
-		...(id && { _id: id }),
 		name,
 		timezoneName: 'America/Sao_Paulo',
 		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
