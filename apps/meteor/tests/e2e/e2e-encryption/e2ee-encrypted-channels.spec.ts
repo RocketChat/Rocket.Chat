@@ -132,9 +132,7 @@ test.describe('E2EE Encrypted Channels', () => {
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.navbar.createNew('Channel', channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -231,9 +229,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.navbar.setDisplayMode('Extended');
 
 		// Create private channel
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });
+
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
