@@ -211,13 +211,6 @@ export const permissions = [
 	{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 
-	// Allow managing team collab voip extensions
-	{ _id: 'manage-voip-extensions', roles: ['admin'] },
-	// Allow viewing the extension number of other users
-	{ _id: 'view-user-voip-extension', roles: ['admin', 'user'] },
-	// Allow viewing details of an extension
-	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
-
 	// New Media calls permissions
 	{ _id: 'allow-internal-voice-calls', roles: ['admin', 'user'] },
 	{ _id: 'allow-external-voice-calls', roles: ['admin', 'user'] },
