@@ -1,12 +1,6 @@
 import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
-import {
-	isEditedMessage,
-	isRoomNativeFederated,
-	isUserNativeFederated,
-	type IMessage,
-	type IRoom,
-	type IUser,
-} from '@rocket.chat/core-typings';
+import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
+import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
@@ -15,6 +9,7 @@ import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoom
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
+import { prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -282,3 +277,14 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-matrix-after-create-direct-room',
 );
+
+prepareCreateRoomCallback.add(async ({ extraData }) => {
+	if (!extraData.federated) {
+		return;
+	}
+
+	// when we receive extraData.federated, we need to prepare the room to be considered IRoomNativeFederated.
+	// according to isRoomNativeFederated for a room to be considered IRoomNativeFederated it is enough to have
+	// only an empty "federation" object
+	(extraData as IRoomNativeFederated).federation = { version: 1 } as any;
+});

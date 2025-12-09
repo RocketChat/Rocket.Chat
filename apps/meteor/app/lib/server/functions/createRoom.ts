@@ -3,7 +3,6 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -183,8 +182,7 @@ export const createRoom = async <T extends RoomType>(
 		// options,
 	});
 
-	const shouldBeHandledByFederation = isRoomNativeFederated(extraData);
-	if (shouldBeHandledByFederation && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+	if (hasFederatedMembers && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});
@@ -297,13 +295,13 @@ export const createRoom = async <T extends RoomType>(
 	void notifyOnRoomChanged(room, 'inserted');
 
 	// If federated, we must create Matrix room BEFORE subscriptions so invites can be sent.
-	if (shouldBeHandledByFederation) {
+	if (hasFederatedMembers) {
 		// Reusing unused callback to create Matrix room.
 		// We should discuss the opportunity to rename it to something with "before" prefix.
 		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}
 
-	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
+	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation: hasFederatedMembers });
 
 	if (type === 'c') {
 		if (room.teamId) {
