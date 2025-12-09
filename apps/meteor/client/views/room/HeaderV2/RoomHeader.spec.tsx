@@ -33,36 +33,33 @@ describe('RoomHeader', () => {
 		});
 
 		it('should not render toolbox if roomToolbox is null and no slots are provided', () => {
-			render(<RoomHeader room={mockedRoom} slots={{}} roomToolbox={null} />, { wrapper: appRoot });
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{
+						toolbox: {
+							hidden: true,
+						},
+					}}
+				/>,
+				{ wrapper: appRoot },
+			);
 			expect(screen.queryByLabelText('Toolbox_room_actions')).not.toBeInTheDocument();
 		});
 
 		it('should render toolbox if slots.toolbox is provided', () => {
-			render(<RoomHeader room={mockedRoom} slots={{ toolbox: {} }} roomToolbox={null} />, { wrapper: appRoot });
+			render(<RoomHeader room={mockedRoom} slots={{ toolbox: {} }} />, { wrapper: appRoot });
 			expect(screen.getByLabelText('Toolbox_room_actions')).toBeInTheDocument();
 		});
 
 		it('should render custom toolbox content from roomToolbox prop', () => {
-			render(<RoomHeader room={mockedRoom} slots={{}} roomToolbox={<div>Custom Toolbox</div>} />, { wrapper: appRoot });
+			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { content: <div>Custom Toolbox</div> } }} />, { wrapper: appRoot });
 			expect(screen.getByText('Custom Toolbox')).toBeInTheDocument();
 		});
 
 		it('should render custom toolbox content from slots.toolbox.content', () => {
 			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { content: <div>Slotted Toolbox</div> } }} />, { wrapper: appRoot });
 			expect(screen.getByText('Slotted Toolbox')).toBeInTheDocument();
-		});
-
-		it('should prioritize slots.toolbox.content over roomToolbox', () => {
-			render(
-				<RoomHeader
-					room={mockedRoom}
-					roomToolbox={<div>Custom Toolbox</div>}
-					slots={{ toolbox: { content: <div>Slotted Toolbox</div> } }}
-				/>,
-				{ wrapper: appRoot },
-			);
-			expect(screen.getByText('Slotted Toolbox')).toBeInTheDocument();
-			expect(screen.queryByText('Custom Toolbox')).not.toBeInTheDocument();
 		});
 	});
 });

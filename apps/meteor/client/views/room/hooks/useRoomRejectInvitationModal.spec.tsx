@@ -14,7 +14,7 @@ const mockedSubscription = createFakeSubscription({
 	t: 'c',
 	rid: mockedRoom._id,
 	status: 'INVITED',
-	inviter: { _id: 'inviterId', username: inviterUsername },
+	inviter: { _id: 'inviterId', username: inviterUsername, name: 'Inviter Name' },
 	name: mockedRoom.name,
 	fname: mockedRoom.fname,
 });
@@ -109,21 +109,6 @@ describe('useRoomRejectInvitationModal', () => {
 		act(() => result.current.close());
 
 		expect(screen.queryByRole('dialog', { name: 'Reject invitation' })).not.toBeInTheDocument();
-	});
-
-	it('should display "unknown" as fallback if room name or username is not found', () => {
-		const { result } = renderHook(
-			() => useRoomRejectInvitationModal({ ...mockedRoom, _id: 'unknownid', name: undefined, fname: undefined }),
-			{
-				wrapper: appRoot()
-					.withSubscription({ ...mockedSubscription, rid: 'unknownid', inviter: { _id: 'unknowninviter' } })
-					.build(),
-			},
-		);
-
-		act(() => void result.current.open());
-
-		expect(screen.getByText("You're rejecting the invitation from @unknown to join unknown. This cannot be undone.")).toBeInTheDocument();
 	});
 
 	it('should display the correct description for rejecting DMs', () => {

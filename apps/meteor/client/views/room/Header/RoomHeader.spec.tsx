@@ -58,7 +58,17 @@ describe('RoomHeader', () => {
 		});
 
 		it('should render custom toolbox content from roomToolbox prop', () => {
-			render(<RoomHeader room={mockedRoom} slots={{}} />, { wrapper: appRoot });
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{
+						toolbox: {
+							content: <div>Custom Toolbox</div>,
+						},
+					}}
+				/>,
+				{ wrapper: appRoot },
+			);
 			expect(screen.getByText('Custom Toolbox')).toBeInTheDocument();
 		});
 

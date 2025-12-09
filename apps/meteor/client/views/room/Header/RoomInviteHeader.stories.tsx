@@ -9,7 +9,6 @@ const mockedRoom = createFakeRoom({ name: 'rocket.cat', federated: true });
 const meta = {
 	component: RoomInviteHeader,
 	args: {
-		slots: {},
 		room: mockedRoom,
 	},
 	decorators: [(story) => <FakeRoomProvider roomOverrides={mockedRoom}>{story()}</FakeRoomProvider>],

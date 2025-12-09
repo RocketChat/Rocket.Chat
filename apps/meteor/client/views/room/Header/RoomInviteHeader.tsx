@@ -1,8 +1,17 @@
 import RoomHeader from './RoomHeader';
 import type { RoomHeaderProps } from './RoomHeader';
 
-const RoomInviteHeader = ({ room, slots = {} }: RoomHeaderProps) => {
-	return <RoomHeader room={room} slots={slots} roomToolbox={null} />;
+const RoomInviteHeader = ({ room }: Pick<RoomHeaderProps, 'room'>) => {
+	return (
+		<RoomHeader
+			room={room}
+			slots={{
+				toolbox: {
+					hidden: true,
+				},
+			}}
+		/>
+	);
 };
 
 export default RoomInviteHeader;

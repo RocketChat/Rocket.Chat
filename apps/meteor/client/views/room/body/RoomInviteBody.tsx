@@ -1,6 +1,7 @@
 import type { IInviteSubscription } from '@rocket.chat/core-typings';
 import { Box, Button, Chip, States, StatesActions, StatesIcon, StatesLink, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useTranslation } from 'react-i18next';
 
 type RoomInviteBodyProps = {
 	isLoading?: boolean;
@@ -14,6 +15,7 @@ type RoomInviteBodyProps = {
 };
 
 const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: RoomInviteBodyProps) => {
+	const { t } = useTranslation();
 	const { name, username } = inviter;
 
 	return (
