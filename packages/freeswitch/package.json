@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/freeswitch",
-	"version": "1.2.31",
+	"version": "1.2.32",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

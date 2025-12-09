@@ -1,5 +1,16 @@
 # @rocket.chat/omni-core-ee
 
+## 0.0.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.11.1
+  - @rocket.chat/models@1.8.1
+  - @rocket.chat/omni-core@0.0.10
+  </details>
+
 ## 0.0.9
 
 ### Patch Changes
