@@ -4,14 +4,13 @@ import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useLayout, useRouter, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
-import { useUserCard } from '../views/room/contexts/UserCardContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 type GazzodownTextProps = {
