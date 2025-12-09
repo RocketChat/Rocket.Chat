@@ -15,14 +15,9 @@ jest.mock('../../../../app/utils/client', () => ({
 	getURL: (url: string) => url,
 }));
 
-jest.mock('./ParentRoomWithData', () => ({
+jest.mock('./ParentRoom', () => ({
 	__esModule: true,
-	default: jest.fn(() => <div>ParentRoomWithData</div>),
-}));
-
-jest.mock('./ParentTeam', () => ({
-	__esModule: true,
-	default: jest.fn(() => <div>ParentTeam</div>),
+	default: jest.fn(() => <div>ParentRoom</div>),
 }));
 
 jest.mock('./RoomToolbox', () => ({
