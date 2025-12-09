@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.2.23",
+	"version": "0.2.24",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

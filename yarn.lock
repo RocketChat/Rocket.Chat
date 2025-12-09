@@ -8653,7 +8653,7 @@ __metadata:
     cross-env: "npm:^7.0.3"
     eslint: "npm:~8.45.0"
     eslint-plugin-storybook: "npm:~0.11.6"
-    i18next: "npm:^23.10.1"
+    i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
@@ -8679,8 +8679,10 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@tanstack/react-query": "*"
+    i18next: "*"
     react: "*"
     react-dom: "*"
+    react-i18next: "*"
   languageName: unknown
   linkType: soft
 
@@ -23830,7 +23832,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:>=17.0.11, i18next@npm:^23.10.1":
+"i18next@npm:>=17.0.11":
   version: 23.10.1
   resolution: "i18next@npm:23.10.1"
   dependencies:
