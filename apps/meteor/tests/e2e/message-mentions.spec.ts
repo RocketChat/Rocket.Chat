@@ -49,10 +49,7 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 		await test.step('create private room', async () => {
 			targetChannel2 = faker.string.uuid();
 
-			await poHomeChannel.sidenav.openNewByLabel('Channel');
-			await poHomeChannel.sidenav.inputChannelName.type(targetChannel2);
-			await poHomeChannel.sidenav.btnCreate.click();
-
+			await poHomeChannel.navbar.createNew('Channel', targetChannel2);
 			await expect(page).toHaveURL(`/group/${targetChannel2}`);
 		});
 		await test.step('receive notify message', async () => {
@@ -91,10 +88,7 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 		await test.step('create private room', async () => {
 			targetChannel2 = faker.string.uuid();
 
-			await poHomeChannel.sidenav.openNewByLabel('Channel');
-			await poHomeChannel.sidenav.inputChannelName.type(targetChannel2);
-			await poHomeChannel.sidenav.btnCreate.click();
-
+			await poHomeChannel.navbar.createNew('Channel', targetChannel2);
 			await expect(page).toHaveURL(`/group/${targetChannel2}`);
 		});
 		await test.step('receive notify message', async () => {
@@ -233,10 +227,7 @@ test.describe.serial('message-mentions', () => {
 				await test.step('create private room', async () => {
 					targetChannel2 = faker.string.uuid();
 
-					await poHomeChannel.sidenav.openNewByLabel('Channel');
-					await poHomeChannel.sidenav.inputChannelName.type(targetChannel2);
-					await poHomeChannel.sidenav.btnCreate.click();
-
+					await poHomeChannel.navbar.createNew('Channel', targetChannel2);
 					await expect(page).toHaveURL(`/group/${targetChannel2}`);
 				});
 

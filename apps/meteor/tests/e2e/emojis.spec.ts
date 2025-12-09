@@ -67,7 +67,7 @@ test.describe.serial('emoji', () => {
 		poAdminEmoji = new AdminEmoji(page);
 
 		await test.step('Add custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
 			await poAdminEmoji.newButton.click();
 			await poAdminEmoji.addEmoji.nameInput.fill(emojiName);
@@ -86,7 +86,7 @@ test.describe.serial('emoji', () => {
 		});
 
 		await test.step('Rename custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
 			await poAdminEmoji.findEmojiByName(emojiName);
 			await poAdminEmoji.addEmoji.nameInput.fill(newEmojiName);
@@ -102,7 +102,7 @@ test.describe.serial('emoji', () => {
 		});
 
 		await test.step('Delete custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
 			await poAdminEmoji.findEmojiByName(newEmojiName);
 			await poAdminEmoji.addEmoji.btnDelete.click();
