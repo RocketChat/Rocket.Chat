@@ -1550,7 +1550,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		it('INVITE: after room loses attributes user without attributes can be invited', async () => {
 			await request.delete(`${v1}/abac/rooms/${roomWithAttr._id}/attributes/${accessAttrKey}`).set(credentials).expect(200);
 
-			// Try inviting again - should now succeed
 			await request
 				.post(`${v1}/groups.invite`)
 				.set(credentials)
@@ -1559,6 +1558,82 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+
+		describe('ABAC disabled with ABAC-managed room', () => {
+			let enabledAccessAttrKey: string;
+			let enabledUser: IUser;
+			let managedRoom: IRoom;
+
+			before(async () => {
+				enabledAccessAttrKey = `${accessAttrKey}_disabled_case`;
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: enabledAccessAttrKey, values: ['v1'] })
+					.expect(200);
+
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+
+				managedRoom = (await createRoom({ type: 'p', name: `abac-access-disabled-${Date.now()}` })).body.group;
+
+				await request
+					.post(`${v1}/abac/rooms/${managedRoom._id}/attributes/${enabledAccessAttrKey}`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(200);
+
+				const username = `abac-enabled-user-${Date.now()}`;
+				const createUserRes = await request
+					.post(`${v1}/users.create`)
+					.set(credentials)
+					.send({
+						email: `${username}@example.com`,
+						name: username,
+						username,
+						password: 'pass@123',
+					})
+					.expect(200);
+
+				enabledUser = createUserRes.body.user;
+				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+
+				await updateSetting('ABAC_Enabled', false);
+			});
+
+			after(async () => {
+				await updateSetting('ABAC_Enabled', true);
+
+				await deleteRoom({ type: 'p', roomId: managedRoom._id });
+				await deleteUser(enabledUser);
+			});
+
+			it('INVITE: should fail adding user to ABAC-managed private room when ABAC is disabled', async () => {
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: managedRoom._id, usernames: [enabledUser.username] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-room-is-abac-managed');
+					});
+			});
+
+			it('INVITE: should still fail after user loses attributes when ABAC is disabled', async () => {
+				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
+
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: managedRoom._id, usernames: [enabledUser.username] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-room-is-abac-managed');
+					});
+			});
 		});
 	});
 
