@@ -21,6 +21,12 @@ const meta = {
 				Duration: 'Duration',
 				Voice_Call_Extension: 'Voice call extension',
 				Call_ID: 'Call ID',
+				Options: 'Options',
+				Voice_call: 'Voice call',
+				Video_call: 'Video call',
+				Jump_to_message: 'Jump to message',
+				Direct_Message: 'Direct Message',
+				User_info: 'User info',
 			})
 			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
@@ -69,10 +75,6 @@ export const ExternalContact: Story = {
 		onClose: noop,
 		actions: {
 			voiceCall: noop,
-			videoCall: noop,
-			jumpToMessage: noop,
-			directMessage: noop,
-			userInfo: noop,
 		},
 		data: {
 			callId: '1234567890',

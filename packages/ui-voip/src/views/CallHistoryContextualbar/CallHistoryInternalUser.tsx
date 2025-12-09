@@ -7,7 +7,6 @@ type CallHistoryInternalUserProps = {
 	username: string;
 	name?: string;
 	_id: string;
-	onUserClick: () => void;
 };
 
 const CallHistoryInternalUser = ({ username, name, _id }: CallHistoryInternalUserProps) => {

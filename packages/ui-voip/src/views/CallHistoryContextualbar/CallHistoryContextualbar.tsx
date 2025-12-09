@@ -4,7 +4,6 @@ import {
 	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarTitle,
-	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarIcon,
 	ContextualbarScrollableContent,
@@ -16,6 +15,8 @@ import {
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+import type { HistoryActionCallbacks } from './CallHistoryActions';
+import CallHistoryActions from './CallHistoryActions';
 import CallHistoryExternalUser from './CallHistoryExternalUser';
 import CallHistoryInternalUser from './CallHistoryInternalUser';
 import { useFullStartDate } from './useFullStartDate';
@@ -39,10 +40,6 @@ type CallHistoryData = {
 	state: 'ended' | 'not-answered' | 'failed' | 'error' | 'transferred';
 	messageId?: string;
 };
-
-type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
-
-type HistoryActionCallbacks = Record<HistoryActions, () => void>;
 
 type CallHistoryContextualBarProps = {
 	onClose: () => void;
@@ -88,7 +85,7 @@ const getBlocks = (t: TFunction, duration: number) => {
 const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHistoryContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { voiceCall, /* videoCall, jumpToMessage, */ directMessage, userInfo /* voiceCallExtension, direction */ } = actions;
+	const { voiceCall, directMessage } = actions;
 	const { duration, callId, direction, startedAt } = data;
 
 	const date = useFullStartDate(startedAt);
@@ -97,13 +94,13 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
-				<ContextualbarClose onClick={onClose} />
+				<CallHistoryActions onClose={onClose} actions={actions} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanelSection>
 						{isInternalCallHistoryContact(contact) ? (
-							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} onUserClick={userInfo} />
+							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} />
 						) : (
 							<CallHistoryExternalUser number={contact.number} />
 						)}
@@ -137,16 +134,18 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{isInternalCallHistoryContact(contact) && (
+					{isInternalCallHistoryContact(contact) && directMessage && (
 						<Button onClick={directMessage}>
 							<Icon name='balloon' size='x20' mie='x4' />
 							{t('Direct_message')}
 						</Button>
 					)}
-					<Button success onClick={voiceCall}>
-						<Icon name='phone' size='x20' mie='x4' />
-						{t('Call')}
-					</Button>
+					{voiceCall && (
+						<Button success onClick={voiceCall}>
+							<Icon name='phone' size='x20' mie='x4' />
+							{t('Call')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
 		</Contextualbar>
