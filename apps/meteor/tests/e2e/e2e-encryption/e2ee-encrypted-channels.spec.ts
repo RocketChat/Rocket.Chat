@@ -270,7 +270,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		// Check last message in the sidebar
 		const sidebarChannel = poHomeChannel.sidenav.getSidebarItemByName(channelName);
 		await expect(sidebarChannel).toBeVisible();
-		await expect(sidebarChannel.locator('span')).toContainText(encriptedMessage1);
+		await expect(sidebarChannel.getByText(`You: ${encriptedMessage2}`, { exact: true })).not.toBeVisible();
+		await expect(sidebarChannel.getByText(`You: ${encriptedMessage1}`, { exact: true })).toBeVisible();
 	});
 
 	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
