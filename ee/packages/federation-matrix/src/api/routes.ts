@@ -1,4 +1,3 @@
-import { getAllServices } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 
 import { getWellKnownRoutes } from './.well-known/server';
@@ -14,26 +13,24 @@ import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationD
 import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled';
 
-export const getFederationRoutes = (): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
-	const homeserverServices = getAllServices();
-
+export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
 	const matrix = new Router('/_matrix');
 	const wellKnown = new Router('/.well-known');
 
 	matrix
 		.use(isFederationEnabledMiddleware)
 		.use(isLicenseEnabledMiddleware)
-		.use(getKeyServerRoutes(homeserverServices))
-		.use(getFederationVersionsRoutes(homeserverServices))
+		.use(getKeyServerRoutes())
+		.use(getFederationVersionsRoutes(version))
 		.use(isFederationDomainAllowedMiddleware)
-		.use(getMatrixInviteRoutes(homeserverServices))
-		.use(getMatrixProfilesRoutes(homeserverServices))
-		.use(getMatrixRoomsRoutes(homeserverServices))
-		.use(getMatrixSendJoinRoutes(homeserverServices))
-		.use(getMatrixTransactionsRoutes(homeserverServices))
-		.use(getMatrixMediaRoutes(homeserverServices));
+		.use(getMatrixInviteRoutes())
+		.use(getMatrixProfilesRoutes())
+		.use(getMatrixRoomsRoutes())
+		.use(getMatrixSendJoinRoutes())
+		.use(getMatrixTransactionsRoutes())
+		.use(getMatrixMediaRoutes());
 
-	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(homeserverServices));
+	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes());
 
 	return { matrix, wellKnown };
 };

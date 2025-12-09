@@ -976,7 +976,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return { sessions, total, count, offset };
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },

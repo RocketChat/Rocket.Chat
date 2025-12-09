@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminFlextab } from './fragments/admin-flextab';
+import { AdminSidebar, ToastMessages } from './fragments';
+import { ConfirmDeleteModal } from './fragments/modal';
 
 export enum AdminSectionsHref {
 	Workspace = '/admin/info',
@@ -23,247 +24,41 @@ export enum AdminSectionsHref {
 	Emoji = '/admin/emoji',
 	Settings = '/admin/settings',
 }
-export class Admin {
-	public readonly page: Page;
+export abstract class Admin {
+	readonly sidebar: AdminSidebar;
 
-	readonly tabs: AdminFlextab;
+	readonly deleteModal: ConfirmDeleteModal;
 
-	constructor(page: Page) {
-		this.page = page;
-		this.tabs = new AdminFlextab(page);
-	}
+	readonly toastMessage: ToastMessages;
 
-	get inputSearchRooms(): Locator {
-		return this.page.locator('input[placeholder ="Search rooms"]');
-	}
-
-	getRoomRow(name?: string): Locator {
-		return this.page.locator('[role="link"]', { hasText: name });
-	}
-
-	getUserRow(username?: string): Locator {
-		return this.page.locator('[role="link"]', { hasText: username });
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('button >> text="Save"');
-	}
-
-	get btnSaveSettings(): Locator {
-		return this.page.getByRole('button', { name: 'Save changes' });
-	}
-
-	get btnEdit(): Locator {
-		return this.page.locator('button >> text="Edit"');
-	}
-
-	get privateLabel(): Locator {
-		return this.page.locator(`label >> text=Private`);
-	}
-
-	get privateInput(): Locator {
-		return this.page.locator('input[name="roomType"]');
-	}
-
-	get roomNameInput(): Locator {
-		return this.page.locator('input[name="roomName"]');
-	}
-
-	get roomOwnerInput(): Locator {
-		return this.page.locator('input[name="roomOwner"]');
-	}
-
-	get archivedLabel(): Locator {
-		return this.page.locator('label >> text=Archived');
-	}
-
-	get archivedInput(): Locator {
-		return this.page.locator('input[name="archived"]');
-	}
-
-	get favoriteLabel(): Locator {
-		return this.page.locator('label >> text=Favorite');
-	}
-
-	get favoriteInput(): Locator {
-		return this.page.locator('input[name="favorite"]');
-	}
-
-	get defaultLabel(): Locator {
-		return this.page.locator('label >> text=Default');
-	}
-
-	get defaultInput(): Locator {
-		return this.page.locator('input[name="isDefault"]');
-	}
-
-	get inputSearchUsers(): Locator {
-		return this.page.locator('input[placeholder="Search Users"]');
-	}
-
-	get inputSearchSettings(): Locator {
-		return this.page.locator('input[type=search]');
-	}
-
-	get inputSiteURL(): Locator {
-		return this.page.locator('[data-qa-setting-id="Site_Url"]');
-	}
-
-	get btnResetSiteURL(): Locator {
-		return this.page.locator('//label[@title="Site_Url"]//following-sibling::button');
-	}
-
-	get btnImportNewFile(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
-	}
-
-	async getOptionFileType(option: string): Promise<Locator> {
-		await this.page.locator('.rcx-select').click();
-		return this.page.locator(`.rcx-option__content >> text="${option}"`);
-	}
-
-	get inputFile(): Locator {
-		return this.page.locator('input[type=file]');
-	}
-
-	get btnImport(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import"');
-	}
-
-	get btnStartImport(): Locator {
-		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
-	}
-
-	get importStatusTableFirstRowCell(): Locator {
-		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="Completed successfully"');
-	}
-
-	get btnAssetsSettings(): Locator {
-		return this.page.locator('[data-qa-id="Assets"] >> role=link[name="Open"]');
-	}
-
-	get btnDeleteAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
-	}
-
-	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
-	}
-
-	get btnCreateRole(): Locator {
-		return this.page.locator('button[name="New role"]');
-	}
-
-	openRoleByName(name: string): Locator {
-		return this.page.getByRole('table').getByRole('button', { name });
-	}
-
-	get btnUsersInRole(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role', exact: true });
-	}
-
-	get inputRoom(): Locator {
-		return this.page.locator('input[placeholder="Room"]');
-	}
-
-	get inputUsers(): Locator {
-		return this.page.locator('input[placeholder="Users"]');
+	constructor(protected page: Page) {
+		this.sidebar = new AdminSidebar(page);
+		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnAdd(): Locator {
 		return this.page.getByRole('button', { name: 'Add', exact: true });
 	}
 
-	getUserRowByUsername(username: string): Locator {
-		return this.page.locator('tr', { hasText: username });
-	}
-
 	get btnBack(): Locator {
 		return this.page.getByRole('button', { name: 'Back', exact: true });
+	}
+
+	get btnSave(): Locator {
+		return this.page.getByRole('button', { name: 'Save', exact: true });
 	}
 
 	get btnNew(): Locator {
 		return this.page.getByRole('button', { name: 'New', exact: true });
 	}
 
-	get btnNewApplication(): Locator {
-		return this.page.getByRole('button', { name: 'New Application', exact: true });
-	}
-
 	get btnDelete(): Locator {
 		return this.page.getByRole('button', { name: 'Delete', exact: true });
 	}
 
-	get btnInstructions(): Locator {
-		return this.page.getByRole('button', { name: 'Instructions', exact: true });
-	}
-
-	get inputName(): Locator {
-		return this.page.getByRole('textbox', { name: 'Name' });
-	}
-
-	get inputApplicationName(): Locator {
-		return this.page.getByRole('textbox', { name: 'Application Name' });
-	}
-
-	get inputClientId(): Locator {
-		return this.page.getByRole('textbox', { name: 'Client ID' });
-	}
-
-	get inputClientSecret(): Locator {
-		return this.page.getByRole('textbox', { name: 'Client Secret' });
-	}
-
-	get inputAuthUrl(): Locator {
-		return this.page.getByRole('textbox', { name: 'Authorization URL' });
-	}
-
-	get inputTokenUrl(): Locator {
-		return this.page.getByRole('textbox', { name: 'Access Token URL' });
-	}
-
-	get inputPostToChannel(): Locator {
-		return this.page.getByRole('textbox', { name: 'Post to Channel' });
-	}
-
-	get inputPostAs(): Locator {
-		return this.page.getByRole('textbox', { name: 'Post as' });
-	}
-
-	get inputRedirectURI(): Locator {
-		return this.page.getByRole('textbox', { name: 'Redirect URI' });
-	}
-
-	codeExamplePayload(text: string): Locator {
-		return this.page.locator('code', { hasText: text });
-	}
-
-	getIntegrationByName(name: string): Locator {
-		return this.page.getByRole('table', { name: 'Integrations table' }).locator('tr', { hasText: name });
-	}
-
-	getThirdPartyAppByName(name: string): Locator {
-		return this.page.getByRole('table', { name: 'Third-party applications table' }).locator('tr', { hasText: name });
-	}
-
-	get inputWebhookUrl(): Locator {
-		return this.page.getByRole('textbox', { name: 'Webhook URL' });
-	}
-
 	getAccordionBtnByName(name: string): Locator {
 		return this.page.getByRole('button', { name, exact: true });
-	}
-
-	get btnFullScreen(): Locator {
-		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
-	}
-
-	get btnExitFullScreen(): Locator {
-		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
-	}
-
-	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
-		return this.page.locator(`div[role="button"]:has-text("${text}")`);
 	}
 
 	async adminSectionButton(href: AdminSectionsHref): Promise<Locator> {
@@ -276,9 +71,5 @@ export class Admin {
 
 	findFileCheckboxByUsername(username: string) {
 		return this.findFileRowByUsername(username).locator('label', { has: this.page.getByRole('checkbox') });
-	}
-
-	get btnClose(): Locator {
-		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
 }

@@ -10,7 +10,7 @@ const PreferencesConversationTranscript = () => {
 
 	const { register } = useFormContext();
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canSendTranscriptEmailPermission = usePermission('send-omnichannel-chat-transcript');

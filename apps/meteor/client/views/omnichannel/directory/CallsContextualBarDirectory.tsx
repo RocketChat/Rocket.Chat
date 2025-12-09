@@ -1,12 +1,12 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
-import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 import { voipQueryKeys } from '../../../lib/queryKeys';
 
 // TODO: We should render contextual bar components in this view

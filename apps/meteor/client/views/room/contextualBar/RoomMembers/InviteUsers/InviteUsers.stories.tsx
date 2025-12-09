@@ -1,11 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
-import { Contextualbar } from '../../../../../components/Contextualbar';
+import { links } from '../../../../../lib/links';
 
 export default {
 	component: InviteUsers,
@@ -30,7 +31,7 @@ export default {
 export const Default: StoryFn<typeof InviteUsers> = (args) => <InviteUsers {...args} />;
 Default.storyName = 'Invite Link';
 Default.args = {
-	linkText: 'https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a',
+	linkText: links.go.invite,
 	captionText: 'Expire on February 4, 2020 4:45 PM.',
 };
 

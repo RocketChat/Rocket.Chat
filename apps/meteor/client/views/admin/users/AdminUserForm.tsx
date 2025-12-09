@@ -19,7 +19,7 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -37,9 +37,9 @@ import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordConte
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
+import { useVoipExtensionPermission } from './useVoipExtensionPermission';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -54,7 +54,10 @@ type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
+export type UserFormProps = Omit<
+	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	'fields'
+>;
 
 const getInitialValue = ({
 	data,
@@ -81,6 +84,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -118,6 +122,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		}),
 		mode: 'onBlur',
 	});
+
+	const canManageVoipExtension = useVoipExtensionPermission();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -177,6 +183,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const nameId = useId();
 	const usernameId = useId();
+	const voiceExtensionId = useId();
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
@@ -334,6 +341,18 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
+					{canManageVoipExtension && (
+						<Field>
+							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='freeSwitchExtension'
+									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
 							<PasswordFieldSkeleton />

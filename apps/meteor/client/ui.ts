@@ -1,3 +1,5 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
+
 import { useChatForwardQuickAction } from './hooks/quickActions/useChatForwardQuickAction';
 import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickAction';
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
@@ -6,10 +8,8 @@ import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuic
 import { useAppsRoomStarActions } from './hooks/roomActions/useAppsRoomStarActions';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useCallsRoomAction } from './hooks/roomActions/useCallsRoomAction';
-import { useCannedResponsesRoomAction } from './hooks/roomActions/useCannedResponsesRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
-import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfileRoomAction';
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
@@ -19,12 +19,10 @@ import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomActi
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
-import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
 import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
-import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction';
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
@@ -33,9 +31,12 @@ import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedF
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
-import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
-import type { RoomToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
+import { useCannedResponsesRoomAction } from './views/omnichannel/hooks/useCannedResponsesRoomAction';
+import { useContactProfileRoomAction } from './views/omnichannel/hooks/useContactProfileRoomAction';
+import { useOmnichannelExternalFrameRoomAction } from './views/omnichannel/hooks/useOmnichannelExternalFrameRoomAction';
+import { useRoomInfoRoomAction } from './views/omnichannel/hooks/useRoomInfoRoomAction';
+import { useVoIPRoomInfoRoomAction } from './views/omnichannel/hooks/useVoIPRoomInfoRoomAction';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [

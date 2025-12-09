@@ -56,6 +56,7 @@ import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
+import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -325,6 +326,10 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.userId, this.bodyParams.freeSwitchExtension))) {
+				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
+			}
+
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
 
@@ -356,9 +361,9 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await deleteUser(user._id, confirmRelinquish, this.userId);
+			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
 
-			return API.v1.success();
+			return API.v1.success({ deletedRooms });
 		},
 	},
 );
@@ -606,7 +611,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
 			return API.v1.success(
 				await findPaginatedUsersByStatus({
@@ -619,6 +624,7 @@ API.v1.addRoute(
 					searchTerm,
 					hasLoggedIn,
 					type,
+					inactiveReason,
 				}),
 			);
 		},
@@ -1340,18 +1346,17 @@ API.v1.addRoute(
 			}
 
 			const { _id, username, roles, name } = user;
-			let { statusText } = user;
-
-			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
+			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message);
+				await setStatusText(user._id, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
+
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					const { status } = this.bodyParams;
+					status = this.bodyParams.status;
 
 					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
@@ -1369,11 +1374,6 @@ API.v1.addRoute(
 						},
 					);
 
-					void api.broadcast('presence.status', {
-						user: { status, _id, username, statusText, roles, name },
-						previousStatus: user.status,
-					});
-
 					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -1381,6 +1381,11 @@ API.v1.addRoute(
 					});
 				}
 			}
+
+			void api.broadcast('presence.status', {
+				user: { status, _id, username, statusText, roles, name },
+				previousStatus: user.status,
+			});
 
 			return API.v1.success();
 		},

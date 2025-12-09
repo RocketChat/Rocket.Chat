@@ -65,7 +65,7 @@ export * from './IAvatar';
 export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
-export * from './ReadReceipt';
+export * from './IReadReceipt';
 export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
@@ -147,5 +147,6 @@ export * from './RoomRouteData';
 export * as Cloud from './cloud';
 export * from './themes';
 export * from './mediaCalls';
+export * from './ICallHistoryItem';
 
 export { schemas } from './Ajv';

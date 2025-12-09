@@ -1,30 +1,30 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.40",
+	"version": "0.1.44",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~8.45.0",
-		"mongodb": "6.10.0",
-		"prettier": "~3.3.3",
-		"typescript": "~5.9.3"
-	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"eslint": "~8.45.0",
+		"mongodb": "6.16.0",
+		"prettier": "~3.3.3",
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

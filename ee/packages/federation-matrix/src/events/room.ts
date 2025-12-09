@@ -1,13 +1,17 @@
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { getUsernameServername } from '../FederationMatrix';
 
-export function room(emitter: Emitter<HomeserverEventSignatures>, services: HomeserverServices) {
-	emitter.on('homeserver.matrix.room.name', async (data) => {
-		const { room_id: roomId, name, user_id: userId } = data;
+export function room(emitter: Emitter<HomeserverEventSignatures>) {
+	emitter.on('homeserver.matrix.room.name', async ({ event }) => {
+		const {
+			room_id: roomId,
+			content: { name },
+			sender: userId,
+		} = event;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
 		if (!localRoomId) {
@@ -22,8 +26,12 @@ export function room(emitter: Emitter<HomeserverEventSignatures>, services: Home
 		await Room.saveRoomName(localRoomId._id, localUserId._id, name);
 	});
 
-	emitter.on('homeserver.matrix.room.topic', async (data) => {
-		const { room_id: roomId, topic, user_id: userId } = data;
+	emitter.on('homeserver.matrix.room.topic', async ({ event }) => {
+		const {
+			room_id: roomId,
+			content: { topic },
+			sender: userId,
+		} = event;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
 		if (!localRoomId) {
@@ -51,7 +59,9 @@ export function room(emitter: Emitter<HomeserverEventSignatures>, services: Home
 			throw new Error('mapped room not found');
 		}
 
-		const [allegedUsernameLocal, , allegedUserLocalIsLocal] = getUsernameServername(userId, services.config.serverName);
+		const serverName = federationSDK.getConfig('serverName');
+
+		const [allegedUsernameLocal, , allegedUserLocalIsLocal] = getUsernameServername(userId, serverName);
 		const localUserId = allegedUserLocalIsLocal && (await Users.findOneByUsername(allegedUsernameLocal, { projection: { _id: 1 } }));
 
 		if (!allegedUserLocalIsLocal) {
@@ -62,7 +72,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>, services: Home
 			throw new Error('mapped user not found');
 		}
 
-		const [senderUsername, , senderIsLocal] = getUsernameServername(senderId, services.config.serverName);
+		const [senderUsername, , senderIsLocal] = getUsernameServername(senderId, serverName);
 
 		if (senderIsLocal) {
 			return;

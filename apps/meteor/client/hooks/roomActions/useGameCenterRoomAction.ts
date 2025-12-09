@@ -1,7 +1,7 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
 import { useExternalComponentsQuery } from '../../apps/gameCenter/hooks/useExternalComponentsQuery';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const GameCenter = lazy(() => import('../../apps/gameCenter/GameCenter'));
 
