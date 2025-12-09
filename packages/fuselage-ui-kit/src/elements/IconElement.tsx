@@ -37,7 +37,6 @@ const getFramedIconProps = (
 
 const IconElement = ({ block }: IconElementProps): ReactElement => {
 	const { icon, variant, framed } = block;
-	console.log('block', block);
 	if (framed) {
 		return <FramedIcon size={20} icon={icon} {...getFramedIconProps(variant)} />;
 	}

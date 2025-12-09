@@ -3,4 +3,4 @@
 "@rocket.chat/ui-kit": minor
 ---
 
-Introduces a new varation of the `Icon` element to `ui-kit` through the new `framed` optional property.
+Introduces a new variation of the `Icon` element to `ui-kit` through the new `framed` optional property.
