@@ -20,8 +20,6 @@ import type {
 	IExportOperationsModel,
 	IFederationKeysModel,
 	IFederationServersModel,
-	IFreeSwitchChannelModel,
-	IFreeSwitchChannelEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -85,7 +83,6 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
-	IFreeSwitchChannelEventDeltaModel,
 	IMediaCallsModel,
 	IMediaCallChannelsModel,
 	IMediaCallNegotiationsModel,
@@ -153,9 +150,6 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
-export const FreeSwitchChannel = proxify<IFreeSwitchChannelModel>('IFreeSwitchChannelModel');
-export const FreeSwitchChannelEvent = proxify<IFreeSwitchChannelEventModel>('IFreeSwitchChannelEventModel');
-export const FreeSwitchChannelEventDelta = proxify<IFreeSwitchChannelEventDeltaModel>('IFreeSwitchChannelEventDeltaModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
