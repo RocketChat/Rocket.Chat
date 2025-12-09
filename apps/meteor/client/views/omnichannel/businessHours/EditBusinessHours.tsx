@@ -69,7 +69,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				})),
 			};
 
-			await saveBusinessHour(payload as any);
+			await saveBusinessHour(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
 			router.navigate('/omnichannel/businessHours');
 		} catch (error) {

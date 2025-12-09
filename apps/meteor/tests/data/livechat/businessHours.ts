@@ -70,19 +70,21 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
+		departmentsToApplyBusinessHour: '',
 		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
 		daysTime: workHours.map((workHour: { open: boolean; start: { time: string }; finish: { time: string }; day: string }) => {
 			return {
-				open: workHour.open,
-				start: { time: workHour.start.time },
-				finish: { time: workHour.finish.time },
+				open: true,
+				start: { time: '00:00' },
+				finish: { time: '00:01' },
 				day: workHour.day,
 			};
 		}),
-		workHours: workHours.map((workHour: { open: boolean; start: string; finish: string; day: string }) => {
+		workHours: workHours.map((workHour: { open: boolean; start: string; finish: string; day: string; code?: number }) => {
 			workHour.open = true;
 			workHour.start = '00:00';
 			workHour.finish = '00:01'; // if a job runs between 00:00 and 00:01, then this test will fail :P
+			delete workHour.code;
 			return workHour;
 		}),
 	};
@@ -104,17 +106,17 @@ export const disableDefaultBusinessHour = async () => {
 
 	// Remove properties not accepted by the endpoint schema
 	const { _updatedAt, ts, ...cleanedBusinessHour } = businessHour;
-
 	const disabledBusinessHour = {
 		...cleanedBusinessHour,
 		timezoneName: 'America/Sao_Paulo',
 		timezone: 'America/Sao_Paulo',
+		departmentsToApplyBusinessHour: '',
 		daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
 		daysTime: workHours.map((workHour: { open: boolean; start: { time: string }; finish: { time: string }; day: string }) => {
 			return {
-				open: workHour.open,
-				start: { time: workHour.start.time },
-				finish: { time: workHour.finish.time },
+				open: false,
+				start: { time: '00:00' },
+				finish: { time: '23:59' },
 				day: workHour.day,
 			};
 		}),
