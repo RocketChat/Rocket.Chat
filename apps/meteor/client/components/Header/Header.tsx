@@ -1,4 +1,4 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2, Header as HeaderComponent } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2, HeaderV1 as HeaderComponent } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 

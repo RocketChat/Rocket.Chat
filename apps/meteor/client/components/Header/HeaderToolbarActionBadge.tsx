@@ -3,15 +3,15 @@ import {
 	FeaturePreviewOff,
 	FeaturePreviewOn,
 	HeaderV2ToolbarActionBadge,
-	HeaderToolbarActionBadge as HeaderToolbarActionBadgeComponent,
+	HeaderV1ToolbarActionBadge,
 } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 
-const HeaderToolbarActionBadge = (props: ComponentProps<typeof HeaderToolbarActionBadgeComponent>) => (
+const HeaderToolbarActionBadge = (props: ComponentProps<typeof HeaderV1ToolbarActionBadge>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderToolbarActionBadgeComponent {...props} />
+			<HeaderV1ToolbarActionBadge {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<HeaderV2ToolbarActionBadge {...props} />
