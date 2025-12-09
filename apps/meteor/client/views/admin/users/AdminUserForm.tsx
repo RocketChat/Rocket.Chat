@@ -37,7 +37,7 @@ import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordConte
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { useVoipExtensionPermission } from './useVoipExtensionPermission';
+import { useShowVoipExtension } from './useShowVoipExtension';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
@@ -123,7 +123,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -341,7 +341,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
-					{canManageVoipExtension && (
+					{showVoipExtension && (
 						<Field>
 							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
 							<FieldRow>
