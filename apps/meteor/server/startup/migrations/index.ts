@@ -33,5 +33,6 @@ import './v324';
 import './v325';
 import './v326';
 import './v327';
+import './v328';
 
 export * from './xrun';
