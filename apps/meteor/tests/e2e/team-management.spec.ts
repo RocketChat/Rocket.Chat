@@ -34,7 +34,7 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 
 		await expect(poHomeTeam.textPrivate).toBeDisabled();
 		await expect(poHomeTeam.textPrivate).toBeChecked();
@@ -49,7 +49,7 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 
 		await expect(poHomeTeam.textPrivate).toBeDisabled();
 		await expect(poHomeTeam.textPrivate).not.toBeChecked();
@@ -106,7 +106,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should create targetTeam private', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 		await poHomeTeam.inputTeamName.fill(targetTeam);
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
@@ -115,7 +115,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should create targetTeamNonPrivate non private', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 		await poHomeTeam.inputTeamName.fill(targetTeamNonPrivate);
 		await poHomeTeam.textPrivate.click();
 		await poHomeTeam.addMember('user1');
@@ -125,7 +125,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should create targetTeamReadOnly readonly', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 		await poHomeTeam.inputTeamName.fill(targetTeamReadOnly);
 		await poHomeTeam.sidenav.advancedSettingsAccordion.click();
 		await poHomeTeam.textReadOnly.click();
@@ -136,7 +136,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should throw validation error if team name already exists', async () => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 		await poHomeTeam.inputTeamName.fill(targetTeam);
 		await poHomeTeam.btnTeamCreate.click();
 
