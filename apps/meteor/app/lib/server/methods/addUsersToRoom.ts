@@ -15,7 +15,7 @@ import { addUserToRoom } from '../functions/addUserToRoom';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
+		addUsersToRoom(data: { rid: string; users: string[] }): { added: number; alreadyInRoom: number; total: number };
 	}
 }
 
@@ -28,7 +28,7 @@ export const sanitizeUsername = (username: string) => {
 	return username.replace(/(^@)|( @)/, '');
 };
 
-export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
+export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<{ added: number; alreadyInRoom: number; total: number }> => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'addUsersToRoom',
@@ -87,6 +87,9 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	await beforeAddUsersToRoom.run({ usernames: data.users, inviter: user }, room);
 
+	let addedCount = 0;
+	let alreadyInRoomCount = 0;
+
 	await Promise.all(
 		data.users.map(async (username) => {
 			const sanitizedUsername = sanitizeUsername(username);
@@ -108,7 +111,9 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
 				await addUserToRoom(data.rid, newUser, user);
+				addedCount++;
 			} else {
+				alreadyInRoomCount++;
 				if (!newUser.username) {
 					return;
 				}
@@ -123,7 +128,11 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		}),
 	);
 
-	return true;
+	return {
+		added: addedCount,
+		alreadyInRoom: alreadyInRoomCount,
+		total: data.users.length,
+	};
 };
 
 Meteor.methods<ServerMethods>({
