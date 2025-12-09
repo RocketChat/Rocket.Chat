@@ -64,7 +64,7 @@ const contextValue = {
 };
 
 // TODO use the same function that generates the message-block payload on the server. Duration will also be displayed here.
-const getBlocks = (t: TFunction) => {
+const getBlocks = (t: TFunction, duration: number) => {
 	return [
 		{
 			type: 'info_card' as const,
@@ -75,6 +75,10 @@ const getBlocks = (t: TFunction) => {
 						{ type: 'icon', icon: 'phone-off', variant: 'default' },
 						{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: t('Call_ended') },
 					] as const,
+				},
+				{
+					background: 'secondary' as const,
+					elements: [{ type: 'plain_text', text: duration.toString() }] as const,
 				},
 			],
 		},
@@ -114,14 +118,10 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					<InfoPanelSection>
 						<MessageBlock fixedWidth>
 							<UiKitContext.Provider value={contextValue}>
-								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getBlocks(t)} />
+								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getBlocks(t, duration)} />
 							</UiKitContext.Provider>
 						</MessageBlock>
 						<Box mbs={-8}>{date}</Box>
-					</InfoPanelSection>
-					<InfoPanelSection>
-						<InfoPanelLabel>{t('Duration')}</InfoPanelLabel>
-						<InfoPanelText>{duration}</InfoPanelText>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>
