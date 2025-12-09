@@ -8,22 +8,22 @@ import { Info } from '../../../utils/rocketchat.info';
 
 type AppsStatistics = {
 	engineVersion: string;
-	totalInstalled: number | false;
-	totalActive: number | false;
-	totalFailed: number | false;
-	totalPrivateApps: number | false;
-	totalPrivateAppsEnabled: number | false;
+	totalInstalled: number;
+	totalActive: number;
+	totalFailed: number;
+	totalPrivateApps: number;
+	totalPrivateAppsEnabled: number;
 };
 
 async function _getAppsStatistics(): Promise<AppsStatistics> {
 	if (!Apps.self?.isInitialized()) {
 		return {
 			engineVersion: Info.marketplaceApiVersion,
-			totalInstalled: false,
-			totalActive: false,
-			totalFailed: false,
-			totalPrivateApps: false,
-			totalPrivateAppsEnabled: false,
+			totalInstalled: 0,
+			totalActive: 0,
+			totalFailed: 0,
+			totalPrivateApps: 0,
+			totalPrivateAppsEnabled: 0,
 		};
 	}
 
@@ -58,7 +58,6 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 				}
 			}),
 		);
-
 		return {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled,
@@ -71,11 +70,11 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 		SystemLogger.error({ msg: 'Exception while getting Apps statistics', err });
 		return {
 			engineVersion: Info.marketplaceApiVersion,
-			totalInstalled: false,
-			totalActive: false,
-			totalFailed: false,
-			totalPrivateApps: false,
-			totalPrivateAppsEnabled: false,
+			totalInstalled: 0,
+			totalActive: 0,
+			totalFailed: 0,
+			totalPrivateApps: 0,
+			totalPrivateAppsEnabled: 0,
 		};
 	}
 }
