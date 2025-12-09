@@ -7,6 +7,7 @@ import {
 	type IRoom,
 	type IUser,
 } from '@rocket.chat/core-typings';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -94,6 +95,11 @@ callbacks.add(
 
 beforeAddUsersToRoom.add(async ({ usernames, inviter }, room) => {
 	if (!FederationActions.shouldPerformFederationAction(room) && inviter) {
+		// check if trying to invite a federated user to a non-federated room
+		const federatedUsernames = usernames.filter((u) => validateFederatedUsername(u));
+		if (federatedUsernames.length > 0) {
+			throw new MeteorError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms');
+		}
 		return;
 	}
 
