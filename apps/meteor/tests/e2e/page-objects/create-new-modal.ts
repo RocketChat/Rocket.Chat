@@ -55,7 +55,30 @@ export class CreateNewTeamModal extends CreateNewModal {
 }
 
 export class CreateNewDiscussionModal extends CreateNewModal {
+	private readonly listbox: Listbox;
+
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'New discussion' }));
+		super(page.getByRole('dialog', { name: 'Create discussion' }));
+		this.listbox = new Listbox(page);
+	}
+
+	get inputParentRoom(): Locator {
+		return this.root.getByRole('textbox', { name: 'Parent channel or team' });
+	}
+
+	getParentRoomListItem(name: string): Locator {
+		return this.listbox.root.getByRole('option', { name });
+	}
+
+	get inputMessage(): Locator {
+		return this.root.getByRole('textbox', { name: 'Message', exact: true });
+	}
+}
+
+export class Listbox {
+	readonly root: Locator;
+
+	constructor(page: Page) {
+		this.root = page.getByRole('listbox');
 	}
 }
