@@ -22,7 +22,7 @@ test.describe.serial('Presence', () => {
 			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 
-			await expect(poHomeChannel.sidenav.btnUserProfileMenu).toBeVisible();
+			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
 		});
 	});
 
@@ -42,7 +42,7 @@ test.describe.serial('Presence', () => {
 				await user1Page.goto('/home');
 				const user1Channel = new HomeChannel(user1Page);
 
-				await user1Channel.sidenav.changeUserCustomStatus(customStatus);
+				await user1Channel.navbar.changeUserCustomStatus(customStatus);
 				await user1Page.close();
 			});
 
@@ -54,15 +54,15 @@ test.describe.serial('Presence', () => {
 		});
 
 		test('should be able to erase custom status', async ({ page }) => {
-			await poHomeChannel.sidenav.changeUserCustomStatus(customStatus);
-			await poHomeChannel.sidenav.btnUserProfileMenu.click();
-			await expect(poHomeChannel.sidenav.userProfileMenu).toContainText(customStatus);
+			await poHomeChannel.navbar.changeUserCustomStatus(customStatus);
+			await poHomeChannel.navbar.btnUserMenu.click();
+			await expect(poHomeChannel.navbar.userMenu).toContainText(customStatus);
 			await page.keyboard.press('Escape');
 
-			await poHomeChannel.sidenav.changeUserCustomStatus('');
+			await poHomeChannel.navbar.changeUserCustomStatus('');
 
-			await poHomeChannel.sidenav.btnUserProfileMenu.click();
-			await expect(async () => expect(poHomeChannel.sidenav.userProfileMenu).not.toContainText(customStatus)).toPass();
+			await poHomeChannel.navbar.btnUserMenu.click();
+			await expect(async () => expect(poHomeChannel.navbar.userMenu).not.toContainText(customStatus)).toPass();
 		});
 	});
 });
