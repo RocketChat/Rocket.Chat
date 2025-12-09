@@ -51,7 +51,7 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 				</HeaderContentRow>
 			</HeaderContent>
 			{slots?.posContent}
-			{!slots.toolbox?.hidden !== true && (
+			{slots.toolbox?.hidden !== true && (
 				<Suspense fallback={null}>
 					<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
 						{slots?.toolbox?.pre}
