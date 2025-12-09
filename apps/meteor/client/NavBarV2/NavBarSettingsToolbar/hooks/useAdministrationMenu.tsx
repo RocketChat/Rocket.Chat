@@ -45,7 +45,7 @@ export const useAdministrationMenu = () => {
 	const omnichannel: GenericMenuItemProps = {
 		id: 'omnichannel',
 		content: t('Omnichannel'),
-		onClick: () => router.navigate('/omnichannel/current'),
+		onClick: () => router.navigate('/omnichannel'),
 	};
 
 	return {

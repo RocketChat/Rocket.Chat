@@ -1,38 +1,32 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
+import { useOmnichannelDirectoryRouter } from './hooks/useOmnichannelDirectoryRouter';
 import ChatsProvider from './providers/ChatsProvider';
-
-const DEFAULT_TAB = 'chats';
 
 const OmnichannelDirectoryPage = () => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
-	useEffect(
-		() =>
-			router.subscribeToRouteChange(() => {
-				if (router.getRouteName() !== 'omnichannel-directory' || !!router.getRouteParameters().tab) {
-					return;
-				}
+	const router = useOmnichannelDirectoryRouter();
+	const routeName = router.getRouteName();
 
-				router.navigate({
-					name: 'omnichannel-directory',
-					params: { tab: DEFAULT_TAB },
-				});
-			}),
-		[router],
-	);
+	useEffect(() => {
+		if (!routeName || (routeName && !!tab)) {
+			return;
+		}
 
-	const handleTabClick = useCallback((tab: string) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
+		router.navigate({ tab: 'chats' });
+	}, [routeName, router, tab]);
+
+	const handleTabClick = useCallback((tab: string) => router.navigate({ tab }), [router]);
 
 	return (
 		<ChatsProvider>

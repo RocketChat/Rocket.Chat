@@ -15,10 +15,10 @@ import { useTranslation } from 'react-i18next';
 
 import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
+import { useCurrentChats } from './hooks/useCurrentChats';
 import { useChatsQuery } from './useChatsQuery';
 import GenericNoResults from '../../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../../lib/links';
-import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
