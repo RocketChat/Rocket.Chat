@@ -156,7 +156,7 @@ export const createRoom = async <T extends RoomType>(
 		rid: string;
 	}
 > => {
-	const { teamId, ...optionalExtraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 
 	// TODO: use a shared helper to check whether a user is federated
 	const hasFederatedMembers = members.some((member) => {
@@ -167,22 +167,11 @@ export const createRoom = async <T extends RoomType>(
 	});
 
 	// Prevent adding federated users to rooms that are not marked as federated explicitly
-	if (hasFederatedMembers && optionalExtraData.federated !== true) {
+	if (hasFederatedMembers && extraData.federated !== true) {
 		throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
 			method: 'createRoom',
 		});
 	}
-
-	const extraData = {
-		...optionalExtraData,
-		...((hasFederatedMembers || optionalExtraData.federated) && {
-			federated: true,
-			federation: {
-				version: 1,
-				// TODO we should be able to provide all values from here, currently we update on callback afterCreateRoom
-			},
-		}),
-	};
 
 	await prepareCreateRoomCallback.run({
 		type,

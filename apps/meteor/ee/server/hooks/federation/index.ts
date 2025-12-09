@@ -252,17 +252,32 @@ callbacks.add(
 	'federation-matrix-before-create-direct-room',
 );
 
+callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers) => {
+	// TODO: use a shared helper to check whether a user is federated
+	// since the DM creation API doesn't tell us if the room is federated (unlike normal channels),
+	// we're currently inferring it: if any participant has a Matrix-style ID (@user:server), we treat the DM as federated
+	const hasFederatedMembers = roomUsers.some((user: unknown) => typeof user === 'string' && user.includes(':') && user.includes('@'));
+
+	if (hasFederatedMembers) {
+		return {
+			federated: true,
+			federation: {
+				version: 1,
+			},
+		};
+	}
+});
+
 callbacks.add(
 	'afterCreateDirectRoom',
-	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id']; mrid?: string }): Promise<void> => {
-		if (params.mrid) {
-			await Rooms.setAsFederated(room._id, {
-				mrid: params.mrid,
-				origin: params.mrid.split(':').pop()!,
-			});
+	async (room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): Promise<void> => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
 			return;
 		}
-		if (FederationActions.shouldPerformFederationAction(room)) {
+
+		// as per federation.beforeCreateDirectMessage we create a DM without federation data because we still don't have it.
+		if (!room.federation.mrid) {
+			// so after the DM is created we call the federation to create the DM on Matrix side and then updated the reference here
 			await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
 		}
 	},
