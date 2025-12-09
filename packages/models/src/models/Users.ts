@@ -2688,34 +2688,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByFreeSwitchExtensions<T extends Document = IUser>(freeSwitchExtensions: string[], options: FindOptions<IUser> = {}) {
-		return this.findOne<T>(
-			{
-				freeSwitchExtension: { $in: freeSwitchExtensions },
-			},
-			options,
-		);
-	}
-
-	findAssignedFreeSwitchExtensions() {
-		return this.findUsersWithAssignedFreeSwitchExtensions({
-			projection: {
-				freeSwitchExtension: 1,
-			},
-		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
-	}
-
-	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options: FindOptions<IUser> = {}) {
-		return this.find<T>(
-			{
-				freeSwitchExtension: {
-					$exists: true,
-				},
-			},
-			options,
-		);
-	}
-
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);
@@ -3136,17 +3108,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				$set: {
 					'services.saml.inResponseTo': inResponseTo,
 				},
-			},
-		);
-	}
-
-	async setFreeSwitchExtension(_id: IUser['_id'], extension?: string) {
-		return this.updateOne(
-			{
-				_id,
-			},
-			{
-				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
 			},
 		);
 	}
