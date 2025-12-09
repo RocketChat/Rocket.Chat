@@ -9457,7 +9457,7 @@ __metadata:
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^6.9.16"
+    nodemailer: "npm:^7.0.7"
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
@@ -28742,10 +28742,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.9.16":
-  version: 6.9.16
-  resolution: "nodemailer@npm:6.9.16"
-  checksum: 10/f131888d3111238fde4ee03539e62f1764b99365ff31d556dde0367dfefcee1f2eb8948558f35ba84fe5cd805f2d01294eee63a5675d3aa501e7df548a2518ce
+"nodemailer@npm:^7.0.7":
+  version: 7.0.11
+  resolution: "nodemailer@npm:7.0.11"
+  checksum: 10/2ad4dd56a4caf84a83aa6f4378ded26d5ef8a644ca3be09c3b4fb2255d861369e620f29be6c3c97148ac4a50aa5fdff6240b9d60805362bd99ca15f2ea62e8a2
   languageName: node
   linkType: hard
 
