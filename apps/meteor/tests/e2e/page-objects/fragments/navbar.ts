@@ -156,25 +156,31 @@ export class Navbar {
 		await this.root.keyboard.press('Escape');
 	}
 
-	async createNew(type: 'Channel' | 'Team' | 'Discussion' | 'Direct message', name: string): Promise<void> {
+	async createNew(
+		type: 'Channel' | 'Team' | 'Discussion' | 'Direct message',
+		name: string,
+		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean },
+	): Promise<void> {
 		await this.openCreate(type);
 		await this.modals[type].inputName.fill(name);
-		await this.modals[type].btnCreate.click();
-	}
+		if (options?.private === false) {
+			await this.modals[type].checkboxPrivate.click();
+		}
 
-	async createNewChannel(name: string): Promise<void> {
-		return this.createNew('Channel', name);
-	}
-
-	async createEncrypted(type: 'Channel' | 'Team', name: string): Promise<void> {
-		await this.openCreate(type);
-		await this.modals[type].inputName.fill(name);
-		await this.modals[type].advancedSettingsAccordion.click();
-		await this.modals[type].checkboxEncrypted.click();
+		if (type === 'Channel' || type === 'Team') {
+			if (options?.encrypted) {
+				await this.modals[type].advancedSettingsAccordion.click();
+				await this.modals[type].checkboxEncrypted.click();
+			}
+			if (options?.readOnly) {
+				await this.modals[type].advancedSettingsAccordion.click();
+				await this.modals[type].checkboxReadOnly.click();
+			}
+		}
 		await this.modals[type].btnCreate.click();
 	}
 
 	async createEncryptedChannel(name: string): Promise<void> {
-		await this.createEncrypted('Channel', name);
+		await this.createNew('Channel', name, { encrypted: true });
 	}
 }
