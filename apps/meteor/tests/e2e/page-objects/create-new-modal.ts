@@ -11,6 +11,10 @@ export class CreateNewModal extends Modal {
 		return this.root.locator('label').filter({ has: this.root.getByRole('checkbox', { name: 'Encrypted' }) });
 	}
 
+	get checkboxFederated(): Locator {
+		return this.root.locator('label', { hasText: 'Federated' });
+	}
+
 	get btnCreate(): Locator {
 		return this.root.getByRole('button', { name: 'Create' });
 	}
@@ -23,6 +27,18 @@ export class CreateNewChannelModal extends CreateNewModal {
 
 	get advancedSettingsAccordion(): Locator {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
+	}
+
+	// TODO: improve locator
+	get autocompleteUser(): Locator {
+		return this.root.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full") and contains(text(), "Add Members")]/..//input');
+	}
+
+	async inviteUserToChannel(username: string) {
+		await this.autocompleteUser.click();
+		await this.autocompleteUser.type(username);
+		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
+		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 }
 
