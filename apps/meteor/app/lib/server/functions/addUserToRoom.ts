@@ -80,12 +80,9 @@ export const addUserToRoom = async (
 		}
 
 		throw error;
-	}
-	// TODO: are we calling this twice?
-	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
-		// Add a new event, with an optional inviter
-		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
+	// Ensure single pre-add callback; fire room-scoped events only once
 
+	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Keep the current event
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
