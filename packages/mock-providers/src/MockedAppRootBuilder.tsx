@@ -3,7 +3,6 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
-	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
@@ -149,8 +148,11 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions ?? []], // apply query and option
+		querySubscription: () => [() => () => undefined, () => this.subscription],
+		querySubscriptions: () => [
+			() => () => undefined,
+			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
+		], // apply query and option
 		user: null,
 		userId: undefined,
 	};
@@ -204,6 +206,8 @@ export class MockedAppRootBuilder {
 	private room: IRoom | undefined = undefined;
 
 	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
+
+	private subscription: SubscriptionWithRoom | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -447,6 +451,12 @@ export class MockedAppRootBuilder {
 
 	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
 		this.subscriptions = subscriptions;
+
+		return this;
+	}
+
+	withSubscription(subscription: SubscriptionWithRoom): this {
+		this.subscription = subscription;
 
 		return this;
 	}
