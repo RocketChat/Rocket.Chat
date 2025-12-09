@@ -29,7 +29,7 @@ const appRoot = () =>
 			Cancel: 'Cancel',
 			unknown: 'unknown',
 		})
-		.withSubscriptions([mockedSubscription]);
+		.withSubscription(mockedSubscription);
 
 describe('useRoomRejectInvitationModal', () => {
 	it('should return open and close functions', () => {
@@ -115,7 +115,9 @@ describe('useRoomRejectInvitationModal', () => {
 		const { result } = renderHook(
 			() => useRoomRejectInvitationModal({ ...mockedRoom, _id: 'unknownid', name: undefined, fname: undefined }),
 			{
-				wrapper: appRoot().withSubscriptions([]).build(),
+				wrapper: appRoot()
+					.withSubscription({ ...mockedSubscription, rid: 'unknownid', inviter: { _id: 'unknowninviter' } })
+					.build(),
 			},
 		);
 
