@@ -1,13 +1,12 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, HeaderToolbarAction, HeaderToolbarDivider } from '@rocket.chat/ui-client';
 import { useRoomToolbox, type RenderToolboxItemParams, type RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
-import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];

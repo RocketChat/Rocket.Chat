@@ -1,8 +1,11 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2ToolbarAction, HeaderV1ToolbarAction } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef, memo } from 'react';
 
-const HeaderToolbarAction = forwardRef<HTMLButtonElement, ComponentProps<typeof HeaderV1ToolbarAction>>(
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1ToolbarAction } from '../HeaderV1';
+import { HeaderV2ToolbarAction } from '../HeaderV2';
+
+const HeaderToolbarAction = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<typeof HeaderV1ToolbarAction>>(
 	function HeaderToolbarAction(props, ref) {
 		return (
 			<FeaturePreview feature='newNavigation'>

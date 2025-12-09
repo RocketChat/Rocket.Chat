@@ -1,10 +1,9 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useDocumentTitle, FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
+import { useDocumentTitle, FeaturePreview, FeaturePreviewOn, FeaturePreviewOff, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HeaderToolbar } from '../Header';
 import SidebarToggler from '../SidebarToggler';
 
 type PageHeaderProps = {

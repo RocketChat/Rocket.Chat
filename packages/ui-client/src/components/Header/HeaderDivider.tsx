@@ -1,5 +1,8 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2Divider, HeaderV1Divider } from '@rocket.chat/ui-client';
 import { memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1Divider } from '../HeaderV1';
+import { HeaderV2Divider } from '../HeaderV2';
 
 const HeaderDivider = () => (
 	<FeaturePreview feature='newNavigation'>

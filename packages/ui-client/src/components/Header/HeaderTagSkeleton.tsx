@@ -1,5 +1,8 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV2TagSkeleton, HeaderV1TagSkeleton } from '@rocket.chat/ui-client';
 import { memo } from 'react';
+
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1TagSkeleton } from '../HeaderV1';
+import { HeaderV2TagSkeleton } from '../HeaderV2';
 
 const HeaderTagSkeleton = () => (
 	<FeaturePreview feature='newNavigation'>

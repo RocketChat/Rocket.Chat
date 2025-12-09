@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
 import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useUserTeamsQuery } from '../hooks/useUserTeamsQuery';
