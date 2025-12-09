@@ -252,18 +252,16 @@ callbacks.add(
 	'federation-matrix-before-create-direct-room',
 );
 
-callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers) => {
+callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers, extraData) => {
 	// TODO: use a shared helper to check whether a user is federated
 	// since the DM creation API doesn't tell us if the room is federated (unlike normal channels),
 	// we're currently inferring it: if any participant has a Matrix-style ID (@user:server), we treat the DM as federated
 	const hasFederatedMembers = roomUsers.some((user: unknown) => typeof user === 'string' && user.includes(':') && user.includes('@'));
 
 	if (hasFederatedMembers) {
-		return {
-			federated: true,
-			federation: {
-				version: 1,
-			},
+		extraData.federated = true;
+		extraData.federation = {
+			version: 1,
 		};
 	}
 });
