@@ -1,10 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
+import { ProfileSidebar } from './fragments';
 
 export class AccountProfile extends Account {
+	override readonly sidebar: ProfileSidebar;
+
 	constructor(page: Page) {
 		super(page);
+		this.sidebar = new ProfileSidebar(page);
 	}
 
 	get inputName(): Locator {
