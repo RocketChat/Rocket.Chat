@@ -199,7 +199,7 @@ test.describe.serial('feature preview', () => {
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
 			await page.goto(`/channel/${targetChannel}`);
-			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.waitForHome();
 			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
 
@@ -210,7 +210,7 @@ test.describe.serial('feature preview', () => {
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.waitForHome();
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
@@ -297,7 +297,7 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('mark all rooms as read', async () => {
 				await page.goto('/home');
-				await poHomeChannel.sidenav.waitForHome();
+				await poHomeChannel.waitForHome();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
@@ -342,7 +342,7 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('mark all rooms as read', async () => {
 				await page.goto('/home');
-				await poHomeChannel.sidenav.waitForHome();
+				await poHomeChannel.waitForHome();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
@@ -540,7 +540,7 @@ test.describe.serial('feature preview', () => {
 		test('should open rooms when clicking on sidebar filter', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.waitForHome();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
 			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click({ force: true });
@@ -555,7 +555,7 @@ test.describe.serial('feature preview', () => {
 		test('should open room when clicking on sidepanel item', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.waitForHome();
 			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click();
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
@@ -571,7 +571,7 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('create a direct message with user1', async () => {
 				await page.goto('/home');
-				await poHomeChannel.sidenav.waitForHome();
+				await poHomeChannel.waitForHome();
 
 				await poHomeChannel.navbar.openChat(Users.user1.data.username);
 				await poHomeChannel.content.waitForChannel();
@@ -632,7 +632,7 @@ test.describe.serial('feature preview', () => {
 			await page.setViewportSize({ width: 640, height: 460 });
 			await page.goto('/home');
 
-			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.waitForHome();
 
 			await poHomeChannel.sidebar.waitForDismissal();
 			await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();

@@ -14,11 +14,6 @@ export class HomeTeam extends HomeChannel {
 		return this.page.locator('role=textbox[name="Name"]');
 	}
 
-	async addMember(memberName: string): Promise<void> {
-		await this.page.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
-		await this.page.locator(`.rcx-option__content:has-text("${memberName}")`).click();
-	}
-
 	get btnTeamCreate(): Locator {
 		return this.page.locator('role=dialog >> role=group >> role=button[name=Create]');
 	}

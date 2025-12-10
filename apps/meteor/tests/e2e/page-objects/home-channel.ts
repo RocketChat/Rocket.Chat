@@ -121,4 +121,8 @@ export class HomeChannel {
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
 	}
+
+	async waitForHome(): Promise<void> {
+		await this.page.waitForSelector('main');
+	}
 }
