@@ -8713,7 +8713,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
@@ -8745,7 +8744,6 @@ __metadata:
     "@types/react-dom": "npm:~18.3.7"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
-    babel-loader: "npm:~10.0.0"
     date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.2.7"
     eslint: "npm:~8.45.0"
@@ -10680,7 +10678,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
-    "@rocket.chat/ui-contexts": 25.0.0
+    "@rocket.chat/ui-contexts": 25.0.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
