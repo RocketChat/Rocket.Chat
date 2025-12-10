@@ -265,9 +265,9 @@ test.describe('OC - Livechat API', () => {
 
 			// This is needed since the livechat will not react to online/offline status changes if already loaded in a page
 			if (testInfo.title === 'Expect onOfflineFormSubmit to trigger callback') {
-				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
 			} else {
-				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('online');
+				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
 			}
 
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
@@ -726,9 +726,9 @@ test.describe('OC - Livechat API', () => {
 
 			// This is needed since the livechat will not react to online/offline status changes if already loaded in a page
 			if (testInfo.title === 'Expect onOfflineFormSubmit to trigger callback') {
-				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
 			} else {
-				await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('online');
+				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
 			}
 
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
@@ -860,7 +860,7 @@ test.describe('OC - Livechat API', () => {
 			);
 
 			await poAuxContext.poHomeOmnichannel.navbar.openChat(newVisitor.name);
-			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
 
 			await watchForTrigger;
 		});
@@ -868,7 +868,7 @@ test.describe('OC - Livechat API', () => {
 		test('OC - Livechat API - onOfflineFormSubmit', async () => {
 			const newVisitor = createFakeVisitor();
 
-			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
 			await poAuxContext.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
 
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);

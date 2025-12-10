@@ -214,6 +214,11 @@ export class Navbar {
 		await this.createNew('Channel', name, { encrypted: true });
 	}
 
+	async changeUserStatus(status: 'online' | 'away' | 'busy' | 'invisible' | 'offline' | string): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.getUserProfileMenuOption(status).click();
+	}
+
 	async changeUserCustomStatus(text: string): Promise<void> {
 		await this.btnUserMenu.click();
 		await this.getUserProfileMenuOption('Custom Status').click();
