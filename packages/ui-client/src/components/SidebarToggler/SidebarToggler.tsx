@@ -1,12 +1,11 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSession } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import SidebarTogglerButton from './SidebarTogglerButton';
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { useEmbeddedLayout } from '../../hooks';
 
-const SideBarToggler = (): ReactElement => {
+const SideBarToggler = () => {
 	const { sidebar } = useLayout();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread') as number | string | undefined;

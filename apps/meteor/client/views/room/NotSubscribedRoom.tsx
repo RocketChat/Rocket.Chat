@@ -1,12 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar, SidebarToggler } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
-import SidebarToggler from '../../components/SidebarToggler';
 import { useJoinRoom } from '../../hooks/useJoinRoom';
 
 type NotSubscribedRoomProps = {

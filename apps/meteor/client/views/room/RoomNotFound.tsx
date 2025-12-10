@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, HeaderV1, HeaderV1Toolbar, SidebarToggler } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
 import NotFoundState from '../../components/NotFoundState';
-import SidebarToggler from '../../components/SidebarToggler';
 
 const RoomNotFound = (): ReactElement => {
 	const { t } = useTranslation();

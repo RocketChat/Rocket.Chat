@@ -1,11 +1,9 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isVoipRoom, isInviteSubscription } from '@rocket.chat/core-typings';
-import { HeaderToolbar } from '@rocket.chat/ui-client';
+import { HeaderToolbar, SidebarToggler } from '@rocket.chat/ui-client';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, memo, useMemo } from 'react';
-
-import SidebarToggler from '../../../components/SidebarToggler';
 
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));

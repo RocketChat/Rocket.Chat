@@ -23,3 +23,4 @@ export * from './CustomScrollbars';
 export * from './Page';
 export * from './InfoPanel';
 export * from './GenericTable';
+export * from './SidebarToggler';
