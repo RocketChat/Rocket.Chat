@@ -9,6 +9,8 @@ import type { AttributesFormFormData } from './AttributesForm';
 import AttributesForm from './AttributesForm';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
+const MAX_ATTRIBUTE_VALUES = 10;
+
 type AttributesContextualBarProps = {
 	attributeId?: string;
 	attributeData?: {
@@ -31,7 +33,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 		defaultValues: attributeData
 			? {
 					name: attributeData.key,
-					attributeValues: [{ value: '' }],
+					attributeValues: attributeData.values.length >= MAX_ATTRIBUTE_VALUES ? [] : [{ value: '' }],
 					lockedAttributes: attributeData.values.map((value) => ({ value })),
 				}
 			: {
