@@ -44,8 +44,8 @@ test.describe('Voice Calls - Community Edition', () => {
 
 	test('should see upsell modal when clicked on User menu > New voice call', async () => {
 		await test.step('should open user menu', async () => {
-			await poHomeChannel.sidenav.btnUserProfileMenu.click();
-			await poHomeChannel.sidenav.getUserProfileMenuOption('New voice call').click();
+			await poHomeChannel.navbar.btnUserMenu.click();
+			await poHomeChannel.navbar.getUserProfileMenuOption('New voice call').click();
 		});
 
 		await test.step('should see upsell modal', async () => {
