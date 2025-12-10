@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
+import { CreateNewTeamModal } from './page-objects/create-new-modal';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -75,6 +76,8 @@ test.describe('teams-management-permissions', () => {
 test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
+	let newTeamModal: CreateNewTeamModal;
+
 	const targetTeam = faker.string.uuid();
 	const targetTeamNonPrivate = faker.string.uuid();
 	const targetTeamReadOnly = faker.string.uuid();
@@ -101,46 +104,42 @@ test.describe.serial('teams-management', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
+		newTeamModal = new CreateNewTeamModal(page);
 
 		await page.goto('/home');
 	});
 
 	test('should create targetTeam private', async ({ page }) => {
-		await poHomeTeam.navbar.openCreate('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeam);
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeam, {
+			private: true,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
 	});
 
 	test('should create targetTeamNonPrivate non private', async ({ page }) => {
-		await poHomeTeam.navbar.openCreate('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeamNonPrivate);
-		await poHomeTeam.textPrivate.click();
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeamNonPrivate, {
+			private: false,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/channel/${targetTeamNonPrivate}`);
 	});
 
 	test('should create targetTeamReadOnly readonly', async ({ page }) => {
-		await poHomeTeam.navbar.openCreate('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeamReadOnly);
-		await poHomeTeam.sidenav.advancedSettingsAccordion.click();
-		await poHomeTeam.textReadOnly.click();
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeamReadOnly, {
+			readOnly: true,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/group/${targetTeamReadOnly}`);
 	});
 
 	test('should throw validation error if team name already exists', async () => {
-		await poHomeTeam.navbar.openCreate('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeam);
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeam);
 
-		await expect(poHomeTeam.inputTeamName).toHaveAttribute('aria-invalid', 'true');
+		await expect(newTeamModal.inputName).toHaveAttribute('aria-invalid', 'true');
 	});
 
 	test('should send hello in the targetTeam and reply in a thread', async ({ page }) => {
@@ -212,10 +211,11 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
-		await poHomeTeam.sidenav.inputChannelName.type(targetChannelNameInTeam);
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).not.toBeChecked();
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeDisabled();
-		await poHomeTeam.sidenav.btnCreate.click();
+
+		await newTeamModal.inputName.fill(targetChannelNameInTeam);
+		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
+		await expect(newTeamModal.checkboxPrivate).toBeDisabled();
+		await newTeamModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
 	});
@@ -238,10 +238,12 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
-		await poHomeTeam.sidenav.inputChannelName.type(targetGroupNameInTeam);
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeChecked();
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeDisabled();
-		await poHomeTeam.sidenav.btnCreate.click();
+
+		await newTeamModal.inputName.fill(targetGroupNameInTeam);
+		const { checkboxPrivate } = newTeamModal;
+		await expect(checkboxPrivate).toBeChecked();
+		await expect(checkboxPrivate).toBeDisabled();
+		await newTeamModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
 	});

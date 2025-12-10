@@ -18,6 +18,11 @@ export class CreateNewModal extends Modal {
 	get btnCreate(): Locator {
 		return this.root.getByRole('button', { name: 'Create' });
 	}
+
+	async addMember(memberName: string): Promise<void> {
+		await this.root.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
+		await this.root.locator(`.rcx-option__content:has-text("${memberName}")`).click();
+	}
 }
 
 export class CreateNewChannelModal extends CreateNewModal {

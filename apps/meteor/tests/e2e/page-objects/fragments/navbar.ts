@@ -173,13 +173,19 @@ export class Navbar {
 	async createNew(
 		type: 'Channel' | 'Team' | 'Discussion' | 'Direct message',
 		name: string,
-		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; federated?: boolean },
+		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; federated?: boolean; members?: string[] },
 	): Promise<void> {
 		await this.openCreate(type);
 		await this.modals[type].inputName.fill(name);
 
 		if (options?.private === false) {
 			await this.modals[type].checkboxPrivate.click();
+		}
+
+		if (options?.members) {
+			options.members.forEach(async (member) => {
+				await this.modals[type].addMember(member);
+			});
 		}
 
 		if (options && ('encrypted' in options || 'readOnly' in options || 'federated' in options)) {
