@@ -1,12 +1,11 @@
 import { Room } from '@rocket.chat/core-services';
-import type { Emitter } from '@rocket.chat/emitter';
-import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { getUsernameServername } from '../FederationMatrix';
 
-export function room(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.room.name', async ({ event }) => {
+export function room() {
+	federationSDK.eventEmitterService.on('homeserver.matrix.room.name', async ({ event }) => {
 		const {
 			room_id: roomId,
 			content: { name },
@@ -15,18 +14,18 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
 		if (!localRoomId) {
-			throw new Error('mapped room not found');
+			throw new Error(`mapped room not found: ${roomId}`);
 		}
 
 		const localUserId = await Users.findOneByUsername(userId, { projection: { _id: 1 } });
 		if (!localUserId) {
-			throw new Error('mapped user not found');
+			throw new Error(`mapped user not found: ${userId}`);
 		}
 
 		await Room.saveRoomName(localRoomId._id, localUserId._id, name);
 	});
 
-	emitter.on('homeserver.matrix.room.topic', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.room.topic', async ({ event }) => {
 		const {
 			room_id: roomId,
 			content: { topic },
@@ -51,7 +50,7 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 		});
 	});
 
-	emitter.on('homeserver.matrix.room.role', async (data) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.room.role', async (data) => {
 		const { room_id: roomId, user_id: userId, sender_id: senderId, role } = data;
 
 		const localRoomId = await Rooms.findOne({ 'federation.mrid': roomId }, { projection: { _id: 1 } });
