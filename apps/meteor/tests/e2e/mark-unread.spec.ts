@@ -26,26 +26,29 @@ test.describe.serial('mark-unread', () => {
 
 	test.describe('Mark Unread - Sidebar Action', () => {
 		test('should not mark empty room as unread', async () => {
-			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel.name);
+			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel.name);
+			await poHomeChannel.sidebar.markItemAsUnread(item);
 
-			await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel.name)).not.toBeVisible();
+			await expect(poHomeChannel.sidebar.getItemUnreadBadge(item)).not.toBeVisible();
 		});
 
 		test('should mark a populated room as unread', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel.name);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel.name);
+			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel.name);
+			await poHomeChannel.sidebar.markItemAsUnread(item);
 
-			await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel.name)).toBeVisible();
+			await expect(poHomeChannel.sidebar.getItemUnreadBadge(item)).toBeVisible();
 		});
 
 		test('should mark a populated room as unread - search', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel.name);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel.name);
-			await poHomeChannel.sidenav.searchRoom(targetChannel.name);
+			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel.name);
+			await poHomeChannel.sidebar.markItemAsUnread(item);
+			await poHomeChannel.navbar.typeSearch(targetChannel.name);
 
-			await expect(poHomeChannel.sidenav.getSearchItemBadge(targetChannel.name)).toBeVisible();
+			await expect(poHomeChannel.navbar.getSearchItemBadge(targetChannel.name)).toBeVisible();
 		});
 	});
 
@@ -64,7 +67,8 @@ test.describe.serial('mark-unread', () => {
 				await poHomeChannel.navbar.openChat(targetChannel.name);
 				await poHomeChannel.content.openLastMessageMenu();
 				await poHomeChannel.markUnread.click();
-				await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel.name)).toBeVisible();
+				const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel.name);
+				await expect(poHomeChannel.sidebar.getItemUnreadBadge(item)).toBeVisible();
 			}).toPass();
 		});
 	});

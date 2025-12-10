@@ -55,7 +55,7 @@ test.describe('teams-management-permissions', () => {
 		await expect(poHomeTeam.textPrivate).not.toBeChecked();
 	});
 
-	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api, page }) => {
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
 		expect(
 			(
 				await api.post('/permissions.update', {
@@ -67,8 +67,8 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.btnCreateNew.click();
-		await expect(page.locator(`role=menuitem[name="Team"]`)).not.toBeVisible();
+		await poHomeTeam.navbar.btnCreateNew.click();
+		await expect(poHomeTeam.navbar.createNewMenu.getByRole('menuitem', { name: 'Team' })).not.toBeVisible();
 	});
 });
 
@@ -450,8 +450,8 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.room.confirmDeleteTeamModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmDeleteTeam();
-		await poHomeTeam.sidenav.searchRoom(targetTeamNonPrivate);
-		await expect(poHomeTeam.sidenav.getSearchItemByName(targetTeamNonPrivate)).not.toBeVisible();
+		await poHomeTeam.navbar.typeSearch(targetTeamNonPrivate);
+		await expect(poHomeTeam.navbar.getSearchRoomByName(targetTeamNonPrivate)).not.toBeVisible();
 	});
 
 	test('should user1 leave from targetTeam', async ({ browser }) => {
