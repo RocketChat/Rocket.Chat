@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { LoginPage } from '../login';
+import { EditStatusModal } from './edit-status-modal';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
@@ -250,5 +251,13 @@ export class HomeSidenav {
 
 	get homepageHeader(): Locator {
 		return this.page.locator('main').getByRole('heading', { name: 'Home' });
+	}
+
+	async changeUserCustomStatus(text: string): Promise<void> {
+		const editStatusModal = new EditStatusModal(this.page);
+
+		await this.btnUserProfileMenu.click();
+		await this.getUserProfileMenuOption('Custom Status').click();
+		await editStatusModal.changeStatusMessage(text);
 	}
 }

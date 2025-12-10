@@ -9,7 +9,7 @@ export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFil
 		super(db, 'user_data_files', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [...super.modelIndexes(), { key: { userId: 1 } }];
 	}
 

@@ -1,171 +1,154 @@
-import type { IUserSession } from '@rocket.chat/core-typings';
-import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, WithId } from 'mongodb';
+import { UserStatus, type IUserSession, type IUserSessionConnection } from '@rocket.chat/core-typings';
+import { registerModel } from '@rocket.chat/models';
+import type { FindCursor, WithId } from 'mongodb';
 
 import { PresenceReaper } from './PresenceReaper';
 
-// Define a simplified interface for our mock docs
-type MockSession = {
-	_id: string;
-	connections: { id: string; _updatedAt: Date }[];
+let sessions = 0;
+const createSession = (overrides: Partial<IUserSession> = {}): IUserSession => ({
+	_id: `user-${sessions++}`,
+	connections: [],
+	...overrides,
+});
+
+let connections = 0;
+const createConnection = (overrides: Partial<IUserSessionConnection> = {}): IUserSessionConnection => ({
+	id: `conn-${connections++}`,
+	instanceId: `instanceId`,
+	status: UserStatus.ONLINE,
+	_createdAt: new Date(),
+	_updatedAt: new Date(),
+	...overrides,
+});
+
+const createDates = () => {
+	const now = new Date();
+	const stale = new Date(now.getTime() - 10 * 60 * 1000); // 10 mins ago
+	const active = new Date(now.getTime() - 1 * 60 * 1000); // 1 min ago
+	const cutoff = new Date(now.getTime() - 5 * 60 * 1000); // 5 mins ago
+
+	return { now, stale, active, cutoff };
+};
+
+const createCursor = (documents: WithId<IUserSession>[]): FindCursor<WithId<IUserSession>> => {
+	let index = 0;
+	return {
+		async *[Symbol.asyncIterator]() {
+			while (index < documents.length) {
+				yield documents[index++];
+			}
+		},
+	} as FindCursor<WithId<IUserSession>>;
 };
 
 describe('PresenceReaper', () => {
 	let reaper: PresenceReaper;
-	let mockSessionCollection: Omit<jest.Mocked<IUsersSessionsModel>, 'col'> & {
-		col: jest.Mocked<Collection<IUserSession>>;
-	};
-	let mockOnUpdate: jest.Mock;
+	const bulkWriteMock = jest.fn();
+	const findMock = jest.fn();
+	const onUpdateMock = jest.fn();
+	registerModel('IUsersSessionsModel', {
+		find: findMock,
+		col: {
+			bulkWrite: bulkWriteMock,
+		},
+	} as any);
 
 	beforeEach(() => {
-		// 1. Mock the Collections
-		mockSessionCollection = {
-			find: jest.fn(),
-			col: {
-				bulkWrite: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
-			},
-		} as any;
+		bulkWriteMock.mockClear();
+		findMock.mockClear();
+		onUpdateMock.mockClear();
 
-		// 2. Mock the onUpdate callback
-		mockOnUpdate = jest.fn();
-
-		// 3. Instantiate Reaper
 		reaper = new PresenceReaper({
-			usersSessions: mockSessionCollection,
-			onUpdate: mockOnUpdate,
+			onUpdate: onUpdateMock,
 			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
 			batchSize: 2, // small batch size for testing
 		});
 	});
 
-	describe('processDocument (Business Logic)', () => {
-		it('should identify stale connections by "id" and preserve valid ones', () => {
-			const now = new Date();
-			const staleTime = new Date(now.getTime() - 10 * 60 * 1000); // 10 mins ago
-			const activeTime = new Date(now.getTime() - 1 * 60 * 1000); // 1 min ago
-			const cutoff = new Date(now.getTime() - 5 * 60 * 1000); // 5 mins ago
+	it('should not call onUpdate when there no connections', async () => {
+		findMock.mockReturnValue(createCursor([]));
 
-			const doc: MockSession = {
-				_id: 'user-123',
-				connections: [
-					{ id: 'conn-stale', _updatedAt: staleTime }, // Should be removed
-					{ id: 'conn-active', _updatedAt: activeTime }, // Should stay
-				],
-			};
+		await reaper.run();
 
-			const changeMap = new Map();
-
-			// @ts-expect-error - testing private method
-			reaper.processDocument(doc, cutoff, changeMap);
-
-			const result = changeMap.get('user-123');
-
-			// Assertions
-			expect(result).toBeDefined();
-			expect(result?.removeIds).toContain('conn-stale'); // Found the stale ID
-			expect(result?.removeIds).not.toContain('conn-active'); // Ignored the active ID
-			expect(result?.shouldMarkOffline).toBe(false); // User still has 1 active connection
-		});
-
-		it('should mark user offline only if ALL connections are stale', () => {
-			const now = new Date();
-			const staleTime = new Date(now.getTime() - 10000);
-			const cutoff = new Date(now); // Cutoff is now, so everything before is stale
-
-			const doc: MockSession = {
-				_id: 'user-456',
-				connections: [
-					{ id: 'conn-1', _updatedAt: staleTime },
-					{ id: 'conn-2', _updatedAt: staleTime },
-				],
-			};
-
-			const changeMap = new Map();
-			// @ts-expect-error - testing private method
-			reaper.processDocument(doc, cutoff, changeMap);
-
-			const result = changeMap.get('user-456');
-
-			expect(result).toBeDefined();
-			expect(result?.removeIds).toHaveLength(2);
-			expect(result?.shouldMarkOffline).toBe(true); // No valid connections left
-		});
+		expect(onUpdateMock).not.toHaveBeenCalled();
 	});
 
-	describe('run (Integration Flow)', () => {
-		it('should handle empty collections without errors', async () => {
-			// Mock empty cursor
-			const mockCursor = {
-				async *[Symbol.asyncIterator]() {
-					// No documents
-				},
-			} as FindCursor<WithId<IUserSession>>;
-			mockSessionCollection.find.mockReturnValue(mockCursor);
+	it('should process users with stale connections correctly', async () => {
+		const { stale } = createDates();
 
-			// Execute Run
-			await reaper.run();
+		findMock.mockReturnValue(
+			createCursor([
+				createSession({
+					_id: 'user-789',
+					connections: [createConnection({ _updatedAt: stale })],
+				}),
+			]),
+		);
 
-			// Verify no updates were made
-			expect(mockOnUpdate).not.toHaveBeenCalled();
-		});
+		await reaper.run();
 
-		it('should generate correct bulkWrite operations', async () => {
-			const now = new Date();
-			const staleTime = new Date(now.getTime() - 6 * 60 * 1000); // 6 mins ago (Stale)
-
-			// Mock Data from DB Cursor
-			const mockCursor = {
-				async *[Symbol.asyncIterator]() {
-					yield {
-						_id: 'user-789',
-						connections: [{ id: 'zombie-conn', _updatedAt: staleTime }],
-					};
-				},
-			} as FindCursor<WithId<IUserSession>>;
-			mockSessionCollection.find.mockReturnValue(mockCursor);
-
-			// Execute Run
-			await reaper.run();
-
-			// Verify 'users' Update (Status Offline)
-			expect(mockOnUpdate).toHaveBeenCalledTimes(1);
-			expect(mockOnUpdate).toHaveBeenCalledWith(['user-789']);
-		});
+		expect(onUpdateMock).toHaveBeenCalledTimes(1);
+		expect(onUpdateMock).toHaveBeenCalledWith(['user-789']);
 	});
 
-	describe('end-to-end Presence Reaping', () => {
-		it('should process multiple users and batch updates correctly', async () => {
-			const now = new Date();
-			const staleTime = new Date(now.getTime() - 10 * 60 * 1000); // 10 mins ago
+	it('should process multiple users and batch updates correctly', async () => {
+		const { stale } = createDates();
 
-			// Mock Data from DB Cursor
-			const mockCursor = {
-				async *[Symbol.asyncIterator]() {
-					yield {
-						_id: 'user-1',
+		findMock.mockReturnValue(
+			createCursor([
+				createSession({
+					_id: 'user-1',
+					connections: [createConnection({ _updatedAt: stale })],
+				}),
+				createSession({
+					_id: 'user-2',
+					connections: [createConnection({ _updatedAt: stale })],
+				}),
+				createSession({
+					_id: 'user-3',
+					connections: [createConnection({ _updatedAt: stale })],
+				}),
+			]),
+		);
 
-						connections: [{ id: 'conn-1', _updatedAt: staleTime }],
-					};
-					yield {
-						_id: 'user-2',
-						connections: [{ id: 'conn-2', _updatedAt: staleTime }],
-					};
-					yield {
-						_id: 'user-3',
+		// Execute Run
+		await reaper.run();
 
-						connections: [{ id: 'conn-3', _updatedAt: staleTime }],
-					};
-				},
-			};
-			mockSessionCollection.find.mockReturnValue(mockCursor as FindCursor<WithId<IUserSession>>);
+		// Verify 'users' Update called twice due to batch size of 2
+		expect(onUpdateMock).toHaveBeenCalledTimes(2);
+		expect(onUpdateMock).toHaveBeenNthCalledWith(1, ['user-1', 'user-2']);
+		expect(onUpdateMock).toHaveBeenNthCalledWith(2, ['user-3']);
+	});
 
-			// Execute Run
-			await reaper.run();
+	it('should process users with mixed connection states correctly', async () => {
+		const { stale, active } = createDates();
 
-			// Verify 'users' Update called twice due to batch size of 2
-			expect(mockOnUpdate).toHaveBeenCalledTimes(2);
-			expect(mockOnUpdate).toHaveBeenNthCalledWith(1, ['user-1', 'user-2']);
-			expect(mockOnUpdate).toHaveBeenNthCalledWith(2, ['user-3']);
-		});
+		findMock.mockReturnValue(
+			createCursor([
+				createSession({
+					_id: 'no-connections',
+					connections: [],
+				}),
+				createSession({
+					_id: 'all-active',
+					connections: [createConnection({ _updatedAt: active })],
+				}),
+				createSession({
+					_id: 'all-stale',
+					connections: [createConnection({ _updatedAt: stale })],
+				}),
+				createSession({
+					_id: 'mixed',
+					connections: [createConnection({ _updatedAt: stale }), createConnection({ _updatedAt: active })],
+				}),
+			]),
+		);
+
+		// Execute Run
+		await reaper.run();
+
+		// Verify 'users' Update called for both users
+		expect(onUpdateMock).toHaveBeenCalledTimes(1);
+		expect(onUpdateMock).toHaveBeenNthCalledWith(1, ['all-stale', 'mixed']);
 	});
 });

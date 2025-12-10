@@ -32,7 +32,6 @@ export class Presence extends ServiceClass implements IPresence {
 		super();
 
 		this.reaper = new PresenceReaper({
-			usersSessions: UsersSessions,
 			batchSize: 500,
 			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
 			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
@@ -82,7 +81,7 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
@@ -101,11 +100,23 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async handleReaperUpdates(userIds: string[]): Promise<void> {
-		console.log(`[PresenceReaper] Updating presence for ${userIds.length} users due to stale connections.`);
-		await Promise.all(userIds.map((uid) => this.updateUserPresence(uid)));
+		const results = await Promise.allSettled(userIds.map((uid) => this.updateUserPresence(uid)));
+		const fulfilled = results.filter((result) => result.status === 'fulfilled');
+		const rejected = results.filter((result) => result.status === 'rejected');
+
+		if (fulfilled.length > 0) {
+			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+		}
+
+		if (rejected.length > 0) {
+			console.error(
+				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
+				rejected.map(({ reason }) => reason),
+			);
+		}
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;
@@ -155,8 +166,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
-		console.debug(`Updating connection for user ${uid} and connection ${connectionId}`);
-
 		const query = {
 			'_id': uid,
 			'connections.id': connectionId,
@@ -179,10 +188,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
-		if (uid === 'rocketchat.internal.admin.test') {
-			console.log('Admin detected, skipping removal of connection for testing purposes.');
-			return;
-		}
 		if (!uid || !session) {
 			return;
 		}
