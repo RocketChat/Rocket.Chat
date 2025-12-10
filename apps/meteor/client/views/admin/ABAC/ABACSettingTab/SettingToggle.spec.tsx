@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
-import SettingToggle from './SettingToggle';
+import AbacEnabledToggle from './AbacEnabledToggle';
 import EditableSettingsProvider from '../../settings/EditableSettingsProvider';
 
 const settingStructure = {
@@ -26,9 +26,9 @@ const baseAppRoot = mockAppRoot()
 		Cancel: 'Cancel',
 	});
 
-describe('SettingToggle', () => {
+describe('AbacEnabledToggle', () => {
 	it('should render the setting toggle when setting exists', () => {
-		const { baseElement } = render(<SettingToggle hasABAC={true} />, {
+		const { baseElement } = render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 		expect(baseElement).toMatchSnapshot();
@@ -36,7 +36,7 @@ describe('SettingToggle', () => {
 
 	it('should show warning modal when disabling ABAC', async () => {
 		const user = userEvent.setup();
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 
@@ -57,7 +57,7 @@ describe('SettingToggle', () => {
 
 	it('should not show warning modal when enabling ABAC', async () => {
 		const user = userEvent.setup();
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', false, settingStructure).build(),
 		});
 
@@ -70,7 +70,7 @@ describe('SettingToggle', () => {
 
 	it('should show warning modal when resetting setting', async () => {
 		const user = userEvent.setup();
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 
@@ -87,7 +87,7 @@ describe('SettingToggle', () => {
 	});
 
 	it('should have no accessibility violations', async () => {
-		const { container } = render(<SettingToggle hasABAC={true} />, {
+		const { container } = render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 		const results = await axe(container);
@@ -96,7 +96,7 @@ describe('SettingToggle', () => {
 
 	it('should handle setting change correctly', async () => {
 		const user = userEvent.setup();
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', false, settingStructure).build(),
 		});
 
@@ -108,7 +108,7 @@ describe('SettingToggle', () => {
 	});
 
 	it('should be disabled when abac license is not installed', () => {
-		const { baseElement } = render(<SettingToggle hasABAC={false} />, {
+		const { baseElement } = render(<AbacEnabledToggle hasABAC={false} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 
@@ -118,14 +118,14 @@ describe('SettingToggle', () => {
 	});
 
 	it('should show skeleton when loading', () => {
-		const { baseElement } = render(<SettingToggle hasABAC='loading' />, {
+		const { baseElement } = render(<AbacEnabledToggle hasABAC='loading' />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 		expect(baseElement).toMatchSnapshot();
 	});
 
 	it('should show reset button when value differs from package value', () => {
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', true, settingStructure).build(),
 		});
 
@@ -133,7 +133,7 @@ describe('SettingToggle', () => {
 	});
 
 	it('should not show reset button when value matches package value', () => {
-		render(<SettingToggle hasABAC={true} />, {
+		render(<AbacEnabledToggle hasABAC={true} />, {
 			wrapper: baseAppRoot.withSetting('ABAC_Enabled', false, settingStructure).build(),
 		});
 
