@@ -3355,7 +3355,7 @@ const POSTLivechatBusinessHoursSaveParamsSchema = {
 				required: ['day', 'start', 'finish', 'open'],
 				additionalProperties: false,
 			},
-minItems: 1,
+			minItems: 1,
 		},
 		departmentsToApplyBusinessHour: {
 			type: 'string',
