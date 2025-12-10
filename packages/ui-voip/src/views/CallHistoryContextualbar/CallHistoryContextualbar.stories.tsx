@@ -19,7 +19,7 @@ const meta = {
 				Incoming_voice_call: 'Incoming voice call',
 				Outgoing_voice_call: 'Outgoing voice call',
 				Duration: 'Duration',
-				Voice_Call_Extension: 'Voice call extension',
+				Voice_call_extension: 'Voice call extension',
 				Call_ID: 'Call ID',
 				Options: 'Options',
 				Voice_call: 'Voice call',

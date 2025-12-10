@@ -12,7 +12,6 @@ import {
 	InfoPanelLabel,
 	InfoPanelText,
 } from '@rocket.chat/ui-client';
-import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
@@ -20,6 +19,7 @@ import CallHistoryActions from './CallHistoryActions';
 import CallHistoryExternalUser from './CallHistoryExternalUser';
 import CallHistoryInternalUser from './CallHistoryInternalUser';
 import { useFullStartDate } from './useFullStartDate';
+import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
 type InternalCallHistoryContact = {
 	_id: string;
@@ -60,28 +60,6 @@ const contextValue = {
 	values: {},
 };
 
-// TODO use the same function that generates the message-block payload on the server. Duration will also be displayed here.
-const getBlocks = (t: TFunction, duration: number) => {
-	return [
-		{
-			type: 'info_card' as const,
-			rows: [
-				{
-					background: 'default' as const,
-					elements: [
-						{ type: 'icon', icon: 'phone-off', variant: 'default' },
-						{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: t('Call_ended') },
-					] as const,
-				},
-				{
-					background: 'secondary' as const,
-					elements: [{ type: 'plain_text', text: duration.toString() }] as const,
-				},
-			],
-		},
-	];
-};
-
 const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHistoryContextualBarProps) => {
 	const { t } = useTranslation();
 
@@ -115,7 +93,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					<InfoPanelSection>
 						<MessageBlock fixedWidth>
 							<UiKitContext.Provider value={contextValue}>
-								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getBlocks(t, duration)} />
+								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getHistoryMessagePayload(data.state, duration).blocks} />
 							</UiKitContext.Provider>
 						</MessageBlock>
 						<Box mbs={-8}>{date}</Box>
@@ -126,7 +104,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					</InfoPanelSection>
 					{isInternalCallHistoryContact(contact) && contact.voiceCallExtension && (
 						<InfoPanelSection>
-							<InfoPanelLabel>{t('Voice_Call_Extension')}</InfoPanelLabel>
+							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
 							<InfoPanelText>{contact.voiceCallExtension}</InfoPanelText>
 						</InfoPanelSection>
 					)}
