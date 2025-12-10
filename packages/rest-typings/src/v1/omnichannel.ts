@@ -3299,7 +3299,6 @@ const POSTLivechatBusinessHoursSaveParamsSchema = {
 		},
 		timezone: {
 			type: 'string',
-			nullable: true,
 		},
 		workHours: {
 			type: 'array',
