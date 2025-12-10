@@ -1,4 +1,4 @@
-import type { IRole, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IRole, IUser, AtLeast, ISubscription, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -20,9 +20,19 @@ const endpointsByRoomType = {
 	c: '/v1/rooms.membersOrderedByRole',
 } as const;
 
-export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+export type RoomMember = Serialized<
+	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension'> & {
+		roles?: IUser['roles'];
+		subscription?: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+	}
+>;
 
-type MembersListPage = { members: RoomMember[]; count: number; total: number; offset: number };
+type MembersListPage = {
+	members: RoomMember[];
+	count: number;
+	total: number;
+	offset: number;
+};
 
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 	const membersWithRolePriority: (RoomMember & { rolePriority: number })[] = members.map((member) => ({
