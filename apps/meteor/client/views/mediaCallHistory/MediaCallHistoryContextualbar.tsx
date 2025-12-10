@@ -13,9 +13,11 @@ import { CallHistoryContextualBar } from '@rocket.chat/ui-voip';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { useMediaCallHistoryActions } from './useMediaCallHistoryActions';
+
 const getContact = (item: Serialized<CallHistoryItem>, call?: Serialized<IMediaCall>) => {
 	if (item.external) {
-		return { number: item.contactExtension };
+		return { number: item.contactExtension, external: true as const };
 	}
 	if (!call) {
 		throw new Error('Call is required');
@@ -23,11 +25,18 @@ const getContact = (item: Serialized<CallHistoryItem>, call?: Serialized<IMediaC
 	const { caller, callee } = call ?? {};
 	const contact = caller?.id === item.contactId ? caller : callee;
 	// todo fix this
-	return { ...contact, _id: contact.id, username: contact.username ?? '' };
+	return {
+		...contact,
+		_id: contact.id,
+		username: contact.username ?? '',
+		voiceCallExtension: contact.sipExtension,
+		external: false as const,
+	};
 };
 
 export const MediaCallHistoryContextualbar = () => {
 	const context = useRouteParameter('context');
+
 	const { closeTab } = useRoomToolbox();
 	const { t } = useTranslation();
 
@@ -50,14 +59,14 @@ export const MediaCallHistoryContextualbar = () => {
 					direction,
 					state,
 					duration,
+					messageId: 'messageId' in item ? item.messageId : undefined,
 				},
 				contact,
 			};
-			// return data;
 		},
 	});
 
-	console.log(data);
+	const actions = useMediaCallHistoryActions(data?.contact, data?.data?.messageId);
 
 	if (isPending) {
 		return <ContextualbarSkeleton />;
@@ -78,11 +87,7 @@ export const MediaCallHistoryContextualbar = () => {
 		);
 	}
 
-	// const contextualBarData = useMemo(() => {
-
-	// }, [data]);
-
-	return <CallHistoryContextualBar onClose={closeTab} actions={{}} contact={data.contact} data={data.data} />;
+	return <CallHistoryContextualBar onClose={closeTab} actions={actions} contact={data.contact} data={data.data} />;
 };
 
 export default MediaCallHistoryContextualbar;
