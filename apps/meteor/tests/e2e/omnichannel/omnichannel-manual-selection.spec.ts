@@ -58,16 +58,16 @@ test.describe('OC - Manual Selection', () => {
 		await test.step('expect not be able to see queue when livechat is disabled', async () => {
 			await poOmnichannel.sidenav.switchOmnichannelStatus('offline');
 			await agentB.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).not.toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(room.fname)).not.toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
 			await poOmnichannel.sidenav.switchOmnichannelStatus('online');
 			await agentB.poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
 
 		await test.step('expect to be able join chat in read mode', async () => {
-			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
+			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).toBeVisible();
 		});
@@ -77,12 +77,12 @@ test.describe('OC - Manual Selection', () => {
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
 			await expect(poOmnichannel.content.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
 
 		await test.step('expect chat to leave the queue', async () => {
 			await page.waitForTimeout(250);
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(room.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able return to queue', async () => {
@@ -92,10 +92,10 @@ test.describe('OC - Manual Selection', () => {
 		});
 
 		await test.step('expect chat to be back in queue', async () => {
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 
-			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
+			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).toBeVisible();
 		});
