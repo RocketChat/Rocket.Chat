@@ -282,12 +282,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
-		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
-		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const sipEnabled = settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false;
 		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
-			enabled,
 			internalCalls: {
 				requireExtensions: forceSip,
 				routeExternally: forceSip ? 'always' : 'never',
