@@ -44,7 +44,7 @@ import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissi
 import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';

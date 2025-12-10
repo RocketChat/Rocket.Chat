@@ -25,9 +25,9 @@ import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import { Callbacks } from './callbacks/callbacksBase';
-import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
-import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
+import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
+import type { IBusinessHourBehavior } from '../../app/livechat/server/business-hour/AbstractBusinessHour';
+import type { CloseRoomParams } from '../../app/livechat/server/lib/localTypes';
 
 /**
  * Callbacks returning void, like event listeners.
@@ -85,7 +85,6 @@ interface EventLikeCallbackSignatures {
 		params: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage; room: IRoom },
 	) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
-	'usernameSet': () => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
@@ -110,14 +109,11 @@ type ChainedCallbackSignatures = {
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
 	) => Promise<T>;
-
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
-
 	'livechat.saveInfo': (
 		newRoom: IOmnichannelRoom,
 		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
 	) => IOmnichannelRoom;
-
 	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
@@ -193,20 +189,13 @@ type ChainedCallbackSignatures = {
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
-	'livechat.beforeInquiry': (data: IOmnichannelInquiryExtraData) => Partial<ILivechatInquiryRecord>;
-	'roomNameChanged': (room: IRoom) => void;
-	'roomTopicChanged': (room: IRoom) => void;
-	'roomAnnouncementChanged': (room: IRoom) => void;
-	'roomTypeChanged': (room: IRoom) => void;
-	'archiveRoom': (room: IRoom) => void;
-	'unarchiveRoom': (room: IRoom) => void;
-	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
 	'afterRoomTopicChange': (
 		params: undefined,
 		{ room, topic, user }: { room: IRoom; topic: string; user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'> },
 	) => void;
+	'livechat.beforeInquiry': (data: IOmnichannelInquiryExtraData) => Partial<ILivechatInquiryRecord>;
 };
 
 export type Hook =
@@ -226,22 +215,11 @@ export type Hook =
 	| 'livechat.closeRoom'
 	| 'livechat.offlineMessage'
 	| 'livechat.manageDepartmentUnit'
-	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'onCreateUser'
 	| 'onLDAPLogin'
-	| 'onValidateLogin'
-	| 'openBroadcast'
 	| 'renderNotification'
-	| 'streamMessage'
-	| 'streamNewMessage'
-	| 'userAvatarSet'
-	| 'userConfirmationEmailRequested'
-	| 'userForgotPasswordEmailRequested'
-	| 'usernameSet'
-	| 'userPasswordReset'
 	| 'userRegistered'
-	| 'userStatusManuallySet'
 	| 'test';
 
 /**

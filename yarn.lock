@@ -9585,7 +9585,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models":
+"@rocket.chat/models@workspace:^, @rocket.chat/models@workspace:packages/models, @rocket.chat/models@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/models@workspace:packages/models"
   dependencies:
@@ -10270,6 +10270,7 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
+    "@rocket.chat/models": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
