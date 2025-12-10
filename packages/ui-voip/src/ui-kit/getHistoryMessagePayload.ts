@@ -54,7 +54,7 @@ export const getFormattedCallDuration = (callDuration: number | undefined): Text
 	} as const;
 };
 
-const getHistoryAction = (callId: string): IconButtonElement => {
+export const getHistoryAction = (callId: string): IconButtonElement => {
 	return {
 		type: 'icon_button',
 		icon: { type: 'icon', icon: 'info', variant: 'default' },

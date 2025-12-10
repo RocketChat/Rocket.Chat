@@ -1,4 +1,10 @@
-import { callStateToTranslationKey, callStateToIcon, getFormattedCallDuration, getHistoryMessagePayload } from './getHistoryMessagePayload';
+import {
+	callStateToTranslationKey,
+	callStateToIcon,
+	getFormattedCallDuration,
+	getHistoryMessagePayload,
+	getHistoryAction,
+} from './getHistoryMessagePayload';
 
 const appId = 'media-call-core';
 describe('callStateToTranslationKey', () => {
@@ -102,9 +108,24 @@ describe('getFormattedCallDuration', () => {
 	});
 });
 
+const actionObj = {
+	type: 'icon_button',
+	icon: { type: 'icon', icon: 'info', variant: 'default' },
+	actionId: 'open-history',
+	appId,
+	blockId: 'callid',
+};
+
+describe('getHistoryAction', () => {
+	it('should return correct action for "ended" state', () => {
+		const result = getHistoryAction('callid');
+		expect(result).toEqual(actionObj);
+	});
+});
+
 describe('getHistoryMessagePayload', () => {
 	it('should return correct payload for "ended" state without duration', () => {
-		const result = getHistoryMessagePayload('ended', undefined);
+		const result = getHistoryMessagePayload('ended', undefined, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -119,6 +140,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'phone-off', variant: 'secondary' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' },
 							],
+							action: actionObj,
 						},
 					],
 				},
@@ -127,7 +149,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "ended" state with duration', () => {
-		const result = getHistoryMessagePayload('ended', 125);
+		const result = getHistoryMessagePayload('ended', 125, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -142,6 +164,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'phone-off', variant: 'secondary' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' },
 							],
+							action: actionObj,
 						},
 						{
 							background: 'secondary',
@@ -154,7 +177,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "not-answered" state', () => {
-		const result = getHistoryMessagePayload('not-answered', undefined);
+		const result = getHistoryMessagePayload('not-answered', undefined, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -169,6 +192,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'clock', variant: 'danger' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_not_answered_bold' }, text: 'Call not answered' },
 							],
+							action: actionObj,
 						},
 					],
 				},
@@ -177,7 +201,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "failed" state', () => {
-		const result = getHistoryMessagePayload('failed', undefined);
+		const result = getHistoryMessagePayload('failed', undefined, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -192,6 +216,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' },
 							],
+							action: actionObj,
 						},
 					],
 				},
@@ -200,7 +225,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "error" state', () => {
-		const result = getHistoryMessagePayload('error', undefined);
+		const result = getHistoryMessagePayload('error', undefined, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -215,6 +240,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' },
 							],
+							action: actionObj,
 						},
 					],
 				},
@@ -223,7 +249,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should return correct payload for "transferred" state', () => {
-		const result = getHistoryMessagePayload('transferred', undefined);
+		const result = getHistoryMessagePayload('transferred', undefined, 'callid');
 		expect(result).toEqual({
 			msg: '',
 			groupable: false,
@@ -238,6 +264,7 @@ describe('getHistoryMessagePayload', () => {
 								{ type: 'icon', icon: 'arrow-forward', variant: 'secondary' },
 								{ type: 'mrkdwn', i18n: { key: 'Call_transferred_bold' }, text: 'Call transferred' },
 							],
+							action: actionObj,
 						},
 					],
 				},
@@ -246,7 +273,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should include duration row when duration is provided', () => {
-		const result = getHistoryMessagePayload('ended', 3665);
+		const result = getHistoryMessagePayload('ended', 3665, 'callid');
 
 		expect(result.blocks[0].rows).toHaveLength(2);
 		expect(result.blocks[0].rows[1]).toEqual({
@@ -256,7 +283,7 @@ describe('getHistoryMessagePayload', () => {
 	});
 
 	it('should not include duration row when duration is undefined', () => {
-		const result = getHistoryMessagePayload('ended', undefined);
+		const result = getHistoryMessagePayload('ended', undefined, 'callid');
 		expect(result.blocks[0].rows).toHaveLength(1);
 	});
 
@@ -265,7 +292,7 @@ describe('getHistoryMessagePayload', () => {
 		const duration = 125;
 
 		states.forEach((state) => {
-			const result = getHistoryMessagePayload(state, duration);
+			const result = getHistoryMessagePayload(state, duration, 'callid');
 			expect(result.msg).toBe('');
 			expect(result.groupable).toBe(false);
 			expect(result.blocks).toHaveLength(1);
@@ -273,6 +300,8 @@ describe('getHistoryMessagePayload', () => {
 			expect(result.blocks[0].rows).toHaveLength(2);
 			expect(result.blocks[0].rows[1].background).toBe('secondary');
 			expect(result.blocks[0].rows[1].elements[0].type).toBe('mrkdwn');
+			expect(result.blocks[0].rows[0].action).toEqual(actionObj);
+			expect(result.blocks[0].rows[1].action).toBeUndefined();
 		});
 	});
 });
