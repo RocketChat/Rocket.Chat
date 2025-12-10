@@ -5,6 +5,7 @@ import { ajv } from '@rocket.chat/rest-typings';
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ATTRIBUTE_VALUES = 10;
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
+const MAX_USERS_SYNC_ITEMS = 100;
 
 const GenericSuccess = {
 	type: 'object',
@@ -312,24 +313,28 @@ const PostAbacUsersSyncBody = {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
+			maxItems: MAX_USERS_SYNC_ITEMS,
 			uniqueItems: true,
 		},
 		ids: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
+			maxItems: MAX_USERS_SYNC_ITEMS,
 			uniqueItems: true,
 		},
 		emails: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
+			maxItems: MAX_USERS_SYNC_ITEMS,
 			uniqueItems: true,
 		},
 		ldapIds: {
 			type: 'array',
 			items: { type: 'string', minLength: 1 },
 			minItems: 1,
+			maxItems: MAX_USERS_SYNC_ITEMS,
 			uniqueItems: true,
 		},
 	},
