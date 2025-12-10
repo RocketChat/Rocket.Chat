@@ -26,6 +26,18 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'ui',
+		system: true,
+		text: (t, message) => t('User_invited_to_room', { user_invited: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'uir',
+		system: true,
+		text: (t) => t('User_rejected_invitation_to_room'),
+	});
+
+	instance.registerType({
 		id: 'added-user-to-team',
 		system: true,
 		text: (t, message) => t('Added__username__to_this_team', { user_added: message.msg }),

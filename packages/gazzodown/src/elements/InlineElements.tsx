@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { lazy, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { lazy } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ImageElement from './ImageElement';

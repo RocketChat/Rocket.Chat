@@ -1,14 +1,13 @@
 import { Message, FederationMatrix } from '@rocket.chat/core-services';
-import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 import emojione from 'emojione';
 
 const logger = new Logger('federation-matrix:reaction');
 
-export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
+export function reaction() {
+	federationSDK.eventEmitterService.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
 		try {
 			const isSetReaction = event.content?.['m.relates_to'];
 
@@ -47,7 +46,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 		}
 	});
 
-	emitter.on('homeserver.matrix.redaction', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
 		try {
 			const redactedEventId = event.redacts;
 			if (!redactedEventId) {

@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { lazy, memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { lazy, memo } from 'react';
 
 import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';

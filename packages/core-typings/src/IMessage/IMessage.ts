@@ -68,6 +68,8 @@ export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
 const MessageTypes = [
 	'e2e',
 	'uj',
+	'ui',
+	'uir',
 	'ul',
 	'ru',
 	'au',

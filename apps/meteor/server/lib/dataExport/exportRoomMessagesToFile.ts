@@ -79,6 +79,14 @@ export const getMessageData = (
 		case 'ul':
 			messageObject.msg = i18n.t('User_left_this_channel');
 			break;
+		case 'ui':
+			messageObject.msg = i18n.t('User_invited_to_room', {
+				user_invited: hideUserName(msg.msg, userData, usersMap),
+			});
+			break;
+		case 'uir':
+			messageObject.msg = i18n.t('User_rejected_invitation_to_room');
+			break;
 		case 'ult':
 			messageObject.msg = i18n.t('User_left_this_team');
 			break;
