@@ -514,7 +514,7 @@ export class LDAPEEManager extends LDAPManager {
 		if (settings.get('ABAC_Enabled')) {
 			const roomsWithAbacAttributes = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(
 				allTeams.filter((t) => teamsToAdd.includes(t._id)).map((t) => t.roomId),
-				{ projection: { teamId: 1 } },
+				{ projection: { teamId: 1, roomId: 1 } },
 			)
 				.map((r) => r.teamId)
 				.toArray();
