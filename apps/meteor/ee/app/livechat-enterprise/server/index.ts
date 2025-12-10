@@ -3,7 +3,6 @@ import { patchOmniCore } from '@rocket.chat/omni-core-ee';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
-import './methods/removeMonitor';
 import './methods/removeBusinessHour';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
