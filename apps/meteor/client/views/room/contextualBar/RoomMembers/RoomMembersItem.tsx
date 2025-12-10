@@ -17,11 +17,12 @@ import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
+import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'> & {
+type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -38,9 +39,12 @@ const RoomMembersItem = ({
 	rid,
 	reload,
 	useRealName,
+	subscription,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const isInvited = subscription?.status === 'INVITED';
+	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
@@ -58,6 +62,11 @@ const RoomMembersItem = ({
 			<OptionContent data-qa={`MemberItem-${username}`}>
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
+			{isInvited && (
+				<OptionColumn>
+					<InvitationBadge mbs={2} size='x20' invitationDate={invitationDate} />
+				</OptionColumn>
+			)}
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
 					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
