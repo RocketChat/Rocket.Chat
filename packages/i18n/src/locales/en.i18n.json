@@ -5735,7 +5735,6 @@
   "VoIP_TeamCollab": "Team voice calls (VoIP)",
   "VoIP_TeamCollab_Beta_Alert": "This feature is currently in Beta, please report any issues to Rocket.Chat support",
   "VoIP_TeamCollab_Description": "Set up VoIP in Team collaboration",
-  "VoIP_TeamCollab_Enabled": "Enabled",
   "VoIP_TeamCollab_Feature1": "<0>Direct calling:</0> Instantly start or receive calls with team members within your Rocket.Chat workspace.",
   "VoIP_TeamCollab_Feature2": "<0>Extension management:</0> Admins can assign unique extensions to users, enabling quick, direct dialing both from inside and outside your organization.",
   "VoIP_TeamCollab_Feature3": "<0>Call transfers:</0> Seamlessly transfer active calls to ensure users reach the right team member.",
