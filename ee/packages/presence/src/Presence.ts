@@ -166,8 +166,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
-		console.debug(`Updating connection for user ${uid} and connection ${connectionId}`);
-
 		const query = {
 			'_id': uid,
 			'connections.id': connectionId,

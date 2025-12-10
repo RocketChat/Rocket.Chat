@@ -4,18 +4,19 @@ import type { IUserSession } from '@rocket.chat/core-typings';
 import { UsersSessions } from '@rocket.chat/models';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
-export type ReaperPlan = {
+type ReaperPlan = {
 	userId: string;
-	removeIds: string[];
-	shouldMarkOffline: boolean;
+	removeIds: NonEmptyArray<string>;
 	cutoffDate: Date;
 };
 
-type NonEmptyArray<T> = [T, ...T[]];
+type NonEmptyArray<T> = Omit<[T, ...T[]], 'map'> & {
+	map<U>(callbackfn: (value: T, index: number, array: T[]) => U): NonEmptyArray<U>;
+};
 
 const isNonEmptyArray = <T>(arr: T[]): arr is NonEmptyArray<T> => arr.length > 0;
 
-type ReaperCallback = (userIds: NonEmptyArray<string>) => void;
+type ReaperCallback = (userIds: NonEmptyArray<string>) => Promise<void>;
 
 type ReaperOptions = {
 	onUpdate: ReaperCallback;
@@ -49,8 +50,6 @@ export class PresenceReaper {
 		this.intervalId = setInterval(() => {
 			this.run().catch((err) => console.error('[PresenceReaper] Error:', err));
 		}, 60 * 1000);
-
-		console.log('[PresenceReaper] Service started.');
 	}
 
 	public stop() {
@@ -61,8 +60,6 @@ export class PresenceReaper {
 			clearInterval(this.intervalId);
 			this.intervalId = undefined;
 		}
-
-		console.log('[PresenceReaper] Service stopped.');
 	}
 
 	public async run(): Promise<void> {
@@ -92,57 +89,44 @@ export class PresenceReaper {
 		}
 	}
 
-	processDocument(sessionDoc: IUserSession, cutoffDate: Date, changeMap: Map<string, ReaperPlan>): void {
+	private processDocument(sessionDoc: IUserSession, cutoffDate: Date, changeMap: Map<string, ReaperPlan>): void {
 		const userId = sessionDoc._id;
 		const allConnections = sessionDoc.connections || [];
 
 		// Filter connections based on the cutoff
 		const staleConnections = allConnections.filter((c) => c._updatedAt <= cutoffDate);
-		const validConnections = allConnections.filter((c) => c._updatedAt > cutoffDate);
 
-		if (staleConnections.length === 0) return;
-
-		changeMap.set(userId, {
-			userId,
-			removeIds: staleConnections.map((c) => c.id),
-			cutoffDate, // Keep reference for race-condition check
-			shouldMarkOffline: validConnections.length === 0,
-		});
+		if (isNonEmptyArray(staleConnections)) {
+			changeMap.set(userId, {
+				userId,
+				removeIds: staleConnections.map((c) => c.id),
+				cutoffDate, // Keep reference for race-condition check
+			});
+		}
 	}
 
 	private async flushBatch(changeMap: Map<string, ReaperPlan>): Promise<void> {
-		const sessionOps: AnyBulkWriteOperation<IUserSession>[] = [];
-		const usersToUpdate: string[] = [];
+		const operations = [];
 
 		for (const plan of changeMap.values()) {
-			// 1. Prepare DB Cleanup
-			if (plan.removeIds.length > 0) {
-				sessionOps.push({
-					updateOne: {
-						filter: { _id: plan.userId },
-						update: {
-							$pull: {
-								connections: {
-									id: { $in: plan.removeIds },
-									_updatedAt: { $lte: plan.cutoffDate },
-								},
+			operations.push({
+				updateOne: {
+					filter: { _id: plan.userId },
+					update: {
+						$pull: {
+							connections: {
+								id: { $in: plan.removeIds },
+								_updatedAt: { $lte: plan.cutoffDate },
 							},
 						},
 					},
-				});
-			}
-
-			usersToUpdate.push(plan.userId);
+				},
+			} satisfies AnyBulkWriteOperation<IUserSession>);
 		}
 
-		// Step A: Clean the Database
-		if (sessionOps.length > 0) {
-			await UsersSessions.col.bulkWrite(sessionOps);
-		}
-
-		// Step B: Notify Presence Service
-		if (isNonEmptyArray(usersToUpdate)) {
-			this.onUpdate(usersToUpdate);
+		if (isNonEmptyArray(operations)) {
+			await UsersSessions.col.bulkWrite(operations);
+			await this.onUpdate(operations.map((op) => op.updateOne.filter._id));
 		}
 	}
 }
