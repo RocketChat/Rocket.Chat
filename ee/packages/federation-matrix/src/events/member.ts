@@ -1,8 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, PduForType } from '@rocket.chat/federation-sdk';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
@@ -237,8 +235,8 @@ async function handleLeave({
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
 
-export function member(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.membership', async ({ event }) => {
+export function member() {
+	federationSDK.eventEmitterService.on('homeserver.matrix.membership', async ({ event }) => {
 		try {
 			switch (event.content.membership) {
 				case 'invite':
