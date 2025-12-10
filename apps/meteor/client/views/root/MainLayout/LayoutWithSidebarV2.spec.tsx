@@ -62,6 +62,28 @@ describe('LayoutWithSidebarV2 - First_Channel_After_Login navigation', () => {
 		expect(navigate).toHaveBeenCalledWith({ name: '/channel/general' });
 	});
 
+	it('does NOT redirect if First_Channel_After_Login starts with "?"', () => {
+		const navigate = setupRouterMock();
+		mockedUseCurrentRoutePath.mockReturnValue('/');
+
+		render(<LayoutWithSidebarV2>content</LayoutWithSidebarV2>, {
+			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '?general').build(),
+		});
+
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
+	it('does NOT redirect if First_Channel_After_Login starts with "##"', () => {
+		const navigate = setupRouterMock();
+		mockedUseCurrentRoutePath.mockReturnValue('/');
+
+		render(<LayoutWithSidebarV2>content</LayoutWithSidebarV2>, {
+			wrapper: mockAppRoot().withSetting('First_Channel_After_Login', '##general').build(),
+		});
+
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
 	it('redirects when route is "/home"', () => {
 		const navigate = setupRouterMock();
 		mockedUseCurrentRoutePath.mockReturnValue('/home');
