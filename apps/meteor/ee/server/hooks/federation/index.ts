@@ -279,7 +279,7 @@ callbacks.add(
 );
 
 prepareCreateRoomCallback.add(async ({ extraData }) => {
-	if (!extraData.federated) {
+	if (!extraData.federated || isRoomNativeFederated(extraData)) {
 		return;
 	}
 
