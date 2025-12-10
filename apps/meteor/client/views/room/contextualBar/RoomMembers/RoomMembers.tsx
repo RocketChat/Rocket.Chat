@@ -1,4 +1,4 @@
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
@@ -22,8 +22,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-
-export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+import type { RoomMember } from '../../../hooks/useMembersList';
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -34,7 +33,7 @@ type RoomMembersProps = {
 	type: string;
 	setText: FormEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
-	members: RoomMemberUser[];
+	members: RoomMember[];
 	total: number;
 	error?: Error;
 	onClickClose: () => void;
@@ -91,10 +90,10 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles } = useMemo(() => {
-		const owners: RoomMemberUser[] = [];
-		const leaders: RoomMemberUser[] = [];
-		const moderators: RoomMemberUser[] = [];
-		const normalMembers: RoomMemberUser[] = [];
+		const owners: RoomMember[] = [];
+		const leaders: RoomMember[] = [];
+		const moderators: RoomMember[] = [];
+		const normalMembers: RoomMember[] = [];
 
 		members.forEach((member) => {
 			if (member.roles?.includes('owner')) {

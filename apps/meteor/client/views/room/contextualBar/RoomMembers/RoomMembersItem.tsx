@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Option,
 	OptionAvatar,
@@ -19,13 +19,14 @@ import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = {
-	onClickView: (e: MouseEvent<HTMLElement>) => void;
+type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'> & {
 	rid: IRoom['_id'];
-	reload: () => void;
 	useRealName: boolean;
-} & Pick<IUser, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'>;
+	reload: () => void;
+	onClickView: (e: MouseEvent<HTMLElement>) => void;
+};
 
 const RoomMembersItem = ({
 	_id,
