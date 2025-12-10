@@ -8,11 +8,6 @@ const logger = new Logger('federation-matrix:edu');
 
 export const edus = async () => {
 	federationSDK.eventEmitterService.on('homeserver.matrix.typing', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processTyping) {
-			return;
-		}
-
 		try {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
@@ -31,11 +26,6 @@ export const edus = async () => {
 	});
 
 	federationSDK.eventEmitterService.on('homeserver.matrix.presence', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processPresence) {
-			return;
-		}
-
 		try {
 			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
