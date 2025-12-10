@@ -7,6 +7,7 @@ import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
+import { DatabaseClient } from './db';
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
@@ -16,7 +17,7 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		recreateContext(credentials?: Credentials): Promise<void>;
+		recreateContext(): Promise<void>;
 		login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
 		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
@@ -25,12 +26,6 @@ export type BaseTest = {
 	};
 	makeAxeBuilder: () => AxeBuilder;
 };
-
-type Credentials = {
-	username: string;
-	password: string;
-};
-
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
@@ -43,7 +38,17 @@ let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
 
-export const test = baseTest.extend<BaseTest>({
+export const test = baseTest.extend<BaseTest, { db: DatabaseClient }>({
+	db: [
+		// eslint-disable-next-line no-empty-pattern
+		async ({}, use) => {
+			const db = await DatabaseClient.connect();
+			await use(db);
+			await db.close();
+		},
+		{ scope: 'worker' },
+	],
+
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
@@ -84,7 +89,7 @@ export const test = baseTest.extend<BaseTest>({
 				},
 			});
 
-		const login = async (credentials: Credentials): Promise<APIRequestContext> => {
+		const login = async (credentials: { username: string; password: string }): Promise<APIRequestContext> => {
 			if (credentials.username === Users.admin.data.username) {
 				return newContext(Users.admin.data.loginToken, Users.admin.data.username);
 			}
@@ -102,8 +107,8 @@ export const test = baseTest.extend<BaseTest>({
 			return newContext(json.data.authToken, json.data.userId);
 		};
 
-		const recreateContext = async (credentials: Credentials = ADMIN_CREDENTIALS) => {
-			apiContext = await login(credentials);
+		const recreateContext = async () => {
+			apiContext = await login(ADMIN_CREDENTIALS);
 		};
 
 		await recreateContext();
