@@ -1,29 +1,49 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { Response } from 'supertest';
 
 import { credentials, request, api } from '../api-data';
 
 type ExtendedCustomField = Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
 
-export const createCustomField = async (customFieldData: ExtendedCustomField): Promise<ExtendedCustomField> => {
-	const response = await request
-		.get(api(`livechat/custom-fields/${customFieldData.label}`))
-		.set(credentials)
-		.send();
-
-	if (response.body.customField) {
-		return response.body.customField;
-	}
-
-	const { body } = await request.post(api('livechat/custom-fields.save')).set(credentials).send({ customFieldData });
-
-	return body.customField;
-};
-
-export const deleteCustomField = async (customFieldId: string) => {
-	console.log(`Deleting custom field with id: ${customFieldId}`);
-	const { body } = await request.post(api('livechat/custom-fields.delete')).set(credentials).send({
-		customFieldId,
+export const createCustomField = (customField: ExtendedCustomField): Promise<ExtendedCustomField> =>
+	new Promise((resolve, reject) => {
+		void request
+			.get(api(`livechat/custom-fields/${customField.label}`))
+			.set(credentials)
+			.send()
+			.end((err: Error, res: Response) => {
+				if (err) {
+					return reject(err);
+				}
+				if (res.body.customField !== null && res.body.customField !== undefined) {
+					resolve(res.body.customField);
+				} else {
+					void request
+						.post(api('livechat/custom-fields.save'))
+						.set(credentials)
+						.send({ customFieldId: null, customFieldData: customField })
+						.end((err: Error, res: Response): void => {
+							if (err) {
+								return reject(err);
+							}
+							resolve(res.body.customField);
+						});
+				}
+			});
 	});
 
-	return body;
-};
+export const deleteCustomField = (customFieldID: string) =>
+	new Promise((resolve, reject) => {
+		void request
+			.post(api('livechat/custom-fields.delete'))
+			.set(credentials)
+			.send({
+				customFieldId: customFieldID,
+			})
+			.end((err: Error, res: Response): void => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
+			});
+	});
