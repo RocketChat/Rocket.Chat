@@ -579,11 +579,11 @@ describe('[Users]', () => {
 
 		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
 			beforeEach(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			after(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			it('should create a user with a voice call extension', async () => {
@@ -644,7 +644,7 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user if voip is disabled', async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -2530,11 +2530,11 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			beforeEach(async () => {
-				await Promise.all([updateSetting('VoIP_TeamCollab_Enabled', true)]);
+				await Promise.all([updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			it("should update the user's voice call extension", async () => {
@@ -2572,7 +2572,7 @@ describe('[Users]', () => {
 			});
 
 			it("should not update the user's voice call extension if voip setting is disabled", async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.update'))
 					.set(credentials)

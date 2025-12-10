@@ -11,8 +11,6 @@ export type MediaCallServerEvents = {
 };
 
 export interface IMediaCallServerSettings {
-	enabled: boolean;
-
 	internalCalls: {
 		requireExtensions: boolean;
 		routeExternally: 'never' | 'preferably' | 'always';
