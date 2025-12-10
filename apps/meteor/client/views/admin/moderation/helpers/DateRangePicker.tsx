@@ -72,7 +72,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 
 	useEffect(() => {
 		handleOptionClick(defaultSelectedKey);
-	});
+	}, []);
 
 	return (
 		<Box flexGrow={0}>
