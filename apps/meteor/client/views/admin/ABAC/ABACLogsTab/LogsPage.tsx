@@ -120,6 +120,7 @@ const LogsPage = () => {
 					</Margins>
 					<Margins inlineStart={8}>
 						<DateRangePicker
+							defaultSelectedKey='today'
 							onChange={(range) => {
 								setStartDate(range.start);
 								setEndDate(range.end);
