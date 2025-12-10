@@ -5,7 +5,7 @@ import type { ReactElement, ComponentProps } from 'react';
 import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import { useInvalidateLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense } from '../../../hooks';
 import { links } from '../../../lib/links';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 

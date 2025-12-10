@@ -1,6 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
-import { clientCallbacks } from '@rocket.chat/ui-client';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -15,7 +14,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ContextType } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useInvalidateLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense } from '../../../hooks';
+import { clientCallbacks } from '../../../lib';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';

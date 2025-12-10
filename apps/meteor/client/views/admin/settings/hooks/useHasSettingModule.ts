@@ -1,7 +1,6 @@
 import type { ISetting, LicenseModule } from '@rocket.chat/core-typings';
+import { useLicenseBase } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
-
-import { useLicenseBase } from '../../../../hooks/useLicense';
 
 export const useHasSettingModule = (setting?: ISetting) => {
 	const { data } = useLicenseBase({

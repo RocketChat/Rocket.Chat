@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 export const useRouteLock = (): boolean => {
 	const [locked, setLocked] = useState(true);
-	const setupWizardState = useSetting('Show_Setup_Wizard');
+	const setupWizardState = useSetting<'pending' | 'in_progress' | 'completed'>('Show_Setup_Wizard', 'pending');
 	const userId = useUserId();
 	const user = useDebouncedValue(useUser(), 100);
 	const hasAdminRole = useRole('admin');
