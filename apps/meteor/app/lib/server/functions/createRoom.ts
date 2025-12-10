@@ -182,7 +182,9 @@ export const createRoom = async <T extends RoomType>(
 		// options,
 	});
 
-	if (hasFederatedMembers && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+	const shouldBeHandledByFederation = extraData.federated === true;
+
+	if (shouldBeHandledByFederation && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});
@@ -295,13 +297,13 @@ export const createRoom = async <T extends RoomType>(
 	void notifyOnRoomChanged(room, 'inserted');
 
 	// If federated, we must create Matrix room BEFORE subscriptions so invites can be sent.
-	if (hasFederatedMembers) {
+	if (shouldBeHandledByFederation) {
 		// Reusing unused callback to create Matrix room.
 		// We should discuss the opportunity to rename it to something with "before" prefix.
 		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}
 
-	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation: hasFederatedMembers });
+	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
 
 	if (type === 'c') {
 		if (room.teamId) {
