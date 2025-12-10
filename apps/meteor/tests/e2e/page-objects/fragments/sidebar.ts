@@ -55,7 +55,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('link', { name, exact: true });
+		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	get firstCollapser(): Locator {
@@ -76,10 +76,6 @@ export class RoomSidebar extends Sidebar {
 
 	get firstChannelFromList(): Locator {
 		return this.channelsList.getByRole('listitem').first();
-	}
-
-	async escSearch(): Promise<void> {
-		await this.page.keyboard.press('Escape');
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {
