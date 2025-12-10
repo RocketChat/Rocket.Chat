@@ -9,7 +9,7 @@ Accounts._runLoginHandlers = async function (methodInvocation, options) {
 	const result = await _runLoginHandlers.call(Accounts, methodInvocation, options);
 
 	if (result.error instanceof Meteor.Error) {
-		result.error = new Meteor.Error(401, 'User not found');
+		result.error = new Meteor.Error(401, 'Incorrect username or password');
 	}
 
 	return result;
