@@ -5,29 +5,22 @@
  * Rocket.Chat instances, Matrix homeservers, and user credentials needed
  * for end-to-end federation testing.
  */
+
+type FederationServerConfig = {
+	url: string;
+	domain: string;
+	adminUser: string;
+	adminPassword: string;
+	adminMatrixUserId: string;
+	additionalUser1: {
+		username: string;
+		password: string;
+		matrixUserId: string;
+	};
+};
 export interface IFederationConfig {
-	rc1: {
-		apiUrl: string;
-		adminUser: string;
-		adminPassword: string;
-		adminMatrixUserId: string;
-		additionalUser1: {
-			username: string;
-			password: string;
-			matrixUserId: string;
-		};
-	};
-	hs1: {
-		url: string;
-		adminMatrixUserId: string;
-		adminUser: string;
-		adminPassword: string;
-		additionalUser1: {
-			username: string;
-			password: string;
-			matrixUserId: string;
-		};
-	};
+	rc1: FederationServerConfig;
+	hs1: FederationServerConfig;
 }
 
 /**
@@ -38,13 +31,12 @@ export interface IFederationConfig {
  * Throws an error if a required variable is missing or empty.
  *
  * @param name - The name of the environment variable for error messages
- * @param value - The environment variable value (may be undefined)
  * @param defaultValue - Optional default value to use if variable is not set
  * @returns The validated value (either the env var or default)
  * @throws Error if the variable is required but missing or empty
  */
-function validateEnvVar(name: string, value: string | undefined, defaultValue?: string): string {
-	const finalValue = value || defaultValue;
+function validateEnvVar(name: string, defaultValue?: string): string {
+	const finalValue = process.env[name] || defaultValue;
 	if (!finalValue || finalValue.trim() === '') {
 		throw new Error(`Required environment variable ${name} is not set or is empty`);
 	}
@@ -63,46 +55,40 @@ function validateEnvVar(name: string, value: string | undefined, defaultValue?: 
  * @throws Error if any required configuration is missing or invalid
  */
 function getFederationConfig(): IFederationConfig {
-	const rcDomain = validateEnvVar('FEDERATION_RC1_DOMAIN', process.env.FEDERATION_RC1_DOMAIN, 'rc1');
-	const rcAdminUser = validateEnvVar('FEDERATION_RC1_ADMIN_USER', process.env.FEDERATION_RC1_ADMIN_USER, 'admin');
-	const rcAdditionalUser1 = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2');
+	const rcDomain = validateEnvVar('FEDERATION_RC1_DOMAIN', 'rc1');
+	const rcAdminUser = validateEnvVar('FEDERATION_RC1_ADMIN_USER', 'admin');
+	const rcAdminPassword = validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', 'admin');
+	const rcAdditionalUser1 = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', 'user2');
+	const rcAdditionalUser1Password = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD', 'user2pass');
 
-	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', process.env.FEDERATION_SYNAPSE_DOMAIN, 'hs1');
-	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin');
-	const hs1AdditionalUser1 = validateEnvVar(
-		'FEDERATION_SYNAPSE_ADDITIONAL_USER1',
-		process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1,
-		'alice',
-	);
+	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', 'hs1');
+	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', 'admin');
+	const hs1AdminPassword = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', 'admin');
+	const hs1AdditionalUser1 = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', 'alice');
+	const hs1AdditionalUser1Password = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', 'alice');
 
 	return {
 		rc1: {
-			apiUrl: `https://${rcDomain}`,
+			url: `https://${rcDomain}`,
+			domain: rcDomain,
 			adminUser: rcAdminUser,
-			adminPassword: validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', process.env.FEDERATION_RC1_ADMIN_PASSWORD, 'admin'),
+			adminPassword: rcAdminPassword,
 			adminMatrixUserId: `@${rcAdminUser}:${rcDomain}`,
 			additionalUser1: {
 				username: rcAdditionalUser1,
-				password: validateEnvVar(
-					'FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD',
-					process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD,
-					'user2pass',
-				),
+				password: rcAdditionalUser1Password,
 				matrixUserId: `@${rcAdditionalUser1}:${rcDomain}`,
 			},
 		},
 		hs1: {
 			url: `https://${hs1Domain}`,
+			domain: hs1Domain,
 			adminUser: hs1AdminUser,
 			adminMatrixUserId: `@${hs1AdminUser}:${hs1Domain}`,
-			adminPassword: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', process.env.FEDERATION_SYNAPSE_ADMIN_PASSWORD, 'admin'),
+			adminPassword: hs1AdminPassword,
 			additionalUser1: {
 				username: hs1AdditionalUser1,
-				password: validateEnvVar(
-					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD',
-					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD,
-					'alice',
-				),
+				password: hs1AdditionalUser1Password,
 				matrixUserId: `@${hs1AdditionalUser1}:${hs1Domain}`,
 			},
 		},
