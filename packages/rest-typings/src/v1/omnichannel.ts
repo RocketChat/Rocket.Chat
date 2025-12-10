@@ -3409,6 +3409,43 @@ export const POSTLivechatBusinessHoursSaveSuccessSchema = {
 
 export const POSTLivechatBusinessHoursSaveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursSaveSuccessSchema);
 
+type POSTLivechatBusinessHoursRemoveParams = {
+	_id: string;
+	type: string;
+};
+
+const POSTLivechatBusinessHoursRemoveParamsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+		},
+	},
+	required: ['_id', 'type'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatBusinessHoursRemoveParams = ajv.compile<POSTLivechatBusinessHoursRemoveParams>(
+	POSTLivechatBusinessHoursRemoveParamsSchema,
+);
+
+export const POSTLivechatBusinessHoursRemoveSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const POSTLivechatBusinessHoursRemoveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursRemoveSuccessSchema);
+
 export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
 export type GETLivechatRoomsParams = PaginatedRequest<{
