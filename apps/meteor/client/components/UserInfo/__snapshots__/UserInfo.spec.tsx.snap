@@ -509,21 +509,36 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         >
                           <span
                             class="rcx-tag__inner"
-                          />
+                          >
+                            Top Secret
+                          </span>
                         </span>
                         <span
                           class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
                         >
                           <span
                             class="rcx-tag__inner"
-                          />
+                          >
+                            Confidential
+                          </span>
                         </span>
                         <span
                           class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
                         >
                           <span
                             class="rcx-tag__inner"
-                          />
+                          >
+                            Top Secret
+                          </span>
+                        </span>
+                        <span
+                          class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                        >
+                          <span
+                            class="rcx-tag__inner"
+                          >
+                            Confidential
+                          </span>
                         </span>
                       </div>
                     </div>
