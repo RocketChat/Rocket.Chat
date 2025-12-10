@@ -75,7 +75,12 @@ export interface ISubscription extends IRocketChatRecord {
 	suggestedOldRoomKeys?: OldKey[];
 
 	status?: SubscriptionStatus;
-	inviter?: Pick<IUser, '_id' | 'username' | 'name'>;
+	inviter?: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+}
+
+export interface IInviteSubscription extends ISubscription {
+	status: 'INVITED';
+	inviter: NonNullable<ISubscription['inviter']>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
@@ -85,3 +90,7 @@ export interface IOmnichannelSubscription extends ISubscription {
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }
+
+export const isInviteSubscription = (subscription: ISubscription): subscription is IInviteSubscription => {
+	return subscription?.status === 'INVITED' && !!subscription.inviter;
+};
