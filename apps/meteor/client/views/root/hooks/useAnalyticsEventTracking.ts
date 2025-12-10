@@ -1,7 +1,6 @@
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import { useRouter, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-
-import { callbacks } from '../../../../lib/callbacks';
 
 function trackEvent(category: string, action: string, label?: unknown) {
 	const { _paq, ga } = window;
@@ -32,17 +31,17 @@ export const useAnalyticsEventTracking = () => {
 	);
 
 	useEffect(() => {
-		callbacks.add(
+		clientCallbacks.add(
 			'loginPageStateChange',
 			(state) => {
 				trackEvent('Navigation', 'Login Page State Change', state);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-login-state-change',
 		);
 
 		return () => {
-			callbacks.remove('loginPageStateChange', 'analytics-login-state-change');
+			clientCallbacks.remove('loginPageStateChange', 'analytics-login-state-change');
 		};
 	}, []);
 
@@ -53,17 +52,17 @@ export const useAnalyticsEventTracking = () => {
 			return;
 		}
 
-		callbacks.add(
+		clientCallbacks.add(
 			'afterSaveMessage',
 			(_message, { room }) => {
 				trackEvent('Message', 'Send', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.LOW,
+			clientCallbacks.priority.LOW,
 			'trackEvents',
 		);
 
 		return () => {
-			callbacks.remove('afterSaveMessage', 'trackEvents');
+			clientCallbacks.remove('afterSaveMessage', 'trackEvents');
 		};
 	}, [featuresMessages]);
 
@@ -74,87 +73,87 @@ export const useAnalyticsEventTracking = () => {
 			return;
 		}
 
-		callbacks.add(
+		clientCallbacks.add(
 			'afterCreateChannel',
 			(_owner, room) => {
 				trackEvent('Room', 'Create', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-after-create-channel',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'roomNameChanged',
 			(room) => {
 				trackEvent('Room', 'Changed Name', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-room-name-changed',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'roomTopicChanged',
 			(room) => {
 				trackEvent('Room', 'Changed Topic', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-room-topic-changed',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'roomAnnouncementChanged',
 			(room) => {
 				trackEvent('Room', 'Changed Announcement', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-room-announcement-changed',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'roomTypeChanged',
 			(room) => {
 				trackEvent('Room', 'Changed Room Type', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-room-type-changed',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'archiveRoom',
 			(room) => {
 				trackEvent('Room', 'Archived', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-archive-room',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'unarchiveRoom',
 			(room) => {
 				trackEvent('Room', 'Unarchived', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-unarchive-room',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'roomAvatarChanged',
 			(room) => {
 				trackEvent('Room', 'Changed Avatar', `${room.name} (${room._id})`);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-room-avatar-changed',
 		);
 
 		return () => {
-			callbacks.remove('afterCreateChannel', 'analytics-after-create-channel');
-			callbacks.remove('roomNameChanged', 'analytics-room-name-changed');
-			callbacks.remove('roomTopicChanged', 'analytics-room-topic-changed');
-			callbacks.remove('roomAnnouncementChanged', 'analytics-room-announcement-changed');
-			callbacks.remove('roomTypeChanged', 'analytics-room-type-changed');
-			callbacks.remove('archiveRoom', 'analytics-archive-room');
-			callbacks.remove('unarchiveRoom', 'analytics-unarchive-room');
-			callbacks.remove('roomAvatarChanged', 'analytics-room-avatar-changed');
+			clientCallbacks.remove('afterCreateChannel', 'analytics-after-create-channel');
+			clientCallbacks.remove('roomNameChanged', 'analytics-room-name-changed');
+			clientCallbacks.remove('roomTopicChanged', 'analytics-room-topic-changed');
+			clientCallbacks.remove('roomAnnouncementChanged', 'analytics-room-announcement-changed');
+			clientCallbacks.remove('roomTypeChanged', 'analytics-room-type-changed');
+			clientCallbacks.remove('archiveRoom', 'analytics-archive-room');
+			clientCallbacks.remove('unarchiveRoom', 'analytics-unarchive-room');
+			clientCallbacks.remove('roomAvatarChanged', 'analytics-room-avatar-changed');
 		};
 	}, [featuresRooms]);
 
@@ -165,77 +164,77 @@ export const useAnalyticsEventTracking = () => {
 			return;
 		}
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userRegistered',
 			() => {
 				trackEvent('User', 'Registered');
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'piwik-user-resitered',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'usernameSet',
 			() => {
 				trackEvent('User', 'Username Set');
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'piweik-username-set',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userPasswordReset',
 			() => {
 				trackEvent('User', 'Reset Password');
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'piwik-user-password-reset',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userConfirmationEmailRequested',
 			() => {
 				trackEvent('User', 'Confirmation Email Requested');
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'piwik-user-confirmation-email-requested',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userForgotPasswordEmailRequested',
 			() => {
 				trackEvent('User', 'Forgot Password Email Requested');
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'piwik-user-forgot-password-email-requested',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userStatusManuallySet',
 			(status) => {
 				trackEvent('User', 'Status Manually Changed', status);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-user-status-manually-set',
 		);
 
-		callbacks.add(
+		clientCallbacks.add(
 			'userAvatarSet',
 			(service) => {
 				trackEvent('User', 'Avatar Changed', service);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			'analytics-user-avatar-set',
 		);
 
 		return () => {
-			callbacks.remove('userRegistered', 'piwik-user-resitered');
-			callbacks.remove('usernameSet', 'piweik-username-set');
-			callbacks.remove('userPasswordReset', 'piwik-user-password-reset');
-			callbacks.remove('userConfirmationEmailRequested', 'piwik-user-confirmation-email-requested');
-			callbacks.remove('userForgotPasswordEmailRequested', 'piwik-user-forgot-password-email-requested');
-			callbacks.remove('userStatusManuallySet', 'analytics-user-status-manually-set');
-			callbacks.remove('userAvatarSet', 'analytics-user-avatar-set');
+			clientCallbacks.remove('userRegistered', 'piwik-user-resitered');
+			clientCallbacks.remove('usernameSet', 'piweik-username-set');
+			clientCallbacks.remove('userPasswordReset', 'piwik-user-password-reset');
+			clientCallbacks.remove('userConfirmationEmailRequested', 'piwik-user-confirmation-email-requested');
+			clientCallbacks.remove('userForgotPasswordEmailRequested', 'piwik-user-forgot-password-email-requested');
+			clientCallbacks.remove('userStatusManuallySet', 'analytics-user-status-manually-set');
+			clientCallbacks.remove('userAvatarSet', 'analytics-user-avatar-set');
 		};
 	}, [featuresUsers]);
 

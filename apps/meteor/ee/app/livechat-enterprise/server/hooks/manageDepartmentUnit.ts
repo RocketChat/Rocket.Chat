@@ -3,7 +3,7 @@ import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { userId: string; departmentId: string; unitId: string }) => {
 	const accessibleUnits = await getUnitsFromUser(userId);

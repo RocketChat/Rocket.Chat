@@ -1,8 +1,8 @@
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../lib/settings';
 
 Meteor.startup(() => {
@@ -10,14 +10,14 @@ Meteor.startup(() => {
 		const isEnabled = settings.watch('AutoTranslate_Enabled') && hasPermission('auto-translate');
 
 		if (!isEnabled) {
-			callbacks.remove('streamMessage', 'autotranslate-stream');
+			clientCallbacks.remove('streamMessage', 'autotranslate-stream');
 			return;
 		}
 
 		import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
 			const streamMessage = createAutoTranslateMessageStreamHandler();
-			callbacks.remove('streamMessage', 'autotranslate-stream');
-			callbacks.add('streamMessage', streamMessage, callbacks.priority.HIGH - 3, 'autotranslate-stream');
+			clientCallbacks.remove('streamMessage', 'autotranslate-stream');
+			clientCallbacks.add('streamMessage', streamMessage, clientCallbacks.priority.HIGH - 3, 'autotranslate-stream');
 		});
 	});
 });

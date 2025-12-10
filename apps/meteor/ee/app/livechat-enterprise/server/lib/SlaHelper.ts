@@ -7,7 +7,7 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnLivechatInquiryChanged,
 } from '../../../../../app/lib/server/lib/notifyListener';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export const removeSLAFromRooms = async (slaId: string, userId: string) => {
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });

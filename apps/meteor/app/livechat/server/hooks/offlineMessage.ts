@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { sendRequest } from '../lib/webhooks';
 

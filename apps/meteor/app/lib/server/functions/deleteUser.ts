@@ -20,7 +20,7 @@ import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';

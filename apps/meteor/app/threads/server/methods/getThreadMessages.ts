@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';

@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { Filter } from 'mongodb';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
@@ -10,7 +11,6 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { modifyMessageOnFilesDelete } from '../../../../client/lib/utils/modifyMessageOnFilesDelete';
 import { Messages, Subscriptions } from '../../../../client/stores';
-import { callbacks } from '../../../../lib/callbacks';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
@@ -180,11 +180,11 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 					({ _id: msg._id, temp: { $ne: true } });
 					await upsertMessage({ msg, subscription });
 					if (isNew) {
-						await callbacks.run('streamNewMessage', msg);
+						await clientCallbacks.run('streamNewMessage', msg);
 					}
 				}
 
-				await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
+				await clientCallbacks.run('streamMessage', { ...msg, name: room.name || '' });
 
 				fireGlobalEvent('new-message', {
 					...msg,

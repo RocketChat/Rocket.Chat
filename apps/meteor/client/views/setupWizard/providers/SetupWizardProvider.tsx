@@ -1,5 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -14,7 +15,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ContextType } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
@@ -81,7 +81,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			password: string;
 		}): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
-			void callbacks.run('userRegistered', {});
+			void clientCallbacks.run('userRegistered', {});
 
 			try {
 				await loginWithPassword(email, password);
@@ -100,7 +100,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			await setBasicInfo({ data: { username } });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
-			void callbacks.run('usernameSet', {});
+			void clientCallbacks.run('usernameSet', {});
 		},
 		[registerUser, setForceLogin, setBasicInfo, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);

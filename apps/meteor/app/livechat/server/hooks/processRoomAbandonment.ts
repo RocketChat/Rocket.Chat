@@ -3,7 +3,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import type { CloseRoomParams } from '../lib/localTypes';

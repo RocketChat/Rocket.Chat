@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',

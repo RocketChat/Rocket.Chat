@@ -4,12 +4,12 @@ import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
-import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
-import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
-import { prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
+import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
+import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
+import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');

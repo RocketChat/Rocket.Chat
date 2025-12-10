@@ -6,7 +6,7 @@ import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { LDAPEEManager } from '../lib/ldap/Manager';

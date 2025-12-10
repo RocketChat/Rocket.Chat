@@ -5,7 +5,7 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { beforeAddUsersToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';

@@ -8,10 +8,10 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../server/lib/callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
