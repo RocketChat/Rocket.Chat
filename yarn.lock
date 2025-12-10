@@ -9770,7 +9770,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:~0.36.1":
+"@rocket.chat/onboarding-ui@npm:~0.36.0, @rocket.chat/onboarding-ui@npm:~0.36.1":
   version: 0.36.1
   resolution: "@rocket.chat/onboarding-ui@npm:0.36.1"
   dependencies:
@@ -10271,6 +10271,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
+    "@rocket.chat/onboarding-ui": "npm:~0.36.0"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
