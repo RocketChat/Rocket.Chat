@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav, ToastMessages } from './fragments';
-import { OmnichannelRoomToolbar, OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
+import { OmnichannelSidenav } from './fragments';
+import { OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
 import { HomeChannel } from './home-channel';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
@@ -14,12 +14,6 @@ import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
 
 export class HomeOmnichannel extends HomeChannel {
-	readonly content: HomeOmnichannelContent;
-
-	readonly sidenav: HomeSidenav;
-
-	readonly tabs: HomeFlextab;
-
 	readonly triggers: OmnichannelTriggers;
 
 	readonly omnisidenav: OmnichannelSidenav;
@@ -40,17 +34,10 @@ export class HomeOmnichannel extends HomeChannel {
 
 	readonly roomInfo: OmnichannelRoomInfo;
 
-	readonly roomToolbar: OmnichannelRoomToolbar;
-
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
-
-	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
 		super(page);
-		this.content = new HomeOmnichannelContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.tabs = new HomeFlextab(page);
 		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidenav(page);
 		this.currentChats = new OmnichannelCurrentChats(page);
@@ -61,9 +48,7 @@ export class HomeOmnichannel extends HomeChannel {
 		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContacts(page);
 		this.roomInfo = new OmnichannelRoomInfo(page);
-		this.roomToolbar = new OmnichannelRoomToolbar(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
-		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnContactInfo(): Locator {
