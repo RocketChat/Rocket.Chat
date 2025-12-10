@@ -77,14 +77,14 @@ test.describe.serial('Sidebar', () => {
 	test.describe('sidebar', async () => {
 		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
 			// focus should be on the next item
-			await poHomeChannel.sidenav.sidebarChannelsList.getByRole('link').first().focus();
+			await poHomeChannel.sidebar.channelsList.getByRole('link').first().focus();
 			await page.keyboard.press('ArrowDown');
-			await expect(poHomeChannel.sidenav.sidebarChannelsList.getByRole('link').first()).not.toBeFocused();
+			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 
 			// shouldn't focus the first item
 			await page.keyboard.press('Shift+Tab');
 			await page.keyboard.press('Tab');
-			await expect(poHomeChannel.sidenav.sidebarChannelsList.getByRole('link').first()).not.toBeFocused();
+			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 		});
 
 		test('should expand/collapse sidebar groups', async ({ page }) => {
@@ -142,7 +142,6 @@ test.describe.serial('Sidebar', () => {
 
 			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel);
 			await poHomeChannel.sidebar.markItemAsUnread(item);
-			await poHomeChannel.sidebar.escSearch();
 
 			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
 			await collapser.click();
