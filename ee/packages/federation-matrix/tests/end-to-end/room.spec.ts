@@ -1598,10 +1598,13 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
-					const pendingInvitation = subscriptions.update.find((subscription) => subscription.status === 'INVITED');
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
 
 					expect(pendingInvitation).not.toBeUndefined();
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation?.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
@@ -1618,6 +1621,43 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(members.members.find((member: IUser) => member.username === federationConfig.hs1.adminMatrixUserId)).not.toBeNull();
 					});
 				});
+			});
+		});
+
+		describe('Rejecting an invitation from Synapse', () => {
+			let matrixRoomId: string;
+			let channelName: string;
+			let rid: string;
+
+			beforeAll(async () => {
+				channelName = `federated-channel-reject-from-synapse-${Date.now()}`;
+				matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+				await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const pendingInvitation = subscriptions.update.find(
+					(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+				);
+
+				expect(pendingInvitation).not.toBeUndefined();
+
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				rid = pendingInvitation?.rid!;
+			}, 15000);
+
+			it('It should allow RC user to reject the invite', async () => {
+				const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
+				expect(rejectResponse.success).toBe(true);
+			});
+
+			it('It should remove the subscription after rejection', async () => {
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+
+				expect(invitedSub).toBeFalsy();
 			});
 		});
 	});
