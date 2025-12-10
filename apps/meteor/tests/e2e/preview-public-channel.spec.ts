@@ -36,7 +36,7 @@ test.describe('Preview public channel', () => {
 		test.use({ storageState: Users.user1.state });
 
 		test('should let user preview public rooms messages', async () => {
-			await poHomeChannel.sidenav.openDirectory();
+			await poHomeChannel.navbar.btnDirectory.click();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
@@ -55,7 +55,7 @@ test.describe('Preview public channel', () => {
 		test('should not let user role preview public rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.sidenav.openDirectory();
+			await poHomeChannel.navbar.btnDirectory.click();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.btnJoinChannel).toBeVisible();
@@ -69,7 +69,7 @@ test.describe('Preview public channel', () => {
 
 		test('should prevent user from join the room', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
-			await poHomeChannel.sidenav.openDirectory();
+			await poHomeChannel.navbar.btnDirectory.click();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
@@ -86,7 +86,7 @@ test.describe('Preview public channel', () => {
 		test('should prevent user from join the room without preview permission', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.sidenav.openDirectory();
+			await poHomeChannel.navbar.btnDirectory.click();
 			await poDirectory.openChannel(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 

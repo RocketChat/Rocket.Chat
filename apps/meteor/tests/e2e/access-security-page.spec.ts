@@ -31,7 +31,7 @@ test.describe.serial('access-security-page', () => {
 	);
 
 	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
-		const securityTab = poAccountProfile.sidenav.linkSecurity;
+		const securityTab = poAccountProfile.sidebar.linkSecurity;
 		await expect(securityTab).not.toBeVisible();
 		const mainContent = page.locator('#main-content').getByText('You are not authorized to view this page.').first();
 		await expect(mainContent).toBeVisible();
@@ -51,7 +51,7 @@ test.describe.serial('access-security-page', () => {
 		});
 
 		test('security page is visible when password change is enabled but 2FA and E2E are disabled', async () => {
-			const securityTab = poAccountProfile.sidenav.linkSecurity;
+			const securityTab = poAccountProfile.sidebar.linkSecurity;
 
 			await expect(securityTab).toBeVisible();
 		});
