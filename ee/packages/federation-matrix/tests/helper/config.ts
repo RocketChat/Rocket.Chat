@@ -20,8 +20,6 @@ export interface IFederationConfig {
 	hs1: {
 		url: string;
 		adminMatrixUserId: string;
-		password: string;
-		homeserver: string;
 		adminUser: string;
 		adminPassword: string;
 		additionalUser1: {
@@ -65,45 +63,47 @@ function validateEnvVar(name: string, value: string | undefined, defaultValue?: 
  * @throws Error if any required configuration is missing or invalid
  */
 function getFederationConfig(): IFederationConfig {
+	const rcDomain = validateEnvVar('FEDERATION_RC1_DOMAIN', process.env.FEDERATION_RC1_DOMAIN, 'rc1');
+	const rcAdminUser = validateEnvVar('FEDERATION_RC1_ADMIN_USER', process.env.FEDERATION_RC1_ADMIN_USER, 'admin');
+	const rcAdditionalUser1 = validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2');
+
+	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', process.env.FEDERATION_SYNAPSE_DOMAIN, 'hs1');
+	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin');
+	const hs1AdditionalUser1 = validateEnvVar(
+		'FEDERATION_SYNAPSE_ADDITIONAL_USER1',
+		process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1,
+		'alice',
+	);
+
 	return {
 		rc1: {
-			apiUrl: validateEnvVar('FEDERATION_RC1_API_URL', process.env.FEDERATION_RC1_API_URL, 'https://rc1'),
-			adminUser: validateEnvVar('FEDERATION_RC1_ADMIN_USER', process.env.FEDERATION_RC1_ADMIN_USER, 'admin'),
+			apiUrl: `https://${rcDomain}`,
+			adminUser: rcAdminUser,
 			adminPassword: validateEnvVar('FEDERATION_RC1_ADMIN_PASSWORD', process.env.FEDERATION_RC1_ADMIN_PASSWORD, 'admin'),
-			adminMatrixUserId: validateEnvVar('FEDERATION_RC1_USER_ID', process.env.FEDERATION_RC1_USER_ID, '@admin:rc1'),
+			adminMatrixUserId: `@${rcAdminUser}:${rcDomain}`,
 			additionalUser1: {
-				username: validateEnvVar('FEDERATION_RC1_ADDITIONAL_USER1', process.env.FEDERATION_RC1_ADDITIONAL_USER1, 'user2'),
+				username: rcAdditionalUser1,
 				password: validateEnvVar(
 					'FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD',
 					process.env.FEDERATION_RC1_ADDITIONAL_USER1_PASSWORD,
 					'user2pass',
 				),
-				matrixUserId: validateEnvVar(
-					'FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID',
-					process.env.FEDERATION_RC1_ADDITIONAL_USER1_MATRIX_ID,
-					'@user2:rc1',
-				),
+				matrixUserId: `@${rcAdditionalUser1}:${rcDomain}`,
 			},
 		},
 		hs1: {
-			url: validateEnvVar('FEDERATION_SYNAPSE_URL', process.env.FEDERATION_SYNAPSE_URL, 'https://hs1'),
-			adminMatrixUserId: validateEnvVar('FEDERATION_SYNAPSE_USER', process.env.FEDERATION_SYNAPSE_USER, '@admin:hs1'),
-			password: validateEnvVar('FEDERATION_SYNAPSE_PASSWORD', process.env.FEDERATION_SYNAPSE_PASSWORD, 'admin'),
-			homeserver: validateEnvVar('FEDERATION_SYNAPSE_HOMESERVER', process.env.FEDERATION_SYNAPSE_HOMESERVER, 'hs1'),
-			adminUser: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', process.env.FEDERATION_SYNAPSE_ADMIN_USER, 'admin'),
+			url: `https://${hs1Domain}`,
+			adminUser: hs1AdminUser,
+			adminMatrixUserId: `@${hs1AdminUser}:${hs1Domain}`,
 			adminPassword: validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', process.env.FEDERATION_SYNAPSE_ADMIN_PASSWORD, 'admin'),
 			additionalUser1: {
-				username: validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1, 'alice'),
+				username: hs1AdditionalUser1,
 				password: validateEnvVar(
 					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD',
 					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD,
 					'alice',
 				),
-				matrixUserId: validateEnvVar(
-					'FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID',
-					process.env.FEDERATION_SYNAPSE_ADDITIONAL_USER1_MATRIX_ID,
-					'@alice:hs1',
-				),
+				matrixUserId: `@${hs1AdditionalUser1}:${hs1Domain}`,
 			},
 		},
 	};
