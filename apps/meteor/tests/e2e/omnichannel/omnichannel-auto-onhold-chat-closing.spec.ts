@@ -38,7 +38,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
 
 		// start a new chat for each test
 		newVisitor = createFakeVisitor();

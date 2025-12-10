@@ -47,8 +47,8 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	// Make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
 	test.beforeAll(async () => {
 		const [agentA, agentB] = sessions;
-		await agentA.poHomeOmnichannel.sidenav.switchStatus('online');
-		await agentB.poHomeOmnichannel.sidenav.switchStatus('offline');
+		await agentA.poHomeOmnichannel.navbar.changeUserStatus('online');
+		await agentB.poHomeOmnichannel.navbar.changeUserStatus('offline');
 	});
 
 	// Close sessions
@@ -70,7 +70,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 		});
 
 		await test.step('expect to not be able to transfer chat to "user-2" when that user is offline', async () => {
-			await agentB.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await agentB.poHomeOmnichannel.navbar.changeUserStatus('offline');
 
 			await agentA.poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
 			await agentA.poHomeOmnichannel.content.forwardChatModal.inputFowardUser.click();
@@ -81,7 +81,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 		});
 
 		await test.step('expect to be able to transfer an omnichannel to conversation to agent 2 as agent 1 when agent 2 is online', async () => {
-			await agentB.poHomeOmnichannel.sidenav.switchStatus('online');
+			await agentB.poHomeOmnichannel.navbar.changeUserStatus('online');
 
 			await agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(visitor.name).click();
 			await agentA.poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
