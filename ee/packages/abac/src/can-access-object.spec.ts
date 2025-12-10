@@ -7,7 +7,7 @@ const mockSubscriptionsFindOneByRoomIdAndUserId = jest.fn();
 const mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId = jest.fn();
 const mockUsersFindOne = jest.fn();
 const mockUsersFindOneById = jest.fn();
-const mockRoomRemoveUserFromRoom = jest.fn();
+const mockRoomRemoveUserFromRoom = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('@rocket.chat/models', () => ({
 	Settings: {

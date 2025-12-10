@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import {
 	validateAndNormalizeAttributes,
 	MAX_ABAC_ATTRIBUTE_KEYS,
@@ -7,7 +5,19 @@ import {
 	diffAttributeSets,
 	buildRoomNonCompliantConditionsFromSubject,
 	extractAttribute,
+	ensureAttributeDefinitionsExist,
 } from './helper';
+
+const attributesFindMock = jest.fn();
+jest.mock('@rocket.chat/models', () => {
+	return {
+		AbacAttributes: {
+			find: jest.fn().mockReturnValue({
+				toArray: () => attributesFindMock(),
+			}),
+		},
+	};
+});
 
 describe('validateAndNormalizeAttributes', () => {
 	it('normalizes keys and merges duplicate values from multiple entries', () => {
@@ -17,7 +27,7 @@ describe('validateAndNormalizeAttributes', () => {
 			'dept': ['engineering'],
 		});
 
-		expect(result).to.deep.equal([
+		expect(result).toEqual([
 			{ key: 'dept', values: ['sales', 'marketing', 'engineering'] },
 			{ key: 'role', values: ['admin', 'user'] },
 		]);
@@ -28,7 +38,7 @@ describe('validateAndNormalizeAttributes', () => {
 			validateAndNormalizeAttributes({
 				role: ['   ', '\n', '\t'],
 			}),
-		).to.throw('error-invalid-attribute-values');
+		).toThrow('error-invalid-attribute-values');
 	});
 
 	it('throws when a key exceeds the maximum number of unique values', () => {
@@ -37,12 +47,71 @@ describe('validateAndNormalizeAttributes', () => {
 			validateAndNormalizeAttributes({
 				role: values,
 			}),
-		).to.throw('error-invalid-attribute-values');
+		).toThrow('error-invalid-attribute-values');
 	});
 
-	it('throws when total unique attribute keys exceeds limit', () => {
+	it('throws when attempting to add a new key beyond MAX_ABAC_ATTRIBUTE_KEYS', () => {
+		const baseEntries = Object.fromEntries(Array.from({ length: MAX_ABAC_ATTRIBUTE_KEYS }, (_, i) => [`key-${i}`, ['value']]));
+
+		expect(() =>
+			validateAndNormalizeAttributes({
+				...baseEntries,
+				'extra-key': ['value'],
+			}),
+		).toThrow('error-invalid-attribute-values');
+	});
+
+	it('throws when total unique attribute keys exceeds limit (post-aggregation check)', () => {
 		const attributes = Object.fromEntries(Array.from({ length: MAX_ABAC_ATTRIBUTE_KEYS + 1 }, (_, i) => [`key-${i}`, ['value']]));
-		expect(() => validateAndNormalizeAttributes(attributes)).to.throw('error-invalid-attribute-values');
+
+		expect(() => validateAndNormalizeAttributes(attributes)).toThrow('error-invalid-attribute-values');
+	});
+
+	it('throws when a key exceeds the maximum number of unique values (bucket size limit)', () => {
+		const values = Array.from({ length: MAX_ABAC_ATTRIBUTE_VALUES + 1 }, (_, i) => `value-${i}`);
+
+		expect(() =>
+			validateAndNormalizeAttributes({
+				role: values,
+			}),
+		).toThrow('error-invalid-attribute-values');
+	});
+
+	it('throws when a key has only invalid/empty values after sanitization', () => {
+		expect(() =>
+			validateAndNormalizeAttributes({
+				role: ['   ', '\n', '\t'],
+			}),
+		).toThrow('error-invalid-attribute-values');
+	});
+});
+
+describe('ensureAttributeDefinitionsExist', () => {
+	afterEach(() => {
+		attributesFindMock.mockReset();
+	});
+
+	it('does nothing when normalized is empty', async () => {
+		await ensureAttributeDefinitionsExist([]);
+	});
+
+	it('throws when some attribute definitions are missing (size mismatch)', async () => {
+		const normalized = [
+			{ key: 'dept', values: ['eng'] },
+			{ key: 'role', values: ['admin'] },
+		];
+
+		attributesFindMock.mockResolvedValue([{ key: 'dept', values: ['eng', 'sales'] }]);
+
+		await expect(ensureAttributeDefinitionsExist(normalized)).rejects.toThrow('error-attribute-definition-not-found');
+	});
+
+	it('throws when a normalized value is not in the allowed definition values', async () => {
+		const normalized = [{ key: 'dept', values: ['eng', 'support'] }];
+
+		attributesFindMock.mockResolvedValue([{ key: 'dept', values: ['eng', 'sales'] }]);
+
+		await expect(ensureAttributeDefinitionsExist(normalized)).rejects.toThrow('error-invalid-attribute-values');
 	});
 });
 
@@ -50,7 +119,7 @@ describe('diffAttributeSets', () => {
 	it('returns false/false when both sets are empty', () => {
 		const result = diffAttributeSets([], []);
 
-		expect(result).to.deep.equal({ added: false, removed: false });
+		expect(result).toEqual({ added: false, removed: false });
 	});
 
 	it('detects only additions when moving from empty to non-empty', () => {
@@ -62,7 +131,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: false });
+		expect(result).toEqual({ added: true, removed: false });
 	});
 
 	it('detects only removals when moving from non-empty to empty', () => {
@@ -74,7 +143,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: false, removed: true });
+		expect(result).toEqual({ added: false, removed: true });
 	});
 
 	it('returns false/false when sets are identical (same keys and values)', () => {
@@ -89,7 +158,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: false, removed: false });
+		expect(result).toEqual({ added: false, removed: false });
 	});
 
 	it('ignores value ordering and still treats sets as identical', () => {
@@ -104,7 +173,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: false, removed: false });
+		expect(result).toEqual({ added: false, removed: false });
 	});
 
 	it('detects added values for an existing key', () => {
@@ -113,7 +182,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: false });
+		expect(result).toEqual({ added: true, removed: false });
 	});
 
 	it('detects removed values for an existing key', () => {
@@ -122,7 +191,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: false, removed: true });
+		expect(result).toEqual({ added: false, removed: true });
 	});
 
 	it('detects added and removed values on the same key', () => {
@@ -131,7 +200,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: true });
+		expect(result).toEqual({ added: true, removed: true });
 	});
 
 	it('detects newly added keys as additions', () => {
@@ -143,7 +212,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: false });
+		expect(result).toEqual({ added: true, removed: false });
 	});
 
 	it('detects removed keys as removals', () => {
@@ -155,7 +224,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: false, removed: true });
+		expect(result).toEqual({ added: false, removed: true });
 	});
 
 	it('detects both added and removed keys across sets', () => {
@@ -170,7 +239,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: true });
+		expect(result).toEqual({ added: true, removed: true });
 	});
 
 	it('handles mixed changes: new key, removed key, added and removed values', () => {
@@ -185,7 +254,7 @@ describe('diffAttributeSets', () => {
 
 		const result = diffAttributeSets(current, next);
 
-		expect(result).to.deep.equal({ added: true, removed: true });
+		expect(result).toEqual({ added: true, removed: true });
 	});
 });
 
@@ -211,14 +280,14 @@ describe('buildNonCompliantConditions', () => {
 
 	it('returns empty array for empty attributes list', () => {
 		const result = buildNonCompliantConditions([]);
-		expect(result).to.deep.equal([]);
+		expect(result).toEqual([]);
 	});
 
 	it('maps single attribute to $not $elemMatch query', () => {
 		const attrs: AttributeDef[] = [{ key: 'dept', values: ['eng', 'sales'] }];
 		const result = buildNonCompliantConditions(attrs);
 
-		expect(result).to.deep.equal([
+		expect(result).toEqual([
 			{
 				abacAttributes: {
 					$not: {
@@ -240,7 +309,7 @@ describe('buildNonCompliantConditions', () => {
 
 		const result = buildNonCompliantConditions(attrs);
 
-		expect(result).to.deep.equal([
+		expect(result).toEqual([
 			{
 				abacAttributes: {
 					$not: {
@@ -271,7 +340,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 
 		const result = buildRoomNonCompliantConditionsFromSubject(subject);
 
-		expect(result).to.deep.equal([
+		expect(result).toEqual([
 			{
 				abacAttributes: {
 					$elemMatch: {
@@ -298,7 +367,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 
 		const result = buildRoomNonCompliantConditionsFromSubject(subject);
 
-		expect(result[0]).to.deep.equal({
+		expect(result[0]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: { $nin: ['dept', 'role'] },
@@ -306,7 +375,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 			},
 		});
 
-		expect(result[1]).to.deep.equal({
+		expect(result[1]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: 'dept',
@@ -315,7 +384,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 			},
 		});
 
-		expect(result[2]).to.deep.equal({
+		expect(result[2]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: 'role',
@@ -333,7 +402,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 
 		const result = buildRoomNonCompliantConditionsFromSubject(subject);
 
-		expect(result[0]).to.deep.equal({
+		expect(result[0]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: { $nin: ['dept', 'role'] },
@@ -341,7 +410,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 			},
 		});
 
-		expect(result[1]).to.deep.equal({
+		expect(result[1]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: 'dept',
@@ -350,7 +419,7 @@ describe('buildRoomNonCompliantConditionsFromSubject', () => {
 			},
 		});
 
-		expect(result[2]).to.deep.equal({
+		expect(result[2]).toEqual({
 			abacAttributes: {
 				$elemMatch: {
 					key: 'role',
@@ -365,14 +434,14 @@ describe('extractAttribute', () => {
 	it('returns undefined when ldapKey or abacKey is missing', () => {
 		const ldapUser = { memberOf: ['CN=Eng,OU=Groups'] } as any;
 
-		expect(extractAttribute(ldapUser, '', 'dept')).to.be.undefined;
-		expect(extractAttribute(ldapUser, 'memberOf', '')).to.be.undefined;
+		expect(extractAttribute(ldapUser, '', 'dept')).toBeUndefined();
+		expect(extractAttribute(ldapUser, 'memberOf', '')).toBeUndefined();
 	});
 
 	it('returns undefined when ldapUser does not have the provided key', () => {
 		const ldapUser = { other: ['value'] } as any;
 
-		expect(extractAttribute(ldapUser, 'memberOf', 'dept')).to.be.undefined;
+		expect(extractAttribute(ldapUser, 'memberOf', 'dept')).toBeUndefined();
 	});
 
 	it('extracts and normalizes a single string value', () => {
@@ -380,7 +449,7 @@ describe('extractAttribute', () => {
 
 		const result = extractAttribute(ldapUser, 'department', 'dept');
 
-		expect(result).to.deep.equal({
+		expect(result).toEqual({
 			key: 'dept',
 			values: ['Engineering'],
 		});
@@ -394,7 +463,7 @@ describe('extractAttribute', () => {
 		const result = extractAttribute(ldapUser, 'memberOf', 'dept');
 
 		// Order is preserved by insertion into the Set in implementation: ['Eng', 'Sales']
-		expect(result).to.deep.equal({
+		expect(result).toEqual({
 			key: 'dept',
 			values: ['Eng', 'Sales'],
 		});
@@ -407,7 +476,7 @@ describe('extractAttribute', () => {
 
 		const result = extractAttribute(ldapUser, 'memberOf', 'dept');
 
-		expect(result).to.deep.equal({
+		expect(result).toEqual({
 			key: 'dept',
 			values: ['Eng'],
 		});
@@ -420,6 +489,6 @@ describe('extractAttribute', () => {
 
 		const result = extractAttribute(ldapUser, 'memberOf', 'dept');
 
-		expect(result).to.be.undefined;
+		expect(result).toBeUndefined();
 	});
 });

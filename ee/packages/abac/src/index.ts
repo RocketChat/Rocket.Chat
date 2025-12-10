@@ -1,11 +1,20 @@
 import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, AtLeast, IUser, ILDAPEntry, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	IAbacAttribute,
+	IAbacAttributeDefinition,
+	IRoom,
+	AtLeast,
+	IUser,
+	ILDAPEntry,
+	ISubscription,
+	AbacAuditReason,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Document, UpdateFilter } from 'mongodb';
+import type { Document, FindCursor, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
@@ -550,12 +559,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 
 			// When a user is not compliant, remove them from the room automatically
-			await Room.removeUserFromRoom(room._id, fullUser, {
-				skipAppPreEvents: true,
-				customSystemMessage: 'abac-removed-user-from-room' as const,
-			});
+			await this.removeUserFromRoom(room, fullUser, 'realtime-policy-eval');
 
-			void Audit.actionPerformed({ _id: user._id, username: fullUser.username }, { _id: room._id }, 'realtime-policy-eval');
 			return false;
 		}
 
@@ -595,22 +600,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const userRemovalPromises = [];
 			for await (const doc of cursor) {
 				usersToRemove.push(doc._id);
-				userRemovalPromises.push(
-					limit(() =>
-						Room.removeUserFromRoom(rid, doc, {
-							skipAppPreEvents: true,
-							customSystemMessage: 'abac-removed-user-from-room' as const,
-						})
-							.then(() => void Audit.actionPerformed({ _id: doc._id, username: doc.username }, { _id: rid }, 'room-attributes-change'))
-							.catch((err) => {
-								this.logger.error({
-									msg: 'Failed to remove user from ABAC room after room attributes changed',
-									rid,
-									err,
-								});
-							}),
-					),
-				);
+				userRemovalPromises.push(limit(() => this.removeUserFromRoom(room, doc, 'room-attributes-change')));
 			}
 
 			if (!usersToRemove.length) {
@@ -627,12 +617,36 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
+	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
+		return Room.removeUserFromRoom(room._id, user, {
+			skipAppPreEvents: true,
+			customSystemMessage: 'abac-removed-user-from-room' as const,
+		})
+			.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, reason))
+			.catch((err) => {
+				this.logger.error({
+					msg: 'Failed to remove user from ABAC room',
+					rid: room._id,
+					err,
+					reason,
+				});
+			});
+	}
+
+	private async removeUserFromRoomList(roomList: FindCursor<IRoom>, user: IUser, reason: AbacAuditReason): Promise<void> {
+		const removalPromises: Promise<void>[] = [];
+		for await (const room of roomList) {
+			removalPromises.push(limit(() => this.removeUserFromRoom(room, user, reason)));
+		}
+
+		await Promise.all(removalPromises);
+	}
+
 	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
 		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length) {
 			return;
 		}
-
-		const roomIds: string[] = user.__rooms;
+		const roomIds = user.__rooms;
 
 		try {
 			// No attributes: no rooms :(
@@ -645,28 +659,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 					{ projection: { _id: 1 } },
 				);
 
-				const removalPromises: Promise<void>[] = [];
-				for await (const room of cursor) {
-					removalPromises.push(
-						limit(() =>
-							Room.removeUserFromRoom(room._id, user, {
-								skipAppPreEvents: true,
-								customSystemMessage: 'abac-removed-user-from-room' as const,
-							})
-								.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
-								.catch((err) => {
-									this.logger.error({
-										msg: 'Failed to remove user from ABAC room after room attributes changed',
-										rid: room._id,
-										err,
-									});
-								}),
-						),
-					);
-				}
-
-				await Promise.all(removalPromises);
-				return;
+				return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
 			}
 
 			const query = {
@@ -676,27 +669,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const cursor = Rooms.find(query, { projection: { _id: 1 } });
 
-			const removalPromises: Promise<unknown>[] = [];
-			for await (const room of cursor) {
-				removalPromises.push(
-					limit(() =>
-						Room.removeUserFromRoom(room._id, user, {
-							skipAppPreEvents: true,
-							customSystemMessage: 'abac-removed-user-from-room' as const,
-						})
-							.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, 'ldap-sync'))
-							.catch((err) => {
-								this.logger.error({
-									msg: 'Failed to remove user from ABAC room after room attributes changed',
-									rid: room._id,
-									err,
-								});
-							}),
-					),
-				);
-			}
-
-			await Promise.all(removalPromises);
+			return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
 		} catch (err) {
 			this.logger.error({
 				msg: 'Failed to query and remove user from non-compliant ABAC rooms',
