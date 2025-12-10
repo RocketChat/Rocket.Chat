@@ -260,10 +260,6 @@ export const createGeneralSettings = () =>
 			],
 			public: true,
 		});
-		await this.add('ECDH_Enabled', false, {
-			type: 'boolean',
-			alert: 'This_feature_is_currently_in_alpha',
-		});
 		await this.section('UTF8', async function () {
 			await this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 				type: 'string',

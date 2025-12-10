@@ -84,7 +84,6 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				allowConnection: () => void;
 				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 

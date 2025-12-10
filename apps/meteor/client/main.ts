@@ -3,7 +3,6 @@ import './meteor/startup';
 import './serviceWorker';
 
 import('./meteor/login')
-	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => import('./startup'))
 	.then(() =>
