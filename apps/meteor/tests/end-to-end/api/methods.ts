@@ -345,7 +345,7 @@ describe('Meteor.methods', () => {
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
 					await retry(
-						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no away to make sure the read receipt will be rigth 
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
 						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
 						async () => {
 							await request
@@ -432,7 +432,7 @@ describe('Meteor.methods', () => {
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
 					await retry(
-						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no away to make sure the read receipt will be rigth 
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
 						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
 						async () => {
 							await request
