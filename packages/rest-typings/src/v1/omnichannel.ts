@@ -3304,12 +3304,12 @@ export type POSTLivechatBusinessHoursSaveParams = {
 	name: string;
 	timezoneName: string;
 	daysOpen: string[];
-	daysTime: BusinessHourDaysTime[];
+	daysTime?: BusinessHourDaysTime[];
 	departmentsToApplyBusinessHour: string;
 	active: boolean;
 	_id?: string;
 	type: string;
-	timezone: string;
+	timezone?: string;
 	workHours: BusinessHourWorkHours[];
 };
 
@@ -3355,6 +3355,7 @@ const POSTLivechatBusinessHoursSaveParamsSchema = {
 				required: ['day', 'start', 'finish', 'open'],
 				additionalProperties: false,
 			},
+minItems: 1,
 		},
 		departmentsToApplyBusinessHour: {
 			type: 'string',
@@ -3385,9 +3386,10 @@ const POSTLivechatBusinessHoursSaveParamsSchema = {
 				required: ['day', 'start', 'finish', 'open'],
 				additionalProperties: false,
 			},
+			minItems: 1,
 		},
 	},
-	required: ['name', 'timezoneName', 'daysOpen', 'daysTime', 'departmentsToApplyBusinessHour', 'active', 'type', 'timezone', 'workHours'],
+	required: ['name', 'timezoneName', 'daysOpen', 'departmentsToApplyBusinessHour', 'active', 'type', 'workHours'],
 	additionalProperties: false,
 };
 

@@ -866,6 +866,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
+	findOneFederatedByMrid(mrid: string, options: FindOptions<IRoomFederated> = {}): Promise<IRoomFederated | null> {
+		const query: Filter<IRoom> = {
+			'federated': true,
+			'federation.mrid': mrid,
+		};
+
+		return this.findOne<IRoomFederated>(query, options);
+	}
+
 	findCountOfRoomsWithActiveCalls(): Promise<number> {
 		const query: Filter<IRoom> = {
 			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
