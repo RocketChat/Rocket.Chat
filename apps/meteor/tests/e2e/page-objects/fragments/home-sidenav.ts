@@ -72,10 +72,6 @@ export class HomeSidenav {
 		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
-	async waitForHome(): Promise<void> {
-		await this.page.waitForSelector('main');
-	}
-
 	get homepageHeader(): Locator {
 		return this.page.locator('main').getByRole('heading', { name: 'Home' });
 	}
