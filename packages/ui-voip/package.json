@@ -29,6 +29,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.52.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "^0.69.0",
@@ -43,6 +44,7 @@
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/ui-kit": "workspace:^",
 		"@storybook/addon-a11y": "^8.6.14",
 		"@storybook/addon-actions": "^8.6.14",
 		"@storybook/addon-docs": "^8.6.14",
@@ -60,6 +62,7 @@
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~18.3.26",
 		"@types/react-dom": "~18.3.7",
+		"date-fns": "~4.1.0",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
@@ -83,6 +86,7 @@
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
+		"date-fns": "*",
 		"react": "*",
 		"react-aria": "~3.23.1",
 		"react-dom": "*"

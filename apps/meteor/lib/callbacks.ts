@@ -78,7 +78,7 @@ interface EventLikeCallbackSignatures {
 		},
 	) => void;
 	'beforeCreateDirectRoom': (members: string[], room: IRoom) => void;
-	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[], extraData: Record<string, unknown>) => void;
 	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,
