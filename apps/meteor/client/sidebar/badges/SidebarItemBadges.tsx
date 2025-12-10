@@ -1,13 +1,13 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Margins } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import UnreadBadge from './UnreadBadge';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarItemBadgesProps = {
-	room: ISubscription & IRoom;
+	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };
 

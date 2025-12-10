@@ -1,6 +1,7 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Sidebar, SidebarItemAction, SidebarItemActions } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { TFunction } from 'i18next';
@@ -17,7 +18,7 @@ import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -63,7 +64,7 @@ type RoomListRowProps = {
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 
-	room: ISubscription & IRoom;
+	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
