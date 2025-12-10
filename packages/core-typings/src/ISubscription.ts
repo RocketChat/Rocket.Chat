@@ -7,6 +7,7 @@ type RoomID = string;
 
 export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 
+export type SubscriptionStatus = 'INVITED';
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
@@ -72,6 +73,9 @@ export interface ISubscription extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 	oldRoomKeys?: OldKey[];
 	suggestedOldRoomKeys?: OldKey[];
+
+	status?: SubscriptionStatus;
+	inviter?: Pick<IUser, '_id' | 'username' | 'name'>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
