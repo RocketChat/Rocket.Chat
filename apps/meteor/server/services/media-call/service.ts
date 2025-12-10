@@ -1,12 +1,19 @@
 import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
-import type { IMediaCall, IUser, IRoom, IInternalMediaCallHistoryItem, CallHistoryItemState } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IUser,
+	IRoom,
+	IInternalMediaCallHistoryItem,
+	CallHistoryItemState,
+	IExternalMediaCallHistoryItem,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
+import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
-import { getHistoryMessagePayload } from './getHistoryMessagePayload';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { createDirectMessage } from '../../methods/createDirectMessage';
@@ -81,10 +88,50 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		if (call.uids.length !== 2) {
-			return;
+			return this.saveExternalCallToHistory(call);
 		}
 
 		return this.saveInternalCallToHistory(call);
+	}
+
+	private async saveExternalCallToHistory(call: IMediaCall): Promise<void> {
+		const callerIsInternal = call.caller.type === 'user';
+		const calleeIsInternal = call.callee.type === 'user';
+
+		if (callerIsInternal && calleeIsInternal) {
+			logger.warn({ msg: 'Attempt to save an external call history with a call that is not external', callId: call._id });
+			return;
+		}
+
+		if (!callerIsInternal && !calleeIsInternal) {
+			logger.warn({ msg: 'Attempt to save an external call history with an invalid call', callId: call._id });
+			return;
+		}
+
+		const state = this.getCallHistoryItemState(call);
+		const duration = this.getCallDuration(call);
+		const direction = callerIsInternal ? 'outbound' : 'inbound';
+		const uid = callerIsInternal ? call.caller.id : call.callee.id;
+		const contact = callerIsInternal ? call.callee : call.caller;
+
+		const contactExtension = contact.sipExtension || contact.id;
+
+		const historyItem: InsertionModel<IExternalMediaCallHistoryItem> = {
+			uid,
+			ts: call.createdAt,
+			callId: call._id,
+			state,
+			type: 'media-call',
+			duration,
+			endedAt: call.endedAt || new Date(),
+			external: true,
+			direction,
+			contactExtension,
+		};
+
+		await CallHistory.insertOne(historyItem).catch((error: unknown) =>
+			logger.error({ msg: 'Failed to insert item into Call History', error }),
+		);
 	}
 
 	private async saveInternalCallToHistory(call: IMediaCall): Promise<void> {

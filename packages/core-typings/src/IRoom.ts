@@ -116,6 +116,7 @@ export interface IRoomNativeFederated extends IRoomFederated {
 		version: number;
 		// Matrix's room ID. Example: !XqJXqZxXqJXq:matrix.org
 		mrid: string;
+		origin: string;
 	};
 }
 

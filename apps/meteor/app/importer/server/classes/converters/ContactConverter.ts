@@ -16,7 +16,7 @@ export class ContactConverter extends RecordConverter<IImportContactRecord> {
 		return validateCustomFields(allowedCustomFields, customFields, { ignoreAdditionalFields: true });
 	}
 
-	protected async convertRecord(record: IImportContactRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportContactRecord): Promise<boolean> {
 		const { data } = record;
 
 		await createContact({
@@ -36,7 +36,7 @@ export class ContactConverter extends RecordConverter<IImportContactRecord> {
 		return LivechatVisitors.getNextVisitorUsername();
 	}
 
-	protected getDataType(): 'contact' {
+	protected override getDataType(): 'contact' {
 		return 'contact';
 	}
 }

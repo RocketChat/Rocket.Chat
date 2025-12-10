@@ -67,7 +67,10 @@ export const listenSessionLogin = () => {
 			emails: [{ address: email }],
 		} = user;
 
-		const userAgentString = connection?.httpHeaders?.['user-agent'] ?? '';
+		const userAgentString =
+			connection.httpHeaders instanceof Headers
+				? (connection.httpHeaders.get('user-agent') ?? '')
+				: (connection.httpHeaders['user-agent'] ?? '');
 		const { browser, os, device, cpu, app } = await uaParser(userAgentString);
 
 		const mailData = {
