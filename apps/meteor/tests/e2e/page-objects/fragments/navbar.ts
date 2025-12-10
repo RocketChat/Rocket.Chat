@@ -145,6 +145,10 @@ export class Navbar {
 		return this.searchList.getByRole('option', { name }).filter({ has: this.root.getByText(name, { exact: true }) });
 	}
 
+	getSearchItemBadge(name: string): Locator {
+		return this.getSearchRoomByName(name).getByRole('status', { name: 'unread' });
+	}
+
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.getSearchRoomByName(name).waitFor();
