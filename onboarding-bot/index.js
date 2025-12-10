@@ -1,83 +1,101 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose'); // Import Mongoose
 const app = express();
 
 app.use(express.json());
 
-// ---  WORK STARTS HERE ---
+// --- 1. CONNECT TO MONGODB ---
+// Use environment variable or fallback to local MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/onboarding_db';
 
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    console.log('💡 Make sure MongoDB is running or set MONGODB_URI environment variable');
+  });
 
-// 'steps' remembers which question the user is currently on.
-// 'data' stores the answers the user gives.
-let steps = {};  
-let data = {};   
+// --- 2. DEFINE THE SCHEMA ---
+// This defines what a "User" looks like in the database
+const UserSchema = new mongoose.Schema({
+  username: String,
+  step: { type: Number, default: 0 }, // Tracks progress (0, 1, 2, 3...)
+  department: String,
+  employeeId: String,
+  location: String
+});
 
-app.post('/webhook', (req, res) => {
-  // 2. Extract data from Rocket.Chat's webhook request
-  const user = req.body.user_name;
+// Create the Model
+const User = mongoose.model('User', UserSchema);
+
+// --- 3. THE BOT LOGIC ---
+app.post('/webhook', async (req, res) => {
+  const username = req.body.user_name;
   const msg = req.body.text ? req.body.text.trim().toLowerCase() : "";
 
-  // 3. Initialize user if they are new
-  if (!steps[user]) {
-    steps[user] = 0;
-    data[user] = {};
+  // Find the user in the DB, or create them if they don't exist
+  let user = await User.findOne({ username: username });
+
+  if (!user) {
+    user = new User({ username: username, step: 0 });
+    await user.save();
   }
 
-  console.log(`User: ${user} | Step: ${steps[user]} | Msg: ${msg}`);
+  console.log(`User: ${username} | Step: ${user.step} | Msg: ${msg}`);
 
-  // 4. STEP 0: Waiting for the user to say "onboarding"
-  if (steps[user] === 0) {
-    if (msg === 'onboarding') {
-      steps[user] = 1; // Move to next step
-      return res.json({ text: "👋 Welcome! Let's get you set up.\n\nFirst question: **Which department are you joining?**" });
-    } else {
-      // Fallback if they haven't started yet
-      return res.json({ text: `Hi ${user}! I am your onboarding assistant. Type **'onboarding'** to start.` });
-    }
+  // --- FAQ LOGIC (Global) ---
+  if (msg.includes('help')) {
+    return res.json({ text: "🤖 I can help. Ask about 'documents' or 'HR'." });
   }
 
-  // 5. STEP 1: User just answered Department
-  if (steps[user] === 1) {
-    data[user].department = msg; // Save answer
-    steps[user] = 2; // Move to next step
-    return res.json({ text: `Got it, ${msg} department.\n\nNext: **What is your Employee ID?**` });
-  }
-
-  // 6. STEP 2: User just answered Employee ID
-  if (steps[user] === 2) {
-    data[user].employeeId = msg;
-    steps[user] = 3;
-    return res.json({ text: "Thanks. \n\nLast question: **Which city is your work location?**" });
-  }
-
-  // 7. STEP 3: User just answered Location
-  if (steps[user] === 3) {
-    data[user].location = msg;
-    steps[user] = 4; // Mark as complete
-    
-    // Summary message
-    const summary = `
-      🎉 **Onboarding Complete!**
-      - Department: ${data[user].department}
-      - ID: ${data[user].employeeId}
-      - Location: ${data[user].location}
-      
-      You can now type **'help'** if you have questions.
-    `;
-    return res.json({ text: summary });
-  }
-
-  // 8. STEP 4: Completed State
-  if (steps[user] === 4) {
-    return res.json({ text: "You have already completed onboarding! Type 'help' for other queries." });
-  }
+  // --- CONVERSATION FLOW ---
   
+  // STEP 0: Waiting to start
+  if (user.step === 0) {
+    if (msg === 'onboarding') {
+      user.step = 1;
+      await user.save(); // Save progress to DB
+      return res.json({ text: "👋 Welcome! **Which department are you joining?**" });
+    }
+    return res.json({ text: `Hi ${username}! Type **'onboarding'** to start.` });
+  }
+
+  // STEP 1: Department
+  if (user.step === 1) {
+    user.department = msg;
+    user.step = 2;
+    await user.save(); // Save to DB
+    return res.json({ text: `Got it. **What is your Employee ID?**` });
+  }
+
+  // STEP 2: Employee ID
+  if (user.step === 2) {
+    user.employeeId = msg;
+    user.step = 3;
+    await user.save(); // Save to DB
+    return res.json({ text: "Thanks. **Which city is your work location?**" });
+  }
+
+  // STEP 3: Location (Finish)
+  if (user.step === 3) {
+    user.location = msg;
+    user.step = 4;
+    await user.save(); // Save final state
+
+    return res.json({ text: `🎉 **Done!**\nDept: ${user.department}\nID: ${user.employeeId}\nLoc: ${user.location}` });
+  }
+
+  // STEP 4: Already Done
+  if (user.step === 4) {
+    return res.json({ text: "You have already completed onboarding." });
+  }
+
   return res.json({ text: "I didn't understand that." });
 });
 
-// --- YOUR WORK ENDS HERE ---
-
-// Note: Ensure this port matches what Person A set up (3000 or 3001)
-const PORT = 3000; 
+// Start Server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Onboarding bot running on port ${PORT}`);
+  console.log(`🚀 Bot running on port ${PORT}`);
 });
