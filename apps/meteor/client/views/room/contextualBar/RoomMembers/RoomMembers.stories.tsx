@@ -25,6 +25,7 @@ Default.args = {
 			username: 'rocket.cat',
 			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
+			roles: ['user'],
 		},
 	],
 	text: 'filter',
