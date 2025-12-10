@@ -1,5 +1,5 @@
 import { MessageReads } from '@rocket.chat/core-services';
-import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { type IUser, type IRoom, type IMessage, isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -12,7 +12,7 @@ callbacks.add(
 			return;
 		}
 		// Rooms federated are not supported yet
-		if (room.federated) {
+		if (isRoomFederated(room)) {
 			return;
 		}
 		const { uid, lastSeen, tmid } = params;
