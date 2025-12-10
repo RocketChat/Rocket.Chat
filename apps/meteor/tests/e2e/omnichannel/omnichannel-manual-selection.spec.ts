@@ -56,12 +56,12 @@ test.describe('OC - Manual Selection', () => {
 		} = await createConversation(api);
 
 		await test.step('expect not be able to see queue when livechat is disabled', async () => {
-			await poOmnichannel.sidenav.switchOmnichannelStatus('offline');
-			await agentB.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
+			await poOmnichannel.navbar.switchOmnichannelStatus('offline');
+			await agentB.poHomeOmnichannel.navbar.switchOmnichannelStatus('offline');
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).not.toBeVisible();
-			await poOmnichannel.sidenav.switchOmnichannelStatus('online');
-			await agentB.poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+			await poOmnichannel.navbar.switchOmnichannelStatus('online');
+			await agentB.poHomeOmnichannel.navbar.switchOmnichannelStatus('online');
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});

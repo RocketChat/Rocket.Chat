@@ -61,7 +61,7 @@ test.describe('OC - Contact Unknown Callout', () => {
 		});
 
 		await test.step('expect keep callout hidden after changing pages', async () => {
-			await agent.poHomeChannel.sidenav.sidebarHomeAction.click();
+			await agent.poHomeChannel.navbar.btnHome.click();
 			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 			await expect(agent.poHomeChannel.content.contactUnknownCallout).not.toBeVisible();
 		});

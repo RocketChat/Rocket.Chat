@@ -31,7 +31,7 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+		await agent.poHomeChannel.navbar.switchOmnichannelStatus('online');
 		await agent.poHomeChannel.navbar.changeUserStatus('online');
 
 		await agent.page.close();
@@ -55,7 +55,7 @@ test.describe('omnichannel-takeChat', () => {
 	test('When agent is online should take the chat', async () => {
 		await sendLivechatMessage();
 
-		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getQueuedChat(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
 
@@ -78,12 +78,12 @@ test.describe('omnichannel-takeChat', () => {
 		await sendLivechatMessage();
 
 		await agent.poHomeChannel.navbar.changeUserStatus('offline');
-		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getQueuedChat(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 
 		await agent.poHomeChannel.navbar.changeUserStatus('online');
-		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
+		await agent.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 	});
