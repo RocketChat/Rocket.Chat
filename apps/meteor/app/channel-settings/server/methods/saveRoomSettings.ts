@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -62,6 +62,19 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
+const isAbacManagedRoom = (room: IRoom): boolean => {
+	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
+};
+
+const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
+	return (
+		team?.type === TEAM_TYPE.PRIVATE &&
+		settings.get<boolean>('ABAC_Enabled') &&
+		Array.isArray(teamRoom?.abacAttributes) &&
+		teamRoom.abacAttributes.length > 0
+	);
+};
+
 const validators: RoomSettingsValidators = {
 	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
@@ -70,7 +83,7 @@ const validators: RoomSettingsValidators = {
 				action: 'Viewing_room_administration',
 			});
 		}
-		if (settings.get('ABAC_Enabled') && value && room?.abacAttributes?.length) {
+		if (isAbacManagedRoom(room) && value) {
 			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
@@ -105,7 +118,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (settings.get('ABAC_Enabled') && room.t === 'p' && value !== 'p' && room?.abacAttributes?.length) {
+		if (isAbacManagedRoom(room) && value !== 'p') {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
@@ -131,7 +144,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (settings.get('ABAC_Enabled') && team?.type === TEAM_TYPE.PRIVATE && value !== 'p' && room?.abacAttributes?.length) {
+		if (isAbacManagedTeam(team, room) && value !== 'p') {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',

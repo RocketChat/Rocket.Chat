@@ -144,6 +144,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
+			// This call is noop cause user doesnt have a __rooms property
 			expect(mockUsersUnsetAbacAttributesById).toHaveBeenCalledTimes(1);
 		});
 
@@ -210,6 +211,7 @@ describe('AbacService (unit)', () => {
 
 			await service.addSubjectAttributes(user, ldapUser, map);
 
+			// This call is noop cause user doesnt have a __rooms property
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy.mock.calls[0][1]).toEqual([{ key: 'dept', values: ['eng'] }]);
 		});
