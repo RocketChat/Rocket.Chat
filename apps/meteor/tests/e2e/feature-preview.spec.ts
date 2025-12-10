@@ -205,7 +205,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidenav.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+			await expect(poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
 		});
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {

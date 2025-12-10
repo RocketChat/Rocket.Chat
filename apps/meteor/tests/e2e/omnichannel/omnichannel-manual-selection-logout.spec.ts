@@ -55,7 +55,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		} = await createConversation(api);
 
 		await test.step('expect login and see the chat in queue after login', async () => {
-			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
+			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 		});
 
@@ -70,7 +70,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 			await expect(poOmnichannel.content.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
 			await expect(poOmnichannel.content.btnReturnToQueue).toBeVisible();
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
 	});
 });
