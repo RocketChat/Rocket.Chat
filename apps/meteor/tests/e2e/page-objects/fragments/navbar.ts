@@ -35,6 +35,14 @@ export class Navbar {
 		return this.root.getByRole('group', { name: 'Pages and actions' });
 	}
 
+	get omnichannelGroup(): Locator {
+		return this.root.getByRole('group', { name: 'Omnichannel' });
+	}
+
+	get btnSwitchOmnichannelStatus(): Locator {
+		return this.omnichannelGroup.getByRole('button', { name: 'answer chats' });
+	}
+
 	get btnHome(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Home' });
 	}
@@ -213,5 +221,30 @@ export class Navbar {
 		await this.btnUserMenu.click();
 		await this.getUserProfileMenuOption('Custom Status').click();
 		await this.modals.editStatus.changeStatusMessage(text);
+	}
+
+	async switchOmnichannelStatus(status: 'offline' | 'online') {
+		// button has a id of "omnichannel-status-toggle"
+		const toggleButton = this.btnSwitchOmnichannelStatus;
+		await expect(toggleButton).toBeVisible();
+
+		enum StatusTitleMap {
+			offline = 'Turn on answer chats',
+			online = 'Turn off answer chats',
+		}
+
+		const currentStatus = await toggleButton.getAttribute('title');
+		if (status === 'offline') {
+			if (currentStatus === StatusTitleMap.online) {
+				await toggleButton.click();
+			}
+		} else if (currentStatus === StatusTitleMap.offline) {
+			await toggleButton.click();
+		}
+
+		await this.root.waitForTimeout(500);
+
+		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
+		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 }

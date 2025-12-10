@@ -58,6 +58,11 @@ export class RoomSidebar extends Sidebar {
 		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
+	// Note: this is different from openChat because queued chats are not searchable
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+	}
+
 	get firstCollapser(): Locator {
 		return this.topChannelList.getByRole('region').first();
 	}

@@ -869,7 +869,7 @@ test.describe('OC - Livechat API', () => {
 			const newVisitor = createFakeVisitor();
 
 			await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('offline');
-			await poAuxContext.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
+			await poAuxContext.poHomeOmnichannel.navbar.switchOmnichannelStatus('offline');
 
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);
 
