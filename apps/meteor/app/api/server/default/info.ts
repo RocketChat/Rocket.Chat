@@ -12,19 +12,3 @@ API.default.addRoute(
 		},
 	},
 );
-
-API.default.addRoute(
-	'ecdh_proxy/initEncryptedSession',
-	{ authRequired: false },
-	{
-		post() {
-			return {
-				statusCode: 200,
-				body: {
-					success: false,
-					error: 'Not Acceptable',
-				},
-			};
-		},
-	},
-);

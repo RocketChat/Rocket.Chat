@@ -16,7 +16,6 @@ window.addEventListener('load', function() {
 
 ${process.env.DISABLE_ANIMATION ? 'window.DISABLE_ANIMATION = true;\n' : ''}
 
-${settings.get('ECDH_Enabled') ? 'window.ECDH_Enabled = true;\n' : ''}
 // Custom_Script_Logged_Out
 window.addEventListener('Custom_Script_Logged_Out', function() {
 	${settings.get('Custom_Script_Logged_Out')}
@@ -52,13 +51,7 @@ window.addEventListener('load', function() {
 }`;
 
 settings.watchMultiple(
-	[
-		'Custom_Script_Logged_Out',
-		'Custom_Script_Logged_In',
-		'Custom_Script_On_Logout',
-		'Accounts_ForgetUserSessionOnWindowClose',
-		'ECDH_Enabled',
-	],
+	['Custom_Script_Logged_Out', 'Custom_Script_Logged_In', 'Custom_Script_On_Logout', 'Accounts_ForgetUserSessionOnWindowClose'],
 	() => {
 		const content = getContent();
 		addScript('scripts', content);
