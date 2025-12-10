@@ -1,17 +1,19 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { PageScrollableContent } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ComponentType } from 'react';
 
-import { Page, PageContent, PageHeader, PageScrollableContentWithShadow } from '.';
+import Page from './Page';
+import PageContent from './PageContent';
+import PageHeader from './PageHeader';
+import PageScrollableContent from './PageScrollableContent';
+import PageScrollableContentWithShadow from './PageScrollableContentWithShadow';
 
 export default {
 	component: Page,
 	subcomponents: {
-		PageContent: PageContent as ComponentType<any>,
-		PageHeader: PageHeader as ComponentType<any>,
-		PageScrollableContent: PageScrollableContent as ComponentType<any>,
-		PageScrollableContentWithShadow: PageScrollableContentWithShadow as ComponentType<any>,
+		PageContent,
+		PageHeader,
+		PageScrollableContent,
+		PageScrollableContentWithShadow,
 	},
 	parameters: {
 		layout: 'fullscreen',

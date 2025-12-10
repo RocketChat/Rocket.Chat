@@ -2,6 +2,7 @@ import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
@@ -25,7 +26,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { links } from '../../../lib/links';
 import RoomActivityIcon from '../components/RoomActivityIcon';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';

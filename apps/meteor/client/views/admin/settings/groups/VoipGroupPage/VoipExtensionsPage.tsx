@@ -1,5 +1,6 @@
 import { Box, Chip, Button, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { PageContent } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -18,7 +19,6 @@ import {
 	GenericTableLoadingRow,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { PageContent } from '../../../../../components/Page';
 
 const VoipExtensionsPage = () => {
 	const t = useTranslation();

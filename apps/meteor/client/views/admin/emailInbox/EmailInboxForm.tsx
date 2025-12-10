@@ -20,14 +20,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { PageScrollableContentWithShadow } from '../../../components/Page';
 import AutoCompleteDepartment from '../../omnichannel/components/AutoCompleteDepartment';
 
 type EmailInboxFormData = {

@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const IntegrationsPage = (): ReactElement => {
 	const { t } = useTranslation();

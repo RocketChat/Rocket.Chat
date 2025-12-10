@@ -1,5 +1,6 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -10,7 +11,6 @@ import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityList from './PriorityList';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 
 type PrioritiesPageProps = {

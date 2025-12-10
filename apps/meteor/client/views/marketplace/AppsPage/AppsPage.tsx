@@ -1,7 +1,7 @@
+import { Page } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 
 import AppsPageContent from './AppsPageContent';
-import { Page } from '../../../components/Page';
 
 const AppsPage = (): ReactElement => {
 	return (

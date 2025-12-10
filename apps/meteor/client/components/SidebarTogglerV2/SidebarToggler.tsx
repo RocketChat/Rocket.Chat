@@ -1,10 +1,10 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useLayout, useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import SidebarTogglerButton from './SidebarTogglerButton';
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 
 const SideBarToggler = (): ReactElement => {
 	const { sidebar } = useLayout();

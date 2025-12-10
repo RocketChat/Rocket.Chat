@@ -7,3 +7,4 @@ export * from './useUserDisplayName';
 export * from './useValidatePassword';
 export * from './useSafeRefCallback';
 export * from './useDontAskAgain';
+export * from './useEmbeddedLayout';

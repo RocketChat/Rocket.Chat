@@ -3,6 +3,6 @@ import { createContext } from 'react';
 
 type PageContextValue = [boolean, Dispatch<SetStateAction<boolean>>];
 
-const PageContext = createContext<PageContextValue>([false, (): void => undefined]);
+const PageContext = createContext<PageContextValue>([false, () => undefined]);
 
 export default PageContext;
