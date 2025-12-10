@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
-import { OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
+import { HomeOmnichannelContent, OmnichannelSidenav } from './fragments';
+import { OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar } from './fragments/toolbar';
 import { HomeChannel } from './home-channel';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
@@ -36,6 +36,10 @@ export class HomeOmnichannel extends HomeChannel {
 
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
 
+	override readonly content: HomeOmnichannelContent;
+
+	override readonly roomToolbar: OmnichannelRoomToolbar;
+
 	constructor(page: Page) {
 		super(page);
 		this.triggers = new OmnichannelTriggers(page);
@@ -49,6 +53,8 @@ export class HomeOmnichannel extends HomeChannel {
 		this.contacts = new OmnichannelContacts(page);
 		this.roomInfo = new OmnichannelRoomInfo(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
+		this.content = new HomeOmnichannelContent(page);
+		this.roomToolbar = new OmnichannelRoomToolbar(page);
 	}
 
 	get btnContactInfo(): Locator {
