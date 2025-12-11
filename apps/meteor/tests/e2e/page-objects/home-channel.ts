@@ -123,6 +123,6 @@ export class HomeChannel {
 	}
 
 	async waitForHome(): Promise<void> {
-		await this.page.waitForSelector('main');
+		await this.sidenav.homepageHeader.waitFor({ state: 'visible' });
 	}
 }
