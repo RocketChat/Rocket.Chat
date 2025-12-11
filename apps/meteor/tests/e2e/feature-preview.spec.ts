@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel } from './page-objects';
+import { CreateNewChannelModal } from './page-objects/create-new-modal';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -64,6 +65,8 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.describe('Sidepanel', () => {
+		let newChannelModal: CreateNewChannelModal;
+
 		test.beforeEach(async ({ api }) => {
 			sidepanelTeam = await createTargetTeam(api);
 
@@ -99,14 +102,17 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should display new channel from team on the sidepanel', async ({ page, api }) => {
+			newChannelModal = new CreateNewChannelModal(page);
+
 			await page.goto(`/group/${sidepanelTeam}`);
 			await poHomeChannel.content.waitForChannel();
 
 			await poHomeChannel.roomToolbar.openTeamChannels();
 			await poHomeChannel.tabs.channels.btnCreateNew.click();
-			await poHomeChannel.sidenav.inputChannelName.fill(targetChannelNameInTeam);
-			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
-			await poHomeChannel.sidenav.btnCreate.click();
+
+			await newChannelModal.inputName.fill(targetChannelNameInTeam);
+			await newChannelModal.checkboxPrivate.click();
+			await newChannelModal.btnCreate.click();
 
 			await expect(poHomeChannel.sidepanel.sidepanelList).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannelNameInTeam)).toBeVisible();
@@ -214,7 +220,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
-			await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
+			await expect(poHomeChannel.navbar.btnHome).toBeVisible();
 
 			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.waitForChannel();
