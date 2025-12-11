@@ -50,7 +50,7 @@ export class RoomRead implements IRoomRead {
 		const limit = options.limit ?? 100;
 
 		if (!Number.isFinite(limit) || limit <= 0 || limit > 100) {
-			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${options.limit}`);
+			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${limit}`);
 		}
 
 		if (typeof options.skip !== 'undefined' && (!Number.isFinite(options.skip) || options.skip < 0)) {
