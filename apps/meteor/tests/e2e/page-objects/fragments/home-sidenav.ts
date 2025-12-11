@@ -1,15 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { LoginPage } from '../login';
-
 export class HomeSidenav {
 	private readonly page: Page;
 
-	private readonly login: LoginPage;
-
 	constructor(page: Page) {
 		this.page = page;
-		this.login = new LoginPage(page);
 	}
 
 	get advancedSettingsAccordion(): Locator {

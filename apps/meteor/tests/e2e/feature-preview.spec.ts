@@ -205,7 +205,7 @@ test.describe.serial('feature preview', () => {
 
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
 			await page.goto(`/channel/${targetChannel}`);
-			await poHomeChannel.waitForHome();
+			await poHomeChannel.waitForRoomLoad();
 			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
 

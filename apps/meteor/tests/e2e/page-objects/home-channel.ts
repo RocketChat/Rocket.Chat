@@ -125,4 +125,8 @@ export class HomeChannel {
 	async waitForHome(): Promise<void> {
 		await this.sidenav.homepageHeader.waitFor({ state: 'visible' });
 	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
+	}
 }
