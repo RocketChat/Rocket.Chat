@@ -656,6 +656,7 @@ jobs:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
           QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
 
   report-coverage:
