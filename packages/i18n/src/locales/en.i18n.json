@@ -53,6 +53,7 @@
   "ABAC_Edit_Room": "Edit Room",
   "ABAC_Add_room": "Add Room",
   "ABAC_No_repeated_attributes": "Attribute already added",
+  "ABAC_No_repeated_values": "Value already added",
   "ABAC_Room_created": "Access to {{roomName}} is now restricted to attribute-compliant users",
   "ABAC_Room_to_be_managed": "Room to be ABAC-managed",
   "ABAC_Room_updated": "{{roomName}} ABAC room updated",

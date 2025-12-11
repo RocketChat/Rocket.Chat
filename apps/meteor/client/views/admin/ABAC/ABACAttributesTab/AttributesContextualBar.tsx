@@ -38,6 +38,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 					attributeValues: [{ value: '' }],
 					lockedAttributes: [],
 				},
+		mode: 'onChange',
 	});
 
 	const { getValues } = methods;
