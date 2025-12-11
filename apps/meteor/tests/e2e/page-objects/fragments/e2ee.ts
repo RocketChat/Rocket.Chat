@@ -152,3 +152,23 @@ export class DisableRoomEncryptionModal extends Modal {
 		await this.toastMessages.dismissToast('success');
 	}
 }
+
+export class E2EEMessageActions {
+	private readonly page: Page;
+
+	constructor(page: Page) {
+		this.page = page;
+	}
+
+	get forwardMessageButton(): Locator {
+		return this.page.getByRole('button', { name: 'Forward message not available on encrypted content' });
+	}
+
+	get replyInDirectMessageOption(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Reply in direct message' });
+	}
+
+	get copyLinkOption(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Copy link' });
+	}
+}

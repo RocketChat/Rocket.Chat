@@ -1,5 +1,6 @@
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from '../page-objects/fragments/e2ee';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -14,6 +15,8 @@ preserveSettings(settingsList);
 
 test.describe('E2EE OTR (Off-The-Record)', () => {
 	let poHomeChannel: HomeChannel;
+	let enableEncryptionModal: EnableRoomEncryptionModal;
+	let disableEncryptionModal: DisableRoomEncryptionModal;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -27,6 +30,8 @@ test.describe('E2EE OTR (Off-The-Record)', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		enableEncryptionModal = new EnableRoomEncryptionModal(page);
+		disableEncryptionModal = new DisableRoomEncryptionModal(page);
 		await page.goto('/home');
 	});
 
@@ -43,20 +48,15 @@ test.describe('E2EE OTR (Off-The-Record)', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		if (await poHomeChannel.tabs.btnDisableE2E.isVisible()) {
 			await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
-			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
-			await page.getByRole('button', { name: 'Disable encryption' }).click();
-			await poHomeChannel.toastMessage.dismissToast();
+			await disableEncryptionModal.disable();
 			await poHomeChannel.tabs.kebab.click({ force: true });
 		}
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click();
+		await enableEncryptionModal.enable();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-
-		await poHomeChannel.toastMessage.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
