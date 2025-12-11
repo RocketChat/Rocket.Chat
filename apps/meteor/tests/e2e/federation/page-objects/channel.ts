@@ -3,6 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { FederationHomeContent } from './fragments/home-content';
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
+import { CreateNewChannelModal, CreateNewDMModal } from '../../page-objects/create-new-modal';
 import { Navbar, RoomToolbar, ToastMessages } from '../../page-objects/fragments';
 
 export class FederationChannel {
@@ -20,6 +21,10 @@ export class FederationChannel {
 
 	readonly toastMessage: ToastMessages;
 
+	readonly newChannelModal: CreateNewChannelModal;
+
+	readonly newDMModal: CreateNewDMModal;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new FederationHomeContent(page);
@@ -28,6 +33,8 @@ export class FederationChannel {
 		this.tabs = new FederationHomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
 		this.toastMessage = new ToastMessages(page);
+		this.newChannelModal = new CreateNewChannelModal(page);
+		this.newDMModal = new CreateNewDMModal(page);
 	}
 
 	get btnContextualbarClose(): Locator {
@@ -67,23 +74,24 @@ export class FederationChannel {
 
 	async createDirectMessagesUsingModal(usernamesToInvite: string[]) {
 		await this.navbar.openCreate('Direct message');
+
 		for await (const username of usernamesToInvite) {
-			await this.sidenav.inviteUserToDM(username);
+			await this.newDMModal.inviteUserToDM(username);
 		}
 		await this.page
 			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct messages")]')
 			.click();
-		await this.sidenav.btnCreateChannel.click();
+		await this.newDMModal.btnCreate.click();
 	}
 
 	async createNonFederatedPublicChannelAndInviteUsersUsingCreationModal(channelName: string, usernamesToInvite: string[]) {
-		await this.sidenav.openNewByLabel('Channel');
-		await this.sidenav.checkboxPrivateChannel.click();
-		await this.sidenav.inputChannelName.type(channelName);
+		await this.navbar.openCreate('Channel');
+		await this.newChannelModal.checkboxPrivate.click();
+		await this.newChannelModal.inputName.fill(channelName);
 		for await (const username of usernamesToInvite) {
-			await this.sidenav.inviteUserToChannel(username);
+			await this.newChannelModal.inviteUserToChannel(username);
 		}
 
-		await this.sidenav.btnCreateChannel.click();
+		await this.newChannelModal.btnCreate.click();
 	}
 }

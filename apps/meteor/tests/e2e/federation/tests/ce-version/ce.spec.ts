@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { CreateNewChannelModal } from '../../../page-objects/create-new-modal';
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';
@@ -14,6 +15,7 @@ test.describe.parallel('Federation - CE version', () => {
 	let userFromServer1UsernameOnly: string;
 	let fullUsernameFromServer1: string;
 	let fullUsernameFromServer2: string;
+	let newChannelModal: CreateNewChannelModal;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		await setupTesting(apiServer1);
@@ -44,9 +46,11 @@ test.describe.parallel('Federation - CE version', () => {
 		await page.goto(`${constants.RC_SERVER_2.url}/home`);
 	});
 
-	test('expect to not be able to create channels from the UI', async () => {
-		await poFederationChannelServer2.sidenav.openNewByLabel('Channel');
-		await expect(poFederationChannelServer2.sidenav.checkboxFederatedChannel).toBeDisabled();
+	test('expect to not be able to create channels from the UI', async ({ page }) => {
+		newChannelModal = new CreateNewChannelModal(page);
+		await poFederationChannelServer2.navbar.openChat('Channel');
+		await newChannelModal.advancedSettingsAccordion.click();
+		await expect(newChannelModal.checkboxFederated).toBeDisabled();
 	});
 
 	test('expect to not be able to create DMs from UI inviting external users (an user who does not exists on the server yet)', async () => {
