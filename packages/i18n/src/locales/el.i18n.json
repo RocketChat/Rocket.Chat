@@ -709,7 +709,6 @@
   "Created_at_s_by_s": "Δημιουργήθηκε στις <strong>%s</strong> από <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Δημιουργήθηκε στις <strong>%s</strong> από <strong>%s</strong> ενεργοποιήθηκε από <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Το διάστημα μεταξύ των συγχρονισμών. Παράδειγμα \"κάθε 24 ώρες\" ή \"την πρώτη μέρα της εβδομάδας\", περισσότερα παραδείγματα στο [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Τρέχουσες Συζητήσεις",
   "Current_Status": "Τρέχουσα Κατάσταση",
   "Custom": "Προσαρμοσμένο",
   "Custom CSS": "έθιμο CSS",

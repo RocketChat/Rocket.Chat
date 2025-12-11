@@ -967,7 +967,6 @@
   "Created_by": "Vytvořil/a",
   "Crowd_Remove_Orphaned_Users": "Odebrat \"osiřelé\" uživatele",
   "Crowd_sync_interval_Description": "Interval mezi synchronizacemi. Například `every 24 hours` nebo `on the first day of the week`, více příkladů - [Cron Text Parser](http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Aktuální Místnosti",
   "Current_File": "Aktuální soubor",
   "Current_Import_Operation": "Aktuální operace importu",
   "Current_Status": "Aktuální stav",

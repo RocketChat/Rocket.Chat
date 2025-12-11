@@ -800,7 +800,6 @@
   "Created_at_s_by_s": "Erstellt am <strong>%s</strong> von <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Erstellt um <strong>%s</strong> von <strong>%s</strong>, angestoßen von <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Das Intervall zwischen Synchronisierungen. Z. B. `every 24 hours` oder `on the first day of the week`. Weitere Beispiele unter [Cron Text Parser](http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Aktuelle Chats",
   "Current_File": "Aktuelle Datei",
   "Current_Status": "Aktueller Status",
   "Custom": "Benutzerdefiniert",

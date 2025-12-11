@@ -704,7 +704,6 @@
   "Created_at_s_by_s": "Creat la <strong>%s</strong> by <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Creat la <strong>%s</strong> de către <strong>%s</strong> declanșat de <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Intervalul dintre sincronizări. Exemplu \"la fiecare 24 de ore\" sau \"în prima zi a săptămânii\", mai multe exemple la [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Chaturi curente",
   "Current_Status": "Statusul curent",
   "Custom": "Personalizat",
   "Custom CSS": "CSS personalizat",
