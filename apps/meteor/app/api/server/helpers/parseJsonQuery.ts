@@ -25,15 +25,11 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	 */
 	query: Record<string, unknown>;
 }> {
-	const { userId, response, route, logger } = api;
+	const { userId = '', response, route, logger } = api;
 
 	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
 	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
 	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
-
-	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
-	}
 
 	let sort;
 	if (typeof params?.sort === 'string') {
