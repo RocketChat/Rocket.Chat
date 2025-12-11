@@ -23,7 +23,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { getSourceLabel } = useOmnichannelSource();
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
-	const router = useOmnichannelDirectoryRouter();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const getStatusText = (open = false, onHold = false): string => {
 		if (!open) {
@@ -37,13 +37,13 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 
-	const onRowClick = useEffectEvent((id: string) => {
-		return router.navigate({
+	const onRowClick = useEffectEvent((id: string) =>
+		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',
 			id,
-		});
-	});
+		}),
+	);
 
 	return (
 		<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>

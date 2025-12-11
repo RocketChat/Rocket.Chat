@@ -6,12 +6,12 @@ import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHis
 
 const ChatsContextualBar = () => {
 	const router = useRouter();
-	const directoryRouter = useOmnichannelDirectoryRouter();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
 	const handleOpenRoom = () => id && router.navigate(`/live/${id}`);
-	const handleClose = () => directoryRouter.navigate({ tab: 'chats' });
+	const handleClose = () => omnichannelDirectoryRouter.navigate({ tab: 'chats' });
 
 	if (context === 'filters') {
 		return <ChatsFiltersContextualBar onClose={handleClose} />;

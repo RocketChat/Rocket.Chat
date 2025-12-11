@@ -18,13 +18,13 @@ type ContactItemMenuProps = {
 const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactElement => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const router = useOmnichannelDirectoryRouter();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const canEditContact = usePermission('update-livechat-contact');
 	const canDeleteContact = usePermission('delete-livechat-contact');
 
 	const handleContactEdit = useEffectEvent((): void =>
-		router.navigate({
+		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'edit',
 			id: _id,
