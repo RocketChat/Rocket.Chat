@@ -1,4 +1,4 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Box, Callout, Tabs } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
@@ -9,24 +9,25 @@ import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import { useOmnichannelDirectoryRouter } from './hooks/useOmnichannelDirectoryRouter';
 import ChatsProvider from './providers/ChatsProvider';
+import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
 
 const OmnichannelDirectoryPage = () => {
 	const { t } = useTranslation();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
-	const router = useOmnichannelDirectoryRouter();
-	const routeName = router.getRouteName();
+	const isWorkspaceOverMacLimit = useIsOverMacLimit();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	useEffect(() => {
-		if (!routeName || (routeName && !!tab)) {
+		if (!omnichannelDirectoryRouter.getRouteName() || (omnichannelDirectoryRouter.getRouteName() && !!tab)) {
 			return;
 		}
 
-		router.navigate({ tab: 'chats' });
-	}, [routeName, router, tab]);
+		omnichannelDirectoryRouter.navigate({ tab: 'chats' });
+	}, [omnichannelDirectoryRouter, tab]);
 
-	const handleTabClick = useCallback((tab: string) => router.navigate({ tab }), [router]);
+	const handleTabClick = useCallback((tab: string) => omnichannelDirectoryRouter.navigate({ tab }), [omnichannelDirectoryRouter]);
 
 	return (
 		<ChatsProvider>
@@ -42,6 +43,13 @@ const OmnichannelDirectoryPage = () => {
 						</Tabs.Item>
 					</Tabs>
 					<PageContent>
+						{isWorkspaceOverMacLimit && (
+							<Box mbs={16}>
+								<Callout type='danger' icon='warning' title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}>
+									{t('Talk_to_your_workspace_admin_to_address_this_issue')}
+								</Callout>
+							</Box>
+						)}
 						{tab === 'chats' && <ChatsTab />}
 						{tab === 'contacts' && <ContactTab />}
 					</PageContent>
