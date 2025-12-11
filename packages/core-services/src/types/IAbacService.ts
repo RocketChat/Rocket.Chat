@@ -32,11 +32,7 @@ export interface IAbacService {
 	): Promise<{ rooms: IRoom[]; offset: number; count: number; total: number }>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor | undefined): Promise<void>;
 	deleteAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<void>;
-	// Usage represents if the attribute values are in use or not. If no values are in use, the attribute is not in use.
-	getAbacAttributeById(
-		_id: string,
-		actor: AbacActor | undefined,
-	): Promise<{ key: string; values: string[]; usage: Record<string, boolean> }>;
+	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;

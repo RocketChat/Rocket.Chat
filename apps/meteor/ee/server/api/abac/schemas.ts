@@ -3,9 +3,9 @@ import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typing
 import { ajv } from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
-const MAX_ATTRIBUTE_VALUES = 10;
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
 const MAX_USERS_SYNC_ITEMS = 100;
+const MAX_ROOM_ATTRIBUTE_KEYS = 10;
 
 const GenericSuccess = {
 	type: 'object',
@@ -26,7 +26,6 @@ const UpdateAbacAttributeBody = {
 			type: 'array',
 			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 			minItems: 1,
-			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -45,7 +44,6 @@ const AbacAttributeDefinition = {
 			type: 'array',
 			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 			minItems: 1,
-			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -79,7 +77,6 @@ const AbacAttributeRecord = {
 			type: 'array',
 			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 			minItems: 1,
-			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
 		},
 	},
@@ -120,12 +117,7 @@ const GetAbacAttributeByIdResponse = {
 			type: 'array',
 			items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 			minItems: 1,
-			maxItems: MAX_ATTRIBUTE_VALUES,
 			uniqueItems: true,
-		},
-		usage: {
-			type: 'object',
-			additionalProperties: { type: 'boolean' },
 		},
 	},
 	required: ['key', 'values'],
@@ -135,7 +127,6 @@ const GetAbacAttributeByIdResponse = {
 export const GETAbacAttributeByIdResponseSchema = ajv.compile<{
 	key: string;
 	values: string[];
-	usage: Record<string, boolean>;
 }>(GetAbacAttributeByIdResponse);
 
 const GetAbacAttributeIsInUseResponse = {
@@ -245,7 +236,7 @@ const PostRoomAbacAttributesBody = {
 			type: 'object',
 			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
 			minProperties: 1,
-			maxProperties: MAX_ATTRIBUTE_VALUES,
+			maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
 			additionalProperties: {
 				type: 'array',
 				items: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
