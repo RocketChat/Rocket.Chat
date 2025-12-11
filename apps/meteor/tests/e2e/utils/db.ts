@@ -1,4 +1,3 @@
-import type { IUsersSessionsModel, IUsersModel } from '@rocket.chat/model-typings/src';
 import { UsersSessionsRaw, UsersRaw } from '@rocket.chat/models';
 import { MongoClient } from 'mongodb';
 
@@ -7,9 +6,9 @@ import { URL_MONGODB } from '../config/constants';
 export class DatabaseClient {
 	client: MongoClient;
 
-	users: IUsersModel;
+	users: UsersRaw;
 
-	usersSessions: IUsersSessionsModel;
+	usersSessions: UsersSessionsRaw;
 
 	private constructor(client: MongoClient) {
 		this.client = client;
