@@ -200,7 +200,7 @@ describe('[OAuth2 v1 Endpoint Authentication]', () => {
 			});
 		});
 
-		describe('POST endpoints with OAuth2 token', () => {
+		describe('Additional GET endpoints with OAuth2 token', () => {
 			it('should authenticate successfully for channels.list endpoint', async () => {
 				await request
 					.get(api('channels.list'))
