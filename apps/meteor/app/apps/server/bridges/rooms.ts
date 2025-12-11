@@ -1,9 +1,9 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions, GetRoomsFilter } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
@@ -151,26 +151,12 @@ export class AppRoomBridge extends RoomBridge {
 		return promises as Promise<IUser[]>;
 	}
 
-	protected async getAllRooms(filter: GetRoomsFilter, appId: string): Promise<Array<IRoom>> {
-		this.orch.debugLog(`The App ${appId} is getting all rooms with filter`, filter);
+	protected async getAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
 
-		const { types, limit = 100, skip = 0, includeDiscussions = true, onlyDiscussions = false, teamMainOnly = false } = filter || {};
+		const { types, limit = 100, skip = 0 } = options || {};
 
-		const query: Filter<ICoreRoom> = {};
-
-		if (types?.length) {
-			query.t = { $in: types };
-		}
-
-		if (onlyDiscussions) {
-			query.prid = { $exists: true };
-		} else if (includeDiscussions === false) {
-			query.prid = { $exists: false };
-		}
-
-		if (teamMainOnly) {
-			query.teamMain = true;
-		}
+		const { query } = this.buildRoomQuery(types);
 
 		const findOptions: FindOptions<ICoreRoom> = {
 			sort: { ts: -1 },
@@ -178,15 +164,15 @@ export class AppRoomBridge extends RoomBridge {
 			limit: Math.min(limit, 100),
 		};
 
+		const rooms: IRoomRaw[] = [];
+
 		const roomConverter = this.orch.getConverters()?.get('rooms');
 		if (!roomConverter) {
 			throw new Error('Room converter not found');
 		}
 
-		const rooms: IRoom[] = [];
-
 		for await (const room of Rooms.find(query, findOptions)) {
-			const converted = await roomConverter.convertRoom(room, { lightweight: true });
+			const converted = await roomConverter.convertRoomRaw(room);
 			if (converted) {
 				rooms.push(converted);
 			}
@@ -357,5 +343,64 @@ export class AppRoomBridge extends RoomBridge {
 
 		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
 		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
+	}
+
+	private buildRoomQuery(types?: Array<RoomType>): { query: Filter<ICoreRoom> } {
+		if (!types || types.length === 0) {
+			return { query: {} };
+		}
+
+		const baseTypes: Array<ICoreRoom['t']> = [];
+		let includeDiscussions = false;
+		let includeTeams = false;
+
+		for (const type of types) {
+			switch (type) {
+				case RoomType.CHANNEL:
+					baseTypes.push('c');
+					break;
+				case RoomType.PRIVATE_GROUP:
+					baseTypes.push('p');
+					break;
+				case RoomType.DIRECT_MESSAGE:
+					baseTypes.push('d');
+					break;
+				case RoomType.LIVE_CHAT:
+					baseTypes.push('l');
+					break;
+				case RoomType.DISCUSSION:
+					includeDiscussions = true;
+					break;
+				case RoomType.TEAM:
+					includeTeams = true;
+					break;
+				default:
+					break;
+			}
+		}
+
+		const conditions: Array<Filter<ICoreRoom>> = [];
+
+		if (baseTypes.length) {
+			conditions.push({ t: { $in: baseTypes } });
+		}
+
+		if (includeDiscussions) {
+			conditions.push({ prid: { $exists: true } });
+		}
+
+		if (includeTeams) {
+			conditions.push({ teamMain: true });
+		}
+
+		if (!conditions.length) {
+			return { query: {} };
+		}
+
+		if (conditions.length === 1) {
+			return { query: conditions[0] };
+		}
+
+		return { query: { $or: conditions } };
 	}
 }

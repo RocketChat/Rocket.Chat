@@ -1,7 +1,7 @@
 import { AsyncTest, Expect, SetupFixture } from 'alsatian';
 
 import type { IMessageRaw } from '../../../src/definition/messages';
-import type { IRoom } from '../../../src/definition/rooms';
+import type { IRoom, IRoomRaw } from '../../../src/definition/rooms';
 import type { IUser } from '../../../src/definition/users';
 import { RoomRead } from '../../../src/server/accessors';
 import type { RoomBridge } from '../../../src/server/bridges';
@@ -23,6 +23,7 @@ export class RoomReadAccessorTestFixture {
 	@SetupFixture
 	public setupFixture() {
 		this.room = TestData.getRoom();
+		this.room.id = this.room.id || 'room-id';
 		this.user = TestData.getUser();
 		this.messages = ['507f1f77bcf86cd799439011', '507f191e810c19729de860ea'].map((id) => TestData.getMessageRaw(id));
 		this.unreadRoomId = this.messages[0].roomId;
@@ -35,7 +36,19 @@ export class RoomReadAccessorTestFixture {
 		const theUnreadMsg = this.messages;
 		const { unreadRoomId } = this;
 		const { unreadUserId } = this;
-		const theRooms = [this.room];
+		const theRooms: IRoomRaw[] = [
+			{
+				id: this.room.id,
+				slugifiedName: this.room.slugifiedName,
+				displayName: this.room.displayName,
+				type: this.room.type,
+				creator: {
+					_id: this.room.creator.id,
+					username: this.room.creator.username,
+					name: this.room.creator.name,
+				},
+			},
+		];
 		this.mockRoomBridgeWithRoom = {
 			doGetById(id, appId): Promise<IRoom> {
 				return Promise.resolve(theRoom);
@@ -55,7 +68,7 @@ export class RoomReadAccessorTestFixture {
 			doGetMembers(name, appId): Promise<Array<IUser>> {
 				return Promise.resolve([theUser]);
 			},
-			doGetAllRooms(filter, appId): Promise<Array<IRoom>> {
+			doGetAllRooms(filter, appId): Promise<Array<IRoomRaw>> {
 				return Promise.resolve(theRooms);
 			},
 			doGetMessages(roomId, options, appId): Promise<IMessageRaw[]> {
@@ -97,7 +110,19 @@ export class RoomReadAccessorTestFixture {
 		Expect(await rr.getMessages('testing')).toBeDefined();
 		Expect(await rr.getMessages('testing')).toBe(this.messages);
 		Expect(await rr.getAllRooms()).toBeDefined();
-		Expect(await rr.getAllRooms()).toEqual([this.room]);
+		Expect(await rr.getAllRooms()).toEqual([
+			{
+				id: this.room.id,
+				slugifiedName: this.room.slugifiedName,
+				displayName: this.room.displayName,
+				type: this.room.type,
+				creator: {
+					_id: this.room.creator.id,
+					username: this.room.creator.username,
+					name: this.room.creator.name,
+				},
+			},
+		]);
 		Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toBeDefined();
 		Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toEqual(this.messages);
 

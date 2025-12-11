@@ -21,6 +21,44 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
+	async convertRoomRaw(room) {
+		if (!room) {
+			return undefined;
+		}
+
+		const creator = room.u
+			? {
+					_id: room.u._id,
+					username: room.u.username,
+					name: room.u.name,
+				}
+			: undefined;
+
+		const type = this._resolveRoomType(room);
+
+		return {
+			id: room._id,
+			slugifiedName: room.name || room.fname || room._id,
+			displayName: room.fname,
+			type,
+			creator,
+			userIds: room.uids,
+			isDefault: !!room.default,
+			isReadOnly: !!room.ro,
+			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
+			messageCount: room.msgs,
+			createdAt: room.ts,
+			updatedAt: room._updatedAt,
+			lastModifiedAt: room.lm,
+			description: room.description,
+			customFields: room.customFields,
+			parentRoomId: room.prid,
+			teamId: room.teamId,
+			isTeamMain: !!room.teamMain,
+			livechatData: room.livechatData,
+		};
+	}
+
 	async __getCreator(user) {
 		if (!user) {
 			return;
@@ -226,9 +264,9 @@ export class AppRoomsConverter {
 				return sysMes;
 			},
 			type: (room) => {
-				const result = this._convertTypeToApp(room.t);
+				const derivedType = this._resolveRoomType(room);
 				delete room.t;
-				return result;
+				return derivedType;
 			},
 			creator: async (room) => {
 				const { u } = room;
@@ -345,7 +383,7 @@ export class AppRoomsConverter {
 	convertRoomWithoutLookups(room) {
 		const creatorFromRoom = room.u
 			? {
-					id: room.u._id,
+					_id: room.u._id,
 					username: room.u.username,
 					name: room.u.name || room.u.username || 'Unknown',
 					emails: [],
@@ -386,7 +424,7 @@ export class AppRoomsConverter {
 			id: room._id,
 			displayName: room.fname,
 			slugifiedName: room.name || room.fname || room._id,
-			type: this._convertTypeToApp(room.t),
+			type: this._resolveRoomType(room),
 			creator: creatorFromRoom || fallbackUser,
 			usernames: room.usernames || [],
 			userIds: room.uids || [],
@@ -401,6 +439,18 @@ export class AppRoomsConverter {
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 		};
+	}
+
+	_resolveRoomType(room) {
+		if (room.teamMain) {
+			return RoomType.TEAM;
+		}
+
+		if (room.prid) {
+			return RoomType.DISCUSSION;
+		}
+
+		return this._convertTypeToApp(room.t);
 	}
 
 	_convertTypeToApp(typeChar) {

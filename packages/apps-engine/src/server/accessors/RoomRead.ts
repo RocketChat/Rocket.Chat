@@ -1,9 +1,9 @@
 import type { IRoomRead } from '../../definition/accessors';
 import type { IMessageRaw } from '../../definition/messages';
-import type { IRoom } from '../../definition/rooms';
+import type { IRoom, IRoomRaw } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { RoomBridge } from '../bridges';
-import { type GetMessagesOptions, type GetRoomsFilter, GetMessagesSortableFields } from '../bridges/RoomBridge';
+import { type GetMessagesOptions, type GetRoomsOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
 	constructor(
@@ -46,26 +46,22 @@ export class RoomRead implements IRoomRead {
 		return this.roomBridge.doGetMembers(roomId, this.appId);
 	}
 
-	public getAllRooms(filter: Partial<GetRoomsFilter> = {}): Promise<Array<IRoom>> {
-		const limit = filter.limit ?? 100;
+	public getAllRooms(options: Partial<GetRoomsOptions> = {}): Promise<Array<IRoomRaw>> {
+		const limit = options.limit ?? 100;
 
 		if (!Number.isFinite(limit) || limit <= 0 || limit > 100) {
-			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${filter.limit}`);
+			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${options.limit}`);
 		}
 
-		if (typeof filter.skip !== 'undefined' && (!Number.isFinite(filter.skip) || filter.skip < 0)) {
-			throw new Error(`Invalid skip provided. Expected number >= 0, got ${filter.skip}`);
-		}
-
-		if (filter.onlyDiscussions && filter.includeDiscussions === false) {
-			throw new Error('Invalid filter: onlyDiscussions cannot be used with includeDiscussions set to false');
+		if (typeof options.skip !== 'undefined' && (!Number.isFinite(options.skip) || options.skip < 0)) {
+			throw new Error(`Invalid skip provided. Expected number >= 0, got ${options.skip}`);
 		}
 
 		return this.roomBridge.doGetAllRooms(
 			{
-				...filter,
+				...options,
 				limit,
-				skip: filter.skip ?? 0,
+				skip: options.skip ?? 0,
 			},
 			this.appId,
 		);

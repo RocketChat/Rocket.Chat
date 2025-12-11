@@ -1,6 +1,6 @@
 import { BaseBridge } from './BaseBridge';
 import type { IMessage, IMessageRaw } from '../../definition/messages';
-import type { IRoom, RoomType } from '../../definition/rooms';
+import type { IRoom, IRoomRaw, RoomType } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
@@ -15,13 +15,10 @@ export type GetMessagesOptions = {
 	showThreadMessages: boolean;
 };
 
-export type GetRoomsFilter = {
+export type GetRoomsOptions = {
 	types?: Array<RoomType>;
 	limit?: number;
 	skip?: number;
-	includeDiscussions?: boolean;
-	onlyDiscussions?: boolean;
-	teamMainOnly?: boolean;
 };
 
 export abstract class RoomBridge extends BaseBridge {
@@ -67,9 +64,9 @@ export abstract class RoomBridge extends BaseBridge {
 		}
 	}
 
-	public async doGetAllRooms(filter: GetRoomsFilter = {}, appId: string): Promise<Array<IRoom>> {
+	public async doGetAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
 		if (this.hasReadPermission(appId)) {
-			return this.getAllRooms(filter, appId);
+			return this.getAllRooms(options, appId);
 		}
 	}
 
@@ -153,7 +150,7 @@ export abstract class RoomBridge extends BaseBridge {
 
 	protected abstract getMembers(roomId: string, appId: string): Promise<Array<IUser>>;
 
-	protected abstract getAllRooms(filter: GetRoomsFilter, appId: string): Promise<Array<IRoom>>;
+	protected abstract getAllRooms(options: GetRoomsOptions, appId: string): Promise<Array<IRoomRaw>>;
 
 	protected abstract update(room: IRoom, members: Array<string>, appId: string): Promise<void>;
 
