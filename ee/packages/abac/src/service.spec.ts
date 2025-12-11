@@ -539,29 +539,20 @@ describe('AbacService (unit)', () => {
 		});
 		it('throws error-attribute-not-found when attribute does not exist', async () => {
 			mockAbacFindOne.mockResolvedValueOnce(null);
-			await expect(service.getAbacAttributeById('missingAttr')).rejects.toThrow('error-attribute-not-found');
+			await expect(service.getAbacAttributeById('missingAttr', undefined)).rejects.toThrow('error-attribute-not-found');
 			expect(mockRoomsIsAbacAttributeInUse).not.toHaveBeenCalled();
 		});
 
-		it('returns attribute with per-value usage map', async () => {
+		it('returns attribute without usage map', async () => {
 			mockAbacFindOne.mockResolvedValueOnce({ _id: 'id13', key: 'Attr', values: ['a', 'b', 'c'] });
-			// Usage results for each value
-			mockRoomsIsAbacAttributeInUse
-				.mockResolvedValueOnce(true) // a
-				.mockResolvedValueOnce(false) // b
-				.mockResolvedValueOnce(true); // c
 
-			const result = await service.getAbacAttributeById('id13');
+			const result = await service.getAbacAttributeById('id13', undefined);
 			expect(mockAbacFindOne).toHaveBeenCalledWith('id13', { projection: { key: 1, values: 1 } });
-			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(1, 'Attr', ['a']);
-			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(2, 'Attr', ['b']);
-			expect(mockRoomsIsAbacAttributeInUse).toHaveBeenNthCalledWith(3, 'Attr', ['c']);
+			expect(mockRoomsIsAbacAttributeInUse).not.toHaveBeenCalled();
 
 			expect(result).toEqual({
-				_id: 'id13',
 				key: 'Attr',
 				values: ['a', 'b', 'c'],
-				usage: { a: true, b: false, c: true },
 			});
 		});
 
