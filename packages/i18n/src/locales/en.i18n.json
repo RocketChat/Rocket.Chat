@@ -5583,7 +5583,7 @@
   "User_menu": "User menu",
   "User_muted": "User Muted",
   "User_muted_by": "User {{user_muted}} muted by {{user_by}}.",
-  "User_not_found": "User not found",
+  "User_not_found": "Incorrect login or password",
   "User_not_found_or_incorrect_password": "User not found or incorrect password",
   "User_or_channel_name": "User or channel name",
   "User_removed": "User removed",
