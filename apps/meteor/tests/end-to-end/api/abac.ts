@@ -2244,6 +2244,77 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			}
 		});
 
+		// Hard limits for the endpoint - max 100 identifiers per type, 400 total per request
+		it('should fail /abac/users/sync when more than 100 usernames are provided', async () => {
+			const usernames = Array.from({ length: 101 }, (_, i) => `user_${i}@example.com`);
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					usernames,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should fail /abac/users/sync when more than 100 ids are provided', async () => {
+			const ids = Array.from({ length: 101 }, (_, i) => `id_${i}`);
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					ids,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should fail /abac/users/sync when more than 100 emails are provided', async () => {
+			const emails = Array.from({ length: 101 }, (_, i) => `user_${i}@example.com`);
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					emails,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should fail /abac/users/sync when more than 100 ldapIds are provided', async () => {
+			const ldapIds = Array.from({ length: 101 }, (_, i) => `ldap_${i}`);
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					ldapIds,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should succeed /abac/users/sync when exactly 100 usernames are provided (boundary)', async () => {
+			const usernames = Array.from({ length: 100 }, (_, i) => `boundary_user_${i}`);
+			await request
+				.post(`${v1}/abac/users/sync`)
+				.set(credentials)
+				.send({
+					usernames,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
 		describe('LDAP ABAC room membership sync', () => {
 			let roomIdWithAbac: string;
 

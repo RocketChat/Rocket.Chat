@@ -6,6 +6,7 @@ import {
 	buildRoomNonCompliantConditionsFromSubject,
 	extractAttribute,
 	ensureAttributeDefinitionsExist,
+	buildNonCompliantConditions,
 } from './helper';
 
 const attributesFindMock = jest.fn();
@@ -260,23 +261,6 @@ describe('diffAttributeSets', () => {
 
 describe('buildNonCompliantConditions', () => {
 	type AttributeDef = { key: string; values: string[] };
-
-	const buildNonCompliantConditions = (attrs: AttributeDef[]): any[] => {
-		if (!attrs.length) {
-			return [];
-		}
-
-		return attrs.map((attr) => ({
-			abacAttributes: {
-				$not: {
-					$elemMatch: {
-						key: attr.key,
-						values: { $all: attr.values },
-					},
-				},
-			},
-		}));
-	};
 
 	it('returns empty array for empty attributes list', () => {
 		const result = buildNonCompliantConditions([]);
