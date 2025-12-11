@@ -822,9 +822,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				lastAssignTime?: Date;
 				lastRoutingTime?: Date;
 				queueInfo: { chats: number };
-			}>(aggregate)
+			}>(aggregate, {
+				readConcern: { level: 'majority' },
+				readPreference: 'primary',
+			})
 			.toArray();
 		return agent;
+	}
+
+	async acquireAgentLock(agentId: IUser['_id'], lockTimeoutMs = 5000): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				$or: [{ agentLocked: { $exists: false } }, { agentLockedAt: { $lt: new Date(Date.now() - lockTimeoutMs) } }],
+			},
+			{
+				$set: {
+					agentLocked: true,
+					agentLockedAt: new Date(),
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
+	}
+
+	async releaseAgentLock(agentId: IUser['_id']): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				agentLocked: true,
+			},
+			{
+				$unset: {
+					agentLocked: 1,
+					agentLockedAt: 1,
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
 	}
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]> {
