@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.23.15",
-	"private": true,
+	"version": "1.23.16",
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",

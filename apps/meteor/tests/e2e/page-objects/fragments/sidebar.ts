@@ -108,3 +108,18 @@ export class AdminSidebar extends Sidebar {
 		await this.waitForDismissal();
 	}
 }
+
+export class AccountSidebar extends Sidebar {
+	constructor(page: Page) {
+		super(page.getByRole('navigation', { name: 'Account' }));
+	}
+
+	get linkSecurity(): Locator {
+		return this.root.getByRole('link', { name: 'Security' });
+	}
+
+	async close(): Promise<void> {
+		await this.btnClose.click();
+		await this.waitForDismissal();
+	}
+}
