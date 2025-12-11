@@ -1,11 +1,4 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import MessageSearch from './components/MessageSearch';
-import MessageSearchForm from './components/MessageSearchForm';
-import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
@@ -14,7 +7,14 @@ import {
 	ContextualbarIcon,
 	ContextualbarSection,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import MessageSearch from './components/MessageSearch';
+import MessageSearchForm from './components/MessageSearchForm';
+import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 
 const MessageSearchTab = () => {
 	const providerQuery = useMessageSearchProviderQuery();

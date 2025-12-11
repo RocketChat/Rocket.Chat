@@ -1,12 +1,12 @@
 {
   "name": "@rocket.chat/uikit-playground",
+  "version": "0.7.1",
   "private": true,
-  "version": "0.6.32",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build-preview": "tsc && vite build",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
+    "build-preview": "tsc && vite build",
+    "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -18,7 +18,7 @@
     "@lezer/highlight": "^1.2.3",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "~0.68.1",
+    "@rocket.chat/fuselage": "^0.69.0",
     "@rocket.chat/fuselage-hooks": "~0.38.1",
     "@rocket.chat/fuselage-toastbar": "~0.35.1",
     "@rocket.chat/fuselage-tokens": "~0.33.2",

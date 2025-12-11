@@ -41,7 +41,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		super(db, 'subscription', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		// Add all indexes from constructor to here
 		return [
 			{ key: { E2EKey: 1 }, unique: true, sparse: true },
@@ -161,6 +161,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			rid,
 			'u._id': uid,
+			'status': { $exists: false },
 		};
 
 		return this.countDocuments(query);
@@ -2084,5 +2085,29 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				},
 			},
 		]);
+	}
+
+	async findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED',
+		});
+	}
+
+	async acceptInvitationById(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					status: 1,
+					inviter: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
 	}
 }

@@ -9,7 +9,7 @@ export class OAuthRefreshTokensRaw extends BaseRaw<IOAuthRefreshToken> implement
 		super(db, 'oauth_refresh_tokens', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { refreshToken: 1 } }, { key: { expires: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 }];
 	}
 

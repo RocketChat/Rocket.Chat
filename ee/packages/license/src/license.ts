@@ -384,6 +384,8 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		if (this._valid && this._license) {
 			return this._license;
 		}
+
+		return undefined;
 	}
 
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {

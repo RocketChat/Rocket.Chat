@@ -1,11 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import { links } from '../../../../../lib/links';
 
 export default {
