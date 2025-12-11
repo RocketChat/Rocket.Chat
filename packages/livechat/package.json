@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.23.15",
-	"private": true,
+	"version": "1.23.16",
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
@@ -56,6 +55,7 @@
 		"@babel/core": "~7.28.5",
 		"@babel/eslint-parser": "~7.28.5",
 		"@babel/preset-env": "~7.28.5",
+		"@babel/preset-react": "~7.27.1",
 		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",

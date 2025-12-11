@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,6 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
-import { useUserCard } from '../../views/room/contexts/UserCardContext';
 
 type MessageHeaderProps = {
 	message: IMessage;

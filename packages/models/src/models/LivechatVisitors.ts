@@ -26,7 +26,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		super(db, 'livechat_visitor', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
@@ -365,7 +365,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne({ _id }, { $unset: { department: 1 } });
 	}
 
-	removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id });
 	}
 

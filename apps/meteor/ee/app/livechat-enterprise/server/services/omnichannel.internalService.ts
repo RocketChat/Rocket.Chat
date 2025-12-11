@@ -19,7 +19,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';
 
-	protected internal = true;
+	protected override internal = true;
 
 	logger: Logger;
 

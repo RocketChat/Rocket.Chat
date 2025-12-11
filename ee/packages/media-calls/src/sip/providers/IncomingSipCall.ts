@@ -37,7 +37,7 @@ export class IncomingSipCall extends BaseSipCall {
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: BroadcastActorAgent,
+		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 		private readonly srf: Srf,
 		private readonly req: SrfRequest,

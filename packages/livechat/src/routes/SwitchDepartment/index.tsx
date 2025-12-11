@@ -68,7 +68,8 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 				user: user as StoreState['user'],
 				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
 			});
-			return route('/');
+			route('/');
+			return;
 		}
 
 		await dispatch({ loading: true });

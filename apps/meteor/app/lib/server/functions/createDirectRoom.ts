@@ -44,9 +44,8 @@ export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
 	options: {
-		creator?: string;
+		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
-		federatedRoomId?: string;
 	},
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
@@ -155,8 +154,29 @@ export async function createDirectRoom(
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
 		).toArray();
 
+		const creatorUser = roomMembers.find((member) => member._id === options?.creator);
+		if (roomExtraData.federated && !creatorUser) {
+			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
+		}
+
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
+
+			const subscriptionStatus: Partial<ISubscription> =
+				roomExtraData.federated && options.creator !== member._id && creatorUser
+					? {
+							status: 'INVITED',
+							inviter: {
+								_id: creatorUser._id,
+								username: creatorUser.username!,
+								name: creatorUser.name,
+							},
+							open: true,
+							unread: 1,
+							userMentions: 1,
+						}
+					: {};
+
 			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
@@ -164,6 +184,7 @@ export async function createDirectRoom(
 					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
 						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
+						...subscriptionStatus,
 					}),
 				},
 				{ upsert: true },
@@ -181,7 +202,6 @@ export async function createDirectRoom(
 		await callbacks.run('afterCreateDirectRoom', insertedRoom, {
 			members: roomMembers,
 			creatorId: options?.creator,
-			mrid: options?.federatedRoomId,
 		});
 
 		void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, insertedRoom);

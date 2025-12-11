@@ -43,7 +43,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	// move indexes from constructor to here using IndexDescription as type
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { open: 1 }, sparse: true },
 			{ key: { departmentId: 1 }, sparse: true },
@@ -83,11 +83,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		];
 	}
 
-	async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 
-	async findOneById<P extends Document = IOmnichannelRoom>(_id: IOmnichannelRoom['_id'], options?: FindOptions<P>): Promise<P | null>;
+	override async findOneById<P extends Document = IOmnichannelRoom>(
+		_id: IOmnichannelRoom['_id'],
+		options?: FindOptions<P>,
+	): Promise<P | null>;
 
-	async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
 		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
 		if (options) {
 			return this.findOne(query, options);
@@ -2418,7 +2421,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteMany(query);
 	}
 
-	removeById(_id: string) {
+	override removeById(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id,
 			t: 'l',

@@ -9,7 +9,7 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		super(db, 'export_operations', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
 

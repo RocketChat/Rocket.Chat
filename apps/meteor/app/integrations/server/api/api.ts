@@ -187,7 +187,7 @@ async function executeIntegrationRest(
 				});
 				return API.v1.success();
 			}
-			if (result && result.error) {
+			if (result?.error) {
 				return API.v1.failure(result.error);
 			}
 
@@ -312,7 +312,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 }
 
 class WebHookAPI extends APIClass<'/hooks'> {
-	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
+	override async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = this.urlParams;
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
@@ -327,7 +327,7 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		return Users.findOneById(this.request.integration.userId);
 	}
 
-	shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
+	override shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
@@ -336,14 +336,14 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		);
 	}
 
-	async shouldVerifyRateLimit(): Promise<boolean> {
+	override async shouldVerifyRateLimit(): Promise<boolean> {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 
-	async enforceRateLimit(
+	override async enforceRateLimit(
 		objectForRateLimitMatch: RateLimiterOptionsToCheck,
 		request: Request,
 		response: Response,

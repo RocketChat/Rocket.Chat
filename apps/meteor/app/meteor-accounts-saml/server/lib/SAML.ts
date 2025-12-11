@@ -1,7 +1,7 @@
 import type { ServerResponse } from 'http';
 
-import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
-import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
+import type { IUser, IIncomingMessage, IPersonalAccessToken, IRole } from '@rocket.chat/core-typings';
+import { CredentialTokens, Rooms, Users, Roles } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -27,6 +27,20 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 	});
 	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${escapeHTML(err)}</div></body></html>`;
 	res.end(content, 'utf-8');
+};
+
+const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_id'][]> => {
+	const roles = (await Roles.findInIdsOrNames(roleNamesOrIds).toArray()).map((role) => role._id);
+
+	if (roles.length !== roleNamesOrIds.length) {
+		SystemLogger.warn(`Failed to convert some role names to ids: ${roleNamesOrIds.join(', ')}`);
+	}
+
+	if (!roles.length) {
+		throw new Error(`We should have at least one existing role to create the user: ${roleNamesOrIds.join(', ')}`);
+	}
+
+	return roles;
 };
 
 export class SAML {
@@ -129,7 +143,8 @@ export class SAML {
 
 		if (!user) {
 			// If we received any role from the mapping, use them - otherwise use the default role for creation.
-			const roles = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
+			const roleNamesOrIds = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
+			const roles = await convertRoleNamesToIds(roleNamesOrIds);
 
 			const newUser: Record<string, any> = {
 				name: fullName,
@@ -200,7 +215,8 @@ export class SAML {
 
 		// When updating an user, we only update the roles if we received them from the mapping
 		if (userObject.roles?.length) {
-			updateData.roles = userObject.roles;
+			const roles = await convertRoleNamesToIds(userObject.roles);
+			updateData.roles = roles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {

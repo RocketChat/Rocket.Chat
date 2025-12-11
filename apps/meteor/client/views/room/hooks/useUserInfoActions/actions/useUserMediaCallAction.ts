@@ -1,9 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath, useUserId, useUserSubscription, useUserCard } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useTranslation } from 'react-i18next';
 
-import { useUserCard } from '../../../contexts/UserCardContext';
 import type { UserInfoAction } from '../useUserInfoActions';
 
 export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'name'>, rid: IRoom['_id']): UserInfoAction | undefined => {

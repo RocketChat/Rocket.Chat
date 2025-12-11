@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { createAuxContext } from '../fixtures/createAuxContext';
+import injectInitialData from '../fixtures/inject-initial-data';
 import { Users } from '../fixtures/userStates';
 import { AccountProfile } from '../page-objects';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -35,6 +36,7 @@ test.describe('E2EE Key Reset', () => {
 
 	test.afterEach(async () => {
 		await anotherClientPage.close();
+		await injectInitialData();
 	});
 
 	test('expect force logout on e2e keys reset', async ({ page }) => {
