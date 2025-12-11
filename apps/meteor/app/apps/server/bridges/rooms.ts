@@ -350,39 +350,45 @@ export class AppRoomBridge extends RoomBridge {
 			return { query: {} };
 		}
 
-		const baseTypes: Array<ICoreRoom['t']> = [];
+		const baseTypes = new Set<ICoreRoom['t']>();
 		let includeDiscussions = false;
 		let includeTeams = false;
 
 		for (const type of types) {
-			switch (type) {
-				case RoomType.CHANNEL:
-					baseTypes.push('c');
-					break;
-				case RoomType.PRIVATE_GROUP:
-					baseTypes.push('p');
-					break;
-				case RoomType.DIRECT_MESSAGE:
-					baseTypes.push('d');
-					break;
-				case RoomType.LIVE_CHAT:
-					baseTypes.push('l');
-					break;
-				case RoomType.DISCUSSION:
-					includeDiscussions = true;
-					break;
-				case RoomType.TEAM:
-					includeTeams = true;
-					break;
-				default:
-					break;
+			if (type === RoomType.DISCUSSION) {
+				includeDiscussions = true;
+				continue;
+			}
+
+			if (type === RoomType.TEAM) {
+				includeTeams = true;
+				continue;
+			}
+
+			if (type === RoomType.CHANNEL) {
+				baseTypes.add('c');
+				continue;
+			}
+
+			if (type === RoomType.PRIVATE_GROUP) {
+				baseTypes.add('p');
+				continue;
+			}
+
+			if (type === RoomType.DIRECT_MESSAGE) {
+				baseTypes.add('d');
+				continue;
+			}
+
+			if (type === RoomType.LIVE_CHAT) {
+				baseTypes.add('l');
 			}
 		}
 
 		const conditions: Array<Filter<ICoreRoom>> = [];
 
-		if (baseTypes.length) {
-			const baseCondition: Filter<ICoreRoom> = { t: { $in: baseTypes } };
+		if (baseTypes.size) {
+			const baseCondition: Filter<ICoreRoom> = { t: { $in: Array.from(baseTypes) } };
 
 			if (!includeDiscussions) {
 				baseCondition.prid = { $exists: false };
