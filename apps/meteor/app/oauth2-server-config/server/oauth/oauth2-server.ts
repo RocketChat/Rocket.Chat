@@ -5,6 +5,7 @@ import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
 import { API } from '../../../api/server';
 
@@ -74,10 +75,9 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
-API.v1.addAuthMethod((request: globalThis.Request) => {
-	const url = new URL(request.url);
-	const headers = Object.fromEntries(request.headers.entries());
-	const query = Object.fromEntries(url.searchParams.entries());
+API.v1.addAuthMethod((routeContext) => {
+	const headers = Object.fromEntries(routeContext.request.headers.entries());
+	const query = (isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {}) as Record<string, string | undefined>;
 
 	return oAuth2ServerAuth({ headers, query });
 });
