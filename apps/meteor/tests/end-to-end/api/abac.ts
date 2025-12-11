@@ -116,20 +116,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('POST should fail with > 10 values', async () => {
-			await request
-				.post(`${v1}/abac/attributes`)
-				.set(credentials)
-				.send({
-					key: `${anotherKey}_toolong`,
-					values: ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11'],
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				});
-		});
-
 		it('POST should create a valid attribute definition', async () => {
 			await request
 				.post(`${v1}/abac/attributes`)
@@ -138,6 +124,32 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('POST should allow more than 10 values for an attribute definition', async () => {
+			const manyValues = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12'];
+
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: `${anotherKey}_many_values`, values: manyValues })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(`${v1}/abac/attributes`)
+				.set(credentials)
+				.query({ key: `${anotherKey}_many_values` })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('attributes').that.is.an('array');
+					const found = res.body.attributes.find((a: any) => a.key === `${anotherKey}_many_values`);
+					expect(found).to.exist;
+					expect(found).to.have.property('values').that.deep.equals(manyValues);
 				});
 		});
 
@@ -258,6 +270,27 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
+		it('PUT should allow updating an attribute definition to have more than 10 values', async () => {
+			const manyValues = ['cyan', 'magenta', 'yellow', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9', 'w10', 'w11', 'w12'];
+
+			await request
+				.put(`${v1}/abac/attributes/${attributeId}`)
+				.set(credentials)
+				.send({ values: manyValues })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(`${v1}/abac/attributes/${attributeId}`)
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.values).to.deep.equal(manyValues);
+				});
+		});
+
 		it('PUT should update key only', async () => {
 			await request
 				.put(`${v1}/abac/attributes/${attributeId}`)
@@ -321,15 +354,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('inUse', false);
 				});
-			// Also check per-value usage map (all false)
-			await request
-				.get(`${v1}/abac/attributes/${attributeId}`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('usage');
-					expect((Object.values(res.body.usage) as boolean[]).every((v) => v === false)).to.be.true;
-				});
 		});
 
 		it('POST room attribute should fail with duplicate values', async () => {
@@ -343,7 +367,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('POST room attribute should add values and reflect usage/inUse=true', async () => {
+		it('POST room attribute should add values and reflect inUse=true', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
@@ -361,22 +385,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect((res) => {
 					expect(res.body.inUse).to.be.true;
 				});
-
-			// usage map: cyan true, others false
-			await request
-				.get(`${v1}/abac/attributes/${attributeId}`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('usage');
-					expect(res.body.usage).to.have.property('cyan', true);
-					// magenta & yellow not in use yet
-					if (res.body.usage.magenta !== undefined) expect(res.body.usage.magenta).to.be.false;
-					if (res.body.usage.yellow !== undefined) expect(res.body.usage.yellow).to.be.false;
-				});
 		});
 
-		it('PUT room attribute should replace values and update usage map accordingly', async () => {
+		it('PUT room attribute should replace values and keep inUse=true', async () => {
 			await request
 				.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)
 				.set(credentials)
@@ -384,17 +395,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				});
-
-			// usage now: magenta true, yellow true, cyan false
-			await request
-				.get(`${v1}/abac/attributes/${attributeId}`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body.usage).to.have.property('magenta', true);
-					expect(res.body.usage).to.have.property('yellow', true);
-					if (res.body.usage.cyan !== undefined) expect(res.body.usage.cyan).to.be.false;
 				});
 
 			// inUse should remain true
@@ -468,15 +468,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				});
-
-			// usage all false again
-			await request
-				.get(`${v1}/abac/attributes/${attributeId}`)
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect((Object.values(res.body.usage) as boolean[]).every((v) => v === false)).to.be.true;
 				});
 
 			await request
@@ -870,11 +861,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.set(credentials)
 				.send({ values: ['alpha', 'alpha'] })
 				.expect(400);
-		});
-
-		it('PUT attribute should fail when values array > 10', async () => {
-			const eleven = Array.from({ length: 11 }, (_, i) => `v${i}`);
-			await request.put(`${v1}/abac/attributes/${secondAttributeId}`).set(credentials).send({ values: eleven }).expect(400);
 		});
 
 		it('PUT attribute should fail when values array empty', async () => {
