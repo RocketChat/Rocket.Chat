@@ -61,17 +61,6 @@ export class HomeSidenav {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
-	getSidebarListItemByName(name: string): Locator {
-		return this.sidebarChannelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
-	}
-
-	async selectPriority(name: string, priority: string) {
-		const sidebarItem = this.getSidebarItemByName(name);
-		await sidebarItem.focus();
-		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.getByRole('menuitem', { name: priority }).click();
-	}
-
 	get homepageHeader(): Locator {
 		return this.page.locator('main').getByRole('heading', { name: 'Home' });
 	}

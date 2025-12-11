@@ -97,6 +97,17 @@ export class RoomSidebar extends Sidebar {
 	getItemUnreadBadge(item: Locator): Locator {
 		return item.getByRole('status', { name: 'unread' });
 	}
+
+	async selectPriority(name: string, priority: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('menuitem', { name: priority }).click();
+	}
+
+	getSidebarListItemByName(name: string): Locator {
+		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+	}
 }
 
 export class AdminSidebar extends Sidebar {
