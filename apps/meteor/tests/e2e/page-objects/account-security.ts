@@ -23,26 +23,19 @@ export class AccountSecurity extends Account {
 		return this.page.getByRole('textbox', { name: 'Confirm password' });
 	}
 
-	async changePassword(newPassword: string, confirmPassword: string, currentPassword: string) {
-		await this.inputNewPassword.fill(newPassword);
-		await this.inputConfirmPassword.fill(confirmPassword);
-		await this.saveChangesButton.click();
-		await this.enterPasswordModal.enterPassword(currentPassword);
-	}
-
-	private get expandE2EESectionButton() {
+	private get btnExpandE2EESection() {
 		return this.page.getByRole('button', { name: 'End-to-end encryption' });
 	}
 
-	private get resetE2EEPasswordButton() {
+	private get btnResetE2EEPassword() {
 		return this.page.getByRole('button', { name: 'Reset E2EE password' });
 	}
 
-	private get newE2EEPasswordInput() {
+	private get inputNewE2EEPassword() {
 		return this.page.getByRole('textbox', { name: 'New E2EE password' });
 	}
 
-	private get confirmNewE2EEPasswordInput() {
+	private get inputConfirmNewE2EEPassword() {
 		return this.page.getByRole('textbox', { name: 'Confirm new E2EE password' });
 	}
 
@@ -82,17 +75,24 @@ export class AccountSecurity extends Account {
 		return this.page.locator('dialog >> button');
 	}
 
+	async changePassword(newPassword: string, confirmPassword: string, currentPassword: string) {
+		await this.inputNewPassword.fill(newPassword);
+		await this.inputConfirmPassword.fill(confirmPassword);
+		await this.saveChangesButton.click();
+		await this.enterPasswordModal.enterPassword(currentPassword);
+	}
+
 	async resetE2EEPassword() {
-		await this.expandE2EESectionButton.click();
-		await this.resetE2EEPasswordButton.click();
+		await this.btnExpandE2EESection.click();
+		await this.btnResetE2EEPassword.click();
 		await this.toastMessage.dismissToast('success');
 		// Logged out
 	}
 
 	async setE2EEPassword(newPassword: string) {
-		await this.expandE2EESectionButton.click();
-		await this.newE2EEPasswordInput.fill(newPassword);
-		await this.confirmNewE2EEPasswordInput.fill(newPassword);
+		await this.btnExpandE2EESection.click();
+		await this.inputNewE2EEPassword.fill(newPassword);
+		await this.inputConfirmNewE2EEPassword.fill(newPassword);
 		await this.saveChangesButton.click();
 		await this.toastMessage.dismissToast('success');
 	}
