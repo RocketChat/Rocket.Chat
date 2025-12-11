@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
+import { retry } from './helpers/retry';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
@@ -343,30 +344,39 @@ describe('Meteor.methods', () => {
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: firstThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: firstThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+						{
+							delayMs: 100,
+						},
+					);
 				});
 			});
 
@@ -421,30 +431,39 @@ describe('Meteor.methods', () => {
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: otherThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: otherThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+						{
+							delayMs: 100,
+						},
+					);
 				});
 			});
 		});

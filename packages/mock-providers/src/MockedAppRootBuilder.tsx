@@ -129,6 +129,7 @@ export class MockedAppRootBuilder {
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
+		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,

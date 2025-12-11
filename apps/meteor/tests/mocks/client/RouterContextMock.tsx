@@ -86,6 +86,7 @@ const RouterContextMock = ({
 					getRouteParameters: () => routeParameters,
 					getSearchParameters: () => searchParameters,
 					getRouteName: () => 'home',
+					getPreviousRouteName: () => undefined,
 					buildRoutePath,
 					navigate:
 						navigate ??
