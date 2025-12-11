@@ -269,6 +269,9 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                     />
                   </span>
                   <span
+                    class="rcx-box rcx-box--full rcx-field__error"
+                  />
+                  <span
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <input
@@ -292,6 +295,9 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                       </i>
                     </button>
                   </span>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__error"
+                  />
                   <span
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
