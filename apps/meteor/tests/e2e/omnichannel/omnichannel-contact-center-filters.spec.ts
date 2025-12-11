@@ -95,36 +95,36 @@ test.describe('OC - Contact Center', async () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA, departmentB] = departments.map(({ data }) => data);
 
-		conversations = await Promise.all([
-			createConversation(api, {
-				visitorName: visitorA,
-				visitorToken: visitorA,
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-			createConversation(api, {
-				visitorName: visitorB,
-				visitorToken: visitorB,
-				agentId: `user2`,
-				departmentId: departmentB._id,
-			}),
-			createConversation(api, {
-				visitorName: visitorC,
-				visitorToken: visitorC,
-			}),
-		]);
+		const conversationA = await createConversation(api, {
+			visitorName: visitorA,
+			visitorToken: visitorA,
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
 
-		const [conversationA, conversationB] = conversations.map(({ data }) => data);
+		const conversationB = await createConversation(api, {
+			visitorName: visitorB,
+			visitorToken: visitorB,
+			agentId: `user2`,
+			departmentId: departmentB._id,
+		});
+
+		const conversationC = await createConversation(api, {
+			visitorName: visitorC,
+			visitorToken: visitorC,
+		});
+
+		conversations = [conversationA, conversationB, conversationC];
 
 		await Promise.all([
 			updateRoom(api, {
-				roomId: conversationA.room._id,
-				visitorId: conversationA.visitor._id,
+				roomId: conversationA.data.room._id,
+				visitorId: conversationA.data.visitor._id,
 				tags: [tagA.data.name],
 			}),
 			updateRoom(api, {
-				roomId: conversationB.room._id,
-				visitorId: conversationB.visitor._id,
+				roomId: conversationB.data.room._id,
+				visitorId: conversationB.data.visitor._id,
 				tags: [tagB.data.name],
 			}),
 		]);
