@@ -83,8 +83,8 @@ const AttributesPage = () => {
 						<GenericTableBody>
 							{data?.attributes?.map((attribute) => (
 								<GenericTableRow key={attribute._id}>
-									<GenericTableCell>{attribute.key}</GenericTableCell>
-									<GenericTableCell>{attribute.values.join(', ')}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{attribute.key}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{attribute.values.join(', ')}</GenericTableCell>
 									<GenericTableCell>
 										<AttributeMenu attribute={attribute} />
 									</GenericTableCell>
