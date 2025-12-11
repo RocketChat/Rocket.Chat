@@ -801,7 +801,7 @@ export class FileUploadClass {
 			if (streamOrBuffer instanceof stream) {
 				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
 			} else if (streamOrBuffer instanceof Buffer) {
-				fs.writeFileSync(tmpFile, streamOrBuffer);
+				await fs.promises.writeFile(tmpFile, streamOrBuffer);
 			} else {
 				throw new Error('Invalid file type');
 			}
