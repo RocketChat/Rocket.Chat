@@ -78,7 +78,7 @@ export class CreateNewDMModal extends CreateNewModal {
 
 export class CreateNewTeamModal extends CreateNewModal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'New team' }));
+		super(page.getByRole('dialog', { name: 'Create team' }));
 	}
 
 	get advancedSettingsAccordion(): Locator {
