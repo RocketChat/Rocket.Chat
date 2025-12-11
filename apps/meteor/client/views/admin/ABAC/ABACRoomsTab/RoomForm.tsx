@@ -27,7 +27,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 	const {
 		control,
 		handleSubmit,
-		formState: { isValid, errors },
+		formState: { isValid, errors, touchedFields },
 	} = useFormContext<RoomFormData>();
 
 	const { t } = useTranslation();
@@ -131,7 +131,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={!isValid} primary>
+					<Button type='submit' form={formId} disabled={!isValid || !Object.keys(touchedFields).length} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

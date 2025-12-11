@@ -31,7 +31,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const {
 		handleSubmit,
 		register,
-		formState: { errors },
+		formState: { errors, touchedFields },
 		watch,
 	} = useFormContext<AttributesFormFormData>();
 
@@ -125,7 +125,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => onCancel()}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name} primary>
+					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name || !Object.keys(touchedFields).length} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
