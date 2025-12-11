@@ -110,7 +110,7 @@ cleanup() {
         echo "=========================================="
         echo "CONTAINER LOGS (Test Failed)"
         echo "=========================================="
-        
+
         echo ""
         echo "ROCKET.CHAT (rc1) LOGS:"
         echo "----------------------------------------"
@@ -119,7 +119,7 @@ cleanup() {
         else
             echo "  Rocket.Chat container not found or no logs"
         fi
-        
+
         echo ""
         echo "SYNAPSE (hs1) LOGS:"
         echo "----------------------------------------"
@@ -128,11 +128,11 @@ cleanup() {
         else
             echo "  Synapse container not found or no logs"
         fi
-        
+
         echo ""
         echo "=========================================="
     fi
-    
+
     if [ "$KEEP_RUNNING" = true ]; then
         log_info "Keeping Docker containers running (--keep-running flag set)"
         log_info "Services are available at:"
@@ -158,12 +158,12 @@ cleanup() {
         fi
         log_success "Cleanup completed"
     fi
-    
+
     # Remove temporary build directory if it exists
     if [ -n "${BUILD_DIR:-}" ] && [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR" || true
     fi
-    
+
     # Exit with the test result code
     if [ -n "${TEST_EXIT_CODE:-}" ]; then
         exit $TEST_EXIT_CODE
@@ -186,21 +186,21 @@ fi
 if [ "$USE_PREBUILT_IMAGE" = false ]; then
     log_info "🚀 Building Rocket.Chat locally..."
     log_info "====================================="
-    
+
     # Clean up any existing build
     log_info "Cleaning up previous build..."
     rm -rf "$BUILD_DIR"
-    
+
     # Build the project
     log_info "Building packages from project root..."
     cd "$ROCKETCHAT_ROOT"
     yarn build
-    
+
     # Build the Meteor bundle (must be run from the meteor directory)
     log_info "Building Meteor bundle..."
     cd "$ROCKETCHAT_ROOT/apps/meteor"
     METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory "$BUILD_DIR"
-    
+
     log_success "Build completed!"
 else
     log_info "🚀 Using pre-built image: $PREBUILT_IMAGE"
@@ -289,7 +289,7 @@ wait_for_service() {
         # Capture curl output and error for debugging
         curl_output=$(curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" 2>&1)
         curl_exit_code=$?
-        
+
         if [ $curl_exit_code -eq 0 ]; then
             log_success "$name is ready!"
             return 0
@@ -328,8 +328,8 @@ fi
 if [ "$NO_TEST" = false ]; then
     log_info "Running end-to-end tests..."
     cd "$PACKAGE_ROOT"
-    
-    yarn testend-to-end
+
+    IS_EE=true NODE_EXTRA_CA_CERTS=$(pwd)/docker-compose/traefik/certs/ca/rootCA.crt yarn test:federation
     TEST_EXIT_CODE=$?
 else
     log_info "No-test mode: skipping test execution"
