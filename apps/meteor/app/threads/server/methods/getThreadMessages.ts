@@ -55,7 +55,8 @@ Meteor.methods<ServerMethods>({
 			...(limit && { limit }),
 			sort: { ts: -1 },
 		}).toArray();
-		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
+
+		callbacks.runAsync('afterReadMessages', room, { uid: user._id, tmid });
 
 		return [thread, ...result];
 	},
