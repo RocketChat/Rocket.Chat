@@ -77,9 +77,11 @@ describe('[OAuth2 v1 Endpoint Authentication]', () => {
 				.expect((res: Response) => {
 					expect(res.headers).to.have.property('location');
 					const location = new URL(res.headers.location);
-					expect(location.searchParams.get('code')).to.be.string;
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					code = location.searchParams.get('code')!;
+					const retrievedCode = location.searchParams.get('code');
+					expect(retrievedCode).to.be.a('string');
+					if (retrievedCode) {
+						code = retrievedCode;
+					}
 				});
 		});
 
@@ -228,12 +230,15 @@ describe('[OAuth2 v1 Endpoint Authentication]', () => {
 		});
 
 		describe('Error cases', () => {
+			const INVALID_TOKEN = 'invalid-token-12345';
+			const MALFORMED_TOKEN = 'malformed.jwt.token';
+
 			it('should reject invalid OAuth2 token', async () => {
-				await request.get(api('users.info')).auth('invalid-token', { type: 'bearer' }).expect(401);
+				await request.get(api('users.info')).auth(INVALID_TOKEN, { type: 'bearer' }).expect(401);
 			});
 
 			it('should reject expired or malformed OAuth2 token', async () => {
-				await request.get(api('users.info')).auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid', { type: 'bearer' }).expect(401);
+				await request.get(api('users.info')).auth(MALFORMED_TOKEN, { type: 'bearer' }).expect(401);
 			});
 
 			it('should reject request without authentication when required', async () => {
