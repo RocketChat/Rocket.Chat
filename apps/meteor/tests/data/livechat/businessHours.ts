@@ -3,7 +3,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { POSTLivechatBusinessHoursSaveParams } from '@rocket.chat/rest-typings';
 import moment from 'moment';
 
-import { api, credentials, methodCall, request } from '../api-data';
+import { api, credentials, request } from '../api-data';
 import { updateEESetting, updateSetting } from '../permissions.helper';
 
 type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'> & {
@@ -132,17 +132,10 @@ export const disableDefaultBusinessHour = async () => {
 };
 
 const removeCustomBusinessHour = async (businessHourId: string) => {
-	await request
-		.post(methodCall('livechat:removeBusinessHour'))
+	return request
+		.post(api('livechat/business-hours.remove'))
 		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				params: [businessHourId, LivechatBusinessHourTypes.CUSTOM],
-				msg: 'method',
-				method: 'livechat:removeBusinessHour',
-				id: '101',
-			}),
-		})
+		.send({ _id: businessHourId, type: LivechatBusinessHourTypes.CUSTOM })
 		.expect(200);
 };
 
