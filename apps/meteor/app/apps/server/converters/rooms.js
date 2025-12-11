@@ -1,5 +1,4 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
@@ -386,38 +385,13 @@ export class AppRoomsConverter {
 					_id: room.u._id,
 					username: room.u.username,
 					name: room.u.name || room.u.username || 'Unknown',
-					emails: [],
-					type: UserType.UNKNOWN,
-					isEnabled: true,
-					roles: room.u.roles || [],
-					bio: room.u.bio,
-					status: room.u.status || 'offline',
-					statusConnection: room.u.statusConnection || UserStatusConnection.OFFLINE,
-					statusText: room.u.statusText,
-					utcOffset: room.u.utcOffset ?? 0,
-					createdAt: room.u.createdAt || room.ts || new Date(0),
-					updatedAt: room.u._updatedAt || room._updatedAt || room.ts || new Date(0),
-					lastLoginAt: room.u.lastLogin || room._updatedAt || room.ts || new Date(0),
-					settings: room.u.settings,
-					appId: room.u.appId,
-					customFields: room.u.customFields,
 				}
 			: undefined;
 
 		const fallbackUser = {
-			id: 'unknown',
+			_id: 'unknown',
 			username: 'unknown',
 			name: 'Unknown',
-			emails: [],
-			type: UserType.UNKNOWN,
-			isEnabled: true,
-			roles: [],
-			status: 'offline',
-			statusConnection: UserStatusConnection.OFFLINE,
-			utcOffset: 0,
-			createdAt: room.ts || new Date(0),
-			updatedAt: room._updatedAt || room.ts || new Date(0),
-			lastLoginAt: room._updatedAt || room.ts || new Date(0),
 		};
 
 		return {
