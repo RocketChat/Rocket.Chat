@@ -3,4 +3,6 @@ export enum RoomType {
 	PRIVATE_GROUP = 'p',
 	DIRECT_MESSAGE = 'd',
 	LIVE_CHAT = 'l',
+	DISCUSSION = 'discussion',
+	TEAM = 'team',
 }
