@@ -382,7 +382,17 @@ export class AppRoomBridge extends RoomBridge {
 		const conditions: Array<Filter<ICoreRoom>> = [];
 
 		if (baseTypes.length) {
-			conditions.push({ t: { $in: baseTypes } });
+			const baseCondition: Filter<ICoreRoom> = { t: { $in: baseTypes } };
+
+			if (!includeDiscussions) {
+				baseCondition.prid = { $exists: false };
+			}
+
+			if (!includeTeams) {
+				baseCondition.teamMain = { $ne: true };
+			}
+
+			conditions.push(baseCondition);
 		}
 
 		if (includeDiscussions) {
