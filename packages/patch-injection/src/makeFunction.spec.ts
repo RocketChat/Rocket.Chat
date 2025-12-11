@@ -138,6 +138,14 @@ describe('Chained calls', () => {
 
 		expect(fn('A', 'B')).toBe('1=AB,2=AB,3=AB');
 	});
+
+	it('should return the original value if patched but not calling next', () => {
+		const fn = makeFunction(() => 15);
+
+		fn.patch(() => 50);
+
+		expect(fn()).toBe(50);
+	});
 });
 
 describe('Multiple patches', () => {
