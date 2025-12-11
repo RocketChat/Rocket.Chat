@@ -14,7 +14,6 @@ type AttributesContextualBarProps = {
 	attributeData?: {
 		key: string;
 		values: string[];
-		usage: Record<string, boolean>;
 	};
 	onClose: () => void;
 };
