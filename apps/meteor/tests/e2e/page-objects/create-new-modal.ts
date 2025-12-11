@@ -55,6 +55,17 @@ export class CreateNewDMModal extends CreateNewModal {
 	get dmListbox(): Locator {
 		return this.root.getByRole('listbox');
 	}
+
+	get autocompleteUser(): Locator {
+		return this.root.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full")]/..//input');
+	}
+
+	async inviteUserToDM(username: string) {
+		await this.autocompleteUser.click();
+		await this.autocompleteUser.type(username);
+		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
+		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
+	}
 }
 
 export class CreateNewTeamModal extends CreateNewModal {
