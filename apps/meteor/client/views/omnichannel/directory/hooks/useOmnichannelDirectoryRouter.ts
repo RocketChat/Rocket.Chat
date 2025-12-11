@@ -19,14 +19,12 @@ export const useOmnichannelDirectoryRouter = () => {
 	);
 
 	const getDirectoryRouteName = useCallback(() => {
-		if (routeName === 'omnichannel-directory') {
-			return 'omnichannel-directory';
+		if (!routeName || !validRoutes) {
+			return undefined;
 		}
-		if (routeName === 'omnichannel-current-chats') {
-			return 'omnichannel-current-chats';
-		}
-		return undefined;
-	}, [routeName]);
+
+		return routeName;
+	}, [routeName, validRoutes]);
 
 	return {
 		...router,
