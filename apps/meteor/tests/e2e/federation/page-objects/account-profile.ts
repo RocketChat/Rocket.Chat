@@ -1,15 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { FederationAccountSidenav } from './fragments/account-sidenav';
-
 export class FederationAccountProfile {
 	private readonly page: Page;
 
-	readonly sidenav: FederationAccountSidenav;
-
 	constructor(page: Page) {
 		this.page = page;
-		this.sidenav = new FederationAccountSidenav(page);
 	}
 
 	get inputName(): Locator {
