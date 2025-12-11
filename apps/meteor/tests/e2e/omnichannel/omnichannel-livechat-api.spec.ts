@@ -404,9 +404,8 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await test.step('Expect registered guest to be in dep2', async () => {
-					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`).click();
+					await poAuxContext2.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
+
 					await poAuxContext2.page.locator('role=main').waitFor();
 					await poAuxContext2.page.locator('role=main >> role=heading[level=1]').waitFor();
 					await expect(poAuxContext2.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
@@ -414,11 +413,8 @@ test.describe('OC - Livechat API', () => {
 				});
 
 				await test.step('Expect registered guest not to be in dep1', async () => {
-					await poAuxContext.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await expect(
-						poAuxContext.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
-					).not.toBeVisible();
+					await poAuxContext.poHomeOmnichannel.navbar.typeSearch(registerGuestVisitor.name);
+					await expect(poAuxContext.poHomeOmnichannel.navbar.getSearchRoomByName(registerGuestVisitor.name)).not.toBeVisible();
 				});
 			});
 		});
@@ -465,11 +461,8 @@ test.describe('OC - Livechat API', () => {
 				await test.step('Expect chat to be transferred', async () => {
 					await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.transferChat(depId), depId);
 
-					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await expect(
-						poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
-					).toBeVisible();
+					await poAuxContext2.poHomeOmnichannel.navbar.openChat(registerGuestVisitor.name);
+					await expect(poAuxContext2.poHomeOmnichannel.navbar.getSearchRoomByName(registerGuestVisitor.name)).toBeVisible();
 				});
 			});
 		});
