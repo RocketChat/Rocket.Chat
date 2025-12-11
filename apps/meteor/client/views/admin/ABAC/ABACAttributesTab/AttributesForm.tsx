@@ -115,11 +115,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 						<Button
 							onClick={() => append({ value: '' })}
 							// Checking for values since rhf does consider the newly added field as dirty after an append() call
-							disabled={
-								!!getAttributeValuesError() ||
-								attributeValues?.some((value: { value: string }) => value?.value === '') ||
-								lockedAttributesFields.length + fields.length >= 10
-							}
+							disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
 						>
 							{t('Add_Value')}
 						</Button>
