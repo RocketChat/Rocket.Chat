@@ -165,6 +165,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findOneFederatedByMrid(mrid: string, options?: FindOptions<IRoomFederated>): Promise<IRoomFederated | null>;
+
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
 
 	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
