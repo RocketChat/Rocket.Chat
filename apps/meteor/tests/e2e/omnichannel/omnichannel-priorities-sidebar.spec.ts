@@ -63,18 +63,18 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Lowest');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Lowest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getBadgeIndicator(visitor.name, 'Lowest')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Highest');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Highest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 			await expect(poRoomInfo.getBadgeIndicator(visitor.name, 'Highest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Unprioritized');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Unprioritized');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
@@ -87,18 +87,18 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Lowest');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Lowest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 			await expect(poRoomInfo.getBadgeIndicator(visitor.name, 'Lowest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Highest');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Highest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 			await expect(poRoomInfo.getBadgeIndicator(visitor.name, 'Highest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Unprioritized');
+			await poHomeChannel.sidebar.selectPriority(visitor.name, 'Unprioritized');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
