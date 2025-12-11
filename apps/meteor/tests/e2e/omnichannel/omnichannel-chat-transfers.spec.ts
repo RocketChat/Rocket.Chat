@@ -59,20 +59,19 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA] = departments.map(({ data }) => data);
 
-		conversations = await Promise.all([
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-		]);
+		const conversationA = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		const conversationB = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		const conversationC = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		conversations = [conversationA, conversationB, conversationC];
 	});
 
 	// Create monitors
@@ -303,20 +302,19 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA] = departments.map(({ data }) => data);
 
-		conversations = await Promise.all([
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-			createConversation(api, {
-				agentId: `user1`,
-				departmentId: departmentA._id,
-			}),
-		]);
+		const conversationA = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		const conversationB = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		const conversationC = await createConversation(api, {
+			agentId: `user1`,
+			departmentId: departmentA._id,
+		});
+		conversations = [conversationA, conversationB, conversationC];
 	});
 
 	// Create sessions

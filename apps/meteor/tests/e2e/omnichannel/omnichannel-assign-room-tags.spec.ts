@@ -52,10 +52,17 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test.beforeAll('Create conversations', async ({ api }) => {
-		conversations = await Promise.all([
-			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
-			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
-		]);
+		const conversationA = await createConversation(api, {
+			visitorName: visitorA.name,
+			agentId: 'user1',
+			departmentId: departmentA.data._id,
+		});
+		const conversationB = await createConversation(api, {
+			visitorName: visitorB.name,
+			agentId: 'user1',
+			departmentId: departmentB.data._id,
+		});
+		conversations = [conversationA, conversationB];
 	});
 
 	test.beforeEach(async ({ page }) => {
