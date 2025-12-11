@@ -1,7 +1,6 @@
 import type { IMessage, IMessageRaw } from '../../../src/definition/messages';
 import type { IRoom } from '../../../src/definition/rooms';
 import type { IRoomRaw } from '../../../src/definition/rooms/IRoomRaw';
-import type { IRoomRaw } from '../../../src/definition/rooms/IRoomRaw';
 import type { IUser } from '../../../src/definition/users';
 import { RoomBridge } from '../../../src/server/bridges';
 import type { GetMessagesOptions, GetRoomsOptions } from '../../../src/server/bridges/RoomBridge';
