@@ -30,10 +30,9 @@ test.describe('OC - Contact Center - Chats', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		conversations = await Promise.all([
-			createConversation(api, { agentId: `user1`, visitorName: visitorA }),
-			createConversation(api, { agentId: `user1`, visitorName: visitorB }),
-		]);
+		const conversationA = await createConversation(api, { agentId: `user1`, visitorName: visitorA });
+		const conversationB = await createConversation(api, { agentId: `user1`, visitorName: visitorB });
+		conversations = [conversationA, conversationB];
 	});
 
 	test.beforeEach(async ({ page }) => {
