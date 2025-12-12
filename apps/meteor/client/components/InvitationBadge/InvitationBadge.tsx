@@ -22,7 +22,6 @@ const InvitationBadge = ({ invitationDate, ...props }: InvitationBadgeProps) => 
 			name='mail'
 			aria-hidden='false'
 			title={t('Invited__date__', { date: formattedDate })}
-			aria-label={t('Invited__date__', { date: formattedDate })}
 		/>
 	);
 };
