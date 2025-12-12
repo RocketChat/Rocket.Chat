@@ -3142,12 +3142,8 @@ describe('Meteor.methods', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').that.is.an('object');
-						expect(res.body.message).to.have.property('msg').that.is.an('string');
-						expect(res.body.message.msg).to.equal('result');
-						expect(res.body.message).to.have.property('error').that.is.an('object');
-						expect(res.body.message.error).to.have.property('error').that.is.an('string');
-						expect(res.body.message.error.error).to.equal('error-cant-invite-for-direct-room');
+						expect(res.body).to.have.property('message').that.is.an('string');
+						expect(res.body.message).to.contain('error-cant-invite-for-direct-room');
 					})
 					.end(done);
 			});
