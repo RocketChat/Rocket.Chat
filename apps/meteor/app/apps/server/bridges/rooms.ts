@@ -154,9 +154,9 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
 		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
 
-		const { types, limit = 100, skip = 0 } = options || {};
+		const { limit = 100, skip = 0 } = options || {};
 
-		const { query } = this.buildRoomQuery(types);
+		const { query } = this.buildRoomQuery(options);
 
 		const findOptions: FindOptions<ICoreRoom> = {
 			sort: { ts: -1 },
@@ -345,79 +345,31 @@ export class AppRoomBridge extends RoomBridge {
 		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
 	}
 
-	private buildRoomQuery(types?: Array<RoomType>): { query: Filter<ICoreRoom> } {
-		if (!types || types.length === 0) {
-			return { query: {} };
+	private buildRoomQuery(options: GetRoomsOptions = {}): { query: Filter<ICoreRoom> } {
+		const { types, onlyDiscussions, onlyTeamMain } = options;
+
+		const hasTypes = !!types?.length;
+		const includeDiscussions = options.includeDiscussions ?? !hasTypes;
+		const includeTeamMain = options.includeTeamMain ?? !hasTypes;
+
+		const query: Filter<ICoreRoom> = {};
+
+		if (hasTypes) {
+			query.t = { $in: types as Array<ICoreRoom['t']> };
 		}
 
-		const baseTypes = new Set<ICoreRoom['t']>();
-		let includeDiscussions = false;
-		let includeTeams = false;
-
-		for (const type of types) {
-			if (type === RoomType.DISCUSSION) {
-				includeDiscussions = true;
-				continue;
-			}
-
-			if (type === RoomType.TEAM) {
-				includeTeams = true;
-				continue;
-			}
-
-			if (type === RoomType.CHANNEL) {
-				baseTypes.add('c');
-				continue;
-			}
-
-			if (type === RoomType.PRIVATE_GROUP) {
-				baseTypes.add('p');
-				continue;
-			}
-
-			if (type === RoomType.DIRECT_MESSAGE) {
-				baseTypes.add('d');
-				continue;
-			}
-
-			if (type === RoomType.LIVE_CHAT) {
-				baseTypes.add('l');
-				continue;
-			}
+		if (onlyDiscussions) {
+			query.prid = { $exists: true };
+		} else if (!includeDiscussions) {
+			query.prid = { $exists: false };
 		}
 
-		const conditions: Array<Filter<ICoreRoom>> = [];
-
-		if (baseTypes.size) {
-			const baseCondition: Filter<ICoreRoom> = { t: { $in: Array.from(baseTypes) } };
-
-			if (!includeDiscussions) {
-				baseCondition.prid = { $exists: false };
-			}
-
-			if (!includeTeams) {
-				baseCondition.teamMain = { $ne: true };
-			}
-
-			conditions.push(baseCondition);
+		if (onlyTeamMain) {
+			query.teamMain = true;
+		} else if (!includeTeamMain) {
+			query.teamMain = { $ne: true };
 		}
 
-		if (includeDiscussions) {
-			conditions.push({ prid: { $exists: true } });
-		}
-
-		if (includeTeams) {
-			conditions.push({ teamMain: true });
-		}
-
-		if (!conditions.length) {
-			return { query: {} };
-		}
-
-		if (conditions.length === 1) {
-			return { query: conditions[0] };
-		}
-
-		return { query: { $or: conditions } };
+		return { query };
 	}
 }

@@ -17,6 +17,10 @@ export type GetMessagesOptions = {
 
 export type GetRoomsOptions = {
 	types?: Array<RoomType>;
+	includeDiscussions?: boolean;
+	onlyDiscussions?: boolean;
+	includeTeamMain?: boolean;
+	onlyTeamMain?: boolean;
 	limit?: number;
 	skip?: number;
 };

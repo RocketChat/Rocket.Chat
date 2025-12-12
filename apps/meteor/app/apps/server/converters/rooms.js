@@ -33,7 +33,7 @@ export class AppRoomsConverter {
 				}
 			: undefined;
 
-		const type = this._resolveRoomType(room);
+		const type = this._convertTypeToApp(room.t);
 
 		return {
 			id: room._id,
@@ -259,9 +259,9 @@ export class AppRoomsConverter {
 				return sysMes;
 			},
 			type: (room) => {
-				const derivedType = this._resolveRoomType(room);
+				const result = this._convertTypeToApp(room.t);
 				delete room.t;
-				return derivedType;
+				return result;
 			},
 			creator: async (room) => {
 				const { u } = room;
@@ -373,18 +373,6 @@ export class AppRoomsConverter {
 		};
 
 		return transformMappedData(originalRoom, map);
-	}
-
-	_resolveRoomType(room) {
-		if (room.teamMain) {
-			return RoomType.TEAM;
-		}
-
-		if (room.prid) {
-			return RoomType.DISCUSSION;
-		}
-
-		return this._convertTypeToApp(room.t);
 	}
 
 	_convertTypeToApp(typeChar) {

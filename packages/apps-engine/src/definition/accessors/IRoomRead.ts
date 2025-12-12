@@ -67,7 +67,7 @@ export interface IRoomRead {
 	 * @param options Optional filters such as types and pagination
 	 * @returns a list of lightweight rooms
 	 */
-	getAllRooms(options?: Partial<GetRoomsOptions>): Promise<Array<IRoomRaw>>;
+	getAllRooms(options?: GetRoomsOptions): Promise<Array<IRoomRaw>>;
 
 	/**
 	 * Gets a direct room with all usernames
