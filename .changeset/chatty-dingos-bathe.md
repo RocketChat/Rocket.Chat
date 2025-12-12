@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds room listing to the Apps Engine bridge to let apps retrieve rooms by type and provide workspace-wide visibility.
+Adds a new method to the Apps-Engine that allows apps to retrieve multiple rooms from database
