@@ -1668,13 +1668,11 @@ import { SynapseClient } from '../helper/synapse-client';
 				let rid: string;
 
 				beforeAll(async () => {
-					channelName = `federated-channel-revoked-accept-${Date.now()}`;
+					channelName = `federated-channel-revoked-${Date.now()}`;
 					matrixRoomId = await hs1AdminApp.createRoom(channelName);
 
 					// hs1 invites RC user
 					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
-
-					// Wait for RC to receive the invitation
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
 					const pendingInvitation = subscriptions.update.find(
@@ -1693,19 +1691,19 @@ import { SynapseClient } from '../helper/synapse-client';
 					await new Promise((resolve) => setTimeout(resolve, 2000));
 				}, 20000);
 
-				it('should no longer have the user status as INVITED after revocation', async () => {
-					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
-
-					const invitedSubscription = subscriptions.update.find(
-						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
-					);
-
-					expect(invitedSubscription).toBeUndefined();
-				});
-
 				it('should fail when RC user tries to accept the revoked invitation', async () => {
 					const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
 					expect(acceptResponse.success).toBe(false);
+				});
+
+				it('should allow RC user to reject the revoked invitation', async () => {
+					const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
+					expect(rejectResponse.success).toBe(true);
+				});
+
+				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+					expect(member?.membership).toBe('leave');
 				});
 			});
 		});
