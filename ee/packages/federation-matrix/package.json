@@ -14,7 +14,7 @@
 		"lint:fix": "eslint src --fix",
 		"test": "jest",
 		"test:integration": "./tests/scripts/run-integration-tests.sh",
-		"testend-to-end": "IS_EE=true NODE_EXTRA_CA_CERTS=$(pwd)/docker-compose/traefik/certs/ca/rootCA.crt jest --config jest.config.federation.ts --forceExit --testTimeout=30000",
+		"test:federation": "jest --config jest.config.federation.ts",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck"
 	},
