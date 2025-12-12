@@ -140,4 +140,42 @@ export class RoomReadAccessorTestFixture {
 		Expect((await rr.getMembers('testing')) as Array<IUser>).not.toBeEmpty();
 		Expect((await rr.getMembers('testing'))[0]).toBe(this.user);
 	}
+
+	@AsyncTest()
+	public async validateGetAllRoomsEdgeCases() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+
+		// Test negative limit
+		await Expect(async () => rr.getAllRooms({ limit: -1 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: -100 })).toThrowAsync();
+
+		// Test zero limit
+		await Expect(async () => rr.getAllRooms({ limit: 0 })).toThrowAsync();
+
+		// Test non-finite limit values
+		await Expect(async () => rr.getAllRooms({ limit: NaN })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: -Infinity })).toThrowAsync();
+
+		// Test limit > 100 (existing test case)
+		await Expect(async () => rr.getAllRooms({ limit: 101 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: 200 })).toThrowAsync();
+
+		// Test negative skip values
+		await Expect(async () => rr.getAllRooms({ skip: -1 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ skip: -100 })).toThrowAsync();
+
+		// Test non-finite skip values
+		await Expect(async () => rr.getAllRooms({ skip: NaN })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ skip: Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ skip: -Infinity })).toThrowAsync();
+
+		// Test valid calls to ensure validation doesn't break normal behavior
+		await Expect(async () => rr.getAllRooms({ limit: 1 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: 50 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: 100 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ skip: 0 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ skip: 10 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ limit: 50, skip: 10 })).not.toThrowAsync();
+	}
 }
