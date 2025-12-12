@@ -136,7 +136,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomA.fname).click();
+			await poOmnichannel.chats.findRowByName(roomA.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
@@ -179,7 +179,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomB.fname).click();
+			await poOmnichannel.chats.findRowByName(roomB.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomB._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
@@ -224,7 +224,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomC.fname).click();
+			await poOmnichannel.chats.findRowByName(roomC.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomC._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
@@ -361,7 +361,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomA.fname).click();
+			await poOmnichannel.chats.findRowByName(roomA.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
@@ -404,7 +404,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomB.fname).click();
+			await poOmnichannel.chats.findRowByName(roomB.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomB._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
@@ -449,7 +449,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomC.fname).click();
+			await poOmnichannel.chats.findRowByName(roomC.fname).click();
 			await expect(page).toHaveURL(`/omnichannel/current/${roomC._id}`);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
