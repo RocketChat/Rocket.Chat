@@ -5482,7 +5482,6 @@
   "Visitor_time_on_site": "Tempo do visitante no site",
   "VoIP": "VoIP",
   "VoIP_TeamCollab": "Chamadas de voz para equipe (VoIP)",
-  "VoIP_TeamCollab_Beta_Alert": "Este recurso está atualmente em Beta, por favor, reporte quaisquer problemas ao suporte da Rocket.Chat.",
   "VoIP_TeamCollab_Description": "Configurar o VoIP na colaboração em equipe",
   "VoIP_TeamCollab_Feature1": "<0>Chamadas diretas:</0> Inicie ou receba chamadas instantaneamente com membros da equipe dentro do seu workspace do Rocket.Chat.",
   "VoIP_TeamCollab_Feature2": "<0>Gerenciamento de extensões:</0> Os administradores podem atribuir extensões exclusivas aos usuários, permitindo a discagem rápida e direta de dentro e de fora da sua organização.",
