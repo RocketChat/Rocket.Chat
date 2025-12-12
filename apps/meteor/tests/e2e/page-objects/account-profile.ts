@@ -1,14 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
-import { AccountSidenav } from './fragments/account-sidenav';
+import { ProfileSidebar } from './fragments';
 
 export class AccountProfile extends Account {
-	readonly sidenav: AccountSidenav;
+	readonly sidebar: ProfileSidebar;
 
 	constructor(page: Page) {
 		super(page);
-		this.sidenav = new AccountSidenav(page);
+		this.sidebar = new ProfileSidebar(page);
 	}
 
 	get inputName(): Locator {

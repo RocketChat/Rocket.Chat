@@ -1,5 +1,5 @@
 import { isInviteSubscription } from '@rocket.chat/core-typings';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, ContextualbarSkeleton } from '@rocket.chat/ui-client';
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
@@ -8,12 +8,10 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
-import Header from './Header';
-import { HeaderV2 } from './HeaderV2';
+import Header from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomInvite from './RoomInvite';
-import RoomBody from './body/RoomBody';
-import RoomBodyV2 from './body/RoomBodyV2';
+import RoomBody from './body/RoomBodyV2';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
@@ -51,32 +49,8 @@ const Room = (): ReactElement => {
 						<RoomLayout
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
-							header={
-								<FeaturePreview feature='newNavigation'>
-									<FeaturePreviewOn>
-										<HeaderV2 room={room} subscription={subscription} />
-									</FeaturePreviewOn>
-									<FeaturePreviewOff>
-										<Header room={room} subscription={subscription} />
-									</FeaturePreviewOff>
-								</FeaturePreview>
-							}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
-								)
-							}
+							header={<Header room={room} />}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

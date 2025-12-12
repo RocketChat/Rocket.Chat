@@ -53,7 +53,7 @@ test.describe('E2EE Legacy Format', () => {
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
