@@ -51,7 +51,7 @@ export default {
 							mode: 'testops',
 							testops: {
 								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
-								project: 'RC',
+								project: process.env.QASE_PROJECT || 'RC',
 								run: {
 									title: qaseRunTitle(),
 									complete: true,
