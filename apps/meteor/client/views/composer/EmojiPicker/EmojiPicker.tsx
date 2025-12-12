@@ -9,9 +9,9 @@ import {
 	EmojiPickerListArea,
 	EmojiPickerPreview,
 } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useRoute, useRole, useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
-import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef, useMemo } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
@@ -47,6 +47,13 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	const canManageEmoji = usePermission('manage-emoji');
 	const customEmojiRoute = useRoute('emoji-custom');
+
+	const isAdmin = useRole('admin');
+	const restrictedEmojisString = useSetting<string>('Emoji_Restricted_For_Users', '');
+	const restrictedEmojis = useMemo(() => {
+		if (!restrictedEmojisString) return [];
+		return restrictedEmojisString.split(',').map((emoji) => emoji.trim()).filter(Boolean);
+	}, [restrictedEmojisString]);
 
 	const [searching, setSearching] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -137,7 +144,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
+		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis);
 
 		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
 			setCurrentCategory('no-results');
