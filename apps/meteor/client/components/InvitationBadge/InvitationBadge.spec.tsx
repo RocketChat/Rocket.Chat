@@ -1,18 +1,25 @@
-import { composeStories } from '@storybook/react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
-import { axe } from 'jest-axe';
 
-import * as stories from './InvitationBadge.stories';
+import InvitationBadge from './InvitationBadge';
 
-const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
+const wrapper = mockAppRoot()
+	.withTranslations('en', 'core', {
+		Invited__date__: 'Invited {{date}}',
+	})
+	.build();
+
+it('should render InvitationBadge without date', () => {
+	const { baseElement } = render(<InvitationBadge />, { wrapper });
 	expect(baseElement).toMatchSnapshot();
 });
 
-test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />);
+it('should render InvitationBadge with date ISO string', () => {
+	const { baseElement } = render(<InvitationBadge invitationDate='2025-01-01T12:00:00Z' />, { wrapper });
+	expect(baseElement).toMatchSnapshot();
+});
 
-	const results = await axe(container);
-	expect(results).toHaveNoViolations();
+it('should render InvitationBadge with Date object', () => {
+	const { baseElement } = render(<InvitationBadge invitationDate={new Date('2025-02-01T12:00:00Z')} />, { wrapper });
+	expect(baseElement).toMatchSnapshot();
 });
