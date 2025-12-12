@@ -182,7 +182,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			);
 		} catch (error) {
 			this.sipDialog = null;
-			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error, callId: call._id });
+			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', err: error, callId: call._id });
 			const errorCode = this.getSipErrorCode(error);
 			if (errorCode) {
 				void mediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
@@ -237,8 +237,8 @@ export class OutgoingSipCall extends BaseSipCall {
 				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (error) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', error });
+			} catch (err) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', err });
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
@@ -308,8 +308,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
 				logger.debug('modify failed');
 			});
-		} catch (error) {
-			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', error });
+		} catch (err) {
+			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', err });
 		}
 
 		if (!answer) {
@@ -374,8 +374,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			if (res.status === 202) {
 				logger.debug({ msg: 'REFER was accepted', method: 'OutgoingSipCall.processTransferredCall' });
 			}
-		} catch (error) {
-			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error, callId: call._id });
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', err, callId: call._id });
 			if (!call.ended) {
 				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}
