@@ -21,18 +21,18 @@ import CallHistoryInternalUser from './CallHistoryInternalUser';
 import { useFullStartDate } from './useFullStartDate';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
-type InternalCallHistoryContact = {
+export type InternalCallHistoryContact = {
 	_id: string;
 	name?: string;
 	username: string;
 	voiceCallExtension?: string;
 };
 
-type ExternalCallHistoryContact = {
+export type ExternalCallHistoryContact = {
 	number: string;
 };
 
-type CallHistoryData = {
+export type CallHistoryData = {
 	callId: string;
 	direction: 'inbound' | 'outbound';
 	duration: number;
