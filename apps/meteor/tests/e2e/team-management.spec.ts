@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
-import { CreateNewTeamModal } from './page-objects/create-new-modal';
+import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/create-new-modal';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -77,6 +77,7 @@ test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
 	let newTeamModal: CreateNewTeamModal;
+	let newChannelModal: CreateNewChannelModal;
 
 	const targetTeam = faker.string.uuid();
 	const targetTeamNonPrivate = faker.string.uuid();
@@ -104,7 +105,7 @@ test.describe.serial('teams-management', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
-		newTeamModal = new CreateNewTeamModal(page);
+		newChannelModal = new CreateNewChannelModal(page);
 
 		await page.goto('/home');
 	});
@@ -136,9 +137,9 @@ test.describe.serial('teams-management', () => {
 		await expect(page).toHaveURL(`/group/${targetTeamReadOnly}`);
 	});
 
-	test('should throw validation error if team name already exists', async () => {
+	test('should throw validation error if team name already exists', async ({ page }) => {
+		newTeamModal = new CreateNewTeamModal(page);
 		await poHomeTeam.navbar.createNew('Team', targetTeam);
-
 		await expect(newTeamModal.inputName).toHaveAttribute('aria-invalid', 'true');
 	});
 
@@ -212,10 +213,10 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
 
-		await newTeamModal.inputName.fill(targetChannelNameInTeam);
-		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
-		await expect(newTeamModal.checkboxPrivate).toBeDisabled();
-		await newTeamModal.btnCreate.click();
+		await newChannelModal.inputName.fill(targetChannelNameInTeam);
+		await expect(newChannelModal.checkboxPrivate).not.toBeChecked();
+		await expect(newChannelModal.checkboxPrivate).toBeDisabled();
+		await newChannelModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
 	});
@@ -239,11 +240,11 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
 
-		await newTeamModal.inputName.fill(targetGroupNameInTeam);
-		const { checkboxPrivate } = newTeamModal;
+		await newChannelModal.inputName.fill(targetGroupNameInTeam);
+		const { checkboxPrivate } = newChannelModal;
 		await expect(checkboxPrivate).toBeChecked();
 		await expect(checkboxPrivate).toBeDisabled();
-		await newTeamModal.btnCreate.click();
+		await newChannelModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
 	});
@@ -264,8 +265,7 @@ test.describe.serial('teams-management', () => {
 	test('should access team channel through targetTeam header', async ({ page }) => {
 		await poHomeTeam.navbar.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
+		await page.keyboard.press('Shift+Tab');
 		await page.keyboard.press('Space');
 
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
@@ -445,7 +445,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should delete targetTeamNonPrivate', async () => {
-		await poHomeTeam.navbar.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeamNonPrivate);
 		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnMore.click();
 		await poHomeTeam.tabs.room.getMoreOption('Delete').click();

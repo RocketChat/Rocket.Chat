@@ -39,6 +39,18 @@ export class Navbar {
 		return this.root.getByRole('group', { name: 'Omnichannel' });
 	}
 
+	get btnContactCenter(): Locator {
+		return this.omnichannelGroup.getByRole('button', { name: 'Contact Center' });
+	}
+
+	get voiceCallGroup(): Locator {
+		return this.root.getByRole('group', { name: 'Voice call' });
+	}
+
+	get btnNewVoiceCall(): Locator {
+		return this.voiceCallGroup.getByRole('button', { name: 'New voice call' });
+	}
+
 	get btnSwitchOmnichannelStatus(): Locator {
 		return this.omnichannelGroup.getByRole('button', { name: 'answer chats' });
 	}
@@ -182,10 +194,8 @@ export class Navbar {
 			await this.modals[type].checkboxPrivate.click();
 		}
 
-		if (options?.members) {
-			options.members.forEach(async (member) => {
-				await this.modals[type].addMember(member);
-			});
+		if (options?.members && options.members.length > 0) {
+			await Promise.all(options.members.map((member) => this.modals[type].addMember(member)));
 		}
 
 		if (options && ('encrypted' in options || 'readOnly' in options || 'federated' in options)) {

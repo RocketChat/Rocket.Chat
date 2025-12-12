@@ -12,10 +12,6 @@ export class OmnichannelTranscript {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get contactCenter(): Locator {
-		return this.page.locator('//button[@data-tooltip="Contact Center"]');
-	}
-
 	get contactCenterChats(): Locator {
 		return this.page.locator('//button[contains(.,"Chats")]');
 	}

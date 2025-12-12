@@ -55,7 +55,7 @@ test.describe('omnichannel-takeChat', () => {
 	test('When agent is online should take the chat', async () => {
 		await sendLivechatMessage();
 
-		await agent.poHomeChannel.sidebar.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
 
@@ -78,7 +78,7 @@ test.describe('omnichannel-takeChat', () => {
 		await sendLivechatMessage();
 
 		await agent.poHomeChannel.navbar.changeUserStatus('offline');
-		await agent.poHomeChannel.sidebar.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 
