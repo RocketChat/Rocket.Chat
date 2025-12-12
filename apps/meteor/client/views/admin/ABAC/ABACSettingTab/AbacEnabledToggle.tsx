@@ -9,11 +9,11 @@ import { useEditableSetting } from '../../EditableSettingsContext';
 import MemoizedSetting from '../../settings/Setting/MemoizedSetting';
 import SettingSkeleton from '../../settings/Setting/SettingSkeleton';
 
-type SettingToggleProps = {
+type ABACEnabledToggleProps = {
 	hasABAC: 'loading' | boolean;
 };
 
-const SettingToggle = ({ hasABAC }: SettingToggleProps) => {
+const ABACEnabledToggle = ({ hasABAC }: ABACEnabledToggleProps) => {
 	const setting = useEditableSetting('ABAC_Enabled');
 	const setModal = useSetModal();
 	const dispatch = useSettingsDispatch();
@@ -86,10 +86,10 @@ const SettingToggle = ({ hasABAC }: SettingToggleProps) => {
 			packageValue={setting.packageValue === true}
 			hint={t(setting.i18nDescription || '')}
 			disabled={!hasABAC || setting.blocked}
-			hasResetButton={setting.packageValue !== setting.value}
+			hasResetButton={hasABAC && setting.packageValue !== setting.value}
 			onChangeValue={(value: SettingValue) => onChange(value === true)}
 			onResetButtonClick={() => onReset()}
 		/>
 	);
 };
-export default SettingToggle;
+export default ABACEnabledToggle;

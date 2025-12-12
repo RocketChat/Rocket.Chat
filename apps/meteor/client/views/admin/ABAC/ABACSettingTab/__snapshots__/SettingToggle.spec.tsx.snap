@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`SettingToggle should be disabled when abac license is not installed 1`] = `
+exports[`AbacEnabledToggle should be disabled when abac license is not installed 1`] = `
 <body>
   <div>
     <div
@@ -25,19 +25,6 @@ exports[`SettingToggle should be disabled when abac license is not installed 1`]
             <div
               class="rcx-box rcx-box--full rcx-css-127j9mz"
             >
-              <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
-                data-qa-reset-setting-id="ABAC_Enabled"
-                title="Reset"
-                type="button"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
-                >
-                  ❰
-                </i>
-              </button>
               <label
                 class="rcx-box rcx-box--full rcx-toggle-switch"
               >
@@ -68,7 +55,7 @@ exports[`SettingToggle should be disabled when abac license is not installed 1`]
 </body>
 `;
 
-exports[`SettingToggle should render the setting toggle when setting exists 1`] = `
+exports[`AbacEnabledToggle should render the setting toggle when setting exists 1`] = `
 <body>
   <div>
     <div
@@ -135,7 +122,7 @@ exports[`SettingToggle should render the setting toggle when setting exists 1`] 
 </body>
 `;
 
-exports[`SettingToggle should show skeleton when loading 1`] = `
+exports[`AbacEnabledToggle should show skeleton when loading 1`] = `
 <body>
   <div>
     <div

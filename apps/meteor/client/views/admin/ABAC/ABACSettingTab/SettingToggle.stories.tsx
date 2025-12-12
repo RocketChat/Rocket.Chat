@@ -1,12 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import SettingToggle from './SettingToggle';
+import AbacEnabledToggle from './AbacEnabledToggle';
 import EditableSettingsProvider from '../../settings/EditableSettingsProvider';
 
-const meta: Meta<typeof SettingToggle> = {
-	title: 'Admin/ABAC/SettingToggle',
-	component: SettingToggle,
+const meta: Meta<typeof AbacEnabledToggle> = {
+	component: AbacEnabledToggle,
 	parameters: {
 		layout: 'padded',
 	},
@@ -44,7 +43,7 @@ const meta: Meta<typeof SettingToggle> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof SettingToggle>;
+type Story = StoryObj<typeof AbacEnabledToggle>;
 
 export const Default: Story = {
 	args: {
