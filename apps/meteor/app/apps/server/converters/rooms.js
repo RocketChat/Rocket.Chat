@@ -214,13 +214,9 @@ export class AppRoomsConverter {
 		return newRoom;
 	}
 
-	async convertRoom(originalRoom, { lightweight = false } = {}) {
+	async convertRoom(originalRoom) {
 		if (!originalRoom) {
 			return undefined;
-		}
-
-		if (lightweight) {
-			return this.convertRoomWithoutLookups(originalRoom);
 		}
 
 		const map = {
@@ -377,42 +373,6 @@ export class AppRoomsConverter {
 		};
 
 		return transformMappedData(originalRoom, map);
-	}
-
-	convertRoomWithoutLookups(room) {
-		const creatorFromRoom = room.u
-			? {
-					_id: room.u._id,
-					username: room.u.username,
-					name: room.u.name || room.u.username || 'Unknown',
-				}
-			: undefined;
-
-		const fallbackUser = {
-			_id: 'unknown',
-			username: 'unknown',
-			name: 'Unknown',
-		};
-
-		return {
-			id: room._id,
-			displayName: room.fname,
-			slugifiedName: room.name || room.fname || room._id,
-			type: this._resolveRoomType(room),
-			creator: creatorFromRoom || fallbackUser,
-			usernames: room.usernames || [],
-			userIds: room.uids || [],
-			isDefault: !!room.default,
-			isReadOnly: !!room.ro,
-			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
-			messageCount: room.msgs,
-			createdAt: room.ts,
-			updatedAt: room._updatedAt,
-			lastModifiedAt: room.lm,
-			description: room.description,
-			customFields: room.customFields,
-			livechatData: room.livechatData,
-		};
 	}
 
 	_resolveRoomType(room) {
