@@ -1,7 +1,8 @@
 import { Box, Callout, Margins } from '@rocket.chat/fuselage';
 import { Trans } from 'react-i18next';
 
-import SettingToggle from './SettingToggle';
+import AbacEnabledToggle from './AbacEnabledToggle';
+import SettingField from './SettingField';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { links } from '../../../../lib/links';
 
@@ -11,7 +12,9 @@ const SettingsPage = () => {
 		<Box maxWidth='x600' w='full' alignSelf='center'>
 			<Box>
 				<Margins block={24}>
-					<SettingToggle hasABAC={hasABAC} />
+					<AbacEnabledToggle hasABAC={hasABAC} />
+					<SettingField settingId='ABAC_ShowAttributesInRooms' />
+					<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
 					<Callout>
 						<Trans i18nKey='ABAC_Enabled_callout'>
