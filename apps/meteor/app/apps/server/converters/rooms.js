@@ -238,6 +238,8 @@ export class AppRoomsConverter {
 			description: 'description',
 			source: 'source',
 			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;

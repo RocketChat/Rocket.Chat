@@ -62,10 +62,10 @@ export interface IRoomRead {
 	getMembers(roomId: string): Promise<Array<IUser>>;
 
 	/**
-	 * Retrieves all rooms in the workspace, optionally filtered by type or other flags.
+	 * Retrieves rooms in the workspace, optionally filtered by type and metadata flags.
 	 *
-	 * @param options Optional filters such as types and pagination
-	 * @returns a list of lightweight rooms
+	 * @param options Optional filters such as `types`, pagination, and discussion/team flags
+	 * @returns a list of raw rooms
 	 */
 	getAllRooms(options?: GetRoomsOptions): Promise<Array<IRoomRaw>>;
 
