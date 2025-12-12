@@ -705,7 +705,6 @@
   "Created_at_s_by_s": "Dicipta <strong>pada %s</strong> <strong>oleh %s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Dicipta di <strong>%s</strong> oleh <strong>%s</strong> dipicu oleh <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Jeda antara penyegerakan. Contoh `setiap 24 jam` atau` pada hari pertama minggu`, lebih banyak contoh di [Pengekalan Teks Cron] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Sembang Semasa",
   "Current_Status": "Status semasa",
   "Custom": "Custom",
   "Custom CSS": "CSS Custom",

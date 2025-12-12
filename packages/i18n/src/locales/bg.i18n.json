@@ -703,7 +703,6 @@
   "Created_at_s_by_s": "Създадено на <strong>%s</strong>от <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Създаден на <strong>%s</strong>от <strong>%s</strong>%strong>е задействан от <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Интервалът между синхронизациите. Пример \"на всеки 24 часа\" или \"в първия ден от седмицата\", още примери в [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Текущи чатове",
   "Current_Status": "Актуално състояние",
   "Custom": "Персонализиран",
   "Custom CSS": "Персонализиран CSS",

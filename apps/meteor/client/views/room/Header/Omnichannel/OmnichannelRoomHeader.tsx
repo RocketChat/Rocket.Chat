@@ -28,9 +28,9 @@ type OmnichannelRoomHeaderProps = {
 const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps) => {
 	const router = useRouter();
 
-	const currentRouteName = useSyncExternalStore(
+	const previousRouteName = useSyncExternalStore(
 		router.subscribeToRouteChange,
-		useCallback(() => router.getRouteName(), [router]),
+		useCallback(() => router.getPreviousRouteName(), [router]),
 	);
 
 	const { isMobile } = useLayout();
@@ -39,16 +39,16 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
+			start: (!!isMobile || previousRouteName === 'omnichannel-directory' || previousRouteName === 'omnichannel-current-chats') && (
 				<HeaderToolbar>
 					{isMobile && <SidebarToggler />}
-					<BackButton routeName={currentRouteName} />
+					<BackButton routeName={previousRouteName} />
 				</HeaderToolbar>
 			),
 			insideContent: <OmnichannelRoomHeaderTag />,
 			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot],
+		[parentSlot, isMobile, previousRouteName],
 	);
 
 	return <RoomHeader slots={slots} room={room} />;

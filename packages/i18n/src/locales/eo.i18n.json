@@ -703,7 +703,6 @@
   "Created_at_s_by_s": "Kreita ĉe <strong>%s</strong> de <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Kreita ĉe <strong>%s</strong> per <strong>%s</strong> deĉenigita de <strong>%s</strong>",
   "Crowd_sync_interval_Description": "La intervalo inter sinkronigoj. Ekzemplo 'ĉiu 24 horoj' aŭ 'en la unua tago de la semajno', pli ekzemploj ĉe [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Aktualaj Ĉambroj",
   "Current_Status": "Nuna Stato",
   "Custom": "Propra",
   "Custom CSS": "Propra CSS",

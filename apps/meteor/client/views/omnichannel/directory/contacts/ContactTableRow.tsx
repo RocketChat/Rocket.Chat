@@ -1,18 +1,18 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import { useRoute } from '@rocket.chat/ui-contexts';
 
 import ContactItemMenu from './ContactItemMenu';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const latestChannel = channels?.sort((a, b) => {
 		if (a.lastChat && b.lastChat) {
@@ -22,13 +22,12 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 		return 0;
 	})[0];
 
-	const onRowClick = useEffectEvent(
-		(id: string) => (): void =>
-			directoryRoute.push({
-				id,
-				tab: 'contacts',
-				context: 'details',
-			}),
+	const onRowClick = useEffectEvent((id: string) =>
+		omnichannelDirectoryRouter.navigate({
+			id,
+			tab: 'contacts',
+			context: 'details',
+		}),
 	);
 
 	return (
@@ -40,7 +39,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			height='40px'
 			qa-user-id={_id}
 			rcx-show-call-button-on-hover
-			onClick={onRowClick(_id)}
+			onClick={() => onRowClick(_id)}
 		>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>

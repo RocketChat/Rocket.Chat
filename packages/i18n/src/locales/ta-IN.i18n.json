@@ -704,7 +704,6 @@
   "Created_at_s_by_s": "<strong>% கள்</strong> <strong>மூலம் %s</strong> இல் உருவாக்கப்பட்டது",
   "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong><strong>%s</strong><strong>%s</strong> தூண்டுதலாக %sஇல் உருவாக்கப்பட்டது",
   "Crowd_sync_interval_Description": "ஒத்திசைவுகளுக்கு இடையில் இடைவெளி. எடுத்துக்காட்டு `ஒவ்வொரு 24 மணிநேரமும்` அல்லது` வாரத்தின் முதல் நாளில்`, [கிரான் உரைப் பார்சர்] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "தற்போதைய அரட்டைகள்",
   "Current_Status": "தற்போதைய நிலை",
   "Custom": "விருப்ப",
   "Custom CSS": "தனிப்பயன் CSS",
