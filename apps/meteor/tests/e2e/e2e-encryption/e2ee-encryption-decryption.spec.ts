@@ -51,6 +51,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
+		await encryptedRoomPage.waitForChannel();
 		await expect(encryptedRoomPage.encryptedTitle).toBeVisible();
 		await expect(encryptedRoomPage.encryptionNotReadyIndicator).not.toBeVisible();
 

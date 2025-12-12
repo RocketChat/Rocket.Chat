@@ -4,7 +4,7 @@ import { Message } from './fragments/message';
 
 export class EncryptedRoomPage extends HomeContent {
 	get encryptedTitle() {
-		return this.page.getByRole('button').filter({ hasText: '- encrypted' });
+		return this.page.getByRole('button', { name: '- encrypted' });
 	}
 
 	get encryptionNotReadyIndicator() {

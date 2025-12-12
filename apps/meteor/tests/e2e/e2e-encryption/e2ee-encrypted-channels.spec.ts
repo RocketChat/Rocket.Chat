@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { ToastMessages } from '../page-objects/fragments';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -16,6 +17,7 @@ preserveSettings(settingsList);
 
 test.describe('E2EE Encrypted Channels', () => {
 	let poHomeChannel: HomeChannel;
+	let toastMessages: ToastMessages;
 
 	test.use({ storageState: Users.userE2EE.state });
 
@@ -33,6 +35,8 @@ test.describe('E2EE Encrypted Channels', () => {
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
+		toastMessages = new ToastMessages(page);
+
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.navbar.createEncryptedChannel(channelName);
@@ -45,6 +49,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await toastMessages.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 

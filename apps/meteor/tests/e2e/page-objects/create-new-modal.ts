@@ -1,8 +1,16 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { Listbox } from './fragments/listbox';
 import { Modal } from './fragments/modal';
 
 export class CreateNewModal extends Modal {
+	readonly listbox: Locator;
+
+	constructor(root: Locator, page: Page) {
+		super(root, page);
+		this.listbox = new Listbox(page).root;
+	}
+
 	get inputName(): Locator {
 		return this.root.getByRole('textbox', { name: 'Name' });
 	}
@@ -20,14 +28,15 @@ export class CreateNewModal extends Modal {
 	}
 
 	async addMember(memberName: string): Promise<void> {
-		await this.root.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
-		await this.root.locator(`.rcx-option__content:has-text("${memberName}")`).click();
+		await this.root.getByRole('textbox', { name: 'Members' }).click();
+		await this.root.getByRole('textbox', { name: 'Members' }).fill(memberName, { force: true });
+		await this.listbox.getByRole('option', { name: memberName }).click();
 	}
 }
 
 export class CreateNewChannelModal extends CreateNewModal {
-	constructor(root: Page) {
-		super(root.getByRole('dialog', { name: 'Create channel' }));
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Create channel' }), page);
 	}
 
 	get advancedSettingsAccordion(): Locator {
@@ -49,7 +58,7 @@ export class CreateNewChannelModal extends CreateNewModal {
 
 export class CreateNewDMModal extends CreateNewModal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'New direct message' }));
+		super(page.getByRole('dialog', { name: 'New direct message' }), page);
 	}
 
 	get dmListbox(): Locator {
@@ -70,7 +79,7 @@ export class CreateNewDMModal extends CreateNewModal {
 
 export class CreateNewTeamModal extends CreateNewModal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Create team' }));
+		super(page.getByRole('dialog', { name: 'Create team' }), page);
 	}
 
 	get advancedSettingsAccordion(): Locator {
@@ -80,6 +89,18 @@ export class CreateNewTeamModal extends CreateNewModal {
 
 export class CreateNewDiscussionModal extends CreateNewModal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'New discussion' }));
+		super(page.getByRole('dialog', { name: 'Create discussion' }), page);
+	}
+
+	get inputParentRoom(): Locator {
+		return this.root.getByRole('textbox', { name: 'Parent channel or team' });
+	}
+
+	getParentRoomListItem(name: string): Locator {
+		return this.listbox.getByRole('option', { name });
+	}
+
+	get inputMessage(): Locator {
+		return this.root.getByRole('textbox', { name: 'Message', exact: true });
 	}
 }

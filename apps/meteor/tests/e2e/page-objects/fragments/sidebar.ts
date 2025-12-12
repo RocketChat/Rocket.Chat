@@ -58,9 +58,12 @@ export class RoomSidebar extends Sidebar {
 		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
-	// Note: this is different from openChat because queued chats are not searchable
-	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+	getFilterItemByName(name: string): Locator {
+		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarListItem(name: string): Locator {
+		return this.root.getByRole('listitem').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	get firstCollapser(): Locator {
@@ -100,8 +103,9 @@ export class RoomSidebar extends Sidebar {
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.hover();
 		await sidebarItem.focus();
-		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await sidebarItem.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
