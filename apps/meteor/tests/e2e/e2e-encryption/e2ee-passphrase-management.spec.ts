@@ -332,6 +332,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
+		await poHomeChannel.navbar.typeSearch(channelName);
 		await poHomeChannel.navbar.getSearchRoomByName(channelName).click();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();

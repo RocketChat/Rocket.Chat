@@ -103,7 +103,8 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Not Urgent');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toBeVisible();
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '1');
 			});
 		});
 
@@ -122,8 +123,8 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Urgent');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorB.name)).toHaveAttribute('data-index', '1');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '2');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorB.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '2');
 			});
 		});
 
@@ -142,9 +143,9 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Very Urgent');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorC.name)).toHaveAttribute('data-index', '1');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorB.name)).toHaveAttribute('data-index', '2');
-				await expect(poHomeChannel.sidebar.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '3');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorC.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorB.name)).toHaveAttribute('data-index', '2');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '3');
 			});
 		});
 	});

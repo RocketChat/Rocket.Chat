@@ -206,12 +206,12 @@ test.describe.serial('feature preview', () => {
 		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
 			await page.goto(`/channel/${targetChannel}`);
 			await poHomeChannel.waitForRoomLoad();
-			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click();
+			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
 
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
 		});
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
@@ -549,7 +549,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.waitForHome();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
-			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click({ force: true });
+			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click({ force: true });
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
@@ -562,7 +562,7 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 
 			await poHomeChannel.waitForHome();
-			await poHomeChannel.sidebar.getSidebarItemByName(sidepanelTeam).click();
+			await poHomeChannel.sidebar.getFilterItemByName(sidepanelTeam).click();
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
@@ -601,9 +601,9 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidebar.directMessagesCollapser).toBeVisible();
 				await expect(poHomeChannel.sidebar.directMessagesCollapser.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
-				await expect(poHomeChannel.sidebar.getSidebarItemByName(Users.user1.data.username)).toBeVisible();
+				await expect(poHomeChannel.sidebar.getFilterItemByName(Users.user1.data.username)).toBeVisible();
 
-				await poHomeChannel.sidebar.getSidebarItemByName(Users.user1.data.username).click();
+				await poHomeChannel.sidebar.getFilterItemByName(Users.user1.data.username).click();
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
