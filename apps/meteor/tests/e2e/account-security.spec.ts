@@ -38,8 +38,7 @@ test.describe.serial('account-security', () => {
 		await poAccountSecurity.toastMessage.waitForDisplay();
 	});
 
-	// FIXME: This test should pass as soon as we provide the fix
-	test.skip('should be able to change password', async ({ api }) => {
+	test('should be able to change password', async ({ api }) => {
 		await test.step('change password', async () => {
 			await poAccountSecurity.changePassword(RANDOM_PASSWORD, RANDOM_PASSWORD, ADMIN_CREDENTIALS.password);
 			await expect(poAccountSecurity.inputNewPassword).toHaveValue('');
