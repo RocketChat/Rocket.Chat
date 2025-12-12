@@ -1682,10 +1682,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					// hs1 revokes the invitation by kicking the invited user
 					await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Invitation revoked');
-
-					// Wait for the revocation to propagate
-					await new Promise((resolve) => setTimeout(resolve, 2000));
-				}, 20000);
+				}, 15000);
 
 				it('should fail when RC user tries to accept the revoked invitation', async () => {
 					const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
