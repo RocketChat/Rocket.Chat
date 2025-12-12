@@ -151,9 +151,22 @@ export class OutgoingSipCall extends BaseSipCall {
 							provRes: provRes && this.session.stripDrachtioServerDetails(provRes),
 						});
 					},
-					cbRequest: (_error: unknown, req: SrfRequest) => {
-						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req: this.session.stripDrachtioServerDetails(req) });
+					cbRequest: (err: unknown, req: SrfRequest) => {
+						if (err) {
+							logger.error({
+								msg: 'OutgoingSipCall.createDialog - request failed',
+								err,
+							});
+							void mediaCallDirector.hangupByServer(call, 'signaling-error');
+							return;
+						}
+
 						if (req) {
+							logger.debug({
+								msg: 'OutgoingSipCall.createDialog - request initiated',
+								req: this.session.stripDrachtioServerDetails(req),
+							});
+
 							this.sipDialogReq = req;
 							req.on('response', (res, ack) => {
 								logger.debug({
