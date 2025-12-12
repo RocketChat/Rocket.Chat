@@ -37,27 +37,27 @@ describe('callStateToTranslationKey', () => {
 describe('callStateToIcon', () => {
 	it('should return correct icon for "ended" state', () => {
 		const result = callStateToIcon('ended');
-		expect(result).toEqual({ type: 'icon', icon: 'phone-off', variant: 'secondary' });
+		expect(result).toEqual({ type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true });
 	});
 
 	it('should return correct icon for "not-answered" state', () => {
 		const result = callStateToIcon('not-answered');
-		expect(result).toEqual({ type: 'icon', icon: 'clock', variant: 'danger' });
+		expect(result).toEqual({ type: 'icon', icon: 'clock', variant: 'danger', framed: true });
 	});
 
 	it('should return correct icon for "failed" state', () => {
 		const result = callStateToIcon('failed');
-		expect(result).toEqual({ type: 'icon', icon: 'phone-issue', variant: 'danger' });
+		expect(result).toEqual({ type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true });
 	});
 
 	it('should return correct icon for "error" state', () => {
 		const result = callStateToIcon('error');
-		expect(result).toEqual({ type: 'icon', icon: 'phone-issue', variant: 'danger' });
+		expect(result).toEqual({ type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true });
 	});
 
 	it('should return correct icon for "transferred" state', () => {
 		const result = callStateToIcon('transferred');
-		expect(result).toEqual({ type: 'icon', icon: 'arrow-forward', variant: 'secondary' });
+		expect(result).toEqual({ type: 'icon', icon: 'arrow-forward', variant: 'secondary', framed: true });
 	});
 });
 
@@ -137,7 +137,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'phone-off', variant: 'secondary' },
+								{ type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' },
 							],
 							action: actionObj,
@@ -161,7 +161,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'phone-off', variant: 'secondary' },
+								{ type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_ended_bold' }, text: 'Call ended' },
 							],
 							action: actionObj,
@@ -189,7 +189,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'clock', variant: 'danger' },
+								{ type: 'icon', icon: 'clock', variant: 'danger', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_not_answered_bold' }, text: 'Call not answered' },
 							],
 							action: actionObj,
@@ -213,7 +213,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
+								{ type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' },
 							],
 							action: actionObj,
@@ -237,7 +237,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
+								{ type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' },
 							],
 							action: actionObj,
@@ -261,7 +261,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'arrow-forward', variant: 'secondary' },
+								{ type: 'icon', icon: 'arrow-forward', variant: 'secondary', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_transferred_bold' }, text: 'Call transferred' },
 							],
 							action: actionObj,

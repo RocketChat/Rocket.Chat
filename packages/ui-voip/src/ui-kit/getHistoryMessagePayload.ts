@@ -1,5 +1,5 @@
 import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
-import type { IconButtonElement, IconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
+import type { IconButtonElement, FrameableIconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
 import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
 const APP_ID = 'media-call-core';
@@ -18,17 +18,17 @@ export const callStateToTranslationKey = (callState: CallHistoryItemState): Text
 	}
 };
 
-export const callStateToIcon = (callState: CallHistoryItemState): IconElement => {
+export const callStateToIcon = (callState: CallHistoryItemState): FrameableIconElement => {
 	switch (callState) {
 		case 'ended':
-			return { type: 'icon', icon: 'phone-off', variant: 'secondary' };
+			return { type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true };
 		case 'not-answered':
-			return { type: 'icon', icon: 'clock', variant: 'danger' };
+			return { type: 'icon', icon: 'clock', variant: 'danger', framed: true };
 		case 'failed':
 		case 'error':
-			return { type: 'icon', icon: 'phone-issue', variant: 'danger' };
+			return { type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true };
 		case 'transferred':
-			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary' };
+			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary', framed: true };
 	}
 };
 
