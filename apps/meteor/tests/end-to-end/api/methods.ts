@@ -3114,7 +3114,7 @@ describe('Meteor.methods', () => {
 						name: `direct.test.${Date.now()}-${Math.random()}`,
 						username: guestUser.username,
 					})
-				).body.channel;
+				).body.room;
 				createdRooms.push(room);
 			});
 			after(() =>
