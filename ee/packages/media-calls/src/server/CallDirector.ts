@@ -362,7 +362,7 @@ class MediaCallDirector {
 			logger.error({
 				msg: 'Failed to hangup a call.',
 				callId,
-				hangupError: err,
+				err,
 				hangupReason: params?.reason,
 				hangupActor: params?.endedBy,
 			});

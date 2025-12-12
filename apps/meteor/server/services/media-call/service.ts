@@ -129,9 +129,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			contactExtension,
 		};
 
-		await CallHistory.insertOne(historyItem).catch((err: unknown) =>
-			logger.error({ msg: 'Failed to insert item into Call History', err }),
-		);
+		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
 	}
 
 	private async saveInternalCallToHistory(call: IMediaCall): Promise<void> {
