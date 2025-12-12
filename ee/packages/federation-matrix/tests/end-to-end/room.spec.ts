@@ -1660,5 +1660,54 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(invitedSub).toBeFalsy();
 			});
 		});
+
+		describe('Revoked invitation flow from Synapse', () => {
+			describe('Synapse revokes an invitation before the RC user responds', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+				let rid: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-revoked-accept-${Date.now()}`;
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// hs1 invites RC user
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Wait for RC to receive the invitation
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					rid = pendingInvitation?.rid!;
+
+					// hs1 revokes the invitation by kicking the invited user
+					await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Invitation revoked');
+
+					// Wait for the revocation to propagate
+					await new Promise((resolve) => setTimeout(resolve, 2000));
+				}, 20000);
+
+				it('should no longer have the user status as INVITED after revocation', async () => {
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+					const invitedSubscription = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(invitedSubscription).toBeUndefined();
+				});
+
+				it('should fail when RC user tries to accept the revoked invitation', async () => {
+					const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
+					expect(acceptResponse.success).toBe(false);
+				});
+			});
+		});
 	});
 });
