@@ -1699,6 +1699,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				it('should allow RC user to reject the revoked invitation', async () => {
 					const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
 					expect(rejectResponse.success).toBe(true);
+
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+					expect(invitedSub).toBeFalsy();
 				});
 
 				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
