@@ -37,7 +37,7 @@ exports[`should render InvitationBadge without date 1`] = `
       aria-hidden="false"
       class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-dpa92h"
       role="status"
-      title="Invited "
+      title="Invited"
     >
       
     </i>

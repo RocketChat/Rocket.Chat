@@ -11,19 +11,9 @@ type InvitationBadgeProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color' |
 const InvitationBadge = ({ invitationDate, ...props }: InvitationBadgeProps) => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
-	const formattedDate = invitationDate ? timeAgo(invitationDate) : '';
+	const formattedDate = invitationDate ? t('Invited__date__', { date: timeAgo(invitationDate) }) : t('Invited');
 
-	return (
-		<Icon
-			size='x20'
-			{...props}
-			role='status'
-			color='info'
-			name='mail'
-			aria-hidden='false'
-			title={t('Invited__date__', { date: formattedDate })}
-		/>
-	);
+	return <Icon size='x20' {...props} role='status' color='info' name='mail' aria-hidden='false' title={formattedDate} />;
 };
 
 export default InvitationBadge;
