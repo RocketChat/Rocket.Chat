@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Icon, MessageBlock } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import {
-	Contextualbar,
+	ContextualbarDialog,
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarFooter,
@@ -68,7 +68,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 
 	const date = useFullStartDate(startedAt);
 	return (
-		<Contextualbar>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
@@ -126,7 +126,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					)}
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 
