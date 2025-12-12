@@ -2,13 +2,13 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useE2EERoomState } from '../../views/room/hooks/useE2EERoomState';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';

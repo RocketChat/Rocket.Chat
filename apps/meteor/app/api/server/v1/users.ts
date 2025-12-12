@@ -611,7 +611,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
 			return API.v1.success(
 				await findPaginatedUsersByStatus({
@@ -624,6 +624,7 @@ API.v1.addRoute(
 					searchTerm,
 					hasLoggedIn,
 					type,
+					inactiveReason,
 				}),
 			);
 		},
@@ -1345,18 +1346,17 @@ API.v1.addRoute(
 			}
 
 			const { _id, username, roles, name } = user;
-			let { statusText } = user;
-
-			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
+			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message);
+				await setStatusText(user._id, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
+
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					const { status } = this.bodyParams;
+					status = this.bodyParams.status;
 
 					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
@@ -1374,11 +1374,6 @@ API.v1.addRoute(
 						},
 					);
 
-					void api.broadcast('presence.status', {
-						user: { status, _id, username, statusText, roles, name },
-						previousStatus: user.status,
-					});
-
 					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -1386,6 +1381,11 @@ API.v1.addRoute(
 					});
 				}
 			}
+
+			void api.broadcast('presence.status', {
+				user: { status, _id, username, statusText, roles, name },
+				previousStatus: user.status,
+			});
 
 			return API.v1.success();
 		},

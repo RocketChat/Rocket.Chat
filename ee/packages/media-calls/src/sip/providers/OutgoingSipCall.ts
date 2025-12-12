@@ -33,7 +33,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: BroadcastActorAgent,
+		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 	) {
 		super(session, call, agent, channel);

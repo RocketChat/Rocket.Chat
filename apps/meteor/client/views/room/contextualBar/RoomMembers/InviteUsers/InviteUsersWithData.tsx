@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState, useEffect } from 'react';
@@ -10,7 +10,6 @@ import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
 type InviteUsersWithDataProps = {
 	rid: IRoom['_id'];

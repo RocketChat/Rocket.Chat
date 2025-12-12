@@ -1,6 +1,7 @@
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+
 import { VoipInfo } from './VoipInfo';
 import { useVoipRoom } from '../../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 
 const VoipInfoWithData = () => {
 	const room = useVoipRoom();

@@ -1,15 +1,15 @@
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import type { PriorityFormData } from './PriorityEditForm';
-import PriorityEditFormWithData from './PriorityEditFormWithData';
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import type { PriorityFormData } from './PriorityEditForm';
+import PriorityEditFormWithData from './PriorityEditFormWithData';
 
 type PriorityListProps = {
 	context: 'edit';
