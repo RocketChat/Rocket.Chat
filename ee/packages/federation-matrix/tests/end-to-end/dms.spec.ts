@@ -3,7 +3,7 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import { acceptRoomInvite, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
+import { acceptRoomInvite, createDirectMessage, createRoom, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -108,68 +108,110 @@ const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, valida
 			await deleteUser(rcUser, {}, rc1AdminRequestConfig);
 		});
 
-		it('should create a DM from Synapse', async () => {
-			hs1Room = await hs1AdminApp.createDM([userDmId]);
+		describe('Residend Synapse', () => {
+			it('should create a DM and invite user from rc', async () => {
+				hs1Room = await hs1AdminApp.createDM([userDmId]);
 
-			expect(hs1Room).toHaveProperty('roomId');
+				expect(hs1Room).toHaveProperty('roomId');
 
-			const subs = await getSubscriptions(rcUserConfig);
+				const subs = await getSubscriptions(rcUserConfig);
 
-			const pendingInvitation = subs.update.find(
-				(subscription) =>
-					subscription.status === 'INVITED' &&
-					subscription.fname?.includes(`@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`),
-			);
+				const pendingInvitation = subs.update.find(
+					(subscription) =>
+						subscription.status === 'INVITED' &&
+						subscription.fname?.includes(`@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`),
+				);
 
-			expect(pendingInvitation).toHaveProperty('rid');
+				expect(pendingInvitation).toHaveProperty('rid');
 
-			const membersBefore = await hs1Room!.getMembers();
+				const membersBefore = await hs1Room!.getMembers();
 
-			expect(membersBefore.length).toBe(2);
+				expect(membersBefore.length).toBe(2);
 
-			const invitedMember = membersBefore.find((member) => member.userId === userDmId);
+				const invitedMember = membersBefore.find((member) => member.userId === userDmId);
 
-			expect(invitedMember).toHaveProperty('membership', 'invite');
+				expect(invitedMember).toHaveProperty('membership', 'invite');
 
-			invitedRoomId = pendingInvitation!.rid;
+				invitedRoomId = pendingInvitation!.rid;
 
-			const response = await acceptRoomInvite(invitedRoomId, rcUserConfig);
-			expect(response.success).toBe(true);
+				const response = await acceptRoomInvite(invitedRoomId, rcUserConfig);
+				expect(response.success).toBe(true);
 
-			await waitForRoomEvent(hs1Room!, RoomStateEvent.Members, ({ event }) => {
-				expect(event).toHaveProperty('content.membership', 'join');
-				expect(event).toHaveProperty('state_key', userDmId);
+				await waitForRoomEvent(hs1Room!, RoomStateEvent.Members, ({ event }) => {
+					expect(event).toHaveProperty('content.membership', 'join');
+					expect(event).toHaveProperty('state_key', userDmId);
+				});
+			});
+
+			it('should leave the DM from Rocket.Chat', async () => {
+				const subs = await getSubscriptions(rcUserConfig);
+
+				const dmSubscription = subs.update.find(
+					(subscription) =>
+						subscription.t === 'd' && subscription.fname?.includes(`@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`),
+				);
+
+				expect(dmSubscription).toHaveProperty('rid');
+
+				const response = await rcUserConfig.request
+					.post(api('rooms.leave'))
+					.set(rcUserConfig.credentials)
+					.send({
+						roomId: invitedRoomId,
+					})
+					.expect(200);
+
+				expect(response.body).toHaveProperty('success', true);
+
+				await waitForRoomEvent(hs1Room!, RoomStateEvent.Members, ({ event }) => {
+					expect(event).toHaveProperty('content.membership', 'leave');
+					expect(event).toHaveProperty('state_key', userDmId);
+				});
 			});
 		});
 
-		it('should leave the DM from Rocket.Chat', async () => {
-			const subs = await getSubscriptions(rcUserConfig);
+		describe('Resident RC', () => {
+			it('should create a DM and invite user from synapse', async () => {
+				const createResponse = await createDirectMessage({
+					usernames: [federationConfig.hs1.adminMatrixUserId],
+					config: rc1AdminRequestConfig,
+				});
 
-			const dmSubscription = subs.update.find(
-				(subscription) =>
-					subscription.t === 'd' && subscription.fname?.includes(`@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`),
-			);
+				expect(createResponse.status).toBe(200);
+				expect(createResponse.body).toHaveProperty('success', true);
+				// createResponse.body.room._rid;
 
-			expect(dmSubscription).toHaveProperty('rid');
+				const sub = await getSubscriptions(rc1AdminRequestConfig).then((subs) =>
+					subs.update.find((subscription) => subscription.rid === createResponse.body.room._rid),
+				);
+				expect(sub).toHaveProperty('rid', createResponse.body.room._rid);
 
-			const response = await rcUserConfig.request
-				.post(api('rooms.leave'))
-				.set(rcUserConfig.credentials)
-				.send({
-					roomId: invitedRoomId,
-				})
-				.expect(200);
+				expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
+			});
 
-			expect(response.body).toHaveProperty('success', true);
+			it.todo('should display the fname properly after reject the invitation');
+			it.todo('should display the fname properly after accept the invitation');
+			it.todo('should allow the user to leave the DM if it is not the only member');
+			it.todo('should not allow to leave if the user is the only member');
+		});
+	});
 
-			await waitForRoomEvent(hs1Room!, RoomStateEvent.Members, ({ event }) => {
-				expect(event).toHaveProperty('content.membership', 'leave');
-				expect(event).toHaveProperty('state_key', userDmId);
+	describe('Multiple user DMs', () => {
+		describe('Resident RC', () => {
+			describe('fname display', () => {
+				it.todo('should display the fname containing the two invited users for the inviter');
+				it.todo("should display only the inviter's username for the invited user");
+				it.todo('should update the fname when a user leaves the DM');
+				it.todo('should update the fname when a user is added to the DM');
+			});
+			describe('permissions', () => {
+				it.todo('should possible to add a user to the DM');
+				it.todo('should possible to add for another user besides the initial inviter');
 			});
 		});
 	});
 
-	describe.only('Group Direct Messages', () => {
+	describe('Group Direct Messages', () => {
 		let rcUser1: TestUser<IUser>;
 		let rcUser2: TestUser<IUser>;
 
