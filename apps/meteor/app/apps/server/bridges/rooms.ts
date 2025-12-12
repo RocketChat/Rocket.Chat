@@ -382,6 +382,7 @@ export class AppRoomBridge extends RoomBridge {
 
 			if (type === RoomType.LIVE_CHAT) {
 				baseTypes.add('l');
+				continue;
 			}
 		}
 
