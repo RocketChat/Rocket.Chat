@@ -1,18 +1,16 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
-import { type IUser } from '@rocket.chat/core-typings';
+import { Team, Room } from '@rocket.chat/core-services';
+import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -49,6 +47,12 @@ export const addUserToRoom = async (
 		throw new Meteor.Error('user-not-found');
 	}
 
+	// Check if user is already in room
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		return;
+	}
+
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
@@ -66,12 +70,6 @@ export const addUserToRoom = async (
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription || !userToBeAdded) {
-		return;
-	}
-
 	try {
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
 	} catch (error: any) {
@@ -81,6 +79,12 @@ export const addUserToRoom = async (
 
 		throw error;
 	}
+
+	// for federation rooms we stop here since everything else will be handled by the federation invite flow
+	if (isRoomNativeFederated(room)) {
+		return;
+	}
+
 	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
@@ -90,49 +94,15 @@ export const addUserToRoom = async (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
-	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
-
-	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
+	await Room.createUserSubscription({
+		room,
 		ts: now,
-		open: !createAsHidden,
-		alert: createAsHidden ? false : !skipAlertSound,
-		unread: 1,
-		userMentions: 1,
-		groupMentions: 0,
-		...autoTranslateConfig,
-		...getDefaultSubscriptionPref(userToBeAdded as IUser),
+		inviter,
+		userToBeAdded,
+		createAsHidden,
+		skipAlertSound,
+		skipSystemMessage,
 	});
-
-	if (insertedId) {
-		void notifyOnSubscriptionChangedById(insertedId, 'inserted');
-	}
-
-	if (!userToBeAdded.username) {
-		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
-	}
-
-	if (!skipSystemMessage) {
-		if (inviter) {
-			const extraData = {
-				ts: now,
-				u: {
-					_id: inviter._id,
-					username: inviter.username,
-				},
-			};
-			if (room.teamMain) {
-				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
-			} else {
-				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
-			}
-		} else if (room.prid) {
-			await Message.saveSystemMessage('ut', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ujt', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		} else {
-			await Message.saveSystemMessage('uj', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		}
-	}
 
 	if (room.t === 'c' || room.t === 'p') {
 		process.nextTick(async () => {
