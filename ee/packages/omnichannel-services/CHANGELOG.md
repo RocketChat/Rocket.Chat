@@ -1,5 +1,20 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.1
+  - @rocket.chat/rest-typings@7.13.1
+  - @rocket.chat/pdf-worker@0.3.24
+  - @rocket.chat/core-services@0.11.1
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.9.1
+  - @rocket.chat/models@1.8.1
+  </details>
+
 ## 0.3.41
 
 ### Patch Changes

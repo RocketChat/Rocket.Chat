@@ -22,7 +22,7 @@ import { SynapseClient } from '../helper/synapse-client';
 	beforeAll(async () => {
 		// Create admin request config for RC1
 		rc1AdminRequestConfig = await getRequestConfig(
-			federationConfig.rc1.apiUrl,
+			federationConfig.rc1.url,
 			federationConfig.rc1.adminUser,
 			federationConfig.rc1.adminPassword,
 		);

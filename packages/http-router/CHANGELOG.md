@@ -1,5 +1,15 @@
 # @rocket.chat/http-router
 
+## 7.9.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.1
+  - @rocket.chat/rest-typings@7.13.1
+  </details>
+
 ## 7.9.11
 
 ### Patch Changes
