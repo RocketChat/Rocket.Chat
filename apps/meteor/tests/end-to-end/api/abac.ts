@@ -1472,6 +1472,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			after(async () => {
 				await Promise.all(createdInviteIds.map((id) => request.delete(`${v1}/removeInvite/${id}`).set(credentials)));
+
+				await deleteRoom({ type: 'p', roomId: plainRoomId });
+				await deleteRoom({ type: 'p', roomId: managedRoomId });
 			});
 		});
 	});

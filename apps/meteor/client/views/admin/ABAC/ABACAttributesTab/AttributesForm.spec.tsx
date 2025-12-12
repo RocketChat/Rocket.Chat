@@ -69,6 +69,11 @@ describe('AttributesForm', () => {
 			{ wrapper: appRoot },
 		);
 
+		// Making the form "touched"
+		const nameInput = screen.getByLabelText('Name*');
+		await userEvent.type(nameInput, 'Test Attribute');
+		await userEvent.clear(nameInput);
+
 		const saveButton = screen.getByRole('button', { name: 'Save' });
 		await userEvent.click(saveButton);
 
