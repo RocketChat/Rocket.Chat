@@ -102,7 +102,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 								/>
 							)}
 						</FieldRow>
-						<FieldError>{errors.room?.message}</FieldError>
+						{errors.room && <FieldError>{errors.room.message}</FieldError>}
 					</Field>
 					{fields.map((field, index) => (
 						<Field key={field.id} mb={16}>

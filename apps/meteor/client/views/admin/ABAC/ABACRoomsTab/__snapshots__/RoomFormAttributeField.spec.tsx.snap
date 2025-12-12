@@ -13,7 +13,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-box rcx-box--full rcx-select rcx-css-18q594f"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1hx4au7"
             name="attributes.0.key"
           >
             <div
@@ -39,13 +39,10 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           </div>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__error"
-        />
-        <span
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-box rcx-box--full rcx-select"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1te28na"
             name="attributes.0.values"
           >
             <div
@@ -76,9 +73,6 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             </div>
           </div>
         </span>
-        <span
-          class="rcx-box rcx-box--full rcx-field__error"
-        />
         <button
           class="rcx-box rcx-box--full rcx-button rcx-css-1qsx7et"
           title="Remove"

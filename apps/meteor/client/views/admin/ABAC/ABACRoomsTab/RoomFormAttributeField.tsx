@@ -75,19 +75,21 @@ const RoomFormAttributeField = ({ onRemove, index }: ABACAttributeAutocompletePr
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
+					withTruncatedText
 				/>
 			</FieldRow>
-			<FieldError>{keyFieldState.error?.message || ''}</FieldError>
+			{keyFieldState.error && <FieldError>{keyFieldState.error.message}</FieldError>}
 
 			<FieldRow>
 				<MultiSelect
+					withTruncatedText
 					{...valuesField}
 					options={valueOptions}
 					placeholder={t('ABAC_Select_Attribute_Values')}
 					error={valuesFieldState.error?.message}
 				/>
 			</FieldRow>
-			<FieldError>{valuesFieldState.error?.message || ''}</FieldError>
+			{valuesFieldState.error && <FieldError>{valuesFieldState.error.message}</FieldError>}
 
 			<Button onClick={onRemove} title={t('Remove')} mbs={4}>
 				{t('Remove')}

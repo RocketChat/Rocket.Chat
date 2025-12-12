@@ -38,6 +38,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 					attributeValues: [{ value: '' }],
 					lockedAttributes: [],
 				},
+		mode: 'onChange',
 	});
 
 	const { getValues } = methods;
@@ -74,7 +75,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.roomAttributes.all() });
+			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.roomAttributes.list() });
 		},
 	});
 
