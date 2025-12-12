@@ -51,43 +51,103 @@ function describeImpl(name: string, fn: () => void): void {
 		const currentTest = global.test;
 
 		// Wrap it() to automatically set suite at the very start
-		global.it = ((testName: any, fn?: any, timeout?: number) => {
-			// Handle qase-wrapped test names (qase returns a string)
-			if (typeof testName === 'string' && fn) {
-				return currentIt(
-					testName,
-					async () => {
-						// Set suite immediately at the start of the test
-						qase.suite(currentPath);
-						// Call the original test function and return the result
-						return fn();
-					},
-					timeout,
-				);
-			}
-			// Handle cases where testName might be a number or other type
-			return currentIt(testName, fn, timeout);
-		}) as typeof global.it;
+		global.it = Object.assign(
+			(testName: any, fn?: any, timeout?: number) => {
+				// Handle qase-wrapped test names (qase returns a string)
+				if (typeof testName === 'string' && fn) {
+					return currentIt(
+						testName,
+						async () => {
+							// Set suite immediately at the start of the test
+							qase.suite(currentPath);
+							// Call the original test function and return the result
+							return fn();
+						},
+						timeout,
+					);
+				}
+				// Handle cases where testName might be a number or other type
+				return currentIt(testName, fn, timeout);
+			},
+			{
+				skip: (name: string, fn: () => void) => {
+					suitePathStack.push(name);
+					try {
+						currentIt.skip(name, fn);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+				only: (name: string, fn: () => void) => {
+					suitePathStack.push(name);
+					try {
+						currentIt.only(name, fn);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+				todo: (name: string) => {
+					suitePathStack.push(name);
+					try {
+						currentIt.todo(name);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+			},
+		) as typeof global.it;
 
 		// Wrap test() to automatically set suite at the very start
-		global.test = ((testName: any, fn?: any, timeout?: number) => {
-			if (typeof testName === 'string' && fn) {
-				return currentTest(
-					testName,
-					async () => {
-						// Set suite immediately at the start of the test
-						qase.suite(currentPath);
-						// Call the original test function and return the result
-						return fn();
-					},
-					timeout,
-				);
-			}
-			return currentTest(testName, fn, timeout);
-		}) as typeof global.test;
+		global.test = Object.assign(
+			(testName: any, fn?: any, timeout?: number) => {
+				if (typeof testName === 'string' && fn) {
+					return currentTest(
+						testName,
+						async () => {
+							// Set suite immediately at the start of the test
+							qase.suite(currentPath);
+							// Call the original test function and return the result
+							return fn();
+						},
+						timeout,
+					);
+				}
+				return currentTest(testName, fn, timeout);
+			},
+			{
+				skip: (name: string, fn: () => void) => {
+					suitePathStack.push(name);
+					try {
+						currentTest.skip(name, fn);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+				only: (name: string, fn: () => void) => {
+					suitePathStack.push(name);
+					try {
+						currentTest.only(name, fn);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+				todo: (name: string) => {
+					suitePathStack.push(name);
+					try {
+						currentTest.todo(name);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
+			},
+		) as typeof global.test;
 
 		// Execute the describe block
-		fn();
+		try {
+			fn();
+		} catch (error) {
+			console.error('Error in describe block:', error);
+		}
 
 		// Restore previous wrappers
 		global.it = currentIt;

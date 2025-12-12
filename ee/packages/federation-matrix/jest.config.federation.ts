@@ -8,6 +8,22 @@
 import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 
+function qaseRunTitle(): string {
+	const title = ['Federation E2E Tests'];
+
+	if (process.env.PR_NUMBER) {
+		title.push(`PR ${process.env.PR_NUMBER}`);
+	}
+
+	if (process.env.GITHUB_RUN_ID) {
+		title.push(`Run ${process.env.GITHUB_RUN_ID}`);
+	}
+
+	title.push(new Date().toISOString());
+
+	return title.join(' - ');
+}
+
 export default {
 	preset: server.preset,
 	transformIgnorePatterns: [
@@ -36,7 +52,10 @@ export default {
 							testops: {
 								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
 								project: 'RC',
-								run: { complete: true },
+								run: {
+									title: qaseRunTitle(),
+									complete: true,
+								},
 							},
 							debug: true,
 						},

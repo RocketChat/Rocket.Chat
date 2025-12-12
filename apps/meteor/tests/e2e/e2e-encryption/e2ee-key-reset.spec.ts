@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users } from '../fixtures/userStates';
-import { AccountProfile } from '../page-objects';
+import { AccountSecurity } from '../page-objects';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -40,12 +40,12 @@ test.describe('E2EE Key Reset', () => {
 	});
 
 	test('expect force logout on e2e keys reset', async ({ page }) => {
-		const poAccountProfile = new AccountProfile(page);
+		const poAccountSecurity = new AccountSecurity(page);
 
 		await page.goto('/account/security');
 
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await poAccountSecurity.securityE2EEncryptionSection.click();
+		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
 		await expect(page.locator('role=button[name="Login"]')).toBeVisible();
 		await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();

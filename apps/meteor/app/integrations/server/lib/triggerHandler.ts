@@ -216,9 +216,14 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'roomJoined':
-			case 'roomLeft':
 				if (args.length >= 3) {
 					argObject.user = args[1] as IUser;
+					argObject.room = args[2] as IRoom;
+				}
+				break;
+			case 'roomLeft':
+				if (args.length >= 3) {
+					argObject.user = (args[1] as { user: IUser })?.user;
 					argObject.room = args[2] as IRoom;
 				}
 				break;
@@ -235,7 +240,9 @@ class RocketChatIntegrationHandler {
 
 		outgoingLogger.debug({
 			msg: `Got the event arguments for the event: ${argObject.event}`,
-			argObject,
+			messageId: argObject.message?._id,
+			roomId: argObject.room?._id,
+			userId: argObject.user?._id || argObject.owner?._id,
 		});
 
 		return argObject;

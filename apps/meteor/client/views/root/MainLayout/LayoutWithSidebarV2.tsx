@@ -13,6 +13,8 @@ import Sidebar from '../../../sidebarv2';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
+const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
+
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 
@@ -20,7 +22,8 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 
-	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
+	const firstChannelAfterLogin = useSetting<string>('First_Channel_After_Login', '');
+	const roomName = (firstChannelAfterLogin.startsWith('#') ? firstChannelAfterLogin.slice(1) : firstChannelAfterLogin).trim();
 
 	const redirected = useRef(false);
 
@@ -31,7 +34,12 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 			return;
 		}
 
-		if (!firstChannelAfterLogin || typeof firstChannelAfterLogin !== 'string') {
+		if (!roomName) {
+			return;
+		}
+
+		if (INVALID_ROOM_NAME_PREFIXES.some((prefix) => roomName.startsWith(prefix))) {
+			// Because this will break url routing. Eg: /channel/#roomName and /channel/?roomName which will route to path /channel
 			return;
 		}
 
@@ -40,8 +48,8 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 		}
 		redirected.current = true;
 
-		router.navigate({ name: `/channel/${firstChannelAfterLogin}` as keyof IRouterPaths });
-	}, [router, currentRoutePath, firstChannelAfterLogin]);
+		router.navigate({ name: `/channel/${roomName}` as keyof IRouterPaths });
+	}, [router, currentRoutePath, roomName]);
 
 	return (
 		<>
