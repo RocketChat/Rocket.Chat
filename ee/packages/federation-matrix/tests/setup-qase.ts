@@ -86,10 +86,20 @@ function describeImpl(name: string, fn: () => void): void {
 						suitePathStack.pop();
 					}
 				},
+				failing: (name: string, fn: () => void) => {
+					suitePathStack.push(name);
+					try {
+						currentIt.skip(name, fn);
+					} finally {
+						suitePathStack.pop();
+					}
+				},
 				todo: (name: string) => {
 					suitePathStack.push(name);
 					try {
-						currentIt.todo(name);
+						currentIt.skip(name, () => {
+							// noop
+						});
 					} finally {
 						suitePathStack.pop();
 					}
