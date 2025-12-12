@@ -1,4 +1,3 @@
-import type { CallHistoryItem, IMediaCall, Serialized } from '@rocket.chat/core-typings';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -9,30 +8,11 @@ import {
 	ContextualbarSkeleton,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { CallHistoryContextualBar } from '@rocket.chat/ui-voip';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaCallHistoryActions } from './useMediaCallHistoryActions';
-
-const getContact = (item: Serialized<CallHistoryItem>, call?: Serialized<IMediaCall>) => {
-	if (item.external) {
-		return { number: item.contactExtension, external: true as const };
-	}
-	if (!call) {
-		throw new Error('Call is required');
-	}
-	const { caller, callee } = call ?? {};
-	const contact = caller?.id === item.contactId ? caller : callee;
-	// todo fix this
-	return {
-		...contact,
-		_id: contact.id,
-		username: contact.username ?? '',
-		voiceCallExtension: contact.sipExtension,
-		external: false as const,
-	};
-};
+import MediaCallHistoryExternal, { isExternalCallHistoryItem } from './MediaCallHistoryExternal';
+import MediaCallHistoryInternal, { isInternalCallHistoryItem } from './MediaCallHistoryInternal';
 
 export const MediaCallHistoryContextualbar = () => {
 	const context = useRouteParameter('context');
@@ -47,32 +27,16 @@ export const MediaCallHistoryContextualbar = () => {
 			if (!context) {
 				throw new Error('Call ID is required');
 			}
-			const data = await getCallHistory({ callId: context } as any); // TODO fix this type
-			const { item, call } = data;
-			const { ts, callId, direction, state, duration } = item;
-
-			const contact = getContact(item, call);
-			return {
-				data: {
-					startedAt: new Date(ts),
-					callId,
-					direction,
-					state,
-					duration,
-					messageId: 'messageId' in item ? item.messageId : undefined,
-				},
-				contact,
-			};
+			return getCallHistory({ callId: context } as any); // TODO fix this type
 		},
+		staleTime: Infinity, // Call history should never change...
 	});
-
-	const actions = useMediaCallHistoryActions(data?.contact, data?.data?.messageId);
 
 	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 
-	if (isError || !data?.data || !data.contact) {
+	if (isError || !data?.item || !data.call) {
 		return (
 			<ContextualbarDialog onClose={closeTab}>
 				<ContextualbarHeader>
@@ -87,7 +51,15 @@ export const MediaCallHistoryContextualbar = () => {
 		);
 	}
 
-	return <CallHistoryContextualBar onClose={closeTab} actions={actions} contact={data.contact} data={data.data} />;
+	if (isInternalCallHistoryItem(data)) {
+		return <MediaCallHistoryInternal onClose={closeTab} data={data} />;
+	}
+
+	if (isExternalCallHistoryItem(data)) {
+		return <MediaCallHistoryExternal onClose={closeTab} data={data} />;
+	}
+
+	throw new Error('Invalid call history item');
 };
 
 export default MediaCallHistoryContextualbar;
