@@ -176,7 +176,7 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect to be able to join chats from same unit', async () => {
 			await poOmnichannel.chats.findRowByName(ROOM_A).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
+			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
 			await expect(poOmnichannel.content.btnJoinRoom).toBeVisible();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 

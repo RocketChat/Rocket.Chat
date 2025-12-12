@@ -253,7 +253,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		await test.step('expect to be return using return button', async () => {
 			const { room: roomA } = conversations[0].data;
 			await poCurrentChats.findRowByName(visitorA).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
+			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
 			await poCurrentChats.content.btnReturn.click();
 			await expect(page).toHaveURL(`/omnichannel/current`);
 		});
@@ -263,7 +263,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		await test.step('expect to be able to join', async () => {
 			const { room: roomB, visitor: visitorB } = conversations[1].data;
 			await poCurrentChats.findRowByName(visitorB.name).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomB._id}`);
+			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomB._id}`);
 			await expect(poCurrentChats.content.btnJoinRoom).toBeVisible();
 			await poCurrentChats.content.btnJoinRoom.click();
 			await expect(poCurrentChats.content.btnJoinRoom).not.toBeVisible();
@@ -312,7 +312,7 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 			const { room, visitor } = queuedConversation.data;
 			await poCurrentChats.inputGuest.fill(visitor.name);
 			await poCurrentChats.findRowByName(visitor.name).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${room._id}`);
+			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${room._id}`);
 			await expect(poCurrentChats.content.btnTakeChat).toBeVisible();
 			await poCurrentChats.content.btnTakeChat.click();
 			await expect(poCurrentChats.content.btnTakeChat).not.toBeVisible();
