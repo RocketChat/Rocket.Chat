@@ -1647,16 +1647,12 @@ import { SynapseClient } from '../helper/synapse-client';
 				rid = pendingInvitation?.rid!;
 			}, 15000);
 
-			it('It should allow RC user to reject the invite', async () => {
+			it('should allow RC user to reject the invite and remove the subscription', async () => {
 				const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
 				expect(rejectResponse.success).toBe(true);
-			});
 
-			it('It should remove the subscription after rejection', async () => {
 				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
-
 				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
-
 				expect(invitedSub).toBeFalsy();
 			});
 		});
@@ -1696,7 +1692,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(acceptResponse.success).toBe(false);
 				});
 
-				it('should allow RC user to reject the revoked invitation', async () => {
+				it('should allow RC user to reject the revoked invitation and remove the subscription', async () => {
 					const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
 					expect(rejectResponse.success).toBe(true);
 
