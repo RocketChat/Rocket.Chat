@@ -158,6 +158,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
           </button>
           <button
             class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            disabled=""
             form=":r0:"
             type="submit"
           >
@@ -380,6 +381,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
           </button>
           <button
             class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            disabled=""
             form=":r3:"
             type="submit"
           >
