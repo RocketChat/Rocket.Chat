@@ -240,6 +240,7 @@ test.describe('SAML', () => {
 	});
 
 	test('AuthnRequest includes RequestedAuthnContext when custom authn context is set', async ({ page, api }) => {
+		test.skip(!constants.IS_EE);
 		await test.step('Configure custom authn context to PasswordProtectedTransport', async () => {
 			const res = await setSettingValueById(
 				api,
@@ -295,6 +296,7 @@ test.describe('SAML', () => {
 	});
 
 	test('AuthnRequest omits RequestedAuthnContext when custom authn context is empty', async ({ page, api }) => {
+		test.skip(!constants.IS_EE);
 		await test.step('Configure custom authn context to empty string', async () => {
 			const res = await setSettingValueById(api, 'SAML_Custom_Default_custom_authn_context', '');
 			expect(res.status()).toBe(200);
