@@ -77,7 +77,7 @@ const RoomFormAttributeField = ({ onRemove, index }: ABACAttributeAutocompletePr
 					error={keyFieldState.error?.message}
 				/>
 			</FieldRow>
-			<FieldError>{keyFieldState.error?.message || ''}</FieldError>
+			{keyFieldState.error && <FieldError>{keyFieldState.error.message}</FieldError>}
 
 			<FieldRow>
 				<MultiSelect
@@ -87,7 +87,7 @@ const RoomFormAttributeField = ({ onRemove, index }: ABACAttributeAutocompletePr
 					error={valuesFieldState.error?.message}
 				/>
 			</FieldRow>
-			<FieldError>{valuesFieldState.error?.message || ''}</FieldError>
+			{valuesFieldState.error && <FieldError>{valuesFieldState.error.message}</FieldError>}
 
 			<Button onClick={onRemove} title={t('Remove')} mbs={4}>
 				{t('Remove')}

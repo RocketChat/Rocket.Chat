@@ -95,7 +95,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 								{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 							/>
 						</FieldRow>
-						<FieldError>{errors.name?.message || ''}</FieldError>
+						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 					</Field>
 					<Field mb={16}>
 						<FieldLabel required id={valuesField}>
@@ -117,7 +117,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 										<IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
 									)}
 								</FieldRow>
-								<FieldError>{errors.lockedAttributes?.[index]?.value?.message || ''}</FieldError>
+								{errors.lockedAttributes?.[index]?.value && <FieldError>{errors.lockedAttributes?.[index]?.value?.message}</FieldError>}
 							</Fragment>
 						))}
 						{fields.map((field, index) => (
@@ -135,7 +135,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 										<IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
 									)}
 								</FieldRow>
-								<FieldError>{errors.attributeValues?.[index]?.value?.message || ''}</FieldError>
+								{errors.attributeValues?.[index]?.value && <FieldError>{errors.attributeValues[index].value.message}</FieldError>}
 							</Fragment>
 						))}
 						<Button
