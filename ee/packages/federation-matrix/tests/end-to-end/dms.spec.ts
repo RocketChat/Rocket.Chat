@@ -168,6 +168,8 @@ const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, valida
 					expect(event).toHaveProperty('state_key', userDmId);
 				});
 			});
+
+			it.todo('should reflect the revoke invitation in the RC user subscriptions');
 		});
 
 		describe('Resident RC', () => {
