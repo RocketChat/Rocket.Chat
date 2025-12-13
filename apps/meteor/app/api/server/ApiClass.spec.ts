@@ -59,3 +59,25 @@ describe('ExtractRoutesFromAPI', () => {
 		true as ExpectedFunctionSignature;
 	});
 });
+
+it('Should extract correct function signature when multi paths is present', () => {
+	type APIWithMultiPath = APIClass<
+		'/v1',
+		{
+			method: 'POST';
+			path: ['/v1/endpoint.foo', '/v1/endpoint.bar'];
+			body: ValidateFunction<{
+				foo: string;
+			}>;
+			response: {
+				200: ValidateFunction<{
+					bar: string;
+				}>;
+			};
+			authRequired: true;
+		}
+	>;
+	type APIEndpoints = ExtractRoutesFromAPI<APIWithMultiPath>['/v1/endpoint.test']['POST'];
+	type ExpectedFunctionSignature = Expect<ShallowEqual<APIEndpoints, (params: { foo: string }) => { bar: string }>>;
+	true satisfies ExpectedFunctionSignature;
+});
