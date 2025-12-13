@@ -1,43 +1,46 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useId } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ChangeEvent } from 'react';
-import { useState, useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
+import { InputError } from './DeleteAccountError';
 
 type ActionConfirmModalProps = {
 	isPassword: boolean;
-	onConfirm: (input: string) => void;
+	onConfirm: (input: string) => Promise<void>;
 	onCancel: () => void;
 };
 
 // TODO: Use react-hook-form
 const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const { t } = useTranslation();
-	const [inputText, setInputText] = useState('');
-	const [inputError, setInputError] = useState<string | undefined>();
+	const actionTextId = useId();
+	const inputId = useId();
+	const errorId = `${inputId}-error`;
 
-	const handleChange = useCallback(
-		(e: ChangeEvent<HTMLInputElement>) => {
-			e.target.value !== '' && setInputError(undefined);
-			setInputText(e.currentTarget.value);
-		},
-		[setInputText],
-	);
+	const {
+		control,
+		handleSubmit,
+		setError,
+		setFocus,
+		formState: { errors },
+	} = useForm<{ credential: string }>({
+		defaultValues: { credential: '' },
+		mode: 'onBlur',
+	});
 
-	const handleSave = useCallback(
-		(e: ChangeEvent<HTMLInputElement>) => {
-			e.preventDefault();
-			if (inputText === '') {
-				setInputError(t('Invalid_field'));
+	const handleSave = handleSubmit(async ({ credential }) => {
+		try {
+			await onConfirm(credential);
+		} catch (error) {
+			if (error instanceof InputError) {
+				setError('credential', { message: error.message });
+				setFocus('credential');
 				return;
 			}
-			onConfirm(inputText);
-			onCancel();
-		},
-		[inputText, onConfirm, onCancel, t],
-	);
+		}
+	});
 
-	const actionTextId = useId();
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
@@ -54,10 +57,39 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			<FieldGroup w='full'>
 				<Field>
 					<FieldRow>
-						{isPassword && <PasswordInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
-						{!isPassword && <TextInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
+						<Controller
+							name='credential'
+							control={control}
+							rules={{ required: t('Invalid_field') }}
+							render={({ field }) =>
+								isPassword ? (
+									<PasswordInput
+										{...field}
+										id={inputId}
+										aria-labelledby={actionTextId}
+										aria-describedby={errors.credential ? errorId : undefined}
+										aria-invalid={Boolean(errors.credential)}
+										aria-required='true'
+									/>
+								) : (
+									<TextInput
+										{...field}
+										id={inputId}
+										placeholder={t('Username')}
+										aria-labelledby={actionTextId}
+										aria-describedby={errors.credential ? errorId : undefined}
+										aria-invalid={Boolean(errors.credential)}
+										aria-required='true'
+									/>
+								)
+							}
+						/>
 					</FieldRow>
-					<FieldError>{inputError}</FieldError>
+					{errors.credential && (
+						<FieldError aria-live='assertive' id={errorId}>
+							{errors.credential.message}
+						</FieldError>
+					)}
 				</Field>
 			</FieldGroup>
 		</GenericModal>
