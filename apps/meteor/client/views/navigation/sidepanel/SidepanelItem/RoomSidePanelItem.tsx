@@ -1,11 +1,12 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2ItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
+import RoomSidePanelItemBadges from './RoomSidePanelItemBadges';
 import SidePanelParent from './SidePanelParent';
 import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
@@ -14,7 +15,6 @@ import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
-import SidePanelOmnichannelBadges from '../omnichannel/SidePanelOmnichannelBadges';
 
 type RoomSidePanelItemProps = {
 	room: SubscriptionWithRoom;
@@ -26,29 +26,13 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { unreadTitle, unreadVariant, showUnread, highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
+	const { highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
 	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message = getNavigationMessagePreview(room, room.lastMessage, t);
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
-
-	const badges = (
-		<>
-			{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
-			{showUnread && (
-				<SidebarV2ItemBadge
-					variant={unreadVariant}
-					title={unreadTitle}
-					role='status'
-					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
-				>
-					<span aria-hidden>{unreadCount.total}</span>
-				</SidebarV2ItemBadge>
-			)}
-		</>
-	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -82,7 +66,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
 			parentRoom={!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
-			badges={badges}
+			badges={<RoomSidePanelItemBadges room={room} roomTitle={title} />}
 			menu={menu}
 			{...props}
 		/>

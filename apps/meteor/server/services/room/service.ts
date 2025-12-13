@@ -1,16 +1,21 @@
-import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import type { ISubscription, AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
+import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
@@ -81,6 +86,14 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
+	async performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+		return performUserRemoval(room, user, options);
+	}
+
+	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
+		return performAcceptRoomInvite(room, subscription, user);
+	}
+
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
 		return getValidRoomName(displayName, roomId, options);
 	}
@@ -112,6 +125,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		if (!(await Authorization.canAccessRoom(room, user))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+		}
+
+		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
@@ -201,5 +218,73 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 				return;
 			}
 		}
+	}
+
+	async createUserSubscription({
+		room,
+		ts,
+		userToBeAdded,
+		inviter,
+		createAsHidden = false,
+		skipAlertSound = false,
+		skipSystemMessage = false,
+		status,
+	}: {
+		room: IRoom;
+		ts: Date;
+		userToBeAdded: IUser;
+		inviter?: Pick<IUser, '_id' | 'username' | 'name'>;
+		createAsHidden?: boolean;
+		skipAlertSound?: boolean;
+		skipSystemMessage?: boolean;
+		status?: 'INVITED';
+	}): Promise<string | undefined> {
+		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
+			ts,
+			open: !createAsHidden,
+			alert: createAsHidden ? false : !skipAlertSound,
+			unread: 1,
+			userMentions: 1,
+			groupMentions: 0,
+			...(status && { status }),
+			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, name: inviter.name } }),
+			...autoTranslateConfig,
+			...getDefaultSubscriptionPref(userToBeAdded),
+		});
+
+		if (insertedId) {
+			void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+		}
+
+		if (!skipSystemMessage && userToBeAdded.username) {
+			if (inviter) {
+				const extraData = {
+					ts,
+					u: {
+						_id: inviter._id,
+						username: inviter.username,
+					},
+				};
+				if (room.teamMain) {
+					await Message.saveSystemMessage('added-user-to-team', room._id, userToBeAdded.username, userToBeAdded, extraData);
+				} else if (status === 'INVITED') {
+					await Message.saveSystemMessage('ui', room._id, userToBeAdded.username, userToBeAdded, {
+						u: { _id: inviter._id, username: inviter.username },
+					});
+				} else {
+					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData);
+				}
+			} else if (room.prid) {
+				await Message.saveSystemMessage('ut', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			} else if (room.teamMain) {
+				await Message.saveSystemMessage('ujt', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			} else {
+				await Message.saveSystemMessage('uj', room._id, userToBeAdded.username, userToBeAdded, { ts });
+			}
+		}
+
+		return insertedId;
 	}
 }

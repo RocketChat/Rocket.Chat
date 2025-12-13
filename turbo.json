@@ -14,16 +14,12 @@
 			"outputs": ["dist/**"]
 		},
 		"test-storybook": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {
 			"outputs": ["coverage/**"]
 		},
 		"lint": {
-			"outputs": []
-		},
-		"translation-check": {
 			"outputs": []
 		},
 		"typecheck": {

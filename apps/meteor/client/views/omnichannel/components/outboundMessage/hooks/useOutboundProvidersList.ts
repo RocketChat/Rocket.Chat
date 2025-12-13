@@ -19,7 +19,7 @@ const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: U
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
 
 	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
-	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
+	const { data: hasOutboundModule = false } = useHasLicenseModule('outbound-messaging');
 	const canSendOutboundMessages = usePermission('outbound.send-messages');
 
 	return useQuery<OutboundProvidersResponse, Error, TData>({

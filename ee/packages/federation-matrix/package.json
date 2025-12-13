@@ -1,44 +1,28 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.0.3",
+	"version": "0.0.7",
 	"private": true,
-	"devDependencies": {
-		"@babel/cli": "~7.28.3",
-		"@babel/core": "~7.28.4",
-		"@babel/preset-env": "~7.28.3",
-		"@babel/preset-typescript": "~7.27.1",
-		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/emojione": "^2.2.9",
-		"@types/node": "~22.16.5",
-		"@types/sanitize-html": "~2.16.0",
-		"babel-jest": "~30.2.0",
-		"eslint": "~8.45.0",
-		"jest": "~30.2.0",
-		"pino-pretty": "^7.6.1",
-		"typescript": "~5.9.3"
-	},
-	"scripts": {
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
-		"test": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit --skipLibCheck",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
-	"volta": {
-		"extends": "../../../package.json"
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"test": "jest",
+		"test:integration": "./tests/scripts/run-integration-tests.sh",
+		"test:federation": "jest --config jest.config.federation.ts",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit --skipLibCheck"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "^0.31.25",
-		"@rocket.chat/federation-sdk": "0.3.0",
+		"@rocket.chat/federation-sdk": "0.3.3",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
@@ -52,5 +36,25 @@
 		"sanitize-html": "~2.17.0",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3"
+	},
+	"devDependencies": {
+		"@babel/cli": "~7.28.3",
+		"@babel/core": "~7.28.5",
+		"@babel/preset-env": "~7.28.5",
+		"@babel/preset-typescript": "~7.27.1",
+		"@rocket.chat/ddp-client": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/emojione": "^2.2.9",
+		"@types/node": "~22.16.5",
+		"@types/sanitize-html": "~2.16.0",
+		"babel-jest": "~30.2.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"matrix-js-sdk": "^38.4.0",
+		"pino-pretty": "^7.6.1",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../../package.json"
 	}
 }

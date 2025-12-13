@@ -131,6 +131,7 @@ type FindPaginatedUsersByStatusProps = {
 	searchTerm: string;
 	hasLoggedIn: boolean;
 	type: string;
+	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
 };
 
 export async function findPaginatedUsersByStatus({
@@ -143,6 +144,7 @@ export async function findPaginatedUsersByStatus({
 	searchTerm,
 	hasLoggedIn,
 	type,
+	inactiveReason,
 }: FindPaginatedUsersByStatusProps) {
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
 	if (sort?.status) {
@@ -197,6 +199,26 @@ export async function findPaginatedUsersByStatus({
 	}
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
+	}
+
+	if (inactiveReason) {
+		const inactiveReasonCondition = {
+			$or: [
+				{ inactiveReason: { $in: inactiveReason } },
+				// This condition is to make it backward compatible with the old behavior
+				// The deactivated users not having the inactiveReason field should be returned as well
+				...(inactiveReason.includes('deactivated') || inactiveReason.includes('idle_too_long')
+					? [{ inactiveReason: { $exists: false } }]
+					: []),
+			],
+		};
+
+		if (match.$or) {
+			match.$and = [{ $or: match.$or }, inactiveReasonCondition];
+			delete match.$or;
+		} else {
+			Object.assign(match, inactiveReasonCondition);
+		}
 	}
 
 	const { cursor, totalCount } = Users.findPaginated(

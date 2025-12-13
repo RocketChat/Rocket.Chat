@@ -111,5 +111,5 @@ export abstract class ServiceClass implements IServiceClass {
  * Services that run on their own node should use @ServiceClass instead.
  */
 export abstract class ServiceClassInternal extends ServiceClass {
-	protected internal = true;
+	protected override internal = true;
 }

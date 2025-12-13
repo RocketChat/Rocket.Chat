@@ -15,7 +15,7 @@ env:
 
 jobs:
   code-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
@@ -30,7 +30,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node

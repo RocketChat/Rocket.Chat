@@ -1,11 +1,11 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 
 import TagEdit from './TagEdit';
 import TagEditWithData from './TagEditWithData';
 import TagsTable from './TagsTable';
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const TagsPage = () => {

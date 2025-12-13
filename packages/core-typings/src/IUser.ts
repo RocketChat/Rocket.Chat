@@ -252,6 +252,7 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
 }
 
 export interface IRegisterUser extends IUser {

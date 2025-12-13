@@ -78,7 +78,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		});
 	}
 
-	public async started(): Promise<void> {
+	public override async started(): Promise<void> {
 		void this.serviceStarter.start();
 	}
 

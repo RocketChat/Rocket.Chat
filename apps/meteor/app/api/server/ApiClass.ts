@@ -78,13 +78,13 @@ export type ExtractRoutesFromAPI<T> = Prettify<
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET' | 'DELETE'
 			? (
 					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
 						? [params?: never]
 						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
-			: K2 extends 'POST'
+			: K2 extends 'POST' | 'PUT'
 				? (
 						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
 					) => ExtractValidation<
@@ -704,6 +704,12 @@ export class APIClass<
 				method: 'PUT';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'PUT';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('PUT', subpath, options, action);
 	}
@@ -719,6 +725,12 @@ export class APIClass<
 				method: 'DELETE';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'DELETE';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('DELETE', subpath, options, action);
 	}
