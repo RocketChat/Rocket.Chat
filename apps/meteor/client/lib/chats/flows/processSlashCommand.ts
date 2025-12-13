@@ -10,20 +10,38 @@ import { settings } from '../../settings';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	const match = msg.match(/^\/([^\s]+)(.*)/);
-
+	// Matches "/<cmd> <params...>" and keeps parameters unchanged; an optional "<label>:" is stripped only if it matches the command's declared parameters (e.g., "channel: #", "username: @").
+	// This regex allows extracting the command and its parameters, with any optional label removed afterwards.
+	const match = msg.match(/^\/(\S+)\s*(.*)$/);
 	if (!match) {
 		return undefined;
 	}
 
-	const [, cmd, params] = match;
-	const command = slashCommands.commands[cmd];
+	const cmd = match[1];
+	let params = match[2] ?? '';
 
-	if (!command) {
+	// that the composer may have inserted (e.g., "channel: #", "username: @").
+	const meta = slashCommands.commands[cmd];
+	if (meta && typeof meta !== 'string' && typeof meta.params === 'string' && meta.params) {
+		const raw = meta.params;
+		const label = raw.startsWith('@') || raw.startsWith('#') ? raw.slice(1) : raw;
+
+		if (label) {
+			// Used to avoid issues with special characters in the label.
+			const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const re = new RegExp(`^\\s*(?:${esc(label)})\\s*:\\s*`);
+			if (re.test(params)) {
+				// Replaces the label with an empty string to make parameters suitable for parsing.
+				params = params.replace(re, '');
+			}
+		}
+	}
+
+	if (!meta) {
 		return { command: cmd, params };
 	}
 
-	return { command, params };
+	return { command: meta, params };
 };
 
 const warnUnrecognizedSlashCommand = async (chat: ChatAPI, message: string): Promise<void> => {
