@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -17,6 +16,7 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
+import { useUserLanguageSync } from './hooks/useUserLanguageSync';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
@@ -73,13 +73,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	});
 
 	const previousUserId = useRef(userId);
-	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
-	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 	const [, setSamlInviteToken] = useSamlInviteToken();
 	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
 	const inviteTokenHash = useRouteParameter('hash');
-
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
@@ -88,6 +84,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	useUpdateAvatar();
 	useIdleConnection(userId);
 	useReloadAfterLogin(user);
+	useUserLanguageSync(user);
 
 	const querySubscriptions = useMemo(() => {
 		const createSubscriptionFactory =
@@ -155,18 +152,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		}),
 		[userId, user, querySubscription, querySubscriptions],
 	);
-
-	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
-		}
-
-		if (user?.language !== undefined && user.language !== userLanguage) {
-			setUserLanguage(user.language);
-			setPreferedLanguage(user.language);
-		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
 
 	useEffect(() => {
 		if (!samlCredentialToken && !inviteTokenHash) {
