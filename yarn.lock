@@ -8284,7 +8284,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.4"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.45.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8495,7 +8495,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.4"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -8521,9 +8521,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.3.3":
-  version: 0.3.3
-  resolution: "@rocket.chat/federation-sdk@npm:0.3.3"
+"@rocket.chat/federation-sdk@npm:0.3.4":
+  version: 0.3.4
+  resolution: "@rocket.chat/federation-sdk@npm:0.3.4"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -8536,7 +8536,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/e93f0d59da8508ee0ecfb53f6d599f93130ab4b9f651d87da77615355261e4852d6f4659aae9f4c8881cf4b26a628512e6363ecc407d6e01a31a27d20b9d7684
+  checksum: 10/d9dfa2263e5253f96cd3e9a3262a07ef306256acd5e0b1de8df0c686733d6449de152b373170dea918484198d4a74180eb046a7173d560119bec0bd65de78db7
   languageName: node
   linkType: hard
 
@@ -9185,7 +9185,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.4"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.69.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
