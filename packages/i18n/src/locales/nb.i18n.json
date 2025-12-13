@@ -2155,7 +2155,6 @@
   "Federation_Service_EDU_Process_Typing_Description": "Sende og motta hendelser der en bruker skriver en melding mellom fødererte servere.",
   "Federation_Service_EDU_Process_Typing_Alert": "Hvis du aktiverer skrivehendelser, kan det øke belastningen på serveren og nettverkstrafikken betraktelig, spesielt hvis du har mange brukere. Aktiver dette alternativet bare hvis du forstår konsekvensene og har de nødvendige ressursene til å håndtere den ekstra belastningen.",
   "Federation_Service_EDU_Process_Presence_Description": "Sende og motta hendelser om brukertilstedeværelse (online, offline osv.) mellom fødererte servere.",
-  "Federation_Service_Alert": "<strong>Dette er en alfa-funksjon som ikke er beregnet for produksjonsbruk!</strong><br/>Det er ikke sikkert at den er stabil og/eller ytelsesmessig. Vær oppmerksom på at den kan endres, gå i stykker eller til og med bli fjernet i fremtiden uten forvarsel.",
   "Federation_Service_Domain": "Føderert domene",
   "Federation_Service_Domain_Description": "Domenet som denne serveren skal svare til, for eksempel: `acme.com`. Dette vil bli brukt som suffiks for bruker-ID-er (f.eks. `@user:acme.com`).<br/>Hvis chatteserveren din er tilgjengelig fra et annet domene enn det du ønsker å bruke for føderasjon, bør du følge dokumentasjonen vår for å konfigurere filen `.well-known` på webserveren din.",
   "Federation_Service_Domain_Alert": "Oppgi bare domenet, ikke inkluder http(s)://, skråstreker eller noen sti etter det.<br/>Bruk noe sånt som `acme.com` og ikke `https://acme.com/chat`.",
