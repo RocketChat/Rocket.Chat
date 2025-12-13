@@ -1,0 +1,13 @@
+dn: ou=people,dc=rcldap,dc=com,dc=br
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=ldapuser1,ou=people,dc=rcldap,dc=com,dc=br
+objectClass: inetOrgPerson
+uid: ldapuser1
+sn: User
+givenName: LDAP
+cn: LDAP User 1
+displayName: LDAP User 1
+userPassword: password
+mail: ldapuser1@example.com
