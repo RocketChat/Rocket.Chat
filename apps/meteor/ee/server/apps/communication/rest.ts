@@ -24,7 +24,6 @@ import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger'
 import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
@@ -253,93 +252,6 @@ export class AppsRestApi {
 			'',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				async get() {
-					// Gets the Apps from the marketplace
-					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
-
-						try {
-							const apps = await fetchMarketplaceApps();
-							return API.v1.success(apps);
-						} catch (e) {
-							if (e instanceof MarketplaceConnectionError) {
-								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-							}
-
-							if (e instanceof MarketplaceAppsError || e instanceof MarketplaceUnsupportedVersionError) {
-								return API.v1.failure({ error: e.message });
-							}
-
-							if (e instanceof ZodError) {
-								orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', e.issues);
-								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
-							}
-
-							return API.v1.internalError();
-						}
-					}
-
-					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
-						try {
-							const categories = await fetchMarketplaceCategories();
-							return API.v1.success(categories);
-						} catch (err) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
-							if (err instanceof MarketplaceConnectionError) {
-								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
-							}
-
-							if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
-								return API.v1.failure({ error: err.message });
-							}
-
-							if (err instanceof ZodError) {
-								orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
-								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
-							}
-
-							return API.v1.internalError();
-						}
-					}
-
-					if (
-						'buildExternalUrl' in this.queryParams &&
-						'appId' in this.queryParams &&
-						this.queryParams.buildExternalUrl &&
-						this.queryParams.appId
-					) {
-						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
-						const workspaceId = settings.get('Cloud_Workspace_Id');
-
-						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
-							return API.v1.failure({ error: 'Invalid purchase type' });
-						}
-
-						const token = await getWorkspaceAccessTokenWithScope({ scope: 'marketplace:purchase' });
-						if (!token) {
-							return API.v1.failure({ error: 'Unauthorized' });
-						}
-
-						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
-
-						const seats = await Users.getActiveLocalUserCount();
-
-						const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
-
-						return API.v1.success({
-							url: `${baseUrl}/apps/${this.queryParams.appId}/${
-								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
-						});
-					}
-					apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
-
-					const proxiedApps = await manager.get();
-					const apps = await Promise.all(proxiedApps.map((app) => formatAppInstanceForRest(app)));
-
-					return API.v1.success({ apps });
-				},
 				async post() {
 					let buff;
 					let marketplaceInfo: IMarketplaceInfo[] | undefined;

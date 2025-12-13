@@ -89,17 +89,6 @@ services:
       traefik.http.services.ecdh-proxy-http-service.loadbalancer.server.port: 3000
       traefik.http.routers.ecdh-proxy-http-service.service: ecdh-proxy-http-service
 
-  stream-hub-service:
-    container_name: stream-hub-service
-    build:
-      context: .
-      args:
-        SERVICE: stream-hub
-    image: rocketchat/stream-hub-service:latest
-    env_file: .config/services/service.env
-    depends_on:
-      - nats
-
   queue-worker-service:
     container_name: queue-worker-service
     build:
@@ -125,20 +114,20 @@ services:
   nats:
     image: nats
     ports:
-      - "4222:4222"
+      - '4222:4222'
 
   # tracing container for all tracing reporting
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
     ports:
-      - "16686:16686"
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "14268:14268"
-      - "9411:9411"
+      - '16686:16686'
+      - '5775:5775/udp'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '5778:5778'
+      - '14268:14268'
+      - '9411:9411'
     depends_on:
       - traefik
     # environment:
@@ -211,7 +200,6 @@ services:
       traefik.http.routers.traefik.rule: Host(`traefik.${HOST_NAME}`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entrypoints: web
-
 
   cadvisor:
     image: google/cadvisor

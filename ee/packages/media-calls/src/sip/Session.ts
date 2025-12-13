@@ -116,7 +116,7 @@ export class SipServerSession {
 	}
 
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {
-		return Boolean(settings.enabled && settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
+		return Boolean(settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
 	}
 
 	private initializeDrachtio(): void {

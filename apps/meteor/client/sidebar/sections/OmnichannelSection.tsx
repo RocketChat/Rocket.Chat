@@ -6,16 +6,13 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { OverMacLimitSection } from './OverMacLimitSection';
-import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
-import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { OmnichannelLivechatToggle } from './actions';
 import { useIsOverMacLimit } from '../../views/omnichannel/hooks/useIsOverMacLimit';
 import { useOmnichannelShowQueueLink } from '../../views/omnichannel/hooks/useOmnichannelShowQueueLink';
 import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';
 
 const OmnichannelSection = () => {
 	const { t } = useTranslation();
-	const isCallEnabled = useIsCallEnabled();
-	const isCallReady = useIsCallReady();
 	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const { sidebar } = useLayout();
@@ -49,7 +46,6 @@ const OmnichannelSection = () => {
 							{showOmnichannelQueueLink && (
 								<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
 							)}
-							{isCallEnabled && <OmnichannelCallToggle />}
 							<OmnichannelLivechatToggle />
 							{hasPermissionToSeeContactCenter && (
 								<Sidebar.TopBar.Action
@@ -59,7 +55,6 @@ const OmnichannelSection = () => {
 									onClick={(): void => handleRoute('directory')}
 								/>
 							)}
-							{isCallReady && <OmniChannelCallDialPad />}
 						</SidebarHeaderToolbar>
 					</Sidebar.TopBar.Section>
 				</FeaturePreviewOff>
@@ -70,7 +65,6 @@ const OmnichannelSection = () => {
 							{showOmnichannelQueueLink && (
 								<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
 							)}
-							{isCallEnabled && <OmnichannelCallToggle />}
 							<OmnichannelLivechatToggle />
 							{hasPermissionToSeeContactCenter && (
 								<Sidebar.TopBar.Action
@@ -80,7 +74,6 @@ const OmnichannelSection = () => {
 									onClick={(): void => handleRoute('directory')}
 								/>
 							)}
-							{isCallReady && <OmniChannelCallDialPad />}
 						</SidebarHeaderToolbar>
 					</SidebarSection>
 					<SidebarDivider />

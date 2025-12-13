@@ -6,14 +6,12 @@ import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import { useE2EERoomState } from '../../views/room/hooks/useE2EERoomState';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';
 import EnableE2EEModal from '../../views/room/modals/E2EEModals/EnableE2EEModal';
-import { useOTR } from '../useOTR';
 
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
@@ -29,7 +27,6 @@ export const useE2EERoomAction = () => {
 	const federated = isRoomFederated(room);
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { otrState } = useOTR();
 
 	const isE2EERoomNotReady = () => {
 		if (e2eeRoomState === 'NOT_STARTED' || e2eeRoomState === 'DISABLED' || e2eeRoomState === 'ERROR' || e2eeRoomState === 'WAITING_KEYS') {
@@ -50,12 +47,6 @@ export const useE2EERoomAction = () => {
 	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
 	const action = useEffectEvent(async () => {
-		if (otrState === OtrRoomState.ESTABLISHED || otrState === OtrRoomState.ESTABLISHING || otrState === OtrRoomState.REQUESTED) {
-			dispatchToastMessage({ type: 'error', message: t('E2EE_not_available_OTR') });
-
-			return;
-		}
-
 		if (enabledOnRoom) {
 			imperativeModal.open({
 				component: BaseDisableE2EEModal,

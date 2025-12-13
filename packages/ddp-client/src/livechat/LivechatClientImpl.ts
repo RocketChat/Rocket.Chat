@@ -204,11 +204,11 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}: {
 		rid: string;
 		department: string;
-	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.transfer'>>> {
+	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
-		return this.rest.post('/v1/livechat/room.transfer', { rid, token: this.token, department });
+		return this.rest.post('/v1/livechat/visitor/department.transfer', { rid, token: this.token, department });
 	}
 
 	async grantVisitor(
@@ -237,17 +237,6 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 			throw new Error('Invalid token');
 		}
 		return this.rest.post('/v1/livechat/room.survey', { rid: params.rid, token: this.token, data: params.data });
-	}
-
-	updateCallStatus(
-		callStatus: string,
-		rid: string,
-		callId: string,
-	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.callStatus'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/visitor.callStatus', { token: this.token, callStatus, rid, callId });
 	}
 
 	sendMessage(

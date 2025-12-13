@@ -27,7 +27,7 @@ Meteor.startup(async () => {
 		);
 
 		videoConfTypes.registerVideoConferenceType({ type: 'videoconference', ringing: true }, async ({ _id, t }, allowRinging) => {
-			if (!allowRinging || ['l', 'v'].includes(t)) {
+			if (!allowRinging || t === 'l') {
 				return false;
 			}
 

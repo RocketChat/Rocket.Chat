@@ -66,7 +66,7 @@ export type RouterContextValue = {
 	navigate(delta: number): void;
 	defineRoutes(routes: RouteObject[]): () => void;
 	getRoomRoute(roomType: 'd', routeData: DirectRoomRouteData): { path: LocationPathname };
-	getRoomRoute(roomType: 'l' | 'v', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
+	getRoomRoute(roomType: 'l', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
 	getRoomRoute(roomType: 'p' | 'c', routeData: ChannelRouteData): { path: LocationPathname };
 	getRoomRoute(
 		roomType: RoomType,

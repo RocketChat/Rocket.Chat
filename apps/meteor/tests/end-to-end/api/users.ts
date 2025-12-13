@@ -579,13 +579,11 @@ describe('[Users]', () => {
 
 		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
 			beforeEach(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			after(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			it('should create a user with a voice call extension', async () => {
@@ -646,7 +644,7 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user if voip is disabled', async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -654,30 +652,6 @@ describe('[Users]', () => {
 						email: 'fail_voip_disabled@rocket.chat',
 						name: 'fail_voip_disabled',
 						username: 'fail_voip_disabled',
-						password,
-						active: true,
-						roles: ['user'],
-						joinDefaultChannels: true,
-						verified: true,
-						freeSwitchExtension: '999',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-					});
-			});
-
-			it('should not create a user if user has no permission to manage voip extensions', async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.create'))
-					.set(credentials)
-					.send({
-						email: 'fail_no_permission@rocket.chat',
-						name: 'fail_no_permission',
-						username: 'fail_no_permission',
 						password,
 						active: true,
 						roles: ['user'],
@@ -2556,15 +2530,11 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([
-					deleteUser(user),
-					updateSetting('VoIP_TeamCollab_Enabled', true),
-					updatePermission('manage-voip-extensions', ['admin']),
-				]);
+				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			beforeEach(async () => {
-				await Promise.all([updatePermission('manage-voip-extensions', ['admin']), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+				await Promise.all([updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			it("should update the user's voice call extension", async () => {
@@ -2601,22 +2571,8 @@ describe('[Users]', () => {
 					});
 			});
 
-			it("should not update the user's voice call extension if the user has no permission to manage voip extensions", async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: user._id,
-						data: {
-							freeSwitchExtension: '9998',
-						},
-					})
-					.expect(400);
-			});
-
 			it("should not update the user's voice call extension if voip setting is disabled", async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.update'))
 					.set(credentials)

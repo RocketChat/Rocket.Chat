@@ -6,18 +6,14 @@ import { useRoute } from '@rocket.chat/ui-contexts';
 import ContactItemMenu from './ContactItemMenu';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
-import { CallDialpadButton } from '../components/CallDialpadButton';
 
-const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const directoryRoute = useRoute('omnichannel-directory');
-	const isCallReady = useIsCallReady();
 
-	const phoneNumber = phones?.length ? phones[0].phoneNumber : undefined;
 	const latestChannel = channels?.sort((a, b) => {
 		if (a.lastChat && b.lastChat) {
 			return a.lastChat.ts > b.lastChat.ts ? -1 : 1;
@@ -59,11 +55,6 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
-			{isCallReady && (
-				<GenericTableCell>
-					<CallDialpadButton phoneNumber={phoneNumber} />
-				</GenericTableCell>
-			)}
 			<GenericTableCell>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>

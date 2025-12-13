@@ -10,7 +10,6 @@ import { getUsersInRolePaginated } from '../../../authorization/server/functions
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -64,17 +63,13 @@ API.v1.addRoute(
 			}
 
 			const user = await getUserFromParams(this.bodyParams);
-			const { roleId, roleName, roomId } = this.bodyParams;
+			const { roleId, roomId } = this.bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 			if (!role) {
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
@@ -117,21 +112,10 @@ API.v1.addRoute(
 			}
 
 			const options = { projection: { _id: 1 } };
-			let roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
-			if (!roleData) {
-				roleData = await Roles.findOneByName<Pick<IRole, '_id'>>(role, options);
-				if (!roleData) {
-					throw new Meteor.Error('error-invalid-roleId');
-				}
+			const roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
 
-				apiDeprecationLogger.deprecatedParameterUsage(
-					this.route,
-					'role',
-					'7.0.0',
-					this.response,
-					({ parameter, endpoint, version }) =>
-						`Querying \`${parameter}\` by name is deprecated in ${endpoint} and will be removed on the removed on version ${version}`,
-				);
+			if (!roleData) {
+				throw new Meteor.Error('error-invalid-roleId');
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
@@ -191,14 +175,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			const { roleId, roleName, username, scope } = bodyParams;
+			const { roleId, username, scope } = bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
 			const user = await Users.findOneByUsername(username);
@@ -207,7 +187,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 
 			if (!role) {
 				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');

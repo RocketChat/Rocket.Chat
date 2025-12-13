@@ -243,43 +243,6 @@ export const statistics = {
 			}),
 		);
 
-		// VoIP Enabled
-		statistics.voipEnabled = settings.get('VoIP_Enabled');
-
-		// Amount of VoIP Calls
-		statsPms.push(
-			Rooms.countByType('v').then((count) => {
-				statistics.voipCalls = count;
-			}),
-		);
-
-		// Amount of VoIP Extensions connected
-		statsPms.push(
-			Users.countDocuments({ extension: { $exists: true } }).then((count) => {
-				statistics.voipExtensions = count;
-			}),
-		);
-
-		// Amount of Calls that ended properly
-		statsPms.push(
-			Messages.countByType('voip-call-wrapup', { readPreference }).then((count) => {
-				statistics.voipSuccessfulCalls = count;
-			}),
-		);
-
-		// Amount of Calls that ended with an error
-		statsPms.push(
-			Messages.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
-				statistics.voipErrorCalls = count;
-			}),
-		);
-		// Amount of Calls that were put on hold
-		statsPms.push(
-			Messages.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
-				statistics.voipOnHoldCalls = count;
-			}),
-		);
-
 		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
 		const billablePeriod = moment.utc().format('YYYY-MM');
 		statsPms.push(
@@ -415,9 +378,9 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
+		const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
-		statistics.oplogEnabled = oplogEnabled;
+		statistics.oplogEnabled = false;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
@@ -540,8 +503,6 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await Rooms.countByCreatedOTR({ readPreference });
-		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
@@ -603,11 +564,6 @@ export const statistics = {
 		statistics.maxMonthlyPeakConnections = Math.max(statistics.dailyPeakConnections, peak?.dailyPeakConnections || 0);
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
-
-		// Omnichannel call stats
-		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
-		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

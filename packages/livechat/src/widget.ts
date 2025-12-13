@@ -374,8 +374,8 @@ function setParentUrl(url: string) {
 	callHook('setParentUrl', url);
 }
 
-function transferChat(department: string) {
-	callHook('transferChat', department);
+function transferChat(rid: string, department: string) {
+	callHook('transferChat', rid, department);
 }
 
 function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {

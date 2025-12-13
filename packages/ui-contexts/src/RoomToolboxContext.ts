@@ -19,7 +19,7 @@ export type RoomToolboxActionConfig = {
 	disabled?: boolean;
 	full?: true;
 	order?: number;
-	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team' | 'voip'>;
+	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple' | 'team'>;
 	hotkey?: string;
 	action?: () => void;
 	featured?: boolean;
