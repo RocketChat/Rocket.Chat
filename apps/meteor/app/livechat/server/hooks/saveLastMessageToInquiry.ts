@@ -1,7 +1,7 @@
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';

@@ -1,6 +1,5 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow } from '../../../components/Header';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow } from '@rocket.chat/ui-client';
 
 const HeaderSkeleton = () => {
 	return (

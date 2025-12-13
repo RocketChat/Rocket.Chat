@@ -1,7 +1,7 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { afterAgentUserActivated, afterAgentAdded, afterRemoveAgent } from '../lib/hooks';
 
 type IAfterSaveUserProps = {

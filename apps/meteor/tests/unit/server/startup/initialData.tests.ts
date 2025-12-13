@@ -40,7 +40,7 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 	'../../app/settings/server': {
 		settings: { get: settingsGet },
 	},
-	'../../lib/emailValidator': {
+	'@rocket.chat/tools': {
 		validateEmail,
 	},
 	'../lib/roles/addUserRoles': {

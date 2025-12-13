@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Wrapper from './Wrapper';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
 
