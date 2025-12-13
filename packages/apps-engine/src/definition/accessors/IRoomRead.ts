@@ -1,6 +1,6 @@
-import type { GetMessagesOptions } from '../../server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsOptions } from '../../server/bridges/RoomBridge';
 import type { IMessageRaw } from '../messages/index';
-import type { IRoom } from '../rooms/index';
+import type { IRoom, IRoomRaw } from '../rooms/index';
 import type { IUser } from '../users/index';
 
 /**
@@ -60,6 +60,14 @@ export interface IRoomRead {
 	 * @returns an iterator for the users in the room
 	 */
 	getMembers(roomId: string): Promise<Array<IUser>>;
+
+	/**
+	 * Retrieves rooms in the workspace, optionally filtered by type and metadata flags.
+	 *
+	 * @param options Optional filters such as `types`, pagination, and discussion/team flags
+	 * @returns a list of raw rooms
+	 */
+	getAllRooms(options?: GetRoomsOptions): Promise<Array<IRoomRaw>>;
 
 	/**
 	 * Gets a direct room with all usernames

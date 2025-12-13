@@ -20,6 +20,44 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
+	async convertRoomRaw(room) {
+		if (!room) {
+			return undefined;
+		}
+
+		const creator = room.u
+			? {
+					_id: room.u._id,
+					username: room.u.username,
+					name: room.u.name,
+				}
+			: undefined;
+
+		const type = this._convertTypeToApp(room.t);
+
+		return {
+			id: room._id,
+			slugifiedName: room.name || room.fname || room._id,
+			displayName: room.fname,
+			type,
+			creator,
+			userIds: room.uids,
+			isDefault: !!room.default,
+			isReadOnly: !!room.ro,
+			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
+			messageCount: room.msgs,
+			createdAt: room.ts,
+			updatedAt: room._updatedAt,
+			lastModifiedAt: room.lm,
+			description: room.description,
+			customFields: room.customFields,
+			parentRoomId: room.prid,
+			teamId: room.teamId,
+			isTeamMain: !!room.teamMain,
+			livechatData: room.livechatData,
+		};
+	}
+
 	async __getCreator(user) {
 		if (!user) {
 			return;
@@ -200,6 +238,8 @@ export class AppRoomsConverter {
 			description: 'description',
 			source: 'source',
 			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;

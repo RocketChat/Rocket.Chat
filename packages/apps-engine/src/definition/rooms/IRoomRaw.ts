@@ -1,18 +1,16 @@
-import type { IUser } from '../users';
+import type { IUserLookup } from '../users';
 import type { RoomType } from './RoomType';
 
-export interface IRoom {
+/**
+ * A lightweight representation of a room without resolving relational data.
+ * This is intended for listing operations to avoid additional database lookups.
+ */
+export interface IRoomRaw {
 	id: string;
-	displayName?: string;
 	slugifiedName: string;
+	displayName?: string;
 	type: RoomType;
-	creator: IUser;
-	teamId?: string;
-	isTeamMain?: boolean;
-	/**
-	 * @deprecated usernames will be removed on version 2.0.0
-	 */
-	usernames: Array<string>;
+	creator?: IUserLookup;
 	userIds?: Array<string>;
 	isDefault?: boolean;
 	isReadOnly?: boolean;
@@ -23,6 +21,8 @@ export interface IRoom {
 	lastModifiedAt?: Date;
 	description?: string;
 	customFields?: { [key: string]: any };
-	parentRoom?: IRoom;
+	parentRoomId?: string;
+	teamId?: string;
+	isTeamMain?: boolean;
 	livechatData?: { [key: string]: any };
 }

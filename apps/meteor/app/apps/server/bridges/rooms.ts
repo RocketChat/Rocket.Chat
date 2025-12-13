@@ -1,13 +1,13 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions, Sort } from 'mongodb';
+import type { FindOptions, Filter, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -149,6 +149,36 @@ export class AppRoomBridge extends RoomBridge {
 		);
 
 		return promises as Promise<IUser[]>;
+	}
+
+	protected async getAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
+
+		const { limit = 100, skip = 0 } = options || {};
+
+		const { query } = this.buildRoomQuery(options);
+
+		const findOptions: FindOptions<ICoreRoom> = {
+			sort: { ts: -1 },
+			skip,
+			limit: Math.min(limit, 100),
+		};
+
+		const rooms: IRoomRaw[] = [];
+
+		const roomConverter = this.orch.getConverters()?.get('rooms');
+		if (!roomConverter) {
+			throw new Error('Room converter not found');
+		}
+
+		for await (const room of Rooms.find(query, findOptions)) {
+			const converted = await roomConverter.convertRoomRaw(room);
+			if (converted) {
+				rooms.push(converted);
+			}
+		}
+
+		return rooms;
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -313,5 +343,33 @@ export class AppRoomBridge extends RoomBridge {
 
 		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
 		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
+	}
+
+	private buildRoomQuery(options: GetRoomsOptions = {}): { query: Filter<ICoreRoom> } {
+		const { types, onlyDiscussions, onlyTeamMain } = options;
+
+		const hasTypes = !!types?.length;
+		const includeDiscussions = options.includeDiscussions ?? !hasTypes;
+		const includeTeamMain = options.includeTeamMain ?? !hasTypes;
+
+		const query: Filter<ICoreRoom> = {};
+
+		if (hasTypes) {
+			query.t = { $in: types as Array<ICoreRoom['t']> };
+		}
+
+		if (onlyDiscussions) {
+			query.prid = { $exists: true };
+		} else if (!includeDiscussions) {
+			query.prid = { $exists: false };
+		}
+
+		if (onlyTeamMain) {
+			query.teamMain = true;
+		} else if (!includeTeamMain) {
+			query.teamMain = { $ne: true };
+		}
+
+		return { query };
 	}
 }
