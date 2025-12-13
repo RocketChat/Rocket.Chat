@@ -5091,5 +5091,25 @@
   "__departments__departments_and__count__conversations__period__": "{{departments}} departamentos y {{count}} conversaciones, {{period}}",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ya no es {{role}} (por {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{username}} se ha establecido como {{role}} por {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados"
+  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados",
+  
+  "teamchats_sidebar_home": "Inicio",
+  "teamchats_sidebar_channels": "Canales",
+  "teamchats_sidebar_direct_messages": "Mensajes directos",
+  "teamchats_sidebar_threads": "Hilos",
+  "teamchats_sidebar_unread": "No leídos",
+  "teamchats_sidebar_pinned": "Fijados",
+  "teamchats_sidebar_starred": "Destacados",
+  "teamchats_sidebar_recent": "Recientes",
+  
+  "teamchats_header_title": "TeamChats",
+  "teamchats_header_search_placeholder": "Buscar en mensajes y canales",
+  "teamchats_header_profile_menu": "Cuenta y perfil",
+  "teamchats_header_sign_out": "Cerrar sesión",
+  "teamchats_button_new_channel": "Nuevo canal",
+  "teamchats_button_new_dm": "Nuevo mensaje directo",
+  "teamchats_button_invite_people": "Invitar personas"
 }
+
+
+
