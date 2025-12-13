@@ -32,6 +32,12 @@ export const useMarketPlaceMenu = () => {
 			content: t('Installed'),
 			onClick: () => router.navigate('/marketplace/installed/list'),
 		},
+		{
+			id: 'private',
+			icon: 'lock',
+			content: t('Private'),
+			onClick: () => router.navigate('/marketplace/private'),
+		},
 	];
 
 	const appsManagementItem: GenericMenuItemProps = {
