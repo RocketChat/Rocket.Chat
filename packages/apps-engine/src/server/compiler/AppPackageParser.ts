@@ -5,7 +5,7 @@ import * as AdmZip from 'adm-zip';
 import * as semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
-import { AppImplements } from '.';
+import { AppImplements } from './index.ts';
 import type { IAppInfo } from '../../definition/metadata/IAppInfo';
 import { RequiredApiVersionError } from '../errors';
 import type { IParseAppPackageResult } from './IParseAppPackageResult';
