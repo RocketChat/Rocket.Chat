@@ -27,7 +27,7 @@
 		"sip.js": "^0.21.2"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.52.0",
+		"@playwright/test": "^1.57.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",

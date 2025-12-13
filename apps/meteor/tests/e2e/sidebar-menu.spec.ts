@@ -6,7 +6,7 @@ test.use({ storageState: Users.admin.state });
 test.describe('sidebar-menu', () => {
 	test('expect popover to stay open after home loads', async ({ page }) => {
 		await page.route('**/__meteor__/dynamic-import/fetch', async (route, request) => {
-			if (request.postData()?.includes('HomePage.tsx')) {
+			if (request.postData()?.includes('"HomePage.tsx"')) {
 				await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
 			}
 			await route.continue();
