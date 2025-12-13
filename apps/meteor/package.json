@@ -57,6 +57,16 @@
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testunit": "yarn .testunit:definition && yarn .testunit:jest && yarn .testunit:server:cov",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
+chore/update-emoji-library-24917
+		"test": "yarn testunit && yarn testapi",
+		"version": "node .scripts/version.js",
+		"set-version": "node .scripts/set-version.js",
+		"release": "meteor yarn set-version --silent",
+		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"prepare": "node playwright.prepare.mjs",
+		"docker:start": "docker-compose up"
+	},
+=======
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
 		"version": "node .scripts/version.js"
 	},
@@ -64,6 +74,7 @@
 		"last 2 versions",
 		"Firefox ESR"
 	],
+develop
 	"dependencies": {
 		"@babel/runtime": "~7.28.4",
 		"@bugsnag/js": "~7.20.2",
