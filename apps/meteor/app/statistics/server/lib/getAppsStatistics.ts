@@ -1,6 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
+import type { IStats } from '@rocket.chat/core-typings';
 import mem from 'mem';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -11,6 +12,7 @@ type AppsStatistics = {
 	totalInstalled: number | false;
 	totalActive: number | false;
 	totalFailed: number | false;
+	appsFailed: IStats['apps']['appsFailed'];
 	totalPrivateApps: number | false;
 	totalPrivateAppsEnabled: number | false;
 };
@@ -22,6 +24,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			totalInstalled: false,
 			totalActive: false,
 			totalFailed: false,
+			appsFailed: [],
 			totalPrivateApps: false,
 			totalPrivateAppsEnabled: false,
 		};
@@ -32,7 +35,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 
 		let totalInstalled = 0;
 		let totalActive = 0;
-		let totalFailed = 0;
+		const appsFailed: IStats['apps']['appsFailed'] = [];
 		let totalPrivateApps = 0;
 		let totalPrivateAppsEnabled = 0;
 
@@ -54,7 +57,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 				if (AppStatusUtils.isEnabled(status)) {
 					totalActive++;
 				} else if (status !== AppStatus.MANUALLY_DISABLED) {
-					totalFailed++;
+					appsFailed.push({ name: app.getName(), id: app.getID(), reason: status });
 				}
 			}),
 		);
@@ -63,7 +66,8 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			engineVersion: Info.marketplaceApiVersion,
 			totalInstalled,
 			totalActive,
-			totalFailed,
+			appsFailed,
+			totalFailed: appsFailed.length,
 			totalPrivateApps,
 			totalPrivateAppsEnabled,
 		};
@@ -74,6 +78,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			totalInstalled: false,
 			totalActive: false,
 			totalFailed: false,
+			appsFailed: [],
 			totalPrivateApps: false,
 			totalPrivateAppsEnabled: false,
 		};
