@@ -281,7 +281,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 					</Field>
 				</FieldGroup>
 				<Accordion>
-					<AccordionItem title={t('Advanced_settings')}>
+					<AccordionItem title={<Box is='span' fontScale='p2' fontWeight='400'>{t('Advanced_settings')}</Box>}>
 						<FieldGroup>
 							<Box is='h5' fontScale='h5' color='titles-labels'>
 								{t('Security_and_permissions')}
