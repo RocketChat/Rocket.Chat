@@ -1,7 +1,6 @@
 import { parseISO, isSameDay } from 'date-fns';
 import { Suspense } from 'preact/compat';
 
-import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { createClassName } from '../../../helpers/createClassName';
 import constants from '../../../lib/constants';
@@ -12,139 +11,153 @@ import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
 import styles from './styles.scss';
+import { useEffect, useRef, useState, useCallback } from 'preact/hooks';
 
-export class MessageList extends MemoizedComponent {
-	static defaultProps = {
-		typingUsernames: [],
-	};
+export const MessageList = ({
+	typingUsernames = [],
+	onScrollTo,
+	handleEmojiClick,
+	messages,
+	uid,
+	dispatch,
+	hideSenderAvatar = false,
+	hideReceiverAvatar = false,
+	lastReadMessageId,
+	conversationFinishedMessage,
+	attachmentResolver = getAttachmentUrl,
+	avatarResolver,
+	className,
+	style = {},
+}) => {
+	const SCROLL_AT_TOP = 'top';
+	const SCROLL_AT_BOTTOM = 'bottom';
+	const SCROLL_FREE = 'free';
 
-	static SCROLL_AT_TOP = 'top';
+	const [scrollPosition, setScrollPosition] = useState(SCROLL_AT_BOTTOM);
+	const baseRef = useRef(null);
+	const lastMessageRef = useRef(null);
+	const previousScrollHeightRef = useRef(null);
+	const isResizingFromBottomRef = useRef(false);
 
-	static SCROLL_AT_BOTTOM = 'bottom';
-
-	static SCROLL_FREE = 'free';
-
-	static SCROLL_AT_BOTTOM_AREA = 128;
-
-	// eslint-disable-next-line no-use-before-define
-	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
-
-	handleScroll = () => {
-		if (this.isResizingFromBottom) {
-			this.base.scrollTop = this.base.scrollHeight;
-			delete this.isResizingFromBottom;
+	const handleScroll = useCallback(() => {
+		if (isResizingFromBottomRef.current) {
+			baseRef.current.scrollTop = baseRef.current.scrollHeight;
+			isResizingFromBottomRef.current = false;
 			return;
 		}
 
-		let scrollPosition;
-		const scrollBottom = this.base.scrollHeight - (this.base.clientHeight + this.base.scrollTop);
+		let newScrollPosition;
+		const scrollBottom = baseRef.current.scrollHeight - (baseRef.current.clientHeight + baseRef.current.scrollTop);
 
-		if (this.base.scrollHeight <= this.base.clientHeight) {
-			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
-		} else if (this.base.scrollTop === 0) {
-			scrollPosition = MessageList.SCROLL_AT_TOP;
-		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTTOM_AREA) {
-			// TODO: Once we convert these classes to functional components we should use refs to check if the last message is within the viewport
-			// For now we are using a fixed value to check if the last message is within the bottom of the scroll area
-			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
+		if (baseRef.current.scrollHeight <= baseRef.current.clientHeight) {
+			newScrollPosition = SCROLL_AT_BOTTOM;
+		} else if (baseRef.current.scrollTop === 0) {
+			newScrollPosition = SCROLL_AT_TOP;
+		} else if (scrollBottom <= 0) {
+			newScrollPosition = SCROLL_AT_BOTTOM;
 		} else {
-			scrollPosition = MessageList.SCROLL_FREE;
+			newScrollPosition = SCROLL_FREE;
 		}
 
-		if (this.scrollPosition !== scrollPosition) {
-			this.scrollPosition = scrollPosition;
-			const { onScrollTo } = this.props;
-			onScrollTo && onScrollTo(scrollPosition);
+		if (scrollPosition !== newScrollPosition) {
+			setScrollPosition(newScrollPosition);
+			onScrollTo && onScrollTo(newScrollPosition);
 		}
 
-		const { dispatch } = this.props;
 		const { messageListPosition } = store.state;
 
-		if (messageListPosition !== this.scrollPosition) {
-			dispatch({ messageListPosition: this.scrollPosition });
+		if (messageListPosition !== newScrollPosition) {
+			dispatch({ messageListPosition: newScrollPosition });
 		}
-	};
+	}, [scrollPosition, onScrollTo, dispatch]);
 
-	handleResize = () => {
-		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
-			this.base.scrollTop = this.base.scrollHeight;
-			this.isResizingFromBottom = true;
+	const checkIfLastMessageInView = useCallback((entries) => {
+		const entry = entries[0];
+		const isInView = entry.isIntersecting;
+	}, []);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(checkIfLastMessageInView, {
+			root: baseRef.current,
+			threshold: 1.0,
+		});
+
+		if (lastMessageRef.current) {
+			observer.observe(lastMessageRef.current);
+		}
+
+		return () => {
+			if (lastMessageRef.current) {
+				observer.unobserve(lastMessageRef.current);
+			}
+		};
+	}, [messages, checkIfLastMessageInView]);
+
+	const handleResize = useCallback(() => {
+		if (scrollPosition === SCROLL_AT_BOTTOM) {
+			baseRef.current.scrollTop = baseRef.current.scrollHeight;
+			isResizingFromBottomRef.current = true;
 			return;
 		}
 
-		if (this.base.scrollHeight <= this.base.clientHeight) {
-			const { onScrollTo } = this.props;
-			this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
-			onScrollTo && onScrollTo(MessageList.SCROLL_AT_BOTTOM);
+		if (baseRef.current.scrollHeight <= baseRef.current.clientHeight) {
+			setScrollPosition(SCROLL_AT_BOTTOM);
+			onScrollTo && onScrollTo(SCROLL_AT_BOTTOM);
 		}
-	};
+	}, [scrollPosition, onScrollTo]);
 
-	handleClick = () => {
-		const { handleEmojiClick } = this.props;
+	const handleClick = useCallback(() => {
 		handleEmojiClick && handleEmojiClick();
-	};
+	}, [handleEmojiClick]);
 
-	componentWillUpdate() {
-		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
-			this.previousScrollHeight = this.base.scrollHeight;
+	useEffect(() => {
+		handleResize();
+		window.addEventListener('resize', handleResize);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, [handleResize]);
+
+	useEffect(() => {
+		if (scrollPosition === SCROLL_AT_TOP) {
+			previousScrollHeightRef.current = baseRef.current.scrollHeight;
 		}
-	}
+	});
 
-	componentDidUpdate(prevProps) {
-		const { messages, uid } = this.props;
-		const { messages: prevMessages } = prevProps;
-
+	useEffect(() => {
 		if (messages?.length !== prevMessages?.length) {
 			const lastMessage = messages[messages.length - 1];
 
 			if (lastMessage?.u?._id && lastMessage.u._id === uid) {
-				this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
+				setScrollPosition(SCROLL_AT_BOTTOM);
 			}
 		}
 
-		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
-			this.base.scrollTop = this.base.scrollHeight;
+		if (scrollPosition === SCROLL_AT_BOTTOM) {
+			baseRef.current.scrollTop = baseRef.current.scrollHeight;
 			return;
 		}
 
-		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
-			const delta = this.base.scrollHeight - this.previousScrollHeight;
+		if (scrollPosition === SCROLL_AT_TOP) {
+			const delta = baseRef.current.scrollHeight - previousScrollHeightRef.current;
 			if (delta > 0) {
-				this.base.scrollTop = delta;
+				baseRef.current.scrollTop = delta;
 			}
-			delete this.previousScrollHeight;
+			previousScrollHeightRef.current = null;
 		}
-	}
+	}, [messages, uid, scrollPosition]);
 
-	componentDidMount() {
-		this.handleResize();
-		window.addEventListener('resize', this.handleResize);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('resize', this.handleResize);
-	}
-
-	isVideoConfMessage(message) {
+	const isVideoConfMessage = (message) => {
 		return Boolean(
 			message.blocks
 				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
 				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
 		);
-	}
+	};
 
-	renderItems = ({
-		attachmentResolver = getAttachmentUrl,
-		avatarResolver,
-		messages,
-		lastReadMessageId,
-		uid,
-		conversationFinishedMessage,
-		typingUsernames,
-	}) => {
+	const renderItems = () => {
 		const items = [];
 		const { incomingCallAlert, ongoingCall } = store.state;
-		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
@@ -210,15 +223,16 @@ export class MessageList extends MemoizedComponent {
 		return items;
 	};
 
-	render = ({ className, style = {} }) => (
+	return (
 		<div
-			onScroll={this.handleScroll}
+			onScroll={handleScroll}
 			className={createClassName(styles, 'message-list', {}, [className])}
-			onClick={this.handleClick}
+			onClick={handleClick}
 			style={style}
 			data-qa='message-list'
+			ref={baseRef}
 		>
-			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
+			<ol className={createClassName(styles, 'message-list__content')}>{renderItems()}</ol>
 		</div>
 	);
-}
+};
