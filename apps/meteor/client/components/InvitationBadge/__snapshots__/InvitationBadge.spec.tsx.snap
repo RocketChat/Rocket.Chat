@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`should render InvitationBadge with Date object 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="false"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-dpa92h"
+      role="status"
+      title="Invited February 1, 2025"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`should render InvitationBadge with date ISO string 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="false"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-dpa92h"
+      role="status"
+      title="Invited January 1, 2025"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`should render InvitationBadge without date 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="false"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-dpa92h"
+      role="status"
+      title="Invited"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
