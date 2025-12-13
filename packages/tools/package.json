@@ -17,9 +17,6 @@
 		"testunit": "jest",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
-	"dependencies": {
-		"moment-timezone": "^0.5.48"
-	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
