@@ -7,8 +7,8 @@ import { axe } from 'jest-axe';
 import type { ReactNode } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import AdminABACRoomAttributesForm, { type AdminABACRoomAttributesFormFormData } from './AdminABACRoomAttributesForm';
-import * as stories from './AdminABACRoomAttributesForm.stories';
+import AttributesForm, { type AttributesFormFormData } from './AttributesForm';
+import * as stories from './AttributesForm.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -23,14 +23,8 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-const FormProviderWrapper = ({
-	children,
-	defaultValues,
-}: {
-	children: ReactNode;
-	defaultValues?: Partial<AdminABACRoomAttributesFormFormData>;
-}) => {
-	const methods = useForm<AdminABACRoomAttributesFormFormData>({
+const FormProviderWrapper = ({ children, defaultValues }: { children: ReactNode; defaultValues?: Partial<AttributesFormFormData> }) => {
+	const methods = useForm<AttributesFormFormData>({
 		defaultValues: {
 			name: '',
 			attributeValues: [{ value: '' }],
@@ -43,7 +37,7 @@ const FormProviderWrapper = ({
 	return <FormProvider {...methods}>{children}</FormProvider>;
 };
 
-describe('AdminABACRoomAttributesForm', () => {
+describe('AttributesForm', () => {
 	const defaultProps = {
 		onSave: jest.fn(),
 		onCancel: jest.fn(),
@@ -70,10 +64,15 @@ describe('AdminABACRoomAttributesForm', () => {
 	it('should show validation errors for required fields', async () => {
 		render(
 			<FormProviderWrapper>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
+
+		// Making the form "touched"
+		const nameInput = screen.getByLabelText('Name*');
+		await userEvent.type(nameInput, 'Test Attribute');
+		await userEvent.clear(nameInput);
 
 		const saveButton = screen.getByRole('button', { name: 'Save' });
 		await userEvent.click(saveButton);
@@ -86,7 +85,7 @@ describe('AdminABACRoomAttributesForm', () => {
 	it('should show validation error for empty attribute values', async () => {
 		render(
 			<FormProviderWrapper>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -110,7 +109,7 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -130,12 +129,12 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.getAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		expect(screen.getByDisplayValue('Value 1')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Value 2')).toBeInTheDocument();
 
@@ -153,12 +152,12 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.queryAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.queryAllByRole('button', { name: 'ABAC_Remove_attribute' });
 
 		expect(screen.getByDisplayValue('Locked Value 1')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Locked Value 2')).toBeInTheDocument();
@@ -172,7 +171,7 @@ describe('AdminABACRoomAttributesForm', () => {
 	it('should disable Add Value button when there are empty values', async () => {
 		render(
 			<FormProviderWrapper>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -189,7 +188,7 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -206,12 +205,12 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
 
-		const trashButtons = screen.queryAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.queryAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		await userEvent.click(trashButtons[0]);
 
 		const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -225,7 +224,7 @@ describe('AdminABACRoomAttributesForm', () => {
 	it('should call onCancel when Cancel button is clicked', async () => {
 		render(
 			<FormProviderWrapper>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -245,7 +244,7 @@ describe('AdminABACRoomAttributesForm', () => {
 
 		render(
 			<FormProviderWrapper defaultValues={defaultValues}>
-				<AdminABACRoomAttributesForm {...defaultProps} />
+				<AttributesForm {...defaultProps} />
 			</FormProviderWrapper>,
 			{ wrapper: appRoot },
 		);
@@ -253,7 +252,7 @@ describe('AdminABACRoomAttributesForm', () => {
 		expect(screen.getByDisplayValue('Locked Value')).toBeDisabled();
 		expect(screen.getByDisplayValue('Regular Value')).not.toBeDisabled();
 
-		const trashButtons = screen.getAllByRole('button', { name: 'Remove' });
+		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		expect(trashButtons).toHaveLength(1);
 	});
 });

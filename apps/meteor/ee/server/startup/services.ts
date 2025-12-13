@@ -1,3 +1,4 @@
+import { AbacService } from '@rocket.chat/abac';
 import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
@@ -19,5 +20,6 @@ api.registerService(new VoipFreeSwitchService());
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {
+	api.registerService(new AbacService());
 	api.registerService(new InstanceService());
 }
