@@ -4,6 +4,7 @@ import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
+import { LogLevel } from './LogLevelMixin';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -94,7 +95,7 @@ export class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
+			mixins: !instance.isInternal() ? [EnterpriseCheck, LogLevel] : [],
 			...(dependencies.length ? { dependencies } : {}),
 			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, { eventName }) => {
 				map[eventName] = /^\$/.test(eventName)
