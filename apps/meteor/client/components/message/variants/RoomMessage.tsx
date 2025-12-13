@@ -62,6 +62,16 @@ const RoomMessage = ({
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
 
+		const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!selecting || isOTRMsg) return;
+
+		const isToggleKey = e.key === ' ' || e.key === 'Enter';
+		if (!isToggleKey) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
 	return (
 		<Message
 			ref={messageRef}
@@ -71,6 +81,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting && !isOTRMsg ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -84,6 +95,7 @@ const RoomMessage = ({
 			data-own={message.u._id === uid}
 			data-qa-type='message'
 			aria-busy={message.temp}
+			aria-pressed={selecting ? selected : undefined}
 			{...props}
 		>
 			<MessageLeftContainer>
