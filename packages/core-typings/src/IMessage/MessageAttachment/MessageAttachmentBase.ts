@@ -8,6 +8,7 @@ export type MessageAttachmentBase = {
 	description?: string;
 	descriptionMd?: Root;
 	text?: string;
+	footer?: string;
 	md?: Root;
 	size?: number;
 	format?: string;
