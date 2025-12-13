@@ -150,7 +150,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	clearAudioNotificationValueById(_id: string): Promise<UpdateResult>;
 	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult>;
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
-	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
+	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string, autoTranslateLanguageBcp47?: string): Promise<UpdateResult>;
 
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	findByToken(token: string, options?: FindOptions): FindCursor<ISubscription>;
