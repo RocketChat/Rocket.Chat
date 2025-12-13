@@ -263,13 +263,12 @@ class RocketChatIntegrationHandler {
 		const userWithoutServicesField = user?.services ? omitServicesField(user) : user;
 		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
 
-		if (!room || !message) {
-			outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
-			return;
-		}
-
 		switch (event) {
 			case 'sendMessage':
+				if (!room || !message) {
+					outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
+					return;
+				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.message_id = message._id;
@@ -296,6 +295,10 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'fileUploaded':
+				if (!room || !message) {
+					outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
+					return;
+				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.message_id = message._id;
@@ -316,8 +319,8 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'roomCreated':
-				if (!owner) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+				if (!room || !owner) {
+					outgoingLogger.warn(`The integration ${event} was called but the room or owner was not defined.`);
 					return;
 				}
 				data.channel_id = room._id;
@@ -331,8 +334,8 @@ class RocketChatIntegrationHandler {
 			case 'roomArchived':
 			case 'roomJoined':
 			case 'roomLeft':
-				if (!user) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+				if (!room || !user) {
+					outgoingLogger.warn(`The integration ${event} was called but the room or user was not defined.`);
 					return;
 				}
 				data.timestamp = new Date();
@@ -349,7 +352,7 @@ class RocketChatIntegrationHandler {
 				break;
 			case 'userCreated':
 				if (!user) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					outgoingLogger.warn(`The integration ${event} was called but the user was not defined.`);
 					return;
 				}
 				data.timestamp = user.createdAt;
