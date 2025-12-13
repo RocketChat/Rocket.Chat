@@ -74,7 +74,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} etag={message.u.avatarETag} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
