@@ -62,18 +62,6 @@ const SubscriptionPage = () => {
 	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
-	// TEMP: Mock license for Starter plan testing
-	const mockLicense = {
-		information: {
-			trial: false,
-			autoRenew: true,
-			visualExpiration: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			cancellable: false,
-		},
-		tags: [{ name: 'Starter', color: '#1d74f5' }],
-	};
-	const displayLicense = license || mockLicense;
-
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
 		const { max, value } = limits?.[key] || {};
 		return {
@@ -82,9 +70,8 @@ const SubscriptionPage = () => {
 		};
 	};
 
-	// TEMP: Hardcode Starter subscription limits for testing
-	const macLimit = { max: 200, value: getKeyLimit('monthlyActiveContacts').value ?? 0 };
-	const seatsLimit = { max: 50, value: getKeyLimit('activeUsers').value ?? 1 };
+	const macLimit = getKeyLimit('monthlyActiveContacts');
+	const seatsLimit = getKeyLimit('activeUsers');
 
 	const { isLoading: isCancelSubscriptionLoading, open: openCancelSubscriptionModal } = useCancelSubscriptionModal();
 
@@ -152,7 +139,8 @@ const SubscriptionPage = () => {
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
 								<GridItem lg={4} xs={4} p={8} minHeight={260}>
-									<PlanCard licenseInformation={displayLicense.information} licenseLimits={{ activeUsers: seatsLimit }} />
+									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
+									{!license && <PlanCardCommunity />}
 								</GridItem>
 
 								<GridItem lg={8} xs={4} p={8} minHeight={260}>

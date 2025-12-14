@@ -76,9 +76,7 @@ export const useHasLicense = (): UseQueryResult<boolean> => {
 };
 
 export const useLicenseName = (params?: LicenseParams) => {
-	// TEMP: Return "Starter" for testing - REMOVE BEFORE COMMITTING
-	return { data: 'Starter', isLoading: false };
-	// return useLicenseBase({ params, select: (data) => data?.license.tags?.map((tag) => tag.name).join(' ') || 'Community' });
+	return useLicenseBase({ params, select: (data) => data?.license.tags?.map((tag) => tag.name).join(' ') || 'Community' });
 };
 
 export const useInvalidateLicense = () => {
