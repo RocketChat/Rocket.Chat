@@ -53,7 +53,7 @@ type CreateChannelModalPayload = {
 };
 
 const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
-	if (licenseModule === 'loading' || !licenseModule) {
+	if (licenseModule.isPending || !licenseModule.data) {
 		return 'error-this-is-a-premium-feature';
 	}
 	if (!featureToggle) {
@@ -79,7 +79,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
-	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
+	const canUseFederation = !federatedModule.isPending && federatedModule.data && federationEnabled;
 
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');

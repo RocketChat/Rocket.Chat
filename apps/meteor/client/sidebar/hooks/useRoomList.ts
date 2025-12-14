@@ -1,5 +1,6 @@
-import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useEffect } from 'react';
@@ -38,8 +39,8 @@ const order: (
 	'Conversations',
 ];
 
-export const useRoomList = (): Array<ISubscription & IRoom> => {
-	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
+export const useRoomList = (): SubscriptionWithRoom[] => {
+	const [roomList, setRoomList] = useDebouncedState<SubscriptionWithRoom[]>([], 150);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');

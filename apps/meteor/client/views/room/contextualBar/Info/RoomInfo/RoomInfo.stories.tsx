@@ -1,8 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomInfo from './RoomInfo';
-import { Contextualbar } from '../../../../../components/Contextualbar';
+import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 
 export default {
 	component: RoomInfo,
@@ -10,7 +12,13 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on[A-Z].*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<FakeRoomProvider roomOverrides={roomArgs}>
+				<Contextualbar height='100vh'>{fn()}</Contextualbar>
+			</FakeRoomProvider>
+		),
+	],
 	args: {
 		icon: 'lock',
 	},
@@ -59,5 +67,27 @@ Broadcast.args = {
 	room: {
 		...roomArgs,
 		broadcast: true,
+	},
+};
+
+export const ABAC = Template.bind({});
+ABAC.decorators = [
+	mockAppRoot().withSetting('ABAC_Enabled', true).withSetting('ABAC_ShowAttributesInRooms', true).buildStoryDecorator(),
+	(fn) => (
+		<FakeRoomProvider roomOverrides={roomArgs}>
+			<Contextualbar height='100vh'>{fn()}</Contextualbar>
+		</FakeRoomProvider>
+	),
+];
+ABAC.args = {
+	...Default.args,
+	room: {
+		...roomArgs,
+		// @ts-expect-error - abacAttributes is not yet implemented in Rooms properties
+		abacAttributes: [
+			{ name: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+			{ name: 'Country', values: ['US-only'] },
+			{ name: 'Project', values: ['Ruminator-2000'] },
+		],
 	},
 };

@@ -20,7 +20,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		this.logger = new loggerClass('StreamHub');
 	}
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		if (!this.api) {
 			return;
 		}

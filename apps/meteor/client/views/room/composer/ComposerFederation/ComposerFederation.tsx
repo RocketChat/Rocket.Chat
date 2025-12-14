@@ -4,18 +4,27 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
 import ComposerFederationDisabled from './ComposerFederationDisabled';
+import ComposerFederationInvalidVersion from './ComposerFederationInvalidVersion';
 import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisabled';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
-const ComposerFederation = ({ subscription, children, ...props }: ComposerMessageProps): ReactElement => {
+type ComposerFederationProps = ComposerMessageProps & {
+	blocked?: boolean;
+};
+
+const ComposerFederation = ({ children, blocked, ...props }: ComposerFederationProps): ReactElement => {
 	const federationEnabled = useIsFederationEnabled();
-	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+	const { data: federationModuleEnabled = false } = useHasLicenseModule('federation');
+
+	if (blocked) {
+		return <ComposerFederationInvalidVersion />;
+	}
 
 	if (!federationEnabled) {
 		return <ComposerFederationDisabled />;
 	}
 
-	if (!subscription && !federationModuleEnabled) {
+	if (!federationModuleEnabled) {
 		return <ComposerFederationJoinRoomDisabled />;
 	}
 

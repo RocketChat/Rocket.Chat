@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 declare module '@rocket.chat/ddp-client' {
@@ -13,6 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:removeBusinessHour'(id: string, type: string) {
+		methodDeprecationLogger.method('livechat:removeBusinessHour', '8.0.0', '/v1/livechat/business-hours.remove');
 		const userId = Meteor.userId();
 
 		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-business-hours'))) {

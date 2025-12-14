@@ -60,7 +60,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const { department, agents = [] } = data || {};
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const canManageUnits = usePermission('manage-livechat-units');
 
 	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });

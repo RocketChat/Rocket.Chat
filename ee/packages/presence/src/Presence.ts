@@ -72,7 +72,7 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -89,7 +89,7 @@ export class Presence extends ServiceClass implements IPresence {
 		}
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		if (!this.lostConTimeout) {
 			return;
 		}

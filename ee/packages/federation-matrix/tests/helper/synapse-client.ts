@@ -4,7 +4,10 @@
  * This file provides validated federation configuration for federation tests.
  */
 
-import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember } from 'matrix-js-sdk';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember, Visibility } from 'matrix-js-sdk';
 
 /**
  * Creates a promise that resolves after the specified delay.
@@ -27,7 +30,7 @@ export function wait(ms: number): Promise<void> {
  * invitation handling with built-in retry logic for eventual consistency.
  */
 export class SynapseClient {
-	private matrixClient: MatrixClient | null = null;
+	private _matrixClient: MatrixClient | null = null;
 
 	private url: string;
 
@@ -48,6 +51,13 @@ export class SynapseClient {
 		this.password = password;
 	}
 
+	get matrixClient(): MatrixClient {
+		if (!this._matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		return this._matrixClient;
+	}
+
 	/**
 	 * Initializes the Matrix client connection.
 	 *
@@ -60,7 +70,7 @@ export class SynapseClient {
 	async initialize(): Promise<void> {
 		const client = await this.createClient(this.username, this.password, this.url);
 		await client.startClient();
-		this.matrixClient = client;
+		this._matrixClient = client;
 	}
 
 	/**
@@ -127,6 +137,26 @@ export class SynapseClient {
 		}
 
 		throw new Error(`No room found with name ${roomName}`);
+	}
+
+	async createRoom(roomName: string, visibility: Visibility = Visibility.Private): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+
+		const room = await this.matrixClient.createRoom({
+			name: roomName,
+			visibility,
+		});
+
+		return room.room_id;
+	}
+
+	async inviteUserToRoom(roomId: string, userId: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.invite(userId, roomId);
 	}
 
 	/**
@@ -400,6 +430,252 @@ export class SynapseClient {
 	}
 
 	/**
+	 * Uploads a file to a room using Matrix JS SDK.
+	 *
+	 * Uploads a file to the specified room and sends it as a file message.
+	 * Determines the appropriate msgtype based on file extension and mime type.
+	 *
+	 * @param roomName - The display name of the room to upload the file to
+	 * @param filePath - Path to the file to upload
+	 * @param fileName - The file name to use in the message body (used by findFileMessageInRoom)
+	 * @returns Promise resolving to the Matrix event ID of the sent file message
+	 * @throws Error if client is not initialized or room is not found
+	 */
+	async uploadFile(roomName: string, filePath: string, fileName: string): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const room = this.getRoom(roomName);
+
+		// Read file
+		const fileBuffer = fs.readFileSync(filePath);
+		const fileExtension = path.extname(fileName).toLowerCase().slice(1);
+
+		// Determine mime type based on extension
+		const mimeTypes: Record<string, string> = {
+			webp: 'image/webp',
+			png: 'image/png',
+			jpg: 'image/jpeg',
+			jpeg: 'image/jpeg',
+			gif: 'image/gif',
+			pdf: 'application/pdf',
+			webm: 'video/webm',
+			mp4: 'video/mp4',
+			mp3: 'audio/mpeg',
+			wav: 'audio/wav',
+			txt: 'text/plain',
+		};
+
+		const mimeType = mimeTypes[fileExtension] || 'application/octet-stream';
+
+		// Determine msgtype based on file type
+		let msgtype: string;
+		if (mimeType.startsWith('image/')) {
+			msgtype = 'm.image';
+		} else if (mimeType.startsWith('video/')) {
+			msgtype = 'm.video';
+		} else if (mimeType.startsWith('audio/')) {
+			msgtype = 'm.audio';
+		} else {
+			msgtype = 'm.file';
+		}
+
+		// Upload file content
+		const uploadResponse = await this.matrixClient.uploadContent(fileBuffer, {
+			name: fileName,
+			type: mimeType,
+		});
+
+		if (!uploadResponse.content_uri) {
+			throw new Error('File upload failed: no content URI returned');
+		}
+
+		// Send file message
+		const content: any = {
+			msgtype,
+			body: fileName,
+			url: uploadResponse.content_uri,
+			info: {
+				mimetype: mimeType,
+				size: fileBuffer.length,
+			},
+		};
+
+		const response = await this.matrixClient.sendMessage(room.roomId, content);
+		return response.event_id;
+	}
+
+	/**
+	 * Retrieves all file/media messages from a room's timeline.
+	 *
+	 * Gets all file message events (images, videos, audio, files) from the room's timeline.
+	 * Useful for verifying file synchronization in federation testing.
+	 *
+	 * @param roomName - The display name of the room
+	 * @returns Array of file message events from the room's timeline
+	 * @throws Error if client is not initialized or room is not found
+	 */
+	getRoomFileMessages(roomName: string): Array<{
+		content: { body: string; msgtype: string; url?: string; info?: any };
+		event_id: string;
+		sender: string;
+	}> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		const room = this.getRoom(roomName);
+		const { timeline } = room;
+		const messages: Array<{
+			content: { body: string; msgtype: string; url?: string; info?: any };
+			event_id: string;
+			sender: string;
+		}> = [];
+
+		for (const event of timeline) {
+			if (event.getType() === 'm.room.message') {
+				const content = event.getContent();
+				if (
+					content.msgtype === 'm.image' ||
+					content.msgtype === 'm.video' ||
+					content.msgtype === 'm.audio' ||
+					content.msgtype === 'm.file'
+				) {
+					messages.push({
+						content: {
+							body: content.body || '',
+							msgtype: content.msgtype,
+							url: content.url,
+							info: content.info,
+						},
+						event_id: event.getId() || '',
+						sender: event.getSender() || '',
+					});
+				}
+			}
+		}
+
+		return messages;
+	}
+
+	/**
+	 * Finds a file message in a room's timeline by file name.
+	 *
+	 * Searches for a file message in the room's timeline that matches the specified
+	 * file name. Useful for verifying that file messages appear correctly on
+	 * the remote side in federation tests.
+	 *
+	 * @param roomName - The display name of the room to search
+	 * @param fileName - The file name to find
+	 * @param options - Retry configuration options
+	 * @param options.maxRetries - Maximum number of retry attempts (default: 5)
+	 * @param options.delay - Delay between retries in milliseconds (default: 1000)
+	 * @param options.initialDelay - Initial delay before first attempt in milliseconds (default: 2000)
+	 * @returns The file message event if found, null otherwise
+	 */
+	async findFileMessageInRoom(
+		roomName: string,
+		fileName: string,
+		options: { maxRetries?: number; delay?: number; initialDelay?: number } = {},
+	): Promise<{
+		content: { body: string; msgtype: string; url?: string; info?: any };
+		event_id: string;
+		sender: string;
+	} | null> {
+		const { maxRetries = 5, delay = 1000, initialDelay = 2000 } = options;
+
+		if (initialDelay > 0) {
+			await wait(initialDelay);
+		}
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const messages = this.getRoomFileMessages(roomName);
+				const message = messages.find((msg) => msg.content.body === fileName || msg.content.body?.includes(fileName));
+
+				if (message) {
+					return message;
+				}
+
+				if (attempt < maxRetries) {
+					await wait(delay);
+				}
+			} catch (error) {
+				console.warn(`Attempt ${attempt} to find file message in room failed:`, error);
+
+				if (attempt < maxRetries) {
+					await wait(delay);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Downloads a file from Matrix and verifies it matches the original file using binary comparison.
+	 *
+	 * Uses the Matrix JS SDK to download media files from the homeserver and compares
+	 * them byte-by-byte with the original file. The MXC URI format is: mxc://serverName/mediaId
+	 *
+	 * @param mxcUri - The MXC URI of the media to download (e.g., "mxc://serverName/mediaId")
+	 * @param originalFilePath - Path to the original file to compare against
+	 * @returns Promise resolving to true if files match byte-by-byte
+	 * @throws Error if client is not initialized or download fails
+	 */
+	async downloadFileAndCompareBinary(mxcUri: string, originalFilePath: string): Promise<boolean> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+
+		try {
+			// Use Matrix JS SDK's mxcUrlToHttp with useAuthentication=true to get the client v1 endpoint
+			// This generates: https://hs1/_matrix/client/v1/media/download/{serverName}/{mediaId}?allow_redirect=true
+			// Parameters: mxcUrl, width, height, resizeMethod, allowDirectLinks, allowRedirects, useAuthentication
+			const downloadUrl = this.matrixClient.mxcUrlToHttp(mxcUri, undefined, undefined, undefined, false, true, true);
+			if (!downloadUrl) {
+				throw new Error(`Failed to convert MXC URI to HTTP URL: ${mxcUri}`);
+			}
+
+			// Add allow_remote=true parameter to ensure Synapse fetches from remote servers
+			const urlWithRemote = new URL(downloadUrl);
+			urlWithRemote.searchParams.set('allow_remote', 'true');
+			const finalDownloadUrl = urlWithRemote.toString();
+
+			const accessToken = this.matrixClient.getAccessToken();
+			if (!accessToken) {
+				throw new Error('Matrix client access token not available');
+			}
+
+			const response = await fetch(finalDownloadUrl, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+				redirect: 'follow',
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to download media: ${response.status} ${response.statusText}`);
+			}
+
+			const arrayBuffer = await response.arrayBuffer();
+			const downloadedBuffer = Buffer.from(arrayBuffer);
+
+			// Read the original file
+			const originalBuffer = fs.readFileSync(originalFilePath);
+
+			// Compare buffers byte-by-byte
+			if (downloadedBuffer.length !== originalBuffer.length) {
+				return false;
+			}
+
+			return downloadedBuffer.equals(originalBuffer);
+		} catch (error) {
+			throw new Error(`Failed to download and compare media from ${mxcUri}: ${error}`);
+		}
+	}
+
+	/**
 	 * Closes the Matrix client connection and cleans up resources.
 	 *
 	 * Properly shuts down the Matrix client, clears all data stores,
@@ -415,7 +691,7 @@ export class SynapseClient {
 			await this.matrixClient.clearStores?.();
 			this.matrixClient.removeAllListeners();
 			await this.matrixClient.logout(true);
-			this.matrixClient = null;
+			this._matrixClient = null;
 		}
 	}
 }

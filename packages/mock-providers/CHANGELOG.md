@@ -1,5 +1,74 @@
 # @rocket.chat/mock-providers
 
+## 0.4.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.1
+  </details>
+
+## 0.4.4
+
+### Patch Changes
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 99255057f27b9d854a89da815681a03d0776f846, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/i18n@1.13.0
+  </details>
+
+## 0.4.4-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 0.4.4-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 0.4.4-rc.0
+
+### Patch Changes
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 99255057f27b9d854a89da815681a03d0776f846, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/i18n@1.13.0-rc.0
+  </details>
+
+## 0.4.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.2
+  </details>
+
+## 0.4.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.1
+  </details>
+
 ## 0.4.1
 
 ### Patch Changes

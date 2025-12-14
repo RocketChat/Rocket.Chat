@@ -10,7 +10,7 @@ export class EEVoipClient extends VoIPUser {
 		super(config, mediaRenderer);
 	}
 
-	async makeCallURI(calleeURI: string, mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+	override async makeCallURI(calleeURI: string, mediaRenderer?: IMediaStreamRenderer): Promise<void> {
 		if (mediaRenderer) {
 			this.mediaStreamRendered = mediaRenderer;
 		}
@@ -62,14 +62,14 @@ export class EEVoipClient extends VoIPUser {
 		this.emit('stateChanged');
 	}
 
-	async makeCall(calleeNumber: string): Promise<void> {
+	override async makeCall(calleeNumber: string): Promise<void> {
 		const hasPlusChar = calleeNumber.includes('+');
 
 		const digits = calleeNumber.replace('+', '');
 		this.makeCallURI(`sip:${hasPlusChar ? '*' : ''}${digits}@${this.userConfig.sipRegistrarHostnameOrIP}`);
 	}
 
-	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {
+	static override async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPUser> {
 		const voip = new EEVoipClient(config, mediaRenderer);
 		await voip.init();
 		return voip;

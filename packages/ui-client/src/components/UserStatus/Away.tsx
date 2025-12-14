@@ -1,10 +1,10 @@
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
 import UserStatus from './UserStatus';
 
-type AwayProps = Omit<ComponentProps<typeof UserStatus>, 'status'>;
+type AwayProps = Omit<ComponentPropsWithoutRef<typeof UserStatus>, 'status'>;
 
-function Away(props: AwayProps): ReactElement {
+function Away(props: AwayProps) {
 	return <UserStatus status='away' {...props} />;
 }
 

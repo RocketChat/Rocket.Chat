@@ -47,8 +47,8 @@ export class SipServerSession {
 			return;
 		}
 
-		sipCall.reactToCallChanges(otherParams).catch((error) => {
-			logger.error({ msg: 'Failed to react to call changes', error, call: sipCall.call, otherParams });
+		sipCall.reactToCallChanges(otherParams).catch((err) => {
+			logger.error({ msg: 'Failed to react to call changes', err, call: sipCall.call, otherParams });
 		});
 	}
 
@@ -140,8 +140,8 @@ export class SipServerSession {
 		this.srf.invite((req, res) => {
 			logger.debug('Received a call on drachtio.');
 
-			void this.processInvite(req, res).catch((error) => {
-				logger.error({ msg: 'Error processing Drachtio Invite', error });
+			void this.processInvite(req, res).catch((err) => {
+				logger.error({ msg: 'Error processing Drachtio Invite', err });
 			});
 		});
 	}
@@ -189,8 +189,8 @@ export class SipServerSession {
 		res.send(exception.sipErrorCode);
 	}
 
-	private onDrachtioError(error: unknown, socket?: Socket): void {
-		logger.error({ msg: 'Drachtio Service Error', error });
+	private onDrachtioError(err: unknown, socket?: Socket): void {
+		logger.error({ msg: 'Drachtio Service Error', err });
 
 		if (this.isEnabledOnSettings(this.settings)) {
 			return;

@@ -1,11 +1,11 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { Divider, Margins } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
 import ContactInfoPhoneEntry from './ContactInfoPhoneEntry';
 import ContactManagerInfo from './ContactManagerInfo';
-import { ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';

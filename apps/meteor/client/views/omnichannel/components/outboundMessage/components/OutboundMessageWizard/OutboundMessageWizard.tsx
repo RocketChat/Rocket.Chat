@@ -43,7 +43,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
 	const hasOutboundPermission = usePermission('outbound.send-messages');
 
-	const isLoadingModule = hasOutboundModule === 'loading' || hasOmnichannelModule === 'loading';
+	const isLoadingModule = hasOutboundModule.isPending || hasOmnichannelModule.isPending;
 
 	const sendOutboundMessage = useEndpointMutation('POST', '/v1/omnichannel/outbound/providers/:id/message', {
 		keys: { id: provider?.providerId || '' },
@@ -81,13 +81,13 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 			return;
 		}
 
-		if (!hasOmnichannelModule || !hasOutboundModule || !hasProviders) {
+		if (!hasOmnichannelModule.data || !hasOutboundModule.data || !hasProviders) {
 			upsellModal.open();
 		}
-	}, [hasOmnichannelModule, hasOutboundModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
+	}, [hasOmnichannelModule.data, hasOutboundModule.data, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
 
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
-		if (!hasOutboundModule) {
+		if (!hasOutboundModule.data) {
 			upsellModal.open();
 			return;
 		}

@@ -156,7 +156,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
+	protected override validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
 		const { route, label } = roomConfig;
@@ -170,7 +170,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
+	protected override addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
 		super.addRoomType(roomConfig, directives);
 
 		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {

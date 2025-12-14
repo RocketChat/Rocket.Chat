@@ -34,7 +34,6 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 		}
 		ref.current.focus();
 		show();
-		ref.current.classList.add('focus-visible');
 	}, [show]);
 
 	const handleSelection = useCallback(

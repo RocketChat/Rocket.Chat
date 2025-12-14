@@ -78,7 +78,7 @@ const CallContextValueDefault: CallContextValue = {
 
 export const CallContext = createContext<CallContextValue>(CallContextValueDefault);
 
-export const useIsVoipEnterprise = (): boolean => useHasLicenseModule('voip-enterprise') === true;
+export const useIsVoipEnterprise = (): boolean => useHasLicenseModule('voip-enterprise').data === true;
 
 export const useIsCallEnabled = (): boolean => {
 	const { enabled } = useContext(CallContext);

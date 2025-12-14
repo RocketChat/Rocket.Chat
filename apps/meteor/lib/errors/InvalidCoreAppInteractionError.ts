@@ -1,3 +1,3 @@
 export class InvalidCoreAppInteractionError extends Error {
-	name = InvalidCoreAppInteractionError.name;
+	override name = InvalidCoreAppInteractionError.name;
 }

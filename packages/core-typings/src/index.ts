@@ -147,5 +147,6 @@ export * from './RoomRouteData';
 export * as Cloud from './cloud';
 export * from './themes';
 export * from './mediaCalls';
+export * from './ICallHistoryItem';
 
 export { schemas } from './Ajv';

@@ -7,7 +7,7 @@ const config: StorybookConfig = {
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
 		getAbsolutePath('@storybook/addon-a11y'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-interactions'),
 	],
 

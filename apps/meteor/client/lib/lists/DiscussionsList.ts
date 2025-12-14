@@ -29,7 +29,7 @@ export class DiscussionsList extends MessageList<IDiscussionMessage> {
 		this.clear();
 	}
 
-	protected filter(message: IMessage): boolean {
+	protected override filter(message: IMessage): boolean {
 		const { rid } = this._options;
 
 		if (!isDiscussionMessageInRoom(message, rid)) {
@@ -46,7 +46,7 @@ export class DiscussionsList extends MessageList<IDiscussionMessage> {
 		return true;
 	}
 
-	protected compare(a: IMessage, b: IMessage): number {
+	protected override compare(a: IMessage, b: IMessage): number {
 		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }

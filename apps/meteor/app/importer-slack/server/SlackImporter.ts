@@ -267,7 +267,7 @@ export class SlackImporter extends Importer {
 		return data.length;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
+	override async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 

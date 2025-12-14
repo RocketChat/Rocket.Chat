@@ -169,7 +169,9 @@ export class ListenersModule {
 					status,
 					...(statusText && { statusText }),
 				},
-				unset: {},
+				unset: {
+					...(!statusText && { statusText: 1 }),
+				},
 			});
 
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);

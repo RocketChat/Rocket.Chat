@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
 import HeaderDivider from './HeaderDivider';
 
-const Header: FC<ComponentProps<typeof Box>> = (props) => {
+export type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
+
+const Header = (props: HeaderProps) => {
 	const { isMobile } = useLayout();
 
 	return (

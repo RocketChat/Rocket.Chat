@@ -61,7 +61,7 @@ type PopoverMenuWrapperState = {
 };
 
 class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuWrapperState> {
-	state: PopoverMenuWrapperState = {};
+	override state: PopoverMenuWrapperState = {};
 
 	menuRef: (Component & { base: Element }) | null = null;
 
@@ -78,7 +78,7 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 		dismiss();
 	};
 
-	componentDidMount() {
+	override componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
 		const menuBounds = normalizeDOMRect(this.menuRef?.base?.getBoundingClientRect());
 

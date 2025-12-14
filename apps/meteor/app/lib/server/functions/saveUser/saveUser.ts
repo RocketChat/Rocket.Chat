@@ -125,7 +125,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (typeof userData.statusText === 'string') {
-			await setStatusText(userData._id, userData.statusText, updater, session);
+			await setStatusText(userData._id, userData.statusText, { updater, session });
 		}
 
 		if (userData.email) {

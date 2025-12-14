@@ -68,31 +68,6 @@ test.describe.serial('settings-account-profile', () => {
 		});
 	});
 
-	test.describe('Security', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('account/security');
-			await page.waitForSelector('#main-content');
-		});
-
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/security');
-
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		});
-
-		test('should disable and enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.email2FASwitch).toBeVisible();
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
-			await poHomeChannel.toastMessage.dismissToast();
-
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
-		});
-	});
-
 	test('Personal Access Tokens', async ({ page }) => {
 		const response = page.waitForResponse('**/api/v1/users.getPersonalAccessTokens');
 		await page.goto('/account/tokens');

@@ -2,8 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { APIRequestContext } from '@playwright/test';
 
 import { BASE_API_URL } from '../config/constants';
-import injectInitialData from '../fixtures/inject-initial-data';
-import { Users, restoreState } from '../fixtures/userStates';
+import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -53,9 +52,6 @@ test.describe('E2EE Legacy Format', () => {
 
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
-
-		await injectInitialData();
-		await restoreState(page, Users.userE2EE, { except: ['private_key', 'public_key', 'e2e.randomPassword'] });
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 

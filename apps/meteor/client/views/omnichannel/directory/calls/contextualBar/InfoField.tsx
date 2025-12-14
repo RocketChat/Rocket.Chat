@@ -1,6 +1,5 @@
+import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-
-import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 
 type InfoFieldPropsType = {
 	label: string;

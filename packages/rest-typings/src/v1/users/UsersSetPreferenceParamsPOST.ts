@@ -54,6 +54,7 @@ export type UsersSetPreferencesParamsPOST = {
 		omnichannelHideConversationAfterClosing?: boolean;
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
+		desktopNotificationVoiceCalls?: boolean;
 	};
 };
 
@@ -262,6 +263,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				mentionsWithSymbol: {
+					type: 'boolean',
+					nullable: true,
+				},
+				desktopNotificationVoiceCalls: {
 					type: 'boolean',
 					nullable: true,
 				},

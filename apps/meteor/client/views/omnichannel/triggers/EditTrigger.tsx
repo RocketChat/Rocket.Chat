@@ -1,5 +1,12 @@
 import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarTitle,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
@@ -8,13 +15,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarTitle,
-	ContextualbarFooter,
-	ContextualbarHeader,
-	ContextualbarClose,
-} from '../../../components/Contextualbar';
 
 export type TriggersPayload = {
 	name: string;

@@ -60,6 +60,7 @@ export type RouterContextValue = {
 	getRouteParameters(): RouteParameters;
 	getSearchParameters(): SearchParameters;
 	getRouteName(): RouteName | undefined;
+	getPreviousRouteName(): RouteName | undefined;
 	buildRoutePath(to: To): LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
@@ -90,6 +91,9 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	getRouteName: () => {
+		throw new Error('not implemented');
+	},
+	getPreviousRouteName: () => {
 		throw new Error('not implemented');
 	},
 	buildRoutePath: () => {

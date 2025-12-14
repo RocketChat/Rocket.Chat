@@ -122,6 +122,8 @@ function callHook(action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidge
 	const data = formatMessage(action, ...params);
 
 	iframe.contentWindow?.postMessage(data, '*');
+
+	return undefined;
 }
 
 function processHookQueue() {

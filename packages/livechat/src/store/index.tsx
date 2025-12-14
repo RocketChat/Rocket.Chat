@@ -231,9 +231,9 @@ export const StoreContext = createContext<StoreContextValue>({
 });
 
 export class Provider extends Component {
-	static displayName = 'StoreProvider';
+	static override displayName = 'StoreProvider';
 
-	state = {
+	override state = {
 		...store.state,
 		dispatch: store.setState.bind(store),
 		on: store.on.bind(store),
@@ -244,11 +244,11 @@ export class Provider extends Component {
 		this.setState({ ...store.state });
 	};
 
-	componentDidMount() {
+	override componentDidMount() {
 		store.on('change', this.handleStoreChange);
 	}
 
-	componentWillUnmount() {
+	override componentWillUnmount() {
 		store.off('change', this.handleStoreChange);
 	}
 

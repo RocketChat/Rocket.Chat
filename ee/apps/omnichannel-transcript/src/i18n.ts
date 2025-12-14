@@ -1,5 +1,5 @@
 import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
-import i18nDict from '@rocket.chat/i18n/dist/resources';
+import languages from '@rocket.chat/i18n/dist/languages';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -12,9 +12,13 @@ void i18n.init({
 	ns: availableTranslationNamespaces,
 	nsSeparator: '.',
 	resources: Object.fromEntries(
-		Object.entries(i18nDict).map(([language, source]) => [
+		languages.map((language) => [
 			language,
-			extractTranslationNamespaces(source as unknown as Record<string, string>),
+			extractTranslationNamespaces(
+				// TODO: commonjs is terrible but we don't have esm build yet
+				// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
+				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
+			),
 		]),
 	),
 	initImmediate: false,

@@ -185,7 +185,6 @@ export class Agenda extends EventEmitter {
 			this.dbInit(collection);
 		} catch (error) {
 			debug('error connecting to MongoDB using collection: [%s]', collection);
-			return error;
 		}
 	}
 
@@ -356,6 +355,7 @@ export class Agenda extends EventEmitter {
 			return Promise.all(jobs);
 		} catch (error) {
 			debug('every() -> error creating one or more of the jobs', error);
+			return undefined;
 		}
 	}
 
@@ -623,11 +623,11 @@ export class Agenda extends EventEmitter {
 				// Continue processing but notify that Agenda has lost the connection
 				debug('Missing MongoDB connection, not attempting to find and lock a job');
 				this.emit('error', new Error('Lost MongoDB connection'));
-			} else {
-				// No longer recoverable
-				debug('topology.autoReconnect: %s, topology.isDestroyed(): %s', client.topology.autoReconnect, client.topology.isDestroyed?.());
-				throw new Error('MongoDB connection is not recoverable, application restart required');
+				return undefined;
 			}
+			// No longer recoverable
+			debug('topology.autoReconnect: %s, topology.isDestroyed(): %s', client.topology.autoReconnect, client.topology.isDestroyed?.());
+			throw new Error('MongoDB connection is not recoverable, application restart required');
 		} else {
 			// /**
 			// * Query used to find job to run

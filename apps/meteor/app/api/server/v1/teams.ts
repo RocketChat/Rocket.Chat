@@ -22,6 +22,7 @@ import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../autho
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { eraseTeam } from '../lib/eraseTeam';
 
 API.v1.addRoute(
 	'teams.list',
@@ -135,7 +136,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
 			await Team.deleteById(team._id);
 
@@ -634,6 +635,7 @@ API.v1.addRoute(
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
+
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
 			}
@@ -642,26 +644,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const rooms: string[] = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
-
-			// If we got a list of rooms to delete along with the team, remove them first
-			if (rooms.length) {
-				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
-				}
-			}
-
-			// Move every other room back to the workspace
-			await Team.unsetTeamIdOfRooms(this.userId, team._id);
-
-			// Remove the team's main room
-			await eraseRoom(team.roomId, this.userId);
-
-			// Delete all team memberships
-			await Team.removeAllMembersFromTeam(team._id);
-
-			// And finally delete the team itself
-			await Team.deleteById(team._id);
+			await eraseTeam(this.user, team, roomsToRemove);
 
 			return API.v1.success();
 		},

@@ -1,32 +1,35 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 
-import { parseMeteorResponse } from '../parseMeteorResponse';
 import type { BaseTest } from '../test';
 
 type CreateTagParams = {
 	id?: string | null;
 	name?: string;
 	description?: string;
-	departments?: { departmentId: string }[];
+	departments?: string[];
 };
 
 const removeTag = async (api: BaseTest['api'], id: string) => api.post('/livechat/tags.delete', { id });
 
 export const createTag = async (api: BaseTest['api'], { id = null, name, description = '', departments = [] }: CreateTagParams = {}) => {
-	const response = await api.post('/method.call/livechat:saveTag', {
-		message: JSON.stringify({
-			msg: 'method',
-			id: '33',
-			method: 'livechat:saveTag',
-			params: [id, { name, description }, departments],
-		}),
+	const response = await api.post('/livechat/tags.save', {
+		_id: id,
+		tagData: {
+			name,
+			description,
+		},
+		...(departments.length > 0 && { tagDepartments: departments }),
 	});
 
-	const tag = await parseMeteorResponse<ILivechatTag>(response);
+	if (response.status() !== 200) {
+		throw new Error(`Failed to create tag [http status: ${response.status()}]`);
+	}
+
+	const data: ILivechatTag = await response.json();
 
 	return {
 		response,
-		data: tag,
-		delete: async () => removeTag(api, tag?._id),
+		data,
+		delete: async () => removeTag(api, data._id),
 	};
 };

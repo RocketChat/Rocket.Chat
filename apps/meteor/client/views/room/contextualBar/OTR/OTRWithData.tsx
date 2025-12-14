@@ -1,11 +1,10 @@
-import { useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 
 import OTRComponent from './OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { useOTR } from '../../../../hooks/useOTR';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const OTRWithData = (): ReactElement => {
 	const { otr, otrState } = useOTR();

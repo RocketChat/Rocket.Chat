@@ -3,7 +3,7 @@ import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { getCastDirector } from './injection';
+import { getCastDirector, getMediaCallServer } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
@@ -116,9 +116,9 @@ class MediaCallDirector {
 	public get cast(): IMediaCallCastDirector {
 		try {
 			return getCastDirector();
-		} catch (error) {
-			logger.error({ msg: 'Failed to access castDirector', error });
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Failed to access castDirector', err });
+			throw err;
 		}
 	}
 
@@ -303,8 +303,8 @@ class MediaCallDirector {
 			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheckByCallId.timeout', callId });
 			scheduledExpirationChecks.delete(callId);
 
-			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((error) =>
-				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }),
+			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((err) =>
+				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', err }),
 			);
 
 			if (!expectedCallWasExpired) {
@@ -321,19 +321,19 @@ class MediaCallDirector {
 	public scheduleExpirationCheck(): void {
 		setTimeout(async () => {
 			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheck.timeout' });
-			await this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }));
+			await this.hangupExpiredCalls().catch((err) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', err }));
 		}, EXPIRATION_CHECK_TIMEOUT);
 	}
 
 	public async runOnCallCreatedForAgent(call: IMediaCall, agent: IMediaCallAgent, agentToNotifyIfItFails?: IMediaCallAgent): Promise<void> {
 		try {
 			await agent.onCallCreated(call);
-		} catch (error) {
+		} catch (err) {
 			// If the agent failed, we assume they cleaned up after themselves and just hangup the call
 			// We then notify the other agent that the call has ended, but only if it the agent was already notified about this call in the first place
 			logger.error({
 				msg: 'Agent failed to process a new call.',
-				error,
+				err,
 				agentRole: agent.role,
 				callerType: call.caller.type,
 				calleeType: call.callee.type,
@@ -342,7 +342,7 @@ class MediaCallDirector {
 				endedBy: agent.getMyCallActor(call),
 				reason: 'error',
 			});
-			throw error;
+			throw err;
 		}
 	}
 
@@ -358,17 +358,23 @@ class MediaCallDirector {
 			...(endedBy && { endedBy }),
 		};
 
-		const result = await MediaCalls.hangupCallById(callId, cleanedParams).catch((error) => {
+		const result = await MediaCalls.hangupCallById(callId, cleanedParams).catch((err) => {
 			logger.error({
 				msg: 'Failed to hangup a call.',
 				callId,
-				hangupError: error,
+				err,
 				hangupReason: params?.reason,
 				hangupActor: params?.endedBy,
 			});
-			throw error;
+			throw err;
 		});
-		return Boolean(result.modifiedCount);
+
+		const ended = Boolean(result.modifiedCount);
+		if (ended) {
+			getMediaCallServer().updateCallHistory({ callId });
+		}
+
+		return ended;
 	}
 
 	public async hangupCallByIdAndNotifyAgents(
@@ -383,7 +389,7 @@ class MediaCallDirector {
 
 		await Promise.allSettled(
 			agents.map(async (agent) =>
-				agent.onCallEnded(callId).catch((error) => logger.error({ msg: 'Failed to notify agent of a hangup', error, actor: agent.actor })),
+				agent.onCallEnded(callId).catch((err) => logger.error({ msg: 'Failed to notify agent of a hangup', err, actor: agent.actor })),
 			),
 		);
 	}
@@ -407,8 +413,8 @@ class MediaCallDirector {
 			} catch {
 				// Ignore errors on the ended event
 			}
-		} catch (error) {
-			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, params });
+		} catch (err) {
+			logger.error({ msg: 'Failed to terminate call.', err, callId: call._id, params });
 		}
 	}
 }

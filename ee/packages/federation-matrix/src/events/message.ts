@@ -1,14 +1,6 @@
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
-import type { Emitter } from '@rocket.chat/emitter';
-import {
-	type FileMessageType,
-	type MessageType,
-	type FileMessageContent,
-	type HomeserverEventSignatures,
-	type EventID,
-	federationSDK,
-} from '@rocket.chat/federation-sdk';
+import { type FileMessageType, type MessageType, type FileMessageContent, type EventID, federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
@@ -118,8 +110,8 @@ async function handleMediaMessage(
 	};
 }
 
-export function message(emitter: Emitter<HomeserverEventSignatures>) {
-	emitter.on('homeserver.matrix.message', async ({ event, event_id: eventId }) => {
+export function message() {
+	federationSDK.eventEmitterService.on('homeserver.matrix.message', async ({ event, event_id: eventId }) => {
 		try {
 			const { msgtype, body } = event.content;
 			const messageBody = body.toString();
@@ -164,7 +156,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug('Received edited message from Matrix, updating existing message');
 				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', relation.event_id);
+					logger.error({ event_id: relation.event_id, msg: 'Original message not found for edit' });
 					return;
 				}
 				if (originalMessage.federation?.eventId !== relation.event_id) {
@@ -216,7 +208,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
-					logger.error('Original message not found for quote:', quoteMessageEventId);
+					logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 					return;
 				}
 				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
@@ -258,6 +250,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 					homeServerDomain: serverName,
 					senderExternalId: event.sender,
 				});
+
 				await Message.saveMessageFromFederation({
 					fromId: user._id,
 					rid: room._id,
@@ -271,7 +264,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 		}
 	});
 
-	emitter.on('homeserver.matrix.encrypted', async ({ event, event_id: eventId }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.encrypted', async ({ event, event_id: eventId }) => {
 		try {
 			if (!event.content.ciphertext) {
 				logger.debug('No message content found in event');
@@ -311,7 +304,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug('Received edited message from Matrix, updating existing message');
 				const originalMessage = await Messages.findOneByFederationId(relation.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', relation.event_id);
+					logger.error({ event_id: relation.event_id, msg: 'Original message not found for edit' });
 					return;
 				}
 				if (originalMessage.federation?.eventId !== relation.event_id) {
@@ -354,7 +347,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			if (quoteMessageEventId) {
 				const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 				if (!originalMessage) {
-					logger.error('Original message not found for quote:', quoteMessageEventId);
+					logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 					return;
 				}
 				await Message.saveMessageFromFederation({
@@ -385,7 +378,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 		}
 	});
 
-	emitter.on('homeserver.matrix.redaction', async ({ event }) => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
 		try {
 			const redactedEventId = event.redacts;
 			if (!redactedEventId) {
@@ -413,7 +406,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 
 			await Message.deleteMessage(user, rcMessage);
 		} catch (error) {
-			logger.error('Failed to process Matrix removal redaction:', error);
+			logger.error(error, 'Failed to process Matrix removal redaction');
 		}
 	});
 }

@@ -20,7 +20,7 @@ export class SlackUsersImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
+	override async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 

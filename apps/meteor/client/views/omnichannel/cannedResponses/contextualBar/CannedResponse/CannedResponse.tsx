@@ -1,9 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
-import type { MouseEventHandler } from 'react';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -12,7 +8,11 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 	ContextualbarClose,
-} from '../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { MouseEventHandler } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
 type CannedResponseProps = {

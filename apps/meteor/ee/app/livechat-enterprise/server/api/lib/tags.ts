@@ -1,4 +1,4 @@
-import type { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatTag, FindTagsResult } from '@rocket.chat/core-typings';
 import { LivechatTag } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter, FindOptions } from 'mongodb';
@@ -17,13 +17,6 @@ type FindTagsParams = {
 	};
 	department?: string;
 	viewAll?: boolean;
-};
-
-type FindTagsResult = {
-	tags: ILivechatTag[];
-	count: number;
-	offset: number;
-	total: number;
 };
 
 type FindTagsByIdParams = {

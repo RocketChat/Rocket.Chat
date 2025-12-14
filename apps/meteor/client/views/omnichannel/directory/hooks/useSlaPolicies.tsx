@@ -5,7 +5,7 @@ import { millisecondsToMinutes } from 'date-fns';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 export const useSlaPolicies = () => {
-	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 	const getSlaPolicies = useEndpoint('GET', '/v1/livechat/sla');
 	const { data: { sla } = {}, ...props } = useQuery({
 		queryKey: ['/v1/livechat/sla'],

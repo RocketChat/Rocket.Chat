@@ -27,9 +27,11 @@ const invalidateQueryClientLicenses = (() => {
 
 export const useLicenseBase = <TData = LicenseDataType>({
 	params,
+	enabled = true,
 	select,
 }: {
 	params?: LicenseParams;
+	enabled?: boolean;
 	select: (data: LicenseDataType) => TData;
 }) => {
 	const uid = useUserId();
@@ -48,7 +50,7 @@ export const useLicenseBase = <TData = LicenseDataType>({
 		staleTime: Infinity,
 		placeholderData: keepPreviousData,
 		select,
-		enabled: !!uid,
+		enabled: enabled && !!uid,
 	});
 };
 

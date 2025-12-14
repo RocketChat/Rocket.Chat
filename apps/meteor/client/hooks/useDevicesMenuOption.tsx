@@ -13,7 +13,7 @@ type DevicesMenuOption = {
 };
 
 export const useDevicesMenuOption = (): DevicesMenuOption | null => {
-	const isEnterprise = useHasLicenseModule('voip-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('voip-enterprise');
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

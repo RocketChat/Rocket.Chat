@@ -1,11 +1,4 @@
 import { Box, Button, Label } from '@rocket.chat/fuselage';
-import { Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import DateTimeFilter from './DateTimeFilter';
-import { InstanceFilterSelect } from './InstanceFilterSelect';
-import { SeverityFilterSelect } from './SeverityFilterSelect';
-import { TimeFilterSelect } from './TimeFilterSelect';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,7 +7,14 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
 	ContextualbarFooter,
-} from '../../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import DateTimeFilter from './DateTimeFilter';
+import { InstanceFilterSelect } from './InstanceFilterSelect';
+import { SeverityFilterSelect } from './SeverityFilterSelect';
+import { TimeFilterSelect } from './TimeFilterSelect';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type AppLogsFilterContextualBarProps = {

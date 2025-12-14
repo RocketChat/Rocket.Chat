@@ -2,13 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
-import type { ReactElement } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -17,11 +10,17 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useMethod, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
+import type { ReactElement } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
 const hasExternalUsers = (users: string[]): boolean => users.some((user) => user.startsWith('@'));
 

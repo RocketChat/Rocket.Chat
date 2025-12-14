@@ -36,7 +36,7 @@ export const useVoipClient = (): UseVoipClientResult => {
 	const iceServers = useWebRtcServers();
 	const [result, setResult] = useSafely(useState<UseVoipClientResult>({}));
 
-	const isEE = useHasLicenseModule('voip-enterprise');
+	const { data: isEE = false } = useHasLicenseModule('voip-enterprise');
 	const voipEnabled = settingVoipEnabled && voipConnectorEnabled;
 
 	useEffect(() => {

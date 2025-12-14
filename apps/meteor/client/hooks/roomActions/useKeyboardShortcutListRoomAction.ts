@@ -1,6 +1,5 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
-
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const KeyboardShortcuts = lazy(() => import('../../views/room/contextualBar/KeyboardShortcuts'));
 

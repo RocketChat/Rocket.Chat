@@ -1,5 +1,6 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
 
+import { getTrimmedServerVersion } from './getTrimmedServerVersion';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	getCachedSupportedVersionsToken,
@@ -8,15 +9,13 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, minimumClientVersions } from '../../../utils/rocketchat.info';
 
-const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
-
 export async function getServerInfo(userId?: string): Promise<IWorkspaceInfo> {
 	const hasPermissionToViewStatistics = userId && (await hasPermissionAsync(userId, 'view-statistics'));
 	const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
 	const cloudWorkspaceId = settings.get<string | undefined>('Cloud_Workspace_Id');
 
 	return {
-		version: removePatchInfo(Info.version),
+		version: getTrimmedServerVersion(),
 		...(hasPermissionToViewStatistics && {
 			info: {
 				...Info,
