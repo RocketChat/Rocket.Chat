@@ -172,8 +172,8 @@ export class IncomingSipCall extends BaseSipCall {
 				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (error) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', error });
+			} catch (err) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', err });
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
@@ -260,8 +260,8 @@ export class IncomingSipCall extends BaseSipCall {
 			if (res.status === 202) {
 				logger.debug({ msg: 'REFER was accepted', method: 'IncomingSipCall.processTransferredCall' });
 			}
-		} catch (error) {
-			logger.debug({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', error });
+		} catch (err) {
+			logger.debug({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', err });
 			if (!call.ended) {
 				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}
@@ -365,8 +365,8 @@ export class IncomingSipCall extends BaseSipCall {
 			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
 				logger.debug('modify failed');
 			});
-		} catch (error) {
-			logger.error({ msg: 'Error on IncomingSipCall.processCalleeNegotiation', error });
+		} catch (err) {
+			logger.error({ msg: 'Error on IncomingSipCall.processCalleeNegotiation', err });
 		}
 
 		if (!answer) {
