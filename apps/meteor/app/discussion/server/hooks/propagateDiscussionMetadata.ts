@@ -31,6 +31,9 @@ callbacks.add(
 			return message;
 		}
 
+		// Read room state after all callbacks complete to get accurate final count
+		// after roomUpdater changes have been applied to the database
+
 		setImmediate(async () => {
 			try {
 				const room = await Rooms.findOneById(_id, {  
