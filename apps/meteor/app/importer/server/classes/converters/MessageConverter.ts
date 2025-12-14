@@ -83,8 +83,11 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 	protected async buildMessageObject(data: IImportMessage, rid: string, creator: UserIdentification): Promise<MessageObject> {
 		// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-		const mentions = data.mentions && (await this.convertMessageMentions(data));
-		const channels = data.channels && (await this.convertMessageChannels(data));
+		const mentions = (data.mentions && (await this.convertMessageMentions(data))) ?? [];
+		const channels = (data.channels && (await this.convertMessageChannels(data))) ?? [];
+		const replies = data.replies ? await this.convertMessageReplies(data.replies) : undefined;
+		const editedBy = data.editedBy ? await this._cache.findImportedUser(data.editedBy) : undefined;
+		const reactions = data.reactions ? await this.convertMessageReactions(data.reactions) : undefined;
 
 		return {
 			rid,
@@ -94,24 +97,24 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			},
 			msg: data.msg,
 			ts: data.ts,
-			t: data.t || undefined,
-			groupable: data.groupable,
-			tmid: data.tmid,
-			tlm: data.tlm,
-			tcount: data.tcount,
-			replies: data.replies && (await this.convertMessageReplies(data.replies)),
-			editedAt: data.editedAt,
-			editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) || undefined),
+			...(data.t != null && { t: data.t }),
+			...(data.groupable != null && { groupable: data.groupable }),
+			...(data.tmid != null && { tmid: data.tmid }),
+			...(data.tlm != null && { tlm: data.tlm }),
+			...(data.tcount != null && { tcount: data.tcount }),
+			...(replies && replies.length > 0 && { replies }),
+			...(data.editedAt && { editedAt: data.editedAt }),
+			...(editedBy && { editedBy }),
 			mentions,
 			channels,
-			_importFile: data._importFile,
-			url: data.url,
-			attachments: data.attachments,
-			bot: data.bot,
-			emoji: data.emoji,
-			alias: data.alias,
-			...(data._id ? { _id: data._id } : {}),
-			...(data.reactions ? { reactions: await this.convertMessageReactions(data.reactions) } : {}),
+			...(data._importFile && { _importFile: data._importFile }),
+			...(data.url && { url: data.url }),
+			...(data.attachments && { attachments: data.attachments }),
+			...(data.bot != null && { bot: data.bot }),
+			...(data.emoji && { emoji: data.emoji }),
+			...(data.alias && { alias: data.alias }),
+			...(data._id && { _id: data._id }),
+			...(reactions && { reactions }),
 		};
 	}
 
