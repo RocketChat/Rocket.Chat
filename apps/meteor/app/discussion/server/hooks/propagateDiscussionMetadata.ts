@@ -20,25 +20,30 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
  * We need to propagate the writing of new message in a discussion to the linking
  * system message
  */
+
+
 callbacks.add(
 	'afterSaveMessage',
-	async (message, { room: { _id, prid } }) => {
+	async (message, context) => {  
+		const { room: { _id, prid } } = context;
+		
 		if (!prid) {
 			return message;
 		}
 
-		const room = await Rooms.findOneById(_id, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
+		setImmediate(async () => {
+			try {
+				const room = await Rooms.findOneById(_id, {  
+					projection: { msgs: 1, lm: 1 },
+				});
+
+				if (room) {
+					await updateAndNotifyParentRoomWithParentMessage(room);
+				}
+			} catch (error) {
+				console.error('Error updating discussion metadata:', error);
+			}
 		});
-
-		if (!room) {
-			return message;
-		}
-
-		await updateAndNotifyParentRoomWithParentMessage(room);
 
 		return message;
 	},
