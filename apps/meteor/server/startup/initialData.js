@@ -198,10 +198,10 @@ Meteor.startup(async () => {
 	}
 
 	if ((await Roles.countUsersInRole('admin')) !== 0) {
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+		if (settings.get('Show_Setup_Wizard') === 'pending' || settings.get('Show_Setup_Wizard') === 'in_progress') {
+			console.log('Setting Setup Wizard to "completed" to skip wizard');
 
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+			(await Settings.updateValueById('Show_Setup_Wizard', 'completed')).modifiedCount &&
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 	}
@@ -247,8 +247,8 @@ Meteor.startup(async () => {
 
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
-		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+		if (settings.get('Show_Setup_Wizard') === 'pending' || settings.get('Show_Setup_Wizard') === 'in_progress') {
+			(await Settings.updateValueById('Show_Setup_Wizard', 'completed')).modifiedCount &&
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 
