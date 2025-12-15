@@ -8508,6 +8508,7 @@ __metadata:
     emojione: "npm:^4.5.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
+    jest-qase-reporter: "npm:^2.1.4"
     marked: "npm:^16.1.2"
     matrix-js-sdk: "npm:^38.4.0"
     mongodb: "npm:6.16.0"
@@ -16341,6 +16342,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.13.2":
+  version: 1.13.2
+  resolution: "axios@npm:1.13.2"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.4"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10/ae4e06dcd18289f2fd18179256d550d27f9a53ecb2f9c59f2ccc4efd1d7151839ba8c3e0fb533dac793e4a59a576ca8689a19244dce5c396680837674a47a867
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.6.1, axios@npm:^1.7.4, axios@npm:^1.8.2":
   version: 1.10.0
   resolution: "axios@npm:1.10.0"
@@ -20491,7 +20503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"env-schema@npm:^5.2.0":
+"env-schema@npm:^5.2.0, env-schema@npm:^5.2.1":
   version: 5.2.1
   resolution: "env-schema@npm:5.2.1"
   dependencies:
@@ -22369,6 +22381,19 @@ __metadata:
     hasown: "npm:^2.0.2"
     mime-types: "npm:^2.1.12"
   checksum: 10/a4b62e21932f48702bc468cc26fb276d186e6b07b557e3dd7cc455872bdbb82db7db066844a64ad3cf40eaf3a753c830538183570462d3649fdfd705601cbcfb
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "form-data@npm:4.0.5"
+  dependencies:
+    asynckit: "npm:^0.4.0"
+    combined-stream: "npm:^1.0.8"
+    es-set-tostringtag: "npm:^2.1.0"
+    hasown: "npm:^2.0.2"
+    mime-types: "npm:^2.1.12"
+  checksum: 10/52ecd6e927c8c4e215e68a7ad5e0f7c1031397439672fd9741654b4a94722c4182e74cc815b225dcb5be3f4180f36428f67c6dd39eaa98af0dcfdd26c00c19cd
   languageName: node
   linkType: hard
 
@@ -25583,17 +25608,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-qase-reporter@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "jest-qase-reporter@npm:2.1.3"
+"jest-qase-reporter@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "jest-qase-reporter@npm:2.1.4"
   dependencies:
     lodash.get: "npm:^4.4.2"
     lodash.has: "npm:^4.5.2"
-    qase-javascript-commons: "npm:~2.4.2"
-    uuid: "npm:^9.0.0"
+    qase-javascript-commons: "npm:~2.4.16"
+    uuid: "npm:^9.0.1"
   peerDependencies:
     jest: ">=28.0.0"
-  checksum: 10/1c19643adaffd514674d1dbdc92d6377beb859d4036228133a8ad2dadadbc879bc65b74df5f14ad371b5e269976720da3b787afbfba034ff8be0f1a1792324c7
+  checksum: 10/45c9e3606205786f014523e77a6f0818906b2d953da92fda86396486c1ce836ca6a99d29993b1e8d631ce16eb9ebc0e9094f29ad099d1c35d917c3a9d21e41e1
   languageName: node
   linkType: hard
 
@@ -27716,7 +27741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:^2.1.33, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:^2.1.33, mime-types@npm:^2.1.35, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -31256,6 +31281,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qase-api-client@npm:~1.1.1":
+  version: 1.1.1
+  resolution: "qase-api-client@npm:1.1.1"
+  dependencies:
+    axios: "npm:^1.13.2"
+    axios-retry: "npm:^4.5.0"
+  checksum: 10/885ee6cc6d11a197e23335fabe5e20d34f2ce498cbefca9cf25f3fc911af487daf5fbb96771ae97dfc169b4dac4cd8a3f8767c0768bb2512112294ca15f864b2
+  languageName: node
+  linkType: hard
+
 "qase-api-v2-client@npm:~1.0.1":
   version: 1.0.2
   resolution: "qase-api-v2-client@npm:1.0.2"
@@ -31263,6 +31298,37 @@ __metadata:
     axios: "npm:^1.8.2"
     axios-retry: "npm:^4.5.0"
   checksum: 10/c61b4266b90b1e0659205f054d472e54297735d8eeb52398e4485bf0ad702d594371ae845cfdf990c7f402238328fe9a0451bbd08343e73e8199b49bc8772afe
+  languageName: node
+  linkType: hard
+
+"qase-api-v2-client@npm:~1.0.4":
+  version: 1.0.4
+  resolution: "qase-api-v2-client@npm:1.0.4"
+  dependencies:
+    axios: "npm:^1.13.2"
+    axios-retry: "npm:^4.5.0"
+  checksum: 10/6ee58fadd3bc6bb7774e17623ad98ef3f6d2634c90179fde0dfede80951bd808ee2e510bd258835704d65f7dc17f456acc2ecee1c84a6ff41b5abfaf61bb6139
+  languageName: node
+  linkType: hard
+
+"qase-javascript-commons@npm:~2.4.16":
+  version: 2.4.16
+  resolution: "qase-javascript-commons@npm:2.4.16"
+  dependencies:
+    ajv: "npm:^8.17.1"
+    async-mutex: "npm:~0.5.0"
+    chalk: "npm:^4.1.2"
+    env-schema: "npm:^5.2.1"
+    form-data: "npm:^4.0.5"
+    lodash.get: "npm:^4.4.2"
+    lodash.merge: "npm:^4.6.2"
+    lodash.mergewith: "npm:^4.6.2"
+    mime-types: "npm:^2.1.35"
+    qase-api-client: "npm:~1.1.1"
+    qase-api-v2-client: "npm:~1.0.4"
+    strip-ansi: "npm:^6.0.1"
+    uuid: "npm:^9.0.1"
+  checksum: 10/28881ec2909cf29d6d365e3a96a08061eb183b3492ee7529f66a07ef466347025bba91f8f70233c0b38cca95362c142f3e2b498efce76469799ab244784b894e
   languageName: node
   linkType: hard
 
@@ -32750,7 +32816,6 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.8"
-    jest-qase-reporter: "npm:^2.1.3"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:~2.6.1"
