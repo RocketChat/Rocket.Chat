@@ -3,4 +3,3 @@ export * from './Call';
 export * from './TransportWrapper';
 export * from './services/states';
 export * from './services/webrtc';
-export * from './utils/defaultTimerProcessor';

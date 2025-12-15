@@ -1,21 +1,18 @@
-import type { ITimerProcessor } from '../../definition';
-
 export type PromiseWaiterData = {
 	done: boolean;
 	promise: Promise<void>;
 	promiseReject: (error: Error) => void;
 	promiseResolve: () => void;
-	timeout: unknown | null;
+	timeout: ReturnType<typeof setTimeout> | null;
 };
 
 export type PromiseWaiterParams = {
-	processor: ITimerProcessor<unknown, unknown>;
 	timeout?: number;
 	timeoutFn?: () => void;
 	cleanupFn?: () => void;
 };
 
-export function getExternalWaiter({ timeout, timeoutFn, cleanupFn, processor }: PromiseWaiterParams): PromiseWaiterData {
+export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWaiterParams): PromiseWaiterData {
 	const data: Partial<PromiseWaiterData> = {
 		timeout: null,
 		done: false,
@@ -27,7 +24,7 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn, processor }: 
 		}
 
 		if (data.timeout) {
-			processor.clearTimeout(data.timeout);
+			clearTimeout(data.timeout);
 			data.timeout = null;
 		}
 		data.done = true;
@@ -53,7 +50,7 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn, processor }: 
 	});
 
 	if (timeout) {
-		data.timeout = processor.setTimeout(() => {
+		data.timeout = setTimeout(() => {
 			data.timeout = null;
 			if (data.done) {
 				return;

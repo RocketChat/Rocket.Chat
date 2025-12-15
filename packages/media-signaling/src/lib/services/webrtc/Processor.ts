@@ -334,7 +334,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this.iceGatheringTimedOut = true;
 				this.changeInternalState('iceUntrickler');
 			},
-			processor: this.config.timerProcessor,
 		});
 
 		this.iceGatheringWaiters.add(iceGatheringData);
@@ -737,7 +736,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		if (iceGatheringData.timeout) {
-			this.config.timerProcessor.clearTimeout(iceGatheringData.timeout);
+			clearTimeout(iceGatheringData.timeout);
 		}
 
 		if (error) {

@@ -16,7 +16,7 @@ import type {
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
-import type { ITimerProcessor, IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
+import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
 import type {
@@ -35,8 +35,6 @@ export interface IClientMediaCallConfig {
 
 	iceGatheringTimeout: number;
 	iceServers: RTCIceServer[];
-
-	timerProcessor: ITimerProcessor<unknown, unknown>;
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -50,7 +48,7 @@ const AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS = true;
 
 type StateTimeoutHandler = {
 	state: ClientState;
-	handler: unknown; // handler type depends on the ITimerProcessor
+	handler: ReturnType<typeof setTimeout>;
 };
 
 export class ClientMediaCall implements IClientMediaCall {
@@ -176,7 +174,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private serviceStates: Map<string, string>;
 
-	private stateReporterTimeoutHandler: unknown | null;
+	private stateReporterTimeoutHandler: ReturnType<typeof setTimeout> | null;
 
 	private mayReportStates: boolean;
 
@@ -981,7 +979,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const handler = {
 			state,
-			handler: this.config.timerProcessor.setTimeout(() => {
+			handler: setTimeout(() => {
 				if (this.stateTimeoutHandlers.has(handler)) {
 					this.stateTimeoutHandlers.delete(handler);
 				}
@@ -1010,14 +1008,14 @@ export class ClientMediaCall implements IClientMediaCall {
 				continue;
 			}
 
-			this.config.timerProcessor.clearTimeout(handler.handler);
+			clearTimeout(handler.handler);
 			this.stateTimeoutHandlers.delete(handler);
 		}
 	}
 
 	private clearStateTimeouts(): void {
 		for (const handler of this.stateTimeoutHandlers.values()) {
-			this.config.timerProcessor.clearTimeout(handler.handler);
+			clearTimeout(handler.handler);
 		}
 		this.stateTimeoutHandlers.clear();
 	}
@@ -1125,7 +1123,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private clearStateReporter(): void {
 		if (this.stateReporterTimeoutHandler) {
-			this.config.timerProcessor.clearTimeout(this.stateReporterTimeoutHandler);
+			clearTimeout(this.stateReporterTimeoutHandler);
 			this.stateReporterTimeoutHandler = null;
 		}
 	}
@@ -1136,7 +1134,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		this.stateReporterTimeoutHandler = this.config.timerProcessor.setTimeout(() => {
+		this.stateReporterTimeoutHandler = setTimeout(() => {
 			this.reportStates();
 		}, STATE_REPORT_DELAY);
 	}
@@ -1175,7 +1173,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
-			timerProcessor: this.config.timerProcessor,
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));

@@ -5,7 +5,6 @@ import { MediaSignalTransportWrapper } from './TransportWrapper';
 import type {
 	ClientMediaSignal,
 	IServiceProcessorFactoryList,
-	ITimerProcessor,
 	MediaSignalTransport,
 	MediaStreamFactory,
 	RandomStringFactory,
@@ -13,7 +12,6 @@ import type {
 } from '../definition';
 import type { IClientMediaCall, CallActorType, CallContact } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
-import { defaultTimerProcessor } from './utils/defaultTimerProcessor';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -33,7 +31,6 @@ export type MediaSignalingSessionConfig = {
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 	iceServers?: RTCIceServer[] | null;
-	timerProcessor?: ITimerProcessor<unknown, unknown>;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -49,7 +46,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private transporter: MediaSignalTransportWrapper;
 
-	private recurringStateReportHandler: unknown | null;
+	private recurringStateReportHandler: ReturnType<typeof setInterval> | null;
 
 	private inputTrack: MediaStreamTrack | null;
 
@@ -79,7 +76,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		super();
 		this.config = {
 			...config,
-			timerProcessor: config.timerProcessor || defaultTimerProcessor,
 			iceGatheringTimeout: config.iceGatheringTimeout || 5000,
 			oldSessionId: config.oldSessionId || null,
 			logger: config.logger || null,
@@ -111,14 +107,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	public enableStateReport(interval: number): void {
 		this.disableStateReport();
 
-		this.recurringStateReportHandler = this.config.timerProcessor.setInterval(() => {
+		this.recurringStateReportHandler = setInterval(() => {
 			this.reportState();
 		}, interval);
 	}
 
 	public disableStateReport(): void {
 		if (this.recurringStateReportHandler) {
-			this.config.timerProcessor.clearInterval(this.recurringStateReportHandler);
+			clearInterval(this.recurringStateReportHandler);
 			this.recurringStateReportHandler = null;
 		}
 	}
@@ -479,7 +475,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
-			timerProcessor: this.config.timerProcessor,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
