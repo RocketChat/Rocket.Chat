@@ -25,4 +25,3 @@ import './lib/stream/agentStatus';
 import './sendMessageBySMS';
 import './api';
 import './api/rest';
-import './methods/saveBusinessHour';
