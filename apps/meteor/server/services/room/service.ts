@@ -18,7 +18,7 @@ import { performAcceptRoomInvite } from '../../../app/lib/server/functions/accep
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
@@ -34,6 +34,39 @@ import { removeRoomOwner } from '../../methods/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
+
+	async updateDirectMessageRoomName(room: IRoom): Promise<boolean> {
+		const getFname = (members: IUser[]): string => {
+			if (members.length === 0) {
+				return 'Empty Room';
+			}
+			return members.map(({ name, username }) => name || username).join(', ');
+		};
+		const getName = (members: IUser[]): string => {
+			if (members.length === 0) {
+				return 'empty';
+			}
+			return members.map(({ username }) => username).join(', ');
+		};
+
+		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1 } }).toArray();
+
+		const uids = subs.map((sub) => sub.u._id);
+
+		const roomMembers = await Users.findUsersByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
+
+		const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
+
+		for await (const sub of subs) {
+			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
+
+			await Subscriptions.updateOne({ _id: sub._id }, { $set: { fname: getFname(otherMembers), name: getName(otherMembers) } });
+
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, sub.u._id, 'updated');
+		}
+
+		return true;
+	}
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
 		const { type, name, members = [], readOnly, extraData, options } = params;
