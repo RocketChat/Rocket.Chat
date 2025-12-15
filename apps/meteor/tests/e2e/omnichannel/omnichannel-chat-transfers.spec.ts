@@ -126,7 +126,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		]);
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async () => {
 		const [, departmentB] = departments.map(({ data }) => data);
 		const [roomA] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
@@ -136,8 +136,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomA.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
+			await poOmnichannel.chats.openChat(roomA.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
@@ -170,7 +169,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, different department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, different department`, async () => {
 		const [, roomB] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
@@ -179,8 +178,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomB.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomB._id}`);
+			await poOmnichannel.chats.openChat(roomB.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
@@ -215,7 +213,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, same department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, same department`, async () => {
 		const [, , roomC] = conversations.map(({ data }) => data.room);
 		const [agentA, , agentC] = sessions;
 
@@ -224,8 +222,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomC.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomC._id}`);
+			await poOmnichannel.chats.openChat(roomC.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
@@ -351,7 +348,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		]);
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another department`, async () => {
 		const [, departmentB] = departments.map(({ data }) => data);
 		const [roomA] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
@@ -361,8 +358,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomA.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
+			await poOmnichannel.chats.openChat(roomA.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
@@ -395,7 +391,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another agent, different department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another agent, different department`, async () => {
 		const [, roomB] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
@@ -404,8 +400,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomB.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomB._id}`);
+			await poOmnichannel.chats.openChat(roomB.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
@@ -440,7 +435,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another agent, same department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another agent, same department`, async () => {
 		const [, , roomC] = conversations.map(({ data }) => data.room);
 		const [agentA, , agentC] = sessions;
 
@@ -449,8 +444,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(roomC.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomC._id}`);
+			await poOmnichannel.chats.openChat(roomC.fname);
 			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 

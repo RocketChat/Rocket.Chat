@@ -60,7 +60,7 @@ test.describe('Omnichannel close inquiry', () => {
 		await test.step('Expect to inquiry be closed when navigate back', async () => {
 			await agent.poHomeOmnichannel.navbar.openManageMenuItem('Omnichannel');
 			await agent.poHomeOmnichannel.omnisidenav.linkCurrentChats.click();
-			await agent.poHomeOmnichannel.chats.findRowByName(newVisitor.name).click();
+			await agent.poHomeOmnichannel.chats.openChat(newVisitor.name);
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).not.toBeVisible();
 		});
 	});

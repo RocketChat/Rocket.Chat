@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent } from './fragments';
+import { FlexTab } from './fragments/flextab';
 import { Modal } from './fragments/modal';
 import { OmnichannelAdministration } from './omnichannel-administration';
 import { OmnichannelChatsFilters } from './omnichannel-contact-center-chats-filters';
@@ -20,8 +21,25 @@ class ConfirmRemoveChat extends Modal {
 	}
 }
 
+class ConversationFlexTab extends FlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Conversation' }));
+	}
+
+	private get btnOpenChat(): Locator {
+		return this.root.getByRole('button', { name: 'Open chat' });
+	}
+
+	async openChat() {
+		await this.btnOpenChat.click();
+		await this.waitForDismissal();
+	}
+}
+
 export class OmnichannelChats extends OmnichannelAdministration {
 	private readonly confirmRemoveChatModal: ConfirmRemoveChat;
+
+	private readonly conversation: ConversationFlexTab;
 
 	readonly filters: OmnichannelChatsFilters;
 
@@ -32,6 +50,7 @@ export class OmnichannelChats extends OmnichannelAdministration {
 		this.filters = new OmnichannelChatsFilters(page);
 		this.confirmRemoveChatModal = new ConfirmRemoveChat(page);
 		this.content = new HomeOmnichannelContent(page);
+		this.conversation = new ConversationFlexTab(page);
 	}
 
 	get btnFilters(): Locator {
@@ -108,5 +127,10 @@ export class OmnichannelChats extends OmnichannelAdministration {
 	async removeChatByName(name: string) {
 		await this.btnRemoveByName(name).click();
 		await this.confirmRemoveChatModal.confirm();
+	}
+
+	async openChat(name: string) {
+		await this.findRowByName(name).click();
+		await this.conversation.openChat();
 	}
 }

@@ -163,10 +163,7 @@ test.describe('OC - Monitor Role', () => {
 		});
 	});
 
-	test('OC - Monitor Role - Contact Center', async ({ page }) => {
-		const [conversationA] = conversations;
-		const { room: roomA } = conversationA.data;
-
+	test('OC - Monitor Role - Contact Center', async () => {
 		await test.step('expect to be able to view only chats from same unit', async () => {
 			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
 			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
@@ -175,8 +172,7 @@ test.describe('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.chats.findRowByName(ROOM_A).click();
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
+			await poOmnichannel.chats.openChat(ROOM_A);
 			await expect(poOmnichannel.content.btnJoinRoom).toBeVisible();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 
@@ -202,11 +198,8 @@ test.describe('OC - Monitor Role', () => {
 			await expect(poOmnichannel.quickActionsRoomToolbar.btnOnHold).toBeVisible();
 		});
 
-		// await test.step('expect to be able to edit room information from another agent', async () => {);
-
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
-			await page.waitForURL('/omnichannel/current');
 		});
 
 		await test.step('expect not to be able to remove closed room', async () => {
