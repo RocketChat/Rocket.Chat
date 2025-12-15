@@ -9,7 +9,7 @@ export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 		super(db, 'avatars', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [...super.modelIndexes(), { key: { userId: 1 }, sparse: true }];
 	}
 

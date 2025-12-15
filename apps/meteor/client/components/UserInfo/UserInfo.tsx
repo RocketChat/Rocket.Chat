@@ -1,15 +1,8 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import { ContextualbarScrollableContent } from '../Contextualbar';
 import {
+	useUserDisplayName,
+	ContextualbarScrollableContent,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -18,7 +11,14 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../InfoPanel';
+} from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useTimeAgo } from '../../hooks/useTimeAgo';
+import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
@@ -40,6 +40,7 @@ type UserInfoDataProps = Serialized<
 		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
+		| 'freeSwitchExtension'
 	>
 >;
 
@@ -71,6 +72,7 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	freeSwitchExtension,
 	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
 	abacAttributes = null,
 	...props
@@ -177,6 +179,13 @@ const UserInfo = ({
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
 							</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{freeSwitchExtension && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
+							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
 						</InfoPanelField>
 					)}
 

@@ -35,6 +35,8 @@ const promptTranscript = async () => {
 		if (typeof result.success === 'boolean' && result.success) {
 			return Livechat.requestTranscript(email, { rid: _id });
 		}
+
+		return undefined;
 	});
 };
 

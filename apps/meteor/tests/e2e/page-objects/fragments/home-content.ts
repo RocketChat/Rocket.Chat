@@ -299,6 +299,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
+	get btnVoiceCall(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
+	}
+
 	get btnRecordAudio(): Locator {
 		return this.page.locator('[data-qa-id="audio-message"]');
 	}
@@ -313,6 +317,14 @@ export class HomeContent {
 
 	get linkUserCard(): Locator {
 		return this.userCard.locator('a');
+	}
+
+	get btnContactInformation(): Locator {
+		return this.page.getByRole('button', { name: 'User Info' });
+	}
+
+	get btnContactInfoVoiceCall(): Locator {
+		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
 	get btnContactEdit(): Locator {
@@ -426,9 +438,9 @@ export class HomeContent {
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	get threadMessageList(): Locator {
@@ -562,6 +574,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
+		await expect(this.btnModalConfirmDelete).toBeDisabled();
 	}
 
 	get btnClearSelection() {

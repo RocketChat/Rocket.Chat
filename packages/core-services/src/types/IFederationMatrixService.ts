@@ -1,8 +1,8 @@
-import type { IMessage, IRoomFederated, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
-import type { EventID, PduForType, EventStore } from '@rocket.chat/federation-sdk';
+import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { EventStore } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
-	createRoom(room: IRoomFederated, owner: IUser, members: string[]): Promise<{ room_id: string; event_id: string }>;
+	createRoom(room: IRoomFederated, owner: IUser): Promise<{ room_id: string; event_id: string }>;
 	ensureFederatedUsersExistLocally(members: string[]): Promise<void>;
 	createDirectMessageRoom(room: IRoomFederated, members: IUser[], creatorId: IUser['_id']): Promise<void>;
 	sendMessage(message: IMessage, room: IRoomFederated, user: IUser): Promise<void>;
@@ -28,5 +28,5 @@ export interface IFederationMatrixService {
 	inviteUsersToRoom(room: IRoomFederated, usersUserName: string[], inviter: IUser): Promise<void>;
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
-	emitJoin(membershipEvent: PduForType<'m.room.member'>, eventId: EventID): Promise<void>;
+	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
 }

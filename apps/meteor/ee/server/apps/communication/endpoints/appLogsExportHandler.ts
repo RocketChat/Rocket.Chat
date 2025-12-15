@@ -25,7 +25,7 @@ const isErrorResponse = ajv.compile<{
 });
 
 class ExportHandlerAPI extends APIClass {
-	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
+	protected override async authenticatedRoute(req: Request): Promise<IUser | null> {
 		const { rc_uid, rc_token } = parse(req.headers.get('cookie') || '');
 
 		if (rc_uid) {

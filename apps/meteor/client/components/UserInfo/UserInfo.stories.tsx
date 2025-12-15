@@ -1,6 +1,6 @@
+import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import { ContextualbarDialog } from '../Contextualbar';
 import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 import { UserCardRole } from '../UserCard';
@@ -34,6 +34,11 @@ const defaultArgs = {
 const Template: StoryFn<typeof UserInfo> = (args) => <UserInfo {...defaultArgs} {...args} />;
 
 export const Default = Template.bind({});
+
+export const WithVoiceCallExtension = Template.bind({});
+WithVoiceCallExtension.args = {
+	freeSwitchExtension: '1234567890',
+};
 
 export const WithABACAttributes = Template.bind({});
 WithABACAttributes.args = {

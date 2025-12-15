@@ -18,7 +18,6 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
-import { useVoipExtensionAction } from '../voip/hooks/useVoipExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
@@ -96,19 +95,10 @@ const UsersTableRow = ({
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
-	const voipExtensionAction = useVoipExtensionAction({
-		enabled: showVoipExtension,
-		extension: freeSwitchExtension,
-		username,
-		name,
-	});
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const actions = useMemo(
 		() => ({
-			...(voipExtensionAction && {
-				voipExtensionAction,
-			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
 					changeAdminStatusAction,
@@ -134,7 +124,6 @@ const UsersTableRow = ({
 			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			voipExtensionAction,
 		],
 	);
 

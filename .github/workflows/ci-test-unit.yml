@@ -23,7 +23,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     name: Unit Tests
 
@@ -34,7 +34,7 @@ jobs:
           theme: dark
           job_summary: true
           comment_on_pr: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -47,11 +47,17 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
+      - name: Restore packages build
+        uses: actions/download-artifact@v6
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
       - name: Unit Test
         run: yarn testunit
 

@@ -13,7 +13,7 @@ export class FreeSwitchApiClient extends FreeSwitchESLClient {
 		return response.body;
 	}
 
-	protected async transitionToReady(): Promise<void> {
+	protected override async transitionToReady(): Promise<void> {
 		try {
 			this.response.event_json('BACKGROUND_JOB');
 		} catch (error) {

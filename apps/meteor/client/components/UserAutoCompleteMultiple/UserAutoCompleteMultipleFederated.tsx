@@ -1,13 +1,12 @@
-import type { OptionType } from '@rocket.chat/fuselage';
-import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
+import { MultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement, AllHTMLAttributes } from 'react';
 import { memo, useState, useCallback, useMemo } from 'react';
 
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
+import UserAvatarChip from './UserAvatarChip';
 
 type UserAutoCompleteMultipleFederatedProps = {
 	onChange: (value: Array<string>) => void;
@@ -94,7 +93,7 @@ const UserAutoCompleteMultipleFederated = ({
 	);
 
 	return (
-		<OptionsContext.Provider value={{ options: options as unknown as OptionType[] }}>
+		<OptionsContext.Provider value={{ options }}>
 			<MultiSelectFiltered
 				{...props}
 				data-qa-type='user-auto-complete-input'
@@ -103,16 +102,19 @@ const UserAutoCompleteMultipleFederated = ({
 				onChange={handleOnChange}
 				filter={filter}
 				setFilter={setFilter}
-				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }) => {
-					const currentCachedOption = selectedCache[value] || {};
+				renderSelected={({ value: username, onMouseDown }: { value: string; onMouseDown: () => void }) => {
+					const currentCachedOption = selectedCache[username] || {};
 
 					return (
-						<Chip key={value} height='x20' onMouseDown={onMouseDown} mie={4} mb={2}>
-							{currentCachedOption._federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={value} />}
-							<Box is='span' margin='none' mis={4}>
-								{currentCachedOption.name || currentCachedOption.username || value}
-							</Box>
-						</Chip>
+						<UserAvatarChip
+							mie={4}
+							mb={2}
+							key={username}
+							federated={currentCachedOption._federated}
+							name={currentCachedOption.name}
+							username={currentCachedOption.username || username}
+							onMouseDown={onMouseDown}
+						/>
 					);
 				}}
 				renderOptions={AutocompleteOptions}

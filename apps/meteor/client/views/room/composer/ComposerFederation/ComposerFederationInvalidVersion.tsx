@@ -3,6 +3,8 @@ import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/
 import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
+import { links } from '../../../../lib/links';
+
 const ComposerFederationInvalidVersion = (): ReactElement => {
 	return (
 		<MessageFooterCallout>
@@ -10,7 +12,7 @@ const ComposerFederationInvalidVersion = (): ReactElement => {
 				<Trans
 					i18nKey='Federation_Matrix_Federated_Description_invalid_version'
 					components={{
-						1: <ExternalLink to='https://go.rocket.chat/i/matrix-federation' />,
+						1: <ExternalLink to={links.go.matrixFederation} />,
 					}}
 				/>
 			</MessageFooterCalloutContent>

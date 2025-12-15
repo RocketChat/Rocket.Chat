@@ -1,19 +1,23 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
+	"version": "0.4.45",
 	"private": true,
-	"version": "0.4.40",
 	"description": "Rocket.Chat service",
-	"scripts": {
-		"build": "tsc -p tsconfig.json",
-		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint src",
-		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
-	},
 	"keywords": [
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
+	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "eslint src",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
+	},
 	"dependencies": {
 		"@react-pdf/renderer": "^3.4.5",
 		"@rocket.chat/core-services": "workspace:^",
@@ -31,7 +35,6 @@
 		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
-		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
 		"i18next": "~23.4.9",
 		"i18next-sprintf-postprocessor": "^0.2.2",
@@ -39,7 +42,7 @@
 		"moleculer": "^0.14.35",
 		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
@@ -49,18 +52,14 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
-		"@types/polka": "^0.5.7",
+		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"@types/react": "~18.3.24",
+		"@types/react": "~18.3.26",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},
-	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../../package.json"
 	}

@@ -19,7 +19,6 @@ import {
 	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
-import { sleep } from '../../../data/livechat/utils';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
@@ -30,6 +29,7 @@ import {
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { retry } from '../helpers/retry';
 
 describe('LIVECHAT - inquiries', () => {
 	before((done) => getCredentials(done));
@@ -558,14 +558,21 @@ describe('LIVECHAT - inquiries', () => {
 			testRoom = updatedRoom;
 		});
 		it('should return a chat to the queue when not answered after 3 seconds', async () => {
-			await sleep(3000);
-			const inquiry = await fetchInquiry(testRoom._id);
-			const room = await getLivechatRoomInfo(testRoom._id);
+			await retry(
+				`The agenda has a 'heartbeat' of 3 seconds (for testing environment), so its likely that the first fetch will not have the room updated`,
+				async () => {
+					const inquiry = await fetchInquiry(testRoom._id);
+					const room = await getLivechatRoomInfo(testRoom._id);
 
-			expect(room).to.not.have.property('servedBy');
-			expect(inquiry).to.have.property('status', 'queued');
+					expect(room).to.not.have.property('servedBy');
+					expect(inquiry).to.have.property('status', 'queued');
 
-			await closeOmnichannelRoom(testRoom._id);
+					await closeOmnichannelRoom(testRoom._id);
+				},
+				{
+					delayMs: 3000,
+				},
+			);
 		});
 	});
 });

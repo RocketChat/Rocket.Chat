@@ -7,12 +7,12 @@ import { AppIdProvider } from '../contexts/AppIdContext';
 
 export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'video_conf']);
+		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'video_conf', 'info_card']);
 	}
 
-	plain_text = renderTextObject;
+	override plain_text = renderTextObject;
 
-	mrkdwn = renderTextObject;
+	override mrkdwn = renderTextObject;
 
 	video_conf(block: UiKit.VideoConferenceBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
 		if (context === UiKit.BlockContext.BLOCK) {

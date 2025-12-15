@@ -12,7 +12,6 @@ import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import ABACHeaderTag from '../../../components/ABAC/ABACHeaderTag';
 import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 
 export type RoomHeaderProps = {
@@ -27,12 +26,12 @@ export type RoomHeaderProps = {
 			pre?: ReactNode;
 			content?: ReactNode;
 			pos?: ReactNode;
+			hidden?: boolean;
 		};
 	};
-	roomToolbox?: JSX.Element;
 };
 
-const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
+const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -44,7 +43,6 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					<ABACHeaderTag room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
@@ -53,13 +51,15 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 				</HeaderContentRow>
 			</HeaderContent>
 			{slots?.posContent}
-			<Suspense fallback={null}>
-				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
-					{slots?.toolbox?.pre}
-					{slots?.toolbox?.content || roomToolbox || <RoomToolbox />}
-					{slots?.toolbox?.pos}
-				</HeaderToolbar>
-			</Suspense>
+			{slots.toolbox?.hidden !== true && (
+				<Suspense fallback={null}>
+					<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
+						{slots?.toolbox?.pre}
+						{slots?.toolbox?.content || <RoomToolbox />}
+						{slots?.toolbox?.pos}
+					</HeaderToolbar>
+				</Suspense>
+			)}
 			{slots?.end}
 		</Header>
 	);

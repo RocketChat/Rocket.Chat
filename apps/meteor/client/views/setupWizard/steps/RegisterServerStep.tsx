@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks/useLicense';
+import { links } from '../../../lib/links';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {
@@ -77,8 +78,8 @@ const RegisterServerStep = (): ReactElement => {
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
 			{serverOption === SERVER_OPTIONS.OFFLINE ? (
 				<RegisterOfflinePage
-					termsHref='https://rocket.chat/terms'
-					policyHref='https://rocket.chat/privacy'
+					termsHref={links.terms}
+					policyHref={links.privacy}
 					clientKey={clientKey || ''}
 					onCopySecurityCode={() => dispatchToastMessage({ type: 'success', message: t('Copied') })}
 					onBackButtonClick={() => setServerOption(SERVER_OPTIONS.REGISTERED)}

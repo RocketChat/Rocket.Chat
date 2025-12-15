@@ -53,6 +53,8 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+
+	freeSwitchExtension?: string;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -123,7 +125,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (typeof userData.statusText === 'string') {
-			await setStatusText(userData._id, userData.statusText, updater, session);
+			await setStatusText(userData._id, userData.statusText, { updater, session });
 		}
 
 		if (userData.email) {
@@ -159,6 +161,14 @@ const _saveUser = (session?: ClientSession) =>
 			updater.set('requirePasswordChange', userData.requirePasswordChange);
 			if (!userData.requirePasswordChange) {
 				updater.unset('requirePasswordChangeReason');
+			}
+		}
+
+		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
+			if (userData.freeSwitchExtension.trim() === '') {
+				updater.unset('freeSwitchExtension');
+			} else {
+				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 			}
 		}
 

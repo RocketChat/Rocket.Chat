@@ -106,7 +106,7 @@ export class CachedSettings
 	 * @param _id - The setting id
 	 * @returns {boolean}
 	 */
-	public has(_id: ISetting['_id']): boolean {
+	public override has(_id: ISetting['_id']): boolean {
 		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
 		}

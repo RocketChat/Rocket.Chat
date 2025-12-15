@@ -1,6 +1,6 @@
 import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { PermissionsCachedStore } from '../cachedStores';
@@ -12,14 +12,11 @@ type AuthorizationProviderProps = {
 };
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
-	useEffect(() => {
-		PermissionsCachedStore.listen();
-	}, []);
-
 	const isLoading = !PermissionsCachedStore.useReady();
 
 	if (isLoading) {
 		throw (async () => {
+			PermissionsCachedStore.listen();
 			await PermissionsCachedStore.init();
 		})();
 	}
