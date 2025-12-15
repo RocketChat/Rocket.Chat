@@ -38,7 +38,6 @@ export default {
 	detectOpenHandles: true, // Detect open handles that prevent Jest from exiting
 	globalTeardown: '<rootDir>/tests/teardown.ts',
 	// To disable Qase integration, remove this line or comment it out
-	setupFilesAfterEnv: ['<rootDir>/tests/setup-qase.ts'],
 	verbose: false,
 	silent: false,
 	reporters: [
