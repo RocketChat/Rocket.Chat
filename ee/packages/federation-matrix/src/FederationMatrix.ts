@@ -218,13 +218,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// canonical alias computed from name
 			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
-			this.logger.debug('Matrix room created:', matrixRoomResult);
+			this.logger.debug(matrixRoomResult, 'Matrix room created:');
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
 			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
 
-			this.logger.debug('Room creation completed successfully', room._id);
+			this.logger.debug(room._id, 'Room creation completed successfully');
 
 			return matrixRoomResult;
 		} catch (error) {
@@ -235,7 +235,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async ensureFederatedUsersExistLocally(usernames: string[]): Promise<void> {
 		try {
-			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: usernames.length });
+			this.logger.debug({ memberCount: usernames.length }, 'Ensuring federated users exist locally before DM creation');
 
 			const federatedUsers = usernames.filter(validateFederatedUsername);
 			for await (const username of federatedUsers) {
@@ -258,7 +258,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async createDirectMessageRoom(room: IRoom, members: IUser[], creatorId: IUser['_id']): Promise<void> {
 		try {
-			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
+			this.logger.debug({ roomId: room._id, memberCount: members.length }, 'Creating direct message room in Matrix');
 
 			const creator = await Users.findOneById(creatorId);
 			if (!creator) {
@@ -463,7 +463,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
-			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
+			this.logger.debug(result.eventId, 'Message sent to Matrix successfully:');
 		} catch (error) {
 			this.logger.error(error, 'Failed to send message to Matrix');
 			throw error;
@@ -525,7 +525,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// TODO message.u?.username is not the user who removed the message
 			const eventId = await federationSDK.redactMessage(roomIdSchema.parse(matrixRoomId), eventIdSchema.parse(matrixEventId));
 
-			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
+			this.logger.debug(eventId, 'Message Redaction sent to Matrix successfully:');
 		} catch (error) {
 			this.logger.error(error, 'Failed to send redaction to Matrix');
 			throw error;
@@ -737,7 +737,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				eventIdSchema.parse(matrixEventId),
 			);
 
-			this.logger.debug('Message updated in Matrix successfully:', eventId);
+			this.logger.debug(eventId, 'Message updated in Matrix successfully:');
 		} catch (error) {
 			this.logger.error(error, 'Failed to update message in Matrix');
 			throw error;
