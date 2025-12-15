@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
-import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { callWithErrorHandling } from '../../lib/utils/callWithErrorHandling';
@@ -57,7 +57,7 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 			<GenericModal onClose={onClose} onCancel={onClose} onConfirm={sendInvite} title={t('Apps_Game_Center_Invite_Friends')}>
 				<Box mbe={16}>{t('Invite_Users')}</Box>
 				<Box mbe={16} display='flex' justifyContent='stretch'>
-					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
+					<UserAutoCompleteMultiple value={users} onChange={setUsers} />
 				</Box>
 			</GenericModal>
 		</>

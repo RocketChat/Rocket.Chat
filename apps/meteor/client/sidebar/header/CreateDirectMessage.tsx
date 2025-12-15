@@ -20,7 +20,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
@@ -76,7 +76,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 								}}
 								control={control}
 								render={({ field: { name, onChange, value, onBlur } }) => (
-									<UserAutoCompleteMultipleFederated
+									<UserAutoCompleteMultiple
 										name={name}
 										onChange={onChange}
 										value={value}
