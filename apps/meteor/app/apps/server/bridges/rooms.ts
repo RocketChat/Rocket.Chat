@@ -368,23 +368,21 @@ export class AppRoomBridge extends RoomBridge {
 
 		const orConditions: Array<Filter<ICoreRoom>> = [];
 
-		if (typeFilter) {
-			if (allowDiscussions || allowTeamMain) {
-				orConditions.push({ t: typeFilter });
-			} else {
-				query.t = typeFilter;
-			}
+		if (typeFilter && (allowDiscussions || allowTeamMain)) {
+			orConditions.push({ t: typeFilter });
+		} else if (typeFilter) {
+			query.t = typeFilter;
 		}
 
-		if (allowDiscussions) {
+		if (allowDiscussions && !onlyDiscussions) {
 			orConditions.push({ prid: { $exists: true } });
 		}
 
-		if (allowTeamMain) {
+		if (allowTeamMain && !onlyTeamMain) {
 			orConditions.push({ teamMain: { $exists: true } });
 		}
 
-		if (orConditions.length) {
+		if (orConditions.length && !(onlyDiscussions || onlyTeamMain)) {
 			query.$or = orConditions;
 		}
 
