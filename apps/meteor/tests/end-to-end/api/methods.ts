@@ -3111,10 +3111,9 @@ describe('Meteor.methods', () => {
 				room = (
 					await createRoom({
 						type: 'd',
-						name: `direct.test.${Date.now()}-${Math.random()}`,
 						username: guestUser.username,
 					})
-				).body.channel;
+				).body.room;
 				createdRooms.push(room);
 			});
 			after(() =>
@@ -3141,9 +3140,8 @@ describe('Meteor.methods', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error').that.is.a('string');
-						expect(res.body.error).to.equal('error-cant-invite-for-direct-room');
+						expect(res.body).to.have.property('message').that.is.an('string');
+						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
 					})
 					.end(done);
 			});
