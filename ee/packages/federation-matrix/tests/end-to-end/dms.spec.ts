@@ -298,6 +298,10 @@ const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, valida
 				it.todo('should allow a user to add another user to the group DM');
 				it.todo('should allow a user to leave the group DM');
 			});
+			describe('Turning a 1:1 DM into a group DM', () => {
+				it.todo('should show the invite to the third user');
+				it.todo('should update the room name to reflect the three users after the third user accepts the invitation');
+			});
 		});
 		describe('Rocket.Chat as the resident server', () => {
 			describe('Room list name validations', () => {
@@ -321,6 +325,10 @@ const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, valida
 						it.todo('should return the oldest room when trying to create a new DM with same users');
 					});
 				});
+			});
+			describe('Turning a 1:1 DM into a group DM', () => {
+				it.todo('should show the invite to the third user');
+				it.todo('should update the room name to reflect the three users after the third user accepts the invitation');
 			});
 		});
 	});
