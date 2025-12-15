@@ -17,6 +17,40 @@ import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFrom
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 
+const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
+	_id: 1,
+	fname: 1,
+	name: 1,
+	members: 1,
+	uids: 1,
+	default: 1,
+	ro: 1,
+	sysMes: 1,
+	msgs: 1,
+	ts: 1,
+	_updatedAt: 1,
+	closedAt: 1,
+	lm: 1,
+	description: 1,
+	customFields: 1,
+	prid: 1,
+	teamId: 1,
+	teamMain: 1,
+	livechatData: 1,
+	waitingResponse: 1,
+	open: 1,
+	source: 1,
+	closer: 1,
+	t: 1,
+	u: 1,
+	v: 1,
+	contactId: 1,
+	departmentId: 1,
+	closedBy: 1,
+	servedBy: 1,
+	responseBy: 1,
+};
+
 export class AppRoomBridge extends RoomBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
@@ -162,6 +196,7 @@ export class AppRoomBridge extends RoomBridge {
 			sort: { ts: -1 },
 			skip,
 			limit: Math.min(limit, 100),
+			projection: rawRoomProjection,
 		};
 
 		const rooms: IRoomRaw[] = [];
