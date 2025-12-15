@@ -37,6 +37,7 @@
 		"prettier": "~3.3.3"
 	},
 	"devDependencies": {
+		"eslint-plugin-pino": "^1.0.3",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

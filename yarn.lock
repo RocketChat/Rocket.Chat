@@ -8467,6 +8467,7 @@ __metadata:
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-jest: "npm:~28.8.3"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
+    eslint-plugin-pino: "npm:^1.0.3"
     eslint-plugin-prettier: "npm:~5.2.6"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
@@ -21290,6 +21291,15 @@ __metadata:
   dependencies:
     requireindex: "npm:1.2.0"
   checksum: 10/4f56c5acfc7ba3189b6a5428cdc97aa1004f7ba69784949d193a9a88ef9766e2b2070463eedbb26f17e3852ea7362c4205eaa026ea2e0af5471a9daa1469096e
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-pino@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "eslint-plugin-pino@npm:1.0.3"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  checksum: 10/4b911aabb68ffc9beb6bc203f699755894c07994d81aa10bfc32256488ddc7e868366b0a6b474212be88f9477511b311d50d2b779c51e806ff42492b9f46a675
   languageName: node
   linkType: hard
 
