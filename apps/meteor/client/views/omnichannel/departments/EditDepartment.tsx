@@ -414,33 +414,32 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 						</Field>
 
-						{requestTagBeforeClosingChat && (
-							<Field>
-								<FieldLabel htmlFor={chatClosingTagsField} required>
-									{t('Conversation_closing_tags')}
-								</FieldLabel>
-								<Controller
-									control={control}
-									name='chatClosingTags'
-									rules={{ required: t('Required_field', 'tags') }}
-									render={({ field: { value, onChange } }) => (
-										<DepartmentTags
-											id={chatClosingTagsField}
-											value={value}
-											onChange={onChange}
-											error={errors.chatClosingTags?.message as string}
-											aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
-										/>
-									)}
-								/>
-								<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
-								{errors.chatClosingTags && (
-									<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
-										{errors.chatClosingTags?.message}
-									</FieldError>
+						<Field>
+							<FieldLabel htmlFor={chatClosingTagsField} required={requestTagBeforeClosingChat}>
+								{t('Conversation_closing_tags')}
+							</FieldLabel>
+							<Controller
+								control={control}
+								name='chatClosingTags'
+								rules={{ required: requestTagBeforeClosingChat && t('Required_field', { field: 'tags' }) }}
+								render={({ field: { value, onChange } }) => (
+									<DepartmentTags
+										id={chatClosingTagsField}
+										value={value}
+										onChange={onChange}
+										error={errors.chatClosingTags?.message as string}
+										aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
+										disabled={!requestTagBeforeClosingChat}
+									/>
 								)}
-							</Field>
-						)}
+							/>
+							<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
+							{errors.chatClosingTags && (
+								<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
+									{errors.chatClosingTags?.message}
+								</FieldError>
+							)}
+						</Field>
 
 						<Field>
 							<FieldRow>
