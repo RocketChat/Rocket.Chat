@@ -13,7 +13,7 @@ export const useAttributeList = (filter?: string) => {
 		queryKey: ABACQueryKeys.roomAttributes.list({ key: filter ?? '' }),
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			// TODO: Check endpoint types
-			const { attributes, ...data } = await attributesAutoCompleteEndpoint({ key: filter, offset, count: 15 });
+			const { attributes, ...data } = await attributesAutoCompleteEndpoint({ key: filter, offset });
 
 			return {
 				...data,

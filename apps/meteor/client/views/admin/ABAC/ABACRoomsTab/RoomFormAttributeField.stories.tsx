@@ -35,14 +35,7 @@ const meta: Meta<typeof RoomFormAttributeField> = {
 	},
 	decorators: [
 		(Story) => {
-			const AppRoot = mockAppRoot()
-				.withEndpoint('GET', '/v1/abac/attributes', () => ({
-					attributes: [mockAttribute1, mockAttribute2, mockAttribute3],
-					count: 3,
-					offset: 0,
-					total: 3,
-				}))
-				.build();
+			const AppRoot = mockAppRoot().build();
 
 			const methods = useForm<RoomFormData>({
 				defaultValues: {
@@ -65,6 +58,11 @@ const meta: Meta<typeof RoomFormAttributeField> = {
 	],
 	args: {
 		onRemove: action('onRemove'),
+		attributeList: [
+			{ value: mockAttribute1.key, label: mockAttribute1.key, attributeValues: mockAttribute1.values },
+			{ value: mockAttribute2.key, label: mockAttribute2.key, attributeValues: mockAttribute2.values },
+			{ value: mockAttribute3.key, label: mockAttribute3.key, attributeValues: mockAttribute3.values },
+		],
 		index: 0,
 	},
 };

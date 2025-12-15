@@ -1,25 +1,23 @@
-import { Box, Button, FieldError, FieldRow, InputBoxSkeleton, MultiSelect, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useMemo, useState } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Button, FieldError, FieldRow, MultiSelect, SelectFiltered } from '@rocket.chat/fuselage';
+import { useCallback, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { RoomFormData } from './RoomForm';
-import { useAttributeList } from '../hooks/useAttributeList';
 
 type ABACAttributeAutocompleteProps = {
 	onRemove: () => void;
 	index: number;
+	attributeList: { value: string; label: string; attributeValues: string[] }[];
 };
 
-const RoomFormAttributeField = ({ onRemove, index }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
-	const [filter, setFilter] = useState<string>();
-	const filterDebounced = useDebouncedValue(filter, 300);
 
-	const { control, getValues, resetField } = useFormContext<RoomFormData>();
+	const { control, getValues } = useFormContext<RoomFormData>();
 
-	const { data: options, fetchNextPage, isLoading } = useAttributeList(filterDebounced || undefined);
+	const options: SelectOption[] = useMemo(() => attributeList.map((attribute) => [attribute.value, attribute.label]), [attributeList]);
 
 	const validateRepeatedAttributes = useCallback(
 		(value: string) => {
@@ -51,27 +49,17 @@ const RoomFormAttributeField = ({ onRemove, index }: ABACAttributeAutocompletePr
 			return [];
 		}
 
-		const selectedAttributeData = options.find((option) => option.value === keyField.value);
+		const selectedAttributeData = attributeList.find((option) => option.value === keyField.value);
 
 		return selectedAttributeData?.attributeValues.map((value) => [value, value]) || [];
-	}, [keyField.value, options]);
+	}, [attributeList, keyField.value]);
 
-	if (isLoading) {
-		return <InputBoxSkeleton />;
-	}
 	return (
 		<Box display='flex' flexDirection='column' w='full'>
 			<FieldRow>
-				<PaginatedSelectFiltered
+				<SelectFiltered
 					{...keyField}
-					onChange={(val) => {
-						resetField(`attributes.${index}.values`);
-						keyField.onChange(val);
-					}}
-					filter={filter}
-					setFilter={setFilter as (value: string | number | undefined) => void}
 					options={options}
-					endReached={() => fetchNextPage()}
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
