@@ -416,13 +416,14 @@ export const getMatrixProfilesRoutes = () => {
 				tags: ['Federation'],
 				license: ['federation'],
 			},
-			async (_c) => {
+			async (c) => {
 				return {
 					body: {
-						errcode: 'M_UNRECOGNIZED',
-						error: 'This endpoint is not implemented on the homeserver side',
+						devices: [],
+						stream_id: 0,
+						user_id: c.req.param('userId'),
 					},
-					statusCode: 501,
+					statusCode: 200,
 				};
 			},
 		)
