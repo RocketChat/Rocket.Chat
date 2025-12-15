@@ -16,7 +16,7 @@ import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
-import { parentCall } from '../../lib/parentCall';
+import { parentCall } from '../../lib/iframe';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import type { StoreState } from '../../store';

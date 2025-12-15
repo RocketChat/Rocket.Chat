@@ -4,6 +4,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { isDefined } from './helpers/isDefined';
 import type { HooksWidgetAPI } from './lib/hooks';
+import { VALID_CALLBACKS, type LivechatMessageEventData } from './lib/iframe';
 import type { StoreState } from './store';
 
 type InternalWidgetAPI = {
@@ -20,12 +21,6 @@ type InternalWidgetAPI = {
 	resetDocumentStyle: () => void;
 	setFullScreenDocumentMobile: () => void;
 	setWidgetPosition: (position: 'left' | 'right') => void;
-};
-
-export type LivechatMessageEventData<ApiType extends Record<string, any>, Fn extends keyof ApiType = keyof ApiType> = {
-	src?: string;
-	fn: Fn;
-	args: Parameters<ApiType[Fn]>;
 };
 
 type InitializeParams = {
@@ -61,21 +56,6 @@ let smallScreen = false;
 let scrollPosition: number;
 let widgetHeight: number;
 let popoutWindow: Window | null = null;
-
-export const VALID_CALLBACKS = [
-	'chat-maximized',
-	'chat-minimized',
-	'chat-started',
-	'chat-ended',
-	'pre-chat-form-submit',
-	'offline-form-submit',
-	'show-widget',
-	'hide-widget',
-	'assign-agent',
-	'agent-status-change',
-	'queue-position-change',
-	'no-agent-online',
-];
 
 const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
