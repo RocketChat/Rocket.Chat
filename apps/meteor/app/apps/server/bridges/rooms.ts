@@ -346,16 +346,26 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private buildRoomQuery(options: GetRoomsOptions = {}): { query: Filter<ICoreRoom> } {
-		const { types, onlyDiscussions, onlyTeamMain } = options;
+		const { types = [], includeDiscussions = false, onlyDiscussions = false, includeTeamMain = false, onlyTeamMain = false } = options;
 
-		const hasTypes = !!types?.length;
-		const includeDiscussions = options.includeDiscussions ?? !hasTypes;
-		const includeTeamMain = options.includeTeamMain ?? !hasTypes;
+		const orConditions: Array<Filter<ICoreRoom>> = [];
+
+		if (types.length) {
+			orConditions.push({ t: { $in: types as Array<ICoreRoom['t']> } });
+		}
+
+		if (includeDiscussions || onlyDiscussions) {
+			orConditions.push({ prid: { $exists: true } });
+		}
+
+		if (includeTeamMain || onlyTeamMain) {
+			orConditions.push({ teamMain: { $exists: true } });
+		}
 
 		const query: Filter<ICoreRoom> = {};
 
-		if (hasTypes) {
-			query.t = { $in: types as Array<ICoreRoom['t']> };
+		if (orConditions.length) {
+			query.$or = orConditions;
 		}
 
 		if (onlyDiscussions) {
@@ -365,9 +375,9 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		if (onlyTeamMain) {
-			query.teamMain = true;
+			query.teamMain = { $exists: true };
 		} else if (!includeTeamMain) {
-			query.teamMain = { $ne: true };
+			query.teamMain = { $exists: false };
 		}
 
 		return { query };

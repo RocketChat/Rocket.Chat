@@ -20,42 +20,142 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertRoomRaw(room) {
+	convertRoomRaw(room) {
 		if (!room) {
 			return undefined;
 		}
 
-		const creator = room.u
-			? {
-					_id: room.u._id,
-					username: room.u.username,
-					name: room.u.name,
+		const map = {
+			id: '_id',
+			displayName: 'fname',
+			slugifiedName: 'name',
+			members: 'members',
+			userIds: 'uids',
+			messageCount: 'msgs',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			closedAt: 'closedAt',
+			lastModifiedAt: 'lm',
+			customFields: 'customFields',
+			livechatData: 'livechatData',
+			isWaitingResponse: 'waitingResponse',
+			isOpen: 'open',
+			_USERNAMES: '_USERNAMES',
+			description: 'description',
+			source: 'source',
+			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
+			isDefault: 'default',
+			isReadOnly: 'ro',
+			displaySystemMessages: (data) => (typeof data.sysMes === 'undefined' ? true : data.sysMes),
+			type: (data) => this._convertTypeToApp(data.t),
+			creator: (data) => {
+				const { u } = data;
+
+				if (!u) {
+					return undefined;
 				}
-			: undefined;
 
-		const type = this._convertTypeToApp(room.t);
+				return {
+					_id: u._id || u.id,
+					username: u.username,
+					...(u.name && { name: u.name }),
+				};
+			},
+			visitorChannelInfo: (data) => {
+				const { v } = data;
 
-		return {
-			id: room._id,
-			slugifiedName: room.name || room.fname || room._id,
-			displayName: room.fname,
-			type,
-			creator,
-			userIds: room.uids,
-			isDefault: !!room.default,
-			isReadOnly: !!room.ro,
-			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
-			messageCount: room.msgs,
-			createdAt: room.ts,
-			updatedAt: room._updatedAt,
-			lastModifiedAt: room.lm,
-			description: room.description,
-			customFields: room.customFields,
-			parentRoomId: room.prid,
-			teamId: room.teamId,
-			isTeamMain: !!room.teamMain,
-			livechatData: room.livechatData,
+				if (!v) {
+					return undefined;
+				}
+
+				const info = {
+					...(v.phone && { phone: v.phone }),
+					...(v.lastMessageTs && { lastMessageTs: v.lastMessageTs }),
+				};
+
+				return Object.keys(info).length ? info : undefined;
+			},
+			visitor: (data) => {
+				const { v } = data;
+
+				if (!v) {
+					return undefined;
+				}
+
+				return {
+					...(v._id && { id: v._id }),
+					...(v.id && { id: v.id }),
+					...(v.username && { username: v.username }),
+					...(v.token && { token: v.token }),
+					...(v.status && { status: v.status }),
+					...(v.name && { name: v.name }),
+					...(v.visitorEmails && { visitorEmails: v.visitorEmails }),
+					...(v.phone && { phone: v.phone }),
+					...(v.customFields && { customFields: v.customFields }),
+					...(v.livechatData && { livechatData: v.livechatData }),
+				};
+			},
+			contact: (data) => {
+				const { contactId } = data;
+
+				if (!contactId) {
+					return undefined;
+				}
+
+				return { id: contactId };
+			},
+			department: (data) => {
+				const { departmentId } = data;
+
+				if (!departmentId) {
+					return undefined;
+				}
+
+				return { id: departmentId };
+			},
+			closedBy: (data) => {
+				const { closedBy } = data;
+
+				if (!closedBy) {
+					return undefined;
+				}
+
+				return {
+					_id: closedBy._id ?? closedBy.id,
+					...(closedBy.username && { username: closedBy.username }),
+				};
+			},
+			servedBy: (data) => {
+				const { servedBy } = data;
+
+				if (!servedBy) {
+					return undefined;
+				}
+
+				return {
+					_id: servedBy._id ?? servedBy.id,
+					...(servedBy.username && { username: servedBy.username }),
+				};
+			},
+			responseBy: (data) => {
+				const { responseBy } = data;
+
+				if (!responseBy) {
+					return undefined;
+				}
+
+				return {
+					_id: responseBy._id ?? responseBy.id,
+					...(responseBy.username && { username: responseBy.username }),
+				};
+			},
+			parentRoomId: 'prid',
+			parentRoom: (data) => (data.prid ? { id: data.prid } : undefined),
 		};
+
+		return transformMappedData(room, map);
 	}
 
 	async __getCreator(user) {

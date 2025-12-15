@@ -1,4 +1,7 @@
+import type { ILivechatContact, IDepartment, IVisitor } from '../livechat';
+import type { IOmnichannelSource, IVisitorChannelInfo } from '../livechat/ILivechatRoom';
 import type { IUserLookup } from '../users';
+import type { IRoom } from './IRoom';
 import type { RoomType } from './RoomType';
 
 /**
@@ -11,18 +14,33 @@ export interface IRoomRaw {
 	displayName?: string;
 	type: RoomType;
 	creator?: IUserLookup;
+	members?: Array<string>;
 	userIds?: Array<string>;
+	_USERNAMES?: Array<string>;
 	isDefault?: boolean;
 	isReadOnly?: boolean;
 	displaySystemMessages?: boolean;
 	messageCount?: number;
 	createdAt?: Date;
 	updatedAt?: Date;
+	closedAt?: Date;
 	lastModifiedAt?: Date;
 	description?: string;
 	customFields?: { [key: string]: any };
+	parentRoom?: Pick<IRoom, 'id'>;
 	parentRoomId?: string;
 	teamId?: string;
 	isTeamMain?: boolean;
 	livechatData?: { [key: string]: any };
+	isWaitingResponse?: boolean;
+	isOpen?: boolean;
+	closer?: 'user' | 'visitor' | 'bot';
+	closedBy?: IUserLookup;
+	servedBy?: IUserLookup;
+	responseBy?: IUserLookup;
+	source?: IOmnichannelSource;
+	visitor?: IVisitor;
+	visitorChannelInfo?: IVisitorChannelInfo;
+	department?: IDepartment | { id: string };
+	contact?: ILivechatContact | { id: string };
 }
