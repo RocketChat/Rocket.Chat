@@ -25,6 +25,13 @@ export class AppRoomsConverter {
 			return undefined;
 		}
 
+		const mapUserLookup = (user) =>
+			user && {
+				_id: user._id ?? user.id,
+				...(user.username && { username: user.username }),
+				...(user.name && { name: user.name }),
+			};
+
 		const map = {
 			id: '_id',
 			displayName: 'fname',
@@ -50,107 +57,28 @@ export class AppRoomsConverter {
 			isReadOnly: 'ro',
 			displaySystemMessages: (data) => (typeof data.sysMes === 'undefined' ? true : data.sysMes),
 			type: (data) => this._convertTypeToApp(data.t),
-			creator: (data) => {
-				const { u } = data;
-
-				if (!u) {
-					return undefined;
-				}
-
-				return {
-					_id: u._id || u.id,
-					username: u.username,
-					...(u.name && { name: u.name }),
-				};
-			},
-			visitorChannelInfo: (data) => {
-				const { v } = data;
-
-				if (!v) {
-					return undefined;
-				}
-
-				const info = {
-					...(v.phone && { phone: v.phone }),
-					...(v.lastMessageTs && { lastMessageTs: v.lastMessageTs }),
-				};
-
-				return Object.keys(info).length ? info : undefined;
-			},
-			visitor: (data) => {
-				const { v } = data;
-
-				if (!v) {
-					return undefined;
-				}
-
-				return {
-					...(v._id && { id: v._id }),
-					...(v.id && { id: v.id }),
-					...(v.username && { username: v.username }),
-					...(v.token && { token: v.token }),
-					...(v.status && { status: v.status }),
-					...(v.name && { name: v.name }),
-					...(v.visitorEmails && { visitorEmails: v.visitorEmails }),
-					...(v.phone && { phone: v.phone }),
-					...(v.customFields && { customFields: v.customFields }),
-					...(v.livechatData && { livechatData: v.livechatData }),
-				};
-			},
-			contact: (data) => {
-				const { contactId } = data;
-
-				if (!contactId) {
-					return undefined;
-				}
-
-				return { id: contactId };
-			},
-			department: (data) => {
-				const { departmentId } = data;
-
-				if (!departmentId) {
-					return undefined;
-				}
-
-				return { id: departmentId };
-			},
-			closedBy: (data) => {
-				const { closedBy } = data;
-
-				if (!closedBy) {
-					return undefined;
-				}
-
-				return {
-					_id: closedBy._id ?? closedBy.id,
-					...(closedBy.username && { username: closedBy.username }),
-				};
-			},
-			servedBy: (data) => {
-				const { servedBy } = data;
-
-				if (!servedBy) {
-					return undefined;
-				}
-
-				return {
-					_id: servedBy._id ?? servedBy.id,
-					...(servedBy.username && { username: servedBy.username }),
-				};
-			},
-			responseBy: (data) => {
-				const { responseBy } = data;
-
-				if (!responseBy) {
-					return undefined;
-				}
-
-				return {
-					_id: responseBy._id ?? responseBy.id,
-					...(responseBy.username && { username: responseBy.username }),
-				};
-			},
+			creator: (data) => mapUserLookup(data.u),
+			visitor: (data) =>
+				data.v && {
+					...(data.v.id && { id: data.v.id }),
+					...(data.v.username && { username: data.v.username }),
+					...(data.v.token && { token: data.v.token }),
+					...(data.v.status && { status: data.v.status }),
+					...(data.v.name && { name: data.v.name }),
+					...(data.v.visitorEmails && { visitorEmails: data.v.visitorEmails }),
+					...(data.v.phone && { phone: data.v.phone }),
+					...(data.v.customFields && { customFields: data.v.customFields }),
+					...(data.v.livechatData && { livechatData: data.v.livechatData }),
+				},
+			visitorChannelInfo: (data) =>
+				data.v && (data.v.phone || data.v.lastMessageTs)
+					? { ...(data.v.phone && { phone: data.v.phone }), ...(data.v.lastMessageTs && { lastMessageTs: data.v.lastMessageTs }) }
+					: undefined,
+			contact: (data) => (data.contactId ? { id: data.contactId } : undefined),
+			department: (data) => (data.departmentId ? { id: data.departmentId } : undefined),
+			closedBy: (data) => mapUserLookup(data.closedBy),
+			servedBy: (data) => mapUserLookup(data.servedBy),
+			responseBy: (data) => mapUserLookup(data.responseBy),
 			parentRoomId: 'prid',
 			parentRoom: (data) => (data.prid ? { id: data.prid } : undefined),
 		};
