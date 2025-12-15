@@ -96,6 +96,7 @@ slashCommands.add({
 		await Promise.all(
 			usersFiltered.map(async (user) => {
 				try {
+					// TODO: Refactor this to return an error if some user fails to be added
 					return await addUsersToRoomMethod(
 						userId,
 						{
