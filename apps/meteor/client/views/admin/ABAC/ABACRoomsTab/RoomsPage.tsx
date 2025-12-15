@@ -106,8 +106,12 @@ const RoomsPage = () => {
 								<GenericTableRow key={room._id}>
 									<GenericTableCell>{room.fname || room.name}</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
-									<GenericTableCell>{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}</GenericTableCell>
-									<GenericTableCell>{room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}</GenericTableCell>
+									<GenericTableCell withTruncatedText>
+										{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
+									</GenericTableCell>
+									<GenericTableCell withTruncatedText>
+										{room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}
+									</GenericTableCell>
 									<GenericTableCell>
 										<RoomMenu room={{ rid: room._id, name: room.fname || room.name || room._id }} />
 									</GenericTableCell>
