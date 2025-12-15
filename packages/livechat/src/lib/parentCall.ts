@@ -1,4 +1,4 @@
-import { VALID_CALLBACKS } from '../widget';
+import { VALID_CALLBACKS } from '../embeddable-script';
 
 const getParentWindowTarget = () => {
 	if (window.opener && !window.opener.closed) {

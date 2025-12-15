@@ -1,49 +1,46 @@
-import path from 'path';
+import { resolve, dirname } from 'node:path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
 
 import { supportedLocales } from './src/supportedLocales';
+
 import 'webpack-dev-server';
 
 // Helper to use absolute paths in the webpack config
-const _ = (p: string) => path.resolve(__dirname, p);
+const _ = (p: string) => resolve(__dirname, p);
 
-const common = (args: webpack.WebpackOptionsNormalized): Partial<webpack.Configuration> => ({
-	stats: 'errors-warnings',
-	mode: args.mode,
-	devtool: args.mode === 'production' ? 'source-map' : 'eval',
-	resolve: {
-		extensions: ['.js', '.jsx', '.ts', '.tsx'],
-		symlinks: false,
-		alias: {
-			'react': 'preact/compat',
-			'react-dom': 'preact/compat',
-			'date-fns': path.dirname(require.resolve('date-fns/package.json')),
-		},
-	},
-	optimization: {
-		sideEffects: false,
-		splitChunks: {
-			chunks: 'all',
-		},
-		emitOnErrors: false,
-	},
-});
-
-const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Configuration[] => [
+const config = (_env: any, { mode = 'production' }: webpack.WebpackOptionsNormalized): webpack.Configuration[] => [
 	{
-		...common(args),
+		mode,
 		entry: {
 			bundle: ['core-js', 'regenerator-runtime/runtime', _('./src/entry')],
 			polyfills: _('./src/polyfills'),
 		} as webpack.Entry,
 		output: {
 			path: _('./dist'),
-			publicPath: args.mode === 'production' ? 'livechat/' : '/',
-			filename: args.mode === 'production' ? '[name].[chunkhash:5].js' : '[name].js',
+			publicPath: mode === 'production' ? 'livechat/' : '/',
+			filename: mode === 'production' ? '[name].[chunkhash:5].js' : '[name].js',
 			chunkFilename: '[name].chunk.[chunkhash:5].js',
+		},
+		stats: 'errors-warnings',
+		devtool: mode === 'production' ? 'source-map' : 'eval',
+		resolve: {
+			extensions: ['.js', '.jsx', '.ts', '.tsx'],
+			symlinks: false,
+			alias: {
+				'react': 'preact/compat',
+				'react-dom': 'preact/compat',
+				'date-fns': dirname(require.resolve('date-fns/package.json')),
+			},
+		},
+		optimization: {
+			sideEffects: false,
+			splitChunks: {
+				chunks: 'all',
+			},
+			emitOnErrors: false,
 		},
 		module: {
 			rules: [
@@ -66,7 +63,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					test: /\.s?css$/,
 					exclude: [_('./src/components'), _('./src/routes')],
 					use: [
-						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
 							loader: 'css-loader',
 							options: {
@@ -86,7 +83,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					test: /\.s?css$/,
 					include: [_('./src/components'), _('./src/routes')],
 					use: [
-						args.mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+						mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
 						{
 							loader: 'css-loader',
 							options: {
@@ -121,17 +118,17 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				},
 				{
 					test: /\.(woff2?|ttf|eot|jpe?g|png|webp|gif|mp4|mov|ogg|webm)(\?.*)?$/i,
-					loader: args.mode === 'production' ? 'file-loader' : 'url-loader',
+					loader: mode === 'production' ? 'file-loader' : 'url-loader',
 				},
 			],
 		},
 		plugins: [
 			new MiniCssExtractPlugin({
-				filename: args.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
-				chunkFilename: args.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
+				filename: mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
+				chunkFilename: mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
 			}) as unknown as webpack.WebpackPluginInstance,
 			new webpack.DefinePlugin({
-				'process.env.NODE_ENV': JSON.stringify(args.mode === 'production' ? 'production' : 'development'),
+				'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
 				title: 'Livechat - Rocket.Chat',
@@ -147,7 +144,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 			allowedHosts: 'all',
 			open: true,
 			devMiddleware: {
-				publicPath: args.mode === 'production' ? 'livechat/' : '/',
+				publicPath: mode === 'production' ? 'livechat/' : '/',
 				stats: 'normal',
 			},
 			client: {
@@ -155,7 +152,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 			},
 			static: {
 				directory: _('./src'),
-				publicPath: args.mode === 'production' ? 'livechat/' : '/',
+				publicPath: mode === 'production' ? 'livechat/' : '/',
 				watch: {
 					ignored: [_('./dist'), _('./node_modules')],
 				},
@@ -163,20 +160,32 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 		},
 	},
 	{
-		...common(args),
+		mode,
 		entry: {
-			'rocketchat-livechat.min': _('./src/widget.ts'),
+			'rocketchat-livechat.min': _('./src/embeddable-script.ts'),
 		} as webpack.Entry,
 		output: {
 			path: _('./dist'),
-			publicPath: args.mode === 'production' ? 'livechat/' : '/',
+			publicPath: mode === 'production' ? 'livechat/' : '/',
 			filename: '[name].js',
 		},
+		resolve: {
+			extensions: ['.js', '.ts', '.tsx'],
+		},
+		stats: 'errors-warnings',
+		devtool: 'source-map',
 		module: {
 			rules: [
 				{
 					test: /\.tsx?$/,
-					use: 'babel-loader',
+					use: [
+						{
+							loader: 'ts-loader',
+							options: {
+								configFile: _('tsconfig.build.json'),
+							},
+						},
+					],
 					exclude: ['/node_modules/'],
 				},
 			],
