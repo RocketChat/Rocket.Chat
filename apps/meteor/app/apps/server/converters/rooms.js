@@ -87,7 +87,7 @@ export class AppRoomsConverter {
 				delete data.v;
 
 				return {
-					...(v.id && { id: v.id }),
+					...(v.id || v._id ? { id: v.id || v._id } : {}),
 					...(v.username && { username: v.username }),
 					...(v.token && { token: v.token }),
 					...(v.status && { status: v.status }),
