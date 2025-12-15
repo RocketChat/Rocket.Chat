@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils';
 import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
@@ -11,6 +12,7 @@ test.describe.serial('Global Search', () => {
 	let targetChannel: { name: string; _id: string };
 	let targetGroup: { name: string; _id: string };
 	let threadMessage: IMessage;
+	let poHomeChannel: HomeChannel;
 
 	const fillMessages = async (api: BaseTest['api']) => {
 		const { message: parentMessage } = await (
@@ -56,21 +58,18 @@ test.describe.serial('Global Search', () => {
 	);
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/');
+		poHomeChannel = new HomeChannel(page);
+		await page.goto('/home');
 	});
 
 	test('opens correct message when jumping from global search in group to channel thread', async ({ page }) => {
-		await page.goto(`/group/${targetGroup.name}`);
-		await expect(page.getByTitle('Search Messages')).toBeVisible();
-		await page.getByTitle('Search Messages').click();
+		// await poHomeChannel.goto(`/group/${targetGroup.name}`);
+		await poHomeChannel.sidenav.openChat(targetGroup.name);
+		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await expect(page.getByText('Global search')).toBeVisible({ timeout: 10000 });
-		await page.getByText('Global search').click();
+		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true, timeout: 10000 }); // fill partial text to match search
 
-		await expect(page.getByPlaceholder('Search Messages')).toBeVisible();
-		await page.getByPlaceholder('Search Messages').fill(threadMessage.msg.slice(10)); // fill partial text to match search
-
-		const message = page.getByRole('listitem').filter({ hasText: threadMessage.msg });
+		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
 		await expect(message).toBeVisible();
 		await message.hover();
 		const jumpToMessageButton = message.getByTitle('Jump to message');
