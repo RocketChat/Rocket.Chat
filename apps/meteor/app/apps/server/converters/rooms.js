@@ -54,32 +54,99 @@ export class AppRoomsConverter {
 			isTeamMain: 'teamMain',
 			isDefault: 'default',
 			isReadOnly: 'ro',
-			displaySystemMessages: (data) => (typeof data.sysMes === 'undefined' ? true : data.sysMes),
-			type: (data) => this._convertTypeToApp(data.t),
+			displaySystemMessages: (data) => {
+				const { sysMes } = data;
+				delete data.sysMes;
+				return typeof sysMes === 'undefined' ? true : sysMes;
+			},
+			type: (data) => {
+				const result = this._convertTypeToApp(data.t);
+				delete data.t;
+				return result;
+			},
 			creator: (data) => mapUserLookup(data.u),
-			visitor: (data) =>
-				data.v && {
-					...(data.v.id && { id: data.v.id }),
-					...(data.v.username && { username: data.v.username }),
-					...(data.v.token && { token: data.v.token }),
-					...(data.v.status && { status: data.v.status }),
-					...(data.v.name && { name: data.v.name }),
-					...(data.v.visitorEmails && { visitorEmails: data.v.visitorEmails }),
-					...(data.v.phone && { phone: data.v.phone }),
-					...(data.v.customFields && { customFields: data.v.customFields }),
-					...(data.v.livechatData && { livechatData: data.v.livechatData }),
-				},
-			visitorChannelInfo: (data) =>
-				data.v && (data.v.phone || data.v.lastMessageTs)
-					? { ...(data.v.phone && { phone: data.v.phone }), ...(data.v.lastMessageTs && { lastMessageTs: data.v.lastMessageTs }) }
-					: undefined,
-			contact: (data) => (data.contactId ? { id: data.contactId } : undefined),
-			department: (data) => (data.departmentId ? { id: data.departmentId } : undefined),
-			closedBy: (data) => mapUserLookup(data.closedBy),
-			servedBy: (data) => mapUserLookup(data.servedBy),
-			responseBy: (data) => mapUserLookup(data.responseBy),
-			parentRoomId: 'prid',
-			parentRoom: (data) => (data.prid ? { id: data.prid } : undefined),
+			visitorChannelInfo: (data) => {
+				const { v } = data;
+				if (!v) {
+					return undefined;
+				}
+
+				const info = {
+					...(v.phone && { phone: v.phone }),
+					...(v.lastMessageTs && { lastMessageTs: v.lastMessageTs }),
+				};
+
+				return Object.keys(info).length ? info : undefined;
+			},
+			visitor: (data) => {
+				const { v } = data;
+				if (!v) {
+					return undefined;
+				}
+
+				delete data.v;
+
+				return {
+					...(v.id && { id: v.id }),
+					...(v.username && { username: v.username }),
+					...(v.token && { token: v.token }),
+					...(v.status && { status: v.status }),
+					...(v.name && { name: v.name }),
+					...(v.visitorEmails && { visitorEmails: v.visitorEmails }),
+					...(v.phone && { phone: v.phone }),
+					...(v.customFields && { customFields: v.customFields }),
+					...(v.livechatData && { livechatData: v.livechatData }),
+				};
+			},
+			contact: (data) => {
+				if (!data.contactId) {
+					return undefined;
+				}
+				const { contactId } = data;
+				delete data.contactId;
+				return { id: contactId };
+			},
+			department: (data) => {
+				if (!data.departmentId) {
+					return undefined;
+				}
+				const { departmentId } = data;
+				delete data.departmentId;
+				return { id: departmentId };
+			},
+			closedBy: (data) => {
+				if (!data.closedBy) {
+					return undefined;
+				}
+				const { closedBy } = data;
+				delete data.closedBy;
+				return mapUserLookup(closedBy);
+			},
+			servedBy: (data) => {
+				if (!data.servedBy) {
+					return undefined;
+				}
+				const { servedBy } = data;
+				delete data.servedBy;
+				return mapUserLookup(servedBy);
+			},
+			responseBy: (data) => {
+				if (!data.responseBy) {
+					return undefined;
+				}
+				const { responseBy } = data;
+				delete data.responseBy;
+				return mapUserLookup(responseBy);
+			},
+			parentRoomId: (data) => data.prid,
+			parentRoom: (data) => {
+				if (!data.prid) {
+					return undefined;
+				}
+				const { prid } = data;
+				delete data.prid;
+				return { id: prid };
+			},
 		};
 
 		return transformMappedData(room, map);
