@@ -303,7 +303,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			} else if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
 				// Call from another session, must be flagged as ignored before any event is triggered
 				this.config.logger?.log('Ignoring Outbound Call from a different session');
-				this.ignore();
+				this.contractState = 'ignored';
 			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
 				this.config.logger?.log('Ignoring Unknown Outbound Call');
 				this.ignore();
