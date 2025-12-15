@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
-import { getCredentials, request, credentials } from '../../data/api-data';
+import { getCredentials, request, credentials, methodCall } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -384,6 +384,35 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.inUse).to.be.true;
+				});
+		});
+
+		it('should throw an error when trying to audit the messages of an abac managed room', async () => {
+			await request
+				.post(methodCall('auditGetMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'auditGetMessages',
+						params: [
+							{
+								type: '',
+								msg: 'test1234',
+								startDate: { $date: new Date() },
+								endDate: { $date: new Date() },
+								rid: testRoom._id,
+								users: [],
+							},
+						],
+						id: '14',
+						msg: 'method',
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result).to.have.property('error');
+					expect(result.error).to.have.property('error', `Room doesn't exist`);
 				});
 		});
 

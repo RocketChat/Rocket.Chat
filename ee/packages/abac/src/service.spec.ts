@@ -21,6 +21,7 @@ const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
 const mockAbacFindOneAndUpdate = jest.fn();
+const mockCreateAuditServerEvent = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -53,7 +54,7 @@ jest.mock('@rocket.chat/models', () => ({
 		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
 	},
 	ServerEvents: {
-		createAuditServerEvent: jest.fn(),
+		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
 	},
 }));
 
@@ -1030,17 +1031,18 @@ describe('AbacService (unit)', () => {
 	describe('checkUsernamesMatchAttributes', () => {
 		beforeEach(() => {
 			mockUsersFind.mockReset();
+			mockCreateAuditServerEvent.mockReset();
 		});
 
 		const attributes = [{ key: 'dept', values: ['eng'] }];
 
 		it('returns early (no query) when usernames array is empty', async () => {
-			await expect(service.checkUsernamesMatchAttributes([], attributes as any)).resolves.toBeUndefined();
+			await expect(service.checkUsernamesMatchAttributes([], attributes as any, 'objectId')).resolves.toBeUndefined();
 			expect(mockUsersFind).not.toHaveBeenCalled();
 		});
 
 		it('returns early (no query) when attributes array is empty', async () => {
-			await expect(service.checkUsernamesMatchAttributes(['alice'], [])).resolves.toBeUndefined();
+			await expect(service.checkUsernamesMatchAttributes(['alice'], [], 'objectId')).resolves.toBeUndefined();
 			expect(mockUsersFind).not.toHaveBeenCalled();
 		});
 
@@ -1052,7 +1054,7 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any)).resolves.toBeUndefined();
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).resolves.toBeUndefined();
 
 			expect(mockUsersFind).toHaveBeenCalledWith(
 				{
@@ -1083,11 +1085,44 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any)).rejects.toMatchObject({
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
 				error: 'error-usernames-not-matching-abac-attributes',
 				message: expect.stringContaining('[error-usernames-not-matching-abac-attributes]'),
 				details: expect.arrayContaining(['bob', 'charlie']),
 			});
+		});
+
+		it('generates an audit log for every compliant username', async () => {
+			const usernames = ['alice', 'bob'];
+
+			mockUsersFind.mockImplementationOnce(() => ({
+				map: () => ({
+					toArray: async () => [],
+				}),
+			}));
+
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).resolves.toBeUndefined();
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledTimes(usernames.length);
+			const calledUsernames = mockCreateAuditServerEvent.mock.calls.map(([, payload]: any[]) => payload?.subject?.username).filter(Boolean);
+			expect(calledUsernames.sort()).toEqual(usernames.sort());
+		});
+
+		it('does not generate audit logs when usernames do not match attributes', async () => {
+			const usernames = ['alice', 'bob', 'charlie'];
+			const nonCompliantDocs = [{ username: 'alice' }, { username: 'bob' }, { username: 'charlie' }];
+
+			mockUsersFind.mockImplementationOnce(() => ({
+				map: (fn: (u: any) => string) => ({
+					toArray: async () => nonCompliantDocs.map(fn),
+				}),
+			}));
+
+			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
+				error: 'error-usernames-not-matching-abac-attributes',
+			});
+
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
 		});
 	});
 });

@@ -18,5 +18,5 @@ beforeAddUserToRoom.patch(async (prev, users, room, actor) => {
 		throw new Error('error-room-is-abac-managed');
 	}
 
-	await Abac.checkUsernamesMatchAttributes(validUsers as string[], room.abacAttributes);
+	await Abac.checkUsernamesMatchAttributes(validUsers as string[], room.abacAttributes, room._id);
 });

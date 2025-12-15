@@ -1,9 +1,11 @@
-import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents } from '..';
+import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, IServerEvents, Optional } from '..';
 
-export type MinimalUser = Pick<IUser, '_id' | 'username'>;
+export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
 export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval';
+
+export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
 export type AbacAttributeDefinitionChangeType =
 	| 'created'
@@ -54,7 +56,7 @@ interface IServerEventAbacAttributeChanged
 
 interface IServerEventAbacActionPerformed
 	extends IAuditServerEventType<
-		| { key: 'action'; value: 'revoked-object-access' }
+		| { key: 'action'; value: AbacActionPerformed }
 		| { key: 'reason'; value: AbacAuditReason }
 		| { key: 'subject'; value: MinimalUser | undefined }
 		| { key: 'object'; value: MinimalRoom | undefined }
