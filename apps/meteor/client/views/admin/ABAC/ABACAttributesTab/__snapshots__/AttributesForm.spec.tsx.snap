@@ -64,9 +64,6 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                       type="text"
                     />
                   </span>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__error"
-                  />
                 </div>
                 <div
                   class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
@@ -94,9 +91,6 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                       type="text"
                     />
                   </span>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__error"
-                  />
                   <button
                     class="rcx-box rcx-box--full rcx-button"
                     disabled=""
@@ -238,9 +232,6 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                       type="text"
                     />
                   </span>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__error"
-                  />
                 </div>
                 <div
                   class="rcx-box rcx-box--full rcx-field rcx-css-1jagyun"
@@ -317,9 +308,6 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                       </i>
                     </button>
                   </span>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__error"
-                  />
                   <button
                     class="rcx-box rcx-box--full rcx-button"
                     type="button"
