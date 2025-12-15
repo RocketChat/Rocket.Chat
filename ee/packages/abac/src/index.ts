@@ -576,10 +576,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		try {
-			if (!newAttributes.length) {
-				return;
-			}
-
 			const query = {
 				__rooms: rid,
 				$or: buildNonCompliantConditions(newAttributes),
