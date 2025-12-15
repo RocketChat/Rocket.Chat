@@ -593,4 +593,44 @@ describe('[Commands]', () => {
 				.end(done);
 		});
 	});
+
+	// TODO: invite never fails
+	describe.skip('Command "invite"', function () {
+		let directMessageRoom: IRoom;
+		let user1: TestUser<IUser>;
+		let user2: TestUser<IUser>;
+		let user1Credentials: Credentials;
+		this.beforeAll(async () => {
+			user1 = await createUser();
+			user2 = await createUser();
+
+			[user1Credentials] = await Promise.all([login(user1.username, password)]);
+		});
+
+		this.beforeAll(async () => {
+			const [response1] = await Promise.all([
+				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
+			]);
+			directMessageRoom = response1.body.room;
+		});
+
+		this.afterAll(async () => {
+			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should fail when trying to invite a user to a direct message room', (done) => {
+			void request
+				.post(api('commands.run'))
+				.set(user1Credentials)
+				.send({ command: 'invite', roomId: directMessageRoom._id, params: 'g1' })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').that.is.a('string');
+					expect(res.body.error).to.equal('unauthorized');
+				})
+				.end(done);
+		});
+	});
 });
