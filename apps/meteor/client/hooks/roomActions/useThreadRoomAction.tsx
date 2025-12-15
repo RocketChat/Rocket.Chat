@@ -1,11 +1,11 @@
 import type { BadgeProps } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction, HeaderToolbarActionBadge } from '../../components/Header';
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {

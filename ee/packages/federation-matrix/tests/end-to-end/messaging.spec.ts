@@ -1,5 +1,12 @@
+import * as path from 'path';
+
 import type { IMessage } from '@rocket.chat/core-typings';
 
+import {
+	uploadFileToRC,
+	getFilesList,
+	downloadFileAndVerifyBinary as downloadFileAndCompareBinary,
+} from '../../../../../apps/meteor/tests/data/file.helper';
 import { sendMessage } from '../../../../../apps/meteor/tests/data/messages.helper';
 import { createRoom, loadHistory } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
@@ -15,7 +22,7 @@ import { SynapseClient } from '../helper/synapse-client';
 	beforeAll(async () => {
 		// Create admin request config for RC1
 		rc1AdminRequestConfig = await getRequestConfig(
-			federationConfig.rc1.apiUrl,
+			federationConfig.rc1.url,
 			federationConfig.rc1.adminUser,
 			federationConfig.rc1.adminPassword,
 		);
@@ -83,9 +90,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					// Accept invitation for the federated user
 					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
-
-					// Wait for federation synchronization
-					await new Promise((resolve) => setTimeout(resolve, 2000));
 				}, 10000);
 
 				it('Send a text message', async () => {
@@ -416,9 +420,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					// Accept invitation for the federated user
 					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
-
-					// Wait for federation synchronization
-					await new Promise((resolve) => setTimeout(resolve, 2000));
 				}, 10000);
 
 				it('Send a text message', async () => {
@@ -668,6 +669,717 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 					];
 					expect(rcMessage?.md).toEqual(expectedMd);
+				});
+			});
+		});
+
+		describe('Media', () => {
+			// Test file resources
+			const resourcesDir = path.join(__dirname, '../resources');
+			const testFiles = {
+				image: {
+					path: path.join(resourcesDir, 'sample_image.webp'),
+					fileName: 'sample_image.webp',
+					description: 'Image upload test',
+				},
+				pdf: {
+					path: path.join(resourcesDir, 'sample_pdf.pdf'),
+					fileName: 'sample_pdf.pdf',
+					description: 'PDF document test',
+				},
+				video: {
+					path: path.join(resourcesDir, 'sample_video.webm'),
+					fileName: 'sample_video.webm',
+					description: 'Video upload test',
+				},
+				audio: {
+					path: path.join(resourcesDir, 'sample_audio.mp3'),
+					fileName: 'sample_audio.mp3',
+					description: 'Audio upload test',
+				},
+				text: {
+					path: path.join(resourcesDir, 'sample_text.txt'),
+					fileName: 'sample_text.txt',
+					description: 'Text file upload test',
+				},
+			};
+
+			describe('On RC', () => {
+				let channelName: string;
+				let federatedChannel: any;
+
+				beforeAll(async () => {
+					channelName = `federated-room-media-rc-${Date.now()}`;
+
+					// Create a federated private room with federated user
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: {
+							federated: true,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					federatedChannel = createResponse.body.group;
+
+					expect(federatedChannel).toHaveProperty('_id');
+					expect(federatedChannel).toHaveProperty('name', channelName);
+					expect(federatedChannel).toHaveProperty('t', 'p');
+					expect(federatedChannel).toHaveProperty('federated', true);
+
+					// Accept invitation for the federated user
+					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					expect(acceptedRoomId).not.toBe('');
+				}, 10000);
+
+				describe('Upload one image, and add a description', () => {
+					it('should appear correctly locally and on the remote Element as messages', async () => {
+						const fileInfo = testFiles.image;
+						const uploadResponse = await uploadFileToRC(federatedChannel._id, fileInfo.path, fileInfo.description, rc1AdminRequestConfig);
+
+						expect(uploadResponse.message).toBeDefined();
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+
+						// RC view: Verify files array
+						expect(rcMessage?.files).toBeDefined();
+						expect(rcMessage?.files?.[0]?.name).toBe(fileInfo.fileName);
+						expect(rcMessage?.files?.[0]?.type).toBe('image/webp');
+						expect(rcMessage?.files?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify attachments array
+						expect(rcMessage?.attachments).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title).toBe(fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+						expect((rcMessage?.attachments?.[0] as any)?.image_url).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect((rcMessage?.attachments?.[0] as any)?.image_type).toBe('image/webp');
+						expect((rcMessage?.attachments?.[0] as any)?.image_size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify federation
+						expect(rcMessage?.federation?.eventId).not.toBe('');
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
+						expect(synapseMessage?.content.msgtype).toBe('m.image');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files locally', async () => {
+						const fileInfo = testFiles.image;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+						expect(rcFile?.type).toBe('image/webp');
+						expect(rcFile?.federation).toBeDefined();
+
+						// RC view: The file should have federation metadata
+						expect(rcFile?.federation?.mxcUri).toBeDefined();
+					});
+
+					it('should be able to download the files locally and on the remote Element', async () => {
+						const fileInfo = testFiles.image;
+
+						// RC view: Get the file from history to get download URL
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+
+						// RC view: Download and verify binary match from RC
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+
+						// Element view: Download and verify binary match from Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.url).toBeDefined();
+
+						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						expect(synapseFilesMatch).toBe(true);
+					});
+				});
+
+				describe('Upload one PDF, and add a description', () => {
+					it('should appear correctly locally and on the remote Element as messages', async () => {
+						const fileInfo = testFiles.pdf;
+						const uploadResponse = await uploadFileToRC(federatedChannel._id, fileInfo.path, fileInfo.description, rc1AdminRequestConfig);
+
+						expect(uploadResponse.message).toBeDefined();
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+
+						// RC view: Verify files array
+						expect(rcMessage?.files).toBeDefined();
+						expect(rcMessage?.files?.[0]?.name).toBe(fileInfo.fileName);
+						expect(rcMessage?.files?.[0]?.type).toBe('application/pdf');
+						expect(rcMessage?.files?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify attachments array
+						expect(rcMessage?.attachments).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title).toBe(fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+						expect(rcMessage?.attachments?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify federation
+						expect(rcMessage?.federation?.eventId).not.toBe('');
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
+						expect(synapseMessage?.content.msgtype).toBe('m.file');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files locally', async () => {
+						const fileInfo = testFiles.pdf;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+						expect(rcFile?.type).toBe('application/pdf');
+						expect(rcFile?.federation).toBeDefined();
+
+						// RC view: The file should have federation metadata
+						expect(rcFile?.federation?.mxcUri).toBeDefined();
+					});
+
+					it('should be able to download the files locally and on the remote Element', async () => {
+						const fileInfo = testFiles.pdf;
+
+						// RC view: Get the file from history to get download URL
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+
+						// RC view: Download and verify binary match from RC
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+
+						// Element view: Download and verify binary match from Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.url).toBeDefined();
+
+						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						expect(synapseFilesMatch).toBe(true);
+					});
+				});
+
+				describe('Upload one Video, and add a description', () => {
+					it('should appear correctly locally and on the remote Element as messages', async () => {
+						const fileInfo = testFiles.video;
+						const uploadResponse = await uploadFileToRC(federatedChannel._id, fileInfo.path, fileInfo.description, rc1AdminRequestConfig);
+
+						expect(uploadResponse.message).toBeDefined();
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+
+						// RC view: Verify files array
+						expect(rcMessage?.files).toBeDefined();
+						expect(rcMessage?.files?.[0]?.name).toBe(fileInfo.fileName);
+						expect(rcMessage?.files?.[0]?.type).toBe('video/webm');
+						expect(rcMessage?.files?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify attachments array
+						expect(rcMessage?.attachments).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title).toBe(fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+						expect((rcMessage?.attachments?.[0] as any)?.video_url).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect((rcMessage?.attachments?.[0] as any)?.video_type).toBe('video/webm');
+						expect((rcMessage?.attachments?.[0] as any)?.video_size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify federation
+						expect(rcMessage?.federation?.eventId).not.toBe('');
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
+						expect(synapseMessage?.content.msgtype).toBe('m.video');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files locally', async () => {
+						const fileInfo = testFiles.video;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+						expect(rcFile?.type).toBe('video/webm');
+						expect(rcFile?.federation).toBeDefined();
+
+						// RC view: The file should have federation metadata
+						expect(rcFile?.federation?.mxcUri).toBeDefined();
+					});
+
+					it('should be able to download the files locally and on the remote Element', async () => {
+						const fileInfo = testFiles.video;
+
+						// RC view: Get the file from history to get download URL
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+
+						// RC view: Download and verify binary match from RC
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+
+						// Element view: Download and verify binary match from Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.url).toBeDefined();
+
+						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						expect(synapseFilesMatch).toBe(true);
+					});
+				});
+
+				describe('Upload one Audio, and add a description', () => {
+					it('should appear correctly locally and on the remote Element as messages', async () => {
+						const fileInfo = testFiles.audio;
+						const uploadResponse = await uploadFileToRC(federatedChannel._id, fileInfo.path, fileInfo.description, rc1AdminRequestConfig);
+
+						expect(uploadResponse.message).toBeDefined();
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+
+						// RC view: Verify files array
+						expect(rcMessage?.files).toBeDefined();
+						expect(rcMessage?.files?.[0]?.name).toBe(fileInfo.fileName);
+						expect(rcMessage?.files?.[0]?.type).toBe('audio/mpeg');
+						expect(rcMessage?.files?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify attachments array
+						expect(rcMessage?.attachments).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title).toBe(fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+						expect((rcMessage?.attachments?.[0] as any)?.audio_url).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect((rcMessage?.attachments?.[0] as any)?.audio_type).toBe('audio/mpeg');
+						expect((rcMessage?.attachments?.[0] as any)?.audio_size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify federation
+						expect(rcMessage?.federation?.eventId).not.toBe('');
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
+						expect(synapseMessage?.content.msgtype).toBe('m.audio');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files locally', async () => {
+						const fileInfo = testFiles.audio;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+						expect(rcFile?.type).toBe('audio/mpeg');
+						expect(rcFile?.federation).toBeDefined();
+
+						// RC view: The file should have federation metadata
+						expect(rcFile?.federation?.mxcUri).toBeDefined();
+					});
+
+					it('should be able to download the files locally and on the remote Element', async () => {
+						const fileInfo = testFiles.audio;
+
+						// RC view: Get the file from history to get download URL
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+
+						// RC view: Download and verify binary match from RC
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+
+						// Element view: Download and verify binary match from Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.url).toBeDefined();
+
+						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						expect(synapseFilesMatch).toBe(true);
+					});
+				});
+
+				describe('Upload one Text File, and add a description', () => {
+					it('should appear correctly locally and on the remote Element as messages', async () => {
+						const fileInfo = testFiles.text;
+						const uploadResponse = await uploadFileToRC(federatedChannel._id, fileInfo.path, fileInfo.description, rc1AdminRequestConfig);
+
+						expect(uploadResponse.message).toBeDefined();
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+
+						// RC view: Verify files array
+						expect(rcMessage?.files).toBeDefined();
+						expect(rcMessage?.files?.[0]?.name).toBe(fileInfo.fileName);
+						expect(rcMessage?.files?.[0]?.type).toBe('text/plain');
+						expect(rcMessage?.files?.[0]?.size).toBe(uploadResponse.message.files?.[0]?.size);
+
+						// RC view: Verify attachments array
+						expect(rcMessage?.attachments).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title).toBe(fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
+						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+
+						// RC view: Verify federation
+						expect(rcMessage?.federation?.eventId).not.toBe('');
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
+						expect(synapseMessage?.content.msgtype).toBe('m.file');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files locally', async () => {
+						const fileInfo = testFiles.text;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+						expect(rcFile?.type).toBe('text/plain');
+						expect(rcFile?.federation).toBeDefined();
+
+						// RC view: The file should have federation metadata
+						expect(rcFile?.federation?.mxcUri).toBeDefined();
+					});
+
+					it('should be able to download the files locally and on the remote Element', async () => {
+						const fileInfo = testFiles.text;
+
+						// RC view: Get the file from history to get download URL
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.files?.[0]?.name === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+
+						// RC view: Download and verify binary match from RC
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+
+						// Element view: Download and verify binary match from Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.url).toBeDefined();
+
+						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						expect(synapseFilesMatch).toBe(true);
+					});
+				});
+			});
+
+			describe('On Element', () => {
+				let channelName: string;
+				let federatedChannel: any;
+
+				beforeAll(async () => {
+					channelName = `federated-room-media-element-${Date.now()}`;
+
+					// Create a federated private room with federated user
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: {
+							federated: true,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					federatedChannel = createResponse.body.group;
+
+					expect(federatedChannel).toHaveProperty('_id');
+					expect(federatedChannel).toHaveProperty('name', channelName);
+					expect(federatedChannel).toHaveProperty('t', 'p');
+					expect(federatedChannel).toHaveProperty('federated', true);
+
+					// Accept invitation for the federated user
+					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					expect(acceptedRoomId).not.toBe('');
+				}, 10000);
+
+				describe('Upload one image', () => {
+					it('should appear correctly on the remote RC as messages', async () => {
+						const fileInfo = testFiles.image;
+						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.msgtype).toBe('m.image');
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.image;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						const rcFile = rcFilesList.files.find((file) => file.name === fileInfo.fileName);
+						expect(rcFile).toBeDefined();
+					});
+
+					it('should be able to download the files on the remote RC', async () => {
+						const fileInfo = testFiles.image;
+
+						// RC view: Download and verify binary match from RC
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+					});
+
+					it('should be possible to filter the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.image;
+						const filteredFiles = await getFilesList(federatedChannel._id, rc1AdminRequestConfig, {
+							name: fileInfo.fileName,
+						});
+						expect(filteredFiles.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+				});
+
+				describe('Upload one PDF', () => {
+					it('should appear correctly on the remote RC as messages', async () => {
+						const fileInfo = testFiles.pdf;
+						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.msgtype).toBe('m.file');
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.pdf;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						expect(rcFilesList.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+
+					it('should be able to download the files on the remote RC', async () => {
+						const fileInfo = testFiles.pdf;
+
+						// RC view: Download and verify binary match from RC
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+					});
+
+					it('should be possible to filter the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.pdf;
+						const filteredFiles = await getFilesList(federatedChannel._id, rc1AdminRequestConfig, {
+							name: fileInfo.fileName,
+						});
+						expect(filteredFiles.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+				});
+
+				describe('Upload one Video', () => {
+					it('should appear correctly on the remote RC as messages', async () => {
+						const fileInfo = testFiles.video;
+						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.msgtype).toBe('m.video');
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.video;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						expect(rcFilesList.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+
+					it('should be able to download the files on the remote RC', async () => {
+						const fileInfo = testFiles.video;
+
+						// RC view: Download and verify binary match from RC
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+					});
+
+					it('should be possible to filter the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.video;
+						const filteredFiles = await getFilesList(federatedChannel._id, rc1AdminRequestConfig, {
+							name: fileInfo.fileName,
+						});
+						expect(filteredFiles.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+				});
+
+				describe('Upload one Audio', () => {
+					it('should appear correctly on the remote RC as messages', async () => {
+						const fileInfo = testFiles.audio;
+						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.msgtype).toBe('m.audio');
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.audio;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						expect(rcFilesList.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+
+					it('should be able to download the files on the remote RC', async () => {
+						const fileInfo = testFiles.audio;
+
+						// RC view: Download and verify binary match from RC
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+					});
+
+					it('should be possible to filter the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.audio;
+						const filteredFiles = await getFilesList(federatedChannel._id, rc1AdminRequestConfig, {
+							name: fileInfo.fileName,
+						});
+						expect(filteredFiles.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+				});
+
+				describe('Upload one Text File', () => {
+					it('should appear correctly on the remote RC as messages', async () => {
+						const fileInfo = testFiles.text;
+						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+
+						// Element view: Verify in Element
+						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						expect(synapseMessage).not.toBeNull();
+						expect(synapseMessage?.content.msgtype).toBe('m.file');
+
+						// RC view: Verify in RC loadHistory
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage).toBeDefined();
+						expect(rcMessage?.federation?.eventId).toBe(synapseMessage?.event_id);
+					});
+
+					it('should appear in the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.text;
+
+						// RC view: Verify in RC file list
+						const rcFilesList = await getFilesList(federatedChannel._id, rc1AdminRequestConfig);
+						expect(rcFilesList.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
+
+					it('should be able to download the files on the remote RC', async () => {
+						const fileInfo = testFiles.text;
+
+						// RC view: Download and verify binary match from RC
+						const historyResponse = await loadHistory(federatedChannel._id, rc1AdminRequestConfig);
+						const rcMessage = historyResponse.messages.find((message: IMessage) => message.attachments?.[0]?.title === fileInfo.fileName);
+						expect(rcMessage?.attachments?.[0]?.title_link).toBeDefined();
+						const downloadUrl = rcMessage?.attachments?.[0]?.title_link as string;
+						const rcFilesMatch = await downloadFileAndCompareBinary(downloadUrl, fileInfo.path, rc1AdminRequestConfig);
+						expect(rcFilesMatch).toBe(true);
+					});
+
+					it('should be possible to filter the list of files on the remote RC', async () => {
+						const fileInfo = testFiles.text;
+						const filteredFiles = await getFilesList(federatedChannel._id, rc1AdminRequestConfig, {
+							name: fileInfo.fileName,
+						});
+						expect(filteredFiles.files.find((file) => file.name === fileInfo.fileName)).toBeDefined();
+					});
 				});
 			});
 		});

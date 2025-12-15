@@ -38,7 +38,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.col.findOne<P>(query, options);
 	}
 
-	async findOneById<P extends Document = IOmnichannelBusinessUnit>(
+	override async findOneById<P extends Document = IOmnichannelBusinessUnit>(
 		_id: IOmnichannelBusinessUnit['_id'],
 		options: FindOptions<IOmnichannelBusinessUnit>,
 		extra?: Record<string, any>,
@@ -144,7 +144,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.updateOne({ _id }, { $inc: { numDepartments: -1 } });
 	}
 
-	async removeById(_id: string): Promise<DeleteResult> {
+	override async removeById(_id: string): Promise<DeleteResult> {
 		await LivechatUnitMonitors.removeByUnitId(_id);
 		await this.removeParentAndAncestorById(_id);
 		await LivechatRooms.removeUnitAssociationFromRooms(_id);

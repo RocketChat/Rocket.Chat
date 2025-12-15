@@ -19,7 +19,7 @@ type SendMessageActionFormType = ComponentProps<typeof Field> & {
 export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: SendMessageActionFormType) => {
 	const { t } = useTranslation();
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const timeoutFieldId = useId();
 	const timeoutFieldName = `actions.${index}.params.serviceTimeout` as const;

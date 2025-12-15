@@ -1,7 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
@@ -11,7 +12,6 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -19,7 +19,7 @@ import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
-const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
+const computeItemKey = (index: number, room: SubscriptionWithRoom): SubscriptionWithRoom['_id'] | number => room._id || index;
 
 const RoomList = (): ReactElement => {
 	const { t } = useTranslation();
