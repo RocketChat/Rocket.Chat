@@ -64,7 +64,14 @@ export class AppRoomsConverter {
 				delete data.t;
 				return result;
 			},
-			creator: (data) => mapUserLookup(data.u),
+			creator: (data) => {
+				if (!data.u) {
+					return undefined;
+				}
+				const creator = mapUserLookup(data.u);
+				delete data.u;
+				return creator;
+			},
 			visitorChannelInfo: (data) => {
 				const { v } = data;
 				if (!v) {
