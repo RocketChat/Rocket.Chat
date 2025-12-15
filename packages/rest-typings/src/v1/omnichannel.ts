@@ -3285,6 +3285,169 @@ const GETLivechatTriggersParamsSchema = {
 	additionalProperties: false,
 };
 
+// TODO: Remove these types after business hour endpoint refactor, see CORE-1552
+type BusinessHourDaysTime = {
+	day: string;
+	start: { time: string };
+	finish: { time: string };
+	open: boolean;
+};
+
+type BusinessHourWorkHours = {
+	day: string;
+	start: string;
+	finish: string;
+	open: boolean;
+};
+
+export type POSTLivechatBusinessHoursSaveParams = {
+	name: string;
+	timezoneName: string;
+	daysOpen: string[];
+	daysTime?: BusinessHourDaysTime[];
+	departmentsToApplyBusinessHour: string;
+	active: boolean;
+	_id?: string;
+	type: string;
+	timezone?: string;
+	workHours: BusinessHourWorkHours[];
+};
+
+const POSTLivechatBusinessHoursSaveParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		timezoneName: {
+			type: 'string',
+		},
+		daysOpen: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		daysTime: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'string' },
+					start: {
+						type: 'object',
+						properties: {
+							time: { type: 'string' },
+						},
+						required: ['time'],
+						additionalProperties: false,
+					},
+					finish: {
+						type: 'object',
+						properties: {
+							time: { type: 'string' },
+						},
+						required: ['time'],
+						additionalProperties: false,
+					},
+					open: { type: 'boolean' },
+				},
+				required: ['day', 'start', 'finish', 'open'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+		departmentsToApplyBusinessHour: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+		},
+		timezone: {
+			type: 'string',
+		},
+		workHours: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					day: { type: 'string' },
+					start: { type: 'string' },
+					finish: { type: 'string' },
+					open: { type: 'boolean' },
+				},
+				required: ['day', 'start', 'finish', 'open'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+	},
+	required: ['name', 'timezoneName', 'daysOpen', 'departmentsToApplyBusinessHour', 'active', 'type', 'workHours'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatBusinessHoursSaveParams = ajv.compile<POSTLivechatBusinessHoursSaveParams>(
+	POSTLivechatBusinessHoursSaveParamsSchema,
+);
+
+export const POSTLivechatBusinessHoursSaveSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const POSTLivechatBusinessHoursSaveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursSaveSuccessSchema);
+
+type POSTLivechatBusinessHoursRemoveParams = {
+	_id: string;
+	type: string;
+};
+
+const POSTLivechatBusinessHoursRemoveParamsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+		},
+	},
+	required: ['_id', 'type'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatBusinessHoursRemoveParams = ajv.compile<POSTLivechatBusinessHoursRemoveParams>(
+	POSTLivechatBusinessHoursRemoveParamsSchema,
+);
+
+export const POSTLivechatBusinessHoursRemoveSuccessSchema = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const POSTLivechatBusinessHoursRemoveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursRemoveSuccessSchema);
+
 export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
 export type GETLivechatRoomsParams = PaginatedRequest<{
