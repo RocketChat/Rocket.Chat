@@ -58,6 +58,15 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 	}),
 });
 
+const queryAvailableAgentsForSelection = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
+	...queryStatusAgentOnline(extraFilters, isLivechatEnabledWhenAgentIdle),
+	$and: [
+		{
+			$or: [{ agentLocked: { $exists: false } }, { agentLockedAt: { $lt: new Date(Date.now() - 5000) } }],
+		},
+	],
+});
+
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
@@ -586,7 +595,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
 		);
@@ -667,7 +676,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
 		);
@@ -1963,7 +1972,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			username: { $nin: unavailableAgents },
 		};
 
-		const query = queryStatusAgentOnline(extraFilters, enabledWhenAgentIdle);
+		const query = queryAvailableAgentsForSelection(extraFilters, enabledWhenAgentIdle);
 
 		const sort: Record<string, SortDirection> = {
 			livechatCount: 1,
