@@ -30,14 +30,19 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 };
 
 const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_id'][]> => {
-	const roles = (await Roles.findInIdsOrNames(roleNamesOrIds).toArray()).map((role) => role._id);
+	const normalizedRoleNamesOrIds = roleNamesOrIds.map((role) => role.trim()).filter((role) => role.length > 0);
+	if (!normalizedRoleNamesOrIds.length) {
+		throw new Error(`No valid role names or ids provided for conversion: ${roleNamesOrIds.join(', ')}`);
+	}
 
-	if (roles.length !== roleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${roleNamesOrIds.join(', ')}`);
+	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
+
+	if (roles.length !== normalizedRoleNamesOrIds.length) {
+		SystemLogger.warn(`Failed to convert some role names to ids: ${normalizedRoleNamesOrIds.join(', ')}`);
 	}
 
 	if (!roles.length) {
-		throw new Error(`We should have at least one existing role to create the user: ${roleNamesOrIds.join(', ')}`);
+		throw new Error(`We should have at least one existing role to create the user: ${normalizedRoleNamesOrIds.join(', ')}`);
 	}
 
 	return roles;
