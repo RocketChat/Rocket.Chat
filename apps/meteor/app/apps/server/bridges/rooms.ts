@@ -143,7 +143,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages, after, before } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
@@ -152,8 +152,62 @@ export class AppRoomBridge extends RoomBridge {
 
 		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
 
-		// We support only one field for now
-		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
+		const cursorQuery: Array<Record<string, unknown>> = [];
+
+		let sortDirection = _sort?.createdAt;
+		if (!sortDirection && (after || before)) {
+			sortDirection = 'asc';
+		}
+
+		const buildCursorQuery = (cursor: typeof after, kind: 'after' | 'before'): Record<string, unknown> | undefined => {
+			if (!cursor) {
+				return undefined;
+			}
+
+			const afterInOrder = kind === 'after';
+			const isAsc = sortDirection !== 'desc';
+
+			let tsOp: '$gt' | '$lt';
+			let idOp: '$gt' | '$lt';
+
+			if (afterInOrder) {
+				tsOp = isAsc ? '$gt' : '$lt';
+				idOp = isAsc ? '$gt' : '$lt';
+			} else {
+				tsOp = isAsc ? '$lt' : '$gt';
+				idOp = isAsc ? '$lt' : '$gt';
+			}
+
+			const rangeClause = { ts: { [tsOp]: cursor.createdAt } };
+
+			if (!cursor.id) {
+				return { $or: [rangeClause] };
+			}
+
+			const tieBreakerClause = { ts: cursor.createdAt, _id: { [idOp]: cursor.id } };
+			return { $or: [rangeClause, tieBreakerClause] };
+		};
+
+		if (after) {
+			const clause = buildCursorQuery(after, 'after');
+			if (clause) {
+				cursorQuery.push(clause);
+			}
+		}
+
+		if (before) {
+			const clause = buildCursorQuery(before, 'before');
+			if (clause) {
+				cursorQuery.push(clause);
+			}
+		}
+
+		// Deterministic ordering for cursor pagination when `id` tie-breaker is used
+		const shouldSortById = Boolean(after?.id || before?.id);
+		let sort: Sort | undefined;
+		if (sortDirection) {
+			sort = shouldSortById ? { ts: sortDirection, _id: sortDirection } : { ts: sortDirection };
+		}
 
 		const messageQueryOptions: FindOptions<ICoreMessage> = {
 			limit,
@@ -166,6 +220,7 @@ export class AppRoomBridge extends RoomBridge {
 			_hidden: { $ne: true },
 			t: { $exists: false },
 			...threadFilterQuery,
+			...(cursorQuery.length ? { $and: cursorQuery } : {}),
 		};
 
 		const cursor = Messages.find(query, messageQueryOptions);

@@ -14,6 +14,8 @@ export class RoomReadAccessorTestFixture {
 
 	private messages: IMessageRaw[];
 
+	private lastGetMessagesOptions: unknown;
+
 	private unreadRoomId: string;
 
 	private unreadUserId: string;
@@ -32,6 +34,7 @@ export class RoomReadAccessorTestFixture {
 		const theRoom = this.room;
 		const theUser = this.user;
 		const theMessages = this.messages;
+		const fixture = this;
 
 		const theUnreadMsg = this.messages;
 		const { unreadRoomId } = this;
@@ -50,31 +53,32 @@ export class RoomReadAccessorTestFixture {
 			},
 		];
 		this.mockRoomBridgeWithRoom = {
-			doGetById(id, appId): Promise<IRoom> {
+			doGetById(id: string, appId: string): Promise<IRoom> {
 				return Promise.resolve(theRoom);
 			},
-			doGetByName(name, appId): Promise<IRoom> {
+			doGetByName(name: string, appId: string): Promise<IRoom> {
 				return Promise.resolve(theRoom);
 			},
-			doGetCreatorById(id, appId): Promise<IUser> {
+			doGetCreatorById(id: string, appId: string): Promise<IUser> {
 				return Promise.resolve(theUser);
 			},
-			doGetCreatorByName(name, appId): Promise<IUser> {
+			doGetCreatorByName(name: string, appId: string): Promise<IUser> {
 				return Promise.resolve(theUser);
 			},
-			doGetDirectByUsernames(usernames, appId): Promise<IRoom> {
+			doGetDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom> {
 				return Promise.resolve(theRoom);
 			},
-			doGetMembers(name, appId): Promise<Array<IUser>> {
+			doGetMembers(name: string, appId: string): Promise<Array<IUser>> {
 				return Promise.resolve([theUser]);
 			},
-			doGetAllRooms(filter, appId): Promise<Array<IRoomRaw>> {
+			doGetAllRooms(filter: unknown, appId: string): Promise<Array<IRoomRaw>> {
 				return Promise.resolve(theRooms);
 			},
-			doGetMessages(roomId, options, appId): Promise<IMessageRaw[]> {
+			doGetMessages(roomId: string, options: unknown, appId: string): Promise<IMessageRaw[]> {
+				fixture.lastGetMessagesOptions = options;
 				return Promise.resolve(theMessages);
 			},
-			doGetUnreadByUser(roomId, uid, options, appId): Promise<IMessageRaw[]> {
+			doGetUnreadByUser(roomId: string, uid: string, options: unknown, appId: string): Promise<IMessageRaw[]> {
 				if (roomId === unreadRoomId && uid === unreadUserId) {
 					return Promise.resolve(theUnreadMsg);
 				}
@@ -162,11 +166,66 @@ export class RoomReadAccessorTestFixture {
 		await Expect(async () => rr.getAllRooms({}, { skip: -Infinity })).toThrowAsync();
 
 		// Test valid calls to ensure validation doesn't break normal behavior
- 		await Expect(async () => rr.getAllRooms({}, { limit: 1 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 1 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { limit: 50 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { limit: 100 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { skip: 0 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { skip: 10 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { limit: 50, skip: 10 })).not.toThrowAsync();
+	}
+
+	@AsyncTest()
+	public async supportsCursorPaginationOptions() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+
+		const createdAt = new Date('2020-01-01T00:00:00.000Z');
+
+		await rr.getMessages('testing', {
+			after: {
+				createdAt,
+			},
+		});
+
+		const { after } = this.lastGetMessagesOptions as { after?: { id?: string; createdAt: Date } };
+		Expect(after).toBeDefined();
+		Expect(after?.createdAt instanceof Date).toBeTruthy();
+		Expect(after?.createdAt.getTime()).toBe(createdAt.getTime());
+	}
+
+	@AsyncTest()
+	public async throwsOnInvalidCursorOptions() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+
+		Expect(() =>
+			rr.getMessages('testing', {
+				after: {
+					id: '',
+					createdAt: new Date(),
+				} as any,
+			}),
+		).toThrow();
+
+		Expect(() =>
+			rr.getMessages('testing', {
+				before: {
+					id: 'valid-id',
+					createdAt: 'invalid-date',
+				} as any,
+			}),
+		).toThrow();
+	}
+
+	@AsyncTest()
+	public async allowsSkipAndDescSortWithCursor() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		const createdAt = new Date('2020-01-01T00:00:00.000Z');
+
+		Expect(() =>
+			rr.getMessages('testing', {
+				after: { createdAt },
+				skip: 10,
+				sort: { createdAt: 'desc' },
+			}),
+		).not.toThrow();
 	}
 }
