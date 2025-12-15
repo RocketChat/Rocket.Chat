@@ -89,14 +89,6 @@ export class RoomReadAccessorTestFixture {
 
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 
-		let caught = false;
-		try {
-			await rr.getAllRooms({ limit: 200 });
-		} catch (e) {
-			caught = true;
-		}
-
-		Expect(caught).toBeTruthy();
 		Expect(await rr.getById('fake')).toBeDefined();
 		Expect(await rr.getById('fake')).toBe(this.room);
 		Expect(await rr.getByName('testing-room')).toBeDefined();
@@ -177,5 +169,19 @@ export class RoomReadAccessorTestFixture {
 		await Expect(async () => rr.getAllRooms({ skip: 0 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({ skip: 10 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({ limit: 50, skip: 10 })).not.toThrowAsync();
+	}
+
+	@AsyncTest()
+	public async validateGetAllRoomsFlags() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+
+		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true, includeDiscussions: false })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ onlyTeamMain: true, includeTeamMain: false })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true, onlyTeamMain: true })).toThrowAsync();
+
+		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ includeDiscussions: true, types: [this.room.type] })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ onlyTeamMain: true })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({ includeTeamMain: true, types: [this.room.type] })).not.toThrowAsync();
 	}
 }
