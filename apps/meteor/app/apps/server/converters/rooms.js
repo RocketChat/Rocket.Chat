@@ -47,7 +47,6 @@ export class AppRoomsConverter {
 			livechatData: 'livechatData',
 			isWaitingResponse: 'waitingResponse',
 			isOpen: 'open',
-			_USERNAMES: '_USERNAMES',
 			description: 'description',
 			source: 'source',
 			closer: 'closer',
