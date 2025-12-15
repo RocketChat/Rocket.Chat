@@ -310,6 +310,18 @@ const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, valida
 				it.todo('should add a user to the DM');
 				it.todo('should add another user by another user than the initial inviter');
 			});
+			describe('Duplicated rooms', () => {
+				describe('When the third user leaves a DM', () => {
+					describe('When there is an existing non-federated DM with the same users', () => {
+						it.todo('should have two DMs with same users');
+						it.todo('should return the non-federated room when trying to create a new DM with same users');
+					});
+					describe('When there is only federated DMs', () => {
+						it.todo('should have two DMs with same users');
+						it.todo('should return the oldest room when trying to create a new DM with same users');
+					});
+				});
+			});
 		});
 	});
 });
