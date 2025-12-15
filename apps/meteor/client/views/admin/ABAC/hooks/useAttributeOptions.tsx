@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import GenericModal from '@rocket.chat/ui-client/dist/components/Modal/GenericModal';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
