@@ -5,16 +5,6 @@
 		"jest": true
 	},
 	"rules": {
-		"import/order": [
-			"error",
-			{
-				"newlines-between": "always",
-				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
-				"alphabetize": {
-					"order": "asc"
-				}
-			}
-		],
 		"jsx-quotes": ["error", "prefer-single"],
 		"react/display-name": [
 			"warn",

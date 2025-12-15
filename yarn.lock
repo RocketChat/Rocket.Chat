@@ -8961,6 +8961,7 @@ __metadata:
     stylelint-order: "npm:^6.0.4"
     svg-loader: "npm:^0.0.2"
     terser-webpack-plugin: "npm:~4.2.3"
+    ts-loader: "npm:~9.5.4"
     typescript: "npm:~5.9.3"
     url-loader: "npm:^4.1.1"
     webpack: "npm:~5.99.9"
