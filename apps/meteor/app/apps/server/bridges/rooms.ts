@@ -348,36 +348,44 @@ export class AppRoomBridge extends RoomBridge {
 	private buildRoomQuery(options: GetRoomsOptions = {}): { query: Filter<ICoreRoom> } {
 		const { types = [], includeDiscussions = false, onlyDiscussions = false, includeTeamMain = false, onlyTeamMain = false } = options;
 
-		const orConditions: Array<Filter<ICoreRoom>> = [];
-
-		if (types.length) {
-			orConditions.push({ t: { $in: types as Array<ICoreRoom['t']> } });
-		}
-
-		if (includeDiscussions || onlyDiscussions) {
-			orConditions.push({ prid: { $exists: true } });
-		}
-
-		if (includeTeamMain || onlyTeamMain) {
-			orConditions.push({ teamMain: { $exists: true } });
-		}
-
 		const query: Filter<ICoreRoom> = {};
-
-		if (orConditions.length) {
-			query.$or = orConditions;
-		}
+		const allowDiscussions = includeDiscussions || onlyDiscussions;
+		const allowTeamMain = includeTeamMain || onlyTeamMain;
+		const typeValues: Array<ICoreRoom['t']> | undefined = types.length ? [...types] : undefined;
+		const typeFilter: Filter<ICoreRoom>['t'] | undefined = typeValues ? { $in: typeValues } : undefined;
 
 		if (onlyDiscussions) {
 			query.prid = { $exists: true };
-		} else if (!includeDiscussions) {
+		} else if (!allowDiscussions) {
 			query.prid = { $exists: false };
 		}
 
 		if (onlyTeamMain) {
 			query.teamMain = { $exists: true };
-		} else if (!includeTeamMain) {
+		} else if (!allowTeamMain) {
 			query.teamMain = { $exists: false };
+		}
+
+		const orConditions: Array<Filter<ICoreRoom>> = [];
+
+		if (typeFilter) {
+			if (allowDiscussions || allowTeamMain) {
+				orConditions.push({ t: typeFilter });
+			} else {
+				query.t = typeFilter;
+			}
+		}
+
+		if (allowDiscussions) {
+			orConditions.push({ prid: { $exists: true } });
+		}
+
+		if (allowTeamMain) {
+			orConditions.push({ teamMain: { $exists: true } });
+		}
+
+		if (orConditions.length) {
+			query.$or = orConditions;
 		}
 
 		return { query };
