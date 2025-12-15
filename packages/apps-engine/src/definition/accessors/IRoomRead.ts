@@ -64,7 +64,12 @@ export interface IRoomRead {
 	/**
 	 * Retrieves rooms in the workspace, optionally filtered by type and metadata flags.
 	 *
-	 * @param options Optional filters such as `types`, pagination, and discussion/team flags
+	 * @param options Supported filters:
+	 *  - types?: RoomType[] (channel, private, direct, livechat)
+	 *  - includeDiscussions?: boolean | onlyDiscussions?: boolean (mutually exclusive)
+	 *  - includeTeamMain?: boolean | onlyTeamMain?: boolean (mutually exclusive)
+	 *  - limit?: number (1-100, defaults to 100)
+	 *  - skip?: number (>= 0, defaults to 0)
 	 * @returns a list of raw rooms
 	 */
 	getAllRooms(options?: GetRoomsOptions): Promise<Array<IRoomRaw>>;
