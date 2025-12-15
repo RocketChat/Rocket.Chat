@@ -93,14 +93,8 @@ export class SAML {
 	}
 
 	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
-		const {
-			generateUsername,
-			immutableProperty,
-			nameOverwrite,
-			mailOverwrite,
-			channelsAttributeUpdate,
-			defaultUserRole = 'user',
-		} = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole } =
+			SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -142,9 +136,14 @@ export class SAML {
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 		if (!user) {
-			// If we received any role from the mapping, use them - otherwise use the default role for creation.
-			const roleNamesOrIds = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
-			const roles = await convertRoleNamesToIds(roleNamesOrIds);
+			let roleNamesOrIds: string[] = [];
+			if (userObject.roles && userObject.roles.length > 0) {
+				roleNamesOrIds = userObject.roles;
+			} else if (defaultUserRole) {
+				roleNamesOrIds = ensureArray<string>(defaultUserRole.split(','));
+			}
+
+			const roles = roleNamesOrIds.length > 0 ? await convertRoleNamesToIds(roleNamesOrIds) : [];
 
 			const newUser: Record<string, any> = {
 				name: fullName,
@@ -178,7 +177,11 @@ export class SAML {
 				}
 			}
 
-			const userId = await Accounts.insertUserDoc({}, newUser);
+			// only set skipAuthServiceDefaultRoles if SAML is providing its own roles
+			// otherwise, leave it as false to fallback to generic auth service default roles
+			// from Accounts_Registration_AuthenticationServices_Default_Roles
+			const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
+			const userId = await Accounts.insertUserDoc({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
