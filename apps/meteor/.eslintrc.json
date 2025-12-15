@@ -23,6 +23,8 @@
 		]
 	},
 	"ignorePatterns": [
+		"**/server/**",
+		"/dist/**",
 		"app/emoji-emojione/generateEmojiIndex.js",
 		"public",
 		"private/moment-locales",
