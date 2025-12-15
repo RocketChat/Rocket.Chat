@@ -8,8 +8,8 @@ export interface IAppRoomsConverter {
 	convertRoom(room: undefined | null): Promise<undefined>;
 	convertRoom(room: IRoom): Promise<IAppsRoom | IAppsLivechatRoom>;
 	convertRoom(room: IRoom | undefined | null): Promise<IAppsRoom | IAppsLivechatRoom | undefined>;
-	convertRoomRaw(room: IRoom): Promise<IAppsRoomRaw>;
-	convertRoomRaw(room: IRoom | undefined | null): Promise<IAppsRoomRaw | undefined>;
+	convertRoomRaw(room: IRoom): IAppsRoomRaw;
+	convertRoomRaw(room: IRoom | undefined | null): IAppsRoomRaw | undefined;
 	convertAppRoom(room: undefined | null): Promise<undefined>;
 	convertAppRoom(room: IAppsRoom): Promise<IRoom>;
 	convertAppRoom(room: IAppsRoom, isPartial: boolean): Promise<Partial<IRoom>>;

@@ -172,7 +172,8 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		for await (const room of Rooms.find(query, findOptions)) {
-			const converted = await roomConverter.convertRoomRaw(room);
+			const converted = roomConverter.convertRoomRaw(room);
+
 			if (converted) {
 				rooms.push(converted);
 			}
