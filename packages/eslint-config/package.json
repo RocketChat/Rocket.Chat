@@ -33,11 +33,11 @@
 		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-jest": "~28.8.3",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-pino": "^1.0.3",
 		"eslint-plugin-prettier": "~5.2.6",
 		"prettier": "~3.3.3"
 	},
 	"devDependencies": {
-		"eslint-plugin-pino": "^1.0.3",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
