@@ -37,7 +37,6 @@ export default {
 	forceExit: true, // Force Jest to exit after tests complete
 	detectOpenHandles: true, // Detect open handles that prevent Jest from exiting
 	globalTeardown: '<rootDir>/tests/teardown.ts',
-	// To disable Qase integration, remove this line or comment it out
 	verbose: false,
 	silent: false,
 	reporters: [
