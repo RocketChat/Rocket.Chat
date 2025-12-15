@@ -148,16 +148,16 @@ const LogsPage = () => {
 								const eventInfo = getEventInfo(event);
 								return (
 									<GenericTableRow key={event._id}>
-										<GenericTableCell>
+										<GenericTableCell withTruncatedText>
 											<Box is='span' mie={4}>
 												{eventInfo.userAvatar}
 											</Box>
 											{eventInfo.user}
 										</GenericTableCell>
-										<GenericTableCell>{eventInfo.action}</GenericTableCell>
-										<GenericTableCell>{eventInfo.element}</GenericTableCell>
-										<GenericTableCell>{eventInfo.name}</GenericTableCell>
-										<GenericTableCell>{formatDate(eventInfo.timestamp)}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{eventInfo.action}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{eventInfo.element}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{eventInfo.name}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{formatDate(eventInfo.timestamp)}</GenericTableCell>
 									</GenericTableRow>
 								);
 							})}
