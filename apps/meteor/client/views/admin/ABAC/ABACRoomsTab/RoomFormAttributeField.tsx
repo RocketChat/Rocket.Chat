@@ -15,7 +15,7 @@ type ABACAttributeAutocompleteProps = {
 const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
-	const { control, getValues } = useFormContext<RoomFormData>();
+	const { control, getValues, resetField } = useFormContext<RoomFormData>();
 
 	const options: SelectOption[] = useMemo(() => attributeList.map((attribute) => [attribute.value, attribute.label]), [attributeList]);
 
@@ -64,6 +64,10 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 					mbe={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
+					onChange={(value) => {
+						keyField.onChange(value);
+						resetField(`attributes.${index}.values`, { defaultValue: [] });
+					}}
 				/>
 			</FieldRow>
 			{keyFieldState.error && <FieldError>{keyFieldState.error.message}</FieldError>}
