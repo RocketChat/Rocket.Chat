@@ -84,9 +84,8 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 						)}
 					</InfoPanelSection>
 					<InfoPanelSection>
-						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1m'>
-							{/* TODO use `arrow-up-right` and `arrow-down-left` icons when available */}
-							<Icon name={direction === 'inbound' ? 'phone-in' : 'phone-out'} size='x20' mie='x4' />
+						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1b'>
+							<Icon name={direction === 'inbound' ? 'arrow-down-left' : 'arrow-up-right'} size={24} mie={8} />
 							{direction === 'inbound' ? t('Incoming_voice_call') : t('Outgoing_voice_call')}
 						</Box>
 					</InfoPanelSection>
