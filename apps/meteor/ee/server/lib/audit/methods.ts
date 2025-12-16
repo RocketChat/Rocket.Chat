@@ -37,7 +37,8 @@ const getRoomInfoByAuditParams = async ({
 	userId: string;
 }) => {
 	if (rid) {
-		return getValue(await Rooms.findOne({ _id: rid }));
+		// When ABAC is enabled, only rooms without ABAC attributes are considered for auditing by room ID.
+		return getValue(await Rooms.findOne({ _id: rid, abacAttributes: { $exists: false } }));
 	}
 
 	if (type === 'd') {
@@ -165,7 +166,7 @@ Meteor.methods<ServerMethods>({
 		} else {
 			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent, userId: user._id });
 			if (!roomInfo) {
-				throw new Meteor.Error('Room doesn`t exist');
+				throw new Meteor.Error(`Room doesn't exist`);
 			}
 
 			rids = roomInfo.rids;

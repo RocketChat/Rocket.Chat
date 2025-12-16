@@ -461,7 +461,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[]): Promise<void> {
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], objectId: string): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
 		}
@@ -486,9 +486,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 			);
 		}
 
-		this.logger.debug({
-			msg: 'User list complied with ABAC attributes for room',
-			usernames,
+		usernames.forEach((username) => {
+			void Audit.actionPerformed({ username }, { _id: objectId }, 'system', 'granted-object-access');
 		});
 	}
 
