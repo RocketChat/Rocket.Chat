@@ -5,11 +5,11 @@ import { AdminFlextabEmoji } from './fragments/admin-flextab-emoji';
 export class AdminEmoji {
 	private readonly page: Page;
 
-	readonly addEmoji: AdminFlextabEmoji;
+	readonly emojiFlexTab: AdminFlextabEmoji;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.addEmoji = new AdminFlextabEmoji(page);
+		this.emojiFlexTab = new AdminFlextabEmoji(page);
 	}
 
 	get newButton(): Locator {

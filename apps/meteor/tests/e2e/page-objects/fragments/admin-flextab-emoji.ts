@@ -1,31 +1,25 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect } from '../../utils/test';
+import { FlexTab } from './flextab';
 
-export class AdminFlextabEmoji {
-	private readonly page: Page;
-
+export class AdminFlextabEmoji extends FlexTab {
 	constructor(page: Page) {
-		this.page = page;
+		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
 	}
 
 	async save() {
-		await this.contextualBar.getByRole('button', { name: 'Save' }).click();
+		await this.root.getByRole('button', { name: 'Save' }).click();
 		// When clicking save, the contextual bar closes with a redirect
 		// But this redirect can interfere with other actions, so we need to ensure it happens first.
-		await expect(this.contextualBar).not.toBeVisible();
+		await this.waitForDismissal();
 	}
 
 	async delete() {
-		await this.contextualBar.getByRole('button', { name: 'Delete' }).click();
-		await expect(this.contextualBar).not.toBeVisible();
-	}
-
-	get contextualBar(): Locator {
-		return this.page.getByRole('dialog', { name: 'Add New Emoji' });
+		await this.root.getByRole('button', { name: 'Delete' }).click();
+		await this.waitForDismissal();
 	}
 
 	get inputName(): Locator {
-		return this.contextualBar.getByRole('textbox', { name: 'Name' });
+		return this.root.getByRole('textbox', { name: 'Name' });
 	}
 }
