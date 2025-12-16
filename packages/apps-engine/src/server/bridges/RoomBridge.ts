@@ -69,7 +69,7 @@ export abstract class RoomBridge extends BaseBridge {
 	}
 
 	public async doGetAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
-		if (this.hasReadPermission(appId)) {
+		if (this.hasViewAllRoomsPermission(appId)) {
 			return this.getAllRooms(options, appId);
 		}
 	}
@@ -206,6 +206,21 @@ export abstract class RoomBridge extends BaseBridge {
 			new PermissionDeniedError({
 				appId,
 				missingPermissions: [AppPermissions.room.read],
+			}),
+		);
+
+		return false;
+	}
+
+	private hasViewAllRoomsPermission(appId: string): boolean {
+		if (AppPermissionManager.hasPermission(appId, AppPermissions.room['system-view-all'])) {
+			return true;
+		}
+
+		AppPermissionManager.notifyAboutError(
+			new PermissionDeniedError({
+				appId,
+				missingPermissions: [AppPermissions.room['system-view-all']],
 			}),
 		);
 
