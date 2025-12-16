@@ -296,16 +296,21 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._flags = signal.flags || [];
 
 		this._transferredBy = signal.transferredBy || null;
-		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
 			if (oldCall) {
 				this.acceptedLocally = true;
+			} else if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
+				// Call from another session, must be flagged as ignored before any event is triggered
+				this.config.logger?.log('Ignoring Outbound Call from a different session');
+				this.contractState = 'ignored';
 			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
 				this.config.logger?.log('Ignoring Unknown Outbound Call');
 				this.ignore();
 			}
 		}
+
+		this.changeContact(signal.contact);
 
 		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
 		if (this.isOver()) {
@@ -1178,5 +1183,5 @@ export class ClientMediaCall implements IClientMediaCall {
 }
 
 export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
-	public abstract webrtcProcessor: IWebRTCProcessor;
+	public abstract override webrtcProcessor: IWebRTCProcessor;
 }

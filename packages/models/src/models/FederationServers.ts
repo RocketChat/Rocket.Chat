@@ -10,7 +10,7 @@ export class FederationServersRaw extends BaseRaw<IFederationServer> implements 
 		super(db, 'federation_servers', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { domain: 1 } }];
 	}
 

@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -10,6 +10,7 @@ import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
+import SidebarItemBadges from '../badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -31,7 +32,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
-	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const icon = (
 		<SidebarV2ItemIcon
@@ -49,21 +50,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 				</SidebarV2Actions>
 			),
 		[videoConfActions],
-	);
-
-	const badges = (
-		<>
-			{showUnread && (
-				<SidebarV2ItemBadge
-					variant={unreadVariant}
-					title={unreadTitle}
-					role='status'
-					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
-				>
-					<span aria-hidden>{unreadCount.total}</span>
-				</SidebarV2ItemBadge>
-			)}
-		</>
 	);
 
 	const { parentRid } = useRoomsListContext();
@@ -87,7 +73,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			title={title}
 			icon={icon}
 			style={style}
-			badges={badges}
+			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			room={room}
 			actions={actions}
 			{...buttonProps}
