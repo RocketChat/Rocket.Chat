@@ -37,7 +37,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async updateDirectMessageRoomName(room: IRoom): Promise<boolean> {
-		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1 } }).toArray();
+		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
 		const uids = subs.map((sub) => sub.u._id);
 
@@ -46,6 +46,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		const roomNames = getNameForDMs(roomMembers);
 
 		for await (const sub of subs) {
+			// don't update the name if the user is invited but hasn't accepted yet
+			if (sub.status === 'INVITED') {
+				continue;
+			}
 			await Subscriptions.updateOne({ _id: sub._id }, { $set: roomNames[sub.u._id] });
 
 			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, sub.u._id, 'updated');
@@ -271,6 +275,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
+		// TODO need to provide name and fname for DMs (room object won't have it)
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 			ts,
 			open: !createAsHidden,

@@ -42,6 +42,7 @@ export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
 	options: {
+		forceNew?: boolean;
 		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
@@ -77,15 +78,20 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | null =
-		uids.length === 2
-			? await Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
-			: await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+	const room: IRoom | null = await (async () => {
+		if (options?.forceNew) {
+			return null;
+		}
 
-	const isNewRoom = !room;
+		return uids.length === 2
+			? Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
+			: Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+	})();
+
+	const isNewRoom = options?.forceNew ? true : !room;
 
 	const roomInfo = {
-		...(uids.length === 2 && { _id: uids.join('') }), // Deprecated: using users' _id to compose the room _id is deprecated
+		...(uids.length === 2 && !isNewRoom && { _id: uids.join('') }), // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
 		usersCount: members.length,

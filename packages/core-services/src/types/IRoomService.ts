@@ -7,7 +7,8 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
