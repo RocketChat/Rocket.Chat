@@ -186,7 +186,7 @@ export class RoomReadAccessorTestFixture {
 			},
 		});
 
-		const { after } = this.lastGetMessagesOptions as { after?: { id?: string; createdAt: Date } };
+		const { after } = this.lastGetMessagesOptions as { after?: { createdAt: Date } };
 		Expect(after).toBeDefined();
 		Expect(after?.createdAt instanceof Date).toBeTruthy();
 		Expect(after?.createdAt.getTime()).toBe(createdAt.getTime());
@@ -199,7 +199,6 @@ export class RoomReadAccessorTestFixture {
 		Expect(() =>
 			rr.getMessages('testing', {
 				after: {
-					id: '',
 					createdAt: new Date(),
 				} as any,
 			}),
@@ -208,7 +207,6 @@ export class RoomReadAccessorTestFixture {
 		Expect(() =>
 			rr.getMessages('testing', {
 				before: {
-					id: 'valid-id',
 					createdAt: 'invalid-date',
 				} as any,
 			}),
