@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
@@ -36,31 +37,16 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async updateDirectMessageRoomName(room: IRoom): Promise<boolean> {
-		const getFname = (members: IUser[]): string => {
-			if (members.length === 0) {
-				return 'Empty Room';
-			}
-			return members.map(({ name, username }) => name || username).join(', ');
-		};
-		const getName = (members: IUser[]): string => {
-			if (members.length === 0) {
-				return 'empty';
-			}
-			return members.map(({ username }) => username).join(', ');
-		};
-
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1 } }).toArray();
 
 		const uids = subs.map((sub) => sub.u._id);
 
 		const roomMembers = await Users.findUsersByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
 
-		const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
+		const roomNames = getNameForDMs(roomMembers);
 
 		for await (const sub of subs) {
-			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-
-			await Subscriptions.updateOne({ _id: sub._id }, { $set: { fname: getFname(otherMembers), name: getName(otherMembers) } });
+			await Subscriptions.updateOne({ _id: sub._id }, { $set: roomNames[sub.u._id] });
 
 			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, sub.u._id, 'updated');
 		}
