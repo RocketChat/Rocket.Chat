@@ -102,6 +102,8 @@
     "you_browser_doesn_t_support_audio_element": "You browser doesn't support audio element",
     "you_browser_doesn_t_support_video_element": "You browser doesn't support video element",
     "your_spot_is_spot": "Your spot is #{{spot}}",
-    "your_spot_is_spot_estimated_wait_time_estimatedwai": "Your spot is #{{spot}} (Estimated wait time: {{estimatedWaitTime}})"
+    "your_spot_is_spot_estimated_wait_time_estimatedwai": "Your spot is #{{spot}} (Estimated wait time: {{estimatedWaitTime}})",
+	"Page_number": "Page number",
+	"Page_numbering": "Page numbering"
   }
 }
