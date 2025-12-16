@@ -10,20 +10,38 @@ import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
-const waitForRoomEvent = async (room: Room, eventType: RoomEmittedEvents, validateEvent: (event: MatrixEvent) => void, timeoutMs = 5000) =>
-	Promise.race([
-		new Promise<void>((resolve, reject) => {
-			room.once(eventType, async (event: MatrixEvent) => {
-				try {
-					await validateEvent(event);
-					resolve();
-				} catch (error) {
-					reject(error);
-				}
+function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
+	const controller = new AbortController();
+
+	const timeoutId = setTimeout(() => {
+		controller.abort();
+	}, ms);
+
+	return fn(controller.signal).finally(() => {
+		clearTimeout(timeoutId);
+	});
+}
+
+const waitForRoomEvent = async (
+	room: Room,
+	eventType: RoomEmittedEvents,
+	validateEvent: (event: MatrixEvent) => void,
+	timeoutMs = 5000,
+) => {
+	return withTimeout(async (signal) => {
+		return new Promise((resolve, reject) => {
+			const listener = (event: MatrixEvent) => {
+				validateEvent(event);
+				resolve(true);
+			};
+			room.once(eventType, listener);
+			signal.addEventListener('abort', () => {
+				room.off(eventType, listener);
+				reject(new Error('Aborted'));
 			});
-		}),
-		new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout waiting for event')), timeoutMs)),
-	]);
+		});
+	}, timeoutMs);
+};
 
 (IS_EE ? describe : describe.skip)('Federation DMs', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
