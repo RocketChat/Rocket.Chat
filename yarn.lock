@@ -8284,7 +8284,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.5"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8495,7 +8495,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.5"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -8508,6 +8508,7 @@ __metadata:
     emojione: "npm:^4.5.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
+    jest-qase-reporter: "npm:^2.1.4"
     marked: "npm:^16.1.2"
     matrix-js-sdk: "npm:^38.4.0"
     mongodb: "npm:6.16.0"
@@ -8521,9 +8522,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.3.3":
-  version: 0.3.3
-  resolution: "@rocket.chat/federation-sdk@npm:0.3.3"
+"@rocket.chat/federation-sdk@npm:0.3.5":
+  version: 0.3.5
+  resolution: "@rocket.chat/federation-sdk@npm:0.3.5"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -8536,7 +8537,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/e93f0d59da8508ee0ecfb53f6d599f93130ab4b9f651d87da77615355261e4852d6f4659aae9f4c8881cf4b26a628512e6363ecc407d6e01a31a27d20b9d7684
+  checksum: 10/47de2265555649b375620c7a90cf84134b14f3e38d171d84276dee9196b7b303a2d8c6f693223d63ba1c464ce12c128c5f6a795c0bb42c0e5339587b2429d034
   languageName: node
   linkType: hard
 
@@ -9093,27 +9094,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/message-parser@workspace:packages/message-parser"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/eslint-parser": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/peggy-loader": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.16.5"
-    "@typescript-eslint/parser": "npm:~5.58.0"
-    babel-loader: "npm:~10.0.0"
+    "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
     prettier-plugin-pegjs: "npm:~0.5.4"
     rimraf: "npm:^6.0.1"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.4"
-    typedoc: "npm:~0.28.14"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
@@ -9185,7 +9180,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.3"
+    "@rocket.chat/federation-sdk": "npm:0.3.5"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
@@ -14667,23 +14662,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:~5.58.0":
-  version: 5.58.0
-  resolution: "@typescript-eslint/parser@npm:5.58.0"
-  dependencies:
-    "@typescript-eslint/scope-manager": "npm:5.58.0"
-    "@typescript-eslint/types": "npm:5.58.0"
-    "@typescript-eslint/typescript-estree": "npm:5.58.0"
-    debug: "npm:^4.3.4"
-  peerDependencies:
-    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/e15b3e36b56d5a02068d5c125791134f27a241c4e1ed577b282292b467b9e56e1111d7dcee6abe28f5143296fe264d9a4f8b02f22a9d157b3f0dfc98102bd210
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/parser@npm:~5.60.1":
   version: 5.60.1
   resolution: "@typescript-eslint/parser@npm:5.60.1"
@@ -14698,16 +14676,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/4117ce76b1b177278e6e1554f10978c4ae558f5b12d758626979dd78f63228aefabb36148eddd2a050877e8d013bfc33bc2451a8c9a63ed2f208911cbb34a3d5
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/scope-manager@npm:5.58.0":
-  version: 5.58.0
-  resolution: "@typescript-eslint/scope-manager@npm:5.58.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:5.58.0"
-    "@typescript-eslint/visitor-keys": "npm:5.58.0"
-  checksum: 10/fd3295eae5c6031e03f18261120c6642bfe0b7619f74cba48399d5a12873081c1b572e105b14976e55bed5bc5217576e0fb58c35bc3000906afd90ba3a31c372
   languageName: node
   linkType: hard
 
@@ -14758,13 +14726,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:5.58.0":
-  version: 5.58.0
-  resolution: "@typescript-eslint/types@npm:5.58.0"
-  checksum: 10/c927754f463b9e570163d6818eb69e702f47f918095500281adb126973da8bcb872c82640e5ed1c8c0d255308eebca58f1ca89b6b8da613207d05b2e4bfce8ef
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/types@npm:5.60.1":
   version: 5.60.1
   resolution: "@typescript-eslint/types@npm:5.60.1"
@@ -14783,24 +14744,6 @@ __metadata:
   version: 8.12.2
   resolution: "@typescript-eslint/types@npm:8.12.2"
   checksum: 10/57981e5fa45b03a0398ffb82418fdb716f476aa0b9c17d96edeb7fd3e3f4a720466868af7c2a02ddca65c27e70bfaff50c523b2a570582c4645a2702e17dc94a
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/typescript-estree@npm:5.58.0":
-  version: 5.58.0
-  resolution: "@typescript-eslint/typescript-estree@npm:5.58.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:5.58.0"
-    "@typescript-eslint/visitor-keys": "npm:5.58.0"
-    debug: "npm:^4.3.4"
-    globby: "npm:^11.1.0"
-    is-glob: "npm:^4.0.3"
-    semver: "npm:^7.3.7"
-    tsutils: "npm:^3.21.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/ab5eabf3204eab1b8d5f4e0e2c77a35f1f196ef9aff22f0c4771e02b6abd4f39811fef30b58163b4a8debec696a15e9c4689ad8a9d6bc5ec908d9c8c01fe249f
   languageName: node
   linkType: hard
 
@@ -14906,16 +14849,6 @@ __metadata:
   peerDependencies:
     eslint: ^8.57.0 || ^9.0.0
   checksum: 10/4588866ca43314692a0e685d8936c470dca4e6d119a4a1adefbc2fd54682ff081bc21d60bf4e8077d3668aa680bada851b88566264d09c92a840fe2e4feb331b
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/visitor-keys@npm:5.58.0":
-  version: 5.58.0
-  resolution: "@typescript-eslint/visitor-keys@npm:5.58.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:5.58.0"
-    eslint-visitor-keys: "npm:^3.3.0"
-  checksum: 10/c7fd982b016bd4e6f6523ba68136269e430bf3688eaa45ab661000459ddf3625bc374e789719265401212fa9e4dfce4d179fb9b5faab09e0ca2033efe57deb62
   languageName: node
   linkType: hard
 
@@ -16406,6 +16339,17 @@ __metadata:
     form-data: "npm:^4.0.4"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10/232df4af7a4e4e07baa84621b9cc4b0c518a757b4eacc7f635c0eb3642cb98dff347326739f24b891b3b4481b7b838c79a3a0c4819c9fbc1fc40232431b9c5dc
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.13.2":
+  version: 1.13.2
+  resolution: "axios@npm:1.13.2"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.4"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10/ae4e06dcd18289f2fd18179256d550d27f9a53ecb2f9c59f2ccc4efd1d7151839ba8c3e0fb533dac793e4a59a576ca8689a19244dce5c396680837674a47a867
   languageName: node
   linkType: hard
 
@@ -20559,7 +20503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"env-schema@npm:^5.2.0":
+"env-schema@npm:^5.2.0, env-schema@npm:^5.2.1":
   version: 5.2.1
   resolution: "env-schema@npm:5.2.1"
   dependencies:
@@ -22437,6 +22381,19 @@ __metadata:
     hasown: "npm:^2.0.2"
     mime-types: "npm:^2.1.12"
   checksum: 10/a4b62e21932f48702bc468cc26fb276d186e6b07b557e3dd7cc455872bdbb82db7db066844a64ad3cf40eaf3a753c830538183570462d3649fdfd705601cbcfb
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "form-data@npm:4.0.5"
+  dependencies:
+    asynckit: "npm:^0.4.0"
+    combined-stream: "npm:^1.0.8"
+    es-set-tostringtag: "npm:^2.1.0"
+    hasown: "npm:^2.0.2"
+    mime-types: "npm:^2.1.12"
+  checksum: 10/52ecd6e927c8c4e215e68a7ad5e0f7c1031397439672fd9741654b4a94722c4182e74cc815b225dcb5be3f4180f36428f67c6dd39eaa98af0dcfdd26c00c19cd
   languageName: node
   linkType: hard
 
@@ -25651,17 +25608,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-qase-reporter@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "jest-qase-reporter@npm:2.1.3"
+"jest-qase-reporter@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "jest-qase-reporter@npm:2.1.4"
   dependencies:
     lodash.get: "npm:^4.4.2"
     lodash.has: "npm:^4.5.2"
-    qase-javascript-commons: "npm:~2.4.2"
-    uuid: "npm:^9.0.0"
+    qase-javascript-commons: "npm:~2.4.16"
+    uuid: "npm:^9.0.1"
   peerDependencies:
     jest: ">=28.0.0"
-  checksum: 10/1c19643adaffd514674d1dbdc92d6377beb859d4036228133a8ad2dadadbc879bc65b74df5f14ad371b5e269976720da3b787afbfba034ff8be0f1a1792324c7
+  checksum: 10/45c9e3606205786f014523e77a6f0818906b2d953da92fda86396486c1ce836ca6a99d29993b1e8d631ce16eb9ebc0e9094f29ad099d1c35d917c3a9d21e41e1
   languageName: node
   linkType: hard
 
@@ -27784,7 +27741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:^2.1.33, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.27, mime-types@npm:^2.1.31, mime-types@npm:^2.1.33, mime-types@npm:^2.1.35, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -31324,6 +31281,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qase-api-client@npm:~1.1.1":
+  version: 1.1.1
+  resolution: "qase-api-client@npm:1.1.1"
+  dependencies:
+    axios: "npm:^1.13.2"
+    axios-retry: "npm:^4.5.0"
+  checksum: 10/885ee6cc6d11a197e23335fabe5e20d34f2ce498cbefca9cf25f3fc911af487daf5fbb96771ae97dfc169b4dac4cd8a3f8767c0768bb2512112294ca15f864b2
+  languageName: node
+  linkType: hard
+
 "qase-api-v2-client@npm:~1.0.1":
   version: 1.0.2
   resolution: "qase-api-v2-client@npm:1.0.2"
@@ -31331,6 +31298,37 @@ __metadata:
     axios: "npm:^1.8.2"
     axios-retry: "npm:^4.5.0"
   checksum: 10/c61b4266b90b1e0659205f054d472e54297735d8eeb52398e4485bf0ad702d594371ae845cfdf990c7f402238328fe9a0451bbd08343e73e8199b49bc8772afe
+  languageName: node
+  linkType: hard
+
+"qase-api-v2-client@npm:~1.0.4":
+  version: 1.0.4
+  resolution: "qase-api-v2-client@npm:1.0.4"
+  dependencies:
+    axios: "npm:^1.13.2"
+    axios-retry: "npm:^4.5.0"
+  checksum: 10/6ee58fadd3bc6bb7774e17623ad98ef3f6d2634c90179fde0dfede80951bd808ee2e510bd258835704d65f7dc17f456acc2ecee1c84a6ff41b5abfaf61bb6139
+  languageName: node
+  linkType: hard
+
+"qase-javascript-commons@npm:~2.4.16":
+  version: 2.4.16
+  resolution: "qase-javascript-commons@npm:2.4.16"
+  dependencies:
+    ajv: "npm:^8.17.1"
+    async-mutex: "npm:~0.5.0"
+    chalk: "npm:^4.1.2"
+    env-schema: "npm:^5.2.1"
+    form-data: "npm:^4.0.5"
+    lodash.get: "npm:^4.4.2"
+    lodash.merge: "npm:^4.6.2"
+    lodash.mergewith: "npm:^4.6.2"
+    mime-types: "npm:^2.1.35"
+    qase-api-client: "npm:~1.1.1"
+    qase-api-v2-client: "npm:~1.0.4"
+    strip-ansi: "npm:^6.0.1"
+    uuid: "npm:^9.0.1"
+  checksum: 10/28881ec2909cf29d6d365e3a96a08061eb183b3492ee7529f66a07ef466347025bba91f8f70233c0b38cca95362c142f3e2b498efce76469799ab244784b894e
   languageName: node
   linkType: hard
 
@@ -32818,7 +32816,6 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.8"
-    jest-qase-reporter: "npm:^2.1.3"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:~2.6.1"

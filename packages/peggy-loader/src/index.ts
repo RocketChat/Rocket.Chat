@@ -18,14 +18,10 @@ type Options = BuildOptionsBase &
 	);
 
 function peggyLoader(this: LoaderContext<Options>, grammarContent: string): string {
-	const options: Options = {
-		format: 'commonjs',
-		...this.getOptions(),
-	};
-
 	return peggy.generate(grammarContent, {
 		output: 'source',
-		...options,
+		format: 'es',
+		...this.getOptions(),
 	});
 }
 

@@ -37,8 +37,6 @@ export default {
 	forceExit: true, // Force Jest to exit after tests complete
 	detectOpenHandles: true, // Detect open handles that prevent Jest from exiting
 	globalTeardown: '<rootDir>/tests/teardown.ts',
-	// To disable Qase integration, remove this line or comment it out
-	setupFilesAfterEnv: ['<rootDir>/tests/setup-qase.ts'],
 	verbose: false,
 	silent: false,
 	reporters: [
@@ -51,7 +49,7 @@ export default {
 							mode: 'testops',
 							testops: {
 								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
-								project: 'RC',
+								project: process.env.QASE_PROJECT || 'RC',
 								run: {
 									title: qaseRunTitle(),
 									complete: true,
