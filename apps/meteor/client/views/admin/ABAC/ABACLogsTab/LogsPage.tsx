@@ -104,23 +104,14 @@ const LogsPage = () => {
 							element: t('ABAC_room_membership'),
 						};
 					case 'abac.object.attribute.changed':
+					case 'abac.object.attributes.removed':
 						return {
 							...eventInfo,
 							name:
 								event.data
 									?.find((item) => item.key === 'current')
 									?.value?.map((item) => item.key)
-									.join(', ') ?? '',
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					case 'abac.object.attributes.removed':
-						return {
-							...eventInfo,
-							name:
-								event.data
-									?.find((item) => item.key === 'previous')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? '',
+									.join(', ') ?? t('Empty'),
 							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
 						};
 					default:
