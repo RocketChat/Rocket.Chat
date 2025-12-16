@@ -4,10 +4,10 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1ak4hj0"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-13elmuw"
+        class="rcx-box rcx-box--full rcx-css-1gfq70m"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-llee4e"
@@ -33,13 +33,13 @@ exports[`renders Default without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-6vi44e"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1wz6xj9"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-15xal8k"
+              class="rcx-box rcx-box--full rcx-css-uuz7h"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -126,10 +126,10 @@ exports[`renders WithActionBadge without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1ak4hj0"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-13elmuw"
+        class="rcx-box rcx-box--full rcx-css-1gfq70m"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-llee4e"
@@ -155,13 +155,13 @@ exports[`renders WithActionBadge without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-6vi44e"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1wz6xj9"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-15xal8k"
+              class="rcx-box rcx-box--full rcx-css-uuz7h"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -276,10 +276,10 @@ exports[`renders WithAnnouncement without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1ak4hj0"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-13elmuw"
+        class="rcx-box rcx-box--full rcx-css-1gfq70m"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-llee4e"
@@ -305,13 +305,13 @@ exports[`renders WithAnnouncement without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-6vi44e"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1wz6xj9"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-15xal8k"
+              class="rcx-box rcx-box--full rcx-css-uuz7h"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -391,7 +391,7 @@ exports[`renders WithAnnouncement without crashing 1`] = `
       />
     </header>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1szqnba rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-vsh9r1 rcx-css-k3fjzq"
       role="button"
       tabindex="0"
     >
@@ -409,10 +409,10 @@ exports[`renders WithBurger without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1ak4hj0"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-13elmuw"
+        class="rcx-box rcx-box--full rcx-css-1gfq70m"
       >
         <div
           aria-orientation="horizontal"
@@ -456,13 +456,13 @@ exports[`renders WithBurger without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-6vi44e"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1wz6xj9"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-15xal8k"
+              class="rcx-box rcx-box--full rcx-css-uuz7h"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -549,10 +549,10 @@ exports[`renders WithTopic without crashing 1`] = `
 <body>
   <div>
     <header
-      class="rcx-box rcx-box--full rcx-room-header rcx-css-1ak4hj0"
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-1u5v9e9"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-13elmuw"
+        class="rcx-box rcx-box--full rcx-css-1gfq70m"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-llee4e"
@@ -578,13 +578,13 @@ exports[`renders WithTopic without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-6vi44e"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1wz6xj9"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-15xal8k"
+              class="rcx-box rcx-box--full rcx-css-uuz7h"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>

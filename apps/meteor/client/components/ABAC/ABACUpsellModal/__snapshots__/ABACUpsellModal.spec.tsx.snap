@@ -10,7 +10,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -22,7 +22,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>

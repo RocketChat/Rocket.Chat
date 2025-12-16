@@ -19,7 +19,7 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1yimpo4"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-i0csg7 rcx-css-f2vsf1"
+              class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
               role="button"
               tabindex="0"
             >
@@ -28,13 +28,13 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1t9h2ff"
+                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1o911xq"
                 >
                   
                 </i>
               </div>
               <h1
-                class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+                class="rcx-box rcx-box--full rcx-css-15uaxsl"
               >
                 rocket.cat
               </h1>

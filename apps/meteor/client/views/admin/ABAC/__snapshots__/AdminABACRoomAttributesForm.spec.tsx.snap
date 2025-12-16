@@ -4,7 +4,7 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1dwbzta"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
     >
       <form
         class="rcx-box rcx-box--full"
@@ -14,7 +14,7 @@ exports[`AdminABACRoomAttributesForm renders NewAttribute without crashing 1`] =
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -176,7 +176,7 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1dwbzta"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
     >
       <form
         class="rcx-box rcx-box--full"
@@ -186,7 +186,7 @@ exports[`AdminABACRoomAttributesForm renders WithLockedAttributes without crashi
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div

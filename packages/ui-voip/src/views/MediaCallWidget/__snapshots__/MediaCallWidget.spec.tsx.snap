@@ -9,10 +9,10 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -25,7 +25,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Incoming Call...
@@ -74,7 +74,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -98,7 +98,7 @@ exports[`renders IncomingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -106,7 +106,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -166,10 +166,10 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -182,7 +182,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Transferring_call_incoming...
@@ -241,7 +241,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -265,7 +265,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -273,7 +273,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -360,10 +360,10 @@ exports[`renders NewCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -376,7 +376,7 @@ exports[`renders NewCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           New_call
@@ -428,7 +428,7 @@ exports[`renders NewCall without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
                 >
                   
                 </i>
@@ -466,7 +466,7 @@ exports[`renders NewCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-14t6xuk"
+                class="rcx-box rcx-box--full rcx-css-1jbbtow"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -490,7 +490,7 @@ exports[`renders NewCall without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+                class="rcx-box rcx-box--full rcx-css-1m7ucy6"
               >
                 1234567890
               </div>
@@ -499,7 +499,7 @@ exports[`renders NewCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -556,10 +556,10 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -572,7 +572,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           <time
@@ -627,7 +627,7 @@ exports[`renders OngoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -651,7 +651,7 @@ exports[`renders OngoingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -659,7 +659,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
@@ -755,10 +755,10 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -771,7 +771,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Calling...
@@ -820,7 +820,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -844,7 +844,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -852,7 +852,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -895,10 +895,10 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
       >
         <i
           aria-hidden="true"
@@ -911,7 +911,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Transferring_call...
@@ -970,7 +970,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -994,7 +994,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -1002,7 +1002,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"

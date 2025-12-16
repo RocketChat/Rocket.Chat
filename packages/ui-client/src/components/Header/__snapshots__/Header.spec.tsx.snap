@@ -33,13 +33,13 @@ exports[`renders Default without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1t9h2ff"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -74,7 +74,7 @@ exports[`renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1yimpo4"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-p5d81o"
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
             >
               general general general general general general general general general general general general general general general general general general general
             </div>
@@ -164,13 +164,13 @@ exports[`renders WithActionBadge without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1t9h2ff"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -191,7 +191,7 @@ exports[`renders WithActionBadge without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1yimpo4"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-p5d81o"
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
             >
               general general general general general general general general general general general general general general general general general general general
             </div>
@@ -341,13 +341,13 @@ exports[`renders WithBurger without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1t9h2ff"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
               >
                 
               </i>
             </div>
             <h1
-              class="rcx-box rcx-box--full rcx-css-1w5kdwh"
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
             >
               general general general general general general general general general general general general general general general general general general general
             </h1>
@@ -382,7 +382,7 @@ exports[`renders WithBurger without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1yimpo4"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-p5d81o"
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
             >
               general general general general general general general general general general general general general general general general general general general
             </div>
