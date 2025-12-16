@@ -488,6 +488,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		usernames.forEach((username) => {
+			// TODO: Add room name
 			void Audit.actionPerformed({ username }, { _id: objectId }, 'system', 'granted-object-access');
 		});
 	}
@@ -609,7 +610,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
 		})
-			.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id }, reason))
+			.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id, name: room.name }, reason))
 			.catch((err) => {
 				this.logger.error({
 					msg: 'Failed to remove user from ABAC room',
