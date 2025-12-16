@@ -129,8 +129,14 @@ export class RoomRead implements IRoomRead {
 
 		const { createdAt } = cursor as Partial<{ createdAt: unknown }>;
 
-		const parsedCreatedAt =
-			createdAt instanceof Date ? createdAt : typeof createdAt === 'string' || typeof createdAt === 'number' ? new Date(createdAt) : undefined;
+		let parsedCreatedAt: Date | undefined;
+		if (createdAt instanceof Date) {
+			parsedCreatedAt = createdAt;
+		} else if (typeof createdAt === 'string' || typeof createdAt === 'number') {
+			parsedCreatedAt = new Date(createdAt);
+		} else {
+			parsedCreatedAt = undefined;
+		}
 
 		if (!parsedCreatedAt || Number.isNaN(parsedCreatedAt.getTime())) {
 			throw new Error(`Invalid "${optionName}" cursor createdAt. Expected a valid Date, got ${createdAt}`);
