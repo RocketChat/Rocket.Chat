@@ -9,6 +9,7 @@ import type {
 	AbacAuditReason,
 	MinimalRoom,
 	MinimalUser,
+	AbacActionPerformed,
 } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
@@ -116,11 +117,16 @@ export const Audit = {
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
-	actionPerformed: async (subject: MinimalUser, object: MinimalRoom, reason: AbacAuditReason = 'room-attributes-change') => {
+	actionPerformed: async (
+		subject: MinimalUser,
+		object: MinimalRoom,
+		reason: AbacAuditReason = 'room-attributes-change',
+		actionPerformed: AbacActionPerformed = 'revoked-object-access',
+	) => {
 		return audit(
 			'abac.action.performed',
 			{
-				action: 'revoked-object-access',
+				action: actionPerformed,
 				reason,
 				subject,
 				object,
