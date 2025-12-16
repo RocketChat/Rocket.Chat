@@ -294,7 +294,7 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
-	if (user.services && !user.services.password) {
+	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {

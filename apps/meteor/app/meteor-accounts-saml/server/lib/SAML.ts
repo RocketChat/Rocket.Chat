@@ -30,14 +30,19 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 };
 
 const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_id'][]> => {
-	const roles = (await Roles.findInIdsOrNames(roleNamesOrIds).toArray()).map((role) => role._id);
+	const normalizedRoleNamesOrIds = roleNamesOrIds.map((role) => role.trim()).filter((role) => role.length > 0);
+	if (!normalizedRoleNamesOrIds.length) {
+		throw new Error(`No valid role names or ids provided for conversion: ${roleNamesOrIds.join(', ')}`);
+	}
 
-	if (roles.length !== roleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${roleNamesOrIds.join(', ')}`);
+	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
+
+	if (roles.length !== normalizedRoleNamesOrIds.length) {
+		SystemLogger.warn(`Failed to convert some role names to ids: ${normalizedRoleNamesOrIds.join(', ')}`);
 	}
 
 	if (!roles.length) {
-		throw new Error(`We should have at least one existing role to create the user: ${roleNamesOrIds.join(', ')}`);
+		throw new Error(`We should have at least one existing role to create the user: ${normalizedRoleNamesOrIds.join(', ')}`);
 	}
 
 	return roles;
@@ -93,14 +98,8 @@ export class SAML {
 	}
 
 	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
-		const {
-			generateUsername,
-			immutableProperty,
-			nameOverwrite,
-			mailOverwrite,
-			channelsAttributeUpdate,
-			defaultUserRole = 'user',
-		} = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole } =
+			SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -142,9 +141,14 @@ export class SAML {
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 		if (!user) {
-			// If we received any role from the mapping, use them - otherwise use the default role for creation.
-			const roleNamesOrIds = userObject.roles?.length ? userObject.roles : ensureArray<string>(defaultUserRole.split(','));
-			const roles = await convertRoleNamesToIds(roleNamesOrIds);
+			let roleNamesOrIds: string[] = [];
+			if (userObject.roles && userObject.roles.length > 0) {
+				roleNamesOrIds = userObject.roles;
+			} else if (defaultUserRole) {
+				roleNamesOrIds = ensureArray<string>(defaultUserRole.split(','));
+			}
+
+			const roles = roleNamesOrIds.length > 0 ? await convertRoleNamesToIds(roleNamesOrIds) : [];
 
 			const newUser: Record<string, any> = {
 				name: fullName,
@@ -178,7 +182,11 @@ export class SAML {
 				}
 			}
 
-			const userId = await Accounts.insertUserDoc({}, newUser);
+			// only set skipAuthServiceDefaultRoles if SAML is providing its own roles
+			// otherwise, leave it as false to fallback to generic auth service default roles
+			// from Accounts_Registration_AuthenticationServices_Default_Roles
+			const skipAuthServiceDefaultRoles = roleNamesOrIds.length > 0;
+			const userId = await Accounts.insertUserDoc({ skipAuthServiceDefaultRoles, skipNewUserRolesSetting: true }, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
