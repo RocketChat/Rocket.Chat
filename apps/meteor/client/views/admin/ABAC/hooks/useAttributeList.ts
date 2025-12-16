@@ -15,38 +15,25 @@ export const useAttributeList = () => {
 		queryKey: ABACQueryKeys.roomAttributes.list(),
 		queryFn: async () => {
 			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
-			const { attributes: firstPageAttributes, total, count } = firstPage;
+			const { attributes: firstPageAttributes, total } = firstPage;
 
-			// If there's only one page, return it
-			if (total <= count) {
-				return {
-					...firstPage,
-					attributes: firstPageAttributes.map((attribute) => ({
-						_id: attribute._id,
-						label: attribute.key,
-						value: attribute.key,
-						attributeValues: attribute.values,
-					})),
-				};
+			let currentPage = COUNT;
+			const pages = [];
+
+			while (currentPage < total) {
+				pages.push(attributesAutoCompleteEndpoint({ offset: currentPage, count: COUNT }));
+				currentPage += COUNT;
 			}
+			const remainingPages = await Promise.all(pages);
 
-			const remainingOffsets: number[] = [];
-			for (let currentOffset = count; currentOffset < total; currentOffset += count) {
-				remainingOffsets.push(currentOffset);
-			}
-
-			const remainingPages = await Promise.all(
-				remainingOffsets.map((pageOffset) => attributesAutoCompleteEndpoint({ offset: pageOffset, count: COUNT })),
-			);
-
-			const allAttributes = [...firstPageAttributes, ...remainingPages.flatMap((page) => page.attributes)].map((attribute) => ({
-				_id: attribute._id,
-				label: attribute.key,
-				value: attribute.key,
-				attributeValues: attribute.values,
-			}));
-
-			return { attributes: allAttributes };
+			return {
+				attributes: [...firstPageAttributes, ...remainingPages.flatMap((page) => page.attributes)].map((attribute) => ({
+					_id: attribute._id,
+					label: attribute.key,
+					value: attribute.key,
+					attributeValues: attribute.values,
+				})),
+			};
 		},
 	});
 };
