@@ -2639,6 +2639,8 @@
   "Integrations_Outgoing_Type_RoomLeft": "User Left Room",
   "Integrations_Outgoing_Type_SendMessage": "Message Sent",
   "Integrations_Outgoing_Type_UserCreated": "User Created",
+  "Integrations_Outgoing_Type_MessageEdited": "Message Edited",
+  "Integrations_Outgoing_Type_MessageDeleted": "Message Deleted",
   "Integrations_for_all_channels": "Enter <strong>all_public_channels</strong> to listen on all public channels, <strong>all_private_groups</strong> to listen on all private groups, and <strong>all_direct_messages</strong> to listen to all direct messages.",
   "Integrations_table": "Integrations table",
   "InternalHubot": "Internal Hubot",

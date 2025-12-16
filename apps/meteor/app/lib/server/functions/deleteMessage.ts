@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { triggerHandler } from '../../../integrations/server/lib/triggerHandler';
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
@@ -105,6 +106,11 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	if (bridges && deletedMsg) {
 		void bridges.getListenerBridge().messageEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
+	}
+
+	// Trigger outgoing webhook for messageDeleted event
+	if (deletedMsg) {
+		void triggerHandler.executeTriggers('messageDeleted', deletedMsg, room, user);
 	}
 }
 

@@ -14,6 +14,24 @@ export const outgoingEvents: Record<
 			targetRoom: false,
 		},
 	},
+	messageEdited: {
+		label: 'Integrations_Outgoing_Type_MessageEdited',
+		value: 'messageEdited',
+		use: {
+			channel: true,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
+	messageDeleted: {
+		label: 'Integrations_Outgoing_Type_MessageDeleted',
+		value: 'messageDeleted',
+		use: {
+			channel: true,
+			triggerWords: false,
+			targetRoom: false,
+		},
+	},
 	fileUploaded: {
 		label: 'Integrations_Outgoing_Type_FileUploaded',
 		value: 'fileUploaded',

@@ -48,6 +48,7 @@ type IntegrationData = {
 	siteUrl?: string;
 	alias?: string;
 	isEdited?: boolean;
+	isDeleted?: boolean;
 	tmid?: string;
 	user?: Partial<IUser>;
 	room?: IRoom;
@@ -71,7 +72,9 @@ class RocketChatIntegrationHandler {
 	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
 		let channels = [];
-		if (record.event && !outgoingEvents[record.event].use.channel) {
+		// Use optional chaining (?.) to prevent runtime errors when record.event exists
+		// but outgoingEvents[record.event] is undefined.
+		if (record.event && !outgoingEvents[record.event]?.use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
@@ -195,6 +198,14 @@ class RocketChatIntegrationHandler {
 					argObject.room = args[2] as IRoom;
 				}
 				break;
+			case 'messageEdited':
+			case 'messageDeleted':
+				if (args.length >= 3) {
+					argObject.message = args[1] as IMessage;
+					argObject.room = args[2] as IRoom;
+					argObject.user = args[3] as IUser;
+				}
+				break;
 			case 'fileUploaded':
 				if (args.length >= 2) {
 					const arghhh: Record<string, any> = args[1] as Record<string, any>;
@@ -270,13 +281,15 @@ class RocketChatIntegrationHandler {
 
 		switch (event) {
 			case 'sendMessage':
+			case 'messageEdited':
+			case 'messageDeleted':
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.message_id = message._id;
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
-				data.text = message.msg;
+				data.text = message.msg || (message.attachments?.[0]?.description ?? '');
 				data.siteUrl = settings.get('Site_Url');
 
 				if (message.alias) {
@@ -287,12 +300,22 @@ class RocketChatIntegrationHandler {
 					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
 				}
 
-				if (message.editedAt) {
+				if (message.editedAt && event === 'messageEdited') {
 					data.isEdited = true;
+				}
+
+				if (event === 'messageDeleted') {
+					data.isDeleted = true;
 				}
 
 				if (message.tmid) {
 					data.tmid = message.tmid;
+				}
+
+				if (event === 'messageEdited' || event === 'messageDeleted') {
+					data.user = userWithoutServicesField;
+					data.room = room;
+					data.message = message;
 				}
 				break;
 			case 'fileUploaded':
