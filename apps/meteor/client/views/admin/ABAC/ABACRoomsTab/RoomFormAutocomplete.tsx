@@ -11,8 +11,7 @@ const generateQuery = (
 	term = '',
 ): {
 	filter: string;
-	types: string[];
-} => ({ filter: term, types: ['p'] });
+} => ({ filter: term });
 
 type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
 	onSelectedRoom: (value: string, label: string) => void;
@@ -21,7 +20,7 @@ type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filt
 const RoomFormAutocomplete = ({ value, onSelectedRoom, ...props }: RoomFormAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
-	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms');
+	const roomsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.adminRooms.privateRooms');
 
 	const result = useQuery({
 		queryKey: ABACQueryKeys.rooms.autocomplete(generateQuery(filterDebounced)),
