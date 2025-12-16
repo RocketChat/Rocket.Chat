@@ -102,7 +102,7 @@ export const useIframeCommands = () => {
 		if (!iframeReceiveEnabled) {
 			return;
 		}
-		const messageListener = (event: MessageEvent<CommandMessage>) => {c
+		const messageListener = (event: MessageEvent<CommandMessage>) => {
 			if (typeof event.data !== 'object' || typeof event.data.externalCommand !== 'string') {
 				return;
 			}
