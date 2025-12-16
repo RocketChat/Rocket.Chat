@@ -36,7 +36,7 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 	const { data } = useQuery({
-		queryKey: ['users.autocomplete', debouncedFilter],
+		queryKey: ['users.autocomplete', debouncedFilter, { federated }],
 
 		queryFn: async () => {
 			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
