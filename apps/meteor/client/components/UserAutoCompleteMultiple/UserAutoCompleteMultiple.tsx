@@ -13,7 +13,8 @@ type UserAutoCompleteMultipleProps = {
 	value: Array<string> | undefined;
 	placeholder?: string;
 	federated?: boolean;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'onChange' | 'value'>;
+	error?: string;
+} & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange' | 'value'>;
 
 type UserAutoCompleteOptionType = {
 	name: string;
