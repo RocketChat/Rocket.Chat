@@ -1,9 +1,9 @@
 import { NumberInput } from '@rocket.chat/fuselage';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import type { EditDepartmentFormData, IDepartmentAgent } from '../definitions';
 import AgentAvatar from './AgentAvatar';
 import RemoveAgentButton from './RemoveAgentButton';

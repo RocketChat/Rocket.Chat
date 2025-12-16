@@ -34,6 +34,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 
-		await readMessages(rid, userId, readThreads);
+		await readMessages(room, userId, readThreads);
 	},
 });
