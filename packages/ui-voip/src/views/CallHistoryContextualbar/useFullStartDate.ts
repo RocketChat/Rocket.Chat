@@ -5,8 +5,7 @@ export const useFullStartDate = (startedAt: Date) => {
 	const locale = useLanguage();
 
 	const date = useMemo(() => {
-		// eslint-disable-next-line new-cap
-		return Intl.DateTimeFormat(locale, { dateStyle: 'full', timeStyle: 'medium' }).format(startedAt);
+		return new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeStyle: 'medium' }).format(startedAt);
 	}, [locale, startedAt]);
 
 	return date;
