@@ -26,12 +26,12 @@ type SortProps = {
 	setSort: (sortBy: SortBy, direction?: 'asc' | 'desc' | undefined) => void;
 };
 
-type MediaCallHistoryPageProps = {
+type MediaCallHistoryTableProps = {
 	sort: SortProps;
 	data: Array<{ contact: string; type: 'outbound' | 'inbound'; status: CallHistoryItemState; duration: number; timestamp: string }>;
 };
 
-const MediaCallHistoryPage = ({ sort, data }: MediaCallHistoryPageProps) => {
+const MediaCallHistoryTable = ({ sort, data }: MediaCallHistoryTableProps) => {
 	const locale = useLanguage();
 	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort: onClickSort } = sort;
@@ -92,4 +92,4 @@ const MediaCallHistoryPage = ({ sort, data }: MediaCallHistoryPageProps) => {
 	);
 };
 
-export default MediaCallHistoryPage;
+export default MediaCallHistoryTable;

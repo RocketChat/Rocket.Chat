@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSort } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import MediaCallHistoryPage from './MediaCallHistoryPage';
+import MediaCallHistoryTable from './MediaCallHistoryTable';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -21,10 +21,10 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 export default {
-	title: 'V2/Views/MediaCallHistoryPage',
-	component: MediaCallHistoryPage,
+	title: 'V2/Views/MediaCallHistoryTable',
+	component: MediaCallHistoryTable,
 	decorators: [mockedContexts],
-} satisfies Meta<typeof MediaCallHistoryPage>;
+} satisfies Meta<typeof MediaCallHistoryTable>;
 
 const getStatus = (index: number) => {
 	if (index % 4 === 0) {
@@ -67,7 +67,7 @@ const results = Array.from({ length: 100 }).map(
 	}),
 );
 
-export const MediaCallHistoryPageStory: StoryFn<typeof MediaCallHistoryPage> = () => {
+export const MediaCallHistoryTableStory: StoryFn<typeof MediaCallHistoryTable> = () => {
 	const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
-	return <MediaCallHistoryPage sort={sort} data={results} />;
+	return <MediaCallHistoryTable sort={sort} data={results} />;
 };
