@@ -24,7 +24,7 @@ const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProp
 				{t('Attribute')}
 			</FieldLabel>
 			<RoomFormAttributeField
-				attributeList={attributeList}
+				attributeList={attributeList.attributes}
 				onRemove={() => {
 					remove(index);
 				}}

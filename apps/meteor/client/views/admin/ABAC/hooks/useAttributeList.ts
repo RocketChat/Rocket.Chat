@@ -1,39 +1,52 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-export const useAttributeList = (filter?: string) => {
+const COUNT = 150;
+
+export const useAttributeList = () => {
 	const attributesAutoCompleteEndpoint = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
-	return useInfiniteQuery({
+	return useQuery({
 		enabled: isABACAvailable,
-		queryKey: ABACQueryKeys.roomAttributes.list({ key: filter ?? '' }),
-		queryFn: async ({ pageParam: offset = 0 }) => {
-			// TODO: Check endpoint types
-			const { attributes, ...data } = await attributesAutoCompleteEndpoint({ key: filter, offset });
+		queryKey: ABACQueryKeys.roomAttributes.list(),
+		queryFn: async () => {
+			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
+			const { attributes: firstPageAttributes, total, count } = firstPage;
 
-			return {
-				...data,
-				attributes: attributes.map((attribute) => ({
-					_id: attribute._id,
-					label: attribute.key,
-					value: attribute.key,
-					attributeValues: attribute.values,
-				})),
-			};
+			// If there's only one page, return it
+			if (total <= count) {
+				return {
+					...firstPage,
+					attributes: firstPageAttributes.map((attribute) => ({
+						_id: attribute._id,
+						label: attribute.key,
+						value: attribute.key,
+						attributeValues: attribute.values,
+					})),
+				};
+			}
+
+			const remainingOffsets: number[] = [];
+			for (let currentOffset = count; currentOffset < total; currentOffset += count) {
+				remainingOffsets.push(currentOffset);
+			}
+
+			const remainingPages = await Promise.all(
+				remainingOffsets.map((pageOffset) => attributesAutoCompleteEndpoint({ offset: pageOffset, count: COUNT })),
+			);
+
+			const allAttributes = [...firstPageAttributes, ...remainingPages.flatMap((page) => page.attributes)].map((attribute) => ({
+				_id: attribute._id,
+				label: attribute.key,
+				value: attribute.key,
+				attributeValues: attribute.values,
+			}));
+
+			return { attributes: allAttributes };
 		},
-		select: (data) => data.pages.flatMap((page) => page.attributes),
-		initialPageParam: 0,
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			return offset < lastPage.total ? offset : undefined;
-		},
-		initialData: () => ({
-			pages: [{ attributes: [], offset: 0, count: 0, total: Infinity }],
-			pageParams: [0],
-		}),
 	});
 };
