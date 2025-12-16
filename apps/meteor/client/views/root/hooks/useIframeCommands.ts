@@ -1,17 +1,18 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { LocationPathname } from '@rocket.chat/ui-contexts';
+import { type LocationPathname, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { useEffect } from 'react';
 
-import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
-import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
-import { baseURI } from '../lib/baseURI';
-import { loginServices } from '../lib/loginServices';
-import { settings } from '../lib/settings';
-import { getUser } from '../lib/user';
-import { router } from '../providers/RouterProvider';
+import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { baseURI } from '../../../lib/baseURI';
+import { loginServices } from '../../../lib/loginServices';
+import { settings } from '../../../lib/settings';
+import { getUser } from '../../../lib/user';
+import { router } from '../../../providers/RouterProvider';
 
 const commands = {
 	'go'(data: { path: string }) {
@@ -93,27 +94,37 @@ type CommandMessage<TCommandName extends keyof typeof commands = keyof typeof co
 	externalCommand: TCommandName;
 } & Parameters<(typeof commands)[TCommandName]>[0];
 
-window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: MessageEvent<TCommandMessage>) => {
-	if (!settings.peek<boolean>('Iframe_Integration_receive_enable')) {
-		return;
-	}
+export const useIframeCommands = () => {
+	const iframeReceiveEnabled = useSetting('Iframe_Integration_receive_enable');
+	const iframeReceiveOrigin = useSetting('Iframe_Integration_receive_origin', '*');
 
-	if (typeof e.data !== 'object' || typeof e.data.externalCommand !== 'string') {
-		return;
-	}
+	useEffect(() => {
+		if (!iframeReceiveEnabled) {
+			return;
+		}
+		const messageListener = (event: MessageEvent<CommandMessage>) => {c
+			if (typeof event.data !== 'object' || typeof event.data.externalCommand !== 'string') {
+				return;
+			}
 
-	const origins = settings.peek<string>('Iframe_Integration_receive_origin') ?? '*';
+			if (iframeReceiveOrigin !== '*' && iframeReceiveOrigin.split(',').indexOf(event.origin) === -1) {
+				console.error('Origin not allowed', event.origin);
+				return;
+			}
 
-	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
-		console.error('Origin not allowed', e.origin);
-		return;
-	}
+			if (!(event.data.externalCommand in commands)) {
+				console.error('Command not allowed', event.data.externalCommand);
+				return;
+			}
 
-	if (!(e.data.externalCommand in commands)) {
-		console.error('Command not allowed', e.data.externalCommand);
-		return;
-	}
+			const command: (data: any, event: MessageEvent) => void = commands[event.data.externalCommand];
+			command(event.data, event);
+		};
 
-	const command: (data: any, event: MessageEvent) => void = commands[e.data.externalCommand];
-	command(e.data, e);
-});
+		window.addEventListener('message', messageListener);
+
+		return () => {
+			window.removeEventListener('message', messageListener);
+		};
+	}, [iframeReceiveEnabled, iframeReceiveOrigin]);
+};
