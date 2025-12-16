@@ -9416,6 +9416,7 @@ __metadata:
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
     is-svg: "npm:^5.1.0"
+    iso-639-1: "npm:^3.1.5"
     isolated-vm: "npm:5.0.4"
     jest: "npm:~30.2.0"
     jschardet: "npm:^3.1.4"
@@ -24776,6 +24777,13 @@ __metadata:
   version: 3.1.1
   resolution: "isexe@npm:3.1.1"
   checksum: 10/7fe1931ee4e88eb5aa524cd3ceb8c882537bc3a81b02e438b240e47012eef49c86904d0f0e593ea7c3a9996d18d0f1f3be8d3eaa92333977b0c3a9d353d5563e
+  languageName: node
+  linkType: hard
+
+"iso-639-1@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "iso-639-1@npm:3.1.5"
+  checksum: 10/c1adadef57c42a0c5040632451b8954b41e7a3aabe0318d871562263b8d6ea29f3b3d19a32cc657600b7288594cc78e507b9f8ed0aecb6b035985811ede79ead
   languageName: node
   linkType: hard
 

@@ -10,9 +10,11 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import ISO6391 from 'iso-639-1';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { bcp47Mapping } from './bcp47Mapping';
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
@@ -66,7 +68,42 @@ export class TranslationProviderRegistry {
 	}
 
 	static async getSupportedLanguages(target: string): Promise<ISupportedLanguage[] | undefined> {
-		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
+		const languages = TranslationProviderRegistry.enabled
+			? await TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target)
+			: undefined;
+
+		if (languages && languages.length !== 0) {
+			return languages.map((language) => ({
+				...language,
+				bcp47: TranslationProviderRegistry.getBCP47FromLanguageCode(language.language),
+			}));
+		}
+
+		return languages;
+	}
+
+	static getBCP47FromLanguageCode(language: string): string | undefined {
+		if (!language) {
+			return undefined;
+		}
+
+		const normalized = language.trim().replace(/_/g, '-');
+		const lowerCased = normalized.toLowerCase();
+
+		const mapped = bcp47Mapping[normalized] ?? bcp47Mapping[lowerCased];
+		if (mapped) {
+			return mapped;
+		}
+
+		if (normalized.includes('-')) {
+			try {
+				return new Intl.Locale(normalized).toString();
+			} catch {
+				return undefined;
+			}
+		}
+
+		return ISO6391.validate(lowerCased) ? lowerCased : undefined;
 	}
 
 	static async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {

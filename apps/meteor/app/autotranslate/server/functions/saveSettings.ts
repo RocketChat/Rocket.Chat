@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+import { TranslationProviderRegistry } from '../autotranslate';
 
 export const saveAutoTranslateSettings = async (
 	userId: string,
@@ -52,9 +53,11 @@ export const saveAutoTranslateSettings = async (
 			}
 
 			if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
+				const bcp47 = TranslationProviderRegistry.getBCP47FromLanguageCode(options.defaultLanguage);
 				const updateAutoTranslateLanguageResponse = await Subscriptions.updateAutoTranslateLanguageById(
 					subscription._id,
 					options.defaultLanguage,
+					bcp47,
 				);
 				if (updateAutoTranslateLanguageResponse.modifiedCount) {
 					shouldNotifySubscriptionChanged = true;
@@ -63,7 +66,8 @@ export const saveAutoTranslateSettings = async (
 
 			break;
 		case 'autoTranslateLanguage':
-			const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+			const bcp47Language = TranslationProviderRegistry.getBCP47FromLanguageCode(value);
+			const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value, bcp47Language);
 			if (updateAutoTranslateLanguage.modifiedCount) {
 				shouldNotifySubscriptionChanged = true;
 			}
