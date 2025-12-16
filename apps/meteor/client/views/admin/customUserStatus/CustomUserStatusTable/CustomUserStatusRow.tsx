@@ -1,8 +1,8 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { CSSProperties, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import MarkdownText from '../../../../components/MarkdownText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };

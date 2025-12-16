@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 
 import ContactItemMenu from './ContactItemMenu';
-import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';

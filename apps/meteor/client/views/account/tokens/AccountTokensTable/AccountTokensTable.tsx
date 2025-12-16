@@ -1,5 +1,13 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
+import {
+	GenericModal,
+	GenericTable,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableLoadingTable,
+	GenericTableHeaderCell,
+	usePagination,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
@@ -10,14 +18,6 @@ import { useTranslation } from 'react-i18next';
 import AccountTokensRow from './AccountTokensRow';
 import AddToken from './AddToken';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableBody,
-	GenericTableLoadingTable,
-	GenericTableHeaderCell,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 

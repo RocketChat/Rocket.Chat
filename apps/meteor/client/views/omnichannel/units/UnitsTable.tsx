@@ -1,5 +1,14 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingRow,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -8,15 +17,6 @@ import { useTranslation } from 'react-i18next';
 import UnitTableRow from './UnitTableRow';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableBody,
-	GenericTableLoadingRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { links } from '../../../lib/links';
 
 const UnitsTable = () => {

@@ -3,12 +3,11 @@ import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
 import { Roles } from '../../../../stores';
 import type { AdminUsersTab } from '../AdminUsersPage';

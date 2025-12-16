@@ -6,3 +6,4 @@ export * from './GenericTableHeaderCell';
 export * from './GenericTableLoadingRow';
 export * from './GenericTableLoadingTable';
 export * from './GenericTableRow';
+export * from './hooks';

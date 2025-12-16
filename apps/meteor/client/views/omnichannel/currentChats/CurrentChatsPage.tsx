@@ -2,6 +2,17 @@ import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableCell,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	GenericTableRow,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
@@ -14,17 +25,6 @@ import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { links } from '../../../lib/links';
 import RoomActivityIcon from '../components/RoomActivityIcon';

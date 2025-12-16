@@ -1,10 +1,10 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';

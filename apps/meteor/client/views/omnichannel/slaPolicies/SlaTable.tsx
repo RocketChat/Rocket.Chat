@@ -1,13 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import { useMemo, useState, useEffect } from 'react';
-
-import RemoveSlaButton from './RemoveSlaButton';
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -16,9 +8,17 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableCell,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import type { MutableRefObject } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+
+import RemoveSlaButton from './RemoveSlaButton';
+import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {

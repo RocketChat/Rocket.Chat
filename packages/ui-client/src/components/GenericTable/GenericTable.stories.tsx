@@ -10,7 +10,6 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '.';
-import GenericNoResults from '../GenericNoResults/GenericNoResults';
 
 export default {
 	component: GenericTable,
@@ -70,12 +69,5 @@ export const Loading: StoryFn<typeof GenericTable> = () => (
 				<GenericTableLoadingTable headerCells={2} />
 			</GenericTableBody>
 		</GenericTable>
-	</>
-);
-
-export const NoResults: StoryFn<typeof GenericTable> = () => (
-	<>
-		{filter}
-		<GenericNoResults />
 	</>
 );

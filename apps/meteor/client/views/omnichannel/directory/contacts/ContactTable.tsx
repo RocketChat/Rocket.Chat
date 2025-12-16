@@ -1,5 +1,14 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -9,15 +18,6 @@ import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableBody,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { links } from '../../../../lib/links';
 

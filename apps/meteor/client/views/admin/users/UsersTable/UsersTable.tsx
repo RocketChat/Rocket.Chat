@@ -2,6 +2,14 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingTable,
+} from '@rocket.chat/ui-client';
+import type { usePagination, useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
@@ -11,15 +19,6 @@ import { useTranslation } from 'react-i18next';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableBody,
-	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import { useVoipExtensionPermission } from '../useVoipExtensionPermission';
 

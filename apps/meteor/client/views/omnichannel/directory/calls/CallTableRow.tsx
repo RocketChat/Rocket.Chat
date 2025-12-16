@@ -1,10 +1,10 @@
 import type { IVoipRoom, Serialized } from '@rocket.chat/core-typings';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';

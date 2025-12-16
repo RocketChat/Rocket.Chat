@@ -1,12 +1,11 @@
 import { Pagination } from '@rocket.chat/fuselage';
+import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableHeaderCell, usePagination } from '@rocket.chat/ui-client';
 import type { AriaAttributes } from 'react';
 import { useMemo } from 'react';
 import type { Control, UseFormRegister } from 'react-hook-form';
 import { useWatch, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableHeaderCell } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { EditDepartmentFormData } from '../definitions';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';

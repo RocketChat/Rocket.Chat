@@ -13,14 +13,9 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAutoComplete, GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	UserAutoComplete,
+	GenericModal,
 	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
@@ -28,9 +23,15 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+
+import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults';
 import { links } from '../../../lib/links';
 
 const MonitorsTable = () => {
