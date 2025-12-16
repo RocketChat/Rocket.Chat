@@ -3,8 +3,6 @@ import { camelCase } from 'change-case';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
 
 class Providers {
 	private providers: OEmbedProvider[];
@@ -84,11 +82,7 @@ providers.registerProvider({
 
 providers.registerProvider({
 	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
-	getHeaderOverrides: () => {
-		return {
-			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version} Googlebot/2.1`,
-		};
-	},
+	endPoint: 'https://publish.twitter.com/oembed',
 });
 
 providers.registerProvider({
