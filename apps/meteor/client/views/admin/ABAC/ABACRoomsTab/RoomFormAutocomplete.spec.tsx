@@ -13,7 +13,7 @@ const mockRoom2 = createFakeRoom({ t: 'p', name: 'Room 2', fname: 'Room 2' });
 const mockRoom3 = createFakeRoom({ t: 'p', name: 'Room 3', fname: 'Room 3', abacAttributes: [] });
 
 const appRoot = mockAppRoot()
-	.withEndpoint('GET', '/v1/rooms.adminRooms', () => ({
+	.withEndpoint('GET', '/v1/rooms.adminRooms.privateRooms', () => ({
 		rooms: [mockRoom1 as any, mockRoom2 as any, mockRoom3 as any],
 		count: 3,
 		offset: 0,

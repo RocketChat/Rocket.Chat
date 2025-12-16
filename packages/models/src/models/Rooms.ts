@@ -240,6 +240,26 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
+	findPrivateRoomsAndTeamsPaginated(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
+		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const nameCondition: Filter<IRoom> = {
+			$or: [{ name: nameRegex, federated: { $ne: true } }, { fname: nameRegex }],
+		};
+
+		const query: Filter<IRoom> = {
+			$and: [
+				name ? nameCondition : {},
+				{
+					t: 'p',
+				},
+			],
+			prid: { $exists: false },
+		};
+
+		return this.findPaginated(query, options);
+	}
+
 	findByTeamId(teamId: ITeam['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const query: Filter<IRoom> = {
 			teamId,
