@@ -7,7 +7,7 @@ import { useId } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import RoomFormAttributeField from './RoomFormAttributeField';
+import RoomFormAttributeFields from './RoomFormAttributeFields';
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import RoomFormAutocompleteDummy from './RoomFormAutocompleteDummy';
 
@@ -104,19 +104,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 						</FieldRow>
 						{errors.room && <FieldError>{errors.room.message}</FieldError>}
 					</Field>
-					{fields.map((field, index) => (
-						<Field key={field.id} mb={16}>
-							<FieldLabel htmlFor={field.id} required>
-								{t('Attribute')}
-							</FieldLabel>
-							<RoomFormAttributeField
-								onRemove={() => {
-									remove(index);
-								}}
-								index={index}
-							/>
-						</Field>
-					))}
+					<RoomFormAttributeFields fields={fields} remove={remove} />
 					<Button
 						w='full'
 						disabled={fields.length >= 10}
