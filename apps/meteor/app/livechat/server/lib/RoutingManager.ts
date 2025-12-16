@@ -298,11 +298,11 @@ export const RoutingManager: Routing = {
 		try {
 			const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
 			if (result.modifiedCount === 0) {
-				logger.error({ msg: 'Failed to take inquiry, could not match lockedAt', inquiryId: _id, lockedAt: inquiry.lockedAt });
+				logger.error({ msg: 'Failed to take inquiry because lockedAt did not match', inquiryId: _id, lockedAt: inquiry.lockedAt });
 				throw new Error('error-taking-inquiry-lockedAt-mismatch');
 			}
 
-			logger.info({ msg: 'Inquiry taken by agent', inquiryId: inquiry._id, agentId: agent.agentId });
+			logger.info({ msg: 'Inquiry taken', inquiryId: _id, agentId: agent.agentId });
 
 			// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
 			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
