@@ -132,6 +132,9 @@ const waitForRoomEvent = async (
 
 					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
 
+					expect(rcRoom).toHaveProperty('_id');
+					expect(rcRoom).toHaveProperty('t', 'd');
+					expect(rcRoom).toHaveProperty('uids');
 					expect(rcRoom).not.toHaveProperty('fname');
 
 					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
@@ -230,6 +233,9 @@ const waitForRoomEvent = async (
 
 					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
 
+					expect(rcRoom).toHaveProperty('_id');
+					expect(rcRoom).toHaveProperty('t', 'd');
+					expect(rcRoom).toHaveProperty('uids');
 					expect(rcRoom).not.toHaveProperty('fname');
 
 					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
