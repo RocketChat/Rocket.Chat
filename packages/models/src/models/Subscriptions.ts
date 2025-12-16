@@ -1162,6 +1162,55 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	};
 
+	promoteOldestByRoomIdExcludingUserIdsToOwner(
+		roomId: string,
+		excludedUserIds: IUser['_id'][],
+		options?: FindOptions<ISubscription>,
+	): Promise<ISubscription | null> {
+		const query = {
+			'rid': roomId,
+			'u._id': { $nin: excludedUserIds },
+		};
+
+		return this.findOneAndUpdate(
+			query,
+			{
+				$addToSet: {
+					roles: 'owner',
+				},
+			},
+			{
+				sort: {
+					ts: 1,
+				},
+				returnDocument: 'after',
+				projection: options?.projection,
+			},
+		);
+	}
+
+	async hasAnyOwnerInUserIds(roomId: string, userIds: IUser['_id'][], options?: FindOptions<ISubscription>): Promise<boolean> {
+		const query = {
+			'rid': roomId,
+			'roles': 'owner',
+			'u._id': { $in: userIds },
+		};
+
+		const result = await this.findOne(query, options);
+		return !!result;
+	}
+
+	async hasAnyOwnerNotInUserIds(roomId: string, userIds: IUser['_id'][], options?: FindOptions<ISubscription>): Promise<boolean> {
+		const query = {
+			'rid': roomId,
+			'roles': 'owner',
+			'u._id': { $nin: userIds },
+		};
+
+		const result = await this.findOne(query, options);
+		return !!result;
+	}
+
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);
 		const query = {

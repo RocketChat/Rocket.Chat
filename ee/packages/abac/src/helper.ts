@@ -227,11 +227,11 @@ export function buildRoomNonCompliantConditionsFromSubject(subjectAttributes: IA
 
 export async function getAbacRoom(
 	rid: string,
-): Promise<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>> {
+): Promise<Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name' | 'usersCount'>> {
 	const room = await Rooms.findOneByIdAndType<
-		Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name'>
+		Pick<IRoom, '_id' | 'abacAttributes' | 't' | 'teamMain' | 'teamDefault' | 'default' | 'name' | 'usersCount'>
 	>(rid, 'p', {
-		projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1 },
+		projection: { abacAttributes: 1, t: 1, teamMain: 1, teamDefault: 1, default: 1, name: 1, usersCount: 1 },
 	});
 	if (!room) {
 		throw new AbacRoomNotFoundError();

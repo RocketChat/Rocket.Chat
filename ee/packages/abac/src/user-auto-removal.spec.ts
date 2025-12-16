@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
-import { registerServiceModels } from '@rocket.chat/models';
+import { registerServiceModels, Subscriptions } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -12,7 +12,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		// Mimic the DB side-effects of removing a user from a room (no apps/system messages)
 		removeUserFromRoom: async (roomId: string, user: any) => {
-			const { Subscriptions } = await import('@rocket.chat/models');
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
@@ -43,13 +42,14 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		);
 	};
 
-	const insertRoom = async (abacAttributes: IAbacAttributeDefinition[] = []) => {
+	const insertRoom = async (abacAttributes: IAbacAttributeDefinition[] = [], usersCount?: number) => {
 		const rid = `r-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 		await roomsCol.insertOne({
 			_id: rid,
 			t: 'p',
 			name: `Test Room ${rid}`,
 			abacAttributes,
+			...(typeof usersCount === 'number' ? { usersCount } : {}),
 		} as any);
 		return rid;
 	};
@@ -472,6 +472,143 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			const remainingCount = await usersCol.countDocuments({ __rooms: rid });
 			expect(remainingCount).toBe(150);
+		});
+	});
+
+	describe('Ownership', () => {
+		describe('Ownership transfer when removing non-compliant owners', () => {
+			describe('when removing the only owner and other members remain', () => {
+				let rid: string;
+
+				beforeAll(async () => {
+					rid = await insertRoom([], 2);
+
+					await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
+
+					await insertUsers([
+						{
+							_id: 'u_owner_oldest',
+							member: true,
+							extraRooms: [rid],
+							abacAttributes: [{ key: 'dept', values: ['max'] }],
+						},
+						{
+							_id: 'u_member_1',
+							member: true,
+							extraRooms: [rid],
+							abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }],
+						},
+					]);
+
+					await Subscriptions.insertOne({
+						rid,
+						u: { _id: 'u_owner_oldest', username: 'u_owner_oldest' },
+						roles: ['owner'],
+						ts: new Date(Date.now() - 10_000),
+					} as any);
+
+					await Subscriptions.insertOne({
+						rid,
+						u: { _id: 'u_member_1', username: 'u_member_1' },
+						roles: [],
+						ts: new Date(),
+					} as any);
+				}, 30_000);
+
+				it('promotes the remaining compliant member to owner after removing the non-compliant owner', async () => {
+					await service.setRoomAbacAttributes(rid, { dept: ['eng'] }, fakeActor);
+
+					const newOwnerSub = await Subscriptions.findOne({ rid, 'u._id': 'u_member_1' }, { projection: { roles: 1 } });
+					const oldOwnerSub = await Subscriptions.findOne({ rid, 'u._id': 'u_owner_oldest' }, { projection: { roles: 1 } });
+
+					expect(oldOwnerSub).toBeFalsy();
+					expect(newOwnerSub).toBeTruthy();
+					expect(Array.isArray(newOwnerSub?.roles) && newOwnerSub?.roles.includes('owner')).toBe(true);
+				});
+			});
+		});
+		describe('when removing the last remaining owner in the room', () => {
+			let rid: string;
+
+			beforeAll(async () => {
+				rid = await insertRoom([], 1);
+
+				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
+
+				await insertUsers([
+					{
+						_id: 'u_lonely_owner',
+						member: true,
+						extraRooms: [rid],
+						abacAttributes: [{ key: 'dept', values: ['max'] }],
+					}, // non-compliant
+				]);
+
+				await Subscriptions.insertOne({
+					rid,
+					u: { _id: 'u_lonely_owner', username: 'u_lonely_owner' },
+					roles: ['owner'],
+					ts: new Date(Date.now() - 10_000),
+				} as any);
+			}, 30_000);
+
+			it('removes the last owner without assigning a new one when no members remain', async () => {
+				await service.setRoomAbacAttributes(rid, { dept: ['eng'] }, fakeActor);
+
+				const subs = await Subscriptions.find({ rid }).toArray();
+
+				expect(subs).toHaveLength(0);
+			});
+		});
+		describe('when another compliant owner remains in the room', () => {
+			let rid: string;
+
+			beforeAll(async () => {
+				rid = await insertRoom([], 2);
+
+				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
+
+				await insertUsers([
+					{
+						_id: 'u_owner_1',
+						member: true,
+						extraRooms: [rid],
+						abacAttributes: [{ key: 'dept', values: ['max'] }],
+					}, // non-compliant
+					{
+						_id: 'u_owner_2',
+						member: true,
+						extraRooms: [rid],
+						abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }],
+					}, // compliant
+				]);
+
+				await Subscriptions.insertMany([
+					{
+						rid,
+						u: { _id: 'u_owner_1', username: 'u_owner_1' },
+						roles: ['owner'],
+						ts: new Date(Date.now() - 20_000),
+					},
+					{
+						rid,
+						u: { _id: 'u_owner_2', username: 'u_owner_2' },
+						roles: ['owner'],
+						ts: new Date(Date.now() - 10_000),
+					},
+				] as any);
+			}, 30_000);
+
+			it('removes only the non-compliant owner and keeps the remaining owner unchanged', async () => {
+				await service.setRoomAbacAttributes(rid, { dept: ['eng'] }, fakeActor);
+
+				const removedOwnerSub = await Subscriptions.findOne({ rid, 'u._id': 'u_owner_1' }, { projection: { roles: 1 } });
+				const remainingOwnerSub = await Subscriptions.findOne({ rid, 'u._id': 'u_owner_2' }, { projection: { roles: 1 } });
+
+				expect(removedOwnerSub).toBeFalsy();
+				expect(remainingOwnerSub).toBeTruthy();
+				expect(Array.isArray(remainingOwnerSub?.roles) && remainingOwnerSub?.roles.includes('owner')).toBe(true);
+			});
 		});
 	});
 });

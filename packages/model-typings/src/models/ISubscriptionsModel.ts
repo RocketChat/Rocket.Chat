@@ -34,6 +34,16 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	promoteOldestByRoomIdExcludingUserIdsToOwner(
+		roomId: string,
+		excludedUserIds: IUser['_id'][],
+		options?: FindOptions<ISubscription>,
+	): Promise<ISubscription | null>;
+
+	hasAnyOwnerInUserIds(roomId: string, userIds: IUser['_id'][], options?: FindOptions<ISubscription>): Promise<boolean>;
+
+	hasAnyOwnerNotInUserIds(roomId: string, userIds: IUser['_id'][], options?: FindOptions<ISubscription>): Promise<boolean>;
+
 	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;

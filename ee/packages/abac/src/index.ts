@@ -506,7 +506,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async canAccessObject(
-		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes' | 'usersCount'>,
 		user: Pick<IUser, '_id'>,
 		action: AbacAccessOperation,
 		objectType: AbacObjectType,
@@ -549,8 +549,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return false;
 			}
 
-			// When a user is not compliant, remove them from the room automatically
-			await this.removeUserFromRoom(room, fullUser, 'realtime-policy-eval');
+			await this.removeUsersFromRoomWithOwnershipHandling(
+				{ _id: room._id, usersCount: room.usersCount },
+				[fullUser],
+				'realtime-policy-eval',
+			);
 
 			return false;
 		}
@@ -561,7 +564,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	protected async onRoomAttributesChanged(
-		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
+		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes' | 'usersCount'>,
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<void> {
 		const rid = room._id;
@@ -583,18 +586,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const cursor = Users.find(query, { projection: { __rooms: 0 } });
 
-			const usersToRemove: string[] = [];
-			const userRemovalPromises = [];
+			const usersToRemove: IUser[] = [];
 			for await (const doc of cursor) {
-				usersToRemove.push(doc._id);
-				userRemovalPromises.push(limit(() => this.removeUserFromRoom(room, doc, 'room-attributes-change')));
+				usersToRemove.push(doc);
 			}
 
 			if (!usersToRemove.length) {
 				return;
 			}
 
-			await Promise.all(userRemovalPromises);
+			await this.removeUsersFromRoomWithOwnershipHandling(
+				{ _id: room._id, usersCount: room.usersCount || 0 },
+				usersToRemove,
+				'room-attributes-change',
+			);
 		} catch (err) {
 			this.logger.error({
 				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
@@ -620,10 +625,65 @@ export class AbacService extends ServiceClass implements IAbacService {
 			});
 	}
 
+	private async removeUsersFromRoomWithOwnershipHandling(
+		room: Pick<IRoom, '_id' | 'usersCount'>,
+		users: IUser[],
+		reason: AbacAuditReason,
+	): Promise<void> {
+		if (!users.length) {
+			return;
+		}
+
+		const userIdsToRemove = new Set(users.map((u) => u._id));
+		const idsToRemove = Array.from(userIdsToRemove);
+
+		const currentMembersCount = room.usersCount;
+		const remainingMembersCount = currentMembersCount - users.length;
+
+		if (remainingMembersCount === 0) {
+			this.logger.warn({
+				msg: 'After removal, room would have no members left. Skipping ownership checks.',
+				rid: room._id,
+				reason,
+			});
+
+			await Promise.all(users.map((user) => limit(() => this.removeUserFromRoom(room, user, reason))));
+			return;
+		}
+
+		const [anyOwnerRemoved, anyOwnerStaying] = await Promise.all([
+			Subscriptions.hasAnyOwnerInUserIds(room._id, idsToRemove, { projection: { _id: 1 } }),
+			Subscriptions.hasAnyOwnerNotInUserIds(room._id, idsToRemove, { projection: { _id: 1 } }),
+		]);
+
+		if (!anyOwnerRemoved || anyOwnerStaying) {
+			await Promise.all(users.map((user) => limit(() => this.removeUserFromRoom(room, user, reason))));
+			return;
+		}
+
+		const remainingMemberSub = await Subscriptions.promoteOldestByRoomIdExcludingUserIdsToOwner(room._id, idsToRemove, {
+			projection: { u: 1 },
+		});
+
+		if (!remainingMemberSub) {
+			this.logger.warn({
+				msg: 'Cannot assign new owner',
+				rid: room._id,
+				reason,
+			});
+		}
+
+		await Promise.all(users.map((user) => limit(() => this.removeUserFromRoom(room, user, reason))));
+	}
+
 	private async removeUserFromRoomList(roomList: FindCursor<IRoom>, user: IUser, reason: AbacAuditReason): Promise<void> {
 		const removalPromises: Promise<void>[] = [];
 		for await (const room of roomList) {
-			removalPromises.push(limit(() => this.removeUserFromRoom(room, user, reason)));
+			const roomForRemoval: Pick<IRoom, '_id' | 'usersCount'> = {
+				_id: room._id,
+				usersCount: room.usersCount,
+			};
+			removalPromises.push(limit(() => this.removeUsersFromRoomWithOwnershipHandling(roomForRemoval, [user], reason)));
 		}
 
 		await Promise.all(removalPromises);
@@ -643,7 +703,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 						_id: { $in: roomIds },
 						abacAttributes: { $exists: true, $ne: [] },
 					},
-					{ projection: { _id: 1 } },
+					{ projection: { _id: 1, usersCount: 1 } },
 				);
 
 				return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
@@ -654,7 +714,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 				$or: buildRoomNonCompliantConditionsFromSubject(_next),
 			};
 
-			const cursor = Rooms.find(query, { projection: { _id: 1 } });
+			const cursor = Rooms.find(query, { projection: { _id: 1, usersCount: 1 } });
 
 			return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
 		} catch (err) {

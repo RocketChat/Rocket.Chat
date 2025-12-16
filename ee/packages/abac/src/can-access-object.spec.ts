@@ -5,6 +5,9 @@ import { AbacService } from './index';
 const mockSettingsGetValueById = jest.fn();
 const mockSubscriptionsFindOneByRoomIdAndUserId = jest.fn();
 const mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId = jest.fn();
+const mockSubscriptionsHasAnyOwnerInUserIds = jest.fn();
+const mockSubscriptionsHasAnyOwnerNotInUserIds = jest.fn();
+const mockSubscriptionsPromoteOldestByRoomIdExcludingUserIdsToOwner = jest.fn();
 const mockUsersFindOne = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn().mockResolvedValue(undefined);
@@ -16,6 +19,10 @@ jest.mock('@rocket.chat/models', () => ({
 	Subscriptions: {
 		findOneByRoomIdAndUserId: (...args: any[]) => mockSubscriptionsFindOneByRoomIdAndUserId(...args),
 		setAbacLastTimeCheckedByUserIdAndRoomId: (...args: any[]) => mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId(...args),
+		hasAnyOwnerInUserIds: (...args: any[]) => mockSubscriptionsHasAnyOwnerInUserIds(...args),
+		hasAnyOwnerNotInUserIds: (...args: any[]) => mockSubscriptionsHasAnyOwnerNotInUserIds(...args),
+		promoteOldestByRoomIdExcludingUserIdsToOwner: (...args: any[]) =>
+			mockSubscriptionsPromoteOldestByRoomIdExcludingUserIdsToOwner(...args),
 	},
 	Users: {
 		findOne: (...args: any[]) => mockUsersFindOne(...args),
