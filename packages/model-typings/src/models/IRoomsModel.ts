@@ -49,6 +49,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
+	findPrivateRoomsAndTeamsPaginated(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	countByTeamId(teamId: ITeam['_id']): Promise<number>;
