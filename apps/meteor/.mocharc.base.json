@@ -1,14 +1,10 @@
 {
 	"ui": "bdd",
-	"reporter": "spec",
+	"reporter": "mocha-multi-reporters",
+	"reporterOption": {
+		"configFile": "mocha-reporters.json"
+	},
 	"extension": ["js", "ts", "tsx"],
-	"require": [
-		"tsx",
-		"./tests/setup/chaiPlugins.ts"
-	],
-	"watch-files": [
-		"./**/*.js",
-		"./**/*.ts",
-		"./**/*.tsx"
-	]
+	"require": ["tsx", "./tests/setup/chaiPlugins.ts"],
+	"watch-files": ["./**/*.js", "./**/*.ts", "./**/*.tsx"]
 }

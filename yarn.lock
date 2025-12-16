@@ -9441,6 +9441,8 @@ __metadata:
     mime-type: "npm:^4.0.0"
     mkdirp: "npm:^1.0.4"
     mocha: "npm:^9.2.2"
+    mocha-multi-reporters: "npm:^1.5.1"
+    mocha-qase-reporter: "npm:^1.1.8"
     moleculer: "npm:^0.14.35"
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.48"
@@ -16876,6 +16878,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bindings@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10/593d5ae975ffba15fbbb4788fe5abd1e125afbab849ab967ab43691d27d6483751805d98cb92f7ac24a2439a8a8678cd0131c535d5d63de84e383b0ce2786133
+  languageName: node
+  linkType: hard
+
 "bintrees@npm:1.0.1":
   version: 1.0.1
   resolution: "bintrees@npm:1.0.1"
@@ -17049,7 +17060,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-stdout@npm:1.3.1":
+"browser-stdout@npm:1.3.1, browser-stdout@npm:^1.3.1":
   version: 1.3.1
   resolution: "browser-stdout@npm:1.3.1"
   checksum: 10/ac70a84e346bb7afc5045ec6f22f6a681b15a4057447d4cc1c48a25c6dedb302a49a46dd4ddfb5cdd9c96e0c905a8539be1b98ae7bc440512152967009ec7015
@@ -17939,6 +17950,15 @@ __metadata:
   dependencies:
     readdirp: "npm:^4.0.1"
   checksum: 10/62749d2173a60cc5632d6c6e0b7024f33aadce47b06d02e55ad03c7b8daaaf2fc85d4296c047473d04387fd992dab9384cc5263c70a3dc3018b7ebecfb5b5217
+  languageName: node
+  linkType: hard
+
+"chokidar@npm:^4.0.1":
+  version: 4.0.3
+  resolution: "chokidar@npm:4.0.3"
+  dependencies:
+    readdirp: "npm:^4.0.1"
+  checksum: 10/bf2a575ea5596000e88f5db95461a9d59ad2047e939d5a4aac59dd472d126be8f1c1ff3c7654b477cf532d18f42a97279ef80ee847972fd2a25410bf00b80b59
   languageName: node
   linkType: hard
 
@@ -19384,6 +19404,25 @@ __metadata:
   dependencies:
     lodash.isequal: "npm:^4.5.0"
   checksum: 10/b73eef443ecbed79653518c8d22878271d6991686ad680c0d53e3d963d998a187af627100da5cf32f293297b0379bc3a58e162fa58a7a8d835eec583397cb1c4
+  languageName: node
+  linkType: hard
+
+"deasync-promise@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "deasync-promise@npm:1.0.1"
+  dependencies:
+    deasync: "npm:^0.1.7"
+  checksum: 10/e2c29c5a4974e7090725ce3e11a02dd9f0143e8743ad2190ba38f4c84be3d9c8cb4eca26dfc0b4b8b3fe9edda4a16c8c308cea92138213ef59f6923816633590
+  languageName: node
+  linkType: hard
+
+"deasync@npm:^0.1.7":
+  version: 0.1.31
+  resolution: "deasync@npm:0.1.31"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    node-addon-api: "npm:^1.7.1"
+  checksum: 10/e3430cea041d7de593e0cc80a88f9f9b9b8c4f5cc635bcd3a237b7a5371d62dbd50daed0f14ed4d148754a345b993aa7a1e4da848bda69f69c60fb58fd5fac07
   languageName: node
   linkType: hard
 
@@ -22036,6 +22075,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10/b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
+  languageName: node
+  linkType: hard
+
 "filename-reserved-regex@npm:^2.0.0":
   version: 2.0.0
   resolution: "filename-reserved-regex@npm:2.0.0"
@@ -22811,6 +22857,22 @@ __metadata:
   bin:
     glob: dist/esm/bin.mjs
   checksum: 10/698dfe11828b7efd0514cd11e573eaed26b2dff611f0400907281ce3eab0c1e56143ef9b35adc7c77ecc71fba74717b510c7c223d34ca8a98ec81777b293d4ac
+  languageName: node
+  linkType: hard
+
+"glob@npm:^10.4.5":
+  version: 10.5.0
+  resolution: "glob@npm:10.5.0"
+  dependencies:
+    foreground-child: "npm:^3.1.0"
+    jackspeak: "npm:^3.1.2"
+    minimatch: "npm:^9.0.4"
+    minipass: "npm:^7.1.2"
+    package-json-from-dist: "npm:^1.0.0"
+    path-scurry: "npm:^1.11.1"
+  bin:
+    glob: dist/esm/bin.mjs
+  checksum: 10/ab3bccfefcc0afaedbd1f480cd0c4a2c0e322eb3f0aa7ceaa31b3f00b825069f17cf0f1fc8b6f256795074b903f37c0ade37ddda6a176aa57f1c2bbfe7240653
   languageName: node
   linkType: hard
 
@@ -28096,6 +28158,62 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mocha-multi-reporters@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "mocha-multi-reporters@npm:1.5.1"
+  dependencies:
+    debug: "npm:^4.1.1"
+    lodash: "npm:^4.17.15"
+  peerDependencies:
+    mocha: ">=3.1.2"
+  checksum: 10/ae15b9fc12d27fc1c1ead63ec0315dda24fdc94d13051fca1fde110d99f58f4ac5d4f1ec81eec9a5eba694d34b039b8d0ea97b692a40b967ec1181e2eb6fdd4b
+  languageName: node
+  linkType: hard
+
+"mocha-qase-reporter@npm:^1.1.8":
+  version: 1.1.8
+  resolution: "mocha-qase-reporter@npm:1.1.8"
+  dependencies:
+    deasync-promise: "npm:^1.0.1"
+    mocha: "npm:^11.7.5"
+    qase-javascript-commons: "npm:~2.4.13"
+    uuid: "npm:^9.0.1"
+  checksum: 10/bc2ebe4b218e33c10413417dd5048e45f045f470fbe88dcec2269e279e36ef919bae2e937626c604879ac3631ffe9a032c5b4b6f4fad45507f43f7a8ef6845aa
+  languageName: node
+  linkType: hard
+
+"mocha@npm:^11.7.5":
+  version: 11.7.5
+  resolution: "mocha@npm:11.7.5"
+  dependencies:
+    browser-stdout: "npm:^1.3.1"
+    chokidar: "npm:^4.0.1"
+    debug: "npm:^4.3.5"
+    diff: "npm:^7.0.0"
+    escape-string-regexp: "npm:^4.0.0"
+    find-up: "npm:^5.0.0"
+    glob: "npm:^10.4.5"
+    he: "npm:^1.2.0"
+    is-path-inside: "npm:^3.0.3"
+    js-yaml: "npm:^4.1.0"
+    log-symbols: "npm:^4.1.0"
+    minimatch: "npm:^9.0.5"
+    ms: "npm:^2.1.3"
+    picocolors: "npm:^1.1.1"
+    serialize-javascript: "npm:^6.0.2"
+    strip-json-comments: "npm:^3.1.1"
+    supports-color: "npm:^8.1.1"
+    workerpool: "npm:^9.2.0"
+    yargs: "npm:^17.7.2"
+    yargs-parser: "npm:^21.1.1"
+    yargs-unparser: "npm:^2.0.0"
+  bin:
+    _mocha: bin/_mocha
+    mocha: bin/mocha.js
+  checksum: 10/878fcec45d79dad3ec01b896ae75eabd0075b8f91866b338b81b2ef8a2279f1e70fb07fc89054108a46864fbc1e6f6898dc31e64c033ded585748c5fcbf7e704
+  languageName: node
+  linkType: hard
+
 "mocha@npm:^9.2.2":
   version: 9.2.2
   resolution: "mocha@npm:9.2.2"
@@ -28552,6 +28670,15 @@ __metadata:
   version: 3.1.1
   resolution: "node-abort-controller@npm:3.1.1"
   checksum: 10/0a2cdb7ec0aeaf3cb31e1ca0e192f5add48f1c5c9c9ed822129f9dddbd9432f69b7425982f94ce803c56a2104884530aa67cd57696e5774b2e5b8ec2f58de042
+  languageName: node
+  linkType: hard
+
+"node-addon-api@npm:^1.7.1":
+  version: 1.7.2
+  resolution: "node-addon-api@npm:1.7.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10/6bf8217a8cd8148f4bbfd319b46d33587e9fb2e63e3c856ded67a76715167f7a6b17e1d9b8bbf3b8508befeb6a4adb10d92b8998ed5c19ca8448343f4cea11d6
   languageName: node
   linkType: hard
 
@@ -31311,7 +31438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.4.16":
+"qase-javascript-commons@npm:~2.4.13, qase-javascript-commons@npm:~2.4.16":
   version: 2.4.16
   resolution: "qase-javascript-commons@npm:2.4.16"
   dependencies:
@@ -37521,6 +37648,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"workerpool@npm:^9.2.0":
+  version: 9.3.4
+  resolution: "workerpool@npm:9.3.4"
+  checksum: 10/afe729dde73bb541ba84d023813cc920b8e930e453295f58af3c45a3e42e11a2dbb6202f2a693358892d40d1e315b9a14f142d2dfd46a6078b23deda42680495
+  languageName: node
+  linkType: hard
+
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0, wrap-ansi@npm:^7.0.0":
   version: 7.0.0
   resolution: "wrap-ansi@npm:7.0.0"
@@ -37855,7 +37989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs-unparser@npm:2.0.0":
+"yargs-unparser@npm:2.0.0, yargs-unparser@npm:^2.0.0":
   version: 2.0.0
   resolution: "yargs-unparser@npm:2.0.0"
   dependencies:

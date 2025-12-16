@@ -436,6 +436,8 @@
 		"jest": "~30.2.0",
 		"jsdom-global": "^3.0.2",
 		"mocha": "^9.2.2",
+		"mocha-multi-reporters": "^1.5.1",
+		"mocha-qase-reporter": "^1.1.8",
 		"nyc": "^17.1.0",
 		"outdent": "~0.8.0",
 		"pino-pretty": "^7.6.1",
