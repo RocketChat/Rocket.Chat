@@ -4,7 +4,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
     >
       <span
         data-focus-scope-start="true"
@@ -12,12 +12,12 @@ exports[`renders AppLogsItem without crashing 1`] = `
       />
       <div
         aria-labelledby="contextualbarTitle"
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-20qf5w"
         role="dialog"
         tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+          class="rcx-box rcx-box--full rcx-css-zsa0ng"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-1sl6k6j"
@@ -53,7 +53,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
             data-overlayscrollbars="host"
           >
             <div
@@ -142,12 +142,12 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       </label>
                     </div>
                     <span
-                      class="rcx-box rcx-box--full rcx-css-uyvtjh"
+                      class="rcx-box rcx-box--full rcx-css-11g6st8"
                       id="react-aria-:r8:"
                     />
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
                     >
                       
                     </i>
@@ -345,14 +345,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       </label>
                     </div>
                     <span
-                      class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                      class="rcx-box rcx-box--full rcx-css-e3nij6"
                       id="react-aria-:rg:"
                     >
                       All
                     </span>
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
                     >
                       
                     </i>

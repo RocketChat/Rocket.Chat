@@ -52,7 +52,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// Can't add to direct room ever
+	// TODO: Can't add to direct room ever, unless it's a federated room
 	if (room.t === 'd') {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
