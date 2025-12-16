@@ -57,6 +57,9 @@ export async function notifyDesktopUser({
 				...('t' in message && {
 					t: message.t,
 				}),
+				...('content' in message && {
+					content: message.content,
+				}),
 			},
 			name,
 			audioNotificationValue,

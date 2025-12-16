@@ -38,7 +38,7 @@ test.describe('E2EE File Encryption', () => {
 		await page.goto('/home');
 	});
 
-	test('File and description encryption', async ({ page }) => {
+	test('File and description encryption and editing the description', async ({ page }) => {
 		await test.step('create an encrypted channel', async () => {
 			const channelName = faker.string.uuid();
 
@@ -58,6 +58,18 @@ test.describe('E2EE File Encryption', () => {
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		});
+
+		await test.step('edit the description', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionEditMessage.click();
+
+			expect(await poHomeChannel.composer.inputValue()).toBe('any_description');
+
+			await poHomeChannel.content.inputMessage.fill('edited any_description');
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.content.getFileDescription).toHaveText('edited any_description');
 		});
 	});
 
