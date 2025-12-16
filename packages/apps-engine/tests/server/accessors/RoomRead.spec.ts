@@ -198,9 +198,7 @@ export class RoomReadAccessorTestFixture {
 
 		Expect(() =>
 			rr.getMessages('testing', {
-				after: {
-					createdAt: new Date(),
-				} as any,
+				after: {} as any,
 			}),
 		).toThrow();
 
