@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'preact/hooks';
+import { useContext } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
 import CloseIcon from '../../icons/close.svg';
@@ -31,29 +31,6 @@ export const ScreenFooter = ({ children, options, limit }) => {
 };
 
 const CssVar = ({ theme }) => {
-	useEffect(() => {
-		if (window.CSS && CSS.supports('color', 'var(--color)')) {
-			return;
-		}
-		let mounted = true;
-		(async () => {
-			const { default: cssVars } = await import('css-vars-ponyfill');
-			if (!mounted) {
-				return;
-			}
-			cssVars({
-				variables: {
-					'--color': theme.color,
-					'--font-color': theme.fontColor,
-					'--icon-color': theme.iconColor,
-				},
-			});
-		})();
-		return () => {
-			mounted = false;
-		};
-	}, [theme]);
-
 	return (
 		<style>{`
 		.${styles.screen} {
