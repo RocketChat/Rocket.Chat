@@ -339,7 +339,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
 		await iceGatheringData.promise;
-		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering.done', this.iceCandidateCount);
 	}
 
 	private async initialize(): Promise<void> {

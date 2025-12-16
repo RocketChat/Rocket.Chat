@@ -23,14 +23,14 @@ export type MediaSignalingEvents = {
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
-	oldSessionId?: string | null;
-	logger?: IMediaSignalLogger | null;
+	oldSessionId?: string;
+	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
-	iceServers?: RTCIceServer[] | null;
+	iceServers?: RTCIceServer[];
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -62,8 +62,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
 
-	private config: Required<MediaSignalingSessionConfig>;
-
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -72,15 +70,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this._userId;
 	}
 
-	constructor(config: MediaSignalingSessionConfig) {
+	constructor(private config: MediaSignalingSessionConfig) {
 		super();
-		this.config = {
-			...config,
-			iceGatheringTimeout: config.iceGatheringTimeout || 5000,
-			oldSessionId: config.oldSessionId || null,
-			logger: config.logger || null,
-			iceServers: config.iceServers || null,
-		};
 
 		this._userId = config.userId;
 		this._sessionId = config.randomStringFactory();
@@ -101,7 +92,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.getMainCall()?.busy ?? false;
+		return this.getMainCall(false)?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -137,7 +128,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(skipLocal = true): IClientMediaCall | null {
+	public getMainCall(skipLocal = false): IClientMediaCall | null {
 		let ringingCall: IClientMediaCall | null = null;
 		let pendingCall: IClientMediaCall | null = null;
 
@@ -469,10 +460,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
-			logger: this.config.logger || undefined,
+			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
-			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
+			iceGatheringTimeout: this.config.iceGatheringTimeout || 5000,
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
 		};
