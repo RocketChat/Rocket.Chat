@@ -244,14 +244,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const nameCondition: Filter<IRoom> = {
-			$or: [
-				{ name: nameRegex, federated: { $ne: true } },
-				{ fname: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
+			$or: [{ name: nameRegex, federated: { $ne: true } }, { fname: nameRegex }],
 		};
 
 		const query: Filter<IRoom> = {
