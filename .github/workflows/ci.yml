@@ -552,6 +552,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)

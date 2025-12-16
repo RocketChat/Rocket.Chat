@@ -205,11 +205,12 @@ jobs:
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
         run: |
           set -o xtrace
 
           # check QASE_API_TOKEN is set
-          if [ -n "$QASE_API_TOKEN" ]; then
+          if [[ -n "$QASE_API_TOKEN" ]]; then
             QASE_MODE=testops
             # replace QASE_API_TOKEN in qase.config.json
             sed -i "s/<app-token>/$QASE_API_TOKEN/g" qase.config.json
