@@ -43,8 +43,6 @@ const RoomMembersItem = ({
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
-	const isInvited = subscription?.status === 'INVITED';
-	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
@@ -62,9 +60,9 @@ const RoomMembersItem = ({
 			<OptionContent data-qa={`MemberItem-${username}`}>
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
-			{isInvited && (
+			{subscription?.status === 'INVITED' && (
 				<OptionColumn>
-					<InvitationBadge mbs={2} size='x20' invitationDate={invitationDate} />
+					<InvitationBadge mbs={2} size='x20' invitationDate={subscription.ts} />
 				</OptionColumn>
 			)}
 			<OptionMenu onClick={preventPropagation}>
