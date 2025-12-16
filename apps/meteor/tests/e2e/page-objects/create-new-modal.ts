@@ -15,8 +15,16 @@ export class CreateNewModal extends Modal {
 		return this.root.getByRole('textbox', { name: 'Name' });
 	}
 
+	get checkboxPrivate(): Locator {
+		return this.root.locator('label', { hasText: 'Private' });
+	}
+
 	get checkboxEncrypted(): Locator {
-		return this.root.locator('label').filter({ has: this.root.getByRole('checkbox', { name: 'Encrypted' }) });
+		return this.root.locator('label', { hasText: 'Encrypted' });
+	}
+
+	get checkboxReadOnly(): Locator {
+		return this.root.locator('label', { hasText: 'Read-only' });
 	}
 
 	get checkboxFederated(): Locator {

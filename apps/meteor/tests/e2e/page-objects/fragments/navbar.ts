@@ -183,7 +183,7 @@ export class Navbar {
 	}
 
 	async createNew(
-		type: 'Channel' | 'Team' | 'Discussion' | 'Direct message',
+		type: 'Channel' | 'Team',
 		name: string,
 		options?: { private?: boolean; encrypted?: boolean; readOnly?: boolean; federated?: boolean; members?: string[] },
 	): Promise<void> {
@@ -222,6 +222,16 @@ export class Navbar {
 		await this.root.keyboard.press('Enter');
 
 		await this.modals['Direct message'].btnCreate.click();
+	}
+
+	async createNewDiscussion(parentRoom: string, name: string, message?: string): Promise<void> {
+		await this.openCreate('Discussion');
+		await this.modals.Discussion.inputParentRoom.click();
+		await this.modals.Discussion.inputParentRoom.pressSequentially(parentRoom);
+		await this.modals.Discussion.getParentRoomListItem(parentRoom).click();
+		await this.modals.Discussion.inputName.fill(name);
+		message && (await this.modals.Discussion.inputMessage.fill(message));
+		await this.modals.Discussion.btnCreate.click();
 	}
 
 	async createEncryptedChannel(name: string): Promise<void> {

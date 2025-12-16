@@ -318,7 +318,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.navbar.btnUserMenu.click();
 		await poHomeChannel.navbar.getUserProfileMenuOption('Profile').click();
 
-		await poAccountProfile.sidebar.linkSecurity.click();
+		await poAccountSecurity.sidebar.linkSecurity.click();
 
 		await poAccountSecurity.securityE2EEncryptionSection.click();
 		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
