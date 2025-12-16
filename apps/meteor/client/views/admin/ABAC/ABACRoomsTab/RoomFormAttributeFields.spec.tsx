@@ -26,12 +26,13 @@ const mockAttribute3 = {
 
 jest.mock('../hooks/useAttributeList', () => ({
 	useAttributeList: jest.fn(() => ({
-		data: [
-			{ value: mockAttribute1.key, label: mockAttribute1.key, attributeValues: mockAttribute1.values },
-			{ value: mockAttribute2.key, label: mockAttribute2.key, attributeValues: mockAttribute2.values },
-			{ value: mockAttribute3.key, label: mockAttribute3.key, attributeValues: mockAttribute3.values },
-		],
-		fetchNextPage: jest.fn(),
+		data: {
+			attributes: [
+				{ value: mockAttribute1.key, label: mockAttribute1.key, attributeValues: mockAttribute1.values },
+				{ value: mockAttribute2.key, label: mockAttribute2.key, attributeValues: mockAttribute2.values },
+				{ value: mockAttribute3.key, label: mockAttribute3.key, attributeValues: mockAttribute3.values },
+			],
+		},
 		isLoading: false,
 	})),
 }));
