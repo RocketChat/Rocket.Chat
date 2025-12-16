@@ -244,6 +244,13 @@ export const updateDepartment = ({
 	});
 };
 
+export const deleteAgent = async (agentId: string = credentials['X-User-Id']): Promise<void> => {
+	await request
+		.delete(api(`livechat/users/agent/${agentId}`))
+		.set(credentials)
+		.expect(200);
+};
+
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		void request
