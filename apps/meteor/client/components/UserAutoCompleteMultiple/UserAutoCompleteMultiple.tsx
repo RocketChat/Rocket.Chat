@@ -93,6 +93,8 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 		<OptionsContext.Provider value={{ options }}>
 			<MultiSelectFiltered
 				{...props}
+				data-qa='create-channel-users-autocomplete'
+				data-qa-type='user-auto-complete-input'
 				placeholder={placeholder}
 				value={value}
 				onChange={handleOnChange}
