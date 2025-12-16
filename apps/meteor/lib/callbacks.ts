@@ -43,7 +43,7 @@ interface EventLikeCallbackSignatures {
 	'afterDeleteMessage': (message: IMessage, params: { room: IRoom; user: IUser }) => void;
 	'workspaceLicenseChanged': (license: string) => void;
 	'workspaceLicenseRemoved': () => void;
-	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
+	'afterReadMessages': (room: IRoom, params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
@@ -78,7 +78,7 @@ interface EventLikeCallbackSignatures {
 		},
 	) => void;
 	'beforeCreateDirectRoom': (members: string[], room: IRoom) => void;
-	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[], extraData: Record<string, unknown>) => void;
 	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,

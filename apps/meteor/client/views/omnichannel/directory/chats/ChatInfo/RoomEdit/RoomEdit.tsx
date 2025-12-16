@@ -1,13 +1,12 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
-import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import Tags from '../../../../components/Tags';

@@ -9,8 +9,14 @@ import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 // The select requires a forwarded ref component in the renderOptions property
 // but we also need to pass internal state to this renderer, as well as the props that also come from the Select.
 
+export type UserLabel = {
+	_federated?: boolean;
+	username: string;
+	name?: string;
+};
+
 type OptionsContextValue = {
-	options: OptionType[];
+	options: OptionType<string, UserLabel>[];
 };
 
 export const OptionsContext = createContext<OptionsContextValue>({

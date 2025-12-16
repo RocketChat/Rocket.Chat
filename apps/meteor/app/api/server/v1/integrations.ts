@@ -36,9 +36,9 @@ API.v1.addRoute(
 					return API.v1.success({ integration: await addOutgoingIntegration(this.userId, this.bodyParams as INewOutgoingIntegration) });
 				case 'webhook-incoming':
 					return API.v1.success({ integration: await addIncomingIntegration(this.userId, this.bodyParams as INewIncomingIntegration) });
+				default:
+					return API.v1.failure('Invalid integration type.');
 			}
-
-			return API.v1.failure('Invalid integration type.');
 		},
 	},
 );

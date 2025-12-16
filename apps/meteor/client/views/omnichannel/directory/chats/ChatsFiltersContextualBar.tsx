@@ -1,11 +1,4 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { useId } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,12 +7,19 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import { format } from 'date-fns';
+import { useId } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { CurrentChatTags } from '../../additionalForms';
 import AutoCompleteUnits from '../../additionalForms/AutoCompleteUnits';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMultipleAgent from '../../components/AutoCompleteMultipleAgent';
+import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
 
@@ -33,8 +33,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
-	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });
+	const { data } = useCustomFieldsQuery();
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();

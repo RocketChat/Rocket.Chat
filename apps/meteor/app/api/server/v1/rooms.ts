@@ -1,4 +1,4 @@
-import { Media, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Media, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -15,6 +15,9 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
+	isRoomsInviteProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -1073,7 +1076,37 @@ export const roomEndpoints = API.v1.get(
 	},
 );
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+const roomInviteEndpoints = API.v1.post(
+	'rooms.invite',
+	{
+		authRequired: true,
+		body: isRoomsInviteProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const { roomId, action } = this.bodyParams;
+
+		try {
+			await FederationMatrix.handleInvite(roomId, this.userId, action);
+			return API.v1.success();
+		} catch (error) {
+			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+		}
+	},
+);
+
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

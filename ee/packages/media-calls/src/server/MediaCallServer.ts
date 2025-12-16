@@ -48,8 +48,8 @@ export class MediaCallServer implements IMediaCallServer {
 			throw new Error('invalid-signal');
 		}
 
-		this.signalProcessor.processSignal(fromUid, signal).catch((error) => {
-			logger.error({ msg: 'Failed to process client signal', error, type: signal.type });
+		this.signalProcessor.processSignal(fromUid, signal).catch((err) => {
+			logger.error({ msg: 'Failed to process client signal', err, type: signal.type });
 		});
 	}
 
@@ -81,7 +81,7 @@ export class MediaCallServer implements IMediaCallServer {
 			if (error && typeof error === 'object' && error instanceof CallRejectedError) {
 				rejectionReason = error.callRejectedReason;
 			} else {
-				logger.error({ msg: 'Failed to create a requested call', params, error });
+				logger.error({ msg: 'Failed to create a requested call', params, err: error });
 			}
 
 			const originalId = params.requestedCallId || params.parentCallId;
@@ -240,8 +240,9 @@ export class MediaCallServer implements IMediaCallServer {
 				return {
 					preferredType: 'sip',
 				};
-		}
 
-		return {};
+			default:
+				return {};
+		}
 	}
 }

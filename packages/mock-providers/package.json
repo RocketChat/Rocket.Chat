@@ -1,7 +1,18 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.4.1",
+	"version": "0.4.5",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix"
+	},
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/i18n": "workspace:~",
@@ -33,17 +44,6 @@
 		"@tanstack/react-query": "*",
 		"react": "*"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../package.json"
 	}
