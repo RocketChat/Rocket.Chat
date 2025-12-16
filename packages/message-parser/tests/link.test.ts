@@ -42,6 +42,7 @@ test.each([
       ]),
     ],
   ],
+  // New parentheses URL tests
   [
     '[link](https://example.com/query?this=(is)&a=problem)',
     [
@@ -146,6 +147,7 @@ test.each([
     '[ ](https://rocket.chat)',
     [paragraph([link('https://rocket.chat', [plain(' ')])])],
   ],
+
   [
     '[ test](https://rocket.chat)',
     [paragraph([link('https://rocket.chat', [plain(' test')])])],
@@ -706,6 +708,7 @@ Text after line break`,
       ]),
     ],
   ],
+  // Additional parentheses URL tests
   [
     '[URL ending with multiple parens](https://example.com/func(arg1)(arg2))',
     [
