@@ -7,7 +7,7 @@ import { HomeFlextabNotificationPreferences } from './home-flextab-notificationP
 import { HomeFlextabOtr } from './home-flextab-otr';
 import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
-import { HomeFlextabSearchMessages } from './home-flextab-searchMessages';
+import { SearchMessagesFlexTab } from './searchMessages-flextab';
 
 export class HomeFlextab {
 	private readonly page: Page;
@@ -26,7 +26,7 @@ export class HomeFlextab {
 
 	readonly pruneMessages: HomeFlextabPruneMessages;
 
-	readonly searchMessages: HomeFlextabSearchMessages;
+	readonly searchMessages: SearchMessagesFlexTab;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -37,7 +37,7 @@ export class HomeFlextab {
 		this.otr = new HomeFlextabOtr(page);
 		this.exportMessages = new ExportMessagesTab(page);
 		this.pruneMessages = new HomeFlextabPruneMessages(page);
-		this.searchMessages = new HomeFlextabSearchMessages(page);
+		this.searchMessages = new SearchMessagesFlexTab(page);
 	}
 
 	get toolbarPrimaryActions(): Locator {

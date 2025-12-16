@@ -8,6 +8,7 @@ import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+
 test.describe.serial('Global Search', () => {
 	let targetChannel: { name: string; _id: string };
 	let targetGroup: { name: string; _id: string };
@@ -62,8 +63,7 @@ test.describe.serial('Global Search', () => {
 		await page.goto('/home');
 	});
 
-	test('opens correct message when jumping from global search in group to channel thread', async ({ page }) => {
-		// await poHomeChannel.goto(`/group/${targetGroup.name}`);
+	test('should open the correct message when jumping from global search in group to channel thread', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
