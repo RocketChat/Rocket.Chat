@@ -1,10 +1,8 @@
-import type { AbacAttributeDefinitionChangeType, Serialized } from '@rocket.chat/core-typings';
+import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
 import { Box, InputBox, Margins, Pagination } from '@rocket.chat/fuselage';
-import type { OperationResult } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,12 +45,7 @@ const LogsPage = () => {
 		setCurrent(0);
 	}, [startDate, endDate, setCurrent]);
 
-	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: () => getLogs(query),
-	});
-
-	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | null) => {
+	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
 			case 'created':
 				return t('Created');
@@ -72,33 +65,73 @@ const LogsPage = () => {
 				return t('ABAC_Key_added');
 			case 'key-updated':
 				return t('ABAC_Key_updated');
+			case 'revoked-object-access':
+				return t('ABAC_Revoked_Object_Access');
+			case 'granted-object-access':
+				return t('ABAC_Granted_Object_Access');
 			default:
 				return '';
 		}
 	};
 
-	const getEventInfo = (
-		event: Serialized<OperationResult<'GET', '/v1/abac/audit'>>['events'][number],
-	): { element: string; userAvatar: ReactNode; user: string; name: string; action: string; timestamp: Date } => {
-		if (event.t === 'abac.attribute.changed') {
-			return {
-				element: t('ABAC_Room_Attribute'),
-				userAvatar: event.actor?.type === 'user' ? <UserAvatar size='x28' userId={event.actor._id} /> : null,
-				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-				name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
-				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-				timestamp: new Date(event.ts),
-			};
-		}
-		return {
-			element: t('ABAC_Room'),
-			userAvatar: event.actor?.type === 'user' ? <UserAvatar size='x28' userId={event.actor._id} /> : null,
-			user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-			name: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-			action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-			timestamp: new Date(event.ts),
-		};
-	};
+	const { data, isLoading } = useQuery({
+		queryKey: ABACQueryKeys.logs.list(query),
+		queryFn: () => getLogs(query),
+		select: (data) => ({
+			events: data.events.map((event) => {
+				const eventInfo = {
+					id: event._id,
+					user: event.actor?.type === 'user' ? event.actor.username : t('System'),
+					...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+					timestamp: new Date(event.ts),
+					element: t('ABAC_Room'),
+					action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+					room: undefined,
+				};
+				switch (event.t) {
+					case 'abac.attribute.changed':
+						return {
+							...eventInfo,
+							element: t('ABAC_Room_Attribute'),
+							name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
+						};
+					case 'abac.action.performed':
+						return {
+							...eventInfo,
+							name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+							action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+							element: t('ABAC_room_membership'),
+						};
+					case 'abac.object.attribute.changed':
+						return {
+							...eventInfo,
+							name:
+								event.data
+									?.find((item) => item.key === 'current')
+									?.value?.map((item) => item.key)
+									.join(', ') ?? '',
+							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					case 'abac.object.attributes.removed':
+						return {
+							...eventInfo,
+							name:
+								event.data
+									?.find((item) => item.key === 'previous')
+									?.value?.map((item) => item.key)
+									.join(', ') ?? '',
+							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					default:
+						return null;
+				}
+			}),
+			count: data.count,
+			offset: data.offset,
+			total: data.total,
+		}),
+	});
 
 	return (
 		<>
@@ -139,24 +172,32 @@ const LogsPage = () => {
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('User')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Action')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Room')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Element')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Element_Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Timestamp')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
-							{data?.events?.map((event) => {
-								const eventInfo = getEventInfo(event);
+							{data?.events.map((eventInfo) => {
+								if (!eventInfo) {
+									return null;
+								}
 								return (
-									<GenericTableRow key={event._id}>
+									<GenericTableRow key={eventInfo.id}>
 										<GenericTableCell withTruncatedText>
-											<Box is='span' mie={4}>
-												{eventInfo.userAvatar}
-											</Box>
+											{eventInfo.userAvatar && (
+												<Box is='span' mie={4}>
+													{eventInfo.userAvatar}
+												</Box>
+											)}
 											{eventInfo.user}
 										</GenericTableCell>
 										<GenericTableCell withTruncatedText>{eventInfo.action}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{eventInfo.room}</GenericTableCell>
 										<GenericTableCell withTruncatedText>{eventInfo.element}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.name}</GenericTableCell>
+										<GenericTableCell withTruncatedText title={eventInfo.name}>
+											{eventInfo.name}
+										</GenericTableCell>
 										<GenericTableCell withTruncatedText>{formatDate(eventInfo.timestamp)}</GenericTableCell>
 									</GenericTableRow>
 								);
