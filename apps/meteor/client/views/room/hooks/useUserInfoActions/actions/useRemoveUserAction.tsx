@@ -101,7 +101,7 @@ export const useRemoveUserAction = (
 		setModal(
 			<GenericModal
 				variant='danger'
-				confirmText={t('Yes_remove_user')}
+				confirmText={invited ? t('Revoke_invitation') : t('Yes_remove_user')}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
