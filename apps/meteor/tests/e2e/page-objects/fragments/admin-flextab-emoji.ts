@@ -7,15 +7,22 @@ export class AdminFlextabEmoji {
 		this.page = page;
 	}
 
-	get nameInput(): Locator {
-		return this.page.locator('role=textbox[name="Name"]');
+	async save() {
+		await this.contextualBar.getByRole('button', { name: 'Save' }).click();
+		// When clicking save, the contextual bar closes with a redirect
+		// But this redirect can interfere with other actions, so we need to ensure it happens first.
+		expect(this.contextualBar).not.toBeVisible();
 	}
 
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
+	get contextualBar(): Locator {
+		return this.page.getByRole('dialog', { name: 'Add New Emoji' });
+	}
+
+	get nameInput(): Locator {
+		return this.contextualBar.getByRole('textbox', { name: 'Name' });
 	}
 
 	get btnDelete(): Locator {
-		return this.page.locator('role=button[name="Delete"]');
+		return this.contextualBar.getByRole('button', { name: 'Delete' });
 	}
 }
