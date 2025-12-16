@@ -211,7 +211,7 @@ jobs:
 
           # check QASE_API_TOKEN is set
           if [[ -n "$QASE_API_TOKEN" ]]; then
-            QASE_MODE=testops
+            export QASE_MODE=testops
             # replace QASE_API_TOKEN in qase.config.json
             sed -i "s/<app-token>/$QASE_API_TOKEN/g" qase.config.json
           fi
