@@ -72,7 +72,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
-
 		this._userId = config.userId;
 		this._sessionId = config.randomStringFactory();
 		this.recurringStateReportHandler = null;
