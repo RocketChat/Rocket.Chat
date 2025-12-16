@@ -224,9 +224,13 @@ test.describe('OC - Manage Departments', () => {
 					await expect(poOmnichannelDepartments.toggleRequestTags).toBeVisible();
 				});
 
-				await test.step('expect have no add tag to department', async () => {
-					await expect(poOmnichannelDepartments.inputTags).not.toBeVisible();
-					await expect(poOmnichannelDepartments.btnTagsAdd).not.toBeVisible();
+				await test.step('expect tag input to be visible but disabled', async () => {
+					await expect(poOmnichannelDepartments.inputTags).toBeVisible();
+					await expect(poOmnichannelDepartments.btnTagsAdd).toBeVisible();
+
+					await expect(poOmnichannelDepartments.inputTags).toBeDisabled();
+					await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
+
 					await poOmnichannelDepartments.btnBack.click();
 				});
 			});
@@ -244,8 +248,8 @@ test.describe('OC - Manage Departments', () => {
 
 				await test.step('expect clicking on toggle button to enable tags', async () => {
 					await poOmnichannelDepartments.toggleRequestTags.click();
-					await expect(poOmnichannelDepartments.inputTags).toBeVisible();
-					await expect(poOmnichannelDepartments.btnTagsAdd).toBeVisible();
+
+					await expect(poOmnichannelDepartments.inputTags).toBeEnabled();
 				});
 
 				await test.step('expect to have add and remove one tag properly tags', async () => {
