@@ -64,13 +64,23 @@ interface IServerEventAbacActionPerformed
 	t: 'abac.action.performed';
 }
 
+interface IServerEventAbacObjectAttributesRemoved
+	extends IAuditServerEventType<
+		| { key: 'room'; value: MinimalRoom }
+		| { key: 'reason'; value: AbacAuditReason }
+		| { key: 'previous'; value: IAbacAttributeDefinition[] }
+		| { key: 'current'; value: IAbacAttributeDefinition[] | null }
+		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+	> {
+	t: 'abac.object.attributes.removed';
+}
 declare module '../IServerEvent' {
 	interface IServerEvents {
 		'abac.subject.attribute.changed': IServerEventAbacSubjectAttributeChanged;
 		'abac.object.attribute.changed': IServerEventAbacObjectAttributeChanged;
 		'abac.attribute.changed': IServerEventAbacAttributeChanged;
 		'abac.action.performed': IServerEventAbacActionPerformed;
-		'abac.object.attributes.removed': IServerEventAbacObjectAttributeChanged;
+		'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
 	}
 }
 
