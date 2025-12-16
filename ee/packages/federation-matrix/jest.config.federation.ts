@@ -8,6 +8,22 @@
 import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 
+function qaseRunTitle(): string {
+	const title = ['Federation E2E Tests'];
+
+	if (process.env.PR_NUMBER) {
+		title.push(`PR ${process.env.PR_NUMBER}`);
+	}
+
+	if (process.env.GITHUB_RUN_ID) {
+		title.push(`Run ${process.env.GITHUB_RUN_ID}`);
+	}
+
+	title.push(new Date().toISOString());
+
+	return title.join(' - ');
+}
+
 export default {
 	preset: server.preset,
 	transformIgnorePatterns: [
@@ -23,4 +39,26 @@ export default {
 	globalTeardown: '<rootDir>/tests/teardown.ts',
 	verbose: false,
 	silent: false,
+	reporters: [
+		'default',
+		...(process.env.QASE_TESTOPS_JEST_API_TOKEN
+			? [
+					[
+						'jest-qase-reporter',
+						{
+							mode: 'testops',
+							testops: {
+								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
+								project: process.env.QASE_PROJECT || 'RC',
+								run: {
+									title: qaseRunTitle(),
+									complete: true,
+								},
+							},
+							debug: true,
+						},
+					] as [string, { [x: string]: unknown }],
+				]
+			: []),
+	] as Config['reporters'],
 } satisfies Config;

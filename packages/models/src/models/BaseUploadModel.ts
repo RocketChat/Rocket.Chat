@@ -18,7 +18,7 @@ import { BaseRaw } from './BaseRaw';
 type T = IUpload;
 
 export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUploadsModel<T> {
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },

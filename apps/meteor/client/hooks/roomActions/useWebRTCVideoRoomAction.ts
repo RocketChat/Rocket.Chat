@@ -1,11 +1,11 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useWebRTCVideoRoomAction = () => {
 	const enabled = useSetting('WebRTC_Enabled', false);

@@ -1,4 +1,5 @@
-import { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
 
 type PreviewChannelMentionElementProps = {
 	mention: string;

@@ -11,7 +11,7 @@ type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
 
 const AppearanceFieldLabel = ({ children, premium = false, ...props }: AppearanceFieldLabelProps) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const shouldDisableEnterprise = premium && !hasLicense;
 
 	if (!shouldDisableEnterprise) {

@@ -9,6 +9,7 @@ import {
 	StatesTitle,
 	TextAreaInput,
 } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
@@ -16,7 +17,6 @@ import { useCallback, useState } from 'react';
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
-import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 
 // TODO: Replace using RHF

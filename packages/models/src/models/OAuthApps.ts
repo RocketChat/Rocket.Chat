@@ -9,7 +9,7 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		super(db, 'oauth_apps', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { clientId: 1, clientSecret: 1 } }, { key: { appId: 1 } }];
 	}
 

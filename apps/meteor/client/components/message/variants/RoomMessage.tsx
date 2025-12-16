@@ -2,7 +2,7 @@ import { type IMessage, isOTRAckMessage, isOTRMessage } from '@rocket.chat/core-
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
@@ -15,7 +15,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
-import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';

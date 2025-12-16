@@ -1,4 +1,5 @@
 import { dirname, join } from 'path';
+
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
 export default {
@@ -6,7 +7,7 @@ export default {
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
 		getAbsolutePath('storybook-dark-mode'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 	],
 
 	framework: {

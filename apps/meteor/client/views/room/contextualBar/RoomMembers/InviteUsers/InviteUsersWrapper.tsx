@@ -1,6 +1,3 @@
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -8,7 +5,9 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type InviteUsersWrapperProps = {
 	children: ReactElement;
