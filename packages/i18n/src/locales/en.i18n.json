@@ -76,7 +76,7 @@
   "ABAC_Key_added": "Key added",
   "ABAC_Key_updated": "Key updated",
   "ABAC_Revoked_Object_Access": "Automatic removal",
-  "ABAC_Granted_Object_Access": "Automatic addition",
+  "ABAC_Granted_Object_Access": "Manual add approved",
   "ABAC_room_membership": "Room membership",
   "ABAC_Managed": "ABAC Managed",
   "ABAC_Managed_description": "Only compliant users have access to attribute-based access controlled rooms. Attributes determine room access.",
