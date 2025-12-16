@@ -89,37 +89,36 @@ const waitForRoomEvent = async (
 	});
 
 	describe('1:1 Direct Messages', () => {
-		let rcUser: TestUser<IUser>;
-		let rcUserConfig: IRequestConfig;
-		let hs1Room: Room;
-		let subscriptionInvite: ISubscription;
-
-		const userDm = `dm-federation-user-${Date.now()}`;
-		const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
-
-		beforeAll(async () => {
-			// create both RC and Synapse users
-			rcUser = await createUser(
-				{
-					username: userDm,
-					password: 'random',
-					email: `${userDm}}@rocket.chat`,
-					name: `DM Federation User ${Date.now()}`,
-				},
-				rc1AdminRequestConfig,
-			);
-
-			rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
-		});
-
-		afterAll(async () => {
-			// delete both RC and Synapse users
-			await deleteUser(rcUser, {}, rc1AdminRequestConfig);
-		});
-
 		describe('Synapse as the resident server', () => {
 			describe('Room list name validations', () => {
+				let rcUser: TestUser<IUser>;
+				let rcUserConfig: IRequestConfig;
+				let hs1Room: Room;
+				let subscriptionInvite: ISubscription;
 				let rcRoom: IRoom;
+
+				const userDm = `dm-federation-user-${Date.now()}`;
+				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
+
+				beforeAll(async () => {
+					// create both RC and Synapse users
+					rcUser = await createUser(
+						{
+							username: userDm,
+							password: 'random',
+							email: `${userDm}}@rocket.chat`,
+							name: `DM Federation User ${Date.now()}`,
+						},
+						rc1AdminRequestConfig,
+					);
+
+					rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
+				});
+
+				afterAll(async () => {
+					// delete both RC and Synapse users
+					await deleteUser(rcUser, {}, rc1AdminRequestConfig);
+				});
 
 				it('should create a DM and invite user from rc', async () => {
 					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
@@ -190,15 +189,83 @@ const waitForRoomEvent = async (
 			});
 
 			describe('Permission validations', () => {
-				it('should leave the DM from Rocket.Chat', async () => {
-					const subs = await getSubscriptions(rcUserConfig);
+				let rcUser: TestUser<IUser>;
+				let rcUserConfig: IRequestConfig;
+				let hs1Room: Room;
+				let subscriptionInvite: ISubscription;
+				let rcRoom: IRoom;
 
-					const dmSubscription = subs.update.find(
-						(subscription) =>
-							subscription.t === 'd' && subscription.fname?.includes(`@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`),
+				const userDm = `dm-federation-user-${Date.now()}`;
+				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
+
+				beforeAll(async () => {
+					// create both RC and Synapse users
+					rcUser = await createUser(
+						{
+							username: userDm,
+							password: 'random',
+							email: `${userDm}}@rocket.chat`,
+							name: `DM Federation User ${Date.now()}`,
+						},
+						rc1AdminRequestConfig,
 					);
 
-					expect(dmSubscription).toHaveProperty('rid');
+					rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
+				});
+
+				afterAll(async () => {
+					// delete both RC and Synapse users
+					await deleteUser(rcUser, {}, rc1AdminRequestConfig);
+				});
+
+				it('should create a DM and invite user from rc', async () => {
+					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
+
+					expect(hs1Room).toHaveProperty('roomId');
+
+					const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
+
+					expect(roomsResponse.body).toHaveProperty('success', true);
+					expect(roomsResponse.body).toHaveProperty('update');
+
+					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
+
+					expect(rcRoom).not.toHaveProperty('fname');
+
+					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+
+					expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
+					expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
+
+					const membersBefore = await hs1Room.getMembers();
+
+					expect(membersBefore.length).toBe(2);
+
+					const invitedMember = membersBefore.find((member) => member.userId === userDmId);
+
+					expect(invitedMember).toHaveProperty('membership', 'invite');
+
+					const waitForRoomEventPromise = waitForRoomEvent(hs1Room, RoomStateEvent.Members, ({ event }) => {
+						expect(event).toHaveProperty('content.membership', 'join');
+						expect(event).toHaveProperty('state_key', userDmId);
+					});
+
+					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
+					expect(response.success).toBe(true);
+
+					await waitForRoomEventPromise;
+				});
+				it('should display the fname properly', async () => {
+					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+
+					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
+				});
+
+				it('should leave the DM from Rocket.Chat', async () => {
+					const leaveEventPromise = waitForRoomEvent(hs1Room, RoomStateEvent.Members, ({ event }) => {
+						expect(event).toHaveProperty('content.membership', 'leave');
+						expect(event).toHaveProperty('state_key', userDmId);
+					});
 
 					const response = await rcUserConfig.request
 						.post(api('rooms.leave'))
@@ -210,10 +277,7 @@ const waitForRoomEvent = async (
 
 					expect(response.body).toHaveProperty('success', true);
 
-					await waitForRoomEvent(hs1Room, RoomStateEvent.Members, ({ event }) => {
-						expect(event).toHaveProperty('content.membership', 'leave');
-						expect(event).toHaveProperty('state_key', userDmId);
-					});
+					await leaveEventPromise;
 				});
 			});
 
