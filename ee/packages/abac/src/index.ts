@@ -83,6 +83,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
 				const finalUser = await Users.unsetAbacAttributesById(user._id);
 				await this.onSubjectAttributesChanged(finalUser!, []);
+				void Audit.subjectAttributeChanged([], { _id: user._id, username: user.username });
 			}
 			return;
 		}
