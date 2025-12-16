@@ -10,10 +10,10 @@ import UserAvatarChip from './UserAvatarChip';
 
 type UserAutoCompleteMultipleProps = {
 	onChange: (value: Array<string>) => void;
-	value: Array<string>;
+	value: Array<string> | undefined;
 	placeholder?: string;
 	federated?: boolean;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'onChange'>;
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'onChange' | 'value'>;
 
 type UserAutoCompleteOptionType = {
 	name: string;
@@ -79,8 +79,8 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 	const handleOnChange = useCallback(
 		(usernames: string[]) => {
 			onChange(usernames);
-			const newAddedUsername = usernames.filter((username) => !value.includes(username))[0];
-			const removedUsername = value.filter((username) => !usernames.includes(username))[0];
+			const newAddedUsername = usernames.filter((username) => !value?.includes(username))[0];
+			const removedUsername = value?.filter((username) => !usernames.includes(username))[0];
 			setFilter('');
 			newAddedUsername && onAddUser(newAddedUsername);
 			removedUsername && onRemoveUser(removedUsername);
