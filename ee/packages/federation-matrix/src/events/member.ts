@@ -77,7 +77,7 @@ async function getOrCreateFederatedRoom({
 					mrid: matrixRoomId,
 					origin,
 				},
-				fname: roomFName,
+				...(roomType !== 'd' && { fname: roomFName }), // DMs do not have a fname
 			},
 		});
 	} catch (error) {

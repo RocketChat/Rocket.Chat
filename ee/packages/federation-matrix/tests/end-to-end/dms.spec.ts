@@ -3,7 +3,12 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import { acceptRoomInvite, getSubscriptionByRoomId, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
+import {
+	acceptRoomInvite,
+	getRoomInfo,
+	getSubscriptionByRoomId,
+	getSubscriptions,
+} from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -162,6 +167,19 @@ const waitForRoomEvent = async (
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
 					expect(sub).toHaveProperty('name', 'empty');
+
+					const roomInfo = await getRoomInfo(rcRoom._id, rcUserConfig);
+
+					expect(roomInfo).toHaveProperty('room');
+
+					expect(roomInfo.room).toHaveProperty('fname', 'empty');
+					expect(roomInfo.room).toHaveProperty('uids');
+					expect(roomInfo.room?.uids).toHaveLength(1);
+					expect(roomInfo.room?.uids).toBe([rcUser._id]);
+
+					expect(roomInfo.room).toHaveProperty('usernames');
+					expect(roomInfo.room?.usernames).toHaveLength(1);
+					expect(roomInfo.room?.usernames).toBe([rcUser.username]);
 				});
 			});
 
