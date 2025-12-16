@@ -2,7 +2,7 @@ import { resolve, dirname } from 'node:path';
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import webpack from 'webpack';
+import { ContextReplacementPlugin, DefinePlugin, type Configuration, type WebpackOptionsNormalized } from 'webpack';
 
 import { supportedLocales } from './src/supportedLocales';
 
@@ -11,13 +11,12 @@ import 'webpack-dev-server';
 // Helper to use absolute paths in the webpack config
 const _ = (p: string) => resolve(__dirname, p);
 
-const config = (_env: any, { mode = 'production' }: webpack.WebpackOptionsNormalized): webpack.Configuration[] => [
+const config = (_env: any, { mode = 'production' }: WebpackOptionsNormalized): Configuration[] => [
 	{
 		mode,
 		entry: {
 			bundle: ['core-js', 'regenerator-runtime/runtime', _('./src/entry')],
-			polyfills: _('./src/polyfills'),
-		} as webpack.Entry,
+		},
 		output: {
 			path: _('./dist'),
 			publicPath: mode === 'production' ? 'livechat/' : '/',
@@ -27,7 +26,7 @@ const config = (_env: any, { mode = 'production' }: webpack.WebpackOptionsNormal
 		stats: 'errors-warnings',
 		devtool: mode === 'production' ? 'source-map' : 'eval',
 		resolve: {
-			extensions: ['.js', '.jsx', '.ts', '.tsx'],
+			extensions: ['.js', '.ts', '.tsx'],
 			symlinks: false,
 			alias: {
 				'react': 'preact/compat',
@@ -126,16 +125,16 @@ const config = (_env: any, { mode = 'production' }: webpack.WebpackOptionsNormal
 			new MiniCssExtractPlugin({
 				filename: mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
 				chunkFilename: mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
-			}) as unknown as webpack.WebpackPluginInstance,
-			new webpack.DefinePlugin({
+			}),
+			new DefinePlugin({
 				'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
 				title: 'Livechat - Rocket.Chat',
-				chunks: ['polyfills', 'vendor', 'bundle'],
+				chunks: ['vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
-			new webpack.ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\\.js$`)),
+			new ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\\.js$`)),
 		],
 		devServer: {
 			hot: true,
@@ -163,7 +162,7 @@ const config = (_env: any, { mode = 'production' }: webpack.WebpackOptionsNormal
 		mode,
 		entry: {
 			'rocketchat-livechat.min': _('./src/embeddable-script.ts'),
-		} as webpack.Entry,
+		},
 		output: {
 			path: _('./dist'),
 			publicPath: mode === 'production' ? 'livechat/' : '/',

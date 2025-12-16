@@ -8905,7 +8905,6 @@ __metadata:
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
     "@types/react": "npm:~18.3.26"
     "@types/webpack-env": "npm:~1.18.8"
-    "@types/whatwg-fetch": "npm:~0.0.33"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     ajv: "npm:^8.17.1"
@@ -8914,7 +8913,6 @@ __metadata:
     babel-loader: "npm:~10.0.0"
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^4.3.0"
-    css-vars-ponyfill: "npm:^2.4.9"
     cssnano: "npm:^7.0.7"
     date-fns: "npm:~4.1.0"
     desvg-loader: "npm:^0.1.0"
@@ -8967,7 +8965,6 @@ __metadata:
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
     webpack-dev-server: "npm:~5.2.2"
-    whatwg-fetch: "npm:^3.6.20"
   peerDependencies:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/logo": "*"
@@ -14338,22 +14335,6 @@ __metadata:
   version: 1.18.8
   resolution: "@types/webpack-env@npm:1.18.8"
   checksum: 10/f3932f3d6c2530f644cfc898eda1ab8182d6ae57f555c2f0179d813549b639078671b71e4041831fc306c5ebe61f5cdac794fe4ceae281fce8bf67e23661a488
-  languageName: node
-  linkType: hard
-
-"@types/whatwg-fetch@npm:~0.0.33":
-  version: 0.0.33
-  resolution: "@types/whatwg-fetch@npm:0.0.33"
-  dependencies:
-    "@types/whatwg-streams": "npm:*"
-  checksum: 10/431c407a72f5d5098e55361f159027137239df495c930d3f35f231d7375d34423d015d0cc1e391bf73af4dafb757e80a8ff33951972325e402dbea3b4934f6a0
-  languageName: node
-  linkType: hard
-
-"@types/whatwg-streams@npm:*":
-  version: 0.0.7
-  resolution: "@types/whatwg-streams@npm:0.0.7"
-  checksum: 10/63ffdd1493cfcaf6f5ce99f865d9a7b921335c046ef8b8f0e37aacfa17672174606321da0f8d9ab9e4bfa26bd90c80529463f3651f1b202028debabdadf13fe8
   languageName: node
   linkType: hard
 
@@ -37158,13 +37139,6 @@ __metadata:
   dependencies:
     iconv-lite: "npm:0.6.3"
   checksum: 10/bbef815eb67f91487c7f2ef96329743f5fd8357d7d62b1119237d25d41c7e452dff8197235b2d3c031365a17f61d3bb73ca49d0ed1582475aa4a670815e79534
-  languageName: node
-  linkType: hard
-
-"whatwg-fetch@npm:^3.6.20":
-  version: 3.6.20
-  resolution: "whatwg-fetch@npm:3.6.20"
-  checksum: 10/2b4ed92acd6a7ad4f626a6cb18b14ec982bbcaf1093e6fe903b131a9c6decd14d7f9c9ca3532663c2759d1bdf01d004c77a0adfb2716a5105465c20755a8c57c
   languageName: node
   linkType: hard
 
