@@ -17,10 +17,14 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             name="attributes.0.key"
           >
             <div
-              class="rcx-box rcx-box--full rcx-select__wrapper rcx-css-bpb89k"
+              class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
             >
+              <span
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-jmdrnf"
+              >
+                ABAC_Search_Attribute
+              </span>
               <input
-                aria-haspopup="listbox"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-select__focus rcx-css-1l0s473"
                 placeholder="ABAC_Search_Attribute"
                 value=""
