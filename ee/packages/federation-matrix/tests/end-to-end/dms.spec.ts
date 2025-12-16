@@ -125,23 +125,27 @@ const waitForRoomEvent = async (
 
 					expect(hs1Room).toHaveProperty('roomId');
 
-					const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
+					await retry('this is an async operation, so we need to wait for the room to be created in RC', async () => {
+						const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
 
-					expect(roomsResponse.body).toHaveProperty('success', true);
-					expect(roomsResponse.body).toHaveProperty('update');
+						expect(roomsResponse.body).toHaveProperty('success', true);
+						expect(roomsResponse.body).toHaveProperty('update');
 
-					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
+						rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
 
-					expect(rcRoom).toHaveProperty('_id');
-					expect(rcRoom).toHaveProperty('t', 'd');
-					expect(rcRoom).toHaveProperty('uids');
-					expect(rcRoom).not.toHaveProperty('fname');
+						expect(rcRoom).toHaveProperty('_id');
+						expect(rcRoom).toHaveProperty('t', 'd');
+						expect(rcRoom).toHaveProperty('uids');
+						expect(rcRoom).not.toHaveProperty('fname');
 
-					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
-					expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-					expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
+						expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
+						expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
+					});
+				});
 
+				it('should accept the DM invitation from rc', async () => {
 					const membersBefore = await hs1Room.getMembers();
 
 					expect(membersBefore.length).toBe(2);
@@ -160,11 +164,13 @@ const waitForRoomEvent = async (
 
 					await waitForRoomEventPromise;
 				});
+
 				it('should display the fname properly', async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
+
 				it('should return room name as empty after the user from Synapse leaves the DM', async () => {
 					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
 
@@ -226,23 +232,27 @@ const waitForRoomEvent = async (
 
 					expect(hs1Room).toHaveProperty('roomId');
 
-					const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
+					await retry('this is an async operation, so we need to wait for the room to be created in RC', async () => {
+						const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
 
-					expect(roomsResponse.body).toHaveProperty('success', true);
-					expect(roomsResponse.body).toHaveProperty('update');
+						expect(roomsResponse.body).toHaveProperty('success', true);
+						expect(roomsResponse.body).toHaveProperty('update');
 
-					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
+						rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
 
-					expect(rcRoom).toHaveProperty('_id');
-					expect(rcRoom).toHaveProperty('t', 'd');
-					expect(rcRoom).toHaveProperty('uids');
-					expect(rcRoom).not.toHaveProperty('fname');
+						expect(rcRoom).toHaveProperty('_id');
+						expect(rcRoom).toHaveProperty('t', 'd');
+						expect(rcRoom).toHaveProperty('uids');
+						expect(rcRoom).not.toHaveProperty('fname');
 
-					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
-					expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-					expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
+						expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
+						expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
+					});
+				});
 
+				it('should accept the DM invitation from rc', async () => {
 					const membersBefore = await hs1Room.getMembers();
 
 					expect(membersBefore.length).toBe(2);
@@ -261,6 +271,7 @@ const waitForRoomEvent = async (
 
 					await waitForRoomEventPromise;
 				});
+
 				it('should display the fname properly', async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
