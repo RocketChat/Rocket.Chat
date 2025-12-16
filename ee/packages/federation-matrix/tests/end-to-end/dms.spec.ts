@@ -12,6 +12,7 @@ import {
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
+import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 
@@ -132,6 +133,8 @@ const waitForRoomEvent = async (
 
 					rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
 
+					expect(rcRoom).not.toHaveProperty('fname');
+
 					subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
 					expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
@@ -160,26 +163,29 @@ const waitForRoomEvent = async (
 
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
-				it('should display the fname properly after the user from Synapse leaves the DM', async () => {
-					// TODO this is an async operation, so we need to wait for the event to be processed
-					await hs1Room.updateMyMembership('leave');
+				it('should return room name as empty after the user from Synapse leaves the DM', async () => {
+					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
 
-					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+					await retry('this is an async operation, so we need to wait for the event to be processed', async () => {
+						const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
 
-					expect(sub).toHaveProperty('name', 'empty');
+						expect(sub).toHaveProperty('name', 'empty');
+						expect(sub).toHaveProperty('fname', 'Empty Room');
 
-					const roomInfo = await getRoomInfo(rcRoom._id, rcUserConfig);
+						const roomInfo = await getRoomInfo(rcRoom._id, rcUserConfig);
 
-					expect(roomInfo).toHaveProperty('room');
+						expect(roomInfo).toHaveProperty('room');
 
-					expect(roomInfo.room).toHaveProperty('fname', 'empty');
-					expect(roomInfo.room).toHaveProperty('uids');
-					expect(roomInfo.room?.uids).toHaveLength(1);
-					expect(roomInfo.room?.uids).toBe([rcUser._id]);
+						expect(roomInfo.room).toHaveProperty('usersCount', 1);
+						expect(roomInfo.room).not.toHaveProperty('fname');
+						expect(roomInfo.room).toHaveProperty('uids');
+						expect(roomInfo.room?.uids).toHaveLength(1);
+						expect(roomInfo.room?.uids).toEqual([rcUser._id]);
 
-					expect(roomInfo.room).toHaveProperty('usernames');
-					expect(roomInfo.room?.usernames).toHaveLength(1);
-					expect(roomInfo.room?.usernames).toBe([rcUser.username]);
+						expect(roomInfo.room).toHaveProperty('usernames');
+						expect(roomInfo.room?.usernames).toHaveLength(1);
+						expect(roomInfo.room?.usernames).toEqual([rcUser.username]);
+					});
 				});
 			});
 
