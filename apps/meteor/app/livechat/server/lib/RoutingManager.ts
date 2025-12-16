@@ -249,7 +249,11 @@ export const RoutingManager: Routing = {
 
 		const lockAcquired = await Users.acquireAgentLock(agent.agentId);
 		if (!lockAcquired) {
-			logger.debug(`Cannot take inquiry ${inquiry._id} because agent ${agent.agentId} is currently locked by another process`);
+			logger.debug({
+				msg: 'Cannot take inquiry because agent is currently locked by another process',
+				agentId: agent.agentId,
+				inquiryId: _id,
+			});
 			if (options.clientAction && !options.forwardingToDepartment) {
 				throw new Error('error-agent-is-locked');
 			}
@@ -284,14 +288,11 @@ export const RoutingManager: Routing = {
 		try {
 			const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
 			if (result.modifiedCount === 0) {
-				logger.error(`Failed to take inquiry ${inquiry._id} because lockedAt did not match`, {
-					inquiryId: _id,
-					lockedAt: inquiry.lockedAt,
-				});
+				logger.error({ msg: 'Failed to take inquiry because lockedAt did not match', inquiryId: _id, lockedAt: inquiry.lockedAt });
 				throw new Error('error-taking-inquiry-lockedAt-mismatch');
 			}
 
-			logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+			logger.info({ msg: 'Inquiry taken', inquiryId: _id, agentId: agent.agentId });
 
 			// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
 			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
