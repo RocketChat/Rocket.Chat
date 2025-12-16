@@ -13,7 +13,7 @@ export class AdminEmoji {
 	}
 
 	get newButton(): Locator {
-		return this.page.locator('role=button[name="New"]');
+		return this.page.getByRole('button', { name: 'New' });
 	}
 
 	get closeAdminButton(): Locator {
@@ -21,11 +21,11 @@ export class AdminEmoji {
 	}
 
 	get searchInput(): Locator {
-		return this.page.locator('role=textbox[name="Search"]');
+		return this.page.getByRole('textbox', { name: 'Search' });
 	}
 
-	async findEmojiByName(emojiName: string) {
+	async findEmojiByName(emojiName: string): Promise<Locator> {
 		await this.searchInput.fill(emojiName);
-		await this.page.locator(`role=link[name=${emojiName}]`).click();
+		return this.page.getByRole('link', { name: emojiName });
 	}
 }

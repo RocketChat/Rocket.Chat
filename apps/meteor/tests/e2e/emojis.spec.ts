@@ -104,8 +104,9 @@ test.describe.serial('emoji', () => {
 		await test.step('Delete custom emoji', async () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
-			await poAdminEmoji.findEmojiByName(newEmojiName);
-			await poAdminEmoji.addEmoji.btnDelete.click();
+			await (await poAdminEmoji.findEmojiByName(newEmojiName)).click();
+			await poAdminEmoji.addEmoji.delete();
+			await expect(await poAdminEmoji.findEmojiByName(newEmojiName)).not.toBeVisible();
 		});
 	});
 });

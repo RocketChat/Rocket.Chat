@@ -14,15 +14,16 @@ export class AdminFlextabEmoji {
 		expect(this.contextualBar).not.toBeVisible();
 	}
 
+	async delete() {
+		await this.contextualBar.getByRole('button', { name: 'Delete' }).click();
+		expect(this.contextualBar).not.toBeVisible();
+	}
+
 	get contextualBar(): Locator {
 		return this.page.getByRole('dialog', { name: 'Add New Emoji' });
 	}
 
 	get nameInput(): Locator {
 		return this.contextualBar.getByRole('textbox', { name: 'Name' });
-	}
-
-	get btnDelete(): Locator {
-		return this.contextualBar.getByRole('button', { name: 'Delete' });
 	}
 }
