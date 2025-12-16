@@ -2,19 +2,6 @@
 @use 'grid';
 @use 'variables';
 
-
-@font-face {
-    font-family: 'iransans';
-    src: url('../assets/fonts/IRANSansXV.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-* {
-    font-family: 'iransans', sans-serif;
-}
-
 html,
 body {
 	width: 100%;
