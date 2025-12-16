@@ -70,7 +70,7 @@ test.describe.serial('emoji', () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
 			await poAdminEmoji.newButton.click();
-			await poAdminEmoji.addEmoji.nameInput.fill(emojiName);
+			await poAdminEmoji.addEmoji.inputName.fill(emojiName);
 
 			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
 			await fileChooser.setFiles(emojiUrl);
@@ -89,7 +89,7 @@ test.describe.serial('emoji', () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
 			await page.locator('role=link[name="Emoji"]').click();
 			await poAdminEmoji.findEmojiByName(emojiName);
-			await poAdminEmoji.addEmoji.nameInput.fill(newEmojiName);
+			await poAdminEmoji.addEmoji.inputName.fill(newEmojiName);
 
 			await poAdminEmoji.addEmoji.save();
 			await poAdminEmoji.closeAdminButton.click();
