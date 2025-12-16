@@ -122,16 +122,12 @@ export class RoomRead implements IRoomRead {
 		});
 	}
 
-	private parseMessageCursor(cursor: unknown, optionName: string): { id?: string; createdAt: Date } {
+	private parseMessageCursor(cursor: unknown, optionName: string): { createdAt: Date } {
 		if (!cursor || typeof cursor !== 'object') {
-			throw new Error(`Invalid "${optionName}" cursor. Expected an object with { createdAt, id? }.`);
+			throw new Error(`Invalid "${optionName}" cursor. Expected an object with { createdAt }.`);
 		}
 
-		const { id, createdAt } = cursor as Partial<{ id: unknown; createdAt: unknown }>;
-
-		if (typeof id !== 'undefined' && (typeof id !== 'string' || id.trim().length === 0)) {
-			throw new Error(`Invalid "${optionName}" cursor id. Expected a non-empty string, got ${id}`);
-		}
+		const { createdAt } = cursor as Partial<{ createdAt: unknown }>;
 
 		const parsedCreatedAt =
 			createdAt instanceof Date ? createdAt : typeof createdAt === 'string' || typeof createdAt === 'number' ? new Date(createdAt) : undefined;
@@ -141,7 +137,6 @@ export class RoomRead implements IRoomRead {
 		}
 
 		return {
-			id: typeof id === 'string' ? id : undefined,
 			createdAt: parsedCreatedAt,
 		};
 	}

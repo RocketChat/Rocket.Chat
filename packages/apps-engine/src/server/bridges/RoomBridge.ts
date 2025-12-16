@@ -10,10 +10,6 @@ export const GetMessagesSortableFields = ['createdAt'] as const;
 
 export type GetMessagesCursor = {
 	createdAt: IMessageRaw['createdAt'];
-	/**
-	 * Optional tie-breaker for deterministic pagination when multiple messages share the same `createdAt`.
-	 */
-	id?: IMessageRaw['id'];
 };
 
 export type GetMessagesOptions = {
@@ -22,14 +18,14 @@ export type GetMessagesOptions = {
 	sort?: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
 	showThreadMessages: boolean;
 	/**
-	 * Returns messages strictly after the provided cursor (createdAt + optional message id tie-breaker).
+	 * Returns messages strictly after the provided cursor (timestamp based).
 	 * Useful for cursor-based pagination without using large skips.
 	 *
 	 * When `sort.createdAt` is `desc`, "after" is relative to that ordering (i.e. towards older messages).
 	 */
 	after?: GetMessagesCursor;
 	/**
-	 * Returns messages strictly before the provided cursor (createdAt + optional message id tie-breaker).
+	 * Returns messages strictly before the provided cursor (timestamp based).
 	 * Useful for cursor-based pagination without using large skips.
 	 *
 	 * When `sort.createdAt` is `desc`, "before" is relative to that ordering (i.e. towards newer messages).

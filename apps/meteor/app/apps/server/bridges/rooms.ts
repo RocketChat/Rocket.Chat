@@ -168,24 +168,13 @@ export class AppRoomBridge extends RoomBridge {
 			const isAsc = sortDirection !== 'desc';
 
 			let tsOp: '$gt' | '$lt';
-			let idOp: '$gt' | '$lt';
-
 			if (afterInOrder) {
 				tsOp = isAsc ? '$gt' : '$lt';
-				idOp = isAsc ? '$gt' : '$lt';
 			} else {
 				tsOp = isAsc ? '$lt' : '$gt';
-				idOp = isAsc ? '$lt' : '$gt';
 			}
 
-			const rangeClause = { ts: { [tsOp]: cursor.createdAt } };
-
-			if (!cursor.id) {
-				return { $or: [rangeClause] };
-			}
-
-			const tieBreakerClause = { ts: cursor.createdAt, _id: { [idOp]: cursor.id } };
-			return { $or: [rangeClause, tieBreakerClause] };
+			return { $or: [{ ts: { [tsOp]: cursor.createdAt } }] };
 		};
 
 		if (after) {
@@ -202,11 +191,9 @@ export class AppRoomBridge extends RoomBridge {
 			}
 		}
 
-		// Deterministic ordering for cursor pagination when `id` tie-breaker is used
-		const shouldSortById = Boolean(after?.id || before?.id);
 		let sort: Sort | undefined;
 		if (sortDirection) {
-			sort = shouldSortById ? { ts: sortDirection, _id: sortDirection } : { ts: sortDirection };
+			sort = { ts: sortDirection };
 		}
 
 		const messageQueryOptions: FindOptions<ICoreMessage> = {
