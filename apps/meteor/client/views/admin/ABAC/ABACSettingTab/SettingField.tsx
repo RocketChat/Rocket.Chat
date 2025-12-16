@@ -1,14 +1,14 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure } from '@rocket.chat/ui-contexts';
+import { useSettingsDispatch, useSettingStructure } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import MemoizedSetting from '../../settings/Setting/MemoizedSetting';
 import { useHasSettingModule } from '../../settings/hooks/useHasSettingModule';
 
@@ -32,7 +32,7 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 		throw new Error(`Setting ${settingId} is not valid`);
 	}
 
-	const dispatch = useEditableSettingsDispatch();
+	const dispatch = useSettingsDispatch();
 
 	const update = useDebouncedCallback(
 		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
@@ -45,9 +45,6 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 					_id: persistedSetting._id,
 					...(value !== undefined && { value }),
 					...(editor !== undefined && { editor }),
-					changed:
-						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
-						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
 				},
 			]);
 		},
