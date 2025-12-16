@@ -2,7 +2,15 @@ import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
-import { ExternalLink, ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '@rocket.chat/ui-client';
+import {
+	ExternalLink,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -20,8 +28,6 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';

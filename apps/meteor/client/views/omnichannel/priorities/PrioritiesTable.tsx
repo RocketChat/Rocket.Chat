@@ -1,16 +1,16 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import PrioritiesTableRow from './PrioritiesTableRow';
-import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import PrioritiesTableRow from './PrioritiesTableRow';
+import GenericNoResults from '../../../components/GenericNoResults';
 
 type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];

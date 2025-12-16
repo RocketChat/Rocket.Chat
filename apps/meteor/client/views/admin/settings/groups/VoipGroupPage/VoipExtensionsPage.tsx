@@ -1,13 +1,5 @@
 import { Box, Chip, Button, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
-
-import AssignAgentButton from './AssignAgentButton';
-import AssignAgentModal from './AssignAgentModal';
-import RemoveAgentButton from './RemoveAgentButton';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
@@ -16,8 +8,16 @@ import {
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingRow,
-} from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+	usePagination,
+} from '@rocket.chat/ui-client';
+import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+
+import AssignAgentButton from './AssignAgentButton';
+import AssignAgentModal from './AssignAgentModal';
+import RemoveAgentButton from './RemoveAgentButton';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { PageContent } from '../../../../../components/Page';
 
 const VoipExtensionsPage = () => {
