@@ -93,7 +93,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		data-qa-type='system-message-body'
 		style={{
 			whiteSpace: 'normal',
-			wordBreak: 'break-word',
 			overflowWrap: 'anywhere',
 		}}
 	>
