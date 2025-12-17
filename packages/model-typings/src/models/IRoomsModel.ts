@@ -29,16 +29,7 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
-	findByTypesAndFlags(
-		options: {
-			types?: Array<IRoom['t']>;
-			includeDiscussions?: boolean;
-			onlyDiscussions?: boolean;
-			includeTeamMain?: boolean;
-			onlyTeamMain?: boolean;
-		},
-		findOptions?: FindOptions<IRoom>,
-	): FindCursor<IRoom>;
+	findByTypes(types: Array<IRoom['t']>, discussion?: boolean, teams?: boolean, findOptions?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
