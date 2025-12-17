@@ -15,7 +15,7 @@ describe('Push Notifications [PushClass]', () => {
 		settingsStub = { get: sinon.stub().returns('') };
 		clock = sinon.useFakeTimers();
 
-		({ Push } = proxyquire('../../../../../app/push/server/push', {
+		({ Push } = proxyquire('../../../../app/push/server/push', {
 			'./logger': { logger: loggerStub },
 			'../../settings/server': { settings: settingsStub },
 			'@rocket.chat/tools': { pick },
