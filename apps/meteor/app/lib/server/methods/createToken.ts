@@ -1,14 +1,18 @@
-import { User } from '@rocket.chat/core-services';
+import { MeteorError, User } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		createToken(userId: string): { userId: string; authToken: string };
+	}
+}
 
-export async function generateAccessToken(callee: string, userId: string) {
-	if (
-		!['yes', 'true'].includes(String(process.env.CREATE_TOKENS_FOR_USERS)) ||
-		(callee !== userId && !(await hasPermissionAsync(callee, 'user-generate-access-token')))
-	) {
-		throw new Meteor.Error('error-not-authorized', 'Not authorized');
+const { CREATE_TOKENS_FOR_USERS_SECRET } = process.env;
+
+export async function generateAccessToken(userId: string, secret: string) {
+	if (secret !== CREATE_TOKENS_FOR_USERS_SECRET) {
+		throw new MeteorError('error-not-authorized', 'Not authorized');
 	}
 
 	const token = Accounts._generateStampedLoginToken();
