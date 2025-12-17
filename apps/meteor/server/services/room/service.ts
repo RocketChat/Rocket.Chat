@@ -287,6 +287,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, name: inviter.name } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
+			...(room.t === 'd' && inviter && { fname: inviter.name, name: inviter.username }),
 		});
 
 		if (insertedId) {
