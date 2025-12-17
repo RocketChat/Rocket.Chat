@@ -2,9 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from '../fixtures/userStates';
-import { AccountProfile, HomeChannel } from '../page-objects';
+import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
-import { AccountSecurityPage } from '../page-objects/account-security';
 import { HomeSidenav } from '../page-objects/fragments';
 import {
 	E2EEKeyDecodeFailureBanner,
@@ -79,7 +78,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('expect to manually reset the password', async ({ page }) => {
-			const accountSecurityPage = new AccountSecurityPage(page);
+			const accountSecurityPage = new AccountSecurity(page);
 			const loginPage = new LoginPage(page);
 
 			// Reset the E2EE key to start the flow from the beginning
@@ -114,7 +113,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('expect to manually set a new password', async ({ page }) => {
-			const accountSecurityPage = new AccountSecurityPage(page);
+			const accountSecurityPage = new AccountSecurity(page);
 			const loginPage = new LoginPage(page);
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
@@ -183,14 +182,14 @@ test.use({ storageState: Users.admin.state });
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
-	let poAccountProfile: AccountProfile;
+	let poAccountSecurity: AccountSecurity;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
 
 	preserveSettings(roomSetupSettingsList);
 
 	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
+		poAccountSecurity = new AccountSecurity(page);
 		poHomeChannel = new HomeChannel(page);
 	});
 
@@ -205,8 +204,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 	test('expect save password state on encrypted room', async ({ page }) => {
 		await page.goto('/account/security');
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await poAccountSecurity.securityE2EEncryptionSection.click();
+		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -320,8 +319,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();
 
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await poAccountSecurity.securityE2EEncryptionSection.click();
+		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 

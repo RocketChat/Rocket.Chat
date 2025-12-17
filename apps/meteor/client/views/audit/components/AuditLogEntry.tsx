@@ -2,12 +2,12 @@ import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AuditFiltersDisplay from './AuditFiltersDisplay';
-import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type AuditLogEntryProps = { value: IAuditLog };

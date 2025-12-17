@@ -1,8 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -54,7 +52,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// Can't add to direct room ever
+	// TODO: Can't add to direct room ever, unless it's a federated room
 	if (room.t === 'd') {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
@@ -91,13 +89,6 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		data.users.map(async (username) => {
 			const sanitizedUsername = sanitizeUsername(username);
 
-			// If it's a federated username format and the room is not federated, throw error immediately
-			if (validateFederatedUsername(sanitizedUsername) && !isRoomNativeFederated(room)) {
-				throw new Meteor.Error('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
-					method: 'addUsersToRoom',
-				});
-			}
-
 			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);
 			if (!newUser) {
 				throw new Meteor.Error('error-user-not-found', 'User not found', {
@@ -107,19 +98,18 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser, user);
-			} else {
-				if (!newUser.username) {
-					return;
-				}
-				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: i18n.t('Username_is_already_in_here', {
-						postProcess: 'sprintf',
-						sprintf: [newUser.username],
-						lng: user?.language,
-					}),
-				});
+				return addUserToRoom(data.rid, newUser, user);
 			}
+			if (!newUser.username) {
+				return;
+			}
+			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+				msg: i18n.t('Username_is_already_in_here', {
+					postProcess: 'sprintf',
+					sprintf: [newUser.username],
+					lng: user?.language,
+				}),
+			});
 		}),
 	);
 

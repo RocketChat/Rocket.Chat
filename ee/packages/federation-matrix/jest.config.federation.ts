@@ -8,6 +8,22 @@
 import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 
+function qaseRunTitle(): string {
+	const title = ['Federation E2E Tests'];
+
+	if (process.env.PR_NUMBER) {
+		title.push(`PR ${process.env.PR_NUMBER}`);
+	}
+
+	if (process.env.GITHUB_RUN_ID) {
+		title.push(`Run ${process.env.GITHUB_RUN_ID}`);
+	}
+
+	title.push(new Date().toISOString());
+
+	return title.join(' - ');
+}
+
 export default {
 	preset: server.preset,
 	transformIgnorePatterns: [
@@ -21,8 +37,6 @@ export default {
 	forceExit: true, // Force Jest to exit after tests complete
 	detectOpenHandles: true, // Detect open handles that prevent Jest from exiting
 	globalTeardown: '<rootDir>/tests/teardown.ts',
-	// To disable Qase integration, remove this line or comment it out
-	setupFilesAfterEnv: ['<rootDir>/tests/setup-qase.ts'],
 	verbose: false,
 	silent: false,
 	reporters: [
@@ -35,8 +49,11 @@ export default {
 							mode: 'testops',
 							testops: {
 								api: { token: process.env.QASE_TESTOPS_JEST_API_TOKEN },
-								project: 'RC',
-								run: { complete: true },
+								project: process.env.QASE_PROJECT || 'RC',
+								run: {
+									title: qaseRunTitle(),
+									complete: true,
+								},
 							},
 							debug: true,
 						},
