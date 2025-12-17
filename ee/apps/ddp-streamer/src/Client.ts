@@ -3,6 +3,7 @@ import type { IncomingMessage } from 'http';
 
 import { Presence } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
+import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
 
@@ -74,9 +75,17 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	private _seenPacket = false;
-
-	private heartbeatInterval: NodeJS.Timeout | undefined;
+	private updatePresence = throttle(
+		() => {
+			if (this.userId) {
+				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
+					console.error('Error updating connection presence:', err);
+				});
+			}
+		},
+		TIMEOUT,
+		{ leading: true, trailing: false },
+	);
 
 	constructor(
 		public ws: WebSocket,
@@ -96,14 +105,12 @@ export class Client extends EventEmitter {
 		};
 
 		this.renewTimeout(TIMEOUT / 1000);
-		this.startHeartbeat();
 		this.ws.on('message', this.handler);
 		this.ws.on('close', (...args) => {
 			server.emit(DDP_EVENTS.DISCONNECTED, this);
 			this.emit('close', ...args);
 			this.subscriptions.clear();
 			clearTimeout(this.timeout);
-			this.stopHeartbeat();
 		});
 
 		this.ws.on('error', (err) => {
@@ -129,23 +136,6 @@ export class Client extends EventEmitter {
 		this.send(SERVER_ID);
 
 		clientMap.set(ws, this);
-	}
-
-	private stopHeartbeat() {
-		if (this.heartbeatInterval) {
-			clearInterval(this.heartbeatInterval);
-			this.heartbeatInterval = undefined;
-		}
-	}
-
-	private startHeartbeat() {
-		this.heartbeatInterval = setInterval(() => {
-			if (!this.userId) {
-				return;
-			}
-
-			this._seenPacket = false;
-		}, TIMEOUT);
 	}
 
 	greeting(): void {
@@ -203,21 +193,6 @@ export class Client extends EventEmitter {
 		this.ws.close(WS_ERRORS.TIMEOUT, WS_ERRORS_MESSAGES.TIMEOUT);
 	};
 
-	private messageReceived = (): void => {
-		if (!this.userId) {
-			this._seenPacket = true;
-			return;
-		}
-
-		if (this._seenPacket === false) {
-			void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-				console.error('Error updating connection presence after heartbeat:', err);
-			});
-		}
-
-		this._seenPacket = true;
-	};
-
 	ping(id?: string): void {
 		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
@@ -239,7 +214,7 @@ export class Client extends EventEmitter {
 	handler = async (payload: WebSocket.Data, isBinary: boolean): Promise<void> => {
 		try {
 			const packet = server.parse(payload, isBinary);
-			this.messageReceived();
+			this.updatePresence();
 			this.emit('message', packet);
 			if (this.wait) {
 				return new Promise((resolve) => this.once(DDP_EVENTS.LOGGED, () => resolve(this.process(packet.msg, packet))));
