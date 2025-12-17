@@ -3,7 +3,7 @@ import type { IMessageRaw } from '../../definition/messages';
 import type { IRoom, IRoomRaw } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { RoomBridge } from '../bridges';
-import { type GetMessagesOptions, type GetRoomsOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
+import { type GetMessagesOptions, type GetRoomsFilters, type GetRoomsOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
 	constructor(
@@ -46,35 +46,18 @@ export class RoomRead implements IRoomRead {
 		return this.roomBridge.doGetMembers(roomId, this.appId);
 	}
 
-	public getAllRooms(options: GetRoomsOptions = {}): Promise<Array<IRoomRaw>> {
-		const limit = options.limit ?? 100;
-
+	public getAllRooms(filters: GetRoomsFilters = {}, { limit = 100, skip = 0 }: GetRoomsOptions = {}): Promise<Array<IRoomRaw> | undefined> {
 		if (!Number.isFinite(limit) || limit <= 0 || limit > 100) {
 			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${limit}`);
 		}
 
-		if (typeof options.skip !== 'undefined' && (!Number.isFinite(options.skip) || options.skip < 0)) {
-			throw new Error(`Invalid skip provided. Expected number >= 0, got ${options.skip}`);
-		}
-
-		if (options.onlyDiscussions && options.includeDiscussions === false) {
-			throw new Error('Invalid options: onlyDiscussions cannot be used with includeDiscussions set to false');
-		}
-
-		if (options.onlyTeamMain && options.includeTeamMain === false) {
-			throw new Error('Invalid options: onlyTeamMain cannot be used with includeTeamMain set to false');
-		}
-
-		if (options.onlyDiscussions && options.onlyTeamMain) {
-			throw new Error('Invalid options: onlyDiscussions and onlyTeamMain are mutually exclusive');
+		if (!Number.isFinite(skip) || skip < 0) {
+			throw new Error(`Invalid skip provided. Expected number >= 0, got ${skip}`);
 		}
 
 		return this.roomBridge.doGetAllRooms(
-			{
-				...options,
-				limit,
-				skip: options.skip ?? 0,
-			},
+			filters,
+			{ limit, skip },
 			this.appId,
 		);
 	}

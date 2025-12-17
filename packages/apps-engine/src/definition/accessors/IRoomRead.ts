@@ -1,4 +1,4 @@
-import type { GetMessagesOptions, GetRoomsOptions } from '../../server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '../../server/bridges/RoomBridge';
 import type { IMessageRaw } from '../messages/index';
 import type { IRoom, IRoomRaw } from '../rooms/index';
 import type { IUser } from '../users/index';
@@ -62,17 +62,11 @@ export interface IRoomRead {
 	getMembers(roomId: string): Promise<Array<IUser>>;
 
 	/**
-	 * Retrieves rooms in the workspace, optionally filtered by type and metadata flags.
+	 * Retrieves rooms in the workspace, optionally filtered by type and whether they are discussions or part of teams.
 	 *
-	 * @param options Supported filters:
-	 *  - types?: RoomType[] (channel, private, direct, livechat)
-	 *  - includeDiscussions?: boolean | onlyDiscussions?: boolean (mutually exclusive)
-	 *  - includeTeamMain?: boolean | onlyTeamMain?: boolean (mutually exclusive)
-	 *  - limit?: number (1-100, defaults to 100)
-	 *  - skip?: number (>= 0, defaults to 0)
-	 * @returns a list of raw rooms
+	 * @returns a list of raw rooms, or undefined if the app does not have the permission to view all rooms
 	 */
-	getAllRooms(options?: GetRoomsOptions): Promise<Array<IRoomRaw>>;
+	getAllRooms(filters?: GetRoomsFilters, options?: GetRoomsOptions): Promise<Array<IRoomRaw> | undefined>;
 
 	/**
 	 * Gets a direct room with all usernames

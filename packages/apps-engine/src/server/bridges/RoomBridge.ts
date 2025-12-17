@@ -15,12 +15,31 @@ export type GetMessagesOptions = {
 	showThreadMessages: boolean;
 };
 
-export type GetRoomsOptions = {
+/**
+ * Filters for querying rooms in the system.
+ */
+export type GetRoomsFilters = {
+	/**
+	 * When specified, only rooms matching the provided types will be returned.
+	 */
 	types?: Array<RoomType>;
-	includeDiscussions?: boolean;
-	onlyDiscussions?: boolean;
-	includeTeamMain?: boolean;
-	onlyTeamMain?: boolean;
+	/**
+	 * Filter to include or exclude discussion rooms.
+	 *
+	 * When true, discussions are included in the result set.
+	 * When false, discussion rooms are excluded from the result set.
+	 */
+	discussions?: boolean;
+	/**
+	 * Filter to include or exclude team main rooms.
+	 *
+	 * When true, team main rooms are included in the result set.
+	 * When false, team main rooms are excluded from the result set.
+	 */
+	teams?: boolean;
+};
+
+export type GetRoomsOptions = {
 	limit?: number;
 	skip?: number;
 };
@@ -68,9 +87,9 @@ export abstract class RoomBridge extends BaseBridge {
 		}
 	}
 
-	public async doGetAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+	public async doGetAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw> | undefined> {
 		if (this.hasViewAllRoomsPermission(appId)) {
-			return this.getAllRooms(options, appId);
+			return this.getAllRooms(filters, options, appId);
 		}
 	}
 
@@ -154,7 +173,7 @@ export abstract class RoomBridge extends BaseBridge {
 
 	protected abstract getMembers(roomId: string, appId: string): Promise<Array<IUser>>;
 
-	protected abstract getAllRooms(options: GetRoomsOptions, appId: string): Promise<Array<IRoomRaw>>;
+	protected abstract getAllRooms(filter: GetRoomsFilters, options: GetRoomsOptions, appId: string): Promise<Array<IRoomRaw>>;
 
 	protected abstract update(room: IRoom, members: Array<string>, appId: string): Promise<void>;
 

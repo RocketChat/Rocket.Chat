@@ -3,7 +3,7 @@ import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
@@ -185,7 +185,7 @@ export class AppRoomBridge extends RoomBridge {
 		return promises as Promise<IUser[]>;
 	}
 
-	protected async getAllRooms(options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+	protected async getAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
 		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
 
 		const { limit = 100, skip = 0 } = options || {};
@@ -197,13 +197,7 @@ export class AppRoomBridge extends RoomBridge {
 			projection: rawRoomProjection,
 		};
 
-		const queryOptions = {
-			types: options.types?.map((type) => type as ICoreRoom['t']),
-			includeDiscussions: options.includeDiscussions,
-			onlyDiscussions: options.onlyDiscussions,
-			includeTeamMain: options.includeTeamMain,
-			onlyTeamMain: options.onlyTeamMain,
-		};
+		const { types = [], discussions, teams } = filters;
 
 		const rooms: IRoomRaw[] = [];
 
@@ -212,7 +206,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Room converter not found');
 		}
 
-		for await (const room of Rooms.findByTypesAndFlags(queryOptions, findOptions)) {
+		for await (const room of Rooms.findByTypes(types, discussions, teams, findOptions)) {
 			const converted = await roomConverter.convertRoomRaw(room);
 			if (converted) {
 				rooms.push(converted);
