@@ -65,10 +65,6 @@ export class OmnichannelChats extends OmnichannelAdministration {
 		return this.page.locator(`td >> text="${contactName}"`);
 	}
 
-	get inputGuest(): Locator {
-		return this.page.locator('[data-qa="current-chats-guest"]');
-	}
-
 	get inputServedBy(): Locator {
 		return this.page.locator('[data-qa="autocomplete-agent"] input');
 	}

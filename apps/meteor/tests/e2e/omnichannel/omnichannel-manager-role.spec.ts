@@ -112,7 +112,7 @@ test.describe('OC - Manager Role', () => {
 		});
 	});
 
-	test('OC - Manager Role - Contact Center', async () => {
+	test('OC - Manager Role - Contact Center', async ({ page }) => {
 		await test.step('expect to be able to view all chats', async () => {
 			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
 			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
@@ -148,6 +148,7 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
+			await page.goto('/omnichannel');
 		});
 
 		await test.step('expect to be able to remove closed rooms', async () => {

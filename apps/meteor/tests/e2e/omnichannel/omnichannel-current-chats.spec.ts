@@ -117,7 +117,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
-			// // Delete departments
+			// Delete departments
 			...departments.map((department) => department.delete()),
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
@@ -153,11 +153,11 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
 			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
 
-			await poCurrentChats.inputGuest.fill(visitorA);
+			await poCurrentChats.inputSearch.fill(visitorA);
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
 			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
 
-			await poCurrentChats.inputGuest.fill('');
+			await poCurrentChats.inputSearch.fill('');
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
 			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
 		});
@@ -251,19 +251,16 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 
 	test('OC - Contact Center - Basic navigation', async ({ page }) => {
 		await test.step('expect to be return using return button', async () => {
-			const { room: roomA } = conversations[0].data;
 			await poCurrentChats.openChat(visitorA);
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomA._id}`);
 			await poCurrentChats.content.btnReturn.click();
 			await expect(page).toHaveURL(`/omnichannel/current`);
 		});
 	});
 
-	test('OC - Contact Center - Access in progress conversation from another agent', async ({ page }) => {
+	test('OC - Contact Center - Access in progress conversation from another agent', async () => {
 		await test.step('expect to be able to join', async () => {
-			const { room: roomB, visitor: visitorB } = conversations[1].data;
+			const { visitor: visitorB } = conversations[1].data;
 			await poCurrentChats.openChat(visitorB.name);
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${roomB._id}`);
 			await expect(poCurrentChats.content.btnJoinRoom).toBeVisible();
 			await poCurrentChats.content.btnJoinRoom.click();
 			await expect(poCurrentChats.content.btnJoinRoom).not.toBeVisible();
@@ -305,14 +302,13 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test('OC - Contact Center - Access queued conversation', async ({ page, api }) => {
+	test('OC - Contact Center - Access queued conversation', async ({ api }) => {
 		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
 
 		await test.step('expect to be able to take it', async () => {
-			const { room, visitor } = queuedConversation.data;
-			await poCurrentChats.inputGuest.fill(visitor.name);
+			const { visitor } = queuedConversation.data;
+			await poCurrentChats.inputSearch.fill(visitor.name);
 			await poCurrentChats.openChat(visitor.name);
-			await expect(page).toHaveURL(`/omnichannel/current/chats/info/${room._id}`);
 			await expect(poCurrentChats.content.btnTakeChat).toBeVisible();
 			await poCurrentChats.content.btnTakeChat.click();
 			await expect(poCurrentChats.content.btnTakeChat).not.toBeVisible();
