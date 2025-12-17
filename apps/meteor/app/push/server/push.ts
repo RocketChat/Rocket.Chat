@@ -496,7 +496,7 @@ class PushClass {
 				msg: 'Push notification payload size exceeds 4KB limit. Notification will not be sent.',
 			});
 
-			return; // Do not send the notification
+			return;
 		}
 
 		try {
