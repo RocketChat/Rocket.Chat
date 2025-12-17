@@ -149,6 +149,8 @@ exports[`renders Default without crashing 1`] = `
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
+                  data-qa="create-channel-users-autocomplete"
+                  data-qa-type="user-auto-complete-input"
                   id=":r7:"
                 >
                   <div
@@ -171,7 +173,7 @@ exports[`renders Default without crashing 1`] = `
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
                     >
                       
                     </i>
@@ -546,6 +548,8 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
+                  data-qa="create-channel-users-autocomplete"
+                  data-qa-type="user-auto-complete-input"
                   id=":rh:"
                 >
                   <div
@@ -568,7 +572,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
                     >
                       
                     </i>
