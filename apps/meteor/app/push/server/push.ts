@@ -485,7 +485,7 @@ class PushClass {
 
 		// Truncate notification.text to 150 characters to keep the payload size small.
 		if (notification.text && notification.text.length > MESSAGE_BODY_LIMIT) {
-			notification.text = notification.text.slice(0, MESSAGE_BODY_LIMIT);
+			notification.text = `${notification.text.slice(0, MESSAGE_BODY_LIMIT - 3)}...`;
 		}
 
 		try {
