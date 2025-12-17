@@ -1,4 +1,4 @@
-import { Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Room } from '@rocket.chat/core-services';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -232,7 +232,7 @@ async function handleLeave({
 
 	await Room.performUserRemoval(room, leavingUser);
 
-	// TODO check if there are no pending invites to the room, and if so, delete the room
+	await FederationMatrix.deleteOnlyFederatedRoom(room._id);
 }
 
 export function member() {
