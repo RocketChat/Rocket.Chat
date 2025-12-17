@@ -8851,7 +8851,7 @@ __metadata:
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
     "@rocket.chat/eslint-config": "workspace:~"
-    "@swc/core": "npm:1.13.19"
+    "@swc/core": "npm:1.15.3"
     "@swc/jest": "npm:~0.2.39"
     "@testing-library/jest-dom": "npm:~6.8.0"
     "@types/identity-obj-proxy": "npm:^3.0.2"
@@ -12253,13 +12253,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-darwin-arm64@npm:1.13.19"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "@swc/core-darwin-arm64@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-darwin-arm64@npm:1.15.3"
@@ -12270,13 +12263,6 @@ __metadata:
 "@swc/core-darwin-x64@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-darwin-x64@npm:1.12.4"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@swc/core-darwin-x64@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-darwin-x64@npm:1.13.19"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -12295,13 +12281,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.13.19"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
 "@swc/core-linux-arm-gnueabihf@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-linux-arm-gnueabihf@npm:1.15.3"
@@ -12312,13 +12291,6 @@ __metadata:
 "@swc/core-linux-arm64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-arm64-gnu@npm:1.12.4"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-arm64-gnu@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.13.19"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -12337,13 +12309,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-linux-arm64-musl@npm:1.13.19"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
 "@swc/core-linux-arm64-musl@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-linux-arm64-musl@npm:1.15.3"
@@ -12354,13 +12319,6 @@ __metadata:
 "@swc/core-linux-x64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-x64-gnu@npm:1.12.4"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-x64-gnu@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-linux-x64-gnu@npm:1.13.19"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -12379,13 +12337,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-linux-x64-musl@npm:1.13.19"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
 "@swc/core-linux-x64-musl@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-linux-x64-musl@npm:1.15.3"
@@ -12396,13 +12347,6 @@ __metadata:
 "@swc/core-win32-arm64-msvc@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-win32-arm64-msvc@npm:1.12.4"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@swc/core-win32-arm64-msvc@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.13.19"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -12421,13 +12365,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.13.19"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
 "@swc/core-win32-ia32-msvc@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-win32-ia32-msvc@npm:1.15.3"
@@ -12442,13 +12379,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core-win32-x64-msvc@npm:1.13.19"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@swc/core-win32-x64-msvc@npm:1.15.3":
   version: 1.15.3
   resolution: "@swc/core-win32-x64-msvc@npm:1.15.3"
@@ -12456,53 +12386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:1.13.19":
-  version: 1.13.19
-  resolution: "@swc/core@npm:1.13.19"
-  dependencies:
-    "@swc/core-darwin-arm64": "npm:1.13.19"
-    "@swc/core-darwin-x64": "npm:1.13.19"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.13.19"
-    "@swc/core-linux-arm64-gnu": "npm:1.13.19"
-    "@swc/core-linux-arm64-musl": "npm:1.13.19"
-    "@swc/core-linux-x64-gnu": "npm:1.13.19"
-    "@swc/core-linux-x64-musl": "npm:1.13.19"
-    "@swc/core-win32-arm64-msvc": "npm:1.13.19"
-    "@swc/core-win32-ia32-msvc": "npm:1.13.19"
-    "@swc/core-win32-x64-msvc": "npm:1.13.19"
-    "@swc/counter": "npm:^0.1.3"
-    "@swc/types": "npm:^0.1.25"
-  peerDependencies:
-    "@swc/helpers": ">=0.5.17"
-  dependenciesMeta:
-    "@swc/core-darwin-arm64":
-      optional: true
-    "@swc/core-darwin-x64":
-      optional: true
-    "@swc/core-linux-arm-gnueabihf":
-      optional: true
-    "@swc/core-linux-arm64-gnu":
-      optional: true
-    "@swc/core-linux-arm64-musl":
-      optional: true
-    "@swc/core-linux-x64-gnu":
-      optional: true
-    "@swc/core-linux-x64-musl":
-      optional: true
-    "@swc/core-win32-arm64-msvc":
-      optional: true
-    "@swc/core-win32-ia32-msvc":
-      optional: true
-    "@swc/core-win32-x64-msvc":
-      optional: true
-  peerDependenciesMeta:
-    "@swc/helpers":
-      optional: true
-  checksum: 10/07d0f72d8c82070a1ec2b439964780f0ba7aec61b17fa6518b1c372373bbe208ea9ce68f70f606d42df71a33149e4f704eabe07c6197e15d133e375546915f57
-  languageName: node
-  linkType: hard
-
-"@swc/core@npm:^1.10.8":
+"@swc/core@npm:1.15.3, @swc/core@npm:^1.10.8":
   version: 1.15.3
   resolution: "@swc/core@npm:1.15.3"
   dependencies:
