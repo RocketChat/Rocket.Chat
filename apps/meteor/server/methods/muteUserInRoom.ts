@@ -9,7 +9,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 declare module '@rocket.chat/ddp-client' {
