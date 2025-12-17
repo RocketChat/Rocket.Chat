@@ -13,7 +13,13 @@ const ContactContextualBar = () => {
 
 	const handleClose = () => omnichannelDirectoryRouter.navigate({ tab: 'contacts' });
 
-	const handleCancel = () => contactId && omnichannelDirectoryRouter.navigate({ tab: 'contacts', context: 'details', id: contactId });
+	const handleCancel = () => {
+		if (!contactId) {
+			return;
+		}
+
+		return omnichannelDirectoryRouter.navigate({ tab: 'contacts', context: 'details', id: contactId });
+	};
 
 	if (context === 'edit' && contactId) {
 		return <EditContactInfoWithData id={contactId} onClose={handleClose} onCancel={handleCancel} />;
