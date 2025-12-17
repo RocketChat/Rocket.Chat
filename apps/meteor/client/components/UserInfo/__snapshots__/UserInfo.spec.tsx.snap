@@ -38,7 +38,7 @@ exports[`renders Default without crashing 1`] = `
               tabindex="-1"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-iag4sp"
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
@@ -341,7 +341,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
               tabindex="-1"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-iag4sp"
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
@@ -704,7 +704,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
               tabindex="-1"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-iag4sp"
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"

@@ -1,7 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav, ToastMessages } from './fragments';
-import { OmnichannelRoomToolbar, OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
+import { HomeOmnichannelContent, OmnichannelSidenav } from './fragments';
+import { OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar } from './fragments/toolbar';
+import { HomeChannel } from './home-channel';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
 import { OmnichannelContacts } from './omnichannel-contacts-list';
@@ -12,15 +13,7 @@ import { OmnichannelRoomInfo } from './omnichannel-room-info';
 import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
 
-export class HomeOmnichannel {
-	readonly page: Page;
-
-	readonly content: HomeOmnichannelContent;
-
-	readonly sidenav: HomeSidenav;
-
-	readonly tabs: HomeFlextab;
-
+export class HomeOmnichannel extends HomeChannel {
 	readonly triggers: OmnichannelTriggers;
 
 	readonly omnisidenav: OmnichannelSidenav;
@@ -41,17 +34,14 @@ export class HomeOmnichannel {
 
 	readonly roomInfo: OmnichannelRoomInfo;
 
-	readonly roomToolbar: OmnichannelRoomToolbar;
-
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
 
-	readonly toastMessage: ToastMessages;
+	override readonly content: HomeOmnichannelContent;
+
+	override readonly roomToolbar: OmnichannelRoomToolbar;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.content = new HomeOmnichannelContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.tabs = new HomeFlextab(page);
+		super(page);
 		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidenav(page);
 		this.currentChats = new OmnichannelCurrentChats(page);
@@ -62,9 +52,9 @@ export class HomeOmnichannel {
 		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContacts(page);
 		this.roomInfo = new OmnichannelRoomInfo(page);
-		this.roomToolbar = new OmnichannelRoomToolbar(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
-		this.toastMessage = new ToastMessages(page);
+		this.content = new HomeOmnichannelContent(page);
+		this.roomToolbar = new OmnichannelRoomToolbar(page);
 	}
 
 	get btnContactInfo(): Locator {

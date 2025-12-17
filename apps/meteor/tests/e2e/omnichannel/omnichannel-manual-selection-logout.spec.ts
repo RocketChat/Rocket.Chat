@@ -31,7 +31,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		poOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/home');
 
-		await poOmnichannel.sidenav.logout();
+		await poOmnichannel.navbar.logout();
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').waitFor({ state: 'visible' });
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').fill('user1');
 		await poOmnichannel.page.locator('[name=password]').fill(DEFAULT_USER_CREDENTIALS.password);
@@ -55,7 +55,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		} = await createConversation(api);
 
 		await test.step('expect login and see the chat in queue after login', async () => {
-			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
+			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
 		});
 
@@ -70,7 +70,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 			await expect(poOmnichannel.content.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
 			await expect(poOmnichannel.content.btnReturnToQueue).toBeVisible();
-			await expect(poOmnichannel.sidenav.getSidebarItemByName(room.fname)).toBeVisible();
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
 	});
 });

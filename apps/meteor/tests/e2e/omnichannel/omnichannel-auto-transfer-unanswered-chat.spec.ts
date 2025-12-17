@@ -44,8 +44,8 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
-		await agent1.poHomeChannel.sidenav.switchOmnichannelStatus('online');
-		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
+		await agent1.poHomeChannel.navbar.switchOmnichannelStatus('online');
+		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
 		newVisitor = createFakeVisitor();
@@ -58,13 +58,13 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
-		await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent1.poHomeChannel.navbar.openChat(newVisitor.name);
 
-		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 
 		// wait for the chat to be closed automatically for 5 seconds
 		await agent1.page.waitForTimeout(7000);
 
-		await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent2.poHomeChannel.navbar.openChat(newVisitor.name);
 	});
 });
