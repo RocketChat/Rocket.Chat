@@ -3,7 +3,7 @@ import type { Locator, Page } from 'playwright-core';
 import { Modal } from './modal';
 
 export class AppsModal extends Modal {
-	protected readonly page: Page;
+	protected override readonly page: Page;
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Modal Example' }));

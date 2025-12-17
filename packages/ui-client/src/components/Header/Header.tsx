@@ -1,19 +1,35 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
-import { memo } from 'react';
 
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
-import { HeaderV1 } from '../HeaderV1';
-import { HeaderV2 } from '../HeaderV2';
+import HeaderDivider from './HeaderDivider';
 
-const Header = (props: ComponentPropsWithoutRef<typeof HeaderV1>) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<HeaderV1 {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<HeaderV2 {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
+type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
+
+const Header = (props: HeaderProps) => (
+	<Box
+		rcx-room-header
+		is='header'
+		color='default'
+		display='flex'
+		justifyContent='center'
+		flexDirection='column'
+		overflow='hidden'
+		flexShrink={0}
+	>
+		<Box
+			pi='x16'
+			height='x44'
+			display='flex'
+			flexGrow={1}
+			justifyContent='center'
+			alignItems='center'
+			overflow='hidden'
+			flexDirection='row'
+			bg='room'
+			{...props}
+		/>
+		<HeaderDivider />
+	</Box>
 );
 
-export default memo(Header);
+export default Header;

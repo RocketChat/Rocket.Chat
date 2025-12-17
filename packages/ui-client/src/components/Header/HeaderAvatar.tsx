@@ -1,19 +1,8 @@
-import type { ComponentProps } from 'react';
-import { memo } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import type { ComponentPropsWithoutRef } from 'react';
 
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
-import { HeaderV1Avatar } from '../HeaderV1';
-import { HeaderV2Avatar } from '../HeaderV2';
+type HeaderAvatarProps = ComponentPropsWithoutRef<typeof Box>;
 
-const HeaderAvatar = (props: ComponentProps<typeof HeaderV1Avatar>) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<HeaderV1Avatar {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<HeaderV2Avatar {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
-);
+const HeaderAvatar = (props: HeaderAvatarProps) => <Box mi={4} display='flex' alignItems='center' {...props} />;
 
-export default memo(HeaderAvatar);
+export default HeaderAvatar;
