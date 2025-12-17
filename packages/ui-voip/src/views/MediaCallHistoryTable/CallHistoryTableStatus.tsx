@@ -29,8 +29,7 @@ const getIcon = (status: CallHistoryItemState) => {
 		case 'ended':
 			return 'phone-off';
 		case 'not-answered':
-			return 'phone';
-		// return 'phone-question-mark'; TODO use the correct icon
+			return 'phone-question-mark';
 		case 'failed':
 		case 'error':
 			return 'phone-issue';
