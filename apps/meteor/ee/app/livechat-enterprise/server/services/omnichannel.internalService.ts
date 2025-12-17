@@ -14,7 +14,7 @@ import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/H
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';

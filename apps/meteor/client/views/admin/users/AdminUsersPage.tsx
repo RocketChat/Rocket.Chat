@@ -10,6 +10,9 @@ import {
 	ContextualbarDialog,
 	usePagination,
 	useSort,
+	Page,
+	PageHeader,
+	PageContent,
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -28,7 +31,6 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';

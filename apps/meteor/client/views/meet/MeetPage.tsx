@@ -1,12 +1,12 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useRouteParameter, useSearchParameter, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallPage from './CallPage';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import './styles.css';

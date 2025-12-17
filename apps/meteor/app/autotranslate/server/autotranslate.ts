@@ -13,8 +13,8 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
+import { callbacks } from '../../../server/lib/callbacks';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';

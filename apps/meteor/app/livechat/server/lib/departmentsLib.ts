@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
 import { livechatLogger } from './logger';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,

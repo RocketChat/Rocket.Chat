@@ -18,8 +18,8 @@ import { ldapKeyExists } from './ldapKeyExists';
 import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
+import { callbacks } from '../callbacks';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {

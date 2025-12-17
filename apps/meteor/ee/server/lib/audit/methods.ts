@@ -9,8 +9,8 @@ import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };

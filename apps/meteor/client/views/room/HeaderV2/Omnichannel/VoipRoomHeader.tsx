@@ -1,8 +1,8 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
+import { HeaderToolbar } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import { HeaderToolbar } from '../../../../components/Header';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';

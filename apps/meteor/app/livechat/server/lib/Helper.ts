@@ -31,7 +31,7 @@ import {
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
-import { removeEmpty } from '@rocket.chat/tools';
+import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -44,8 +44,7 @@ import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissi
 import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
-import { callbacks } from '../../../../lib/callbacks';
-import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';

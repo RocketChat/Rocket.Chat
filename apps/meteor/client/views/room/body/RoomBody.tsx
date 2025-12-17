@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { CustomScrollbars } from '@rocket.chat/ui-client';
+import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
@@ -14,7 +14,6 @@ import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgre
 import { MessageList } from '../MessageList';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';

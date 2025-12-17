@@ -27,7 +27,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';

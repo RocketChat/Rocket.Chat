@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -6,7 +7,6 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
-import { callbacks } from '../../../../lib/callbacks';
 import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
@@ -36,7 +36,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 	const setStatusMutation = useMutation({
 		mutationFn: async (status: UserStatusDescriptor) => {
 			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
-			void callbacks.run('userStatusManuallySet', status);
+			void clientCallbacks.run('userStatusManuallySet', status);
 			await fireGlobalStatusEvent.mutateAsync(status);
 		},
 	});

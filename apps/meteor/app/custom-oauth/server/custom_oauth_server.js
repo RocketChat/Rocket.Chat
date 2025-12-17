@@ -10,8 +10,8 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
+import { callbacks } from '../../../server/lib/callbacks';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';

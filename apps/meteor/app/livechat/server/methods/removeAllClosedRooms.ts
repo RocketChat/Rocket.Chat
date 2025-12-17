@@ -4,7 +4,7 @@ import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { removeOmnichannelRoom } from '../lib/rooms';

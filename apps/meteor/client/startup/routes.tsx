@@ -1,3 +1,4 @@
+import { SetupWizardRoute } from '@rocket.chat/ui-client';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
@@ -14,7 +15,6 @@ const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CM
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
 const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));

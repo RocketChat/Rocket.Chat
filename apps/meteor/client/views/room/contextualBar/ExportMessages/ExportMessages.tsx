@@ -15,6 +15,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { validateEmail } from '@rocket.chat/tools';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -32,7 +33,6 @@ import { useTranslation } from 'react-i18next';
 import { useDownloadExportMutation } from './useDownloadExportMutation';
 import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
-import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';

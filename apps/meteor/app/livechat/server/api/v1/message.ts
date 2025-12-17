@@ -11,7 +11,7 @@ import {
 	isGETLivechatMessagesParams,
 } from '@rocket.chat/rest-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { isWidget } from '../../../../api/server/helpers/isWidget';

@@ -66,7 +66,7 @@
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
 		"ts-node": "^10.9.2",
-		"turbo": "~2.6.1",
+		"turbo": "~2.6.3",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.11.0",

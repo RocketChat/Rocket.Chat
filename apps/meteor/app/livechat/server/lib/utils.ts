@@ -6,7 +6,7 @@ import type { Filter } from 'mongodb';
 
 import { RoutingManager } from './RoutingManager';
 import type { AKeyOf } from './localTypes';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { businessHourManager } from '../business-hour';

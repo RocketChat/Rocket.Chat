@@ -5,7 +5,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateCustomFields } from './validateCustomFields';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import {
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChangedByRoomId,

@@ -1,4 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import CallTab from './calls/CallTab';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import ChatsProvider from './providers/ChatsProvider';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DEFAULT_TAB = 'chats';
 

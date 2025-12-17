@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {

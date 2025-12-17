@@ -91,7 +91,6 @@ describe('useSafeRefCallback', () => {
 		expect(callback).toHaveBeenCalledTimes(4);
 		expect(callback.mock.calls[3][0]).toBe(null);
 
-		console.log(cleanup.mock.calls);
 		expect(cleanup).toHaveBeenCalledTimes(3);
 
 		expect(callback2).toHaveBeenCalledTimes(1);

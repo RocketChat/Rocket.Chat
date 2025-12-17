@@ -1,13 +1,13 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
 

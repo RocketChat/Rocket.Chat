@@ -1,6 +1,7 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -10,7 +11,6 @@ import BusinessHoursForm from './BusinessHoursForm';
 import { defaultWorkHours } from './mapBusinessHoursForm';
 import { useIsSingleBusinessHours } from './useIsSingleBusinessHours';
 import { useRemoveBusinessHour } from './useRemoveBusinessHour';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | undefined) => ({
 	name: businessHourData?.name || '',

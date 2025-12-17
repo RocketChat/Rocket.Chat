@@ -1,10 +1,9 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useButtonPattern, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle, HeaderTitle, HeaderTitleButton } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
-import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
 
 type RoomTitleProps = { room: IRoom };
 

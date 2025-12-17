@@ -1,10 +1,19 @@
-import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
+import { memo } from 'react';
 
-export type HeaderContentRowProps = ComponentPropsWithoutRef<typeof Box>;
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1ContentRow } from '../HeaderV1';
+import { HeaderV2ContentRow } from '../HeaderV2';
 
-const HeaderContentRow = (props: HeaderContentRowProps) => (
-	<Box alignItems='center' flexShrink={1} flexGrow={1} display='flex' {...props} />
+const HeaderContentRow = (props: ComponentPropsWithoutRef<typeof HeaderV1ContentRow>) => (
+	<FeaturePreview feature='newNavigation'>
+		<FeaturePreviewOff>
+			<HeaderV1ContentRow {...props} />
+		</FeaturePreviewOff>
+		<FeaturePreviewOn>
+			<HeaderV2ContentRow {...props} />
+		</FeaturePreviewOn>
+	</FeaturePreview>
 );
 
-export default HeaderContentRow;
+export default memo(HeaderContentRow);

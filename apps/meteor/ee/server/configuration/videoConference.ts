@@ -5,7 +5,7 @@ import { License } from '@rocket.chat/license';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { addSettings } from '../settings/video-conference';
 

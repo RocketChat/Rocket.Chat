@@ -5,7 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';

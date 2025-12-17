@@ -5,8 +5,8 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { beforeLeaveRoomCallback } from '../../../../server/lib/callbacks/beforeLeaveRoomCallback';
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 

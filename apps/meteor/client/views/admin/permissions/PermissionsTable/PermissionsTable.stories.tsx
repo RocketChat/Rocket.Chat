@@ -1,10 +1,10 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { Margins } from '@rocket.chat/fuselage';
+import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import PermissionsTable from './PermissionsTable';
 import { createMockedPagination } from '../../../../../tests/mocks/data';
-import { PageContent } from '../../../../components/Page';
 
 export default {
 	component: PermissionsTable,

@@ -6,8 +6,8 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';

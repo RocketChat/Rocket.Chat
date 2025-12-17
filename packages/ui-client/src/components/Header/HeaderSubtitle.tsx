@@ -1,8 +1,19 @@
-import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
+import { memo } from 'react';
 
-export type HeaderSubtitleProps = ComponentPropsWithoutRef<typeof Box>;
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1Subtitle } from '../HeaderV1';
+import { HeaderV2Subtitle } from '../HeaderV2';
 
-const HeaderSubtitle = (props: HeaderSubtitleProps) => <Box color='hint' fontScale='p2' withTruncatedText {...props} />;
+const HeaderSubtitle = (props: ComponentPropsWithoutRef<typeof HeaderV1Subtitle>) => (
+	<FeaturePreview feature='newNavigation'>
+		<FeaturePreviewOff>
+			<HeaderV1Subtitle {...props} />
+		</FeaturePreviewOff>
+		<FeaturePreviewOn>
+			<HeaderV2Subtitle {...props} />
+		</FeaturePreviewOn>
+	</FeaturePreview>
+);
 
-export default HeaderSubtitle;
+export default memo(HeaderSubtitle);
