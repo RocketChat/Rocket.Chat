@@ -67,13 +67,11 @@ test.describe.serial('Global Search', () => {
 		await poHomeChannel.sidenav.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
-		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true, timeout: 10000 }); // fill partial text to match search
+		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); // fill partial text to match search
 
 		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
-		await expect(message).toBeVisible();
 		await message.hover();
-		const jumpToMessageButton = message.getByTitle('Jump to message');
-		await expect(jumpToMessageButton).toBeVisible();
+		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
 		await jumpToMessageButton.click();
 
 		await expect(page.locator('header').getByRole('button').filter({ hasText: targetChannel.name })).toBeVisible(); // match channel name in room header
