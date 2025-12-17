@@ -7,7 +7,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
       class="rcx-box rcx-box--full rcx-css-1kmfepv"
     >
       <div
-        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-8umsxh"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-wuv6pi"
       >
         <span
           data-focus-scope-start="true"
@@ -15,12 +15,12 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
         />
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-20qf5w"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-ftwpdg"
+            class="rcx-box rcx-box--full rcx-css-zsa0ng"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1sl6k6j"
@@ -118,12 +118,12 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                       </label>
                     </div>
                     <span
-                      class="rcx-box rcx-box--full rcx-css-uyvtjh"
+                      class="rcx-box rcx-box--full rcx-css-11g6st8"
                       id="react-aria-:r8:"
                     />
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
                     >
                       
                     </i>
@@ -135,7 +135,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
               class="rcx-box rcx-box--full rcx-css-om2mbq"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
               >
                 <div
                   data-testid="virtuoso-scroller"
