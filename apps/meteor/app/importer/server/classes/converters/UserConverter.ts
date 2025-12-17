@@ -7,7 +7,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
-import { callbacks as systemCallbacks } from '../../../../../lib/callbacks';
+import { callbacks as systemCallbacks } from '../../../../../server/lib/callbacks';
 import { addUserToDefaultChannels } from '../../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../../lib/server/functions/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../../lib/server/functions/saveUserIdentity';

@@ -55,7 +55,7 @@ const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/s
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
 	'meteor/check': { check: checkMock },
-	'../../../../lib/callbacks': {
+	'../../../../server/lib/callbacks': {
 		callbacks: {
 			run: sinon.stub(),
 		},
