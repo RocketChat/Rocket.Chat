@@ -20,19 +20,19 @@ exports[`renders Default without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
               >
                 
               </i>
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Members
@@ -40,7 +40,7 @@ exports[`renders Default without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-137qgp8"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -231,19 +231,19 @@ exports[`renders Loading without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
               >
                 
               </i>
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Members
@@ -251,7 +251,7 @@ exports[`renders Loading without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-137qgp8"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -414,19 +414,19 @@ exports[`renders WithABACRoom without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
               >
                 
               </i>
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Members
@@ -434,7 +434,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-137qgp8"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -625,19 +625,19 @@ exports[`renders WithInvitedMember without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
               >
                 
               </i>
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Members
@@ -645,7 +645,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-137qgp8"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"

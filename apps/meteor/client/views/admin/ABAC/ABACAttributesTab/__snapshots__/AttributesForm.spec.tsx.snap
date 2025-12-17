@@ -27,7 +27,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
             tabindex="-1"
           >
             <form
-              class="rcx-box rcx-box--full rcx-css-iag4sp"
+              class="rcx-box rcx-box--full rcx-css-zg7o7h"
               id=":r0:"
             >
               <div
@@ -195,7 +195,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
             tabindex="-1"
           >
             <form
-              class="rcx-box rcx-box--full rcx-css-iag4sp"
+              class="rcx-box rcx-box--full rcx-css-zg7o7h"
               id=":r3:"
             >
               <div
