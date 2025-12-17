@@ -560,11 +560,38 @@ const waitForRoomEvent = async (
 						{ delayMs: 100 },
 					);
 				});
-				it.todo('should update the display the name if the inviter from Synapse leaves the group DM');
+
+				it('should have a correct roomsCount as 3 after first user accept the invitation', async () => {
+					const roomInfo = await getRoomInfo(rcRoom1._id, rcUserConfig1);
+
+					expect(roomInfo).toHaveProperty('room');
+					expect(roomInfo.room).toHaveProperty('usersCount', 3);
+				});
+
+				it('should update the display name if the inviter from Synapse leaves the group DM', async () => {
+					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
+
+					await retry(
+						'this is an async operation, so we need to wait for the event to be processed',
+						async () => {
+							const sub = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials);
+
+							expect(sub).not.toHaveProperty('status');
+							expect(sub).toHaveProperty('name', userDm2);
+							expect(sub).toHaveProperty('fname', userDm2Name);
+						},
+						{ delayMs: 100 },
+					);
+				});
+
+				it('should have a correct roomsCount as 2 after user leaves', async () => {
+					const roomInfo = await getRoomInfo(rcRoom1._id, rcUserConfig1);
+
+					expect(roomInfo).toHaveProperty('room');
+					expect(roomInfo.room).toHaveProperty('usersCount', 2);
+				});
 
 				it.todo('should respect max users allowed in a group DM when adding users');
-				it.todo('should update roomsCount after first user accept the invitation');
-				it.todo('should not update last message when third user accepts the invitation');
 			});
 			describe('Permission validations', () => {
 				it.todo('should allow a user to add another user to the group DM');
