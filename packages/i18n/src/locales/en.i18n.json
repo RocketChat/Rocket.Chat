@@ -6379,6 +6379,7 @@
   "error-room-is-not-closed": "Room is not closed",
   "error-room-not-on-hold": "Error! Room is not On Hold",
   "error-room-onHold": "Error! Room is On Hold",
+  "error-room-is-abac-managed": "This room is ABAC managed and new users cannot be added",
   "error-adding-monitor": "Error adding monitor",
   "error-saving-sla": "An error ocurred while saving the SLA",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",
