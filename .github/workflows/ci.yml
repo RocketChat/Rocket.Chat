@@ -657,7 +657,10 @@ jobs:
           ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
           QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
-        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+        run: yarn test:integration --image "${ROCKETCHAT_IMAGE} --keep-running"
+      - name: Show server logs if federation integration tests failed
+        if: failure()
+        run: yarn test:integration --logs
 
   report-coverage:
     name: 📊 Report Coverage

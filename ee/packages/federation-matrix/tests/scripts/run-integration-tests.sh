@@ -36,8 +36,14 @@ INTERRUPTED=false
 PROFILE_PREFIX="local"  # Default to local build
 NO_TEST=false
 
+LOGS=false
+
 while [[ $# -gt 0 ]]; do
     case $1 in
+        --logs)
+            LOGS=true
+            shift
+            ;;
         --keep-running)
             KEEP_RUNNING=true
             shift
@@ -102,16 +108,8 @@ log_error() {
     echo -e "${RED}❌ [$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
-# Cleanup function
-cleanup() {
-    # Show container logs if tests failed
-    if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
-        echo ""
-        echo "=========================================="
-        echo "CONTAINER LOGS (Test Failed)"
-        echo "=========================================="
+logs_containers() {
 
-        echo ""
         echo "ROCKET.CHAT (rc1) LOGS:"
         echo "----------------------------------------"
         if docker ps -q -f name=rc1 | grep -q .; then
@@ -130,6 +128,18 @@ cleanup() {
         fi
 
         echo ""
+
+}
+
+# Cleanup function
+cleanup() {
+    # Show container logs if tests failed
+    if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
+        echo ""
+        echo "=========================================="
+        echo "CONTAINER LOGS (Test Failed)"
+        echo "=========================================="
+        logs_containers();
         echo "=========================================="
     fi
 
@@ -325,7 +335,11 @@ if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; the
 fi
 
 # Run the end-to-end tests
-if [ "$NO_TEST" = false ]; then
+
+if [ "$LOGS" = true ]; then
+    logs_containers();
+    exit 0
+elif [ "$NO_TEST" = false ]; then
     log_info "Running end-to-end tests..."
     cd "$PACKAGE_ROOT"
 
