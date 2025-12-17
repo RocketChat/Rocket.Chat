@@ -3,13 +3,13 @@ import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { z } from 'zod';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../../lib/errors/CloudWorkspaceLicenseError';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
 const workspaceLicensePayloadSchema = z.object({
 	version: z.number(),

@@ -5,7 +5,7 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { beforeAddUsersToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
+import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
@@ -52,7 +52,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// Can't add to direct room ever
+	// TODO: Can't add to direct room ever, unless it's a federated room
 	if (room.t === 'd') {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',

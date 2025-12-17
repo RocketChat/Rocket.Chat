@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
         id=":r0:"
       >
         <header
@@ -166,7 +166,7 @@ exports[`renders Default without crashing 1`] = `
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
                     >
                       
                     </i>
@@ -248,7 +248,7 @@ exports[`renders Default without crashing 1`] = `
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>
@@ -402,7 +402,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
         id=":ra:"
       >
         <header
@@ -558,7 +558,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
                     >
                       
                     </i>
@@ -640,7 +640,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>

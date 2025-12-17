@@ -1,7 +1,7 @@
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import QueueListTable from './QueueListTable';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const QueueListPage = () => {
 	const { t } = useTranslation();

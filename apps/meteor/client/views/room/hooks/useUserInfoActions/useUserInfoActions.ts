@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
@@ -18,7 +19,6 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
-import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
