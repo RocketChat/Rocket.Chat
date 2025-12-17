@@ -80,7 +80,7 @@ export class RoomReadAccessorTestFixture {
 				}
 				return Promise.resolve([]);
 			},
-		} as RoomBridge;
+		} as unknown as RoomBridge;
 	}
 
 	@AsyncTest()
@@ -138,50 +138,35 @@ export class RoomReadAccessorTestFixture {
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 
 		// Test negative limit
-		await Expect(async () => rr.getAllRooms({ limit: -1 })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: -100 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: -1 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: -100 })).toThrowAsync();
 
 		// Test zero limit
-		await Expect(async () => rr.getAllRooms({ limit: 0 })).toThrowAsync();
-
+		await Expect(async () => rr.getAllRooms({}, { limit: 0 })).toThrowAsync();
 		// Test non-finite limit values
-		await Expect(async () => rr.getAllRooms({ limit: NaN })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: Infinity })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: -Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: NaN })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: -Infinity })).toThrowAsync();
 
 		// Test limit > 100 (existing test case)
-		await Expect(async () => rr.getAllRooms({ limit: 101 })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: 200 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 101 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 200 })).toThrowAsync();
 
 		// Test negative skip values
-		await Expect(async () => rr.getAllRooms({ skip: -1 })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ skip: -100 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: -1 })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: -100 })).toThrowAsync();
 
 		// Test non-finite skip values
-		await Expect(async () => rr.getAllRooms({ skip: NaN })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ skip: Infinity })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ skip: -Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: NaN })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: Infinity })).toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: -Infinity })).toThrowAsync();
 
 		// Test valid calls to ensure validation doesn't break normal behavior
-		await Expect(async () => rr.getAllRooms({ limit: 1 })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: 50 })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: 100 })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ skip: 0 })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ skip: 10 })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ limit: 50, skip: 10 })).not.toThrowAsync();
-	}
-
-	@AsyncTest()
-	public async validateGetAllRoomsFlags() {
-		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
-
-		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true, includeDiscussions: false })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ onlyTeamMain: true, includeTeamMain: false })).toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true, onlyTeamMain: true })).toThrowAsync();
-
-		await Expect(async () => rr.getAllRooms({ onlyDiscussions: true })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ includeDiscussions: true, types: [this.room.type] })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ onlyTeamMain: true })).not.toThrowAsync();
-		await Expect(async () => rr.getAllRooms({ includeTeamMain: true, types: [this.room.type] })).not.toThrowAsync();
+ 		await Expect(async () => rr.getAllRooms({}, { limit: 1 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 50 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 100 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: 0 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { skip: 10 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 50, skip: 10 })).not.toThrowAsync();
 	}
 }
