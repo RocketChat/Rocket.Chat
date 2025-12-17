@@ -21,26 +21,26 @@ exports[`renders AppLogsItem without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-zsa0ng"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-x7bl3q rcx-css-g86psg"
+                class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-1yal9it"
               >
                 
               </i>
               <div
-                class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Filters
               </div>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -74,7 +74,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                 tabindex="-1"
               >
                 <form
-                  class="rcx-box rcx-box--full rcx-css-iag4sp"
+                  class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <div
                     class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
@@ -391,7 +391,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-m843eh"
+            class="rcx-box rcx-box--full rcx-css-f51umh"
           >
             <button
               aria-label="Clear_filters"

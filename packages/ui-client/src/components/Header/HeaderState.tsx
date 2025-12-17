@@ -1,19 +1,17 @@
-import type { ComponentPropsWithoutRef } from 'react';
-import { memo } from 'react';
+import { Icon, IconButton } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { AllHTMLAttributes, ComponentPropsWithoutRef, MouseEventHandler } from 'react';
 
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
-import { HeaderV1State } from '../HeaderV1';
-import { HeaderV2State } from '../HeaderV2';
+type HeaderStateProps =
+	| (Pick<ComponentPropsWithoutRef<typeof IconButton>, 'color' | 'title' | 'icon'> & {
+			onClick: MouseEventHandler;
+	  } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>)
+	| (Omit<ComponentPropsWithoutRef<typeof Icon>, 'name' | 'onClick'> & {
+			icon: IconName;
+			onClick?: undefined;
+	  });
 
-const HeaderState = (props: ComponentPropsWithoutRef<typeof HeaderV1State>) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<HeaderV1State {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<HeaderV2State {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
-);
+const HeaderState = (props: HeaderStateProps) =>
+	props.onClick ? <IconButton tiny mie={4} {...props} /> : <Icon size='x16' mie={8} name={props.icon} {...props} />;
 
-export default memo(HeaderState);
+export default HeaderState;

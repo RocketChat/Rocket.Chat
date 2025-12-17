@@ -21,7 +21,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('should display emoji picker properly', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.btnComposerEmoji.click();
 
 		await test.step('should display scroller', async () => {
@@ -36,7 +36,7 @@ test.describe.serial('emoji', () => {
 		});
 
 		await test.step('should pick and send grinning emoji', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.pickEmoji('grinning');
 			await page.keyboard.press('Enter');
 
@@ -45,7 +45,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect send emoji via text', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(':innocent:');
 		await page.keyboard.press('Enter');
 
@@ -53,7 +53,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect render special characters and numbers properly', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 
 		await poHomeChannel.content.sendMessage('® © ™ # *');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');
@@ -67,7 +67,7 @@ test.describe.serial('emoji', () => {
 		poAdminEmoji = new AdminEmoji(page);
 
 		await test.step('Add custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await poAdminEmoji.sidebar.linkEmoji.click();
 			await poAdminEmoji.btnNew.click();
 			await poAdminEmoji.addEmojiFlexTab.inputName.fill(emojiName);
@@ -78,7 +78,7 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.addEmojiFlexTab.save();
 			await poAdminEmoji.sidebar.close();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await poHomeChannel.content.sendMessage(`:${emojiName}:`);
 			await page.keyboard.press('Enter');
@@ -86,21 +86,22 @@ test.describe.serial('emoji', () => {
 		});
 
 		await test.step('Rename custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await poAdminEmoji.sidebar.linkEmoji.click();
 			await (await poAdminEmoji.findEmojiByName(emojiName)).click();
 			await poAdminEmoji.editEmojiFlexTab.inputName.fill(newEmojiName);
 			await poAdminEmoji.editEmojiFlexTab.save();
 			await poAdminEmoji.sidebar.close();
 
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
+
 			await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.content.lastUserMessage.getByTitle(`:${newEmojiName}:`)).toBeVisible();
 		});
 
 		await test.step('Delete custom emoji', async () => {
-			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeChannel.navbar.openManageMenuItem('Workspace');
 			await poAdminEmoji.sidebar.linkEmoji.click();
 			await poAdminEmoji.deleteEmoji(newEmojiName);
 			await expect(await poAdminEmoji.findEmojiByName(newEmojiName)).not.toBeVisible();

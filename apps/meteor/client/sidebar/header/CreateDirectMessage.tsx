@@ -26,6 +26,7 @@ import { goToRoomById } from '../../lib/utils/goToRoomById';
 const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const createDMFormId = useId();
 	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -55,9 +56,13 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	};
 
 	return (
-		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
+		<Modal
+			aria-labelledby={`${createDMFormId}-title`}
+			data-qa='create-direct-modal'
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+		>
 			<ModalHeader>
-				<ModalTitle>{t('Create_direct_message')}</ModalTitle>
+				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent mbe={2}>

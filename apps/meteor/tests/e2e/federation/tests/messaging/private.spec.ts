@@ -88,8 +88,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A');
@@ -100,8 +100,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server B');
@@ -134,9 +134,9 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
 					await poFederationChannelServer1.content.sendMessage('hello world from server A (creator)');
 
@@ -163,9 +163,9 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
 
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
@@ -193,9 +193,9 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
@@ -215,8 +215,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.sendMessage('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
 
@@ -232,8 +232,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.sendMessage('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
 
@@ -249,8 +249,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.sendAudioRecordedMessage();
 
@@ -269,8 +269,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.sendAudioRecordedMessage();
 
@@ -289,8 +289,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await page.reload();
 				await pageForServer2.reload();
 
@@ -311,8 +311,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await page.reload();
 				await pageForServer2.reload();
 
@@ -333,8 +333,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -347,8 +347,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -361,8 +361,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -382,8 +382,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -403,8 +403,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -417,8 +417,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -431,8 +431,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
 				await poFederationChannelServer1.content.messagePopUpItems
@@ -469,8 +469,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
 				await poFederationChannelServer2.content.messagePopUpItems
@@ -507,8 +507,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage(
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A, @all, @${usernameWithDomainFromServer2}`,
 				);
@@ -530,8 +530,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				const message = `Message for quote - ${Date.now()}`;
 
@@ -549,8 +549,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				const message = `Message for quote - ${Date.now()}`;
 
@@ -568,8 +568,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
@@ -595,8 +595,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer2.content.reactToMessage('slight_smile');
@@ -622,8 +622,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
@@ -692,8 +692,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer2.content.reactToMessage('slight_smile');
@@ -762,8 +762,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -783,8 +783,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server B');
 
@@ -804,8 +804,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -826,8 +826,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -848,8 +848,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				const message = 'message from Server B';
 				await poFederationChannelServer2.content.sendMessageUsingEnter(message);
@@ -859,7 +859,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.content.replyInDm('reply directly in DM from server A');
 
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.navbar.openChat(adminUsernameWithDomainFromServer1);
 
 				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
 				await expect(poFederationChannelServer2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
@@ -872,8 +872,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				const message = 'message from Server A';
 				await poFederationChannelServer1.content.sendMessageUsingEnter(message);
@@ -883,7 +883,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer2.content.replyInDm('reply directly in DM from server B');
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.navbar.openChat(usernameWithDomainFromServer2);
 
 				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
 				await expect(poFederationChannelServer2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
@@ -896,8 +896,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -917,8 +917,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -938,8 +938,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -957,8 +957,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -976,8 +976,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -995,8 +995,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [userFromServer2UsernameOnly]);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer2.navbar.openChat(groupName);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1012,7 +1012,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see the file list sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 
 				await expect(poFederationChannelServer1.roomToolbar.btnFiles).toBeVisible();
 			});
@@ -1020,7 +1020,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see the file list sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(poFederationChannelServer2.roomToolbar.btnFiles).toBeVisible();
 			});
@@ -1028,7 +1028,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see all the mentions sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemMentions).toBeVisible();
@@ -1037,7 +1037,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see all the mentions sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemMentions).toBeVisible();
@@ -1046,7 +1046,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see all the starred messages sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemStarredMessages).toBeVisible();
@@ -1055,7 +1055,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to see all the starred messages sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemStarredMessages).toBeVisible();
@@ -1064,7 +1064,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not to see the pinned messages sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
@@ -1073,7 +1073,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not to see the pinned messages sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemPinnedMessages).not.toBeVisible();
@@ -1082,7 +1082,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to prune messages sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer1.roomToolbar.menuItemPruneMessages).not.toBeVisible();
@@ -1091,7 +1091,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			test('expect to not be able to prune messages sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.roomToolbar.openMoreOptions();
 
 				await expect(poFederationChannelServer2.roomToolbar.menuItemPruneMessages).not.toBeVisible();

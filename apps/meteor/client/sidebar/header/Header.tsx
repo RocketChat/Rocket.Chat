@@ -1,5 +1,4 @@
-import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { SidebarSection } from '@rocket.chat/fuselage';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
@@ -20,45 +19,22 @@ const Header = (): ReactElement => {
 	const user = useUser();
 
 	return (
-		<FeaturePreview feature='newNavigation'>
-			<FeaturePreviewOff>
-				<Sidebar.TopBar.Section>
-					{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
-					<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
-						<Home title={t('Home')} />
-						<Search title={t('Search')} />
-						{user && (
-							<>
-								<Directory title={t('Directory')} />
-								<Sort title={t('Display')} />
-								<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
-								<Administration title={t('Administration')} />
-							</>
-						)}
-						{!user && <Login title={t('Login')} />}
-					</SidebarHeaderToolbar>
-				</Sidebar.TopBar.Section>
-			</FeaturePreviewOff>
-			<FeaturePreviewOn>
-				<SidebarSection>
-					{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
-					<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
-						<Home title={t('Home')} />
-						<Search title={t('Search')} />
-						{user && (
-							<>
-								<Directory title={t('Directory')} />
-								<Sort title={t('Display')} />
-								<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
-								<Administration title={t('Administration')} />
-							</>
-						)}
-						{!user && <Login title={t('Login')} />}
-					</SidebarHeaderToolbar>
-				</SidebarSection>
-				<SidebarDivider />
-			</FeaturePreviewOn>
-		</FeaturePreview>
+		<SidebarSection>
+			{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
+			<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
+				<Home title={t('Home')} />
+				<Search title={t('Search')} />
+				{user && (
+					<>
+						<Directory title={t('Directory')} />
+						<Sort title={t('Display')} />
+						<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
+						<Administration title={t('Administration')} />
+					</>
+				)}
+				{!user && <Login title={t('Login')} />}
+			</SidebarHeaderToolbar>
+		</SidebarSection>
 	);
 };
 

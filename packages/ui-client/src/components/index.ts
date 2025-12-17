@@ -8,8 +8,6 @@ export * from './PasswordVerifier/PasswordVerifier';
 export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
 export * as UserStatus from './UserStatus';
-export * from './HeaderV1';
-export * from './HeaderV2';
 export * from './Header';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview';

@@ -90,7 +90,7 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 	test('OC - SLA Policies [Sidebar] - Update conversation SLA Policy', async () => {
 		await test.step('expect to change room SLA policy to "Not urgent"', async () => {
 			await test.step('expect to open room and room info to be visible', async () => {
-				await poHomeChannel.sidenav.getSidebarItemByName(visitorA.name).click();
+				await poHomeChannel.sidebar.getSidebarItemByName(visitorA.name).click();
 				await expect(poRoomInfo.dialogRoomInfo).toBeVisible();
 			});
 
@@ -103,13 +103,14 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Not Urgent');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toBeVisible();
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '1');
 			});
 		});
 
 		await test.step('expect to change room SLA policy to "Urgent"', async () => {
 			await test.step('expect to open room and room info to be visible', async () => {
-				await poHomeChannel.sidenav.getSidebarItemByName(visitorB.name).click();
+				await poHomeChannel.sidebar.getSidebarItemByName(visitorB.name).click();
 				await expect(poRoomInfo.dialogRoomInfo).toBeVisible();
 			});
 
@@ -122,14 +123,14 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Urgent');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorB.name)).toHaveAttribute('data-index', '1');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '2');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorB.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '2');
 			});
 		});
 
 		await test.step('expect to change room SLA policy to "Very Urgent"', async () => {
 			await test.step('expect to open room and room info to be visible', async () => {
-				await poHomeChannel.sidenav.getSidebarItemByName(visitorC.name).click();
+				await poHomeChannel.sidebar.getSidebarItemByName(visitorC.name).click();
 				await expect(poRoomInfo.dialogRoomInfo).toBeVisible();
 			});
 
@@ -142,9 +143,9 @@ test.describe('OC - SLA Policies [Sidebar]', () => {
 
 			await test.step('expect SLA to have been updated in the room info and queue order to be correct', async () => {
 				await expect(poRoomInfo.getInfoByLabel('SLA Policy')).toHaveText('Very Urgent');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorC.name)).toHaveAttribute('data-index', '1');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorB.name)).toHaveAttribute('data-index', '2');
-				await expect(poHomeChannel.sidenav.getSidebarListItemByName(visitorA.name)).toHaveAttribute('data-index', '3');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorC.name)).toHaveAttribute('data-index', '1');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorB.name)).toHaveAttribute('data-index', '2');
+				await expect(poHomeChannel.sidebar.getSidebarListItem(visitorA.name)).toHaveAttribute('data-index', '3');
 			});
 		});
 	});
