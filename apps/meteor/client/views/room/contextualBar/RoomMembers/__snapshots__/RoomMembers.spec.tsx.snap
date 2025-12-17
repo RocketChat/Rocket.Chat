@@ -20,7 +20,7 @@ exports[`renders Default without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -40,7 +40,7 @@ exports[`renders Default without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-14bkbcs"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -231,7 +231,7 @@ exports[`renders Loading without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -251,7 +251,7 @@ exports[`renders Loading without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-14bkbcs"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
@@ -414,7 +414,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -434,7 +434,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-14bkbcs"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
           >
             <label
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"

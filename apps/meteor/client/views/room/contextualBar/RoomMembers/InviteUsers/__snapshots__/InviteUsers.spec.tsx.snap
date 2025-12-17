@@ -20,7 +20,7 @@ exports[`renders Default without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -218,7 +218,7 @@ exports[`renders InviteEdit without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -548,7 +548,7 @@ exports[`renders InviteError without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
@@ -729,7 +729,7 @@ exports[`renders InviteLoading without crashing 1`] = `
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-v8622k"
+            class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
