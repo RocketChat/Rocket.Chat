@@ -28,7 +28,7 @@ const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push'
 	},
 });
 
-describe.only('Push Notifications [PushClass]', () => {
+describe('Push Notifications [PushClass]', () => {
 	afterEach(() => {
 		clock.restore();
 		sinon.restore();
