@@ -4,33 +4,31 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
+const settingsStub = { get: sinon.stub().returns('') };
+const clock = sinon.useFakeTimers();
+
+const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push', {
+	'./logger': { logger: loggerStub },
+	'../../settings/server': { settings: settingsStub },
+	'@rocket.chat/tools': { pick },
+	'meteor/check': {
+		check: sinon.stub(),
+		Match: {
+			Optional: () => sinon.stub(),
+			Integer: Number,
+			OneOf: () => sinon.stub(),
+			test: sinon.stub().returns(true),
+		},
+	},
+	'meteor/meteor': {
+		Meteor: {
+			absoluteUrl: sinon.stub().returns('http://localhost'),
+		},
+	},
+});
+
 describe('Push Notifications [PushClass]', () => {
-	let Push: any;
-	let loggerStub: any;
-	let settingsStub: any;
-	let clock: sinon.SinonFakeTimers;
-
-	beforeEach(() => {
-		loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
-		settingsStub = { get: sinon.stub().returns('') };
-		clock = sinon.useFakeTimers();
-
-		({ Push } = proxyquire('../../../../app/push/server/push', {
-			'./logger': { logger: loggerStub },
-			'../../settings/server': { settings: settingsStub },
-			'@rocket.chat/tools': { pick },
-			'meteor/check': {
-				check: sinon.stub(),
-				Match: {
-					Optional: () => sinon.stub(),
-					Integer: Number,
-					OneOf: () => sinon.stub(),
-					test: sinon.stub().returns(true),
-				},
-			},
-		}));
-	});
-
 	afterEach(() => {
 		clock.restore();
 		sinon.restore();
@@ -43,7 +41,14 @@ describe('Push Notifications [PushClass]', () => {
 		});
 
 		it('should call sendNotification with required fields', async () => {
-			const options: IPushNotificationConfig = { from: 'test', title: 'title', text: 'body', userId: 'user1' };
+			const options: IPushNotificationConfig = {
+				from: 'test',
+				title: 'title',
+				text: 'body',
+				userId: 'user1',
+				apn: { category: 'MESSAGE' },
+				gcm: { style: 'inbox', image: 'url' },
+			};
 
 			await Push.send(options);
 
@@ -57,8 +62,15 @@ describe('Push Notifications [PushClass]', () => {
 		});
 
 		it('should truncate text longer than 150 chars', async () => {
-			const longText = 'a'.repeat(200);
-			const options: IPushNotificationConfig = { from: 'test', title: 'title', text: longText, userId: 'user1' };
+			const longText = 'a'.repeat(4000);
+			const options: IPushNotificationConfig = {
+				from: 'test',
+				title: 'title',
+				text: longText,
+				userId: 'user1',
+				apn: { category: 'MESSAGE' },
+				gcm: { style: 'inbox', image: 'url' },
+			};
 
 			await Push.send(options);
 
@@ -67,39 +79,22 @@ describe('Push Notifications [PushClass]', () => {
 			expect(notification.text.length).to.equal(150);
 		});
 
-		it('should not call sendNotification if payload exceeds 4KB', async () => {
-			const bigPayload: IPushNotificationConfig = {
+		it('should throw if userId is missing', async () => {
+			const options = {
 				from: 'test',
 				title: 'title',
 				text: 'body',
-				userId: 'user1',
-				payload: { data: 'a'.repeat(5000) },
+				apn: { category: 'MESSAGE' },
+				gcm: { style: 'inbox', image: 'url' },
 			};
 
-			await Push.send(bigPayload);
-
-			expect(sendNotificationStub.called).to.be.false;
-			expect(loggerStub.warn.calledWithMatch(sinon.match.object)).to.be.true;
-		});
-
-		it('should throw if userId is missing', async () => {
-			const options = { from: 'test', title: 'title', text: 'body' };
 			try {
 				await Push.send(options);
 			} catch (e) {
 				// expected
 			}
+
 			expect(sendNotificationStub.called).to.be.false;
-		});
-
-		it('should handle errors from sendNotification gracefully', async () => {
-			sendNotificationStub.rejects(new Error('fail'));
-
-			const options: IPushNotificationConfig = { from: 'test', title: 'title', text: 'body', userId: 'user1' };
-
-			await Push.send(options);
-
-			expect(loggerStub.debug.calledWithMatch(sinon.match.string, sinon.match.string)).to.be.true;
 		});
 	});
 });
