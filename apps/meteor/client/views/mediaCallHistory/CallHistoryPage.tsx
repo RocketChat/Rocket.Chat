@@ -1,0 +1,98 @@
+import { Pagination } from '@rocket.chat/fuselage';
+import { useSort, Page, PageHeader, PageContent, usePagination, GenericTableLoadingTable } from '@rocket.chat/ui-client';
+import { useEndpoint, useRouter, useUserCard } from '@rocket.chat/ui-contexts';
+import { MediaCallHistoryTable } from '@rocket.chat/ui-voip';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
+	switch (sortBy) {
+		case 'type':
+			return { direction: sortDirection === 'asc' ? 1 : -1 };
+		case 'status':
+			return { state: sortDirection === 'asc' ? 1 : -1 };
+		case 'timestamp':
+			return { ts: sortDirection === 'asc' ? 1 : -1 };
+		// Fix sort by contact
+		case 'contact':
+		default:
+			return { ts: -1 };
+	}
+};
+
+const CallHistoryPage = () => {
+	const { t } = useTranslation();
+	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp');
+
+	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
+	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const router = useRouter();
+
+	const { openUserCard } = useUserCard();
+	const onClickRow = useCallback(
+		(_id: string) => {
+			router.navigate(`/call-history/details/${_id}`);
+		},
+		[router],
+	);
+
+	const { data, isPending, error } = useQuery({
+		queryKey: ['call-history', 'list', sortProps.sortBy, sortProps.sortDirection, paginationProps.current, paginationProps.itemsPerPage],
+		queryFn: () => {
+			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
+			return getCallHistory({
+				count: paginationProps.itemsPerPage,
+				offset: paginationProps.current,
+				sort: JSON.stringify(sort),
+			});
+		},
+	});
+
+	console.log('data', data);
+
+	const tableData = useMemo(() => {
+		return data?.items.map((item) => {
+			if (item.external) {
+				return {
+					_id: item._id,
+					contact: item.contactExtension,
+					type: item.direction,
+					status: item.state,
+					timestamp: item.ts,
+					duration: item.duration,
+				};
+			}
+			return {
+				_id: item._id,
+				contact: item.contactId,
+				type: item.direction,
+				status: item.state,
+				timestamp: item.ts,
+				duration: item.duration,
+			};
+		});
+	}, [data]);
+	if (isPending) {
+		return (
+			<PageContent>
+				<GenericTableLoadingTable headerCells={5} />
+			</PageContent>
+		);
+	}
+	if (error) {
+		return <PageContent>Error: {error.message}</PageContent>;
+	}
+	return (
+		<Page>
+			<PageHeader title={t('Call_history')} />
+			<PageContent>
+				<MediaCallHistoryTable sort={sortProps} data={tableData ?? []} onClickRow={onClickRow} onClickUser={openUserCard} />
+				<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
+			</PageContent>
+		</Page>
+	);
+};
+
+export default CallHistoryPage;
