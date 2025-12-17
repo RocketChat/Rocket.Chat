@@ -9,7 +9,7 @@ import { getAppCount } from './lib/getAppCount';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {

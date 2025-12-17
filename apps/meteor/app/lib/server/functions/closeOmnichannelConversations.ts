@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { settings } from '../../../settings/server';
