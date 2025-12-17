@@ -7,12 +7,10 @@ import {
 	GenericTableHeader,
 	GenericTableBody,
 	GenericMenu,
-	// GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
 import { useLanguage } from '@rocket.chat/ui-contexts';
-// import { useUserCard } from '@rocket.chat/ui-contexts';
 import { intlFormatDistance } from 'date-fns';
-import { useCallback } from 'react';
+import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallHistoryTableDirection from './CallHistoryTableDirection';
@@ -28,25 +26,22 @@ type SortProps = {
 
 type MediaCallHistoryTableProps = {
 	sort: SortProps;
-	data: Array<{ contact: string; type: 'outbound' | 'inbound'; status: CallHistoryItemState; duration: number; timestamp: string }>;
+	data: Array<{
+		_id: string;
+		contact: string;
+		type: 'outbound' | 'inbound';
+		status: CallHistoryItemState;
+		duration: number;
+		timestamp: string;
+	}>;
+	onClickRow: (historyId: string) => void;
+	onClickUser: (e: UIEvent, userId: string) => void;
 };
 
-const MediaCallHistoryTable = ({ sort, data }: MediaCallHistoryTableProps) => {
+const MediaCallHistoryTable = ({ sort, data, onClickRow, onClickUser }: MediaCallHistoryTableProps) => {
 	const locale = useLanguage();
 	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort: onClickSort } = sort;
-	// const { openUserCard } = useUserCard();
-	const openContextualBar = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
-		e.preventDefault();
-		console.log('openContextualBar');
-	}, []);
-
-	const openUserCard = useCallback((e: React.MouseEvent<HTMLTableRowElement>) => {
-		e.preventDefault();
-		e.stopPropagation();
-		console.log('openUserCard');
-		// openUserCard(e, contact);
-	}, []);
 
 	return (
 		<GenericTable>
@@ -72,9 +67,9 @@ const MediaCallHistoryTable = ({ sort, data }: MediaCallHistoryTableProps) => {
 				<GenericTableHeaderCell key='menu' width={44} />
 			</GenericTableHeader>
 			<GenericTableBody>
-				{data.map(({ contact, type, status, duration, timestamp }) => (
-					<GenericTableRow key={contact} onClick={openContextualBar}>
-						<GenericTableCell onClick={openUserCard}>{contact}</GenericTableCell>
+				{data.map(({ _id, contact, type, status, duration, timestamp }) => (
+					<GenericTableRow key={_id} onClick={() => onClickRow(_id)} tabIndex={0} role='link' action>
+						<GenericTableCell onClick={(e) => onClickUser(e, contact)}>{contact}</GenericTableCell>
 						<GenericTableCell>
 							<CallHistoryTableDirection direction={type} />
 						</GenericTableCell>
