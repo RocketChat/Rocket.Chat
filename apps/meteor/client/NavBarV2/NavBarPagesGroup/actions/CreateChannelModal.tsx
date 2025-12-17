@@ -260,7 +260,13 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
 							}}
 							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
+								<UserAutoCompleteMultiple
+									id={addMembersId}
+									value={value}
+									onChange={onChange}
+									federated={federated}
+									placeholder={t('Add_people')}
+								/>
 							)}
 						/>
 						{errors.members && (

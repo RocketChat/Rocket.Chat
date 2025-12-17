@@ -32,8 +32,6 @@ export class HomeFlextabMembers {
 		await this.page.locator('role=button[name="Add"]').click();
 		await this.page.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
 		await this.page.getByRole('option', { name: username }).click();
-		// await this.page.locator('//label[contains(text(), "Choose users")]/..//input').fill(username);
-		// await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
 		await this.page.locator('role=button[name="Add users"]').click();
 	}
 

@@ -81,6 +81,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 										onChange={onChange}
 										value={value}
 										onBlur={onBlur}
+										federated
 										id={membersFieldId}
 										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
 										aria-required='true'
