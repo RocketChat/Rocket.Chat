@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
+import useViewRoomsAction from './useViewRoomsAction';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 export const useAttributeOptions = (attribute: { _id: string; key: string }): GenericMenuItemProps[] => {
@@ -18,6 +19,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 	const isAttributeUsed = useEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', { key: attribute.key });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isABACAvailable = useIsABACAvailable();
+	const viewRoomsAction = useViewRoomsAction();
 
 	const editAction = useEffectEvent(() => {
 		return router.navigate(
@@ -57,7 +59,10 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 					title={t('ABAC_Cannot_delete_attribute')}
 					confirmText={t('View_rooms')}
 					// TODO Route to rooms tab once implemented
-					onConfirm={() => setModal(null)}
+					onConfirm={() => {
+						viewRoomsAction(attribute.key);
+						setModal(null);
+					}}
 					onCancel={() => setModal(null)}
 				>
 					<Trans

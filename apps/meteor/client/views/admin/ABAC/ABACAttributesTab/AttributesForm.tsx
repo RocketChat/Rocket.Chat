@@ -17,6 +17,8 @@ import { useCallback, useId, useMemo, Fragment, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
+import useViewRoomsAction from '../hooks/useViewRoomsAction';
+
 export type AttributesFormFormData = {
 	name: string;
 	attributeValues: { value: string }[];
@@ -70,6 +72,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const valuesField = useId();
 
 	const [showDisclaimer, setShowDisclaimer] = useState<number[]>([]);
+	const viewRoomsAction = useViewRoomsAction();
 
 	const removeLockedAttribute = useEffectEvent(async (index: number) => {
 		const isInUse = await isAttributeUsed();
@@ -140,9 +143,15 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									<FieldError>
 										<Trans
 											i18nKey='ABAC_Cannot_delete_attribute_value_in_use'
-											values={{
-												goToRooms: (
-													<Box is='a' onClick={() => null}>
+											components={{
+												1: (
+													<Box
+														is='a'
+														onClick={(e) => {
+															e.preventDefault();
+															viewRoomsAction(getValues('name'));
+														}}
+													>
 														{t('ABAC_View_rooms')}
 													</Box>
 												),
