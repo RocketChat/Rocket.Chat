@@ -14,7 +14,7 @@ const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
 	return (
 		<>
 			<PaletteStyleTag theme={theme} tagId='app-error-palette' />
-			<Box display='flex' justifyContent='center' height='full' backgroundColor='surface'>
+			<Box display='flex' justifyContent='center' height='full' backgroundColor='surface-light'>
 				<States>
 					<StatesIcon name='error-circle' />
 					<StatesTitle>Application Error</StatesTitle>

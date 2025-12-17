@@ -201,7 +201,7 @@ router.defineRoutes([
 	{
 		path: '/setup-wizard/:step?',
 		id: 'setup-wizard',
-		element: <SetupWizardRoute />,
+		element: appLayout.wrap(<SetupWizardRoute />),
 	},
 	{
 		path: '/mailer/unsubscribe/:_id/:createdAt',
