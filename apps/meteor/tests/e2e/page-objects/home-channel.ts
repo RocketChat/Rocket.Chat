@@ -121,4 +121,12 @@ export class HomeChannel {
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
 	}
+
+	async waitForHome(): Promise<void> {
+		await this.sidenav.homepageHeader.waitFor({ state: 'visible' });
+	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
+	}
 }

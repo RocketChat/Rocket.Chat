@@ -51,7 +51,7 @@ test.describe('enforce two factor authentication', () => {
 	test('should redirect to 2FA setup page and setup email 2FA', async ({ page }) => {
 		await page.goto('/home');
 		await poAccountSecurity.required2faModalSetUpButton.click();
-		await expect(poHomeChannel.sidenav.sidebarHomeAction).not.toBeVisible();
+		await expect(poHomeChannel.navbar.btnHome).not.toBeVisible();
 
 		await expect(poAccountSecurity.securityHeader).toBeVisible();
 
@@ -60,7 +60,7 @@ test.describe('enforce two factor authentication', () => {
 		await poAccountSecurity.email2FASwitch.click();
 
 		await poHomeChannel.toastMessage.waitForDisplay();
-		await expect(poHomeChannel.sidenav.sidebarHomeAction).toBeVisible();
+		await expect(poHomeChannel.navbar.btnHome).toBeVisible();
 		await expect(poAccountSecurity.securityHeader).not.toBeVisible();
 	});
 
@@ -76,7 +76,7 @@ test.describe('enforce two factor authentication', () => {
 		test('should redirect to 2FA setup page and show totp 2FA setup', async ({ page }) => {
 			await page.goto('/home');
 			await poAccountSecurity.required2faModalSetUpButton.click();
-			await expect(poHomeChannel.sidenav.sidebarHomeAction).not.toBeVisible();
+			await expect(poHomeChannel.navbar.btnHome).not.toBeVisible();
 
 			await expect(poAccountSecurity.securityHeader).toBeVisible();
 
@@ -99,7 +99,7 @@ test.describe('enforce two factor authentication', () => {
 
 		test('should not redirect to 2FA setup page', async ({ page }) => {
 			await page.goto('/home');
-			await expect(poHomeChannel.sidenav.sidebarHomeAction).toBeVisible();
+			await expect(poHomeChannel.navbar.btnHome).toBeVisible();
 			await expect(poAccountSecurity.securityHeader).not.toBeVisible();
 		});
 	});
