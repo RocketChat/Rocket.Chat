@@ -138,7 +138,7 @@ const waitForRoomEvent = async (
 						expect(rcRoom).toHaveProperty('uids');
 						expect(rcRoom).not.toHaveProperty('fname');
 
-						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 						expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
 						expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
@@ -166,7 +166,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should display the fname properly', async () => {
-					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
@@ -175,7 +175,7 @@ const waitForRoomEvent = async (
 					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
 
 					await retry('this is an async operation, so we need to wait for the event to be processed', async () => {
-						const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+						const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 						expect(sub).toHaveProperty('name', 'empty');
 						expect(sub).toHaveProperty('fname', 'Empty Room');
@@ -245,7 +245,7 @@ const waitForRoomEvent = async (
 						expect(rcRoom).toHaveProperty('uids');
 						expect(rcRoom).not.toHaveProperty('fname');
 
-						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+						subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 						expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
 						expect(subscriptionInvite).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
@@ -273,7 +273,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should display the fname properly', async () => {
-					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials);
+					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
