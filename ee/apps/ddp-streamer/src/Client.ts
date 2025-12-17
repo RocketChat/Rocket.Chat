@@ -74,7 +74,9 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	private _seenPacket = true;
+	private _seenPacket = false;
+
+	private heartbeatInterval: NodeJS.Timeout | undefined;
 
 	constructor(
 		public ws: WebSocket,
@@ -94,12 +96,14 @@ export class Client extends EventEmitter {
 		};
 
 		this.renewTimeout(TIMEOUT / 1000);
+		this.startHeartbeat();
 		this.ws.on('message', this.handler);
 		this.ws.on('close', (...args) => {
 			server.emit(DDP_EVENTS.DISCONNECTED, this);
 			this.emit('close', ...args);
 			this.subscriptions.clear();
 			clearTimeout(this.timeout);
+			this.stopHeartbeat();
 		});
 
 		this.ws.on('error', (err) => {
@@ -125,6 +129,23 @@ export class Client extends EventEmitter {
 		this.send(SERVER_ID);
 
 		clientMap.set(ws, this);
+	}
+
+	private stopHeartbeat() {
+		if (this.heartbeatInterval) {
+			clearInterval(this.heartbeatInterval);
+			this.heartbeatInterval = undefined;
+		}
+	}
+
+	private startHeartbeat() {
+		this.heartbeatInterval = setInterval(() => {
+			if (!this.userId) {
+				return;
+			}
+
+			this._seenPacket = false;
+		}, TIMEOUT);
 	}
 
 	greeting(): void {
@@ -183,15 +204,18 @@ export class Client extends EventEmitter {
 	};
 
 	private messageReceived = (): void => {
-		if (this._seenPacket || !this.userId) {
+		if (!this.userId) {
 			this._seenPacket = true;
 			return;
 		}
 
+		if (this._seenPacket === false) {
+			void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
+				console.error('Error updating connection presence after heartbeat:', err);
+			});
+		}
+
 		this._seenPacket = true;
-		void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-			console.error('Error updating connection presence after heartbeat:', err);
-		});
 	};
 
 	ping(id?: string): void {
@@ -203,9 +227,6 @@ export class Client extends EventEmitter {
 	}
 
 	handleIdle = (): void => {
-		if (this.userId) {
-			this._seenPacket = false;
-		}
 		this.ping();
 		this.timeout = setTimeout(this.closeTimeout, TIMEOUT);
 	};
