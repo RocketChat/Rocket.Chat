@@ -305,7 +305,7 @@ export const RoutingManager: Routing = {
 			logger.info({ msg: 'Inquiry taken', inquiryId: _id, agentId: agent.agentId });
 
 			// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
-			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
+			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry, agent);
 			const roomAfterUpdate = await LivechatRooms.findOneById(rid);
 
 			if (!roomAfterUpdate) {
