@@ -15,6 +15,8 @@ import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
+const MESSAGE_BODY_LIMIT = 150;
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
@@ -482,21 +484,8 @@ class PushClass {
 		this._validateDocument(notification);
 
 		// Truncate notification.text to 150 characters to keep the payload size small.
-		if (notification.text && notification.text.length > 150) {
-			notification.text = notification.text.slice(0, 150);
-		}
-
-		// Check the size of the notification payload to guarantee it does not exceed the 4096 bytes limit (4KB)
-		const notificationByteSize = Buffer.byteLength(JSON.stringify(notification), 'utf8');
-		if (notificationByteSize > 4096) {
-			logger.warn({
-				size: notificationByteSize,
-				userId: notification.userId,
-				title: notification.title,
-				msg: 'Push notification payload size exceeds 4KB limit. Notification will not be sent.',
-			});
-
-			return;
+		if (notification.text && notification.text.length > MESSAGE_BODY_LIMIT) {
+			notification.text = notification.text.slice(0, MESSAGE_BODY_LIMIT);
 		}
 
 		try {
