@@ -277,7 +277,6 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
-		// TODO need to provide name and fname for DMs (room object won't have it)
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 			ts,
 			open: !createAsHidden,

@@ -186,7 +186,6 @@ async function handleInvite({
 		userToBeAdded: inviteeUser,
 		inviter: inviterUser,
 		status: 'INVITED',
-		...(roomType === 'd' && { roles: ['owner'] }),
 	});
 
 	// if an invite is sent to a DM, we need to update the room name to reflect all participants

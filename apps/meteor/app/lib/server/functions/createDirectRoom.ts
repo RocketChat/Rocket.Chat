@@ -192,6 +192,7 @@ export async function createDirectRoom(
 						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
 						...subscriptionStatus,
+						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
 					}),
 				},
 				{ upsert: true },

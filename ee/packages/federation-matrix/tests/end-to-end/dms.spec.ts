@@ -530,9 +530,8 @@ const waitForRoomEvent = async (
 					expect(pendingInvitation1).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
 
-				it('should have user1 as owner of the group DM on RC', async () => {
-					expect(pendingInvitation1).toHaveProperty('roles');
-					expect(pendingInvitation1.roles).toContain('owner');
+				it('should have user1 as regular user of the group DM on RC', async () => {
+					expect(pendingInvitation1).not.toHaveProperty('roles');
 				});
 
 				it('should display the name of the inviter to user2on RC', async () => {
@@ -544,9 +543,8 @@ const waitForRoomEvent = async (
 					expect(pendingInvitation2).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
 
-				it('should have user2 as owner of the group DM on RC', async () => {
-					expect(pendingInvitation2).toHaveProperty('roles');
-					expect(pendingInvitation2.roles).toContain('owner');
+				it('should have user2 as regular user of the group DM on RC', async () => {
+					expect(pendingInvitation2).not.toHaveProperty('roles');
 				});
 
 				it('should display the name of all users on RC after the invited user accepts the invitation', async () => {
@@ -624,7 +622,8 @@ const waitForRoomEvent = async (
 					rcUserConfig3 = await getRequestConfig(federationConfig.rc1.url, rcUser3.username, 'random');
 				});
 
-				it('should allow a user from rc to add another user to the group DM', async () => {
+				// TODO maybe we should allow it
+				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					const response = await addUserToRoom({
 						usernames: [userDmId3],
 						rid: rcRoom1._id,
@@ -637,11 +636,22 @@ const waitForRoomEvent = async (
 					// Parse the error message from the DDP response
 					const messageData = JSON.parse(response.body.message);
 
-					expect(messageData).not.toHaveProperty('error');
-					expect(messageData).not.toHaveProperty('result', true);
+					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
 				});
 
-				it.todo('should allow a user to leave the group DM');
+				it('should allow a user to leave the group DM', async () => {
+					const response = await rcUserConfig1.request
+						.post(api('rooms.leave'))
+						.set(rcUserConfig1.credentials)
+						.send({
+							roomId: rcRoom1._id,
+						})
+						.expect(200);
+
+					expect(response.body).toHaveProperty('success', true);
+				});
+
+				it.todo('should delete the room entirely if no local users in the room');
 			});
 			describe('Turning a 1:1 DM into a group DM', () => {
 				it.todo('should show the invite to the third user');
