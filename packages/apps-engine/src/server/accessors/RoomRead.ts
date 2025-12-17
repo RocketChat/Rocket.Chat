@@ -139,7 +139,13 @@ export class RoomRead implements IRoomRead {
 		}
 
 		if (!parsedCreatedAt || Number.isNaN(parsedCreatedAt.getTime())) {
-			throw new Error(`Invalid "${optionName}" cursor createdAt. Expected a valid Date, got ${createdAt}`);
+			let typeLabel: string = typeof createdAt;
+			if (createdAt === null) {
+				typeLabel = 'null';
+			} else if (Array.isArray(createdAt)) {
+				typeLabel = 'array';
+			}
+			throw new Error(`Invalid "${optionName}" cursor createdAt. Expected a valid Date, got ${typeLabel}`);
 		}
 
 		return {

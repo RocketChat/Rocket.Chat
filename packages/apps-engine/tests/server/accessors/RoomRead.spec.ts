@@ -196,32 +196,32 @@ export class RoomReadAccessorTestFixture {
 	public async throwsOnInvalidCursorOptions() {
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 
-		Expect(() =>
+		await Expect(async () =>
 			rr.getMessages('testing', {
 				after: {} as any,
 			}),
-		).toThrow();
+		).toThrowAsync();
 
-		Expect(() =>
+		await Expect(async () =>
 			rr.getMessages('testing', {
 				before: {
 					createdAt: 'invalid-date',
 				} as any,
 			}),
-		).toThrow();
+		).toThrowAsync();
 	}
 
 	@AsyncTest()
-	public async allowsSkipAndDescSortWithCursor() {
+	public async allowsSkipAndSortOptionsWithCursorPagination() {
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 		const createdAt = new Date('2020-01-01T00:00:00.000Z');
 
-		Expect(() =>
+		await Expect(async () =>
 			rr.getMessages('testing', {
 				after: { createdAt },
 				skip: 10,
 				sort: { createdAt: 'desc' },
 			}),
-		).not.toThrow();
+		).not.toThrowAsync();
 	}
 }
