@@ -34,6 +34,7 @@ export interface IClientMediaCallConfig {
 	sessionId: string;
 
 	iceGatheringTimeout: number;
+	iceServers: RTCIceServer[];
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -141,6 +142,14 @@ export class ClientMediaCall implements IClientMediaCall {
 	/** indicates the call is past the "dialing" stage and not yet over */
 	public get busy(): boolean {
 		return !this.isPendingAcceptance() && !this.isOver();
+	}
+
+	public get confirmed(): boolean {
+		return this.hasRemoteData;
+	}
+
+	public get tempCallId(): string {
+		return this.localCallId;
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
@@ -357,6 +366,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!wasInitialized) {
 			this.emitter.emit('initialized');
 		}
+		this.emitter.emit('confirmed');
 
 		await this.processEarlySignals();
 	}
@@ -1163,7 +1173,13 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor = webrtcFactory({
+			logger,
+			iceGatheringTimeout,
+			call: this,
+			inputTrack: this.inputTrack,
+			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
