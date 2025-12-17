@@ -1,12 +1,20 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Button } from '@rocket.chat/fuselage';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const AccessibilityShortcut = () => {
 	const { t } = useTranslation();
-	const router = useRouter();
-	const currentRoutePath = router.getLocationPathname();
+
+	const handleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		const mainContent = document.getElementById('main-content');
+		if (mainContent) {
+			mainContent.focus();
+			mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}, []);
 
 	const customButtonClass = css`
 		position: absolute;
@@ -24,7 +32,7 @@ const AccessibilityShortcut = () => {
 	`;
 
 	return (
-		<Button className={customButtonClass} is='a' href={`${currentRoutePath}#main-content`} primary>
+		<Button className={customButtonClass} onClick={handleClick} primary>
 			{t('Skip_to_main_content')}
 		</Button>
 	);

@@ -23,6 +23,7 @@ const MainContent = ({ className, ...props }: Omit<AllHTMLAttributes<HTMLDivElem
 		<Box
 			is='main'
 			id='main-content'
+			tabIndex={-1}
 			className={[customCSS, className]}
 			position='relative'
 			zIndex={0}
