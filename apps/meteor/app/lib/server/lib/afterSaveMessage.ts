@@ -2,7 +2,7 @@ import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Rooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 
 export async function afterSaveMessage(message: IMessage, room: IRoom, user: IUser, roomUpdater?: Updater<IRoom>): Promise<IMessage> {
 	const updater = roomUpdater ?? Rooms.getUpdater();

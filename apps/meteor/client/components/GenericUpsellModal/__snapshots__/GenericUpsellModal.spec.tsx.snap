@@ -10,7 +10,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -22,7 +22,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>
@@ -120,7 +120,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -132,7 +132,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>
@@ -235,7 +235,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -247,7 +247,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>
@@ -345,7 +345,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -357,7 +357,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Exclusive
               </div>
@@ -455,7 +455,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -467,7 +467,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>

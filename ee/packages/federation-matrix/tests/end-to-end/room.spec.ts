@@ -30,7 +30,7 @@ import { SynapseClient } from '../helper/synapse-client';
 	beforeAll(async () => {
 		// Create admin request config for RC1
 		rc1AdminRequestConfig = await getRequestConfig(
-			federationConfig.rc1.apiUrl,
+			federationConfig.rc1.url,
 			federationConfig.rc1.adminUser,
 			federationConfig.rc1.adminPassword,
 		);
@@ -48,7 +48,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		// Create user1 request config for RC1
 		rc1User1RequestConfig = await getRequestConfig(
-			federationConfig.rc1.apiUrl,
+			federationConfig.rc1.url,
 			federationConfig.rc1.additionalUser1.username,
 			federationConfig.rc1.additionalUser1.password,
 		);
@@ -84,7 +84,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			beforeAll(async () => {
 				const user = { username: `user-${Date.now()}`, password: '123' };
 				createdUser = await createUser(user, rc1AdminRequestConfig);
-				userRequestConfig = await getRequestConfig(federationConfig.rc1.apiUrl, user.username, user.password);
+				userRequestConfig = await getRequestConfig(federationConfig.rc1.url, user.username, user.password);
 			});
 
 			afterAll(async () => {
@@ -256,7 +256,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			describe('Go to the composer and use the /invite slash command to add a federated user', () => {
 				it('It should not allow and show an error message', async () => {
 					// Set up DDP listener to catch ephemeral messages
-					const ddpListener = createDDPListener(federationConfig.rc1.apiUrl, rc1AdminRequestConfig);
+					const ddpListener = createDDPListener(federationConfig.rc1.url, rc1AdminRequestConfig);
 
 					// Connect to DDP and subscribe to ephemeral messages
 					await ddpListener.connect();
@@ -1647,17 +1647,61 @@ import { SynapseClient } from '../helper/synapse-client';
 				rid = pendingInvitation?.rid!;
 			}, 15000);
 
-			it('It should allow RC user to reject the invite', async () => {
+			it('should allow RC user to reject the invite and remove the subscription', async () => {
 				const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
 				expect(rejectResponse.success).toBe(true);
-			});
 
-			it('It should remove the subscription after rejection', async () => {
 				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
-
 				const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
-
 				expect(invitedSub).toBeFalsy();
+			});
+		});
+
+		describe('Revoked invitation flow from Synapse', () => {
+			describe('Synapse revokes an invitation before the RC user responds', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+				let rid: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-revoked-${Date.now()}`;
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// hs1 invites RC user
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					rid = pendingInvitation?.rid!;
+
+					// hs1 revokes the invitation by kicking the invited user
+					await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Invitation revoked');
+				}, 15000);
+
+				it('should fail when RC user tries to accept the revoked invitation', async () => {
+					const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
+					expect(acceptResponse.success).toBe(false);
+				});
+
+				it('should allow RC user to reject the revoked invitation and remove the subscription', async () => {
+					const rejectResponse = await rejectRoomInvite(rid, rc1AdminRequestConfig);
+					expect(rejectResponse.success).toBe(true);
+
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+					expect(invitedSub).toBeFalsy();
+				});
+
+				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
+					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+					expect(member?.membership).toBe('leave');
+				});
 			});
 		});
 	});
