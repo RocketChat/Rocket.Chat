@@ -5,3 +5,5 @@ export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, t
 export { useMediaCallAction } from './hooks';
 
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
+
+export { MediaCallHistoryTable } from './views';
