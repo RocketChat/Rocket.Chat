@@ -10,7 +10,7 @@ exports[`DeleteRoomModal should render without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"

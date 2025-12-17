@@ -1,12 +1,5 @@
 import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import RoomMenu from './RoomMenu';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -14,8 +7,15 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+	usePagination,
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import RoomMenu from './RoomMenu';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 

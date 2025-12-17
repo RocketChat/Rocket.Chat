@@ -10,12 +10,11 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
-            data-overlayscrollbars="host"
+            class="os-size-observer"
           >
             <div
               class="os-size-observer-listener"
@@ -179,12 +178,11 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
-            data-overlayscrollbars="host"
+            class="os-size-observer"
           >
             <div
               class="os-size-observer-listener"

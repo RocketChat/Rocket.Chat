@@ -20,7 +20,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
             >
               <span
-                class="rcx-box rcx-box--full rcx-select__item rcx-css-jmdrnf"
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-4wu0oz"
               >
                 ABAC_Search_Attribute
               </span>
@@ -58,7 +58,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
               >
                 <button
                   aria-haspopup="listbox"
-                  class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-11drhl5"
+                  class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-3fq6z9"
                   type="button"
                 >
                   ABAC_Select_Attribute_Values
