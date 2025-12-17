@@ -463,7 +463,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], objectId: string): Promise<void> {
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
 		}
@@ -486,7 +486,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		usernames.forEach((username) => {
 			// TODO: Add room name
-			void Audit.actionPerformed({ username }, { _id: objectId }, 'system', 'granted-object-access');
+			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
 		});
 	}
 
