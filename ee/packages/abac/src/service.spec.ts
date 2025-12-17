@@ -1037,12 +1037,14 @@ describe('AbacService (unit)', () => {
 		const attributes = [{ key: 'dept', values: ['eng'] }];
 
 		it('returns early (no query) when usernames array is empty', async () => {
-			await expect(service.checkUsernamesMatchAttributes([], attributes as any, 'objectId')).resolves.toBeUndefined();
+			await expect(
+				service.checkUsernamesMatchAttributes([], attributes as any, { _id: 'xxxxx', name: 'name' } as any),
+			).resolves.toBeUndefined();
 			expect(mockUsersFind).not.toHaveBeenCalled();
 		});
 
 		it('returns early (no query) when attributes array is empty', async () => {
-			await expect(service.checkUsernamesMatchAttributes(['alice'], [], 'objectId')).resolves.toBeUndefined();
+			await expect(service.checkUsernamesMatchAttributes(['alice'], [], { _id: 'xxxxx', name: 'name' } as any)).resolves.toBeUndefined();
 			expect(mockUsersFind).not.toHaveBeenCalled();
 		});
 
@@ -1054,7 +1056,9 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).resolves.toBeUndefined();
+			await expect(
+				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
+			).resolves.toBeUndefined();
 
 			expect(mockUsersFind).toHaveBeenCalledWith(
 				{
@@ -1085,7 +1089,9 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
+			await expect(
+				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
+			).rejects.toMatchObject({
 				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 			});
 		});
@@ -1099,7 +1105,9 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).resolves.toBeUndefined();
+			await expect(
+				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
+			).resolves.toBeUndefined();
 
 			expect(mockCreateAuditServerEvent).toHaveBeenCalledTimes(usernames.length);
 			const calledUsernames = mockCreateAuditServerEvent.mock.calls.map(([, payload]: any[]) => payload?.subject?.username).filter(Boolean);
@@ -1116,7 +1124,9 @@ describe('AbacService (unit)', () => {
 				}),
 			}));
 
-			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
+			await expect(
+				service.checkUsernamesMatchAttributes(usernames, attributes as any, { _id: 'xxxxx', name: 'name' } as any),
+			).rejects.toMatchObject({
 				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 			});
 
