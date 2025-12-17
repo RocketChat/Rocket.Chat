@@ -28,7 +28,7 @@ const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push'
 	},
 });
 
-describe('Push Notifications [PushClass]', () => {
+describe.only('Push Notifications [PushClass]', () => {
 	afterEach(() => {
 		clock.restore();
 		sinon.restore();
@@ -88,11 +88,7 @@ describe('Push Notifications [PushClass]', () => {
 				gcm: { style: 'inbox', image: 'url' },
 			};
 
-			try {
-				await Push.send(options);
-			} catch (e) {
-				// expected
-			}
+			await expect(Push.send(options)).to.be.rejectedWith('No userId found');
 
 			expect(sendNotificationStub.called).to.be.false;
 		});
