@@ -37,6 +37,58 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		super(db, 'room', trash);
 	}
 
+	findByTypesAndFlags(
+		{
+			types = [],
+			includeDiscussions = false,
+			onlyDiscussions = false,
+			includeTeamMain = false,
+			onlyTeamMain = false,
+		}: {
+			types?: Array<IRoom['t']>;
+			includeDiscussions?: boolean;
+			onlyDiscussions?: boolean;
+			includeTeamMain?: boolean;
+			onlyTeamMain?: boolean;
+		} = {},
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {};
+		const allowDiscussions = includeDiscussions || onlyDiscussions;
+		const allowTeamMain = includeTeamMain || onlyTeamMain;
+		const typeValues = types.length ? [...types] : undefined;
+		const typeFilter = typeValues ? { $in: typeValues } : undefined;
+		const shouldOr = !!typeFilter && !onlyDiscussions && !onlyTeamMain && (allowDiscussions || allowTeamMain);
+
+		if (onlyDiscussions) {
+			query.prid = { $exists: true };
+		} else if (!allowDiscussions) {
+			query.prid = { $exists: false };
+		}
+
+		if (onlyTeamMain) {
+			query.teamMain = { $exists: true };
+		} else if (!allowTeamMain) {
+			query.teamMain = { $exists: false };
+		}
+
+		if (typeFilter) {
+			if (shouldOr) {
+				query.$or = [{ t: typeFilter }];
+				if (allowDiscussions) {
+					query.$or.push({ prid: { $exists: true } });
+				}
+				if (allowTeamMain) {
+					query.$or.push({ teamMain: { $exists: true } });
+				}
+			} else {
+				query.t = typeFilter;
+			}
+		}
+
+		return this.find(query, options);
+	}
+
 	override modelIndexes(): IndexDescription[] {
 		return [
 			{

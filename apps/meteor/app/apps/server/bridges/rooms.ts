@@ -7,7 +7,7 @@ import type { GetMessagesOptions, GetRoomsOptions } from '@rocket.chat/apps-engi
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions, Filter, Sort } from 'mongodb';
+import type { FindOptions, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -190,13 +190,19 @@ export class AppRoomBridge extends RoomBridge {
 
 		const { limit = 100, skip = 0 } = options || {};
 
-		const { query } = this.buildRoomQuery(options);
-
 		const findOptions: FindOptions<ICoreRoom> = {
 			sort: { ts: -1 },
 			skip,
 			limit: Math.min(limit, 100),
 			projection: rawRoomProjection,
+		};
+
+		const queryOptions = {
+			types: options.types?.map((type) => type as ICoreRoom['t']),
+			includeDiscussions: options.includeDiscussions,
+			onlyDiscussions: options.onlyDiscussions,
+			includeTeamMain: options.includeTeamMain,
+			onlyTeamMain: options.onlyTeamMain,
 		};
 
 		const rooms: IRoomRaw[] = [];
@@ -206,7 +212,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Room converter not found');
 		}
 
-		for await (const room of Rooms.find(query, findOptions)) {
+		for await (const room of Rooms.findByTypesAndFlags(queryOptions, findOptions)) {
 			const converted = await roomConverter.convertRoomRaw(room);
 			if (converted) {
 				rooms.push(converted);
@@ -378,49 +384,5 @@ export class AppRoomBridge extends RoomBridge {
 
 		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
 		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
-	}
-
-	private buildRoomQuery(options: GetRoomsOptions = {}): { query: Filter<ICoreRoom> } {
-		const { types = [], includeDiscussions = false, onlyDiscussions = false, includeTeamMain = false, onlyTeamMain = false } = options;
-
-		const query: Filter<ICoreRoom> = {};
-		const allowDiscussions = includeDiscussions || onlyDiscussions;
-		const allowTeamMain = includeTeamMain || onlyTeamMain;
-		const typeValues: Array<ICoreRoom['t']> | undefined = types.length ? [...types] : undefined;
-		const typeFilter: Filter<ICoreRoom>['t'] | undefined = typeValues ? { $in: typeValues } : undefined;
-
-		if (onlyDiscussions) {
-			query.prid = { $exists: true };
-		} else if (!allowDiscussions) {
-			query.prid = { $exists: false };
-		}
-
-		if (onlyTeamMain) {
-			query.teamMain = { $exists: true };
-		} else if (!allowTeamMain) {
-			query.teamMain = { $exists: false };
-		}
-
-		const orConditions: Array<Filter<ICoreRoom>> = [];
-
-		if (typeFilter && (allowDiscussions || allowTeamMain)) {
-			orConditions.push({ t: typeFilter });
-		} else if (typeFilter) {
-			query.t = typeFilter;
-		}
-
-		if (allowDiscussions && !onlyDiscussions) {
-			orConditions.push({ prid: { $exists: true } });
-		}
-
-		if (allowTeamMain && !onlyTeamMain) {
-			orConditions.push({ teamMain: { $exists: true } });
-		}
-
-		if (orConditions.length && !(onlyDiscussions || onlyTeamMain)) {
-			query.$or = orConditions;
-		}
-
-		return { query };
 	}
 }
