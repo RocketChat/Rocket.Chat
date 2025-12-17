@@ -2,6 +2,14 @@
 @use 'grid';
 @use 'variables';
 
+@font-face {
+  font-family: 'IRANSans';
+  src: url('../assets/fonts/IRANSansXV.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 html,
 body {
 	width: 100%;
@@ -9,7 +17,7 @@ body {
 	margin: 0;
 	padding: 0;
 	color: #444444;
-	font-family: variables.$font-family;
+	font-family: 'IRANSans', sans-serif, variables.$font-family;
 	font-weight: 400;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
