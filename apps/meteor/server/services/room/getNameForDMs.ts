@@ -1,14 +1,14 @@
 import type { AtLeast, IUser } from '@rocket.chat/core-typings';
 
-const getFname = (members: AtLeast<IUser, 'name' | 'username'>[]): string => {
+const getFname = (members: AtLeast<IUser, 'name' | 'username'>[]): string | undefined => {
 	if (members.length === 0) {
-		return 'Empty Room';
+		return;
 	}
 	return members.map(({ name, username }) => name || username).join(', ');
 };
-const getName = (members: AtLeast<IUser, 'name' | 'username'>[]): string => {
+const getName = (members: AtLeast<IUser, 'name' | 'username'>[]): string | undefined => {
 	if (members.length === 0) {
-		return 'empty';
+		return;
 	}
 	return members.map(({ username }) => username).join(', ');
 };
@@ -24,8 +24,8 @@ export function getNameForDMs(members: AtLeast<IUser, '_id' | 'name' | 'username
 		const otherMembers = sortedMembers.filter((m) => m._id !== member._id);
 
 		nameMap[member._id] = {
-			fname: getFname(otherMembers),
-			name: getName(otherMembers),
+			fname: getFname(otherMembers) || member.name || member.username || '',
+			name: getName(otherMembers) || member.username || '',
 		};
 	}
 

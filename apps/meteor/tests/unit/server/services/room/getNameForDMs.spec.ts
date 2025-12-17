@@ -8,15 +8,15 @@ describe('getNameForDMs', () => {
 		expect(result).to.deep.equal({});
 	});
 
-	it('should return name map with "Empty Room" for single member', () => {
+	it('should return own name for single member', () => {
 		const members = [{ _id: 'user1', name: 'John Doe', username: 'john' }];
 
 		const result = getNameForDMs(members);
 
 		expect(result).to.deep.equal({
 			user1: {
-				fname: 'Empty Room',
-				name: 'empty',
+				fname: 'John Doe',
+				name: 'john',
 			},
 		});
 	});

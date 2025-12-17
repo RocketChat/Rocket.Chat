@@ -99,6 +99,7 @@ const waitForRoomEvent = async (
 
 				const userDm = `dm-federation-user-${Date.now()}`;
 				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
+				const userDmName = `DM Federation User ${Date.now()}`;
 
 				beforeAll(async () => {
 					// create both RC and Synapse users
@@ -107,7 +108,7 @@ const waitForRoomEvent = async (
 							username: userDm,
 							password: 'random',
 							email: `${userDm}}@rocket.chat`,
-							name: `DM Federation User ${Date.now()}`,
+							name: userDmName,
 						},
 						rc1AdminRequestConfig,
 					);
@@ -171,29 +172,33 @@ const waitForRoomEvent = async (
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
 
-				it('should return room name as empty after the user from Synapse leaves the DM', async () => {
+				it('should return own user name as the room name when user is alone in the DM', async () => {
 					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
 
-					await retry('this is an async operation, so we need to wait for the event to be processed', async () => {
-						const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
+					await retry(
+						'this is an async operation, so we need to wait for the event to be processed',
+						async () => {
+							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
-						expect(sub).toHaveProperty('name', 'empty');
-						expect(sub).toHaveProperty('fname', 'Empty Room');
+							expect(sub).toHaveProperty('name', userDm);
+							expect(sub).toHaveProperty('fname', userDmName);
 
-						const roomInfo = await getRoomInfo(rcRoom._id, rcUserConfig);
+							const roomInfo = await getRoomInfo(rcRoom._id, rcUserConfig);
 
-						expect(roomInfo).toHaveProperty('room');
+							expect(roomInfo).toHaveProperty('room');
 
-						expect(roomInfo.room).toHaveProperty('usersCount', 1);
-						expect(roomInfo.room).not.toHaveProperty('fname');
-						expect(roomInfo.room).toHaveProperty('uids');
-						expect(roomInfo.room?.uids).toHaveLength(1);
-						expect(roomInfo.room?.uids).toEqual([rcUser._id]);
+							expect(roomInfo.room).toHaveProperty('usersCount', 1);
+							expect(roomInfo.room).not.toHaveProperty('fname');
+							expect(roomInfo.room).toHaveProperty('uids');
+							expect(roomInfo.room?.uids).toHaveLength(1);
+							expect(roomInfo.room?.uids).toEqual([rcUser._id]);
 
-						expect(roomInfo.room).toHaveProperty('usernames');
-						expect(roomInfo.room?.usernames).toHaveLength(1);
-						expect(roomInfo.room?.usernames).toEqual([rcUser.username]);
-					});
+							expect(roomInfo.room).toHaveProperty('usernames');
+							expect(roomInfo.room?.usernames).toHaveLength(1);
+							expect(roomInfo.room?.usernames).toEqual([rcUser.username]);
+						},
+						{ delayMs: 100 },
+					);
 				});
 			});
 
