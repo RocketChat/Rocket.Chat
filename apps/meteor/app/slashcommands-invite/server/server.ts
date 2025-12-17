@@ -112,10 +112,15 @@ slashCommands.add({
 					);
 				} catch (e: unknown) {
 					if (isMeteorError(e)) {
-						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),
-						});
-						return;
+						if (e.error === 'error-only-compliant-users-can-be-added-to-abac-rooms') {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),
+							});
+						} else {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+								msg: i18n.t(e.message, { lng: settings.get('Language') || 'en' }),
+							});
+						}
 					}
 
 					if (isStringError(e)) {
