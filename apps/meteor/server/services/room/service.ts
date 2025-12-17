@@ -263,6 +263,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		skipAlertSound = false,
 		skipSystemMessage = false,
 		status,
+		roles,
 	}: {
 		room: IRoom;
 		ts: Date;
@@ -272,6 +273,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
+		roles?: ISubscription['roles'];
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
@@ -283,6 +285,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			unread: 1,
 			userMentions: 1,
 			groupMentions: 0,
+			...(roles && { roles }),
 			...(status && { status }),
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, name: inviter.name } }),
 			...autoTranslateConfig,

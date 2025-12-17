@@ -3,12 +3,7 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
-import {
-	acceptRoomInvite,
-	getRoomInfo,
-	getSubscriptionByRoomId,
-	getSubscriptions,
-} from '../../../../../apps/meteor/tests/data/rooms.helper';
+import { acceptRoomInvite, addUserToRoom, getRoomInfo, getSubscriptionByRoomId } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
@@ -435,10 +430,13 @@ const waitForRoomEvent = async (
 	describe('Multiple user DMs', () => {
 		describe('Synapse as the resident server', () => {
 			let rcUser1: TestUser<IUser>;
-			let rcUser2: TestUser<IUser>;
-
 			let rcUserConfig1: IRequestConfig;
+
+			let rcUser2: TestUser<IUser>;
 			let rcUserConfig2: IRequestConfig;
+
+			let rcUser3: TestUser<IUser>;
+			let rcUserConfig3: IRequestConfig;
 
 			let rcRoom1: IRoom;
 
@@ -488,7 +486,11 @@ const waitForRoomEvent = async (
 
 			afterAll(async () => {
 				// delete both RC and Synapse users
-				await Promise.all([deleteUser(rcUser1, {}, rc1AdminRequestConfig), deleteUser(rcUser2, {}, rc1AdminRequestConfig)]);
+				await Promise.all([
+					deleteUser(rcUser1, {}, rc1AdminRequestConfig),
+					deleteUser(rcUser2, {}, rc1AdminRequestConfig),
+					rcUser3 && deleteUser(rcUser3, {}, rc1AdminRequestConfig),
+				]);
 			});
 
 			describe('Room list name validations', () => {
@@ -528,6 +530,11 @@ const waitForRoomEvent = async (
 					expect(pendingInvitation1).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
 
+				it('should have user1 as owner of the group DM on RC', async () => {
+					expect(pendingInvitation1).toHaveProperty('roles');
+					expect(pendingInvitation1.roles).toContain('owner');
+				});
+
 				it('should display the name of the inviter to user2on RC', async () => {
 					// check pending invitations for user 1
 					pendingInvitation2 = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig2.credentials, rcUserConfig2.request);
@@ -535,6 +542,11 @@ const waitForRoomEvent = async (
 					expect(pendingInvitation2).toHaveProperty('status', 'INVITED');
 					expect(pendingInvitation2).toHaveProperty('fname', `@${federationConfig.hs1.adminUser}:${federationConfig.hs1.domain}`);
 					expect(pendingInvitation2).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
+				});
+
+				it('should have user2 as owner of the group DM on RC', async () => {
+					expect(pendingInvitation2).toHaveProperty('roles');
+					expect(pendingInvitation2.roles).toContain('owner');
 				});
 
 				it('should display the name of all users on RC after the invited user accepts the invitation', async () => {
@@ -594,7 +606,41 @@ const waitForRoomEvent = async (
 				it.todo('should respect max users allowed in a group DM when adding users');
 			});
 			describe('Permission validations', () => {
-				it.todo('should allow a user to add another user to the group DM');
+				const userDm3 = `dm-federation-user3-${Date.now()}`;
+				const userDm3Name = `DM Federation User3 ${Date.now()}`;
+				const userDmId3 = `@${userDm3}:${federationConfig.rc1.domain}`;
+
+				beforeAll(async () => {
+					rcUser3 = await createUser(
+						{
+							username: userDm3,
+							password: 'random',
+							email: `${userDm3}}@rocket.chat`,
+							name: userDm3Name,
+						},
+						rc1AdminRequestConfig,
+					);
+
+					rcUserConfig3 = await getRequestConfig(federationConfig.rc1.url, rcUser3.username, 'random');
+				});
+
+				it('should allow a user from rc to add another user to the group DM', async () => {
+					const response = await addUserToRoom({
+						usernames: [userDmId3],
+						rid: rcRoom1._id,
+						config: rcUserConfig1,
+					});
+
+					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('message');
+
+					// Parse the error message from the DDP response
+					const messageData = JSON.parse(response.body.message);
+
+					expect(messageData).not.toHaveProperty('error');
+					expect(messageData).not.toHaveProperty('result', true);
+				});
+
 				it.todo('should allow a user to leave the group DM');
 			});
 			describe('Turning a 1:1 DM into a group DM', () => {

@@ -67,6 +67,7 @@ export interface IRoomService {
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
+		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
 	updateDirectMessageRoomName(room: IRoom): Promise<boolean>;
 }
