@@ -17,7 +17,7 @@ body {
 	margin: 0;
 	padding: 0;
 	color: #444444;
-	font-family: 'IRANSans', sans-serif, variables.$font-family;
+	font-family: 'IRANSans', sans-serif, variables.$font-family !important;
 	font-weight: 400;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
