@@ -139,7 +139,7 @@ export class AppRoomBridge extends RoomBridge {
 				tsOp = isAsc ? '$lt' : '$gt';
 			}
 
-			return { $or: [{ ts: { [tsOp]: cursor.createdAt } }] };
+			return { ts: { [tsOp]: cursor.createdAt } };
 		};
 
 		if (after) {
