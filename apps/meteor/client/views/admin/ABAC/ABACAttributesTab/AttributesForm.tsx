@@ -10,10 +10,12 @@ import {
 	IconButton,
 	TextInput,
 } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
-import { useCallback, useId, useMemo, Fragment } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback, useId, useMemo, Fragment, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 export type AttributesFormFormData = {
 	name: string;
@@ -33,6 +35,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 		register,
 		formState: { errors, isDirty },
 		watch,
+		getValues,
 	} = useFormContext<AttributesFormFormData>();
 
 	const { t } = useTranslation();
@@ -40,7 +43,9 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const attributeValues = watch('attributeValues');
 	const lockedAttributes = watch('lockedAttributes');
 
-	const { fields: lockedAttributesFields, remove: removeLockedAttribute } = useFieldArray({
+	const isAttributeUsed = useEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', { key: getValues('name') });
+
+	const { fields: lockedAttributesFields, remove: removeLockedAttributeField } = useFieldArray({
 		name: 'lockedAttributes',
 	});
 
@@ -63,6 +68,19 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const formId = useId();
 	const nameField = useId();
 	const valuesField = useId();
+
+	const [showDisclaimer, setShowDisclaimer] = useState<number[]>([]);
+
+	const removeLockedAttribute = useEffectEvent(async (index: number) => {
+		const isInUse = await isAttributeUsed();
+		if (showDisclaimer.includes(index)) {
+			return;
+		}
+		if (isInUse?.inUse) {
+			return setShowDisclaimer((prev) => [...prev, index]);
+		}
+		return removeLockedAttributeField(index);
+	});
 
 	const getAttributeValuesError = useCallback(() => {
 		if (errors.attributeValues?.length && errors.attributeValues?.length > 0) {
@@ -118,6 +136,20 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									)}
 								</FieldRow>
 								{errors.lockedAttributes?.[index]?.value && <FieldError>{errors.lockedAttributes?.[index]?.value?.message}</FieldError>}
+								{showDisclaimer.includes(index) && (
+									<FieldError>
+										<Trans
+											i18nKey='ABAC_Cannot_delete_attribute_value_in_use'
+											values={{
+												goToRooms: (
+													<Box is='a' onClick={() => null}>
+														{t('ABAC_View_rooms')}
+													</Box>
+												),
+											}}
+										/>
+									</FieldError>
+								)}
 							</Fragment>
 						))}
 						{fields.map((field, index) => (
