@@ -139,7 +139,7 @@ cleanup() {
         echo "=========================================="
         echo "CONTAINER LOGS (Test Failed)"
         echo "=========================================="
-        logs_containers();
+        logs_containers
         echo "=========================================="
     fi
 
@@ -337,7 +337,7 @@ fi
 # Run the end-to-end tests
 
 if [ "$LOGS" = true ]; then
-    logs_containers();
+    logs_containers
     exit 0
 elif [ "$NO_TEST" = false ]; then
     log_info "Running end-to-end tests..."
