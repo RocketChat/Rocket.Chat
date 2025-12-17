@@ -17,7 +17,7 @@ import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import moment from 'moment-timezone';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import * as Mailer from '../../../mailer/server/api';
