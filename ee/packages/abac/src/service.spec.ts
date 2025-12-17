@@ -1076,7 +1076,7 @@ describe('AbacService (unit)', () => {
 			);
 		});
 
-		it('rejects with error-usernames-not-matching-abac-attributes and details for non-compliant users', async () => {
+		it('rejects with error-only-compliant-users-can-be-added-to-abac-rooms and details for non-compliant users', async () => {
 			const usernames = ['alice', 'bob', 'charlie'];
 			const nonCompliantDocs = [{ username: 'bob' }, { username: 'charlie' }];
 			mockUsersFind.mockImplementationOnce(() => ({
@@ -1086,9 +1086,7 @@ describe('AbacService (unit)', () => {
 			}));
 
 			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
-				error: 'error-usernames-not-matching-abac-attributes',
-				message: expect.stringContaining('[error-usernames-not-matching-abac-attributes]'),
-				details: expect.arrayContaining(['bob', 'charlie']),
+				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 			});
 		});
 
@@ -1119,7 +1117,7 @@ describe('AbacService (unit)', () => {
 			}));
 
 			await expect(service.checkUsernamesMatchAttributes(usernames, attributes as any, 'objectId')).rejects.toMatchObject({
-				error: 'error-usernames-not-matching-abac-attributes',
+				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 			});
 
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();

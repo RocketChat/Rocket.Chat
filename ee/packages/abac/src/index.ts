@@ -1,4 +1,4 @@
-import { MeteorError, Room, ServiceClass } from '@rocket.chat/core-services';
+import { Room, ServiceClass } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
@@ -25,6 +25,7 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
+	OnlyCompliantCanBeAddedToRoomError,
 } from './errors';
 import {
 	getAbacRoom,
@@ -480,11 +481,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
 
 		if (nonCompliantSet.size) {
-			throw new MeteorError(
-				'error-usernames-not-matching-abac-attributes',
-				'Some usernames do not comply with the ABAC attributes for the room',
-				Array.from(nonCompliantSet),
-			);
+			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
 
 		usernames.forEach((username) => {

@@ -112,10 +112,8 @@ slashCommands.add({
 					);
 				} catch (e: unknown) {
 					if (isMeteorError(e)) {
-						const details = Array.isArray(e.details) ? e.details.join(', ') : '';
-
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(e.message, { lng: settings.get('Language') || 'en', details: `\`${details}\`` }),
+							msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),
 						});
 						return;
 					}

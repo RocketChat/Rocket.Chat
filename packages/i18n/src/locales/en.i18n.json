@@ -6352,6 +6352,7 @@
   "error-not-authorized": "Not authorized",
   "error-not-authorized-federation": "Not authorized to access federation",
   "error-office-hours-are-closed": "The office hours are closed.",
+  "error-only-compliant-users-can-be-added-to-abac-rooms": "Only compliant users can be added to ABAC rooms.",
   "error-password-in-history": "Entered password has been previously used",
   "error-password-policy-not-met": "Password does not meet the server's policy",
   "error-password-policy-not-met-maxLength": "Password does not meet the server's policy of maximum length (password too long)",

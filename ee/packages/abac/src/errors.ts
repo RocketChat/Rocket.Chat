@@ -7,9 +7,9 @@ export enum AbacErrorCode {
 	AttributeDefinitionNotFound = 'error-attribute-definition-not-found',
 	RoomNotFound = 'error-room-not-found',
 	CannotConvertDefaultRoomToAbac = 'error-cannot-convert-default-room-to-abac',
-	UsernamesNotMatchingAbacAttributes = 'error-usernames-not-matching-abac-attributes',
 	AbacUnsupportedObjectType = 'error-abac-unsupported-object-type',
 	AbacUnsupportedOperation = 'error-abac-unsupported-operation',
+	OnlyCompliantCanBeAddedToRoom = 'error-only-compliant-users-can-be-added-to-abac-rooms',
 }
 
 export class AbacError extends Error {
@@ -83,5 +83,11 @@ export class AbacUnsupportedObjectTypeError extends AbacError {
 export class AbacUnsupportedOperationError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.AbacUnsupportedOperation, details);
+	}
+}
+
+export class OnlyCompliantCanBeAddedToRoomError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.OnlyCompliantCanBeAddedToRoom, details);
 	}
 }
