@@ -1561,7 +1561,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').that.includes('error-usernames-not-matching-abac-attributes');
+					expect(res.body).to.have.property('errorType', 'error-only-compliant-users-can-be-added-to-abac-rooms');
 				});
 		});
 
