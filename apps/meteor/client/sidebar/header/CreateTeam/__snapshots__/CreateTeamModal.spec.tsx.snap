@@ -149,7 +149,6 @@ exports[`renders Default without crashing 1`] = `
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
-                  data-qa="create-channel-users-autocomplete"
                   data-qa-type="user-auto-complete-input"
                   id=":r7:"
                 >
@@ -548,7 +547,6 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
-                  data-qa="create-channel-users-autocomplete"
                   data-qa-type="user-auto-complete-input"
                   id=":rh:"
                 >
