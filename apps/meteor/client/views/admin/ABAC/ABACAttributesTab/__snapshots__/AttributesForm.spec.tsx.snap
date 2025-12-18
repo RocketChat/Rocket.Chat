@@ -92,7 +92,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                     />
                   </span>
                   <button
-                    class="rcx-box rcx-box--full rcx-button"
+                    class="rcx-box rcx-box--full rcx-button rcx-css-cnkcl9"
                     disabled=""
                     type="button"
                   >
@@ -272,13 +272,13 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                       type="text"
                     />
                     <button
-                      class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+                      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-rxhtwq rcx-css-nc7kyx"
                       title="ABAC_Remove_attribute"
                       type="button"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-1x2l7ts"
+                        class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
                       >
                         
                       </i>
@@ -296,20 +296,20 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                       type="text"
                     />
                     <button
-                      class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+                      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-rxhtwq rcx-css-nc7kyx"
                       title="ABAC_Remove_attribute"
                       type="button"
                     >
                       <i
                         aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-1x2l7ts"
+                        class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
                       >
                         
                       </i>
                     </button>
                   </span>
                   <button
-                    class="rcx-box rcx-box--full rcx-button"
+                    class="rcx-box rcx-box--full rcx-button rcx-css-cnkcl9"
                     type="button"
                   >
                     <span

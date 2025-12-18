@@ -8,6 +8,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	IconButton,
+	Margins,
 	TextInput,
 } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
@@ -114,7 +115,9 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 										})}
 									/>
 									{index !== 0 && (
-										<IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+										<Margins inlineStart={4}>
+											<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+										</Margins>
 									)}
 								</FieldRow>
 								{errors.lockedAttributes?.[index]?.value && <FieldError>{errors.lockedAttributes?.[index]?.value?.message}</FieldError>}
@@ -132,13 +135,16 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 										})}
 									/>
 									{(index !== 0 || lockedAttributesFields.length > 0) && (
-										<IconButton title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+										<Margins inlineStart={4}>
+											<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+										</Margins>
 									)}
 								</FieldRow>
 								{errors.attributeValues?.[index]?.value && <FieldError>{errors.attributeValues[index].value.message}</FieldError>}
 							</Fragment>
 						))}
 						<Button
+							mb={8}
 							onClick={() => append({ value: '' })}
 							// Checking for values since rhf does consider the newly added field as dirty after an append() call
 							disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
