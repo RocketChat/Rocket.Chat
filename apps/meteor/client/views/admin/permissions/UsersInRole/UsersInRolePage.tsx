@@ -1,6 +1,7 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, type ReactElement } from 'react';
@@ -9,8 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTable from './UsersInRoleTable';
 import { useRemoveUserFromRole } from './hooks/useRemoveUserFromRole';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 

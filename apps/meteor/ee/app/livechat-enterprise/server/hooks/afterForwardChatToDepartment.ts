@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(

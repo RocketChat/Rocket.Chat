@@ -1,0 +1,440 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
+          >
+            <img
+              alt=""
+              class="rcx-avatar__element rcx-avatar__element--x40"
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-v5o1rw"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
+              >
+                
+              </i>
+            </div>
+            <h1
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </h1>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="start"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-key rcx-icon rcx-css-gcnmf8"
+              icon="key"
+            >
+              
+            </i>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-language rcx-icon rcx-css-gcnmf8"
+              icon="language"
+            >
+              
+            </i>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </div>
+          </div>
+        </div>
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="magnifier"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="key"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-key rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="menu"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`renders WithActionBadge without crashing 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
+          >
+            <img
+              alt=""
+              class="rcx-avatar__element rcx-avatar__element--x40"
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-v5o1rw"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
+              >
+                
+              </i>
+            </div>
+            <h1
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </h1>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="favorite"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </div>
+          </div>
+        </div>
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="call"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1g43rrm rcx-css-yo1v45"
+              role="status"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+              >
+                1
+              </span>
+            </div>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="disable"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1g43rrm rcx-css-yo1v45"
+              role="status"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+              >
+                2
+              </span>
+            </div>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="decline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1g43rrm rcx-css-yo1v45"
+              role="status"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-badge rcx-badge--warning"
+              >
+                99
+              </span>
+            </div>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="menu"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;
+
+exports[`renders WithBurger without crashing 1`] = `
+<body>
+  <div>
+    <header
+      class="rcx-box rcx-box--full rcx-room-header rcx-css-7tefqp"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1apkof4"
+      >
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="burger"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-burger rcx-icon rcx-css-1x2l7ts"
+            >
+              
+            </i>
+          </button>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-llee4e"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
+          >
+            <img
+              alt=""
+              class="rcx-avatar__element rcx-avatar__element--x40"
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1axz7ym"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-v5o1rw"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1o911xq"
+              >
+                
+              </i>
+            </div>
+            <h1
+              class="rcx-box rcx-box--full rcx-css-15uaxsl"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </h1>
+            <button
+              class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
+              title="star"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-star rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+            </button>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-key rcx-icon rcx-css-gcnmf8"
+              icon="key"
+            >
+              
+            </i>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-language rcx-icon rcx-css-gcnmf8"
+              icon="language"
+            >
+              
+            </i>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1yimpo4"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-19rfpw1"
+            >
+              general general general general general general general general general general general general general general general general general general general
+            </div>
+          </div>
+        </div>
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="magnifier"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="key"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-key rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ll6zd0"
+            title="menu"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+      />
+    </header>
+  </div>
+</body>
+`;

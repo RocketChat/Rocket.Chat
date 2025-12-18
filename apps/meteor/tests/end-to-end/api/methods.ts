@@ -404,30 +404,36 @@ describe('Meteor.methods', () => {
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in the main room", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: otherThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: otherThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+					);
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
@@ -3102,106 +3108,153 @@ describe('Meteor.methods', () => {
 		let room: IRoom;
 		let createdRooms: IRoom[] = [];
 
-		before(async () => {
-			guestUser = await createUser({ roles: ['guest'] });
-			user = await createUser();
-			room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-				})
-			).body.channel;
-			createdRooms.push(room);
-		});
-		after(() =>
-			Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
-		);
+		describe('Direct Message', () => {
+			let thirdUser: TestUser<IUser>;
+			before(async () => {
+				guestUser = await createUser({ roles: ['user'] });
+				thirdUser = await createUser({ roles: ['user'] });
+				user = await createUser();
+				room = (
+					await createRoom({
+						type: 'd',
+						username: guestUser.username,
+					})
+				).body.room;
+				createdRooms.push(room);
+			});
+			after(() =>
+				Promise.all([
+					...createdRooms.map((r) => deleteRoom({ type: 'd', roomId: r._id })),
+					deleteUser(user),
+					deleteUser(guestUser),
+					deleteUser(thirdUser),
+				]),
+			);
 
-		it('should fail if not logged in', (done) => {
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should add a single user to a room', (done) => {
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: room._id, users: [user.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.then(() => {
-					void request
-						.get(api('channels.members'))
-						.set(credentials)
-						.query({
-							roomId: room._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('members').and.to.be.an('array');
-							expect(res.body.members).to.have.lengthOf(2);
-						})
-						.end(done);
-				})
-				.catch(done);
+			it('should fail when trying to add a user to a direct message room', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [thirdUser.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').that.is.an('string');
+						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
+					})
+					.end(done);
+			});
 		});
 
-		it('should not add guest users to more rooms than defined in the license', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!process.env.IS_EE) {
-				this.skip();
-			}
-			const promises = [];
-			for (let i = 0; i < maxRoomsPerGuest; i++) {
-				promises.push(
-					createRoom({
+		describe('Channel', () => {
+			before(async () => {
+				guestUser = await createUser({ roles: ['guest'] });
+				user = await createUser();
+				room = (
+					await createRoom({
 						type: 'c',
 						name: `channel.test.${Date.now()}-${Math.random()}`,
-						members: [guestUser.username],
-					}),
-				);
-			}
-			createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
+					})
+				).body.channel;
+				createdRooms.push(room);
+			});
+			after(() =>
+				Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
+			);
 
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: room._id, users: [guestUser.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
-				});
+			it('should fail if not logged in', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('message');
+					})
+					.end(done);
+			});
+
+			it('should add a single user to a room', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [user.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.then(() => {
+						void request
+							.get(api('channels.members'))
+							.set(credentials)
+							.query({
+								roomId: room._id,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body).to.have.property('members').and.to.be.an('array');
+								expect(res.body.members).to.have.lengthOf(2);
+							})
+							.end(done);
+					})
+					.catch(done);
+			});
+
+			it('should not add guest users to more rooms than defined in the license', async function () {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (!process.env.IS_EE) {
+					this.skip();
+				}
+				const promises = [];
+				for (let i = 0; i < maxRoomsPerGuest; i++) {
+					promises.push(
+						createRoom({
+							type: 'c',
+							name: `channel.test.${Date.now()}-${Math.random()}`,
+							members: [guestUser.username],
+						}),
+					);
+				}
+				createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
+
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [guestUser.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const parsedBody = JSON.parse(res.body.message);
+						expect(parsedBody).to.have.property('error');
+						expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
+					});
+			});
 		});
 	});
 
