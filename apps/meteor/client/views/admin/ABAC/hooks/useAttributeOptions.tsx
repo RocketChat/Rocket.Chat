@@ -58,7 +58,6 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 					icon={null}
 					title={t('ABAC_Cannot_delete_attribute')}
 					confirmText={t('View_rooms')}
-					// TODO Route to rooms tab once implemented
 					onConfirm={() => {
 						viewRoomsAction(attribute.key);
 						setModal(null);
