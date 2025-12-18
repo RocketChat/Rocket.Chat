@@ -67,4 +67,5 @@ export interface IRoomService {
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
 	}): Promise<string | undefined>;
+	updateDirectMessageRoomName(room: IRoom): Promise<boolean>;
 }
