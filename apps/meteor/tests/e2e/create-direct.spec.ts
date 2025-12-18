@@ -22,6 +22,6 @@ test.describe.serial('channel-direct-message', () => {
 		await page.keyboard.press('Enter');
 		await poHomeChannel.sidenav.btnCreate.click();
 
-		await expect(page).toHaveURL('direct/rocket.catrocketchat.internal.admin.test');
+		await expect(page).toHaveURL(/direct\/.*/);
 	});
 });
