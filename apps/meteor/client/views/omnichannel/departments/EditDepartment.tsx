@@ -416,7 +416,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<Controller
 								control={control}
 								name='chatClosingTags'
-								rules={{ required: t('Required_field', { field: 'tags' }) }}
 								render={({ field: { value, onChange } }) => (
 									<DepartmentTags
 										id={chatClosingTagsField}
