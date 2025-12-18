@@ -117,7 +117,7 @@ export const useIframeCommands = () => {
 				return;
 			}
 
-			const command: (data: any, event: MessageEvent) => void = commands[event.data.externalCommand];
+			const command: (data: MessageEvent['data'], event: MessageEvent) => void = commands[event.data.externalCommand];
 			command(event.data, event);
 		};
 
