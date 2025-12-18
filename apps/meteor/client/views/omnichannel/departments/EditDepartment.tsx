@@ -69,11 +69,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		register,
 		control,
 		handleSubmit,
-		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
 	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
-
-	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);
@@ -415,13 +412,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						</Field>
 
 						<Field>
-							<FieldLabel htmlFor={chatClosingTagsField} required={requestTagBeforeClosingChat}>
-								{t('Conversation_closing_tags')}
-							</FieldLabel>
+							<FieldLabel htmlFor={chatClosingTagsField}>{t('Conversation_closing_tags')}</FieldLabel>
 							<Controller
 								control={control}
 								name='chatClosingTags'
-								rules={{ required: requestTagBeforeClosingChat && t('Required_field', { field: 'tags' }) }}
+								rules={{ required: t('Required_field', { field: 'tags' }) }}
 								render={({ field: { value, onChange } }) => (
 									<DepartmentTags
 										id={chatClosingTagsField}
@@ -429,7 +424,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										onChange={onChange}
 										error={errors.chatClosingTags?.message as string}
 										aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
-										disabled={!requestTagBeforeClosingChat}
 									/>
 								)}
 							/>
