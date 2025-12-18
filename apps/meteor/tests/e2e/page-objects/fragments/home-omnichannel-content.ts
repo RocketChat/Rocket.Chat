@@ -47,8 +47,12 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
 	}
 
+	get header(): Locator {
+		return this.page.locator('header');
+	}
+
 	get btnReturn(): Locator {
-		return this.page.getByRole('button', { name: 'Back' });
+		return this.header.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {

@@ -1,38 +1,33 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Box, Callout, Tabs } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
+import { useOmnichannelDirectoryRouter } from './hooks/useOmnichannelDirectoryRouter';
 import ChatsProvider from './providers/ChatsProvider';
-
-const DEFAULT_TAB = 'chats';
+import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
 
 const OmnichannelDirectoryPage = () => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
-	useEffect(
-		() =>
-			router.subscribeToRouteChange(() => {
-				if (router.getRouteName() !== 'omnichannel-directory' || !!router.getRouteParameters().tab) {
-					return;
-				}
+	const isWorkspaceOverMacLimit = useIsOverMacLimit();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-				router.navigate({
-					name: 'omnichannel-directory',
-					params: { tab: DEFAULT_TAB },
-				});
-			}),
-		[router],
-	);
+	useEffect(() => {
+		if (!omnichannelDirectoryRouter.getRouteName() || (omnichannelDirectoryRouter.getRouteName() && !!tab)) {
+			return;
+		}
 
-	const handleTabClick = useCallback((tab: string) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
+		omnichannelDirectoryRouter.navigate({ tab: 'chats' });
+	}, [omnichannelDirectoryRouter, tab]);
+
+	const handleTabClick = useCallback((tab: string) => omnichannelDirectoryRouter.navigate({ tab }), [omnichannelDirectoryRouter]);
 
 	return (
 		<ChatsProvider>
@@ -48,6 +43,13 @@ const OmnichannelDirectoryPage = () => {
 						</Tabs.Item>
 					</Tabs>
 					<PageContent>
+						{isWorkspaceOverMacLimit && (
+							<Box mbs={16}>
+								<Callout type='danger' icon='warning' title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}>
+									{t('Talk_to_your_workspace_admin_to_address_this_issue')}
+								</Callout>
+							</Box>
+						)}
 						{tab === 'chats' && <ChatsTab />}
 						{tab === 'contacts' && <ContactTab />}
 					</PageContent>

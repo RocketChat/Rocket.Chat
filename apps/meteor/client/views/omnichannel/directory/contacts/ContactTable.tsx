@@ -9,7 +9,6 @@ import {
 	usePagination,
 	useSort,
 } from '@rocket.chat/ui-client';
-import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +18,13 @@ import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { links } from '../../../../lib/links';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 function ContactTable() {
 	const { t } = useTranslation();
 
 	const [term, setTerm] = useState('');
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
@@ -43,7 +43,7 @@ function ContactTable() {
 	);
 
 	const onButtonNewClick = useEffectEvent(() =>
-		directoryRoute.push({
+		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'new',
 		}),

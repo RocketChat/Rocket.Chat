@@ -1031,7 +1031,6 @@
   "Created_by": " Oprettet af",
   "Crowd_Remove_Orphaned_Users": "Fjern efterladte brugere",
   "Crowd_sync_interval_Description": "Intervallet mellem synkroniseringer. F.eks. \"hver 24. time\" eller \"på den første dag i ugen\". Flere eksempler kan se på [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Nuværende chats",
   "Current_File": "Nuværende fil",
   "Current_Import_Operation": "Aktuel importhandling",
   "Current_Status": "Nuværende status",

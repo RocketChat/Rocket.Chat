@@ -704,7 +704,6 @@
   "Created_at_s_by_s": "Dibuat <strong>pada%s</strong> <strong>dengan%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Dibuat di <strong>%s</strong> oleh <strong>%s</strong> dipicu oleh <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Interval antara sinkronisasi. Contoh `setiap 24 jam` atau` pada hari pertama dalam minggu `, lebih banyak contoh di [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Chatting saat ini",
   "Current_Status": "Status terkini",
   "Custom": "Adat",
   "Custom CSS": "CSS kustom",

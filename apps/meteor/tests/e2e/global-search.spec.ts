@@ -62,7 +62,7 @@ test.describe.serial('Global Search', () => {
 	});
 
 	test('should open the correct message when jumping from global search in group to channel thread', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetGroup.name);
+		await poHomeChannel.navbar.openChat(targetGroup.name);
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();
 
 		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true }); // fill partial text to match search

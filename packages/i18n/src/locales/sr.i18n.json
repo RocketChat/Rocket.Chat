@@ -614,7 +614,6 @@
   "Created_at_s_by_s": "Направљена у <strong>%s</strong> од <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Креиран је на <strong>%s</strong> од стране <strong>%s</strong> покренут од стране <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Интервал између синхронизације. Пример \"свака 24 сата\" или \"првог дана у недељи\", више примера на [Cron Text Parser](http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Тренутна ћаскања",
   "Current_Status": "Тренутни статус",
   "Custom": "Произвољно",
   "Custom CSS": "Прилагођени CSS",

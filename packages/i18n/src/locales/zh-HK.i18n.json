@@ -724,7 +724,6 @@
   "Created_at_s_by_s": "由<strong>％s</strong>创建于<strong>％s</strong>",
   "Created_at_s_by_s_triggered_by_s": "由<strong>％s</strong>触发，由<strong>％s</strong>创建于<strong>％s</strong>",
   "Crowd_sync_interval_Description": "同步之间的时间间隔。例如“每24小时”或“每周的第一天”，在[Cron Text Parser]（http://bunkat.github.io/later/parsers.html#text）上的更多示例，",
-  "Current_Chats": "当前聊天",
   "Current_Status": "当前状态",
   "Custom": "习惯",
   "Custom CSS": "自定义CSS",

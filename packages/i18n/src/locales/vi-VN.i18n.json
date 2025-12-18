@@ -796,7 +796,6 @@
   "Created_at_s_by_s": "Tạo tại <strong>%s</strong> bởi <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Tạo tại <strong>%s</strong> bởi <strong>%s</strong> được kích hoạt bởi <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Khoảng giữa các lần đồng bộ hóa. Ví dụ \"mỗi 24 giờ\" hoặc \"vào ngày đầu tiên trong tuần\", thêm ví dụ tại [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Cuộc trò chuyện hiện tại",
   "Current_Status": "Tình trạng hiện tại",
   "Custom": "Tuỳ chỉnh",
   "Custom CSS": "CSS tùy chỉnh",

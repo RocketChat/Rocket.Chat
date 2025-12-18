@@ -702,7 +702,6 @@
   "Created_at_s_by_s": "Crëwyd yn <strong>%s</strong> gan <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Crëwyd yn <strong>%s</strong> gan <strong>%s</strong> a achoswyd gan <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Yr egwyl rhwng synchronizations. Enghraifft `bob 24 awr` neu` ar ddiwrnod cyntaf yr wythnos`, mwy o enghreifftiau yn [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Cyfathrebiadau Cyfredol",
   "Current_Status": "Statws Cyfredol",
   "Custom": "Custom",
   "Custom CSS": "CSS CSS",

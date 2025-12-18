@@ -711,7 +711,6 @@
   "Created_at_s_by_s": "Iekš <strong>%s</strong> izveidoja <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Iekš <strong>%s</strong> izveidoja <strong>%s</strong> ko aktivizē <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Intervāls starp sinhronizācijām. Piemērs \"ik pēc 24 stundām\" vai \"pirmajā nedēļas dienā\", vairāk piemēri [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Pašreizējās tērzēšanas",
   "Current_Status": "Pašreizējais statuss",
   "Custom": "Pielāgots",
   "Custom CSS": "Pielāgots CSS",

@@ -702,7 +702,6 @@
   "Created_at_s_by_s": "<strong>%s</strong> дээр үүсгэсэн <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong><strong>%s</strong>үүсгэсэн <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Синхрончлолуудын хоорондын интервал. Жишээ нь `24 цаг` эсвэл` долоо хоногийн эхний өдөр `, жишээ нь [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Одоогийн чат",
   "Current_Status": "Одоогийн байдал",
   "Custom": "Custom",
   "Custom CSS": "CSS тохиргоо",

@@ -65,7 +65,7 @@ const ERROR = {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Omnichannel Contact Center', () => {
+test.describe('OC - Contact Center - Contacts', () => {
 	let poContacts: OmnichannelContacts;
 	let poOmniSection: OmnichannelSection;
 

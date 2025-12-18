@@ -858,7 +858,6 @@
   "Created_at_s_by_s": "បានបង្កើតនូវ <strong>%s</strong> by <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "បានបង្កើតនៅ <strong>%s</strong>ដោយ <strong>%s</strong>ដែលបានបង្កឡើងដោយ <strong>%s</strong>",
   "Crowd_sync_interval_Description": "ចន្លោះពេលរវាងការធ្វើសមកាលកម្ម។ ឧទាហរណ៍ \"រៀងរាល់ 24 ម៉ោង\" ឬ `នៅថ្ងៃដំបូងនៃសប្តាហ៍ 'ឧទាហរណ៍ជាច្រើនទៀតនៅ [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "ការជជែកបច្ចុប្បន្ន",
   "Current_File": "ឯកសារបច្ចុប្បន្ន",
   "Current_Status": "ស្ថានភាព​បច្ចុប្បន្ន",
   "Custom": "ផ្ទាល់ខ្លួន",

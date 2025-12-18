@@ -1012,7 +1012,6 @@
   "Created_by": "의해서 생성됨",
   "Crowd_Remove_Orphaned_Users": "방치된 사용자 제거",
   "Crowd_sync_interval_Description": "동기화 간격. 예를 들어 '매 24 시간마다'또는 '주의 첫날에', [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)에서 더 많은 예제를 볼 수 있습니다.",
-  "Current_Chats": "현재 채팅",
   "Current_File": "현재 파일",
   "Current_Import_Operation": "현재 가져오기 작업",
   "Current_Status": "현재 상태",

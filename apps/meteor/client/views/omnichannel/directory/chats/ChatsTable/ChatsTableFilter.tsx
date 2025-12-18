@@ -1,18 +1,19 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
-import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../../components/FilterByText';
 import { useChatsContext } from '../../contexts/ChatsContext';
+import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
 
 const ChatsTableFilter = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 	const queryClient = useQueryClient();
 	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
 
@@ -65,7 +66,7 @@ const ChatsTableFilter = () => {
 			>
 				<Button
 					onClick={() =>
-						directoryRoute.push({
+						omnichannelDirectoryRouter.navigate({
 							tab: 'chats',
 							context: 'filters',
 						})

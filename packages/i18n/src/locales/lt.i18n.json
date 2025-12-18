@@ -753,7 +753,6 @@
   "Created_at_s_by_s": "Sukurta <strong>%s</strong>, padaryta <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Sukurta <strong>%s</strong><strong>%s</strong> suaktyvinta <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Intervalas tarp sinchronizacijos. Pavyzdys \"kas 24 valandas\" arba \"pirmąją savaitės dieną\", daugiau pavyzdžių pateikiama [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Dabartiniai pokalbiai",
   "Current_Status": "Dabartinis statusas",
   "Custom": "Tinkintas",
   "Custom CSS": "Tinkintas CSS",

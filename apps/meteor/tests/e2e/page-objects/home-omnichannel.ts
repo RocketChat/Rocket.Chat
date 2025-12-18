@@ -5,8 +5,8 @@ import { OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar } from './fr
 import { HomeChannel } from './home-channel';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
+import { OmnichannelChats } from './omnichannel-contact-center-chats';
 import { OmnichannelContacts } from './omnichannel-contacts-list';
-import { OmnichannelCurrentChats } from './omnichannel-current-chats';
 import { OmnichannelManager } from './omnichannel-manager';
 import { OmnichannelMonitors } from './omnichannel-monitors';
 import { OmnichannelRoomInfo } from './omnichannel-room-info';
@@ -17,8 +17,6 @@ export class HomeOmnichannel extends HomeChannel {
 	readonly triggers: OmnichannelTriggers;
 
 	readonly omnisidenav: OmnichannelSidenav;
-
-	readonly currentChats: OmnichannelCurrentChats;
 
 	readonly transcript: OmnichannelTranscript;
 
@@ -32,6 +30,8 @@ export class HomeOmnichannel extends HomeChannel {
 
 	readonly contacts: OmnichannelContacts;
 
+	readonly chats: OmnichannelChats;
+
 	readonly roomInfo: OmnichannelRoomInfo;
 
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
@@ -44,13 +44,13 @@ export class HomeOmnichannel extends HomeChannel {
 		super(page);
 		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidenav(page);
-		this.currentChats = new OmnichannelCurrentChats(page);
 		this.transcript = new OmnichannelTranscript(page);
 		this.cannedResponses = new OmnichannelCannedResponses(page);
 		this.agents = new OmnichannelAgents(page);
 		this.managers = new OmnichannelManager(page);
 		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContacts(page);
+		this.chats = new OmnichannelChats(page);
 		this.roomInfo = new OmnichannelRoomInfo(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
 		this.content = new HomeOmnichannelContent(page);
