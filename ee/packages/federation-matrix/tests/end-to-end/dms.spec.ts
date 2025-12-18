@@ -465,7 +465,7 @@ const waitForRoomEvent = async (
 					await retry(
 						'this is an async operation, so we need to wait for the event to be processed',
 						async () => {
-							const sub = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials);
+							const sub = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials, rcUserConfig1.request);
 
 							expect(sub).not.toHaveProperty('status');
 							expect(sub).toHaveProperty('name', userDm2);
