@@ -329,4 +329,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	insertAbacAttributeIfNotExistsById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
+	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;
 }
