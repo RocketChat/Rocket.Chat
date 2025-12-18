@@ -9,6 +9,7 @@ import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAdd
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
+import { isStringError } from '../lib/error';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -96,20 +97,30 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 				});
 			}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription) {
-				return addUserToRoom(data.rid, newUser, user);
+			try {
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+				if (!subscription) {
+					return await addUserToRoom(data.rid, newUser, user);
+				}
+				if (!newUser.username) {
+					return;
+				}
+				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+					msg: i18n.t('Username_is_already_in_here', {
+						postProcess: 'sprintf',
+						sprintf: [newUser.username],
+						lng: user?.language,
+					}),
+				});
+			} catch (e: unknown) {
+				if (isStringError(e)) {
+					void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+						msg: i18n.t(e.error, {
+							lng: user?.language,
+						}),
+					});
+				}
 			}
-			if (!newUser.username) {
-				return;
-			}
-			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-				msg: i18n.t('Username_is_already_in_here', {
-					postProcess: 'sprintf',
-					sprintf: [newUser.username],
-					lng: user?.language,
-				}),
-			});
 		}),
 	);
 

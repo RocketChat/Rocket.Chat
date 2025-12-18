@@ -6,14 +6,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { FederationActions } from '../../../server/services/room/hooks/BeforeFederationActions';
+import { isStringError } from '../../lib/server/lib/error';
 import { addUsersToRoomMethod, sanitizeUsername } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
-
-// Type guards for the error
-function isStringError(error: unknown): error is { error: string } {
-	return typeof (error as any)?.error === 'string';
-}
 
 /*
  * Invite is a named function that will replace /invite commands
