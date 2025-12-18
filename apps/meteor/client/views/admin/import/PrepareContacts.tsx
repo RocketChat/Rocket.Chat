@@ -1,9 +1,8 @@
 import type { IImporterSelectionContact } from '@rocket.chat/core-typings';
 import { CheckBox, Table, Pagination, TableHead, TableRow, TableCell, TableBody } from '@rocket.chat/fuselage';
+import { usePagination } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 
 type PrepareContactsProps = {
 	contactsCount: number;

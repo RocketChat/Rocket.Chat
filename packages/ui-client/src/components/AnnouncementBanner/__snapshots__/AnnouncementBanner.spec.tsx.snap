@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1szqnba rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-vsh9r1 rcx-css-k3fjzq"
       role="button"
       tabindex="0"
     >
@@ -22,7 +22,7 @@ exports[`renders WithLink without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1szqnba rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-vsh9r1 rcx-css-k3fjzq"
       role="button"
       tabindex="0"
     >
