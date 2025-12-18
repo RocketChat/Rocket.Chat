@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div>
+      Friday, February 7, 2025 at 12:00:00 PM
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders French without crashing 1`] = `
+<body>
+  <div>
+    <div>
+      vendredi 22 août 2025 à 12:00:00
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders German without crashing 1`] = `
+<body>
+  <div>
+    <div>
+      Dienstag, 11. November 2025 um 12:00:00
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Japanese without crashing 1`] = `
+<body>
+  <div>
+    <div>
+      2025年12月16日火曜日 12:00:00
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Spanish without crashing 1`] = `
+<body>
+  <div>
+    <div>
+      lunes, 7 de julio de 2025, 12:00:00
+    </div>
+  </div>
+</body>
+`;

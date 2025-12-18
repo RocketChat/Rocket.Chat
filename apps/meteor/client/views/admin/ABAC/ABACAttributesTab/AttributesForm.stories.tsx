@@ -3,26 +3,37 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import AdminABACRoomAttributesForm, { type AdminABACRoomAttributesFormFormData } from './AdminABACRoomAttributesForm';
+import AttributesForm, { type AttributesFormFormData } from './AttributesForm';
 
 export default {
-	component: AdminABACRoomAttributesForm,
+	component: AttributesForm,
 	parameters: {
 		layout: 'padded',
 	},
 	args: {
 		description: 'Create an attribute that can later be assigned to rooms.',
 	},
-	decorators: [mockAppRoot().buildStoryDecorator()],
-} satisfies Meta<typeof AdminABACRoomAttributesForm>;
+	decorators: [
+		mockAppRoot()
+			.withTranslations('en', 'core', {
+				Name: 'Name',
+				Values: 'Values',
+				Add_Value: 'Add Value',
+				Cancel: 'Cancel',
+				Save: 'Save',
+				Required_field: '{{field}} is required',
+			})
+			.buildStoryDecorator(),
+	],
+} satisfies Meta<typeof AttributesForm>;
 
-const Template: StoryFn<typeof AdminABACRoomAttributesForm> = (args) => <AdminABACRoomAttributesForm {...args} />;
+const Template: StoryFn<typeof AttributesForm> = (args) => <AttributesForm {...args} />;
 
 export const NewAttribute = Template.bind({});
 
 NewAttribute.decorators = [
 	(fn) => {
-		const methods = useForm<AdminABACRoomAttributesFormFormData>({
+		const methods = useForm<AttributesFormFormData>({
 			defaultValues: {
 				name: '',
 				attributeValues: [{ value: '' }],
@@ -49,7 +60,7 @@ WithLockedAttributes.args = {
 
 WithLockedAttributes.decorators = [
 	(fn) => {
-		const methods = useForm<AdminABACRoomAttributesFormFormData>({
+		const methods = useForm<AttributesFormFormData>({
 			defaultValues: {
 				name: 'Room Type',
 				lockedAttributes: [{ value: 'Locked Value 1' }, { value: 'Locked Value 2' }, { value: 'Locked Value 3' }],
