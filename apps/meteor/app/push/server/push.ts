@@ -1,7 +1,7 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { pick } from '@rocket.chat/tools';
+import { pick, truncateString } from '@rocket.chat/tools';
 import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
@@ -15,7 +15,8 @@ import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
-const MESSAGE_BODY_LIMIT = 150;
+const PUSH_TITLE_LIMIT = 50;
+const PUSH_MESSAGE_BODY_LIMIT = 150;
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -461,8 +462,10 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
+			title: options.title.length > PUSH_TITLE_LIMIT ? truncateString(options.title, PUSH_TITLE_LIMIT) : options.title,
+			text: options.text.length > PUSH_MESSAGE_BODY_LIMIT ? truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) : options.text,
 
-			...pick(options, 'from', 'title', 'text', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
 
 			...(this.hasApnOptions(options)
 				? {
@@ -482,11 +485,6 @@ class PushClass {
 
 		// Validate the notification
 		this._validateDocument(notification);
-
-		// Truncate notification.text to 150 characters to keep the payload size small.
-		if (notification.text && notification.text.length > MESSAGE_BODY_LIMIT) {
-			notification.text = `${notification.text.slice(0, MESSAGE_BODY_LIMIT - 3)}...`;
-		}
 
 		try {
 			await this.sendNotification(notification);

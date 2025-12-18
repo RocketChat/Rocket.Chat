@@ -1,5 +1,5 @@
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
-import { pick } from '@rocket.chat/tools';
+import { pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -10,7 +10,7 @@ const settingsStub = { get: sinon.stub().returns('') };
 const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push', {
 	'./logger': { logger: loggerStub },
 	'../../settings/server': { settings: settingsStub },
-	'@rocket.chat/tools': { pick },
+	'@rocket.chat/tools': { pick, truncateString },
 	'meteor/check': {
 		check: sinon.stub(),
 		Match: {
@@ -59,8 +59,8 @@ describe('Push Notifications [PushClass]', () => {
 			expect(notification.userId).to.equal('user1');
 		});
 
-		it('should truncate text longer than 150 chars', async () => {
-			const longText = 'a'.repeat(4000);
+		it('should truncate text if longer than 150 chars', async () => {
+			const longText = 'a'.repeat(200);
 			const options: IPushNotificationConfig = {
 				from: 'test',
 				title: 'title',
@@ -75,6 +75,24 @@ describe('Push Notifications [PushClass]', () => {
 			const notification = sendNotificationStub.firstCall.args[0];
 
 			expect(notification.text.length).to.equal(150);
+		});
+
+		it('should truncate title if longer than 50 chars', async () => {
+			const longTitle = 'a'.repeat(100);
+			const options: IPushNotificationConfig = {
+				from: 'test',
+				title: longTitle,
+				text: 'bpdu',
+				userId: 'user1',
+				apn: { category: 'MESSAGE' },
+				gcm: { style: 'inbox', image: 'url' },
+			};
+
+			await Push.send(options);
+
+			const notification = sendNotificationStub.firstCall.args[0];
+
+			expect(notification.title.length).to.equal(50);
 		});
 
 		it('should throw if userId is missing', async () => {
