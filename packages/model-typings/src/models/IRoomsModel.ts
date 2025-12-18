@@ -29,7 +29,14 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
-	findByTypes(types: Array<IRoom['t']>, discussion?: boolean, teams?: boolean, findOptions?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findAllByTypesAndDiscussionAndTeam(
+		filters?: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		},
+		findOptions?: FindOptions<IRoom>,
+	): FindCursor<IRoom>;
 
 	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
 

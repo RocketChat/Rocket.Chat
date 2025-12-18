@@ -197,7 +197,7 @@ export class AppRoomBridge extends RoomBridge {
 			projection: rawRoomProjection,
 		};
 
-		const { types = [], discussions, teams } = filters;
+		const { types, discussions, teams } = filters;
 
 		const rooms: IRoomRaw[] = [];
 
@@ -206,7 +206,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Room converter not found');
 		}
 
-		for await (const room of Rooms.findByTypes(types, discussions, teams, findOptions)) {
+		for await (const room of Rooms.findAllByTypesAndDiscussionAndTeam({ types, discussions, teams }, findOptions)) {
 			const converted = await roomConverter.convertRoomRaw(room);
 			if (converted) {
 				rooms.push(converted);

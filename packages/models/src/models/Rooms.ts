@@ -2321,24 +2321,29 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
-	findByTypes(types: Array<IRoom['t']>, discussion = false, teams = false, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query: Filter<IRoom> = {
-			...(types?.length || discussion || teams
-				? {
-						$or: [
-							{
-								t: {
-									$in: types,
-								},
-							},
-							...(discussion ? [{ prid: { $exists: true } }] : []),
-							...(teams ? [{ teamMain: { $exists: true } }] : []),
-						],
-					}
-				: {}),
-			...(!discussion ? { prid: { $exists: false } } : {}),
-			...(!teams ? { teamMain: { $exists: false } } : {}),
-		};
+	findAllByTypesAndDiscussionAndTeam(
+		filters: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		} = {},
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const { types, discussions, teams } = filters;
+
+		const query: Filter<IRoom> = {};
+
+		if (types) {
+			query.t = { $in: types };
+		}
+
+		if (typeof discussions !== 'undefined') {
+			query.prid = { $exists: discussions };
+		}
+
+		if (typeof teams !== 'undefined') {
+			query.teamMain = { $exists: teams };
+		}
 
 		return this.find(query, options);
 	}
