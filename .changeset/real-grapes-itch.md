@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Tag input visibility is now consistent with the setting for requesting tags before closing conversations, allowing users to remove tags anytime.
+Fixes an issue where it‘s not being possible to configure department's `chatClosingTags` without enabling `requestTagBeforeClosingTag`
