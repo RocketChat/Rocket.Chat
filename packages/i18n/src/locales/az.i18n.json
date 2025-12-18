@@ -703,7 +703,6 @@
   "Created_at_s_by_s": "<strong>%s</strong> tərəfindən <strong>%s</strong> da yaradılıb.",
   "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong> tərəfindən tetiklenen <strong>%s</strong><strong>%s</strong>",
   "Crowd_sync_interval_Description": "Sinxronizasiyalar arasında interval. Məsələn, hər 24 saatda və ya həftənin birinci günü, daha çox nümunə [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Cari söhbətlər",
   "Current_Status": "Mövcud vəziyyət",
   "Custom": "Xüsusi",
   "Custom CSS": "Xüsusi CSS",

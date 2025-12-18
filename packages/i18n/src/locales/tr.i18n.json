@@ -831,7 +831,6 @@
   "Created_at_s_by_s": "<strong>%s</strong>'de <strong>%s</strong> tarafından oluşturuldu",
   "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong>'de <strong>%s</strong> tarafından <strong>%s</strong> tetiklemesiyle oluşturuldu",
   "Crowd_sync_interval_Description": "Senkronizasyon arasındaki süre. Örnek 'her 24 saatte bir' veya 'haftanın ilk günü', daha fazla örnek [Cron Metin Ayrıştırıcı] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Mevcut Görüşmeler",
   "Current_File": "Mevcut Dosya",
   "Current_Status": "Şu anki durum",
   "Custom": "Özel",
