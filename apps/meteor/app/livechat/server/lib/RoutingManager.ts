@@ -29,7 +29,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 

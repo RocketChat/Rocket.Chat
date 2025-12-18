@@ -103,6 +103,10 @@ export class AdminSidebar extends Sidebar {
 		super(page.getByRole('navigation', { name: 'Administration' }));
 	}
 
+	get linkEmoji() {
+		return this.root.getByRole('link', { name: 'Emoji' });
+	}
+
 	async close(): Promise<void> {
 		await this.btnClose.click();
 		await this.waitForDismissal();
