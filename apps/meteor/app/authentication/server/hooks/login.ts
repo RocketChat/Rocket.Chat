@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
