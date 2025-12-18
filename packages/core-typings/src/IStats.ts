@@ -271,4 +271,8 @@ export interface IStats {
 		totalUpsellViews: number;
 		totalUpsellClicks: number;
 	};
+	abacEnabled?: boolean;
+	abacTotalAttributes?: number;
+	abacTotalAttributeValues?: number;
+	abacRoomsEnrolled?: number;
 }

@@ -22,6 +22,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
@@ -1032,49 +1033,120 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
-export const roomEndpoints = API.v1.get(
-	'rooms.roles',
-	{
-		authRequired: true,
-		query: ajv.compile<{
-			rid: string;
-		}>(isRoomGetRolesPropsSchema),
-		response: {
-			200: ajv.compile<{
-				roles: RoomRoles[];
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajv.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['rid', 'u', 'roles'],
+							},
+						},
+					},
+					required: ['roles'],
+				}),
+			},
+		},
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.userId);
+
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.get(
+		'rooms.adminRooms.privateRooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-room-administration'],
+			query: ajv.compile<{
+				filter?: string;
+				offset?: number;
+				count?: number;
+				sort?: string;
 			}>({
 				type: 'object',
 				properties: {
-					roles: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								u: {
-									type: 'object',
-									properties: { _id: { type: 'string' }, username: { type: 'string' } },
-									required: ['_id', 'username'],
-								},
-								roles: { type: 'array', items: { type: 'string' } },
-							},
-							required: ['rid', 'u', 'roles'],
-						},
-					},
+					filter: { type: 'string' },
+					offset: { type: 'number' },
+					count: { type: 'number' },
+					sort: { type: 'string' },
 				},
-				required: ['roles'],
+				additionalProperties: true,
 			}),
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					rooms: IRoom[];
+					count: number;
+					offset: number;
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						rooms: {
+							type: 'array',
+							items: { type: 'object' },
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['rooms', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function () {
-		const { rid } = this.queryParams;
-		const roles = await executeGetRoomRoles(rid, this.userId);
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { filter } = this.queryParams;
 
-		return API.v1.success({
-			roles,
-		});
-	},
-);
+			const name = (filter || '').trim();
+
+			const { cursor, totalCount } = Rooms.findPrivateRoomsAndTeamsPaginated(name, {
+				skip: offset,
+				limit: count,
+				sort: sort || { default: -1, name: 1 },
+				projection: adminFields,
+			});
+
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				rooms,
+				count: rooms.length,
+				offset,
+				total,
+			});
+		},
+	);
 
 const roomInviteEndpoints = API.v1.post(
 	'rooms.invite',

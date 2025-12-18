@@ -20,6 +20,7 @@ import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { eraseTeam } from '../lib/eraseTeam';
@@ -234,6 +235,13 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+
+			if (settings.get('ABAC_Enabled') && isDefault) {
+				const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
+				if (room?.abacAttributes?.length) {
+					return API.v1.failure('error-room-is-abac-managed');
+				}
+			}
 
 			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 

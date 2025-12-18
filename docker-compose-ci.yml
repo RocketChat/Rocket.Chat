@@ -210,7 +210,7 @@ services:
       bash -c
         "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
           sleep 2;
-          until mongosh --eval \"db.adminCommand('ping')\"; do 
+          until mongosh --eval \"db.adminCommand('ping')\"; do
             echo '=====> Waiting for Mongo...';
             sleep 1;
           done;
@@ -231,3 +231,19 @@ services:
       - 3000:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  openldap:
+    image: bitnamilegacy/openldap:latest
+    volumes:
+      - ./development/ldap:/opt/bitnami/openldap/data/
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ROOT=dc=space,dc=air
+      - LDAP_ADMIN_DN=cn=admin,dc=space,dc=air
+      - LDAP_CUSTOM_LDIF_DIR=/opt/bitnami/openldap/data
+      - LDAP_LOGLEVEL=-1
+      - BITNAMI_DEBUG=false
+    ports:
+      - 1389:1389
+      - 1636:1636

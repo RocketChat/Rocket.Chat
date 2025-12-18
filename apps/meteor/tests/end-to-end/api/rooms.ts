@@ -2516,6 +2516,110 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('/rooms.adminRooms.privateRooms', () => {
+		let publicChannel: IRoom;
+		let privateGroup: IRoom;
+		let publicTeam: ITeam;
+		let privateTeam: ITeam;
+
+		before(async () => {
+			await updatePermission('view-room-administration', ['admin']);
+
+			publicChannel = (await createRoom({ type: 'c', name: `public-channel-${Date.now()}` })).body.channel;
+			privateGroup = (await createRoom({ type: 'p', name: `private-group-${Date.now()}` })).body.group;
+
+			publicTeam = await createTeam(credentials, `public-team-${Date.now()}`, TEAM_TYPE.PUBLIC);
+			privateTeam = await createTeam(credentials, `private-team-${Date.now()}`, TEAM_TYPE.PRIVATE);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'c', roomId: publicChannel._id }),
+				deleteRoom({ type: 'p', roomId: privateGroup._id }),
+				deleteTeam(credentials, publicTeam.name),
+				deleteTeam(credentials, privateTeam.name),
+			]);
+		});
+
+		it('should return only the private room when filtering by its name', async () => {
+			const res = await request
+				.get(api('rooms.adminRooms.privateRooms'))
+				.set(credentials)
+				.query({
+					filter: privateGroup.name,
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
+
+			const rooms = res.body.rooms as IRoom[];
+			expect(rooms).to.have.lengthOf(1);
+			expect(rooms[0].name).to.equal(privateGroup.name);
+			expect(rooms[0].t).to.equal('p');
+		});
+
+		it('should return only the private team main when filtering by its name', async () => {
+			const res = await request
+				.get(api('rooms.adminRooms.privateRooms'))
+				.set(credentials)
+				.query({
+					filter: privateTeam.name,
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('rooms').and.to.be.an('array');
+
+			const rooms = res.body.rooms as IRoom[];
+			expect(rooms).to.have.lengthOf(1);
+			expect(rooms[0].name).to.equal(privateTeam.name);
+			expect(rooms[0].t).to.equal('p');
+		});
+
+		it('should not return public rooms or public team mains even when filtering by their names', async () => {
+			const resPublicChannel = await request
+				.get(api('rooms.adminRooms.privateRooms'))
+				.set(credentials)
+				.query({
+					filter: publicChannel.name,
+				})
+				.expect(200);
+
+			expect(resPublicChannel.body).to.have.property('success', true);
+			expect(resPublicChannel.body).to.have.property('rooms').and.to.be.an('array');
+			expect(resPublicChannel.body.rooms).to.have.lengthOf(0);
+
+			const resPublicTeam = await request
+				.get(api('rooms.adminRooms.privateRooms'))
+				.set(credentials)
+				.query({
+					filter: publicTeam.name,
+				})
+				.expect(200);
+
+			expect(resPublicTeam.body).to.have.property('success', true);
+			expect(resPublicTeam.body).to.have.property('rooms').and.to.be.an('array');
+			expect(resPublicTeam.body.rooms).to.have.lengthOf(0);
+		});
+
+		describe('permissions', () => {
+			before(async () => {
+				await updatePermission('view-room-administration', []);
+			});
+
+			after(async () => {
+				await updatePermission('view-room-administration', ['admin']);
+			});
+
+			it('should return an error for users without view-room-administration permission', async () => {
+				const res = await request.get(api('rooms.adminRooms.privateRooms')).set(credentials).expect(403);
+
+				expect(res.body).to.have.property('success', false);
+			});
+		});
+	});
+
 	describe('update group dms name', () => {
 		let testUser: TestUser<IUser>;
 		let roomId: IRoom['_id'];

@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
@@ -33,6 +34,8 @@ export interface IRoom extends IRocketChatRecord {
 		style?: string;
 	};
 	encrypted?: boolean;
+	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
+	abacAttributes?: IAbacAttributeDefinition[];
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
@@ -400,7 +403,8 @@ export type RoomAdminFieldsType =
 	| 'description'
 	| 'broadcast'
 	| 'uids'
-	| 'avatarETag';
+	| 'avatarETag'
+	| 'abacAttributes';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

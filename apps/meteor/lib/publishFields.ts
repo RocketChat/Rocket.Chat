@@ -127,4 +127,7 @@ export const roomFields = {
 	callTotalHoldTime: 1,
 	callWaitingTime: 1,
 	usersWaitingForE2EKeys: 1,
+
+	// ABAC fields
+	abacAttributes: 1,
 } as const;

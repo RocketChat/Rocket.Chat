@@ -65,6 +65,12 @@ export const {
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
 	},
 	{
+		href: '/admin/ABAC',
+		i18nLabel: 'ABAC',
+		icon: 'team-lock',
+		permissionGranted: (): boolean => hasPermission('abac-management'),
+	},
+	{
 		href: '/admin/device-management',
 		i18nLabel: 'Device_Management',
 		icon: 'mobile',

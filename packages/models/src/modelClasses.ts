@@ -1,4 +1,5 @@
 export * from './models/BaseRaw';
+export * from './models/AbacAttributes';
 export * from './models/Analytics';
 export * from './models/Apps';
 export * from './models/AppsPersistence';
