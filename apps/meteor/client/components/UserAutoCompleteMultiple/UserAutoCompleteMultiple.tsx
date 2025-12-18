@@ -7,6 +7,7 @@ import { memo, useState, useCallback, useMemo } from 'react';
 
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
 import UserAvatarChip from './UserAvatarChip';
+import { usersQueryKeys } from '../../lib/queryKeys';
 
 type UserAutoCompleteMultipleProps = {
 	onChange: (value: Array<string>) => void;
@@ -36,7 +37,7 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 	const { data } = useQuery({
-		queryKey: ['users.autocomplete', debouncedFilter, { federated }],
+		queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false),
 
 		queryFn: async () => {
 			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
