@@ -16,5 +16,5 @@ export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
 		options?: FindOptions<CallHistoryItem>,
 	): Promise<CallHistoryItem | null>;
 
-	updateUserReferences(userId: IRegisterUser['_id'], username: IRegisterUser['username'], name: IRegisterUser['name']): Promise<void>;
+	updateUserReferences(userId: IRegisterUser['_id'], username: IRegisterUser['username'], name?: IRegisterUser['name']): Promise<void>;
 }

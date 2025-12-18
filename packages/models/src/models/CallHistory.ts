@@ -32,7 +32,7 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 	public async updateUserReferences(
 		userId: IRegisterUser['_id'],
 		username: IRegisterUser['username'],
-		name: IRegisterUser['name'],
+		name?: IRegisterUser['name'],
 	): Promise<void> {
 		await this.updateMany(
 			{
@@ -40,8 +40,8 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 			},
 			{
 				$set: {
-					contactName: name,
 					contactUsername: username,
+					...(name && { contactName: name }),
 				},
 			},
 		);
