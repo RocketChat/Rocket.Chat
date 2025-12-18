@@ -1,31 +1,35 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminFlextabEmoji } from './fragments/admin-flextab-emoji';
+import { Admin } from './admin';
+import { AddEmojiFlexTab, EditEmojiFlexTab } from './fragments/admin-flextab-emoji';
 
-export class AdminEmoji {
-	private readonly page: Page;
+export class AdminEmoji extends Admin {
+	readonly addEmojiFlexTab: AddEmojiFlexTab;
 
-	readonly emojiFlexTab: AdminFlextabEmoji;
+	readonly editEmojiFlexTab: EditEmojiFlexTab;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.emojiFlexTab = new AdminFlextabEmoji(page);
+		super(page);
+		this.addEmojiFlexTab = new AddEmojiFlexTab(page);
+		this.editEmojiFlexTab = new EditEmojiFlexTab(page);
 	}
 
-	get newButton(): Locator {
-		return this.page.getByRole('button', { name: 'New' });
-	}
-
-	get closeAdminButton(): Locator {
-		return this.page.getByRole('navigation').getByRole('button', { name: 'Close' });
-	}
-
-	get searchInput(): Locator {
+	private get inputSearch(): Locator {
 		return this.page.getByRole('textbox', { name: 'Search' });
 	}
 
-	async findEmojiByName(emojiName: string): Promise<Locator> {
-		await this.searchInput.fill(emojiName);
-		return this.page.getByRole('link', { name: emojiName });
+	private get emojiTable() {
+		return this.page.getByRole('table', { name: 'Emoji' });
+	}
+
+	async findEmojiByName(emojiName: string) {
+		await this.inputSearch.fill(emojiName);
+		return this.emojiTable.getByRole('link', { name: emojiName });
+	}
+
+	async deleteEmoji(emojiName: string) {
+		await (await this.findEmojiByName(emojiName)).click();
+		await this.editEmojiFlexTab.delete();
+		await this.deleteModal.confirmDelete();
 	}
 }

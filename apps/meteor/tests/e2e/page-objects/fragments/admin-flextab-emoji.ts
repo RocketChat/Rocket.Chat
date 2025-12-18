@@ -2,24 +2,41 @@ import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 
-export class AdminFlextabEmoji extends FlexTab {
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
-	}
-
-	async save() {
-		await this.root.getByRole('button', { name: 'Save' }).click();
-		// When clicking save, the contextual bar closes with a redirect
-		// But this redirect can interfere with other actions, so we need to ensure it happens first.
-		await this.waitForDismissal();
-	}
-
-	async delete() {
-		await this.root.getByRole('button', { name: 'Delete' }).click();
-		await this.waitForDismissal();
+abstract class EmojiFlexTab extends FlexTab {
+	constructor(root: Locator) {
+		super(root);
 	}
 
 	get inputName(): Locator {
 		return this.root.getByRole('textbox', { name: 'Name' });
+	}
+
+	private get btnSave() {
+		return this.root.getByRole('button', { name: 'Save' });
+	}
+
+	async save() {
+		await this.btnSave.click();
+		await this.waitForDismissal();
+	}
+}
+
+export class AddEmojiFlexTab extends EmojiFlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
+	}
+}
+
+export class EditEmojiFlexTab extends EmojiFlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Custom Emoji Info' }));
+	}
+
+	private get btnDelete() {
+		return this.root.getByRole('button', { name: 'Delete' });
+	}
+
+	async delete() {
+		await this.btnDelete.click();
 	}
 }
