@@ -33,7 +33,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: BroadcastActorAgent,
+		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 	) {
 		super(session, call, agent, channel);
@@ -151,9 +151,22 @@ export class OutgoingSipCall extends BaseSipCall {
 							provRes: provRes && this.session.stripDrachtioServerDetails(provRes),
 						});
 					},
-					cbRequest: (_error: unknown, req: SrfRequest) => {
-						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req: this.session.stripDrachtioServerDetails(req) });
+					cbRequest: (err: unknown, req: SrfRequest) => {
+						if (err) {
+							logger.error({
+								msg: 'OutgoingSipCall.createDialog - request failed',
+								err,
+							});
+							void mediaCallDirector.hangupByServer(call, 'signaling-error');
+							return;
+						}
+
 						if (req) {
+							logger.debug({
+								msg: 'OutgoingSipCall.createDialog - request initiated',
+								req: this.session.stripDrachtioServerDetails(req),
+							});
+
 							this.sipDialogReq = req;
 							req.on('response', (res, ack) => {
 								logger.debug({
@@ -169,7 +182,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			);
 		} catch (error) {
 			this.sipDialog = null;
-			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error, callId: call._id });
+			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', err: error, callId: call._id });
 			const errorCode = this.getSipErrorCode(error);
 			if (errorCode) {
 				void mediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
@@ -224,8 +237,8 @@ export class OutgoingSipCall extends BaseSipCall {
 				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (error) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', error });
+			} catch (err) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', err });
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
@@ -295,8 +308,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
 				logger.debug('modify failed');
 			});
-		} catch (error) {
-			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', error });
+		} catch (err) {
+			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', err });
 		}
 
 		if (!answer) {
@@ -361,8 +374,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			if (res.status === 202) {
 				logger.debug({ msg: 'REFER was accepted', method: 'OutgoingSipCall.processTransferredCall' });
 			}
-		} catch (error) {
-			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error, callId: call._id });
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', err, callId: call._id });
 			if (!call.ended) {
 				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
 			}

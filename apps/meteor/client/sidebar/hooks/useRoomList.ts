@@ -1,12 +1,13 @@
-import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useEffect } from 'react';
 
 import { useQueryOptions } from './useQueryOptions';
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
+import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 
 const query = { open: { $ne: false } };
 
@@ -38,8 +39,8 @@ const order: (
 	'Conversations',
 ];
 
-export const useRoomList = (): Array<ISubscription & IRoom> => {
-	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
+export const useRoomList = (): SubscriptionWithRoom[] => {
+	const [roomList, setRoomList] = useDebouncedState<SubscriptionWithRoom[]>([], 150);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');

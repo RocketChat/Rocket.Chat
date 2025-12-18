@@ -12,6 +12,11 @@ inputs:
     required: false
     description: 'Install dependencies'
     type: boolean
+  type:
+    required: false
+    description: 'development or production'
+    type: string
+    default: 'development'
   deno-version:
     required: true
     description: 'Deno version'
@@ -46,14 +51,15 @@ runs:
           apps/meteor/ee/server/services/node_modules
           packages/apps-engine/node_modules
           packages/apps-engine/.deno-cache
-        key: node-modules-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v3
+        # key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v${{ github.run_id }}
     #
     # Could use this command to list all paths to save:
     # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
 
     - name: Use Node.js ${{ inputs.node-version }}
       id: node-version
-      uses: actions/setup-node@v4.4.0
+      uses: actions/setup-node@v6.0.0
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'yarn'
@@ -70,6 +76,11 @@ runs:
         echo "//registry.npmjs.org/:_authToken=${{ inputs.NPM_TOKEN }}" > ~/.npmrc
 
     - name: yarn install
-      if: inputs.install
+      if: inputs.install && inputs.type == 'development'
       shell: bash
       run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn
+
+    - name: yarn install production
+      if: inputs.install && inputs.type == 'production'
+      shell: bash
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production

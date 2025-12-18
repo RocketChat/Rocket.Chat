@@ -86,3 +86,5 @@ export * from './models/IMediaCallChannelsModel';
 export * from './models/IMediaCallNegotiationsModel';
 export * from './updater';
 export * from './models/IWorkspaceCredentialsModel';
+export * from './models/ICallHistoryModel';
+export * from './models/IAbacAttributesModel';

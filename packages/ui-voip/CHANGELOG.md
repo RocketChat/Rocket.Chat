@@ -1,5 +1,107 @@
 # @rocket.chat/ui-voip
 
+## 15.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.1
+  - @rocket.chat/ui-client@25.0.1
+  - @rocket.chat/ui-contexts@25.0.1
+  </details>
+
+## 15.0.0
+
+### Minor Changes
+
+- ([#37217](https://github.com/RocketChat/Rocket.Chat/pull/37217)) Introduces a presence indicator in the call widget and transfer modal (status bullet).
+
+- ([#37492](https://github.com/RocketChat/Rocket.Chat/pull/37492)) Introduces native desktop notifications for voice calls when using the desktop app.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#37469](https://github.com/RocketChat/Rocket.Chat/pull/37469)) Introduces visualization of the peer's muted and held state inside the Media Call widget
+
+### Patch Changes
+
+- ([#37320](https://github.com/RocketChat/Rocket.Chat/pull/37320)) Fixes an issue in the voice call peer selection field (on the widget and transfer modal) by filtering out the current peer and users that do not have an extension assigned, in case of forced SIP routing.
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 99255057f27b9d854a89da815681a03d0776f846, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd]:</summary>
+
+  - @rocket.chat/ui-client@25.0.0
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/media-signaling@0.1.0
+  - @rocket.chat/ui-avatar@21.0.0
+  </details>
+
+## 15.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.0-rc.2
+  - @rocket.chat/ui-client@25.0.0-rc.2
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 15.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.0-rc.1
+  - @rocket.chat/ui-client@25.0.0-rc.1
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 15.0.0-rc.0
+
+### Minor Changes
+
+- ([#37217](https://github.com/RocketChat/Rocket.Chat/pull/37217)) Introduces a presence indicator in the call widget and transfer modal (status bullet).
+
+- ([#37492](https://github.com/RocketChat/Rocket.Chat/pull/37492)) Introduces native desktop notifications for voice calls when using the desktop app.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#37469](https://github.com/RocketChat/Rocket.Chat/pull/37469)) Introduces visualization of the peer's muted and held state inside the Media Call widget
+
+### Patch Changes
+
+- ([#37320](https://github.com/RocketChat/Rocket.Chat/pull/37320)) Fixes an issue in the voice call peer selection field (on the widget and transfer modal) by filtering out the current peer and users that do not have an extension assigned, in case of forced SIP routing.
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 99255057f27b9d854a89da815681a03d0776f846, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd]:</summary>
+
+  - @rocket.chat/ui-client@25.0.0-rc.0
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/media-signaling@0.1.0-rc.0
+  - @rocket.chat/ui-avatar@21.0.0-rc.0
+  </details>
+
+  ## 14.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-avatar@20.0.2
+  - @rocket.chat/ui-client@24.0.2
+  - @rocket.chat/ui-contexts@24.0.2
+  </details>
+
+## 14.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.1
+  - @rocket.chat/ui-client@24.0.1
+  - @rocket.chat/ui-contexts@24.0.1
+  </details>
+
 ## 14.0.0
 
 ### Minor Changes

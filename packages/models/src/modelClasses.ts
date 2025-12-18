@@ -1,4 +1,5 @@
 export * from './models/BaseRaw';
+export * from './models/AbacAttributes';
 export * from './models/Analytics';
 export * from './models/Apps';
 export * from './models/AppsPersistence';
@@ -78,3 +79,4 @@ export * from './models/MediaCallChannels';
 export * from './models/MediaCallNegotiations';
 export * from './models/WorkspaceCredentials';
 export * from './models/Trash';
+export * from './models/CallHistory';

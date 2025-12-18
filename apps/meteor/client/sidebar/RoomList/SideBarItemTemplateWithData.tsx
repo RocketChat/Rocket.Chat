@@ -1,6 +1,7 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
+import { Sidebar, SidebarItemAction, SidebarItemActions } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { TFunction } from 'i18next';
@@ -11,12 +12,13 @@ import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
+import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
-import { OmnichannelBadges } from '../badges/OmnichannelBadges';
+import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -33,24 +35,6 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
-};
-
-const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number, t: TFunction) => {
-	const title = [] as string[];
-	if (userMentions) {
-		title.push(t('mentions_counter', { count: userMentions }));
-	}
-	if (threadUnread) {
-		title.push(t('threads_counter', { count: threadUnread }));
-	}
-	if (groupMentions) {
-		title.push(t('group_mentions_counter', { count: groupMentions }));
-	}
-	const count = unread - userMentions - groupMentions;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
-	}
-	return title.join(', ');
 };
 
 type RoomListRowProps = {
@@ -80,7 +64,7 @@ type RoomListRowProps = {
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 
-	room: ISubscription & IRoom;
+	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -110,22 +94,10 @@ function SideBarItemTemplateWithData({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const {
-		lastMessage,
-		hideUnreadStatus,
-		hideMentionStatus,
-		unread = 0,
-		alert,
-		userMentions,
-		groupMentions,
-		tunread = [],
-		tunreadUser = [],
-		rid,
-		t: type,
-		cl,
-	} = room;
+	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
-	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
+	const { unreadCount, unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
+
 	const icon = (
 		// TODO: Remove icon='at'
 		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
@@ -152,32 +124,6 @@ function SideBarItemTemplateWithData({
 		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
 	) : null;
 
-	const threadUnread = tunread.length > 0;
-	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
-
-	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
-
-	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
-
-	const badges = (
-		<Margins inlineStart={8}>
-			{showBadge && isUnread && (
-				<Badge
-					role='status'
-					{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
-					variant={variant}
-					title={badgeTitle}
-					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title })}
-				>
-					<span aria-hidden>{unread + tunread?.length}</span>
-				</Badge>
-			)}
-			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-		</Margins>
-	);
-
 	return (
 		<SideBarItemTemplate
 			is='a'
@@ -190,13 +136,13 @@ function SideBarItemTemplateWithData({
 			onClick={(): void => {
 				!selected && sidebar.toggle();
 			}}
-			aria-label={showBadge && isUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title }) : title}
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
 			icon={icon}
 			style={style}
-			badges={badges}
+			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
@@ -204,7 +150,7 @@ function SideBarItemTemplateWithData({
 					? (): ReactElement => (
 							<RoomMenu
 								alert={alert}
-								threadUnread={threadUnread}
+								threadUnread={unreadCount.threads > 0}
 								rid={rid}
 								unread={!!unread}
 								roomOpen={selected}

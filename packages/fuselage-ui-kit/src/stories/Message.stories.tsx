@@ -114,3 +114,7 @@ export const Conditional = createStory(payloads.conditional);
 
 export const Preview = createStory(payloads.preview);
 export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUrl);
+
+export const InfoCard = createStory(payloads.infoCard);
+export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
+export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);

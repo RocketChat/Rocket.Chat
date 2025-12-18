@@ -1,25 +1,19 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
+import { memo } from 'react';
 
-const HeaderTitleButton = ({ className, ...props }: { className?: string } & ComponentProps<typeof Box>) => {
-	const customClass = css`
-		border-width: 1px;
-		border-style: solid;
-		border-color: transparent;
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1TitleButton } from '../HeaderV1';
+import { HeaderV2TitleButton } from '../HeaderV2';
 
-		&:hover {
-			cursor: pointer;
-			background-color: ${Palette.surface['surface-hover']};
-		}
-		&:focus.focus-visible {
-			outline: 0;
-			box-shadow: 0 0 0 2px ${Palette.stroke['stroke-extra-light-highlight']};
-			border-color: ${Palette.stroke['stroke-highlight']};
-		}
-	`;
+const HeaderTitleButton = (props: ComponentPropsWithoutRef<typeof HeaderV1TitleButton>) => (
+	<FeaturePreview feature='newNavigation'>
+		<FeaturePreviewOff>
+			<HeaderV1TitleButton {...props} />
+		</FeaturePreviewOff>
+		<FeaturePreviewOn>
+			<HeaderV2TitleButton {...props} />
+		</FeaturePreviewOn>
+	</FeaturePreview>
+);
 
-	return <Box display='flex' alignItems='center' borderRadius={4} withTruncatedText className={[customClass, className]} {...props} />;
-};
-
-export default HeaderTitleButton;
+export default memo(HeaderTitleButton);

@@ -5,9 +5,9 @@ import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.cha
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
+import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
+import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
 
 const query = { open: { $ne: false } };
 

@@ -26,7 +26,7 @@ const eventsToListen: EventNames = [
 
 export class FreeSwitchEventClient extends FreeSwitchESLClient {
 	constructor(
-		protected options: FreeSwitchESLClientOptions,
+		protected override options: FreeSwitchESLClientOptions,
 		private eventsToListen: EventNames,
 	) {
 		super(options);
@@ -36,7 +36,7 @@ export class FreeSwitchEventClient extends FreeSwitchESLClient {
 		});
 	}
 
-	protected async transitionToReady(): Promise<void> {
+	protected override async transitionToReady(): Promise<void> {
 		try {
 			this.response.event_json(...this.eventsToListen);
 		} catch (error) {

@@ -9,6 +9,7 @@ import {
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
 	CustomSoundsRaw,
@@ -80,6 +81,7 @@ import {
 	VoipRoomRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
+	AbacAttributesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -95,6 +97,7 @@ registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
+registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -171,3 +174,4 @@ registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IVoipRoomModel', new VoipRoomRaw(db, trashCollection));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
+registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));

@@ -72,7 +72,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// Move index from constructor to here
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { __rooms: 1 }, sparse: true },
 			{ key: { roles: 1 }, sparse: true },
@@ -127,6 +127,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
 		];
+	}
+
+	findUsersByIdentifiers(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options: FindOptions<IUser> = {},
+	): FindCursor<IUser> {
+		const normalizedIds = (ids ?? []).filter(Boolean);
+		const normalizedUsernames = (usernames ?? []).filter(Boolean);
+		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
+		const normalizedLdapIds = (ldapIds ?? []).filter(Boolean);
+
+		const or: Filter<IUser>[] = [];
+
+		if (normalizedIds.length) {
+			or.push({ _id: { $in: normalizedIds } });
+		}
+		if (normalizedUsernames.length) {
+			or.push({ username: { $in: normalizedUsernames } });
+		}
+		if (normalizedEmails.length) {
+			or.push({ 'emails.address': { $in: normalizedEmails } });
+		}
+		if (normalizedLdapIds.length) {
+			or.push({ 'services.ldap.id': { $in: normalizedLdapIds } });
+		}
+
+		const query: Filter<IUser> = {
+			active: true,
+			$or: or,
+		};
+
+		return this.find(query, options);
+	}
+
+	setAbacAttributesById(_id: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>) {
+		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
+	}
+
+	unsetAbacAttributesById(_id: IUser['_id']) {
+		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
 	/**
@@ -2404,7 +2444,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
+	override findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
@@ -2954,20 +2994,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'deactivated' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateOne({ _id }, update);
-	}
-
-	setAllUsersActive(active: boolean) {
-		const update = {
-			$set: {
-				active,
-			},
-		};
-
-		return this.updateMany({}, update);
 	}
 
 	/**
@@ -2988,7 +3020,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				active,
+				...(!active && { inactiveReason: 'idle_too_long' as const }),
 			},
+			...(active && { $unset: { inactiveReason: 1 as const } }),
 		};
 
 		return this.updateMany(query, update);
@@ -3246,7 +3280,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// REMOVE
-	removeById(_id: IUser['_id']) {
+	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
 	}
 

@@ -43,7 +43,7 @@ export class PendingFileImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
+	override async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
 		const downloadedFileIds: string[] = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;

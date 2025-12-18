@@ -64,10 +64,13 @@ export type CallRejectedReason =
 	| 'invalid-call-params' // something is wrong with the params (eg. no valid route between caller and callee)
 	| 'forbidden'; // one of the actors on the call doesn't have permission for it
 
+export type CallFlag = 'internal' | 'create-data-channel';
+
 export interface IClientMediaCall {
 	callId: string;
 	role: CallRole;
 	service: CallService | null;
+	flags: readonly CallFlag[];
 
 	state: CallState;
 	ignored: boolean;
@@ -78,11 +81,19 @@ export interface IClientMediaCall {
 	held: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
+	/* if the other side has put the call on hold */
+	remoteHeld: boolean;
+	remoteMute: boolean;
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
 	audioLevel: number;
 	localAudioLevel: number;
+
+	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
+	readonly tempCallId: string;
+	/** confirmed indicates if the call exists on the server */
+	readonly confirmed: boolean;
 
 	emitter: Emitter<CallEvents>;
 

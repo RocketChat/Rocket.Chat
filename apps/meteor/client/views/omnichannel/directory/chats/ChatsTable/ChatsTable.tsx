@@ -1,4 +1,13 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
@@ -8,17 +17,9 @@ import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
 import { useChatsQuery } from './useChatsQuery';
 import GenericNoResults from '../../../../../components/GenericNoResults/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { links } from '../../../../../lib/links';
 import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
+import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
 const ChatsTable = () => {
@@ -83,7 +84,7 @@ const ChatsTable = () => {
 					icon='message'
 					title={t('No_chats_yet')}
 					description={t('No_chats_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_conversations')}
 				/>
 			)}

@@ -1,9 +1,9 @@
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';
-import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 type EditContactInfoWithDataProps = {
 	id: string;

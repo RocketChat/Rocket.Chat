@@ -21,7 +21,14 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useEndpoint, useToastMessageDispatch, usePermissionWithScopedRoles } from '@rocket.chat/ui-contexts';
+import {
+	useSetting,
+	useTranslation,
+	useEndpoint,
+	useToastMessageDispatch,
+	usePermissionWithScopedRoles,
+	usePermission,
+} from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -50,13 +57,19 @@ type CreateChannelModalPayload = {
 	federated: boolean;
 };
 
-const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModule>, featureToggle: boolean): TranslationKey => {
-	if (licenseModule === 'loading' || !licenseModule) {
+const getFederationHintKey = (federationModule: boolean, featureToggle: boolean, federationAccessPermission: boolean): TranslationKey => {
+	if (!federationModule) {
 		return 'error-this-is-a-premium-feature';
 	}
+
 	if (!featureToggle) {
 		return 'Federation_Matrix_Federated_Description_disabled';
 	}
+
+	if (!federationAccessPermission) {
+		return 'error-not-authorized-federation';
+	}
+
 	return 'Federation_Matrix_Federated_Description';
 };
 
@@ -68,14 +81,17 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useIsFederationEnabled();
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
-	const federatedModule = useHasLicenseModule('federation');
-	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
+
+	const federationEnabled = useIsFederationEnabled();
+	const { data: federationModule = false } = useHasLicenseModule('federation');
+	const federationAccessPermission = usePermission('access-federation');
+	const canUseFederation = federationModule && federationEnabled && federationAccessPermission;
+	const federationFieldHint = getFederationHintKey(federationModule, federationEnabled, federationAccessPermission);
 
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
@@ -303,7 +319,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${federatedId}-hint`}>{t(getFederationHintKey(federatedModule, federationEnabled))}</FieldHint>
+								<FieldHint id={`${federatedId}-hint`}>{t(federationFieldHint)}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>

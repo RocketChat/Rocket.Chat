@@ -91,6 +91,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string): Promise<T | null>;
 
 	findOneByAppId<T extends Document = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findUsersByIdentifiers(
+		params: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options?: FindOptions<IUser>,
+	): FindCursor<IUser>;
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
@@ -156,6 +160,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	}): Promise<{ date: string; users: number; type: 'users' }[]>;
 
 	getUserLanguages(): Promise<{ _id: string; total: number }[]>;
+
+	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
+	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
@@ -387,7 +394,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAvatarData(userId: string, origin: string, etag?: Date | null | string, options?: UpdateOptions): Promise<UpdateResult>;
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
-	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, active?: boolean): Promise<UpdateResult | Document>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
 	resetPasswordAndSetRequirePasswordChange(

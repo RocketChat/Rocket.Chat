@@ -1,14 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-
-import AddManager from './AddManager';
-import RemoveManagerButton from './RemoveManagerButton';
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -17,9 +9,18 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+
+import AddManager from './AddManager';
+import RemoveManagerButton from './RemoveManagerButton';
+import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
+import { links } from '../../../lib/links';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 // TODO: Missing error state
@@ -96,7 +97,7 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}

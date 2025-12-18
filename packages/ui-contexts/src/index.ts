@@ -6,6 +6,7 @@ export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContex
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
 export * from './RouterContext';
+export { RoomToolboxContext, RoomToolboxContextValue, RoomToolboxActionConfig, RenderToolboxItemParams } from './RoomToolboxContext';
 export { ServerContext, ServerContextValue } from './ServerContext';
 export { SessionContext, SessionContextValue } from './SessionContext';
 export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
@@ -13,6 +14,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { UserCardContext, type UserCardContextValue } from './UserCardContext';
 export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
@@ -57,6 +59,7 @@ export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRol
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useRoomToolbox } from './hooks/useRoomToolbox';
 export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
@@ -85,6 +88,7 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { usePasswordPolicy, type PasswordPolicyValidation } from './hooks/usePasswordPolicy';
 export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
@@ -98,6 +102,7 @@ export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
 export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/useMediaDevicePermission';
 export { useWriteStream } from './hooks/useWriteStream';
+export { useUserCard } from './hooks/useUserCard';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';

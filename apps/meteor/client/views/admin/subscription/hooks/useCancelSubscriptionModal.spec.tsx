@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { useCancelSubscriptionModal } from './useCancelSubscriptionModal';
 import createDeferredMockFn from '../../../../../tests/mocks/utils/createDeferredMockFn';
 
-jest.mock('../../../../hooks/useLicense', () => ({
-	...jest.requireActual('../../../../hooks/useLicense'),
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useLicenseName: () => ({ data: 'Starter' }),
 }));
 

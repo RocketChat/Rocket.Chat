@@ -2,6 +2,20 @@ import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableCell,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	GenericTableRow,
+	usePagination,
+	useSort,
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
@@ -12,25 +26,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
-import { useAllCustomFields } from './hooks/useAllCustomFields';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
-import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
+import { links } from '../../../lib/links';
+import RoomActivityIcon from '../components/RoomActivityIcon';
+import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
+import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
+import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../priorities/PriorityIcon';
 
 type DebouncedParams = {
 	fname: string;
@@ -137,7 +140,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const { data: allCustomFields } = useAllCustomFields();
+	const { data: allCustomFields } = useCustomFieldsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
@@ -335,7 +338,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							icon='discussion'
 							title={t('No_chats_yet')}
 							description={t('No_chats_yet_description')}
-							linkHref='https://go.rocket.chat/i/omnichannel-docs'
+							linkHref={links.go.omnichannelDocs}
 							linkText={t('Learn_more_about_current_chats')}
 						/>
 					)}
@@ -347,7 +350,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data?.rooms.length > 0 && (
+					{isSuccess && data?.rooms?.length > 0 && (
 						<>
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>

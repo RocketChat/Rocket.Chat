@@ -39,7 +39,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		});
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		try {
 			if (!(await License.hasValidLicense())) {
 				return;
@@ -86,12 +86,13 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
-		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(rid, {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(rid, {
 			projection: {
 				_id: 1,
 				t: 1,
 				teamId: 1,
 				prid: 1,
+				abacAttributes: 1,
 			},
 		});
 

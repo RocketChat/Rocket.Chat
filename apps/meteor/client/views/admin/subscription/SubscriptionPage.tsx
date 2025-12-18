@@ -1,5 +1,13 @@
 import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid, GridItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import {
+	Page,
+	PageScrollableContentWithShadow,
+	PageHeaderNoShadow,
+	PageBlockWithBorder,
+	useInvalidateLicense,
+	useLicenseWithCloudAnnouncement,
+} from '@rocket.chat/ui-client';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import { memo, useCallback, useEffect } from 'react';
@@ -22,11 +30,7 @@ import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
-import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
-import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
-import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicenseWithCloudAnnouncement } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {

@@ -4,8 +4,8 @@ import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import AutoCompleteAgent from '../components/AutoCompleteAgent';
+import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
 type QueueListFilterProps = {
 	setFilter: Dispatch<SetStateAction<any>>;

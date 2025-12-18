@@ -82,6 +82,13 @@ roomCoordinator.add(
 		},
 
 		getIcon(room) {
+			if (room.abacAttributes) {
+				if (room.teamMain) {
+					return 'team-shield';
+				}
+				return 'hash-shield';
+			}
+
 			if (room.prid) {
 				return 'discussion';
 			}
