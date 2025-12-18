@@ -7,11 +7,11 @@ export class SearchMessagesFlexTab extends FlexTab {
 		super(page.getByRole('dialog', { name: 'Search Messages' }));
 	}
 
-	async search(text: string, { global = false, timeout }: { global?: boolean; timeout?: number } = {}) {
+	async search(text: string, { global = false }: { global?: boolean } = {}) {
 		if (global) {
-			await this.root.getByText('Global search').click({ timeout });
+			await this.root.getByText('Global search').click();
 		}
-		await this.root.getByPlaceholder('Search Messages').fill(text, { timeout });
+		await this.root.getByPlaceholder('Search Messages').fill(text);
 	}
 
 	async getResultItem(messageText: string) {
