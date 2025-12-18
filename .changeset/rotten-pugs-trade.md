@@ -1,5 +1,6 @@
 ---
 "@rocket.chat/meteor": patch
+"@rocket.chat/tools": patch
 ---
 
-Adds new validations for push notifications; truncates messages larger than 150 characters, checks notification payload size before dispatching the notification.
+Adds improvements to the push notifications logic; the logic now truncates messages and titles larger than 150, and 50 characters respectively.
