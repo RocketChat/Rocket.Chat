@@ -27,11 +27,15 @@ export const performUserRemoval = async function (
 		return;
 	}
 
+	// make TS happy, this should never happen
+	if (!user.username) {
+		throw new Error('User must have a username to be removed from the room');
+	}
+
 	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);
 
 	if (subscription) {
-		const removedUser = user;
 		if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {
@@ -40,16 +44,16 @@ export const performUserRemoval = async function (
 			};
 
 			if (room.teamMain) {
-				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username || '', user, extraData);
+				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username, user, extraData);
 			} else {
-				await Message.saveSystemMessage('ru', room._id, user.username || '', user, extraData);
+				await Message.saveSystemMessage('ru', room._id, user.username, user, extraData);
 			}
 		} else if (subscription.status === 'INVITED') {
-			await Message.saveSystemMessage('uir', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('uir', room._id, user.username, user);
 		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ult', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ult', room._id, user.username, user);
 		} else {
-			await Message.saveSystemMessage('ul', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ul', room._id, user.username, user);
 		}
 	}
 
@@ -68,6 +72,11 @@ export const performUserRemoval = async function (
 
 	if (room.encrypted && settings.get('E2E_Enable')) {
 		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [user._id]);
+	}
+
+	// remove references to the user in direct message rooms
+	if (room.t === 'd') {
+		await Rooms.removeUserReferenceFromDMsById(room._id, user.username, user._id);
 	}
 
 	void notifyOnRoomChangedById(room._id);

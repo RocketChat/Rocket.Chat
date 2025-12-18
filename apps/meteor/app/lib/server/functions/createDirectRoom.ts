@@ -9,6 +9,7 @@ import type { MatchKeysAndValues } from 'mongodb';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { callbacks } from '../../../../server/lib/callbacks';
+import { getNameForDMs } from '../../../../server/services/room/getNameForDMs';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
@@ -36,9 +37,6 @@ const generateSubscription = (
 		username: user.username,
 	},
 });
-
-const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
 
 export async function createDirectRoom(
 	members: IUser[] | string[],
@@ -71,6 +69,7 @@ export async function createDirectRoom(
 	await callbacks.run('beforeCreateDirectRoom', membersUsernames, roomExtraData);
 
 	const roomMembers = await Users.findUsersByUsernames(membersUsernames).toArray();
+
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
@@ -159,9 +158,9 @@ export async function createDirectRoom(
 			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
 		}
 
-		for await (const member of membersWithPreferences) {
-			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
+		const roomNames = getNameForDMs(roomMembers);
 
+		for await (const member of membersWithPreferences) {
 			const subscriptionStatus: Partial<ISubscription> =
 				roomExtraData.federated && options.creator !== member._id && creatorUser
 					? {
@@ -177,11 +176,13 @@ export async function createDirectRoom(
 						}
 					: {};
 
+			const { fname, name } = roomNames[member._id];
+
 			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
-					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
+					$setOnInsert: generateSubscription(fname, name, member, {
 						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
 						...subscriptionStatus,

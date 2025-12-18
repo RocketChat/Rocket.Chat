@@ -77,7 +77,7 @@ async function getOrCreateFederatedRoom({
 					mrid: matrixRoomId,
 					origin,
 				},
-				fname: roomFName,
+				...(roomType !== 'd' && { fname: roomFName }), // DMs do not have a fname
 			},
 		});
 	} catch (error) {
@@ -231,6 +231,11 @@ async function handleLeave({
 	}
 
 	await Room.performUserRemoval(room, leavingUser);
+
+	// update room name for DMs
+	if (room.t === 'd') {
+		await Room.updateDirectMessageRoomName(room);
+	}
 
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }

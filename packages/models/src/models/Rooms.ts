@@ -2345,4 +2345,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	countAbacEnabled(): Promise<number> {
 		return this.countDocuments({ abacAttributes: { $exists: true }, archived: { $ne: true } });
 	}
+
+	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: roomId,
+			t: 'd',
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usernames: username,
+				uids: userId,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
 }
