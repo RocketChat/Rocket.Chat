@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { LoginPage } from '../login';
-import { EditStatusModal } from './edit-status-modal';
+import { EditStatusModal } from './modals/edit-status-modal';
 import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 

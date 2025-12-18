@@ -1,8 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
-import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
+import { OmnichannelTransferChatModal, OmnichannelContactReviewModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;

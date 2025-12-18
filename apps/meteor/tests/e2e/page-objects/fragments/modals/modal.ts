@@ -1,6 +1,6 @@
 import type { Locator } from '@playwright/test';
 
-import { expect } from '../../utils/test';
+import { expect } from '../../../utils/test';
 
 export abstract class Modal {
 	constructor(protected root: Locator) {}
@@ -28,21 +28,6 @@ export abstract class Modal {
 
 	async save() {
 		await this.btnSave.click();
-		await this.waitForDismissal();
-	}
-}
-
-export class ConfirmDeleteModal extends Modal {
-	constructor(root: Locator) {
-		super(root);
-	}
-
-	private btnDelete() {
-		return this.root.getByRole('button', { name: 'Delete' });
-	}
-
-	async confirmDelete() {
-		await this.btnDelete().click();
 		await this.waitForDismissal();
 	}
 }

@@ -1,7 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
-import { OmnichannelOnHoldModal } from './omnichannel-on-hold-modal';
+import { OmnichannelCloseChatModal, OmnichannelOnHoldModal } from './modals';
 
 export abstract class Toolbar {
 	constructor(protected root: Locator) {}
