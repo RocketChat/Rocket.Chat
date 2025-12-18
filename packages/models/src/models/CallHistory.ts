@@ -1,4 +1,4 @@
-import type { CallHistoryItem } from '@rocket.chat/core-typings';
+import type { CallHistoryItem, IRegisterUser } from '@rocket.chat/core-typings';
 import type { ICallHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, FindOptions, IndexDescription } from 'mongodb';
 
@@ -27,5 +27,23 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 		options?: FindOptions<CallHistoryItem>,
 	): Promise<CallHistoryItem | null> {
 		return this.findOne({ callId, uid }, options);
+	}
+
+	public async updateUserReferences(
+		userId: IRegisterUser['_id'],
+		username: IRegisterUser['username'],
+		name: IRegisterUser['name'],
+	): Promise<void> {
+		await this.updateMany(
+			{
+				contactId: userId,
+			},
+			{
+				$set: {
+					contactName: name,
+					contactUsername: username,
+				},
+			},
+		);
 	}
 }
