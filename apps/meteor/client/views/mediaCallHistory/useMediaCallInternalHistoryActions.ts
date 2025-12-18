@@ -1,4 +1,3 @@
-// type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
