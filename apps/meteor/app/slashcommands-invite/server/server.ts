@@ -121,6 +121,7 @@ slashCommands.add({
 								msg: i18n.t(e.message, { lng: settings.get('Language') || 'en' }),
 							});
 						}
+						return;
 					}
 
 					if (isStringError(e)) {
