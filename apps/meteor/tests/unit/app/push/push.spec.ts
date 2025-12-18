@@ -6,7 +6,6 @@ import sinon from 'sinon';
 
 const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
 const settingsStub = { get: sinon.stub().returns('') };
-const clock = sinon.useFakeTimers();
 
 const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push', {
 	'./logger': { logger: loggerStub },
@@ -30,7 +29,6 @@ const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push'
 
 describe('Push Notifications [PushClass]', () => {
 	afterEach(() => {
-		clock.restore();
 		sinon.restore();
 	});
 
