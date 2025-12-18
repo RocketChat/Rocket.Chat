@@ -41,12 +41,10 @@ export const MediaCallHistoryContextualbar = () => {
 			<ContextualbarDialog onClose={closeTab}>
 				<ContextualbarHeader>
 					<ContextualbarIcon name='info-circled' />
-					{/* TODO: use correct translation key Call_info */}
-					<ContextualbarTitle>{t('Call_Information')}</ContextualbarTitle>
+					<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
 					<ContextualbarClose onClick={closeTab} />
 				</ContextualbarHeader>
-				{/* TODO: use a proper error message */}
-				<ContextualbarEmptyContent icon='user' title={t('Contact_not_found')} />
+				<ContextualbarEmptyContent icon='warning' title={t('Call_info_could_not_be_loaded')} subtitle={t('Please_try_again')} />
 			</ContextualbarDialog>
 		);
 	}
