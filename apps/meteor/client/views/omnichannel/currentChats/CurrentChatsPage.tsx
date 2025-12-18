@@ -350,7 +350,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data?.rooms.length > 0 && (
+					{isSuccess && data?.rooms?.length > 0 && (
 						<>
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>

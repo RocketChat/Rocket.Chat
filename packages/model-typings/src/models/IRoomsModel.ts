@@ -31,6 +31,8 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypes(types: Array<IRoom['t']>, discussion?: boolean, teams?: boolean, findOptions?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
@@ -49,6 +51,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		teams?: boolean,
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
+
+	findPrivateRoomsAndTeamsPaginated(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
@@ -125,6 +129,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
+	countAbacEnabled(): Promise<number>;
 
 	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult>;
 
@@ -220,6 +226,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByIds(rids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findPrivateRoomsByIdsWithAbacAttributes(ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findByNameAndTypeNotDefault(
@@ -318,4 +325,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
+	updateAbacConfigurationById(rid: IRoom['_id'], abac: boolean): Promise<UpdateResult>;
+	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null>;
+	unsetAbacAttributesById(rid: IRoom['_id']): Promise<UpdateResult>;
+	updateSingleAbacAttributeValuesById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
+	insertAbacAttributeIfNotExistsById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
+	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
+	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
 }

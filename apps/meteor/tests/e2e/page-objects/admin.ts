@@ -33,7 +33,7 @@ export abstract class Admin {
 
 	constructor(protected page: Page) {
 		this.sidebar = new AdminSidebar(page);
-		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
+		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog', { name: 'Are you sure?' }));
 		this.toastMessage = new ToastMessages(page);
 	}
 
