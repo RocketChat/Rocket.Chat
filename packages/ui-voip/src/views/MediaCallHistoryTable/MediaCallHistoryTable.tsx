@@ -10,11 +10,11 @@ import {
 } from '@rocket.chat/ui-client';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import { intlFormatDistance } from 'date-fns';
-import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallHistoryTableDirection from './CallHistoryTableDirection';
 import CallHistoryTableStatus from './CallHistoryTableStatus';
+import { CallHistoryInternalUser, CallHistoryExternalUser } from '../../components';
 
 type SortBy = 'contact' | 'type' | 'status' | 'timestamp';
 
@@ -24,21 +24,34 @@ type SortProps = {
 	setSort: (sortBy: SortBy, direction?: 'asc' | 'desc' | undefined) => void;
 };
 
+type ExternalContact = {
+	number: string;
+};
+
+type InternalContact = {
+	_id: string;
+	username?: string;
+	name?: string;
+};
+
 type MediaCallHistoryTableProps = {
 	sort: SortProps;
 	data: Array<{
 		_id: string;
-		contact: string;
+		contact: InternalContact | ExternalContact;
 		type: 'outbound' | 'inbound';
 		status: CallHistoryItemState;
 		duration: number;
 		timestamp: string;
 	}>;
 	onClickRow: (historyId: string) => void;
-	onClickUser: (e: UIEvent, userId: string) => void;
 };
 
-const MediaCallHistoryTable = ({ sort, data, onClickRow, onClickUser }: MediaCallHistoryTableProps) => {
+const isExternalContact = (contact: InternalContact | ExternalContact): contact is ExternalContact => {
+	return 'number' in contact;
+};
+
+const MediaCallHistoryTable = ({ sort, data, onClickRow }: MediaCallHistoryTableProps) => {
 	const locale = useLanguage();
 	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort: onClickSort } = sort;
@@ -69,7 +82,13 @@ const MediaCallHistoryTable = ({ sort, data, onClickRow, onClickUser }: MediaCal
 			<GenericTableBody>
 				{data.map(({ _id, contact, type, status, duration, timestamp }) => (
 					<GenericTableRow key={_id} onClick={() => onClickRow(_id)} tabIndex={0} role='link' action>
-						<GenericTableCell onClick={(e) => onClickUser(e, contact)}>{contact}</GenericTableCell>
+						<GenericTableCell>
+							{isExternalContact(contact) ? (
+								<CallHistoryExternalUser showIcon={false} number={contact.number} />
+							) : (
+								<CallHistoryInternalUser username={contact.username ?? ''} name={contact.name} _id={contact._id} />
+							)}
+						</GenericTableCell>
 						<GenericTableCell>
 							<CallHistoryTableDirection direction={type} />
 						</GenericTableCell>

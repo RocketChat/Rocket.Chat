@@ -1,7 +1,7 @@
-import type { CallHistoryItemState } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSort } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
+import type { ComponentProps } from 'react';
 
 import MediaCallHistoryTable from './MediaCallHistoryTable';
 
@@ -57,17 +57,29 @@ const getDate = (index: number) => {
 	return new Date(date.setMonth(date.getMonth() - 2));
 };
 
-const results = Array.from({ length: 100 }).map(
-	(_, index): { contact: string; type: 'outbound' | 'inbound'; status: CallHistoryItemState; duration: number; timestamp: string } => ({
-		contact: `User ${index}`,
-		type: index % 2 ? 'outbound' : 'inbound',
-		status: getStatus(index),
-		duration: index % 2 ? 120 : 0,
-		timestamp: getDate(index).toISOString(),
-	}),
-);
+const getContact = (index: number) => {
+	if (index % 2 === 0) {
+		return {
+			_id: `user_${index}`,
+			username: `user_${index}`,
+			name: `User ${index}`,
+		};
+	}
+	return {
+		number: `1234567890${index}`,
+	};
+};
+
+const results = Array.from({ length: 100 }).map((_, index): ComponentProps<typeof MediaCallHistoryTable>['data'][number] => ({
+	_id: `call_${index}`,
+	contact: getContact(index),
+	type: index % 2 ? 'outbound' : 'inbound',
+	status: getStatus(index),
+	duration: index % 2 ? 120 : 0,
+	timestamp: getDate(index).toISOString(),
+}));
 
 export const MediaCallHistoryTableStory: StoryFn<typeof MediaCallHistoryTable> = () => {
 	const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
-	return <MediaCallHistoryTable sort={sort} data={results} />;
+	return <MediaCallHistoryTable sort={sort} data={results} onClickRow={(id) => console.log(id)} />;
 };
