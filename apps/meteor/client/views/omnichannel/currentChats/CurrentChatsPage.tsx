@@ -12,6 +12,9 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	Page,
+	PageHeader,
+	PageContent,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -25,7 +28,6 @@ import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { links } from '../../../lib/links';
 import RoomActivityIcon from '../components/RoomActivityIcon';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
@@ -348,7 +350,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data?.rooms.length > 0 && (
+					{isSuccess && data?.rooms?.length > 0 && (
 						<>
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>

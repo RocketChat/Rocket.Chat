@@ -1,6 +1,6 @@
 import { Margins, Tabs, Button } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePagination } from '@rocket.chat/ui-client';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -10,7 +10,6 @@ import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
 	const { t } = useTranslation();

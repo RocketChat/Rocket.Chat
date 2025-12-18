@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`DeleteRoomModal should render without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r0:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r0:-title"
+              >
+                Remove room from ABAC management
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            Removing 
+            <span
+              class="rcx-box rcx-box--full rcx-css-skyl9j"
+            >
+              Test Room
+            </span>
+             from ABAC management may result in unintended users gaining access.
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-rzpqmp"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__footer-annotation"
+          >
+            Proceed with caution
+          </div>
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--danger rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Remove
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;

@@ -1,21 +1,42 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class AdminFlextabEmoji {
-	private readonly page: Page;
+import { FlexTab } from './flextab';
 
+abstract class EmojiFlexTab extends FlexTab {
+	constructor(root: Locator) {
+		super(root);
+	}
+
+	get inputName(): Locator {
+		return this.root.getByRole('textbox', { name: 'Name' });
+	}
+
+	private get btnSave() {
+		return this.root.getByRole('button', { name: 'Save' });
+	}
+
+	async save() {
+		await this.btnSave.click();
+		await this.waitForDismissal();
+	}
+}
+
+export class AddEmojiFlexTab extends EmojiFlexTab {
 	constructor(page: Page) {
-		this.page = page;
+		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
+	}
+}
+
+export class EditEmojiFlexTab extends EmojiFlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Custom Emoji Info' }));
 	}
 
-	get nameInput(): Locator {
-		return this.page.locator('role=textbox[name="Name"]');
+	private get btnDelete() {
+		return this.root.getByRole('button', { name: 'Delete' });
 	}
 
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
-	}
-
-	get btnDelete(): Locator {
-		return this.page.locator('role=button[name="Delete"]');
+	async delete() {
+		await this.btnDelete.click();
 	}
 }

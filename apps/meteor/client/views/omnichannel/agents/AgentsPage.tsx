@@ -1,5 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarDialog } from '@rocket.chat/ui-client';
+import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
 import AgentsTable from './AgentsTable';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AgentsPage = (): ReactElement => {
