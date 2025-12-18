@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
 import GenericNoResults from '../../../../components/GenericNoResults';
+import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 
@@ -104,7 +105,12 @@ const RoomsPage = () => {
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
-									<GenericTableCell>{room.fname || room.name}</GenericTableCell>
+									<GenericTableCell withTruncatedText>
+										<Margins inline={8}>
+											<RoomIcon room={room} size='x20' />
+										</Margins>
+										{room.fname || room.name}
+									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
 									<GenericTableCell withTruncatedText>
 										{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
