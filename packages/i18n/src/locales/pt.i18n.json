@@ -834,7 +834,6 @@
   "Created_at_s_by_s": "Criado em <strong>%s</strong> por <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Criado em <strong>%s</strong> por <strong>%s</strong> desencadeado por <strong>%s</strong>",
   "Crowd_sync_interval_Description": "O intervalo entre as sincronizações. Exemplo de \"todas as 24 horas\" ou \"no primeiro dia da semana\", mais exemplos em [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Chats atuais",
   "Current_File": "Arquivo atual",
   "Current_Status": "Estado Actual",
   "Custom": "Personalizado",

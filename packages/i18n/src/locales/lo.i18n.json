@@ -718,7 +718,6 @@
   "Created_at_s_by_s": "<strong>ສ້າງຕັ້ງຂື້ນໃນ %s</strong> <strong>ໂດຍ %s</strong>",
   "Created_at_s_by_s_triggered_by_s": "ສ້າງຢູ່ <strong>%s</strong>ໂດຍ <strong>%s</strong>ຖືກເອີ້ນໂດຍ <strong>%s</strong>",
   "Crowd_sync_interval_Description": "ຊ່ວງເວລາລະຫວ່າງ synchronizations. ຕົວຢ່າງ `ທຸກໆ 24 ຊົ່ວໂມງ` ຫຼື `ໃນມື້ທໍາອິດຂອງອາທິດ ', ຕົວຢ່າງເພີ່ມເຕີມທີ່ [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "ສົນໃນປະຈຸບັນ",
   "Current_Status": "ສະຖານະປັດຈຸບັນ",
   "Custom": "Custom",
   "Custom CSS": "CSS Custom",

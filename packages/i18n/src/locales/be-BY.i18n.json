@@ -722,7 +722,6 @@
   "Created_at_s_by_s": "Створана <strong>%s</strong>па <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Створана <strong>%s</strong>па <strong>%s</strong>запускаецца <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Інтэрвал паміж сінхранізацыі. Прыклад `кожныя 24 hours` или` на першы дзень week`, больш прыкладаў [Крон Тэкст Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "бягучыя Чаты",
   "Current_Status": "бягучы статус",
   "Custom": "выраблены на замову",
   "Custom CSS": "прыстасаваныя CSS",
