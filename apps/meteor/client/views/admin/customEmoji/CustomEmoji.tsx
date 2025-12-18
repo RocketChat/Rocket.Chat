@@ -79,7 +79,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 			)}
 			{isSuccess && data && data.emojis.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Emoji')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&
