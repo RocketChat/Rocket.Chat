@@ -904,7 +904,6 @@
   "Created_at_s_by_s": "Створено  <strong>%s</strong>   <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Створено на <strong>%s</strong>на <strong>%s</strong>, яке запускається <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Інтервал між синхронізаціями. Приклад \"кожні 24 години\" або \"в перший день тижня\", інші приклади в [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "поточні Чати",
   "Current_File": "Поточний файл",
   "Current_Import_Operation": "Поточна операція імпорту",
   "Current_Status": "Поточний стан",

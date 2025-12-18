@@ -703,7 +703,6 @@
   "Created_at_s_by_s": "Tên <strong>li %s</strong> ji <strong>aliyê %s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Li <strong>%s</strong ava kiriye> ji hêla <strong>%s</strong> ve hatî destpêkirin <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Navbera navbera synchronîzasyonan. `` Her 24 saetan` an 'roja hefta pêşî``, mînakên din li [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Chats niha:",
   "Current_Status": "Status Status",
   "Custom": "Hûnbunî",
   "Custom CSS": "CSS Custom",

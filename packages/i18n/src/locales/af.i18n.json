@@ -703,7 +703,6 @@
   "Created_at_s_by_s": "Geskep op <strong>%s</strong> deur <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Gemaak op <strong>%s</strong> deur <strong>%s</strong> geaktiveer deur <strong>%s</strong>",
   "Crowd_sync_interval_Description": "Die interval tussen sinkronisasies. Voorbeeld 'elke 24 uur' of 'op die eerste dag van die week`, meer voorbeelde by [Cron Text Parser] (http://bunkat.github.io/later/parsers.html#text)",
-  "Current_Chats": "Huidige kletse",
   "Current_Status": "Huidige toestand",
   "Custom": "Custom",
   "Custom CSS": "Aangepaste CSS",
