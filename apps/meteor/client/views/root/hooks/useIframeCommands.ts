@@ -1,12 +1,12 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
 import { type LocationPathname, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
 import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
-import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
