@@ -78,20 +78,11 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | null = await (async () => {
-		if (options?.forceNew) {
-			return null;
-		}
+	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
 
-		return uids.length === 2
-			? Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
-			: Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
-	})();
-
-	const isNewRoom = options?.forceNew ? true : !room;
+	const isNewRoom = !room;
 
 	const roomInfo = {
-		...(uids.length === 2 && !isNewRoom && { _id: uids.join('') }), // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
 		usersCount: members.length,
