@@ -7205,5 +7205,8 @@
   "timestamps.longDateDescription": "12/31/2020, 12:00 AM",
   "timestamps.fullDateTimeDescription": "December 31, 2020 12:00 AM",
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
-  "timestamps.relativeTimeDescription": "1 year ago"
+  "timestamps.relativeTimeDescription": "1 year ago",
+  "Call_info_could_not_be_loaded": "Call info could not be loaded",
+  "Please_try_again": "Please try again."
+
 }

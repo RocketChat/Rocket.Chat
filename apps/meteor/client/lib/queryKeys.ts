@@ -158,3 +158,8 @@ export const ABACQueryKeys = {
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
 };
+
+export const callHistoryQueryKeys = {
+	all: ['call-history'] as const,
+	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
+};
