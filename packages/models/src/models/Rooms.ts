@@ -114,6 +114,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				key: { 'abacAttributes.key': 1, 'abacAttributes.values': 1 },
 				partialFilterExpression: { abacAttributes: { $exists: true } },
 			},
+			{
+				key: { teamMain: 1 },
+				sparse: true,
+			},
 		];
 	}
 
