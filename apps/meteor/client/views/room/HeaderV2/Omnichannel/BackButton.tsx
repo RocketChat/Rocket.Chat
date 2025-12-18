@@ -17,13 +17,21 @@ const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
 					name: 'omnichannel-directory',
 					params: {
 						...router.getRouteParameters(),
-						bar: 'info',
+						tab: 'chats',
+						context: 'info',
 					},
 				});
 				break;
 
 			case 'omnichannel-current-chats':
-				router.navigate({ name: 'omnichannel-current-chats' });
+				router.navigate({
+					name: 'omnichannel-current-chats',
+					params: {
+						...router.getRouteParameters(),
+						tab: 'chats',
+						context: 'info',
+					},
+				});
 				break;
 		}
 	});
