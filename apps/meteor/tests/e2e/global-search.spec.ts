@@ -43,7 +43,6 @@ test.describe.serial('Global Search', () => {
 				.then((data) => {
 					targetGroup = data.group;
 				}),
-			setSettingValueById(api, 'Search.Provider', 'defaultProvider'),
 			setSettingValueById(api, 'Search.defaultProvider.GlobalSearchEnabled', true),
 		]);
 		await fillMessages(api);
@@ -54,7 +53,6 @@ test.describe.serial('Global Search', () => {
 			api.post('/channels.delete', { roomId: targetChannel._id }),
 			api.post('/groups.delete', { roomId: targetGroup._id }),
 			setSettingValueById(api, 'Search.defaultProvider.GlobalSearchEnabled', false),
-			setSettingValueById(api, 'Search.Provider', 'defaultProvider'),
 		]),
 	);
 
