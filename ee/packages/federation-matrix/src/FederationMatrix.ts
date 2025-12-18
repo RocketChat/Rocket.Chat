@@ -918,10 +918,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		if (action === 'accept') {
-			await Room.performAcceptRoomInvite(room, subscription, user);
-
 			await federationSDK.acceptInvite(room.federation.mrid, matrixUserId);
+
+			await Room.performAcceptRoomInvite(room, subscription, user);
 		}
+
 		if (action === 'reject') {
 			try {
 				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
