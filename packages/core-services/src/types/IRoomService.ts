@@ -67,4 +67,5 @@ export interface IRoomService {
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
 	}): Promise<string | undefined>;
+	delete(rid: string): Promise<void>;
 }

@@ -679,6 +679,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			await federationSDK.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
 
 			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
+
+			await this.deleteOnlyFederatedRoom(room._id);
 		} catch (error) {
 			this.logger.error(error, 'Failed to leave room in Matrix');
 			throw error;
@@ -931,7 +933,24 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}
 				this.logger.error(error, 'Failed to reject invite in Matrix');
 				throw error;
+			} finally {
+				await this.deleteOnlyFederatedRoom(room._id);
 			}
+		}
+	}
+
+	/**
+	 * Checks if a room has no local members and removes it if so.
+	 */
+	public async deleteOnlyFederatedRoom(rid: IRoom['_id']): Promise<void> {
+		const subs = await Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } }).toArray();
+
+		const federatedUserCount = await Users.countFederatedByIds(subs.map((sub) => sub.u._id));
+		console.log('deleteOnlyFederatedRoom ->', { subsCount: subs.length, federatedUserCount });
+
+		if (federatedUserCount === subs.length) {
+			// all users in the room are federated, safe to delete
+			await Room.delete(rid);
 		}
 	}
 }

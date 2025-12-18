@@ -17,6 +17,7 @@ import { saveRoomTopic } from '../../../app/channel-settings/server/functions/sa
 import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { deleteRoom } from '../../../app/lib/server/functions/deleteRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -297,5 +298,9 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return insertedId;
+	}
+
+	delete(rid: string): Promise<void> {
+		return deleteRoom(rid);
 	}
 }

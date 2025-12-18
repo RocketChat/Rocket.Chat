@@ -455,4 +455,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
+	countFederatedByIds(ids: string[]): Promise<number>;
 }

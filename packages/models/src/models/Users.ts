@@ -450,6 +450,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findPaginatedByActiveUsersExcept<T>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
+	countFederatedByIds(ids: string[]) {
+		return this.countDocuments({
+			_id: { $in: ids },
+			federated: true,
+		});
+	}
+
 	findPaginatedByActiveExternalUsersExcept<T extends Document = IUser>(
 		searchTerm: string,
 		exceptions?: string[],
