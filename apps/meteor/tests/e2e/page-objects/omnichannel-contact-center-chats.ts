@@ -61,8 +61,12 @@ export class OmnichannelChats extends OmnichannelAdministration {
 		return this.page.locator('role=textbox[name="Search"]');
 	}
 
+	private get contactCenterChatsTable(): Locator {
+		return this.page.getByRole('table', { name: 'Omnichannel Contact Center Chats' });
+	}
+
 	findRowByName(contactName: string) {
-		return this.page.locator(`td >> text="${contactName}"`);
+		return this.contactCenterChatsTable.getByRole('link', { name: contactName });
 	}
 
 	get inputServedBy(): Locator {
@@ -117,7 +121,7 @@ export class OmnichannelChats extends OmnichannelAdministration {
 	}
 
 	btnRemoveByName(name: string): Locator {
-		return this.findRowByName(name).locator('role=button[name="Remove"]');
+		return this.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}
 
 	async removeChatByName(name: string) {
@@ -128,5 +132,6 @@ export class OmnichannelChats extends OmnichannelAdministration {
 	async openChat(name: string) {
 		await this.findRowByName(name).click();
 		await this.conversation.openChat();
+		await this.page.locator('#main-content').waitFor();
 	}
 }

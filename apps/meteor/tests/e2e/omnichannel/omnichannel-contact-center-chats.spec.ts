@@ -145,7 +145,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 		await test.step('expect to be return using return button', async () => {
 			await poOmnichats.openChat(visitorA);
 			await poOmnichats.content.btnReturn.click();
-			await expect(page).toHaveURL(`/omnichannel/current`);
+			expect(page.url()).toContain(`/omnichannel/current`);
 		});
 	});
 

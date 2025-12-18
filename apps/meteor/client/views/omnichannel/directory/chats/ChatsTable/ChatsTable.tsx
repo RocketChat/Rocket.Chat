@@ -90,7 +90,7 @@ const ChatsTable = () => {
 			)}
 			{isSuccess && data?.rooms.length > 0 && (
 				<>
-					<GenericTable fixed={false}>
+					<GenericTable aria-label={t('Omnichannel_Contact_Center_Chats')} fixed={false}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>{data?.rooms.map((room) => <ChatsTableRow key={room._id} {...room} />)}</GenericTableBody>
 					</GenericTable>

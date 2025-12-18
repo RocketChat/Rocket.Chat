@@ -163,7 +163,7 @@ test.describe('OC - Monitor Role', () => {
 		});
 	});
 
-	test('OC - Monitor Role - Contact Center', async () => {
+	test('OC - Monitor Role - Contact Center', async ({ page }) => {
 		await test.step('expect to be able to view only chats from same unit', async () => {
 			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
 			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
@@ -200,6 +200,7 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect to be able to close a conversation from another agent', async () => {
 			await poOmnichannel.quickActionsRoomToolbar.closeChat();
+			await page.goto('/omnichannel');
 		});
 
 		await test.step('expect not to be able to remove closed room', async () => {
