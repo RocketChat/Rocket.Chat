@@ -30,8 +30,8 @@ export class HomeTeam {
 	}
 
 	async addMember(memberName: string): Promise<void> {
-		await this.page.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
-		await this.page.locator(`.rcx-option__content:has-text("${memberName}")`).click();
+		await this.page.getByRole('textbox', { name: 'Add people' }).pressSequentially(memberName, { delay: 100 });
+		await this.page.getByRole('option', { name: memberName }).click();
 	}
 
 	get btnTeamCreate(): Locator {

@@ -34,7 +34,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
@@ -74,8 +74,6 @@ const getFederationHintKey = (licenseModule: boolean, featureToggle: boolean, fe
 
 	return 'Federation_Matrix_Federated_Description';
 };
-
-const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
@@ -258,12 +256,14 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						<Controller
 							control={control}
 							name='members'
-							rules={{
-								validate: (members) =>
-									!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
-							}}
 							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultipleFederated id={addMembersId} value={value} onChange={onChange} placeholder={t('Add_people')} />
+								<UserAutoCompleteMultiple
+									federated={federated}
+									id={addMembersId}
+									value={value}
+									onChange={onChange}
+									placeholder={t('Add_people')}
+								/>
 							)}
 						/>
 						{errors.members && (

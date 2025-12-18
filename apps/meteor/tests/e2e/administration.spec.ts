@@ -311,7 +311,7 @@ test.describe.parallel('administration', () => {
 				await poAdminRoles.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
 
-				await poAdminRoles.inputUsers.fill('user1');
+				await poAdminRoles.inputUsers.pressSequentially('user1');
 				await page.getByRole('option', { name: 'user1' }).click();
 				await poAdminRoles.btnAdd.click();
 
