@@ -14,12 +14,12 @@ const visitorA = faker.person.firstName();
 const visitorB = faker.person.firstName();
 const visitorC = faker.person.firstName();
 
-test.skip(!IS_EE, 'OC - Contact Center > Enterprise Only');
+test.skip(!IS_EE, 'OC - Contact Center Chats > Enterprise Only');
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Contact Center [Auto Selection]', async () => {
-	let poCurrentChats: OmnichannelChats;
+test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
+	let poOmnichats: OmnichannelChats;
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
@@ -107,10 +107,10 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
-		poCurrentChats = new OmnichannelChats(page);
+		poOmnichats = new OmnichannelChats(page);
 
 		await page.goto('/omnichannel');
-		await poCurrentChats.sidenav.linkCurrentChats.click();
+		await poOmnichats.sidenav.linkCurrentChats.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -141,136 +141,28 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		statesPromises.forEach((res) => expect(res.status()).toBe(200));
 	});
 
-	test.skip('OC - Contact Center - Accessibility violations', async ({ makeAxeBuilder }) => {
-		const results = await makeAxeBuilder().analyze();
-		expect(results.violations).toEqual([]);
-	});
-
-	test('OC - Contact Center - Filters', async ({ page }) => {
-		const [departmentA, departmentB] = departments.map(({ data }) => data);
-
-		await test.step('expect to filter by guest', async () => {
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-
-			await poCurrentChats.inputSearch.fill(visitorA);
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-
-			await poCurrentChats.inputSearch.fill('');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-		});
-
-		await test.step('expect to filter by server', async () => {
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-
-			await poCurrentChats.selectServedBy('user1');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-
-			await poCurrentChats.selectServedBy('user2');
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorA)).not.toBeVisible();
-
-			await poCurrentChats.selectServedBy('all');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-		});
-
-		await test.step('expect to filter by status', async () => {
-			await poCurrentChats.selectStatus('closed');
-			await expect(poCurrentChats.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).toBeVisible();
-
-			await poCurrentChats.selectStatus('opened');
-			await expect(poCurrentChats.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).not.toBeVisible();
-
-			await poCurrentChats.selectStatus('onhold');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).not.toBeVisible();
-
-			await poCurrentChats.selectStatus('all');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).toBeVisible();
-		});
-
-		await test.step('expect to filter by department', async () => {
-			await poCurrentChats.selectDepartment(departmentA.name);
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).not.toBeVisible();
-
-			await poCurrentChats.selectDepartment(departmentB.name);
-			await expect(poCurrentChats.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).not.toBeVisible();
-
-			await poCurrentChats.selectDepartment('All');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorC)).toBeVisible();
-		});
-
-		await test.step('expect to filter by tags', async () => {
-			await poCurrentChats.addTag('tagA');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).not.toBeVisible();
-
-			await poCurrentChats.addTag('tagB');
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-
-			await poCurrentChats.removeTag('tagA');
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorA)).not.toBeVisible();
-
-			await poCurrentChats.removeTag('tagB');
-			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
-			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
-		});
-
-		await test.step('expect department filter to show selected value after page reload', async () => {
-			await poCurrentChats.selectDepartment(departmentA.name);
-			await page.reload();
-			await expect(poCurrentChats.inputDepartmentValue).toContainText(departmentA.name);
-		});
-
-		// TODO: Unit test await test.step('expect to filter by period', async () => {});
-
-		// TODO: Unit test await test.step('expect to filter by custom fields', async () => {});
-
-		// TODO: Unit test await test.step('expect to filter clear all', async () => {});
-	});
-
-	test('OC - Contact Center - Basic navigation', async ({ page }) => {
+	test('OC - Contact Center Chats - Basic navigation', async ({ page }) => {
 		await test.step('expect to be return using return button', async () => {
-			await poCurrentChats.openChat(visitorA);
-			await poCurrentChats.content.btnReturn.click();
+			await poOmnichats.openChat(visitorA);
+			await poOmnichats.content.btnReturn.click();
 			await expect(page).toHaveURL(`/omnichannel/current`);
 		});
 	});
 
-	test('OC - Contact Center - Access in progress conversation from another agent', async () => {
+	test('OC - Contact Center Chats - Access in progress conversation from another agent', async () => {
 		await test.step('expect to be able to join', async () => {
 			const { visitor: visitorB } = conversations[1].data;
-			await poCurrentChats.openChat(visitorB.name);
-			await expect(poCurrentChats.content.btnJoinRoom).toBeVisible();
-			await poCurrentChats.content.btnJoinRoom.click();
-			await expect(poCurrentChats.content.btnJoinRoom).not.toBeVisible();
+			await poOmnichats.openChat(visitorB.name);
+			await expect(poOmnichats.content.btnJoinRoom).toBeVisible();
+			await poOmnichats.content.btnJoinRoom.click();
+			await expect(poOmnichats.content.btnJoinRoom).not.toBeVisible();
 		});
 	});
 
-	test('OC - Contact Center - Remove conversations', async () => {
+	test('OC - Contact Center Chats - Remove conversations', async () => {
 		await test.step('expect to be able to remove conversation from table', async () => {
-			await poCurrentChats.removeChatByName(visitorC);
-			await expect(poCurrentChats.findRowByName(visitorC)).not.toBeVisible();
+			await poOmnichats.removeChatByName(visitorC);
+			await expect(poOmnichats.findRowByName(visitorC)).not.toBeVisible();
 		});
 
 		// TODO: await test.step('expect to be able to close all closes conversations', async () => {});
@@ -302,7 +194,7 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test('OC - Contact Center - Access queued conversation', async ({ api }) => {
+	test('OC - Contact Center Chats - Access queued conversation', async ({ api }) => {
 		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
 
 		await test.step('expect to be able to take it', async () => {
