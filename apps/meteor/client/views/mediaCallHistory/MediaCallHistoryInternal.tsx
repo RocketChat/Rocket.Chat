@@ -14,10 +14,7 @@ type MediaCallHistoryInternalProps = {
 	onClose: () => void;
 };
 
-export const isInternalCallHistoryItem = (data: {
-	item: Serialized<CallHistoryItem>;
-	call?: Serialized<IMediaCall>;
-}): data is InternalCallEndpointData => {
+export const isInternalCallHistoryItem = (data: { item: Serialized<CallHistoryItem> }): data is InternalCallEndpointData => {
 	return 'external' in data.item && !data.item.external;
 };
 

@@ -18,10 +18,7 @@ const getContact = (item: ExternalCallEndpointData['item']) => {
 	};
 };
 
-export const isExternalCallHistoryItem = (data: {
-	item: Serialized<CallHistoryItem>;
-	call?: Serialized<IMediaCall>;
-}): data is ExternalCallEndpointData => {
+export const isExternalCallHistoryItem = (data: { item: Serialized<CallHistoryItem> }): data is ExternalCallEndpointData => {
 	return 'external' in data.item && data.item.external;
 };
 
