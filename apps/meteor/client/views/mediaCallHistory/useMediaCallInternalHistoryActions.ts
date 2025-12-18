@@ -1,4 +1,3 @@
-
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useCurrentRoutePath, useRoomToolbox, useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
