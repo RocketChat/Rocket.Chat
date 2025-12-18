@@ -21,8 +21,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallAccepted', callId });
-
 		await this.sendSignal({
 			callId,
 			type: 'notification',
@@ -50,8 +48,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallEnded', callId });
-
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -60,8 +56,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallActive', callId });
-
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -70,8 +64,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallCreated', call });
-
 		if (this.role === 'caller' && call.caller.contractId) {
 			// Pre-create the channel for the contractId that requested the call
 			await this.getOrCreateChannel(call, call.caller.contractId);
@@ -81,8 +73,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
-
 		const call = await MediaCalls.findOneById(callId);
 		if (!call || !isBusyState(call.state)) {
 			return;
@@ -140,8 +130,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallTransferred', callId });
-
 		const call = await MediaCalls.findOneById(callId);
 		if (!call?.transferredBy || !call?.transferredTo) {
 			return;
@@ -163,7 +151,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration });
+		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
 	}
 }

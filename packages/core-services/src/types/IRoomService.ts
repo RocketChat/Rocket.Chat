@@ -7,7 +7,8 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
@@ -66,5 +67,7 @@ export interface IRoomService {
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
+		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
+	updateDirectMessageRoomName(room: IRoom): Promise<boolean>;
 }
