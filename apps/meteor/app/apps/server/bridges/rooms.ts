@@ -188,7 +188,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
 		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
 
-		const { limit = 100, skip = 0 } = options || {};
+		const { limit = 100, skip = 0 } = options;
 
 		const findOptions: FindOptions<ICoreRoom> = {
 			sort: { ts: -1 },
