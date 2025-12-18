@@ -25,6 +25,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
+		await makeAgentAvailable();
 	});
 
 	describe('livechat/analytics/agents/average-service-time', () => {
