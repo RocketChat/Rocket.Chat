@@ -462,8 +462,8 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
-			title: options.title.length > PUSH_TITLE_LIMIT ? truncateString(options.title, PUSH_TITLE_LIMIT) : options.title,
-			text: options.text.length > PUSH_MESSAGE_BODY_LIMIT ? truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) : options.text,
+			title: truncateString(options.title, PUSH_TITLE_LIMIT),
+			text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT),
 
 			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
 
