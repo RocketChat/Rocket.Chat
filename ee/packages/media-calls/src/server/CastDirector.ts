@@ -13,8 +13,6 @@ type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
 export class MediaCallCastDirector implements IMediaCallCastDirector {
 	public async getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentsFromCall', callId: call?._id });
-
 		const callerAgent = await this.getAgentFromCall(call, 'caller');
 		if (!callerAgent) {
 			throw new Error('Unable to find caller agent');
@@ -45,8 +43,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getContactForActor', actor, options, defaultContactInfo });
-
 		if (actor.type === 'user') {
 			return this.getContactForUserId(actor.id, options, { ...actor, ...defaultContactInfo });
 		}
@@ -63,8 +59,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): MediaCallContact | null {
-		logger.debug({ msg: 'MediaCallCastDirector.getContactForUser', user, options, defaultContactInfo });
-
 		const actors = this.buildContactListForUser(user, defaultContactInfo);
 		return this.getContactFromList(actors, options);
 	}
@@ -74,13 +68,11 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getContactForUserId', userId, options, defaultContactInfo });
-
 		const user = await Users.findOneById<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(userId, {
 			projection: { name: 1, username: 1, freeSwitchExtension: 1 },
 		});
 		if (!user) {
-			throw new Error('invalid-callee');
+			return null;
 		}
 
 		return this.getContactForUser(user, options, defaultContactInfo);
@@ -91,8 +83,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getContactForExtensionNumber', sipExtension, options, defaultContactInfo });
-
 		const user = await Users.findOneByFreeSwitchExtension<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(sipExtension, {
 			projection: { name: 1, username: 1, freeSwitchExtension: 1 },
 		});
@@ -113,17 +103,15 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 			return this.getAgentForSipActorAndRole(actor, role);
 		}
 
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentForActorAndRole.null', actor, role });
+		logger.warn({ msg: 'Invalid actor type', actor });
 		return null;
 	}
 
 	protected async getAgentForUserActorAndRole(actor: MediaCallContact, role: CallRole): Promise<UserActorAgent | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentForUserActorAndRole', id: actor.id, role });
 		return new UserActorAgent(actor, role);
 	}
 
 	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentForSipActorAndRole', id: actor.id, role });
 		return new BroadcastActorAgent(actor, role);
 	}
 
@@ -170,8 +158,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	protected getContactFromList(list: ContactList, options: GetActorContactOptions): MediaCallContact | null {
-		logger.debug({ msg: 'MediaCallCastDirector.getContactFromList', list, options });
-
 		if (options.requiredType) {
 			return list[options.requiredType] ?? null;
 		}

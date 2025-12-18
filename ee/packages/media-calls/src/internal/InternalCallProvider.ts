@@ -46,6 +46,11 @@ export class InternalCallProvider extends BaseCallProvider {
 		await mediaCallDirector.runOnCallCreatedForAgent(call, calleeAgent, callerAgent);
 
 		if (params.parentCallId) {
+			logger.info({
+				msg: 'Transferred call was created, so the old one will be terminated',
+				newCallId: call._id,
+				oldCallId: params.parentCallId,
+			});
 			mediaCallDirector.hangupTransferredCallById(params.parentCallId).catch(() => null);
 		}
 

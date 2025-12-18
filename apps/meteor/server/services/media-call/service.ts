@@ -41,7 +41,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
-			logger.debug({ msg: 'new client signal', type: signal.type, uid });
 			callServer.receiveSignal(uid, signal);
 		} catch (err) {
 			logger.error({ msg: 'failed to process client signal', err, signal, uid });
@@ -50,8 +49,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
 		try {
-			logger.debug({ msg: 'new client signal', uid });
-
 			const deserialized = await this.deserializeClientSignal(signal);
 
 			callServer.receiveSignal(uid, deserialized);

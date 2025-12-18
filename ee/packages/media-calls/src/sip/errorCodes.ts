@@ -20,6 +20,7 @@ export const SipErrorCodes = {
 	SERVICE_NOT_AVAILABLE: 503,
 
 	DECLINED: 603,
+	UNWANTED: 607,
 } as const;
 
 export class SipError extends Error {
