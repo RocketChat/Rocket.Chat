@@ -1,8 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { useSort } from '@rocket.chat/ui-client';
+import { GenericMenu, useSort } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ComponentProps } from 'react';
 
+import type { CallHistoryTableExternalContact, CallHistoryTableInternalContact, CallHistoryTableRowProps } from './CallHistoryTableRow';
+import CallHistoryTableRow from './CallHistoryTableRow';
 import MediaCallHistoryTable from './MediaCallHistoryTable';
 
 const mockedContexts = mockAppRoot()
@@ -57,7 +58,7 @@ const getDate = (index: number) => {
 	return new Date(date.setMonth(date.getMonth() - 2));
 };
 
-const getContact = (index: number) => {
+const getContact = (index: number): CallHistoryTableInternalContact | CallHistoryTableExternalContact => {
 	if (index % 2 === 0) {
 		return {
 			_id: `user_${index}`,
@@ -70,16 +71,26 @@ const getContact = (index: number) => {
 	};
 };
 
-const results = Array.from({ length: 100 }).map((_, index): ComponentProps<typeof MediaCallHistoryTable>['data'][number] => ({
-	_id: `call_${index}`,
-	contact: getContact(index),
-	type: index % 2 ? 'outbound' : 'inbound',
-	status: getStatus(index),
-	duration: index % 2 ? 120 : 0,
-	timestamp: getDate(index).toISOString(),
-}));
+const results = Array.from({ length: 100 }).map(
+	(_, index): CallHistoryTableRowProps => ({
+		_id: `call_${index}`,
+		contact: getContact(index) as CallHistoryTableInternalContact,
+		type: index % 2 ? 'outbound' : 'inbound',
+		status: getStatus(index),
+		duration: index % 2 ? 120 : 0,
+		timestamp: getDate(index).toISOString(),
+		onClick: () => console.log(`call_${index}`),
+		menu: <GenericMenu title='Menu' sections={[]} />,
+	}),
+);
 
 export const MediaCallHistoryTableStory: StoryFn<typeof MediaCallHistoryTable> = () => {
 	const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
-	return <MediaCallHistoryTable sort={sort} data={results} onClickRow={(id) => console.log(id)} />;
+	return (
+		<MediaCallHistoryTable sort={sort}>
+			{results.map((result) => (
+				<CallHistoryTableRow key={result._id} {...result} />
+			))}
+		</MediaCallHistoryTable>
+	);
 };

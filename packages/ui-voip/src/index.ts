@@ -9,4 +9,4 @@ export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistor
 
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 
-export { MediaCallHistoryTable } from './views';
+export * from './views/MediaCallHistoryTable';
