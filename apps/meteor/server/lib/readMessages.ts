@@ -1,8 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Subscriptions } from '@rocket.chat/models';
 
+import { callbacks } from './callbacks';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
-import { callbacks } from '../../lib/callbacks';
 
 export async function readMessages(room: IRoom, uid: IUser['_id'], readThreads: boolean): Promise<void> {
 	await callbacks.run('beforeReadMessages', room._id, uid);

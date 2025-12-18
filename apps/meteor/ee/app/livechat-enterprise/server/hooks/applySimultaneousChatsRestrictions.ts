@@ -3,7 +3,7 @@ import { LivechatDepartment } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export async function getChatLimitsQuery(departmentId?: string): Promise<Filter<AvailableAgentsAggregation>> {
 	const limitFilter: Filter<AvailableAgentsAggregation> = [];
