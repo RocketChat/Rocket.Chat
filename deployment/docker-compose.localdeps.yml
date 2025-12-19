@@ -1,0 +1,49 @@
+services:
+  mongo:
+    image: mongo:6
+    command: ["mongod", "--replSet", "rs0", "--oplogSize", "128", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - medsense
+
+  mongo-init-replica:
+    image: mongo:6
+    depends_on:
+      - mongo
+    restart: "no"
+    networks:
+      - medsense
+    entrypoint: >
+      bash -lc '
+        for i in {1..30}; do
+          mongosh "mongodb://mongo:27017/admin" --quiet --eval "db.adminCommand({ ping: 1 })" && break;
+          sleep 1;
+        done;
+
+        mongosh "mongodb://mongo:27017/admin" --quiet --eval "
+          try {
+            rs.status();
+          } catch (e) {
+            rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"127.0.0.1:27017\" }] });
+          }
+        ";
+      '
+
+  nats:
+    image: nats:2
+    command: ["-js", "-m", "8222"]
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+    networks:
+      - medsense
+
+volumes:
+  mongo_data:
+
+networks:
+  medsense:
+    driver: bridge
