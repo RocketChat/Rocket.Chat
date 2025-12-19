@@ -1,9 +1,17 @@
 import { ServiceClassInternal, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
-import type { ISubscription, AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import {
+	type AtLeast,
+	type IRoom,
+	type IUser,
+	type MessageTypesValues,
+	type ISubscription,
+	isOmnichannelRoom,
+	isRoomWithJoinCode,
+} from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
@@ -11,7 +19,7 @@ import { performAcceptRoomInvite } from '../../../app/lib/server/functions/accep
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
@@ -27,6 +35,28 @@ import { removeRoomOwner } from '../../methods/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
+
+	async updateDirectMessageRoomName(room: IRoom): Promise<boolean> {
+		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
+
+		const uids = subs.map((sub) => sub.u._id);
+
+		const roomMembers = await Users.findUsersByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
+
+		const roomNames = getNameForDMs(roomMembers);
+
+		for await (const sub of subs) {
+			// don't update the name if the user is invited but hasn't accepted yet
+			if (sub.status === 'INVITED') {
+				continue;
+			}
+			await Subscriptions.updateOne({ _id: sub._id }, { $set: roomNames[sub.u._id] });
+
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, sub.u._id, 'updated');
+		}
+
+		return true;
+	}
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
 		const { type, name, members = [], readOnly, extraData, options } = params;
@@ -82,7 +112,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(roomId, user, inviter, options);
 	}
 
-	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
+	async removeUserFromRoom(
+		roomId: string,
+		user: IUser,
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
@@ -229,6 +263,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		skipAlertSound = false,
 		skipSystemMessage = false,
 		status,
+		roles,
 	}: {
 		room: IRoom;
 		ts: Date;
@@ -238,6 +273,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		skipAlertSound?: boolean;
 		skipSystemMessage?: boolean;
 		status?: 'INVITED';
+		roles?: ISubscription['roles'];
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
@@ -248,10 +284,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			unread: 1,
 			userMentions: 1,
 			groupMentions: 0,
+			...(roles && { roles }),
 			...(status && { status }),
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, name: inviter.name } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
+			...(room.t === 'd' && inviter && { fname: inviter.name, name: inviter.username }),
 		});
 
 		if (insertedId) {

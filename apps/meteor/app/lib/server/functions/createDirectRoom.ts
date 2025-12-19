@@ -7,8 +7,9 @@ import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { getNameForDMs } from '../../../../server/services/room/getNameForDMs';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
@@ -37,13 +38,11 @@ const generateSubscription = (
 	},
 });
 
-const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
-
 export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
 	options: {
+		forceNew?: boolean;
 		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
@@ -71,6 +70,7 @@ export async function createDirectRoom(
 	await callbacks.run('beforeCreateDirectRoom', membersUsernames, roomExtraData);
 
 	const roomMembers = await Users.findUsersByUsernames(membersUsernames).toArray();
+
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
@@ -78,15 +78,11 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | null =
-		uids.length === 2
-			? await Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
-			: await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
 
 	const isNewRoom = !room;
 
 	const roomInfo = {
-		...(uids.length === 2 && { _id: uids.join('') }), // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',
 		usernames,
 		usersCount: members.length,
@@ -159,9 +155,9 @@ export async function createDirectRoom(
 			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
 		}
 
-		for await (const member of membersWithPreferences) {
-			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
+		const roomNames = getNameForDMs(roomMembers);
 
+		for await (const member of membersWithPreferences) {
 			const subscriptionStatus: Partial<ISubscription> =
 				roomExtraData.federated && options.creator !== member._id && creatorUser
 					? {
@@ -177,14 +173,17 @@ export async function createDirectRoom(
 						}
 					: {};
 
+			const { fname, name } = roomNames[member._id];
+
 			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
-					$setOnInsert: generateSubscription(getFname(otherMembers), getName(otherMembers), member, {
+					$setOnInsert: generateSubscription(fname, name, member, {
 						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
 						...subscriptionStatus,
+						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
 					}),
 				},
 				{ upsert: true },

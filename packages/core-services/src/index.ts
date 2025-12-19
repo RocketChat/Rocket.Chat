@@ -1,4 +1,5 @@
 import { proxify } from './lib/proxify';
+import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import { IApiService } from './types/IApiService';
@@ -52,6 +53,7 @@ import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
 export { AppStatusReport } from './types/IAppsEngineService';
+export { IAbacService, AbacActor } from './types/IAbacService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
@@ -197,3 +199,4 @@ export const User = proxify<IUserService>('user');
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
+export const Abac = proxify<IAbacService>('abac');

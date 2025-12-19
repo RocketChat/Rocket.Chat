@@ -12,7 +12,7 @@ const mocks = {
 			startup: () => {},
 		},
 	},
-	'../../../../../lib/callbacks': {
+	'../../../../../server/lib/callbacks': {
 		callbacks: {
 			run: () => {},
 		},
