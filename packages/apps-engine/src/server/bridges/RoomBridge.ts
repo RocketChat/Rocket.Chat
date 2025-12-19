@@ -13,6 +13,8 @@ export type GetMessagesOptions = {
 	skip: number;
 	sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
 	showThreadMessages: boolean;
+	createdAt?: { start?: Date; end?: Date };
+	updatedAt?: { start?: Date; end?: Date };
 };
 
 export abstract class RoomBridge extends BaseBridge {
