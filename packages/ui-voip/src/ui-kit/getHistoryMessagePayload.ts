@@ -1,5 +1,5 @@
 import type { CallHistoryItemState, IMessage } from '@rocket.chat/core-typings';
-import type { IconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
+import type { IconButtonElement, FrameableIconElement, InfoCardBlock, TextObject } from '@rocket.chat/ui-kit';
 import { intervalToDuration, secondsToMilliseconds } from 'date-fns';
 
 const APP_ID = 'media-call-core';
@@ -18,17 +18,17 @@ export const callStateToTranslationKey = (callState: CallHistoryItemState): Text
 	}
 };
 
-export const callStateToIcon = (callState: CallHistoryItemState): IconElement => {
+export const callStateToIcon = (callState: CallHistoryItemState): FrameableIconElement => {
 	switch (callState) {
 		case 'ended':
-			return { type: 'icon', icon: 'phone-off', variant: 'secondary' };
+			return { type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true };
 		case 'not-answered':
-			return { type: 'icon', icon: 'clock', variant: 'danger' };
+			return { type: 'icon', icon: 'clock', variant: 'danger', framed: true };
 		case 'failed':
 		case 'error':
-			return { type: 'icon', icon: 'phone-issue', variant: 'danger' };
+			return { type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true };
 		case 'transferred':
-			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary' };
+			return { type: 'icon', icon: 'arrow-forward', variant: 'secondary', framed: true };
 	}
 };
 
@@ -62,9 +62,20 @@ export const getFormattedCallDuration = (callDuration: number | undefined): Text
 	} as const;
 };
 
+export const getHistoryAction = (callId: string): IconButtonElement => {
+	return {
+		type: 'icon_button',
+		icon: { type: 'icon', icon: 'info', variant: 'default' },
+		actionId: 'open-history',
+		appId: APP_ID,
+		blockId: callId,
+	};
+};
+
 export const getHistoryMessagePayload = (
 	callState: CallHistoryItemState,
 	callDuration: number | undefined,
+	callId?: string,
 ): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
 	const callStateTranslationKey = callStateToTranslationKey(callState);
 	const icon = callStateToIcon(callState);
@@ -81,6 +92,7 @@ export const getHistoryMessagePayload = (
 					{
 						background: 'default',
 						elements: [icon, callStateTranslationKey],
+						...(callId && { action: getHistoryAction(callId) }),
 					},
 					...(callDurationFormatted
 						? [
