@@ -58,7 +58,21 @@ export class AppRoomsConverter {
 			contactId: 'contactId',
 			departmentId: 'departmentId',
 			parentRoomId: 'prid',
-			visitor: 'v',
+			visitor: (data) => {
+				const { v } = data;
+				if (!v) {
+					return undefined;
+				}
+
+				delete data.v;
+
+				const { _id: id, ...rest } = v;
+
+				return {
+					id,
+					...rest,
+				};
+			},
 			displaySystemMessages: (data) => {
 				const { sysMes } = data;
 				delete data.sysMes;
