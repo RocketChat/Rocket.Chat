@@ -1,12 +1,12 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { beforeLeaveRoomCallback } from '../../../../server/lib/callbacks/beforeLeaveRoomCallback';
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
@@ -15,7 +15,11 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/not
  * Executes only the necessary database operations, with no callbacks, to prevent
  * propagation loops during external event processing.
  */
-export const performUserRemoval = async function (room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+export const performUserRemoval = async function (
+	room: IRoom,
+	user: IUser,
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+): Promise<void> {
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1, status: 1 },
 	});
@@ -23,27 +27,33 @@ export const performUserRemoval = async function (room: IRoom, user: IUser, opti
 		return;
 	}
 
+	// make TS happy, this should never happen
+	if (!user.username) {
+		throw new Error('User must have a username to be removed from the room');
+	}
+
 	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);
 
 	if (subscription) {
-		const removedUser = user;
-		if (options?.byUser) {
+		if (options?.customSystemMessage) {
+			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
+		} else if (options?.byUser) {
 			const extraData = {
 				u: options.byUser,
 			};
 
 			if (room.teamMain) {
-				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username || '', user, extraData);
+				await Message.saveSystemMessage('removed-user-from-team', room._id, user.username, user, extraData);
 			} else {
-				await Message.saveSystemMessage('ru', room._id, user.username || '', user, extraData);
+				await Message.saveSystemMessage('ru', room._id, user.username, user, extraData);
 			}
 		} else if (subscription.status === 'INVITED') {
-			await Message.saveSystemMessage('uir', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('uir', room._id, user.username, user);
 		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ult', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ult', room._id, user.username, user);
 		} else {
-			await Message.saveSystemMessage('ul', room._id, removedUser.username || '', removedUser);
+			await Message.saveSystemMessage('ul', room._id, user.username, user);
 		}
 	}
 
@@ -64,6 +74,11 @@ export const performUserRemoval = async function (room: IRoom, user: IUser, opti
 		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [user._id]);
 	}
 
+	// remove references to the user in direct message rooms
+	if (room.t === 'd') {
+		await Rooms.removeUserReferenceFromDMsById(room._id, user.username, user._id);
+	}
+
 	void notifyOnRoomChangedById(room._id);
 };
 
@@ -72,20 +87,27 @@ export const performUserRemoval = async function (room: IRoom, user: IUser, opti
  * and triggering all standard callbacks. Used for local actions (UI or API)
  * that should propagate normally to federation and other subscribers.
  */
-export const removeUserFromRoom = async function (rid: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
+export const removeUserFromRoom = async function (
+	rid: string,
+	user: IUser,
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
 		return;
 	}
 
-	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
-	} catch (error: any) {
-		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
-		}
+	// Rationale: for an abac room, we don't want apps to be able to prevent a user from leaving
+	if (!options?.skipAppPreEvents) {
+		try {
+			await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
+		} catch (error: any) {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		throw error;
+			throw error;
+		}
 	}
 
 	await Room.beforeLeave(room);

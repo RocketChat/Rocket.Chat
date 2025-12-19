@@ -7,10 +7,10 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
-import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
+import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
