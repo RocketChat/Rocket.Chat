@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { getFormattedCallDuration } from '../../ui-kit/getHistoryMessagePayload';
+import { getCallDurationText } from '../../ui-kit/getHistoryMessagePayload';
 
 type CallHistoryTableStatusProps = {
 	status: CallHistoryItemState;
@@ -53,15 +53,14 @@ const getVariant = (status: CallHistoryItemState) => {
 const CallHistoryTableStatus = ({ status, duration }: CallHistoryTableStatusProps) => {
 	const icon = getIcon(status);
 	const variant = getVariant(status);
-	const durationFormatted = getFormattedCallDuration(duration);
+	const durationText = getCallDurationText(duration);
 	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center' color={variant}>
 			<Icon name={icon} color={variant} size={20} mie={8} />
 			{getCallStateText(status, t)}
-			{/* TODO: remove bold */}
-			{durationFormatted && <> - {durationFormatted.text}</>}
+			{durationText && <> - {durationText}</>}
 		</Box>
 	);
 };
