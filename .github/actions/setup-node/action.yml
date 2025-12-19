@@ -51,8 +51,8 @@ runs:
           apps/meteor/ee/server/services/node_modules
           packages/apps-engine/node_modules
           packages/apps-engine/.deno-cache
-        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v3
-        # key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v${{ github.run_id }}
+        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v5
+        # key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v${{ github.run_id }}
     #
     # Could use this command to list all paths to save:
     # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
@@ -82,6 +82,12 @@ runs:
       if: inputs.NPM_TOKEN
       run: |
         echo "//registry.npmjs.org/:_authToken=${{ inputs.NPM_TOKEN }}" > ~/.npmrc
+
+    - name: yarn config
+      if: inputs.install
+      shell: bash
+      run: |
+        yarn config set supportedArchitectures --json '{"os": ["linux"], "cpu": ["arm64", "x64"], "libc": ["glibc", "musl"]}'
 
     - name: yarn install
       if: inputs.install && inputs.type == 'development'
