@@ -49,8 +49,9 @@ export type ImEndpoints = {
 
 	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
-			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'> &
-				{ subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> }[];
+			members: (Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'> & {
+				subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+			})[];
 		}>;
 	};
 	'/v1/im.messages': {

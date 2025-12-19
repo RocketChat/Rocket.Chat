@@ -424,7 +424,10 @@ API.v1.addRoute(
 			).toArray();
 
 			const membersWithSubscriptionInfo = members.map((member) => {
-				const subscription = subs.find((sub) => sub.u._id === member._id);
+				const sub = subs.find((sub) => sub.u._id === member._id);
+
+				const { u: _u, ...subscription } = sub || {};
+
 				return {
 					...member,
 					subscription,
