@@ -12,7 +12,7 @@ addMigration({
 					external: false,
 					contactId: { $exists: true },
 					contactName: { $exists: false },
-					contactUssername: { $exists: false },
+					contactUsername: { $exists: false },
 				},
 			},
 
