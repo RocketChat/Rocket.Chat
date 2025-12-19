@@ -193,6 +193,7 @@ export class AppRoomsConverter {
 			username: visitor.username,
 			token: visitor.token,
 			status: visitor.status || 'online',
+			activity: visitor.activity,
 			...(lastMessageTs && { lastMessageTs }),
 			...(phone && { phone }),
 		};
