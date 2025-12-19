@@ -25,6 +25,11 @@ Default.args = {
 			username: 'rocket.cat',
 			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
+			roles: ['user'],
+			subscription: {
+				_id: 'sub-rocket.cat',
+				ts: '2025-01-01T00:00:00Z',
+			},
 		},
 	],
 	text: 'filter',
@@ -57,6 +62,11 @@ WithABACRoom.args = {
 			username: 'rocket.cat',
 			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
+			roles: ['user'],
+			subscription: {
+				_id: 'sub-rocket.cat',
+				ts: '2025-01-01T00:00:00Z',
+			},
 		},
 	],
 	text: 'filter',

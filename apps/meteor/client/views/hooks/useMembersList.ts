@@ -21,7 +21,7 @@ const endpointsByRoomType = {
 } as const;
 
 export type RoomMember = Serialized<
-	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension' | 'roles'> & {
+	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] } & {
 		subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
 	}
 >;
