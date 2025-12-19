@@ -50,7 +50,7 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsernameOrImportId, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
@@ -498,13 +498,18 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
+			const hasUserQuery = query && Object.keys(query).length > 0;
+
+			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+
+			// if user provided a query, validate it with their allowed operators
+			// otherwise we use the default query (with $regex and $options)
 			if (
 				!isValidQuery(
 					nonEmptyQuery,
@@ -516,7 +521,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					this.queryOperations,
+					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -1139,8 +1144,13 @@ API.v1.addRoute(
 			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
 
 			try {
-				if (selector?.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
-					throw new Error('error-invalid-query');
+				if (selector?.conditions) {
+					const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+					const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
+
+					if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+						throw new Error('error-invalid-query');
+					}
 				}
 			} catch (e) {
 				return API.v1.failure(e);
