@@ -1,4 +1,4 @@
-import type { CallHistoryItem } from '@rocket.chat/core-typings';
+import type { CallHistoryItem, IRegisterUser } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -15,4 +15,6 @@ export interface ICallHistoryModel extends IBaseModel<CallHistoryItem> {
 		uid: CallHistoryItem['uid'],
 		options?: FindOptions<CallHistoryItem>,
 	): Promise<CallHistoryItem | null>;
+
+	updateUserReferences(userId: IRegisterUser['_id'], username: IRegisterUser['username'], name?: IRegisterUser['name']): Promise<void>;
 }
