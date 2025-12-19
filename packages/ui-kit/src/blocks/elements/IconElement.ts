@@ -1,4 +1,4 @@
-type AvailableIcons = 'phone-off' | 'phone-issue' | 'clock' | 'arrow-forward' | 'info' /* | 'phone-question-mark' */; // TODO add new icon when available in fuselage
+type AvailableIcons = 'phone-off' | 'phone-issue' | 'clock' | 'arrow-forward' | 'info' | 'phone-question-mark';
 
 export type IconElement = {
 	type: 'icon';
