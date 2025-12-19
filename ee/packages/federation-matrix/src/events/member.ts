@@ -68,6 +68,7 @@ async function getOrCreateFederatedRoom({
 			name: roomName,
 			members: inviteeUsername ? [inviteeUsername, inviterUsername] : [inviterUsername],
 			options: {
+				forceNew: true, // an invite means the room does not exist yet
 				creator: inviterUserId,
 			},
 			extraData: {
@@ -77,7 +78,7 @@ async function getOrCreateFederatedRoom({
 					mrid: matrixRoomId,
 					origin,
 				},
-				fname: roomFName,
+				...(roomType !== 'd' && { fname: roomFName }), // DMs do not have a fname
 			},
 		});
 	} catch (error) {
@@ -137,10 +138,6 @@ async function handleInvite({
 
 	const joinRuleType = getJoinRuleType(strippedState);
 
-	// DMs do not have a join rule type (they are treated as invite only rooms),
-	// so we use 'd' for direct messages translation to RC.
-	const roomType = content?.is_direct ? 'd' : joinRuleType;
-
 	const roomOriginDomain = senderId.split(':')?.pop();
 	if (!roomOriginDomain) {
 		throw new Error(`Room origin domain not found: ${roomId}`);
@@ -149,9 +146,14 @@ async function handleInvite({
 	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
 
+	// DMs do not have a join rule type (they are treated as invite only rooms),
+	// so we use 'd' for direct messages translation to RC.
+	const roomType = content?.is_direct || !matrixRoomName ? 'd' : joinRuleType;
+
 	let roomName: string;
 	let roomFName: string;
-	if (content?.is_direct) {
+
+	if (roomType === 'd') {
 		roomName = senderId;
 		roomFName = senderId;
 	} else {
@@ -166,8 +168,9 @@ async function handleInvite({
 		roomType,
 		inviterUserId: inviterUser._id,
 		inviterUsername: inviterUser.username as string, // TODO: Remove force cast
-		inviteeUsername: content?.is_direct ? inviteeUser.username : undefined,
+		inviteeUsername: roomType === 'd' ? inviteeUser.username : undefined,
 	});
+
 	if (!room) {
 		throw new Error(`Room not found or could not be created: ${roomId}`);
 	}
@@ -184,6 +187,11 @@ async function handleInvite({
 		inviter: inviterUser,
 		status: 'INVITED',
 	});
+
+	// if an invite is sent to a DM, we need to update the room name to reflect all participants
+	if (room.t === 'd') {
+		await Room.updateDirectMessageRoomName(room);
+	}
 }
 
 async function handleJoin({
@@ -203,6 +211,11 @@ async function handleJoin({
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
+	}
+
+	// update room name for DMs
+	if (room.t === 'd') {
+		await Room.updateDirectMessageRoomName(room);
 	}
 
 	if (!subscription.status) {
@@ -231,6 +244,11 @@ async function handleLeave({
 	}
 
 	await Room.performUserRemoval(room, leavingUser);
+
+	// update room name for DMs
+	if (room.t === 'd') {
+		await Room.updateDirectMessageRoomName(room);
+	}
 
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }

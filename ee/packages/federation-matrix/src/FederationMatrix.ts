@@ -922,6 +922,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Room.performAcceptRoomInvite(room, subscription, user);
 		}
+
 		if (action === 'reject') {
 			try {
 				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);

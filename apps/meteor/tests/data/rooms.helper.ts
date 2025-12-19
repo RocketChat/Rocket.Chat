@@ -112,13 +112,20 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
-export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials): Promise<ISubscription> =>
-	new Promise((resolve) => {
-		void request
+export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials, req = request): Promise<ISubscription> =>
+	new Promise((resolve, reject) => {
+		void req
 			.get(api('subscriptions.getOne'))
 			.set(userCredentials)
 			.query({ roomId })
-			.end((_err, res) => {
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				if (!res.body?.subscription) {
+					return reject(new Error('Subscription not found'));
+				}
+
 				resolve(res.body.subscription);
 			});
 	});
