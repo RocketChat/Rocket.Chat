@@ -38,6 +38,7 @@ export class AppRoomsConverter {
 			slugifiedName: 'name',
 			members: 'members',
 			userIds: 'uids',
+			usernames: 'usernames',
 			messageCount: 'msgs',
 			createdAt: 'ts',
 			updatedAt: '_updatedAt',
@@ -54,6 +55,10 @@ export class AppRoomsConverter {
 			isTeamMain: 'teamMain',
 			isDefault: 'default',
 			isReadOnly: 'ro',
+			contactId: 'contactId',
+			departmentId: 'departmentId',
+			parentRoomId: 'prid',
+			visitor: 'v',
 			displaySystemMessages: (data) => {
 				const { sysMes } = data;
 				delete data.sysMes;
@@ -71,55 +76,6 @@ export class AppRoomsConverter {
 				const creator = mapUserLookup(data.u);
 				delete data.u;
 				return creator;
-			},
-			visitorChannelInfo: (data) => {
-				const { v } = data;
-				if (!v) {
-					return undefined;
-				}
-
-				const info = {
-					...(v.phone && { phone: v.phone }),
-					...(v.lastMessageTs && { lastMessageTs: v.lastMessageTs }),
-				};
-
-				return Object.keys(info).length ? info : undefined;
-			},
-			visitor: (data) => {
-				const { v } = data;
-				if (!v) {
-					return undefined;
-				}
-
-				delete data.v;
-
-				return {
-					...(v.id || v._id ? { id: v.id || v._id } : {}),
-					...(v.username && { username: v.username }),
-					...(v.token && { token: v.token }),
-					...(v.status && { status: v.status }),
-					...(v.name && { name: v.name }),
-					...(v.visitorEmails && { visitorEmails: v.visitorEmails }),
-					...(v.phone && { phone: v.phone }),
-					...(v.customFields && { customFields: v.customFields }),
-					...(v.livechatData && { livechatData: v.livechatData }),
-				};
-			},
-			contact: (data) => {
-				if (!data.contactId) {
-					return undefined;
-				}
-				const { contactId } = data;
-				delete data.contactId;
-				return { id: contactId };
-			},
-			department: (data) => {
-				if (!data.departmentId) {
-					return undefined;
-				}
-				const { departmentId } = data;
-				delete data.departmentId;
-				return { id: departmentId };
 			},
 			closedBy: (data) => {
 				if (!data.closedBy) {
@@ -144,15 +100,6 @@ export class AppRoomsConverter {
 				const { responseBy } = data;
 				delete data.responseBy;
 				return mapUserLookup(responseBy);
-			},
-			parentRoomId: (data) => data.prid,
-			parentRoom: (data) => {
-				if (!data.prid) {
-					return undefined;
-				}
-				const { prid } = data;
-				delete data.prid;
-				return { id: prid };
 			},
 		};
 

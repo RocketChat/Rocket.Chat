@@ -21,6 +21,7 @@ const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
 	fname: 1,
 	name: 1,
+	usernames: 1,
 	members: 1,
 	uids: 1,
 	default: 1,
