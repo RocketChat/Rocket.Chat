@@ -7208,6 +7208,7 @@
   "timestamps.relativeTimeDescription": "1 year ago",
   "Call_info_could_not_be_loaded": "Call info could not be loaded",
   "Please_try_again": "Please try again.",
-  "Invited__date__": "Invited {date}"
+  "Invited__date__": "Invited {date}",
+  "Apps_Permissions_room_system_view-all": "View all rooms in the workspace"
 
 }

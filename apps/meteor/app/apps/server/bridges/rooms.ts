@@ -1,9 +1,9 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
@@ -16,6 +16,41 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+
+const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
+	_id: 1,
+	fname: 1,
+	name: 1,
+	usernames: 1,
+	members: 1,
+	uids: 1,
+	default: 1,
+	ro: 1,
+	sysMes: 1,
+	msgs: 1,
+	ts: 1,
+	_updatedAt: 1,
+	closedAt: 1,
+	lm: 1,
+	description: 1,
+	customFields: 1,
+	prid: 1,
+	teamId: 1,
+	teamMain: 1,
+	livechatData: 1,
+	waitingResponse: 1,
+	open: 1,
+	source: 1,
+	closer: 1,
+	t: 1,
+	u: 1,
+	v: 1,
+	contactId: 1,
+	departmentId: 1,
+	closedBy: 1,
+	servedBy: 1,
+	responseBy: 1,
+};
 
 export class AppRoomBridge extends RoomBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -149,6 +184,37 @@ export class AppRoomBridge extends RoomBridge {
 		);
 
 		return promises as Promise<IUser[]>;
+	}
+
+	protected async getAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
+
+		const { limit = 100, skip = 0 } = options;
+
+		const findOptions: FindOptions<ICoreRoom> = {
+			sort: { ts: -1 },
+			skip,
+			limit: Math.min(limit, 100),
+			projection: rawRoomProjection,
+		};
+
+		const { types, discussions, teams } = filters;
+
+		const rooms: IRoomRaw[] = [];
+
+		const roomConverter = this.orch.getConverters()?.get('rooms');
+		if (!roomConverter) {
+			throw new Error('Room converter not found');
+		}
+
+		for await (const room of Rooms.findAllByTypesAndDiscussionAndTeam({ types, discussions, teams }, findOptions)) {
+			const converted = await roomConverter.convertRoomRaw(room);
+			if (converted) {
+				rooms.push(converted);
+			}
+		}
+
+		return rooms;
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
