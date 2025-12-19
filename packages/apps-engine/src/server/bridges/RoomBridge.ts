@@ -24,16 +24,20 @@ export type GetRoomsFilters = {
 	 */
 	types?: Array<RoomType>;
 	/**
-	 * Filter to include or exclude discussion rooms.
+	 * Filter to include or exclude discussion rooms. 
+	 * 
+	 * When undefined (default), discussions are included in the result set.
 	 *
-	 * When true, discussions are included in the result set.
+	 * When true, ONLY discussions are included in the result set (remove non-discussions).
 	 * When false, discussion rooms are excluded from the result set.
 	 */
 	discussions?: boolean;
 	/**
 	 * Filter to include or exclude team main rooms.
 	 *
-	 * When true, team main rooms are included in the result set.
+	 * When undefined (default), team main rooms are included in the result set.
+	 * 
+	 * When true, ONLY team main rooms are included in the result set (remove non-teams).
 	 * When false, team main rooms are excluded from the result set.
 	 */
 	teams?: boolean;
