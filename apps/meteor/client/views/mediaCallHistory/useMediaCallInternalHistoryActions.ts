@@ -75,7 +75,7 @@ export const useMediaCallInternalHistoryActions = ({
 		router.navigate({
 			name: 'direct',
 			params: { rid },
-			search: messageId ? { ...searchParams, msg: messageId } : searchParams,
+			search: { ...searchParams, msg: messageId },
 		});
 	});
 

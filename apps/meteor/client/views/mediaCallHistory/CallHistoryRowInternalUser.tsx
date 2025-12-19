@@ -11,7 +11,7 @@ import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistor
 type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryTableInternalContact>, 'onClick' | 'menu'> & {
 	messageId?: string;
 	rid: string;
-	onClickUserInfo?: (rid: string, userId: string) => void;
+	onClickUserInfo?: (userId: string, rid: string) => void;
 	onClick: (historyId: string) => void;
 };
 

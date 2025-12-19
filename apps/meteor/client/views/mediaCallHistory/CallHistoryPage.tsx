@@ -25,7 +25,6 @@ const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirect
 			return { state: sortDirectionValue, ts: -1 };
 		case 'timestamp':
 			return { ts: sortDirectionValue };
-		// Fix sort by contact
 		case 'contact':
 			return { contactName: sortDirectionValue, contactUsername: sortDirectionValue, contactExtension: sortDirectionValue, ts: -1 };
 		default:

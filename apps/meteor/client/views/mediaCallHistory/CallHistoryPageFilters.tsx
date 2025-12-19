@@ -105,7 +105,6 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 					defaultTitle='All_status'
 					selectedOptionsTitle='Status'
 					selectedOptions={selectedOptions}
-					value={type}
 					setSelectedOptions={handleChangeType}
 				/>
 			</Box>
