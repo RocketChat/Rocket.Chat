@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 
 const logger = new Logger('getFullUserData');
 
-const defaultFields = {
+export const defaultFields = {
 	name: 1,
 	username: 1,
 	nickname: 1,
@@ -25,7 +25,7 @@ const defaultFields = {
 	abacAttributes: 1,
 } as const;
 
-const fullFields = {
+export const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
