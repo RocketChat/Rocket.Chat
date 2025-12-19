@@ -7,13 +7,14 @@ import { useTranslation } from 'react-i18next';
 import type { RoomFormData } from './RoomForm';
 
 type ABACAttributeAutocompleteProps = {
+	labelId: string;
 	onRemove: () => void;
 	index: number;
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
 	required?: boolean;
 };
 
-const RoomFormAttributeField = ({ onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
@@ -63,8 +64,9 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList, required = fal
 					options={options}
 					required={required}
 					aria-required={required}
+					aria-labelledby={labelId}
 					aria-invalid={keyFieldState.error ? 'true' : 'false'}
-					aria-describedby={`${keyField.name}-error`}
+					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
@@ -80,13 +82,13 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList, required = fal
 					{keyFieldState.error.message}
 				</FieldError>
 			)}
-
 			<FieldRow>
 				<MultiSelect
 					required={required}
 					aria-required={required}
+					aria-labelledby={labelId}
 					aria-invalid={valuesFieldState.error ? 'true' : 'false'}
-					aria-describedby={`${valuesField.name + index}-error`}
+					aria-describedby={valuesFieldState.error ? `${valuesField.name}-error` : undefined}
 					withTruncatedText
 					{...valuesField}
 					options={valueOptions}
@@ -95,13 +97,12 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList, required = fal
 				/>
 			</FieldRow>
 			{valuesFieldState.error && (
-				<FieldError id={`${valuesField.name + index}-error`} role='alert'>
+				<FieldError id={`${valuesField.name}-error`} role='alert'>
 					{valuesFieldState.error.message}
 				</FieldError>
 			)}
-
 			{index !== 0 && (
-				<Button onClick={onRemove} title={t('Remove')} mbs={4}>
+				<Button onClick={onRemove} title={t('Remove')} mbs={8}>
 					{t('Remove')}
 				</Button>
 			)}
