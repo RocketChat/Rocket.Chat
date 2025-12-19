@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
-import CallHistoryRowUnknownUser from './CallHistoryRowUknownUser';
+import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import GenericNoResults from '../../components/GenericNoResults';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
