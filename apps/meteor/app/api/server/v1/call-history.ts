@@ -8,6 +8,7 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -15,6 +16,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 type CallHistoryList = PaginatedRequest<{
+	filter?: string;
 	direction?: CallHistoryItem['direction'];
 	state?: CallHistoryItemState[] | CallHistoryItemState;
 }>;
@@ -29,6 +31,9 @@ const CallHistoryListSchema = {
 			type: 'number',
 		},
 		sort: {
+			type: 'string',
+		},
+		filter: {
 			type: 'string',
 		},
 		direction: {
@@ -106,14 +111,31 @@ const callHistoryListEndpoints = API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort } = await this.parseJsonQuery();
 
-		const { direction, state } = this.queryParams;
+		const { direction, state, filter } = this.queryParams;
+
+		const filterText = typeof filter === 'string' && filter.trim();
 
 		const stateFilter = state && ensureArray(state);
-
 		const query = {
 			uid: this.userId,
 			...(direction && { direction }),
 			...(stateFilter?.length && { state: { $in: stateFilter } }),
+			...(filterText && {
+				$or: [
+					{
+						external: false,
+						contactName: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: false,
+						contactUsername: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: true,
+						contactExtension: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+				],
+			}),
 		};
 
 		const { cursor, totalCount } = CallHistory.findPaginated(query, {

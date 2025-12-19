@@ -32,15 +32,17 @@ describe('[Call History]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').that.is.an('array');
 
-					expect(res.body.items).to.have.lengthOf(4);
-					expect(res.body).to.have.property('total', 4);
-					expect(res.body).to.have.property('count', 4);
+					expect(res.body.items).to.have.lengthOf(6);
+					expect(res.body).to.have.property('total', 6);
+					expect(res.body).to.have.property('count', 6);
 
 					const historyIds = res.body.items.map((item: any) => item._id);
 					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
 					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
 					expect(historyIds).to.include('rocketchat.external.history.test.outbound');
 					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound.2');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound.2');
 
 					const internalItem1 = res.body.items.find((item: any) => item._id === 'rocketchat.internal.history.test.outbound');
 					expect(internalItem1).to.have.property('callId', 'rocketchat.internal.call.test');
@@ -50,6 +52,8 @@ describe('[Call History]', () => {
 					expect(internalItem1).to.have.property('external', false);
 					expect(internalItem1).to.have.property('direction', 'outbound');
 					expect(internalItem1).to.have.property('contactId');
+					expect(internalItem1).to.have.property('contactName', 'Pineapple');
+					expect(internalItem1).to.have.property('contactUsername', 'fruit-001');
 
 					const internalItem2 = res.body.items.find((item: any) => item._id === 'rocketchat.internal.history.test.inbound');
 					expect(internalItem2).to.have.property('callId', 'rocketchat.internal.call.test.2');
@@ -59,6 +63,20 @@ describe('[Call History]', () => {
 					expect(internalItem2).to.have.property('external', false);
 					expect(internalItem2).to.have.property('direction', 'inbound');
 					expect(internalItem2).to.have.property('contactId');
+					expect(internalItem2).to.have.property('contactName', 'Apple');
+					expect(internalItem2).to.have.property('contactUsername', 'fruit-002');
+
+					const internalItem3 = res.body.items.find((item: any) => item._id === 'rocketchat.internal.history.test.outbound.2');
+					expect(internalItem3).to.have.property('callId', 'rocketchat.extra.call.test.1');
+					expect(internalItem3).to.have.property('state', 'transferred');
+					expect(internalItem3).to.have.property('direction', 'outbound');
+					expect(internalItem3).to.have.property('contactName', 'Grapefruit 002');
+
+					const internalItem4 = res.body.items.find((item: any) => item._id === 'rocketchat.internal.history.test.inbound.2');
+					expect(internalItem4).to.have.property('callId', 'rocketchat.extra.call.test.2');
+					expect(internalItem4).to.have.property('state', 'transferred');
+					expect(internalItem4).to.have.property('direction', 'inbound');
+					expect(internalItem4).to.have.property('contactName', 'Pasta 1');
 
 					const externalItem1 = res.body.items.find((item: any) => item._id === 'rocketchat.external.history.test.outbound');
 					expect(externalItem1).to.have.property('callId', 'rocketchat.external.call.test.outbound');
@@ -76,7 +94,7 @@ describe('[Call History]', () => {
 					expect(externalItem2).to.have.property('duration', 10);
 					expect(externalItem2).to.have.property('external', true);
 					expect(externalItem2).to.have.property('direction', 'inbound');
-					expect(externalItem2).to.have.property('contactExtension', '1001');
+					expect(externalItem2).to.have.property('contactExtension', '1002');
 				});
 		});
 
@@ -156,13 +174,14 @@ describe('[Call History]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').that.is.an('array');
 
-					expect(res.body.items).to.have.lengthOf(2);
-					expect(res.body).to.have.property('total', 2);
-					expect(res.body).to.have.property('count', 2);
+					expect(res.body.items).to.have.lengthOf(3);
+					expect(res.body).to.have.property('total', 3);
+					expect(res.body).to.have.property('count', 3);
 
 					const historyIds = res.body.items.map((item: any) => item._id);
 					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
 					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound.2');
 				});
 		});
 
@@ -185,6 +204,215 @@ describe('[Call History]', () => {
 					expect(res.body).to.have.property('count', 1);
 
 					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
+				});
+		});
+
+		it('should return item that match full contact name', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: 'Pineapple',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 1);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+				});
+		});
+
+		it('should return items that match partial contact name', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: 'Apple',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(2);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('count', 2);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
+				});
+		});
+
+		it('should return item that match full contact username', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: 'fruit-001',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 1);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+				});
+		});
+
+		it('should return items that match partial contact username', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: 'fruit-',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(2);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('count', 2);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
+				});
+		});
+
+		it('should return items that match partial contact name or username', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: 'fruit',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(3);
+					expect(res.body).to.have.property('total', 3);
+					expect(res.body).to.have.property('count', 3);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound.2');
+				});
+		});
+
+		it('should return item that match full contact extension', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: '1001',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 1);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.external.history.test.outbound');
+				});
+		});
+
+		it('should return items that match partial contact extension', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: '100',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(2);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('count', 2);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.external.history.test.outbound');
+					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
+				});
+		});
+
+		it('should return items that match partial contact name, username or extension', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: '002',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(3);
+					expect(res.body).to.have.property('total', 3);
+					expect(res.body).to.have.property('count', 3);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound.2');
+					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
+				});
+		});
+
+		it('should apply filter with falsy value', async () => {
+			await request
+				.get(api('call-history.list'))
+				.set(credentials)
+				.query({
+					filter: '0',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').that.is.an('array');
+
+					expect(res.body.items).to.have.lengthOf(5);
+					expect(res.body).to.have.property('total', 5);
+					expect(res.body).to.have.property('count', 5);
+
+					const historyIds = res.body.items.map((item: any) => item._id);
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.inbound');
+					expect(historyIds).to.include('rocketchat.internal.history.test.outbound.2');
+					expect(historyIds).to.include('rocketchat.external.history.test.outbound');
 					expect(historyIds).to.include('rocketchat.external.history.test.inbound');
 				});
 		});
@@ -214,6 +442,8 @@ describe('[Call History]', () => {
 					expect(item).to.have.property('external', false);
 					expect(item).to.have.property('direction', 'outbound');
 					expect(item).to.have.property('contactId');
+					expect(item).to.have.property('contactName', 'Pineapple');
+					expect(item).to.have.property('contactUsername', 'fruit-001');
 					expect(item).to.have.property('ts');
 					expect(item).to.have.property('endedAt');
 
@@ -259,6 +489,8 @@ describe('[Call History]', () => {
 					expect(item).to.have.property('external', false);
 					expect(item).to.have.property('direction', 'inbound');
 					expect(item).to.have.property('contactId');
+					expect(item).to.have.property('contactName', 'Apple');
+					expect(item).to.have.property('contactUsername', 'fruit-002');
 					expect(item).to.have.property('ts');
 					expect(item).to.have.property('endedAt');
 
