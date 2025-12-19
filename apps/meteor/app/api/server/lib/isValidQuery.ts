@@ -23,16 +23,22 @@ export const isValidQuery: {
 const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => {
 	return Object.entries(removeDangerousProps(query)).every(([key, value]) => {
 		const path = parent ? `${parent}.${key}` : key;
-		if (parent === '' && path.startsWith('$')) {
-			if (!allowedOperations.includes(path)) {
-				isValidQuery.errors.push(`Invalid operation: ${path}`);
+		if (key.startsWith('$')) {
+			if (!allowedOperations.includes(key)) {
+				isValidQuery.errors.push(`Invalid operation: ${key}`);
 				return false;
 			}
-			if (!Array.isArray(value)) {
-				isValidQuery.errors.push(`Invalid parameter for operation: ${path} : ${value}`);
-				return false;
+
+			if (Array.isArray(value)) {
+				return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
 			}
-			return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
+
+			if (value instanceof Object) {
+				return verifyQuery(value, allowedAttributes, allowedOperations, path);
+			}
+
+			// handles primitive values (strings, numbers, booleans, etc.)
+			return true;
 		}
 
 		if (
