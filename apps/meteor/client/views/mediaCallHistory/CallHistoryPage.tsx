@@ -11,6 +11,7 @@ import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistory
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
+import GenericNoResults from '../../components/GenericNoResults';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -98,7 +99,7 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, error } = useQuery({
+	const { data, isPending, error, refetch } = useQuery({
 		queryKey: [
 			'call-history',
 			'list',
@@ -113,6 +114,7 @@ const CallHistoryPage = () => {
 			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
 			const stateFilter = getStateFilter(states);
 			console.log({ debouncedSearchText, type, states });
+
 			return getCallHistory({
 				count: paginationProps.itemsPerPage,
 				offset: paginationProps.current,
@@ -169,7 +171,31 @@ const CallHistoryPage = () => {
 	}
 
 	if (error) {
-		return <PageContent>Error: {error.message}</PageContent>;
+		return (
+			<Page>
+				<PageHeader title={t('Call_history')} />
+				<PageContent>
+					<GenericNoResults
+						icon='warning'
+						title={t('Something_went_wrong')}
+						description={t('Please_try_again')}
+						buttonTitle={t('Reload_page')}
+						buttonAction={() => refetch()}
+					/>
+				</PageContent>
+			</Page>
+		);
+	}
+
+	if (tableData?.length === 0) {
+		return (
+			<Page>
+				<PageHeader title={t('Call_history')} />
+				<PageContent>
+					<GenericNoResults />
+				</PageContent>
+			</Page>
+		);
 	}
 
 	return (
