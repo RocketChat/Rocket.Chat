@@ -86,8 +86,11 @@ export class Client extends EventEmitter {
 		TIMEOUT,
 		{ leading: true, trailing: false },
 	);
+<<<<<<< HEAD
 
 	private _seenPacket = true;
+=======
+>>>>>>> e9f1930a27 (regression: fix presence connections not being updated in DDPStreamer (#37887))
 
 	constructor(
 		public ws: WebSocket,
@@ -195,18 +198,6 @@ export class Client extends EventEmitter {
 		this.ws.close(WS_ERRORS.TIMEOUT, WS_ERRORS_MESSAGES.TIMEOUT);
 	};
 
-	private messageReceived = (): void => {
-		if (this._seenPacket || !this.userId) {
-			this._seenPacket = true;
-			return;
-		}
-
-		this._seenPacket = true;
-		void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-			console.error('Error updating connection presence after heartbeat:', err);
-		});
-	};
-
 	ping(id?: string): void {
 		this.send(server.serialize({ [DDP_EVENTS.MSG]: DDP_EVENTS.PING, ...(id && { [DDP_EVENTS.ID]: id }) }));
 	}
@@ -216,9 +207,6 @@ export class Client extends EventEmitter {
 	}
 
 	handleIdle = (): void => {
-		if (this.userId) {
-			this._seenPacket = false;
-		}
 		this.ping();
 		this.timeout = setTimeout(this.closeTimeout, TIMEOUT);
 	};
