@@ -156,7 +156,7 @@ const callHistoryListEndpoints = API.v1.get(
 
 type CallHistoryListEndpoints = ExtractRoutesFromAPI<typeof callHistoryListEndpoints>;
 
-type CallHistoryInfo = { historyId: string; callId: never } | { callId: string; historyId: never };
+type CallHistoryInfo = { historyId: string } | { callId: string };
 
 const CallHistoryInfoSchema = {
 	oneOf: [
@@ -224,13 +224,15 @@ const callHistoryInfoEndpoints = API.v1.get(
 		authRequired: true,
 	},
 	async function action() {
-		if (!this.queryParams.historyId && !this.queryParams.callId) {
+		const { historyId, callId } = this.queryParams as Record<string, never> & typeof this.queryParams;
+
+		if (!historyId && !callId) {
 			return API.v1.failure();
 		}
 
-		const item = await (this.queryParams.historyId
-			? CallHistory.findOneByIdAndUid(this.queryParams.historyId, this.userId)
-			: CallHistory.findOneByCallIdAndUid(this.queryParams.callId, this.userId));
+		const item = await (historyId
+			? CallHistory.findOneByIdAndUid(historyId, this.userId)
+			: CallHistory.findOneByCallIdAndUid(callId, this.userId));
 
 		if (!item) {
 			return API.v1.notFound();
