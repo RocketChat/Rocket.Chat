@@ -110,6 +110,7 @@ const CallHistoryPage = () => {
 			paginationProps.itemsPerPage,
 			type,
 			states,
+			debouncedSearchText,
 		],
 		queryFn: () => {
 			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
@@ -121,6 +122,7 @@ const CallHistoryPage = () => {
 				sort: JSON.stringify(sort),
 				...(type !== 'all' && { direction: type }),
 				...(stateFilter && { state: stateFilter }),
+				...(debouncedSearchText && { filter: debouncedSearchText }),
 			});
 		},
 	});
