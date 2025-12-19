@@ -1,6 +1,7 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isInviteSubscription, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
+import InvitationBadge from '../../../../components/InvitationBadge';
 import UnreadBadge from '../../../../sidebarv2/badges/UnreadBadge';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import SidePanelOmnichannelBadges from '../omnichannel/SidePanelOmnichannelBadges';
@@ -17,6 +18,7 @@ const RoomSidePanelItemBadges = ({ room, roomTitle }: RoomSidePanelItemBadgesPro
 		<>
 			{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
+			{isInviteSubscription(room) && <InvitationBadge invitationDate={room.ts} />}
 		</>
 	);
 };
