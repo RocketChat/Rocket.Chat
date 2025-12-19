@@ -35,7 +35,7 @@ runs:
 
   steps:
     - name: Login to GitHub Container Registry
-      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop')
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
@@ -111,7 +111,7 @@ runs:
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+        SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop') && '-cov' || '' }}
 
         mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
 
