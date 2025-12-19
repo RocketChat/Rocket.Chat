@@ -10,6 +10,8 @@ import { useMediaCallInternalHistoryActions } from './useMediaCallInternalHistor
 
 type CallHistoryRowInternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryTableInternalContact>, 'onClick' | 'menu'> & {
 	messageId?: string;
+	rid: string;
+	onClickUserInfo?: (rid: string, userId: string) => void;
 	onClick: (historyId: string) => void;
 };
 
@@ -54,10 +56,23 @@ const CallHistoryRowInternalUser = ({
 	duration,
 	timestamp,
 	messageId,
+	rid,
+	onClickUserInfo,
 	onClick,
 }: CallHistoryRowInternalUserProps) => {
 	const { t } = useTranslation();
-	const actions = useMediaCallInternalHistoryActions({ ...contact, username: contact.username ?? '' }, messageId);
+	const actions = useMediaCallInternalHistoryActions({
+		contact: {
+			_id: contact._id,
+			username: contact.username ?? '',
+			name: contact.name,
+			displayName: contact.name || contact.username,
+		},
+		messageId,
+		messageRoomId: rid,
+		openUserInfo: onClickUserInfo ? (userId) => onClickUserInfo(rid, userId) : undefined,
+	});
+
 	const items = getItems(actions, t);
 
 	const handleClick = useCallback(() => {

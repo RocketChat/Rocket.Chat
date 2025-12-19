@@ -1,10 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { LocationPathname } from '@rocket.chat/ui-contexts';
-import { useCurrentRoutePath, useRoomToolbox, useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-import { useRoom } from '../room/contexts/RoomContext';
 import { useDirectMessageAction } from '../room/hooks/useUserInfoActions/actions/useDirectMessageAction';
 
 export type InternalCallHistoryContact = {
@@ -16,13 +14,24 @@ export type InternalCallHistoryContact = {
 	avatarUrl?: string;
 };
 
-export const useMediaCallInternalHistoryActions = (contact: InternalCallHistoryContact, messageId?: string) => {
+type UseMediaCallInternalHistoryActionsBaseOptions = {
+	contact: InternalCallHistoryContact;
+	messageId?: string;
+	openRoomId?: string;
+	messageRoomId?: string;
+	openUserInfo?: (userId: string) => void;
+};
+
+export const useMediaCallInternalHistoryActions = ({
+	contact,
+	messageId,
+	openRoomId,
+	messageRoomId,
+	openUserInfo,
+}: UseMediaCallInternalHistoryActionsBaseOptions) => {
 	const { onToggleWidget } = useMediaCallContext();
 	const router = useRouter();
 
-	const currentRoutePath = useCurrentRoutePath();
-	const room = useRoom();
-	const toolbox = useRoomToolbox();
 	const getAvatarUrl = useUserAvatarPath();
 
 	const voiceCall = useEffectEvent(() => {
@@ -39,35 +48,51 @@ export const useMediaCallInternalHistoryActions = (contact: InternalCallHistoryC
 		});
 	});
 
-	const directMessage = useDirectMessageAction(contact, room._id);
+	const directMessage = useDirectMessageAction(contact, openRoomId ?? '');
+
+	const goToDirectMessage = useMemo(() => {
+		if (directMessage?.onClick) {
+			return directMessage.onClick;
+		}
+		if (!messageRoomId || openRoomId) {
+			return;
+		}
+		return () =>
+			router.navigate({
+				name: 'direct',
+				params: { rid: messageRoomId },
+			});
+	}, [directMessage?.onClick, messageRoomId, openRoomId, router]);
 
 	const jumpToMessage = useEffectEvent(() => {
-		if (!messageId || !currentRoutePath) {
+		const rid = messageRoomId || openRoomId;
+		if (!messageId || !rid) {
 			return;
 		}
 
 		const { msg: _, ...searchParams } = router.getSearchParameters();
 
-		router.navigate(
-			{
-				pathname: currentRoutePath as LocationPathname,
-				search: messageId ? { ...searchParams, msg: messageId } : searchParams,
-			},
-			{ replace: true },
-		);
+		router.navigate({
+			name: 'direct',
+			params: { rid },
+			search: messageId ? { ...searchParams, msg: messageId } : searchParams,
+		});
 	});
 
 	const userInfo = useEffectEvent(() => {
-		toolbox.openTab('user-info', contact._id);
+		if (!openUserInfo) {
+			return;
+		}
+		openUserInfo(contact._id);
 	});
 
 	return useMemo(
 		() => ({
 			voiceCall,
-			directMessage: directMessage && 'onClick' in directMessage ? directMessage.onClick : undefined,
-			jumpToMessage,
-			userInfo,
+			directMessage: goToDirectMessage,
+			jumpToMessage: messageId && messageRoomId ? jumpToMessage : undefined,
+			userInfo: openUserInfo ? () => userInfo() : undefined,
 		}),
-		[voiceCall, directMessage, jumpToMessage, userInfo],
+		[voiceCall, goToDirectMessage, messageId, messageRoomId, jumpToMessage, openUserInfo, userInfo],
 	);
 };

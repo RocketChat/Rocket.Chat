@@ -7,7 +7,7 @@ import {
 	ContextualbarDialog,
 	ContextualbarSkeleton,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -15,23 +15,39 @@ import MediaCallHistoryExternal, { isExternalCallHistoryItem } from './MediaCall
 import MediaCallHistoryInternal, { isInternalCallHistoryItem } from './MediaCallHistoryInternal';
 import { callHistoryQueryKeys } from '../../lib/queryKeys';
 
-export const MediaCallHistoryContextualbar = () => {
-	const context = useRouteParameter('context');
+type MediaCallHistoryContextualbarProps = {
+	openRoomId?: string;
+	messageRoomId?: string;
+	openUserInfo?: (userId: string) => void;
+	onClose: () => void;
+	callId?: string;
+	historyId?: string;
+};
 
-	const { closeTab } = useRoomToolbox();
+const MediaCallHistoryContextualbar = ({
+	openRoomId,
+	messageRoomId,
+	openUserInfo,
+	callId,
+	historyId,
+	onClose,
+}: MediaCallHistoryContextualbarProps) => {
 	const { t } = useTranslation();
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.info');
 	const { data, isPending, isSuccess } = useQuery({
-		queryKey: callHistoryQueryKeys.info(context),
+		queryKey: callHistoryQueryKeys.info(callId || historyId),
 		queryFn: async () => {
-			if (!context) {
-				throw new Error('Call ID is required');
+			if (callId) {
+				return getCallHistory({ callId } as any); // TODO fix this type
 			}
-			return getCallHistory({ callId: context } as any); // TODO fix this type
+			if (historyId) {
+				return getCallHistory({ historyId } as any); // TODO fix this type
+			}
+			throw new Error('Call ID or history ID is required');
 		},
 		staleTime: Infinity, // Call history should never change...
-		enabled: !!context,
+		enabled: !!callId || !!historyId,
 	});
 
 	if (isPending) {
@@ -39,19 +55,27 @@ export const MediaCallHistoryContextualbar = () => {
 	}
 
 	if (isSuccess && isInternalCallHistoryItem(data)) {
-		return <MediaCallHistoryInternal onClose={closeTab} data={data} />;
+		return (
+			<MediaCallHistoryInternal
+				onClose={onClose}
+				data={data}
+				openUserInfo={openUserInfo}
+				openRoomId={openRoomId}
+				messageRoomId={messageRoomId}
+			/>
+		);
 	}
 
 	if (isSuccess && isExternalCallHistoryItem(data)) {
-		return <MediaCallHistoryExternal onClose={closeTab} data={data} />;
+		return <MediaCallHistoryExternal onClose={onClose} data={data} />;
 	}
 
 	return (
-		<ContextualbarDialog onClose={closeTab}>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
-				<ContextualbarClose onClick={closeTab} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarEmptyContent icon='warning' title={t('Call_info_could_not_be_loaded')} subtitle={t('Please_try_again')} />
 		</ContextualbarDialog>
