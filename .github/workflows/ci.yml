@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: packages-cache-build
         with:
           path: |
@@ -198,7 +198,7 @@ jobs:
           HARDENED_MODE: '1'
 
       - name: Cache vite
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
