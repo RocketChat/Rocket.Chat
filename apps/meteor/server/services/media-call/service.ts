@@ -198,7 +198,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const state = this.getCallHistoryItemState(call);
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration);
+		const record = getHistoryMessagePayload(state, duration, call._id);
 
 		try {
 			const message = await sendMessage(user, record, room, false);

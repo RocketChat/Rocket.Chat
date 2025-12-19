@@ -176,7 +176,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-nxss1p"
+                              class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
                             >
                               
                             </i>
@@ -485,7 +485,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-nxss1p"
+                              class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
                             >
                               
                             </i>
