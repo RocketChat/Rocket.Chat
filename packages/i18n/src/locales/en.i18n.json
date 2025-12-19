@@ -2757,6 +2757,7 @@
   "Invitation_Subject": "Invitation Subject",
   "Invitation_Subject_Default": "You have been invited to [Site_Name]",
   "Invite": "Invite",
+  "Invited__date__": "Invited {{date}}",
   "Invite_Link": "Invite Link",
   "Invite_Users": "Invite Members",
   "Invite_and_add_members_to_this_workspace_to_start_communicating": "Invite and add members to this workspace to start communicating.",
