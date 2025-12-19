@@ -8,7 +8,6 @@ import {
 	FieldLabel,
 	FieldRow,
 	IconButton,
-	Margins,
 	TextInput,
 } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
@@ -82,77 +81,86 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 
 	return (
 		<>
-			<ContextualbarScrollableContent>
-				<Box is='form' onSubmit={handleSubmit(onSave)} id={formId}>
-					<Box>{description}</Box>
-					<Field mb={16}>
-						<FieldLabel htmlFor={nameField} required>
-							{t('Name')}
-						</FieldLabel>
-						<FieldRow>
-							<TextInput
-								error={errors.name?.message}
-								id={nameField}
-								{...register('name', { required: t('Required_field', { field: t('Name') }) })}
-							/>
-						</FieldRow>
-						{errors.name && <FieldError>{errors.name.message}</FieldError>}
-					</Field>
-					<Field mb={16}>
-						<FieldLabel required id={valuesField}>
-							{t('Values')}
-						</FieldLabel>
-						{lockedAttributesFields.map((field, index) => (
-							<Fragment key={field.id}>
-								<FieldRow key={field.id}>
-									<TextInput
-										disabled
-										aria-labelledby={valuesField}
-										error={errors.lockedAttributes?.[index]?.value?.message || ''}
-										{...register(`lockedAttributes.${index}.value`, {
-											required: t('Required_field', { field: t('Values') }),
-											validate: (value: string) => validateRepeatedValues(value),
-										})}
-									/>
-									{index !== 0 && (
-										<Margins inlineStart={4}>
-											<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
-										</Margins>
-									)}
-								</FieldRow>
-								{errors.lockedAttributes?.[index]?.value && <FieldError>{errors.lockedAttributes?.[index]?.value?.message}</FieldError>}
-							</Fragment>
-						))}
-						{fields.map((field, index) => (
-							<Fragment key={field.id}>
-								<FieldRow>
-									<TextInput
-										aria-labelledby={valuesField}
-										error={errors.attributeValues?.[index]?.value?.message || ''}
-										{...register(`attributeValues.${index}.value`, {
-											required: t('Required_field', { field: t('Values') }),
-											validate: (value: string) => validateRepeatedValues(value),
-										})}
-									/>
-									{(index !== 0 || lockedAttributesFields.length > 0) && (
-										<Margins inlineStart={4}>
-											<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
-										</Margins>
-									)}
-								</FieldRow>
-								{errors.attributeValues?.[index]?.value && <FieldError>{errors.attributeValues[index].value.message}</FieldError>}
-							</Fragment>
-						))}
-						<Button
-							mb={8}
-							onClick={() => append({ value: '' })}
-							// Checking for values since rhf does consider the newly added field as dirty after an append() call
-							disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
-						>
-							{t('Add_Value')}
-						</Button>
-					</Field>
-				</Box>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(onSave)} id={formId}>
+				<Box>{description}</Box>
+				<Field>
+					<FieldLabel htmlFor={nameField} required>
+						{t('Name')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput
+							error={errors.name?.message}
+							id={nameField}
+							aria-required='true'
+							{...register('name', { required: t('Required_field', { field: t('Name') }) })}
+							aria-invalid={errors.name ? 'true' : 'false'}
+							aria-describedby={`${nameField}-error`}
+						/>
+					</FieldRow>
+					{errors.name && (
+						<FieldError id={`${nameField}-error`} role='alert'>
+							{errors.name.message}
+						</FieldError>
+					)}
+				</Field>
+				<Field>
+					<FieldLabel required id={valuesField}>
+						{t('Values')}
+					</FieldLabel>
+					{lockedAttributesFields.map((field, index) => (
+						<Fragment key={field.id}>
+							<FieldRow key={field.id}>
+								<TextInput
+									disabled
+									aria-labelledby={valuesField}
+									error={errors.lockedAttributes?.[index]?.value?.message || ''}
+									{...register(`lockedAttributes.${index}.value`, {
+										required: t('Required_field', { field: t('Values') }),
+										validate: (value: string) => validateRepeatedValues(value),
+									})}
+								/>
+								{index !== 0 && (
+									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+								)}
+							</FieldRow>
+							{errors.lockedAttributes?.[index]?.value && (
+								<FieldError id={`${valuesField + index}-error`} role='alert'>
+									{errors.lockedAttributes?.[index]?.value?.message}
+								</FieldError>
+							)}
+						</Fragment>
+					))}
+					{fields.map((field, index) => (
+						<Fragment key={field.id}>
+							<FieldRow>
+								<TextInput
+									aria-labelledby={valuesField}
+									error={errors.attributeValues?.[index]?.value?.message || ''}
+									{...register(`attributeValues.${index}.value`, {
+										required: t('Required_field', { field: t('Values') }),
+										validate: (value: string) => validateRepeatedValues(value),
+									})}
+								/>
+								{(index !== 0 || lockedAttributesFields.length > 0) && (
+									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+								)}
+							</FieldRow>
+							{errors.attributeValues?.[index]?.value && (
+								<FieldError id={`${valuesField + index}-error`} role='alert'>
+									{errors.attributeValues[index].value.message}
+								</FieldError>
+							)}
+						</Fragment>
+					))}
+					<Button
+						mb={8}
+						onClick={() => append({ value: '' })}
+						// Checking for values since rhf does consider the newly added field as dirty after an append() call
+						disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}
+					>
+						{t('Add_Value')}
+					</Button>
+				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
