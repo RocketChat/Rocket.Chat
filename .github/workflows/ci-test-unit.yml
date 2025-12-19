@@ -20,6 +20,8 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
+  MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/node_modules/.cache/mongodb-memory-server
+  MONGOMS_PREFER_GLOBAL_PATH: false
 
 jobs:
   test:
