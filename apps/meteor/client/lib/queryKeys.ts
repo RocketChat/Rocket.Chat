@@ -123,6 +123,7 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
+	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
 };
 
 export const teamsQueryKeys = {
@@ -156,4 +157,9 @@ export const ABACQueryKeys = {
 		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
+};
+
+export const callHistoryQueryKeys = {
+	all: ['call-history'] as const,
+	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };
