@@ -114,6 +114,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				key: { 'abacAttributes.key': 1, 'abacAttributes.values': 1 },
 				partialFilterExpression: { abacAttributes: { $exists: true } },
 			},
+			{
+				key: { teamMain: 1 },
+				sparse: true,
+			},
 		];
 	}
 
@@ -2324,6 +2328,33 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			},
 		]);
+	}
+
+	findAllByTypesAndDiscussionAndTeam(
+		filters: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		} = {},
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const { types, discussions, teams } = filters;
+
+		const query: Filter<IRoom> = {};
+
+		if (types) {
+			query.t = { $in: types };
+		}
+
+		if (typeof discussions !== 'undefined') {
+			query.prid = { $exists: discussions };
+		}
+
+		if (typeof teams !== 'undefined') {
+			query.teamMain = { $exists: teams };
+		}
+
+		return this.find(query, options);
 	}
 
 	resetRoomKeyAndSetE2EEQueueByRoomId(
