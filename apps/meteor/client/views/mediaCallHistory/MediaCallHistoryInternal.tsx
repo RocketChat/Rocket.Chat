@@ -12,7 +12,7 @@ type InternalCallEndpointData = Serialized<{
 type MediaCallHistoryInternalProps = {
 	data: InternalCallEndpointData;
 	onClose: () => void;
-	openUserInfo?: (userId: string) => void;
+	openUserInfo?: (userId: string, rid: string) => void;
 	openRoomId?: string;
 	messageRoomId?: string;
 };
@@ -44,7 +44,16 @@ const MediaCallHistoryInternal = ({ data, onClose, openUserInfo, openRoomId, mes
 			state: data.item.state,
 		};
 	}, [data]);
-	const actions = useMediaCallInternalHistoryActions({ contact, messageId: data.item.messageId, openRoomId, messageRoomId, openUserInfo });
+
+	const rid = messageRoomId || data.item.rid;
+
+	const actions = useMediaCallInternalHistoryActions({
+		contact,
+		messageId: data.item.messageId,
+		openRoomId,
+		messageRoomId: rid,
+		openUserInfo: openUserInfo && rid ? (userId: string) => openUserInfo(userId, rid) : undefined,
+	});
 
 	return <CallHistoryContextualBar onClose={onClose} actions={actions} contact={contact} data={historyData} />;
 };

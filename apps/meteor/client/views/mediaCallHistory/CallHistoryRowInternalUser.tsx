@@ -70,7 +70,7 @@ const CallHistoryRowInternalUser = ({
 		},
 		messageId,
 		messageRoomId: rid,
-		openUserInfo: onClickUserInfo ? (userId) => onClickUserInfo(rid, userId) : undefined,
+		openUserInfo: onClickUserInfo ? (userId) => onClickUserInfo(userId, rid) : undefined,
 	});
 
 	const items = getItems(actions, t);

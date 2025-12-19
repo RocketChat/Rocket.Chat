@@ -82,7 +82,7 @@ const CallHistoryPage = () => {
 	);
 
 	const openUserInfo = useCallback(
-		(rid: string, userId: string) => {
+		(userId: string, rid: string) => {
 			setTab({ openTab: 'user-info', rid, userId });
 		},
 		[setTab],
@@ -232,12 +232,7 @@ const CallHistoryPage = () => {
 				<UserInfoWithData rid={tab.rid} uid={tab.userId} onClose={closeTab} onClickBack={historyId ? handleBack : undefined} />
 			)}
 			{tab?.openTab === 'details' && historyId && (
-				<MediaCallHistoryContextualbar
-					historyId={historyId}
-					onClose={closeTab}
-					messageRoomId={tab.rid}
-					openUserInfo={tab.rid ? (userId: string) => openUserInfo(tab.rid, userId) : undefined}
-				/>
+				<MediaCallHistoryContextualbar historyId={historyId} onClose={closeTab} messageRoomId={tab.rid} openUserInfo={openUserInfo} />
 			)}
 		</Page>
 	);

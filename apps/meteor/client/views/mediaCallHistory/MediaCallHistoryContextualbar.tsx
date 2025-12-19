@@ -18,7 +18,7 @@ import { callHistoryQueryKeys } from '../../lib/queryKeys';
 type MediaCallHistoryContextualbarProps = {
 	openRoomId?: string;
 	messageRoomId?: string;
-	openUserInfo?: (userId: string) => void;
+	openUserInfo?: (userId: string, rid: string) => void;
 	onClose: () => void;
 	callId?: string;
 	historyId?: string;
