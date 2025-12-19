@@ -1,8 +1,9 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isInviteSubscription } from '@rocket.chat/core-typings';
 import { Margins } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import UnreadBadge from './UnreadBadge';
+import InvitationBadge from '../../components/InvitationBadge';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -18,6 +19,7 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 		<Margins inlineStart={8}>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
+			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
 		</Margins>
 	);
 };
