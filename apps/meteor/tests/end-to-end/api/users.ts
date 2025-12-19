@@ -4433,6 +4433,69 @@ describe('[Users]', () => {
 				})
 				.then(tryAuthentication);
 		});
+
+		it('should remove only logged out session push tokens', async () => {
+			const credentials1 = await login(user.username, password);
+			const credentials2 = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(credentials1)
+				.send({
+					type: 'gcm',
+					value: 'device-1-token',
+					appName: 'com.example.device1',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('push.token'))
+				.set(credentials2)
+				.send({
+					type: 'gcm',
+					value: 'device-2-token',
+					appName: 'com.example.device2',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logoutOtherClients'))
+				.set(credentials2)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-1-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-2-token',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.autocomplete]', () => {
@@ -4961,6 +5024,49 @@ describe('[Users]', () => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
+		});
+
+		it('should remove all push tokens when user logs out', async () => {
+			const testCredentials = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(testCredentials)
+				.send({
+					type: 'gcm',
+					value: 'logout-test-token',
+					appName: 'com.example.logout.test',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logout'))
+				.set(testCredentials)
+				.send({
+					userId: user._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			const newCredentials = await login(user.username, password);
+
+			await request
+				.delete(api('push.token'))
+				.set(newCredentials)
+				.send({
+					token: 'logout-test-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

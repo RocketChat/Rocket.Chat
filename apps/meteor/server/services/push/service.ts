@@ -13,11 +13,13 @@ export class PushService extends ServiceClassInternal implements IPushService {
 			if (!('diff' in data) || !data.diff || !('services.resume.loginTokens' in data.diff)) {
 				return;
 			}
-			if (data.diff['services.resume.loginTokens'] === undefined) {
+
+			const loginTokens = Array.isArray(data.diff['services.resume.loginTokens']) ? data.diff['services.resume.loginTokens'] : [];
+
+			if (data.diff['services.resume.loginTokens'] === undefined || loginTokens.length === 0) {
 				await PushToken.removeAllByUserId(data.id);
 				return;
 			}
-			const loginTokens = Array.isArray(data.diff['services.resume.loginTokens']) ? data.diff['services.resume.loginTokens'] : [];
 			const tokens = loginTokens.map(({ hashedToken }: { hashedToken: string }) => hashedToken);
 			if (tokens.length > 0) {
 				await PushToken.removeByUserIdExceptTokens(data.id, tokens);
