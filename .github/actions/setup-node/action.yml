@@ -69,6 +69,13 @@ runs:
       with:
         deno-version: ${{ inputs.deno-version }}
 
+    - name: Configure mongodb-memory-server cache
+      shell: bash
+      run: |
+        CACHE_DIR="${GITHUB_WORKSPACE}/node_modules/.cache/mongodb-memory-server"
+        mkdir -p "$CACHE_DIR"
+        echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
+
     - name: yarn login
       shell: bash
       if: inputs.NPM_TOKEN

@@ -59,6 +59,8 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Unit Test
+        env:
+          TURBO_FORCE: '1'
         run: yarn testunit
 
       - uses: codecov/codecov-action@v3
