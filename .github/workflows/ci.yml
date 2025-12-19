@@ -301,7 +301,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Restore packages build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: packages-build
           path: /tmp
@@ -396,7 +396,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -628,7 +628,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         continue-on-error: true
         with:
           name: turbo-build
@@ -673,7 +673,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
       - name: Restore coverage folder
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: coverage-*
           path: /tmp/coverage
@@ -768,7 +768,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Restore build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-production
           path: /tmp/build
@@ -839,7 +839,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: manifests-*
           path: /tmp/manifests
