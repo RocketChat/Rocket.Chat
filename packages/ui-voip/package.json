@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "15.0.1",
+	"version": "15.0.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -13,9 +13,9 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"storybook": "storybook dev -p 6006",
-		"test": "jest",
+		"test": "yarn testunit",
 		"test-storybook": "npx concurrently -k -s first -n \"SB,TEST\" \"yarn storybook --ci\" \"npx wait-on tcp:127.0.0.1:6006 && yarn exec test-storybook\"",
-		"testunit": "jest",
+		"testunit": "TZ=UTC jest",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
@@ -35,6 +35,7 @@
 		"@rocket.chat/fuselage": "^0.70.0",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
@@ -79,6 +80,7 @@
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",

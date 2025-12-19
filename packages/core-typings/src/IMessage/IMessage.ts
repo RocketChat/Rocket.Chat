@@ -106,6 +106,7 @@ const MessageTypes = [
 	'new-leader',
 	'leader-removed',
 	'discussion-created',
+	'abac-removed-user-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 	...VoipMessageTypesValues,

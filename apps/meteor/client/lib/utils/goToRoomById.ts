@@ -8,7 +8,12 @@ import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const getRoomById = memoize((rid: IRoom['_id']) => callWithErrorHandling('getRoomById', rid));
 
-export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
+export type GoToRoomByIdOptions = {
+	replace?: boolean;
+	routeParamsOverrides?: Record<string, string>;
+};
+
+export const goToRoomById = async (rid: IRoom['_id'], options: GoToRoomByIdOptions = {}): Promise<void> => {
 	if (!rid) {
 		return;
 	}
@@ -16,10 +21,10 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 	const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
 	if (subscription) {
-		roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
+		roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), options);
 		return;
 	}
 
 	const room = await getRoomById(rid);
-	roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters());
+	roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), options);
 };
