@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { GenericMenu, useSort } from '@rocket.chat/ui-client';
+import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import type {
@@ -90,7 +91,7 @@ const results = Array.from({ length: 100 }).map(
 		status: getStatus(index),
 		duration: index % 2 ? 120 : 0,
 		timestamp: getDate(index).toISOString(),
-		onClick: () => console.log(`call_${index}`),
+		onClick: action(`onClick call_${index}`),
 		menu: <GenericMenu title='Menu' sections={[]} />,
 	}),
 );
