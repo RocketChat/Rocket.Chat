@@ -49,7 +49,7 @@ export const isCallHistoryUnknownContact = (contact: CallHistoryTableRowContact)
 };
 
 export const isCallHistoryTableInternalContact = (contact: CallHistoryTableRowContact): contact is CallHistoryTableInternalContact => {
-	return 'username' in contact || 'name' in contact || '_id' in contact;
+	return '_id' in contact && ('username' in contact || 'name' in contact);
 };
 
 const CallHistoryTableRow = <T extends CallHistoryTableRowContact>({
