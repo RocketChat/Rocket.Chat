@@ -75,7 +75,7 @@ runs:
         set -o xtrace
         export DENO_VERSION="${{ inputs.deno-version }}"
 
-        # Removes unnecessary swc cores to reduce image sized
+        # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
         if [[ "${{ inputs.service }}" == 'rocketchat' ]]; then
           if [[ "${{ inputs.arch }}" == 'arm64' ]]; then
@@ -83,6 +83,14 @@ runs:
           fi
 
           find /tmp/build/bundle/programs/server/npm/node_modules/meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc -type d -name 'core-*' -not -name "*linux-${swc_arch}-gnu*" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@img -type d -name 'sharp-*' -not -name "*-linuxmusl-${swc_arch}" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@napi-rs -type d -name 'pinyin-linux-*' -not -name "*-linux-${swc_arch}-*" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
         fi
 
         if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
