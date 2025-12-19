@@ -113,7 +113,10 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 								<TextInput
 									disabled
 									aria-labelledby={valuesField}
+									aria-describedby={`${valuesField + index}-error`}
 									error={errors.lockedAttributes?.[index]?.value?.message || ''}
+									aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
+									aria-required='true'
 									{...register(`lockedAttributes.${index}.value`, {
 										required: t('Required_field', { field: t('Values') }),
 										validate: (value: string) => validateRepeatedValues(value),
@@ -135,7 +138,10 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							<FieldRow>
 								<TextInput
 									aria-labelledby={valuesField}
+									aria-describedby={`${valuesField + index}-error`}
 									error={errors.attributeValues?.[index]?.value?.message || ''}
+									aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
+									aria-required='true'
 									{...register(`attributeValues.${index}.value`, {
 										required: t('Required_field', { field: t('Values') }),
 										validate: (value: string) => validateRepeatedValues(value),
