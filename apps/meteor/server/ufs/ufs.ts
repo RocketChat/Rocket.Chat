@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { Random } from '@rocket.chat/random';
 
 import { Config } from './ufs-config';
@@ -42,7 +44,7 @@ export const UploadFS = {
 	},
 
 	getTempFilePath(fileId: string) {
-		return `${this.config.tmpDir}/${fileId}`;
+		return path.join(this.config.tmpDir, fileId);
 	},
 
 	Config,

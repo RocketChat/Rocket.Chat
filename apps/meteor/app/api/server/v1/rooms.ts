@@ -54,7 +54,7 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { getUploadFormData, getUploadFormDataStream } from '../lib/getUploadFormData';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -202,7 +202,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
+			const file = await getUploadFormDataStream(
 				{
 					request: this.request,
 				},
@@ -214,11 +214,10 @@ API.v1.addRoute(
 			}
 
 			const { fields } = file;
-			let { fileBuffer } = file;
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
+				size: file.tempFile.getBytesWritten(),
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -227,8 +226,7 @@ API.v1.addRoute(
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
+				void Media.stripExifFromImageStream(file.tempFile.getReadableStream());
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -264,7 +262,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
+			const file = await getUploadFormDataStream(
 				{
 					request: this.request,
 				},
@@ -275,12 +273,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('invalid-field');
 			}
 
-			let { fileBuffer } = file;
+			const { tempFile, fields } = file;
 
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			const { fields } = file;
 
 			let content;
 
@@ -295,7 +291,6 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -306,12 +301,11 @@ API.v1.addRoute(
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
+				void Media.stripExifFromImageStream(tempFile.getReadableStream());
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
+			const uploadedFile = await fileStore.insert(details, tempFile);
 
 			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 

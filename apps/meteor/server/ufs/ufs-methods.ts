@@ -7,7 +7,7 @@ import type { ClientSession } from 'mongodb';
 
 import { UploadFS } from './ufs';
 
-export async function ufsComplete(fileId: string, storeName: string, options?: { session?: ClientSession }): Promise<IUpload> {
+export async function ufsComplete(fileId: string, storeName: string, fileStream: fs.ReadStream, options?: { session?: ClientSession }): Promise<IUpload> {
 	check(fileId, String);
 	check(storeName, String);
 
@@ -17,16 +17,10 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 		throw new Meteor.Error('invalid-store', 'Store not found');
 	}
 
-	const tmpFile = UploadFS.getTempFilePath(fileId);
-
-	const removeTempFile = function () {
-		fs.stat(tmpFile, (err) => {
-			!err &&
-				fs.unlink(tmpFile, (err2) => {
-					err2 && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err2.message})`);
-				});
-		});
-	};
+	const removeTempFile = () =>
+		fs.promises.unlink(fileStream.path).catch((err) =>
+			console.error(`ufs: cannot delete temp file "${fileStream.path}" (${err.message})`)
+		);
 
 	return new Promise(async (resolve, reject) => {
 		try {
@@ -42,15 +36,8 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 			// Validate file before moving to the store
 			await store.validate(file, { session: options?.session });
 
-			// Get the temp file
-			const rs = fs.createReadStream(tmpFile, {
-				flags: 'r',
-				encoding: undefined,
-				autoClose: true,
-			});
-
 			// Clean upload if error occurs
-			rs.on('error', (err) => {
+			fileStream.on('error', (err) => {
 				console.error(err);
 				void store.removeById(fileId, { session: options?.session });
 				reject(err);
@@ -58,7 +45,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 
 			// Save file in the store
 			await store.write(
-				rs,
+				fileStream,
 				fileId,
 				(err, file) => {
 					removeTempFile();

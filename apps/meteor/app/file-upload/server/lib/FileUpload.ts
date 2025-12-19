@@ -4,7 +4,7 @@ import fs from 'fs';
 import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
-import stream from 'stream';
+import { Readable } from 'stream';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -27,6 +27,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
+import { TempUploadFile } from '../../../../server/ufs/TempUploadFile';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -133,7 +134,7 @@ export const FileUpload = {
 		);
 	},
 
-	async validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Readable | Buffer) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -791,14 +792,14 @@ export class FileUploadClass {
 
 	async _doInsert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream | Buffer,
+		streamOrBuffer: ReadableStream | Buffer,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
-			if (streamOrBuffer instanceof stream) {
+			if (streamOrBuffer instanceof Readable) {
 				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
 			} else if (streamOrBuffer instanceof Buffer) {
 				await fs.promises.writeFile(tmpFile, streamOrBuffer);
@@ -806,7 +807,9 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
+			const fileStream = fs.createReadStream(tmpFile);
+
+			const file = await ufsComplete(fileId, this.name, fileStream, { session: options?.session });
 
 			return file;
 		} catch (e: any) {
@@ -816,24 +819,43 @@ export class FileUploadClass {
 
 	async insert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		fileContent: TempUploadFile | ReadableStream | Readable | Buffer,
 		options?: { session?: ClientSession },
 	) {
-		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = await streamToBuffer(streamOrBuffer);
+		if (fileContent instanceof TempUploadFile) {
+			return this.insertFromTempUploadFile(fileData, fileContent, { session: options?.session });
 		}
 
-		if (streamOrBuffer instanceof Uint8Array) {
+		if (fileContent instanceof Readable) {
+			fileContent = await streamToBuffer(fileContent);
+		}
+
+		if (fileContent instanceof Uint8Array) {
 			// Services compat :)
-			streamOrBuffer = Buffer.from(streamOrBuffer);
+			fileContent = Buffer.from(fileContent);
 		}
 
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			await filter.check(fileData, streamOrBuffer);
+			await filter.check(fileData, fileContent);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
+		return this._doInsert(fileData, fileContent, { session: options?.session });
+	}
+
+	private async insertFromTempUploadFile(
+		fileData: OptionalId<IUpload>,
+		tempUploadFile: TempUploadFile,
+		options?: { session?: ClientSession },
+	): Promise<IUpload> {
+		try {
+		await this.store.getFilter()?.check?.(fileData, tempUploadFile.getReadableStream());
+
+		const fileId = await this.store.create(fileData, { session: options?.session });
+
+		return await ufsComplete(fileId, this.name, tempUploadFile.getReadableStream(), { session: options?.session });
+
+		}
 	}
 }
