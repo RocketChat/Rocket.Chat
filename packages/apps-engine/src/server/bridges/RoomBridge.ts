@@ -177,7 +177,7 @@ export abstract class RoomBridge extends BaseBridge {
 
 	protected abstract getMembers(roomId: string, appId: string): Promise<Array<IUser>>;
 
-	protected abstract getAllRooms(filter: GetRoomsFilters, options: GetRoomsOptions, appId: string): Promise<Array<IRoomRaw>>;
+	protected abstract getAllRooms(filters: GetRoomsFilters, options: GetRoomsOptions, appId: string): Promise<Array<IRoomRaw>>;
 
 	protected abstract update(room: IRoom, members: Array<string>, appId: string): Promise<void>;
 
