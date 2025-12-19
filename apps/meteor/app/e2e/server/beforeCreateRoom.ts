@@ -1,4 +1,4 @@
-import { prepareCreateRoomCallback } from '../../../lib/callbacks/beforeCreateRoomCallback';
+import { prepareCreateRoomCallback } from '../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { settings } from '../../settings/server';
 
 prepareCreateRoomCallback.add(({ type, extraData }) => {

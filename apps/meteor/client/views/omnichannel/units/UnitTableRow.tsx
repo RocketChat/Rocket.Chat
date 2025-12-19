@@ -1,10 +1,10 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveUnit } from './useRemoveUnit';
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 
 const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; visibility: string }) => {
 	const { t } = useTranslation();

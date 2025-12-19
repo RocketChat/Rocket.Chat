@@ -4,6 +4,7 @@ import os from 'os';
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	NotificationQueue,
 	Rooms,
@@ -25,6 +26,7 @@ import {
 	Subscriptions,
 	Users,
 	LivechatRooms,
+	AbacAttributes,
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
@@ -608,6 +610,26 @@ export const statistics = {
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
 		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
 		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
+
+		// ABAC stats
+		if (License.hasModule('abac')) {
+			statistics.abacEnabled = settings.get('ABAC_Enabled');
+			statsPms.push(
+				AbacAttributes.estimatedDocumentCount().then((result) => {
+					statistics.abacTotalAttributes = result;
+				}),
+			);
+			statsPms.push(
+				AbacAttributes.countTotalValues().then((result) => {
+					statistics.abacTotalAttributeValues = result;
+				}),
+			);
+			statsPms.push(
+				Rooms.countAbacEnabled().then((result) => {
+					statistics.abacRoomsEnrolled = result;
+				}),
+			);
+		}
 
 		await Promise.all(statsPms).catch(log);
 

@@ -68,15 +68,15 @@ test.describe.serial('emoji', () => {
 
 		await test.step('Add custom emoji', async () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-			await page.locator('role=link[name="Emoji"]').click();
-			await poAdminEmoji.newButton.click();
-			await poAdminEmoji.addEmoji.nameInput.fill(emojiName);
+			await poAdminEmoji.sidebar.linkEmoji.click();
+			await poAdminEmoji.btnNew.click();
+			await poAdminEmoji.addEmojiFlexTab.inputName.fill(emojiName);
 
 			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
 			await fileChooser.setFiles(emojiUrl);
 
-			await poAdminEmoji.addEmoji.btnSave.click();
-			await poAdminEmoji.closeAdminButton.click();
+			await poAdminEmoji.addEmojiFlexTab.save();
+			await poAdminEmoji.sidebar.close();
 
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
@@ -87,15 +87,13 @@ test.describe.serial('emoji', () => {
 
 		await test.step('Rename custom emoji', async () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-			await page.locator('role=link[name="Emoji"]').click();
-			await poAdminEmoji.findEmojiByName(emojiName);
-			await poAdminEmoji.addEmoji.nameInput.fill(newEmojiName);
-
-			await poAdminEmoji.addEmoji.btnSave.click();
-			await poAdminEmoji.closeAdminButton.click();
+			await poAdminEmoji.sidebar.linkEmoji.click();
+			await (await poAdminEmoji.findEmojiByName(emojiName)).click();
+			await poAdminEmoji.editEmojiFlexTab.inputName.fill(newEmojiName);
+			await poAdminEmoji.editEmojiFlexTab.save();
+			await poAdminEmoji.sidebar.close();
 
 			await poHomeChannel.sidenav.openChat(targetChannel);
-
 			await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.content.lastUserMessage.getByTitle(`:${newEmojiName}:`)).toBeVisible();
@@ -103,9 +101,9 @@ test.describe.serial('emoji', () => {
 
 		await test.step('Delete custom emoji', async () => {
 			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-			await page.locator('role=link[name="Emoji"]').click();
-			await poAdminEmoji.findEmojiByName(newEmojiName);
-			await poAdminEmoji.addEmoji.btnDelete.click();
+			await poAdminEmoji.sidebar.linkEmoji.click();
+			await poAdminEmoji.deleteEmoji(newEmojiName);
+			await expect(await poAdminEmoji.findEmojiByName(newEmojiName)).not.toBeVisible();
 		});
 	});
 });
