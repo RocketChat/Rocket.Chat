@@ -15,8 +15,8 @@ import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
-const PUSH_TITLE_LIMIT = 50;
-const PUSH_MESSAGE_BODY_LIMIT = 150;
+const PUSH_TITLE_LIMIT = 65;
+const PUSH_MESSAGE_BODY_LIMIT = 240;
 
 const ajv = new Ajv({
 	coerceTypes: true,

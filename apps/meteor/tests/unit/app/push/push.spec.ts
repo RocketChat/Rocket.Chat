@@ -59,8 +59,8 @@ describe('Push Notifications [PushClass]', () => {
 			expect(notification.userId).to.equal('user1');
 		});
 
-		it('should truncate text if longer than 150 chars', async () => {
-			const longText = 'a'.repeat(200);
+		it('should truncate text if longer than 240 chars', async () => {
+			const longText = 'a'.repeat(300);
 			const options: IPushNotificationConfig = {
 				from: 'test',
 				title: 'title',
@@ -74,10 +74,10 @@ describe('Push Notifications [PushClass]', () => {
 
 			const notification = sendNotificationStub.firstCall.args[0];
 
-			expect(notification.text.length).to.equal(150);
+			expect(notification.text.length).to.equal(240);
 		});
 
-		it('should truncate title if longer than 50 chars', async () => {
+		it('should truncate title if longer than 65 chars', async () => {
 			const longTitle = 'a'.repeat(100);
 			const options: IPushNotificationConfig = {
 				from: 'test',
@@ -92,7 +92,7 @@ describe('Push Notifications [PushClass]', () => {
 
 			const notification = sendNotificationStub.firstCall.args[0];
 
-			expect(notification.title.length).to.equal(50);
+			expect(notification.title.length).to.equal(65);
 		});
 
 		it('should throw if userId is missing', async () => {
