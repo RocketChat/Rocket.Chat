@@ -8,7 +8,14 @@ import {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
-import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError, FederationValidationError } from '@rocket.chat/federation-sdk';
+import {
+	eventIdSchema,
+	roomIdSchema,
+	userIdSchema,
+	federationSDK,
+	FederationRequestError,
+	FederationValidationError,
+} from '@rocket.chat/federation-sdk';
 import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
@@ -207,7 +214,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 	}
 
-	static async validateFederatedUsers(usernames: string[]): Promise<void> {
+	async validateFederatedUsers(usernames: string[]): Promise<void> {
 		const hasInvalidFederatedUsername = usernames.some((username) => !validateFederatedUsername(username));
 		if (hasInvalidFederatedUsername) {
 			throw new FederationValidationError(

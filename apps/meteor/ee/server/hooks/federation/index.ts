@@ -1,7 +1,11 @@
 import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { validateFederatedUsername, FederationValidationError, isFederationDomainAllowedForUsernames } from '@rocket.chat/federation-matrix';
+import {
+	validateFederatedUsername,
+	FederationValidationError,
+	isFederationDomainAllowedForUsernames,
+} from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -257,7 +261,6 @@ callbacks.add(
 				throw new Meteor.Error(
 					'federation-policy-denied',
 					"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
-					{ method: 'createRoom' },
 				);
 			}
 
