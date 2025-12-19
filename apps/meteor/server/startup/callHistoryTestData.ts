@@ -3,15 +3,15 @@ import { CallHistory, MediaCalls } from '@rocket.chat/models';
 export async function addCallHistoryTestData(uid: string, extraUid: string): Promise<void> {
 	const callId1 = 'rocketchat.internal.call.test';
 	const callId2 = 'rocketchat.internal.call.test.2';
-	const callId3 = 'rocketchat.internal.call.test.3';
-	const callId4 = 'rocketchat.internal.call.test.4';
+	const callId3 = 'rocketchat.external.call.test.outbound';
+	const callId4 = 'rocketchat.external.call.test.inbound';
 
 	await CallHistory.deleteMany({ uid });
 	await MediaCalls.deleteMany({ _id: { $in: [callId1, callId2, callId3, callId4] } });
 
 	await CallHistory.insertMany([
 		{
-			_id: 'rocketchat.internal.history.test',
+			_id: 'rocketchat.internal.history.test.outbound',
 			ts: new Date(),
 			callId: callId1,
 			state: 'ended',
@@ -24,10 +24,10 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			direction: 'outbound',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.2',
+			_id: 'rocketchat.internal.history.test.inbound',
 			ts: new Date(),
 			callId: callId2,
-			state: 'ended',
+			state: 'not-answered',
 			type: 'media-call',
 			duration: 10,
 			endedAt: new Date(),
@@ -37,10 +37,10 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			direction: 'inbound',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.3',
+			_id: 'rocketchat.external.history.test.outbound',
 			ts: new Date(),
 			callId: callId3,
-			state: 'ended',
+			state: 'failed',
 			type: 'media-call',
 			duration: 10,
 			endedAt: new Date(),
@@ -50,7 +50,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			contactExtension: '1001',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.4',
+			_id: 'rocketchat.external.history.test.inbound',
 			ts: new Date(),
 			callId: callId4,
 			state: 'ended',
