@@ -1,5 +1,22 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.44
+
+### Patch Changes
+
+- ([#37884](https://github.com/RocketChat/Rocket.Chat/pull/37884) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [e74684d71138f3e1dc3f42544098dc36537f2c31]:</summary>
+
+  - @rocket.chat/core-services@0.10.7
+  - @rocket.chat/network-broker@0.2.23
+  - @rocket.chat/core-typings@7.12.3
+  - @rocket.chat/rest-typings@7.12.3
+  - @rocket.chat/model-typings@1.8.4
+  - @rocket.chat/models@1.7.4
+  - @rocket.chat/instance-status@0.1.44
+  </details>
+
 ## 0.3.43
 
 ### Patch Changes

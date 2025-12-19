@@ -1,5 +1,18 @@
 # @rocket.chat/presence
 
+## 0.2.44
+
+### Patch Changes
+
+- ([#37884](https://github.com/RocketChat/Rocket.Chat/pull/37884) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [e74684d71138f3e1dc3f42544098dc36537f2c31]:</summary>
+
+  - @rocket.chat/core-services@0.10.7
+  - @rocket.chat/core-typings@7.12.3
+  - @rocket.chat/models@1.7.4
+  </details>
+
 ## 0.2.43
 
 ### Patch Changes

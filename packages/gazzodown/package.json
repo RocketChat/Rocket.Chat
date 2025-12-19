@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "24.0.2",
+	"version": "24.0.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
