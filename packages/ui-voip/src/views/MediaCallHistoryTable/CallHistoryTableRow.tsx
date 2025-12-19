@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 
 import CallHistoryTableDirection from './CallHistoryTableDirection';
 import CallHistoryTableStatus from './CallHistoryTableStatus';
+import CallHistoryTableUnknownContact from './CallHistoryTableUnknownContact';
 import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
 
 export type CallHistoryTableExternalContact = {
@@ -18,11 +19,19 @@ export type CallHistoryTableInternalContact = {
 	name?: string;
 };
 
-type CallHistoryTableRowContact = CallHistoryTableInternalContact | CallHistoryTableExternalContact;
+export type CallHistoryUnknownContact = {
+	unknown: true;
+};
+
+type CallHistoryTableRowContact = CallHistoryTableInternalContact | CallHistoryTableExternalContact | CallHistoryUnknownContact;
 
 export type CallHistoryTableRowProps<T extends CallHistoryTableRowContact> = {
 	_id: string;
-	contact: T extends CallHistoryTableInternalContact ? CallHistoryTableInternalContact : CallHistoryTableExternalContact;
+	contact: T extends CallHistoryTableInternalContact
+		? CallHistoryTableInternalContact
+		: T extends CallHistoryTableExternalContact
+			? CallHistoryTableExternalContact
+			: CallHistoryUnknownContact;
 	type: 'outbound' | 'inbound';
 	status: CallHistoryItemState;
 	duration: number;
@@ -31,10 +40,16 @@ export type CallHistoryTableRowProps<T extends CallHistoryTableRowContact> = {
 	menu: ReactNode;
 };
 
-export const isCallHistoryTableExternalContact = (
-	contact: CallHistoryTableInternalContact | CallHistoryTableExternalContact,
-): contact is CallHistoryTableExternalContact => {
+export const isCallHistoryTableExternalContact = (contact: CallHistoryTableRowContact): contact is CallHistoryTableExternalContact => {
 	return 'number' in contact;
+};
+
+export const isCallHistoryUnknownContact = (contact: CallHistoryTableRowContact): contact is CallHistoryUnknownContact => {
+	return 'unknown' in contact;
+};
+
+export const isCallHistoryTableInternalContact = (contact: CallHistoryTableRowContact): contact is CallHistoryTableInternalContact => {
+	return 'username' in contact || 'name' in contact || '_id' in contact;
 };
 
 const CallHistoryTableRow = <T extends CallHistoryTableRowContact>({
@@ -51,11 +66,11 @@ const CallHistoryTableRow = <T extends CallHistoryTableRowContact>({
 	return (
 		<GenericTableRow key={_id} onClick={onClick} tabIndex={0} role='link' action>
 			<GenericTableCell>
-				{isCallHistoryTableExternalContact(contact) ? (
-					<CallHistoryExternalUser showIcon={false} number={contact.number} />
-				) : (
+				{isCallHistoryTableExternalContact(contact) && <CallHistoryExternalUser showIcon={false} number={contact.number} />}
+				{isCallHistoryTableInternalContact(contact) && (
 					<CallHistoryInternalUser username={contact.username ?? ''} name={contact.name} _id={contact._id} />
 				)}
+				{isCallHistoryUnknownContact(contact) && <CallHistoryTableUnknownContact />}
 			</GenericTableCell>
 			<GenericTableCell>
 				<CallHistoryTableDirection direction={type} />
