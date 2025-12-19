@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.4.5",
+	"version": "0.4.6",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
