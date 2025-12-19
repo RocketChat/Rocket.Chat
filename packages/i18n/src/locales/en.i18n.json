@@ -708,6 +708,7 @@
   "Apps_Permissions_experimental_default": "Use experimental APIs",
   "Apps_Permissions_persistence": "Store internal data in the database",
   "Apps_Permissions_room_read": "Access room information",
+  "Apps_Permissions_room_system_view-all": "View all rooms in the workspace",
   "Apps_Permissions_room_write": "Create and modify rooms",
   "Apps_Permissions_scheduler": "Register and maintain scheduled jobs",
   "Apps_Permissions_server-setting_read": "Access settings in this server",
