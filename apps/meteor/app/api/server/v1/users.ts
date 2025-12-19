@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -1282,6 +1282,8 @@ API.v1.addRoute(
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
+
+			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
