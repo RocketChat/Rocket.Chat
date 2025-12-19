@@ -191,48 +191,40 @@ const CallHistoryPage = () => {
 		);
 	}
 
-	if (tableData?.length === 0) {
-		return (
-			<Page>
-				<PageHeader title={t('Call_history')} />
-				<PageContent>
-					<GenericNoResults />
-				</PageContent>
-			</Page>
-		);
-	}
-
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Call_history')} />
 				<PageContent>
 					<CallHistoryPageFilters {...filterProps} />
-					<MediaCallHistoryTable sort={sortProps}>
-						{tableData?.map((item) => {
-							if (isCallHistoryUnknownContact(item.contact)) {
-								return (
-									<CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
-								);
-							}
-							if (isCallHistoryTableInternalContact(item.contact)) {
-								return (
-									<CallHistoryRowInternalUser
-										key={item._id}
-										{...item}
-										contact={item.contact}
-										onClick={() => onClickRow(item.rid ?? '', item._id)}
-										rid={item.rid ?? ''}
-										onClickUserInfo={item.rid ? openUserInfo : undefined}
-									/>
-								);
-							}
+					{!tableData || (tableData.length === 0 && <GenericNoResults />)}
+					{tableData && tableData.length > 0 && (
+						<MediaCallHistoryTable sort={sortProps}>
+							{tableData.map((item) => {
+								if (isCallHistoryUnknownContact(item.contact)) {
+									return (
+										<CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
+									);
+								}
+								if (isCallHistoryTableInternalContact(item.contact)) {
+									return (
+										<CallHistoryRowInternalUser
+											key={item._id}
+											{...item}
+											contact={item.contact}
+											onClick={() => onClickRow(item.rid ?? '', item._id)}
+											rid={item.rid ?? ''}
+											onClickUserInfo={item.rid ? openUserInfo : undefined}
+										/>
+									);
+								}
 
-							return (
-								<CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
-							);
-						})}
-					</MediaCallHistoryTable>
+								return (
+									<CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
+								);
+							})}
+						</MediaCallHistoryTable>
+					)}
 					<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
 				</PageContent>
 			</Page>
