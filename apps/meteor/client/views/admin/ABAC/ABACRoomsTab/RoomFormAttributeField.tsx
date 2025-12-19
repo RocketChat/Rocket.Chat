@@ -10,9 +10,10 @@ type ABACAttributeAutocompleteProps = {
 	onRemove: () => void;
 	index: number;
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
+	required?: boolean;
 };
 
-const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({ onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
@@ -60,6 +61,10 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 				<SelectFiltered
 					{...keyField}
 					options={options}
+					required={required}
+					aria-required={required}
+					aria-invalid={keyFieldState.error ? 'true' : 'false'}
+					aria-describedby={`${keyField.name}-error`}
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
@@ -70,10 +75,18 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 					}}
 				/>
 			</FieldRow>
-			{keyFieldState.error && <FieldError>{keyFieldState.error.message}</FieldError>}
+			{keyFieldState.error && (
+				<FieldError id={`${keyField.name}-error`} role='alert'>
+					{keyFieldState.error.message}
+				</FieldError>
+			)}
 
 			<FieldRow>
 				<MultiSelect
+					required={required}
+					aria-required={required}
+					aria-invalid={valuesFieldState.error ? 'true' : 'false'}
+					aria-describedby={`${valuesField.name + index}-error`}
 					withTruncatedText
 					{...valuesField}
 					options={valueOptions}
@@ -81,11 +94,17 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 					error={valuesFieldState.error?.message}
 				/>
 			</FieldRow>
-			{valuesFieldState.error && <FieldError>{valuesFieldState.error.message}</FieldError>}
+			{valuesFieldState.error && (
+				<FieldError id={`${valuesField.name + index}-error`} role='alert'>
+					{valuesFieldState.error.message}
+				</FieldError>
+			)}
 
-			<Button onClick={onRemove} title={t('Remove')} mbs={4}>
-				{t('Remove')}
-			</Button>
+			{index !== 0 && (
+				<Button onClick={onRemove} title={t('Remove')} mbs={4}>
+					{t('Remove')}
+				</Button>
+			)}
 		</Box>
 	);
 };

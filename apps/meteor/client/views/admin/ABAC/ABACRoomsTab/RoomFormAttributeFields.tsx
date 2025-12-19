@@ -19,12 +19,13 @@ const RoomFormAttributeFields = ({ fields, remove }: RoomFormAttributeFieldsProp
 	}
 
 	return fields.map((field, index) => (
-		<Field key={field.id} mb={16}>
-			<FieldLabel htmlFor={field.id} required>
+		<Field key={field.id}>
+			<FieldLabel htmlFor={field.id} required={index === 0}>
 				{t('Attribute')}
 			</FieldLabel>
 			<RoomFormAttributeField
 				attributeList={attributeList.attributes}
+				required={index === 0}
 				onRemove={() => {
 					remove(index);
 				}}
