@@ -94,7 +94,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							aria-required='true'
 							{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 							aria-invalid={errors.name ? 'true' : 'false'}
-							aria-describedby={`${nameField}-error`}
+							aria-describedby={errors.name ? `${nameField}-error` : undefined}
 						/>
 					</FieldRow>
 					{errors.name && (
@@ -113,7 +113,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 								<TextInput
 									disabled
 									aria-labelledby={valuesField}
-									aria-describedby={`${valuesField + index}-error`}
+									aria-describedby={errors.lockedAttributes?.[index]?.value ? `${valuesField}-lockedAttr-${index}-error` : undefined}
 									error={errors.lockedAttributes?.[index]?.value?.message || ''}
 									aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
 									aria-required='true'
@@ -127,7 +127,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 								)}
 							</FieldRow>
 							{errors.lockedAttributes?.[index]?.value && (
-								<FieldError id={`${valuesField + index}-error`} role='alert'>
+								<FieldError id={`${valuesField}-lockedAttr-${index}-error`} role='alert'>
 									{errors.lockedAttributes?.[index]?.value?.message}
 								</FieldError>
 							)}
@@ -138,7 +138,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							<FieldRow>
 								<TextInput
 									aria-labelledby={valuesField}
-									aria-describedby={`${valuesField + index}-error`}
+									aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
 									error={errors.attributeValues?.[index]?.value?.message || ''}
 									aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
 									aria-required='true'
@@ -152,7 +152,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 								)}
 							</FieldRow>
 							{errors.attributeValues?.[index]?.value && (
-								<FieldError id={`${valuesField + index}-error`} role='alert'>
+								<FieldError id={`${valuesField}-attr-${index}-error`} role='alert'>
 									{errors.attributeValues[index].value.message}
 								</FieldError>
 							)}
