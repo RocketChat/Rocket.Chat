@@ -2,7 +2,8 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, Page, PageHeader, PageContent, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import { MediaCallHistoryTable, isCallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
+import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryTableInternalContact } from '@rocket.chat/ui-voip';
+import type { CallHistoryTableInternalContact, CallHistoryUnknownContact, CallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
+import CallHistoryRowUnknownUser from './CallHistoryRowUknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import GenericNoResults from '../../components/GenericNoResults';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
@@ -130,7 +132,9 @@ const CallHistoryPage = () => {
 			if (item.external) {
 				return {
 					_id: item._id,
-					contact: { number: item.contactExtension || t('Unknown') },
+					contact: item.contactExtension
+						? ({ number: item.contactExtension } as CallHistoryTableExternalContact)
+						: ({ unknown: true } as CallHistoryUnknownContact),
 					type: item.direction,
 					status: item.state,
 					timestamp: item.ts,
@@ -140,7 +144,7 @@ const CallHistoryPage = () => {
 			if (!item.contactUsername || !item.contactName) {
 				return {
 					_id: item._id,
-					contact: undefined,
+					contact: { unknown: true } as CallHistoryUnknownContact,
 					type: item.direction,
 					status: item.state,
 					timestamp: item.ts,
@@ -150,7 +154,7 @@ const CallHistoryPage = () => {
 			return {
 				_id: item._id,
 				rid: item.rid,
-				contact: { _id: item.contactId, username: item.contactUsername, name: item.contactName },
+				contact: { _id: item.contactId, username: item.contactUsername, name: item.contactName } as CallHistoryTableInternalContact,
 				messageId: item.messageId,
 				type: item.direction,
 				status: item.state,
@@ -158,7 +162,7 @@ const CallHistoryPage = () => {
 				duration: item.duration,
 			};
 		});
-	}, [data, t]);
+	}, [data]);
 
 	if (isPending) {
 		return (
@@ -205,20 +209,29 @@ const CallHistoryPage = () => {
 				<PageContent>
 					<CallHistoryPageFilters {...filterProps} />
 					<MediaCallHistoryTable sort={sortProps}>
-						{tableData?.map((item) =>
-							!item.contact || isCallHistoryTableExternalContact(item.contact) ? (
+						{tableData?.map((item) => {
+							if (isCallHistoryUnknownContact(item.contact)) {
+								return (
+									<CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
+								);
+							}
+							if (isCallHistoryTableInternalContact(item.contact)) {
+								return (
+									<CallHistoryRowInternalUser
+										key={item._id}
+										{...item}
+										contact={item.contact}
+										onClick={() => onClickRow(item.rid ?? '', item._id)}
+										rid={item.rid ?? ''}
+										onClickUserInfo={item.rid ? openUserInfo : undefined}
+									/>
+								);
+							}
+
+							return (
 								<CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
-							) : (
-								<CallHistoryRowInternalUser
-									key={item._id}
-									{...item}
-									contact={item.contact}
-									onClick={() => onClickRow(item.rid ?? '', item._id)}
-									rid={item.rid ?? ''}
-									onClickUserInfo={item.rid ? openUserInfo : undefined}
-								/>
-							),
-						)}
+							);
+						})}
 					</MediaCallHistoryTable>
 					<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
 				</PageContent>
