@@ -1,5 +1,19 @@
 # @rocket.chat/core-services
 
+## 0.10.6
+
+### Patch Changes
+
+- ([#37885](https://github.com/RocketChat/Rocket.Chat/pull/37885) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.3
+  - @rocket.chat/rest-typings@7.11.3
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/models@1.7.3
+  </details>
+
 ## 0.10.5
 
 ### Patch Changes

@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 7.11.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37878](https://github.com/RocketChat/Rocket.Chat/pull/37878) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#37885](https://github.com/RocketChat/Rocket.Chat/pull/37885) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [20a539384a829de4bd2f1ebf4b813a36579789aa]:</summary>
+
+  - @rocket.chat/core-services@0.10.6
+  - @rocket.chat/presence@0.2.43
+  - @rocket.chat/federation-matrix@0.0.5
+  - @rocket.chat/network-broker@0.2.22
+  - @rocket.chat/omni-core-ee@0.0.8
+  - @rocket.chat/omnichannel-services@0.3.40
+  - @rocket.chat/core-typings@7.11.3
+  - @rocket.chat/rest-typings@7.11.3
+  - @rocket.chat/license@1.1.3
+  - @rocket.chat/media-calls@0.0.5
+  - @rocket.chat/pdf-worker@0.3.22
+  - @rocket.chat/api-client@0.2.43
+  - @rocket.chat/apps@0.5.22
+  - @rocket.chat/cron@0.1.43
+  - @rocket.chat/freeswitch@1.2.30
+  - @rocket.chat/fuselage-ui-kit@23.0.3
+  - @rocket.chat/gazzodown@23.0.3
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.3
+  - @rocket.chat/ui-avatar@19.0.3
+  - @rocket.chat/ui-client@23.0.3
+  - @rocket.chat/ui-contexts@23.0.3
+  - @rocket.chat/web-ui-registration@23.0.3
+  - @rocket.chat/models@1.7.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@23.0.3
+  - @rocket.chat/ui-voip@13.0.3
+  - @rocket.chat/instance-status@0.1.43
+  - @rocket.chat/omni-core@0.0.8
+  </details>
+
 ## 7.11.2
 
 ### Patch Changes

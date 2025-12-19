@@ -1,5 +1,19 @@
 # @rocket.chat/authorization-service
 
+## 0.4.43
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [20a539384a829de4bd2f1ebf4b813a36579789aa]:</summary>
+
+  - @rocket.chat/core-services@0.10.6
+  - @rocket.chat/network-broker@0.2.22
+  - @rocket.chat/core-typings@7.11.3
+  - @rocket.chat/rest-typings@7.11.3
+  - @rocket.chat/model-typings@1.8.3
+  - @rocket.chat/models@1.7.3
+  </details>
+
 ## 0.4.42
 
 ### Patch Changes
