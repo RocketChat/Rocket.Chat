@@ -115,7 +115,6 @@ const CallHistoryPage = () => {
 		queryFn: () => {
 			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
 			const stateFilter = getStateFilter(states);
-			console.log({ debouncedSearchText, type, states });
 
 			return getCallHistory({
 				count: paginationProps.itemsPerPage,
