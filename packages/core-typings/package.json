@@ -1,8 +1,29 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
+	"version": "7.14.0-develop",
 	"private": true,
-	"version": "7.13.1",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build:build": "tsc -p tsconfig.json",
+		".:build:clean": "rimraf dist",
+		".:build:prepare": "ts-patch install && typia patch",
+		"build": "run-s .:build:prepare .:build:clean .:build:build",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "echo \"no tests\" && exit 1"
+	},
+	"dependencies": {
+		"@rocket.chat/icons": "~0.46.0",
+		"@rocket.chat/message-parser": "workspace:^",
+		"@rocket.chat/ui-kit": "workspace:~",
+		"typia": "~9.7.2"
+	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -14,27 +35,6 @@
 		"rimraf": "^6.0.1",
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"
-	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "echo \"no tests\" && exit 1",
-		".:build:prepare": "ts-patch install && typia patch",
-		".:build:clean": "rimraf dist",
-		".:build:build": "tsc -p tsconfig.json",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "run-s .:build:prepare .:build:clean .:build:build"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"dependencies": {
-		"@rocket.chat/icons": "^0.45.0",
-		"@rocket.chat/message-parser": "workspace:^",
-		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "~9.7.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

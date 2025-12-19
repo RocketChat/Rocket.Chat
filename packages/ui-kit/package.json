@@ -3,44 +3,39 @@
 	"version": "0.38.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
-	"author": {
-		"name": "Rocket.Chat",
-		"url": "https://rocket.chat/"
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
-	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
 	},
-	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
 	},
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/esm/index.d.ts",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
 	"scripts": {
-		"build": "run-s .:build:prepare .:build:clean .:build:esm .:build:cjs",
-		".:build:prepare": "ts-patch install && typia patch",
 		".:build:clean": "rimraf dist",
-		".:build:esm": "tsc -p tsconfig.esm.json",
-		".:build:cjs": "tsc -p tsconfig.cjs.json",
-		"typecheck": "tsc --noEmit",
+		".:build:prepare": "ts-patch install && typia patch",
+		".:build:tsc": "tsc -p tsconfig.build.json",
+		"build": "run-s .:build:prepare .:build:clean .:build:tsc",
 		"lint": "eslint . --ext .ts,.tsx",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"typia": "~9.7.2"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/eslint-parser": "~7.28.5",
-		"@babel/plugin-transform-runtime": "~7.28.5",
-		"@babel/preset-env": "~7.28.5",
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/icons": "^0.45.0",
+		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
@@ -53,13 +48,13 @@
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"
 	},
-	"dependencies": {
-		"typia": "~9.7.2"
-	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }

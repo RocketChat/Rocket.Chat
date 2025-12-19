@@ -71,7 +71,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 			renderSelected={({ selected: { value, label } }) => (
 				<>
 					<Box margin='none' mi={2}>
-						<RoomAvatar size={AVATAR_SIZE} room={{ type: label?.type || 'c', _id: value, ...label }} />
+						<RoomAvatar size={AVATAR_SIZE} room={{ ...label, type: label?.type || 'c', _id: value }} />
 					</Box>
 					<Box margin='none' mi={2}>
 						{label?.name}

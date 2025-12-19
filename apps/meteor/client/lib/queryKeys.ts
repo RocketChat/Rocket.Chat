@@ -1,9 +1,24 @@
-import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser, ILivechatAgent, IOutboundProvider } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	IMessage,
+	IRoom,
+	ITeam,
+	IUser,
+	ILivechatAgent,
+	IOutboundProvider,
+	RoomType,
+} from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
 	room: (rid: IRoom['_id']) => ['rooms', rid] as const,
+	roomReference: (reference: string, type: RoomType, uid?: IUser['_id'], username?: IUser['username']) => [
+		...roomsQueryKeys.all,
+		reference,
+		type,
+		uid ?? username,
+	],
 	starredMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'starred-messages'] as const,
 	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
@@ -50,6 +65,7 @@ export const omnichannelQueryKeys = {
 	livechat: {
 		appearance: () => [...omnichannelQueryKeys.all, 'livechat', 'appearance'] as const,
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
+		customFieldsMetadata: (scope: 'visitor' | 'room') => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields', scope] as const,
 	},
 	visitorInfo: (uid: string) => [...omnichannelQueryKeys.all, 'visitor-info', uid] as const,
 	analytics: {
@@ -107,6 +123,7 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
+	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
 };
 
 export const teamsQueryKeys = {
@@ -116,4 +133,33 @@ export const teamsQueryKeys = {
 	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
+};
+
+export const appsQueryKeys = {
+	all: ['apps'] as const,
+	slashCommands: () => [...appsQueryKeys.all, 'slashCommands'] as const,
+};
+
+export const ABACQueryKeys = {
+	all: ['abac'] as const,
+	logs: {
+		all: () => [...ABACQueryKeys.all, 'logs'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+	},
+	roomAttributes: {
+		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
+	},
+	rooms: {
+		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
+		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
+	},
+};
+
+export const callHistoryQueryKeys = {
+	all: ['call-history'] as const,
+	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };

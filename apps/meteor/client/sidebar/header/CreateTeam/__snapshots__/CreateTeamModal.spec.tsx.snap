@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
         id=":r0:"
       >
         <header
@@ -148,27 +148,33 @@ exports[`renders Default without crashing 1`] = `
                   Teams_New_Add_members_Label
                 </label>
                 <div
-                  class="rcx-box rcx-box--full rcx-autocomplete rcx-css-t3n91h"
+                  class="rcx-box rcx-box--full rcx-select"
+                  data-qa-type="user-auto-complete-input"
+                  id=":r7:"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6d871f"
-                    role="group"
+                    class="rcx-box rcx-box--full rcx-css-1sr8su7"
                   >
-                    <input
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
-                      id=":r7:"
-                      placeholder="Add_people"
-                      value=""
-                    />
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-w398ts"
+                      role="listbox"
+                    >
+                      <input
+                        aria-haspopup="listbox"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                        placeholder="Add_people"
+                        value=""
+                      />
+                    </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-autocomplete__addon"
+                    class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
                     >
-                      
+                      
                     </i>
                   </div>
                 </div>
@@ -248,7 +254,7 @@ exports[`renders Default without crashing 1`] = `
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>
@@ -402,7 +408,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
         id=":ra:"
       >
         <header
@@ -540,27 +546,33 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                   Teams_New_Add_members_Label
                 </label>
                 <div
-                  class="rcx-box rcx-box--full rcx-autocomplete rcx-css-t3n91h"
+                  class="rcx-box rcx-box--full rcx-select"
+                  data-qa-type="user-auto-complete-input"
+                  id=":rh:"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6d871f"
-                    role="group"
+                    class="rcx-box rcx-box--full rcx-css-1sr8su7"
                   >
-                    <input
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
-                      id=":rh:"
-                      placeholder="Add_people"
-                      value=""
-                    />
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-w398ts"
+                      role="listbox"
+                    >
+                      <input
+                        aria-haspopup="listbox"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                        placeholder="Add_people"
+                        value=""
+                      />
+                    </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-autocomplete__addon"
+                    class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
                     >
-                      
+                      
                     </i>
                   </div>
                 </div>
@@ -640,7 +652,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>

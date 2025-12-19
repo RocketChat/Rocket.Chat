@@ -1,4 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useInvalidateLicense, useLicense } from '@rocket.chat/ui-client';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -7,7 +8,6 @@ import { useEffect } from 'react';
 import { storeQueryFunction } from './storeQueryFunction';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
-import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';

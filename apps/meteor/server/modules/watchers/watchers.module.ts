@@ -137,6 +137,8 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 							| 'tunread'
 							| 'tunreadGroup'
 							| 'tunreadUser'
+							| 'status'
+							| 'inviter'
 
 							// Omnichannel fields
 							| 'department'

@@ -8,7 +8,6 @@
 		"strictFunctionTypes": false,
 
 		/* Additional Checks */
-		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 
 		"outDir": "./dist/ee/apps/account-service/src",

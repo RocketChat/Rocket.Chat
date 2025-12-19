@@ -1,5 +1,10 @@
-export { default as MediaCallProvider } from './v2/MediaCallProvider';
+export { default as MediaCallProvider } from './context/MediaCallProvider';
 
-export * from './hooks';
+export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, type PeerInfo } from './context';
 
-export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, useMediaCallAction, type PeerInfo } from './v2';
+export { useMediaCallAction } from './hooks';
+
+export { CallHistoryContextualBar } from './views';
+export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistoryData } from './views';
+
+export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';

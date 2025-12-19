@@ -1,6 +1,8 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Pagination, Palette } from '@rocket.chat/fuselage';
+import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '@rocket.chat/ui-client';
+import type { usePagination } from '@rocket.chat/ui-client';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -8,8 +10,6 @@ import PermissionRow from './PermissionRow';
 import PermissionsTableFilter from './PermissionsTableFilter';
 import RoleHeader from './RoleHeader';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
-import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 
 type PermissionsTableProps = {
 	roleList: IRole[];

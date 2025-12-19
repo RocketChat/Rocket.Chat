@@ -4,15 +4,15 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r2o:-title"
+      aria-labelledby=":r44:-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       data-qa="create-channel-modal"
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-        id=":r2o:"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        id=":r44:"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -22,7 +22,7 @@ exports[`renders Default without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r2o:-title"
+              id=":r44:-title"
             >
               Create_channel
             </h2>
@@ -57,7 +57,7 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r2p:"
+                  for=":r45:"
                 >
                   Name
                   <span
@@ -74,12 +74,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
                   >
                     <input
-                      aria-describedby=":r2p:-error :r2p:-hint"
+                      aria-describedby=":r45:-error :r45:-hint"
                       aria-invalid="false"
                       aria-required="true"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                       data-qa-type="channel-name-input"
-                      id=":r2p:"
+                      id=":r45:"
                       name="name"
                       size="1"
                       type="text"
@@ -98,7 +98,7 @@ exports[`renders Default without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r2p:-hint"
+                  id=":r45:-hint"
                 >
                   No_spaces_or_special_characters
                 </span>
@@ -108,7 +108,7 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r2q:"
+                  for=":r46:"
                 >
                   Topic
                 </label>
@@ -116,10 +116,10 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <input
-                    aria-describedby=":r2q:-hint"
+                    aria-describedby=":r46:-hint"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     data-qa-type="channel-topic-input"
-                    id=":r2q:"
+                    id=":r46:"
                     name="topic"
                     size="1"
                     type="text"
@@ -127,7 +127,7 @@ exports[`renders Default without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r2q:-hint"
+                  id=":r46:-hint"
                 >
                   Displayed_next_to_name
                 </span>
@@ -137,15 +137,14 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r30:"
+                  for=":r4c:"
                 >
                   Members
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
-                  data-qa="create-channel-users-autocomplete"
                   data-qa-type="user-auto-complete-input"
-                  id=":r30:"
+                  id=":r4c:"
                 >
                   <div
                     class="rcx-box rcx-box--full rcx-css-1sr8su7"
@@ -182,7 +181,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r2r:"
+                    for=":r47:"
                   >
                     Private
                   </label>
@@ -190,10 +189,10 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-toggle-switch"
                   >
                     <input
-                      aria-describedby=":r2r:-hint"
+                      aria-describedby=":r47:-hint"
                       checked=""
                       class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                      id=":r2r:"
+                      id=":r47:"
                       type="checkbox"
                     />
                     <i
@@ -204,7 +203,7 @@ exports[`renders Default without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r2r:-hint"
+                  id=":r47:-hint"
                 >
                   People_can_only_join_by_being_invited
                 </span>
@@ -217,7 +216,7 @@ exports[`renders Default without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-accordion-item"
               >
                 <div
-                  aria-controls=":r32:"
+                  aria-controls=":r4e:"
                   aria-expanded="false"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
                   role="button"
@@ -225,7 +224,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <h2
                     class="rcx-box rcx-box--full rcx-accordion-item__title"
-                    id=":r31:"
+                    id=":r4d:"
                   >
                     Advanced_settings
                   </h2>
@@ -242,14 +241,14 @@ exports[`renders Default without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
-                  id=":r32:"
+                  id=":r4e:"
                 >
                   <fieldset
                     class="rcx-box rcx-box--full rcx-field-group"
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>
@@ -261,7 +260,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r2s:"
+                          for=":r48:"
                         >
                           Federation_Matrix_Federated
                         </label>
@@ -269,10 +268,10 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r2s:-hint"
+                            aria-describedby=":r48:-hint"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r2s:"
+                            id=":r48:"
                             type="checkbox"
                           />
                           <i
@@ -283,7 +282,7 @@ exports[`renders Default without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r2s:-hint"
+                        id=":r48:-hint"
                       >
                         error-this-is-a-premium-feature
                       </span>
@@ -296,7 +295,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r2u:"
+                          for=":r4a:"
                         >
                           Encrypted
                         </label>
@@ -304,10 +303,10 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r2u:-hint"
+                            aria-describedby=":r4a:-hint"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r2u:"
+                            id=":r4a:"
                             type="checkbox"
                           />
                           <i
@@ -318,7 +317,7 @@ exports[`renders Default without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r2u:-hint"
+                        id=":r4a:-hint"
                       >
                         Not_available_for_this_workspace
                       </span>
@@ -331,7 +330,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r2t:"
+                          for=":r49:"
                         >
                           Read_only
                         </label>
@@ -339,10 +338,10 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r2t:-hint"
+                            aria-describedby=":r49:-hint"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r2t:"
+                            id=":r49:"
                             type="checkbox"
                           />
                           <i
@@ -353,7 +352,7 @@ exports[`renders Default without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r2t:-hint"
+                        id=":r49:-hint"
                       >
                         Anyone_can_send_new_messages
                       </span>
@@ -366,7 +365,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r2v:"
+                          for=":r4b:"
                         >
                           Broadcast
                         </label>
@@ -375,7 +374,7 @@ exports[`renders Default without crashing 1`] = `
                         >
                           <input
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                            id=":r2v:"
+                            id=":r4b:"
                             type="checkbox"
                           />
                           <i
@@ -431,15 +430,15 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r33:-title"
+      aria-labelledby=":r4f:-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       data-qa="create-channel-modal"
       open=""
     >
       <form
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
-        id=":r33:"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        id=":r4f:"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -449,7 +448,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r33:-title"
+              id=":r4f:-title"
             >
               Create_channel
             </h2>
@@ -484,7 +483,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r34:"
+                  for=":r4g:"
                 >
                   Name
                   <span
@@ -501,12 +500,12 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
                   >
                     <input
-                      aria-describedby=":r34:-error :r34:-hint"
+                      aria-describedby=":r4g:-error :r4g:-hint"
                       aria-invalid="false"
                       aria-required="true"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                       data-qa-type="channel-name-input"
-                      id=":r34:"
+                      id=":r4g:"
                       name="name"
                       size="1"
                       type="text"
@@ -525,7 +524,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r34:-hint"
+                  id=":r4g:-hint"
                 >
                   No_spaces_or_special_characters
                 </span>
@@ -535,7 +534,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r35:"
+                  for=":r4h:"
                 >
                   Topic
                 </label>
@@ -543,10 +542,10 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <input
-                    aria-describedby=":r35:-hint"
+                    aria-describedby=":r4h:-hint"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     data-qa-type="channel-topic-input"
-                    id=":r35:"
+                    id=":r4h:"
                     name="topic"
                     size="1"
                     type="text"
@@ -554,7 +553,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r35:-hint"
+                  id=":r4h:-hint"
                 >
                   Displayed_next_to_name
                 </span>
@@ -564,15 +563,14 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r3b:"
+                  for=":r4n:"
                 >
                   Members
                 </label>
                 <div
                   class="rcx-box rcx-box--full rcx-select"
-                  data-qa="create-channel-users-autocomplete"
                   data-qa-type="user-auto-complete-input"
-                  id=":r3b:"
+                  id=":r4n:"
                 >
                   <div
                     class="rcx-box rcx-box--full rcx-css-1sr8su7"
@@ -609,7 +607,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r36:"
+                    for=":r4i:"
                   >
                     Private
                   </label>
@@ -617,10 +615,10 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-toggle-switch"
                   >
                     <input
-                      aria-describedby=":r36:-hint"
+                      aria-describedby=":r4i:-hint"
                       checked=""
                       class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                      id=":r36:"
+                      id=":r4i:"
                       type="checkbox"
                     />
                     <i
@@ -631,7 +629,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </span>
                 <span
                   class="rcx-box rcx-box--full rcx-field__hint"
-                  id=":r36:-hint"
+                  id=":r4i:-hint"
                 >
                   People_can_only_join_by_being_invited
                 </span>
@@ -644,7 +642,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-accordion-item"
               >
                 <div
-                  aria-controls=":r3d:"
+                  aria-controls=":r4p:"
                   aria-expanded="false"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
                   role="button"
@@ -652,7 +650,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 >
                   <h2
                     class="rcx-box rcx-box--full rcx-accordion-item__title"
-                    id=":r3c:"
+                    id=":r4o:"
                   >
                     Advanced_settings
                   </h2>
@@ -669,14 +667,14 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
-                  id=":r3d:"
+                  id=":r4p:"
                 >
                   <fieldset
                     class="rcx-box rcx-box--full rcx-field-group"
                     role="group"
                   >
                     <h5
-                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1rcvt7i"
+                      class="rcx-box rcx-box--full rcx-field-group__item rcx-css-1g9ijoy"
                     >
                       Security_and_permissions
                     </h5>
@@ -688,8 +686,8 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r37:"
-                          id=":r37:-label"
+                          for=":r4j:"
+                          id=":r4j:-label"
                         >
                           Federation_Matrix_Federated
                         </label>
@@ -697,11 +695,11 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r37:-hint"
-                            aria-labelledby=":r37:-label"
+                            aria-describedby=":r4j:-hint"
+                            aria-labelledby=":r4j:-label"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r37:"
+                            id=":r4j:"
                             type="checkbox"
                           />
                           <i
@@ -712,7 +710,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r37:-hint"
+                        id=":r4j:-hint"
                       >
                         error-this-is-a-premium-feature
                       </span>
@@ -725,8 +723,8 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r39:"
-                          id=":r39:-label"
+                          for=":r4l:"
+                          id=":r4l:-label"
                         >
                           Encrypted
                         </label>
@@ -734,11 +732,11 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r39:-hint"
-                            aria-labelledby=":r39:-label"
+                            aria-describedby=":r4l:-hint"
+                            aria-labelledby=":r4l:-label"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r39:"
+                            id=":r4l:"
                             type="checkbox"
                           />
                           <i
@@ -749,7 +747,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r39:-hint"
+                        id=":r4l:-hint"
                       >
                         Not_available_for_this_workspace
                       </span>
@@ -762,8 +760,8 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r38:"
-                          id=":r38:-label"
+                          for=":r4k:"
+                          id=":r4k:-label"
                         >
                           Read_only
                         </label>
@@ -771,11 +769,11 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r38:-hint"
-                            aria-labelledby=":r38:-label"
+                            aria-describedby=":r4k:-hint"
+                            aria-labelledby=":r4k:-label"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
                             disabled=""
-                            id=":r38:"
+                            id=":r4k:"
                             type="checkbox"
                           />
                           <i
@@ -786,7 +784,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       </span>
                       <span
                         class="rcx-box rcx-box--full rcx-field__hint"
-                        id=":r38:-hint"
+                        id=":r4k:-hint"
                       >
                         Anyone_can_send_new_messages
                       </span>
@@ -799,8 +797,8 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                       >
                         <label
                           class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                          for=":r3a:"
-                          id=":r3a:-label"
+                          for=":r4m:"
+                          id=":r4m:-label"
                         >
                           Broadcast
                         </label>
@@ -808,10 +806,10 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-toggle-switch"
                         >
                           <input
-                            aria-describedby=":r3a:-hint"
-                            aria-labelledby=":r3a:-label"
+                            aria-describedby=":r4m:-hint"
+                            aria-labelledby=":r4m:-label"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                            id=":r3a:"
+                            id=":r4m:"
                             type="checkbox"
                           />
                           <i

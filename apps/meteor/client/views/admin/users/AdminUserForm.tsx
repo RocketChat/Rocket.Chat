@@ -19,7 +19,8 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { validateEmail } from '@rocket.chat/tools';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -38,9 +39,7 @@ import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useVoipExtensionPermission } from './useVoipExtensionPermission';
-import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';

@@ -18,6 +18,8 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { validateEmail } from '@rocket.chat/tools';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
@@ -29,8 +31,6 @@ import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
-import { validateEmail } from '../../../../lib/emailValidator';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
@@ -60,7 +60,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const { department, agents = [] } = data || {};
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const canManageUnits = usePermission('manage-livechat-units');
 
 	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });

@@ -68,6 +68,8 @@ export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
 const MessageTypes = [
 	'e2e',
 	'uj',
+	'ui',
+	'uir',
 	'ul',
 	'ru',
 	'au',
@@ -104,6 +106,7 @@ const MessageTypes = [
 	'new-leader',
 	'leader-removed',
 	'discussion-created',
+	'abac-removed-user-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 	...VoipMessageTypesValues,

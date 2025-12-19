@@ -17,19 +17,22 @@
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@rocket.chat/onboarding-ui": "~0.36.0",
+		"dompurify": "~3.2.7"
+	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.68.1",
-		"@rocket.chat/fuselage-hooks": "~0.37.2",
-		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.70.0",
+		"@rocket.chat/fuselage-hooks": "~0.38.1",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "^0.45.0",
+		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
+		"@rocket.chat/models": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
@@ -49,6 +52,9 @@
 		"eslint-plugin-storybook": "~0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"jest": "~30.2.0",
+		"overlayscrollbars": "^2.11.4",
+		"overlayscrollbars-react": "^0.5.6",
+		"re-resizable": "^6.10.1",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
@@ -64,13 +70,13 @@
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
+		"overlayscrollbars": "*",
+		"overlayscrollbars-react": "*",
+		"re-resizable": "*",
 		"react": "*",
 		"react-i18next": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"dependencies": {
-		"dompurify": "~3.2.7"
 	}
 }

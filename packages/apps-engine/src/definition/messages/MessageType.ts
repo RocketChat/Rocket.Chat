@@ -75,6 +75,10 @@ export type MessageType =
 	| 'ru'
 	/** Sent when a user was added */
 	| 'au'
+	/** Sent when a user was invited to a room */
+	| 'ui'
+	/** Sent when a user was invited to a room and rejected */
+	| 'uir'
 	/** Sent when system messages were muted */
 	| 'mute_unmute'
 	/** Sent when a room name was changed */
@@ -140,4 +144,6 @@ export type MessageType =
 	/** Sent when a leader was removed */
 	| 'leader-removed'
 	/** Sent when a user was added to a room */
-	| 'discussion-created';
+	| 'discussion-created'
+	// ** Sent when a user was removed from an abac room */
+	| 'abac-removed-user-from-room';

@@ -4,16 +4,16 @@ import { useTranslation } from 'react-i18next';
 import {
 	sidePanelFiltersConfig,
 	useRedirectToDefaultTab,
-	useSidePanelRoomsListTab,
+	useSidePanelQueueListTab,
 	useUnreadOnlyToggle,
 } from '../../../contexts/RoomsNavigationContext';
-import SidePanel from '../../SidePanel';
+import SidePanelInquiry from '../../SidePanelInquiry';
 
 const SidePanelQueue = () => {
 	const { t } = useTranslation();
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 
-	const rooms = useSidePanelRoomsListTab('queue');
+	const rooms = useSidePanelQueueListTab();
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 
 	useRedirectToDefaultTab(!canViewOmnichannelQueue);
@@ -23,7 +23,7 @@ const SidePanelQueue = () => {
 	}
 
 	return (
-		<SidePanel
+		<SidePanelInquiry
 			title={t(sidePanelFiltersConfig.queue.title)}
 			currentTab='queue'
 			unreadOnly={unreadOnly}

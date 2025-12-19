@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import CannedResponseList from './CannedResponseList';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	component: CannedResponseList,

@@ -1,8 +1,8 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import OTR from './OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	component: OTR,

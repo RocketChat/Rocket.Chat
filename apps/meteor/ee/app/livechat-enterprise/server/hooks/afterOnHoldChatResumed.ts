@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
 

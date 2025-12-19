@@ -1,6 +1,6 @@
+import { ContextualbarDialog } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import { ContextualbarDialog } from '../Contextualbar';
 import * as Status from '../UserStatus';
 import UserInfo from './UserInfo';
 import { UserCardRole } from '../UserCard';
@@ -42,6 +42,14 @@ WithVoiceCallExtension.args = {
 
 export const WithABACAttributes = Template.bind({});
 WithABACAttributes.args = {
-	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
-	abacAttributes: ['Classified', 'Top Secret', 'Confidential'],
+	abacAttributes: [
+		{
+			key: 'Classified',
+			values: ['Top Secret', 'Confidential'],
+		},
+		{
+			key: 'Security_Clearance',
+			values: ['Top Secret', 'Confidential'],
+		},
+	],
 };

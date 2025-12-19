@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
@@ -21,7 +20,6 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';

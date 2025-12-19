@@ -1,14 +1,19 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
-import { isValidElement } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
+import { memo } from 'react';
 
-type HeaderIconProps = { icon: ReactElement | ComponentProps<typeof Icon> | null };
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1Icon } from '../HeaderV1';
+import { HeaderV2Icon } from '../HeaderV2';
 
-const HeaderIcon = ({ icon }: HeaderIconProps) =>
-	icon && (
-		<Box display='flex' flexShrink={0} alignItems='center' size='x18' overflow='hidden' justifyContent='center'>
-			{isValidElement<any>(icon) ? icon : <Icon color='default' size='x18' name={icon.name} />}
-		</Box>
-	);
+const HeaderIcon = (props: ComponentPropsWithoutRef<typeof HeaderV1Icon>) => (
+	<FeaturePreview feature='newNavigation'>
+		<FeaturePreviewOff>
+			<HeaderV1Icon {...props} />
+		</FeaturePreviewOff>
+		<FeaturePreviewOn>
+			<HeaderV2Icon {...props} />
+		</FeaturePreviewOn>
+	</FeaturePreview>
+);
 
-export default HeaderIcon;
+export default memo(HeaderIcon);

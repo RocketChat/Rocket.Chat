@@ -1,7 +1,7 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import ExportMessages from './index';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	component: ExportMessages,

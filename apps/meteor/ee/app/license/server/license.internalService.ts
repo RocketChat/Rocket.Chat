@@ -30,7 +30,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		this.onEvent('license.sync', () => License.sync());
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		if (!License.hasValidLicense()) {
 			return;
 		}

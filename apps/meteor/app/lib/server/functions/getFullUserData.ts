@@ -22,6 +22,7 @@ export const defaultFields = {
 	extension: 1,
 	federated: 1,
 	statusLivechat: 1,
+	abacAttributes: 1,
 } as const;
 
 export const fullFields = {

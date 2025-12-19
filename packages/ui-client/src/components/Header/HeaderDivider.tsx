@@ -1,6 +1,18 @@
-import { Divider } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import { memo } from 'react';
 
-const HeaderDivider: FC = () => <Divider mbs={-2} mbe={0} />;
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
+import { HeaderV1Divider } from '../HeaderV1';
+import { HeaderV2Divider } from '../HeaderV2';
 
-export default HeaderDivider;
+const HeaderDivider = () => (
+	<FeaturePreview feature='newNavigation'>
+		<FeaturePreviewOff>
+			<HeaderV1Divider />
+		</FeaturePreviewOff>
+		<FeaturePreviewOn>
+			<HeaderV2Divider />
+		</FeaturePreviewOn>
+	</FeaturePreview>
+);
+
+export default memo(HeaderDivider);

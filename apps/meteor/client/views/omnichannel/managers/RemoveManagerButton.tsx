@@ -1,12 +1,11 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { MouseEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell } from '../../../components/GenericTable';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 

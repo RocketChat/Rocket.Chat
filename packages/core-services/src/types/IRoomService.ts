@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -7,28 +7,23 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
-	federatedRoomId?: string;
 }
 
-export interface ICreateRoomExtraData extends Record<string, string | boolean> {
-	teamId: string;
-	teamMain: boolean;
-}
-
-export interface ICreateRoomParams {
+export interface ICreateRoomParams<T extends IRoom = IRoom> {
 	type: IRoom['t'];
 	name: IRoom['name'];
 	members?: Array<string>; // member's usernames
 	readOnly?: boolean;
-	extraData?: Partial<ICreateRoomExtraData>;
+	extraData?: Partial<T>;
 	options?: ICreateRoomOptions;
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
@@ -41,7 +36,13 @@ export interface IRoomService {
 			createAsHidden?: boolean;
 		},
 	): Promise<boolean | undefined>;
-	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
+	performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void>;
+	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	removeUserFromRoom(
+		roomId: string,
+		user: IUser,
+		options?: { byUser?: Pick<IUser, '_id' | 'username'>; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,
@@ -57,4 +58,16 @@ export interface IRoomService {
 	beforeTopicChange(room: IRoom): Promise<void>;
 	saveRoomName(roomId: string, userId: string, name: string): Promise<void>;
 	addUserRoleRoomScoped(fromUserId: string, userId: string, roomId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
+	createUserSubscription(params: {
+		room: IRoom;
+		ts: Date;
+		userToBeAdded: IUser;
+		inviter?: Pick<IUser, '_id' | 'username'>;
+		createAsHidden?: boolean;
+		skipAlertSound?: boolean;
+		skipSystemMessage?: boolean;
+		status?: 'INVITED';
+		roles?: ISubscription['roles'];
+	}): Promise<string | undefined>;
+	updateDirectMessageRoomName(room: IRoom): Promise<boolean>;
 }
