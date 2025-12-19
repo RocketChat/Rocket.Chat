@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 
-const useViewRoomsAction = () => {
+export const useViewRoomsAction = () => {
 	const router = useRouter();
 	return useEffectEvent((key: string) => {
 		return router.navigate(
@@ -21,5 +21,3 @@ const useViewRoomsAction = () => {
 		);
 	});
 };
-
-export default useViewRoomsAction;

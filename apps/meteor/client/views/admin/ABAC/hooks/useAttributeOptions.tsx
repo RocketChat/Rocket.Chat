@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useIsABACAvailable } from './useIsABACAvailable';
-import useViewRoomsAction from './useViewRoomsAction';
+import { useViewRoomsAction } from './useViewRoomsAction';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 export const useAttributeOptions = (attribute: { _id: string; key: string }): GenericMenuItemProps[] => {

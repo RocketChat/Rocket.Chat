@@ -17,7 +17,7 @@ import { useCallback, useId, useMemo, Fragment, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import useViewRoomsAction from '../hooks/useViewRoomsAction';
+import { useViewRoomsAction } from '../hooks/useViewRoomsAction';
 
 export type AttributesFormFormData = {
 	name: string;
