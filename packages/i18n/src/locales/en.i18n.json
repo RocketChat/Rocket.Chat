@@ -7211,6 +7211,14 @@
   "Invited__date__": "Invited {date}",
   "Apps_Permissions_room_system_view-all": "View all rooms in the workspace",
   "Invitation_date": "Invitation date",
-  "Revoke_invitation": "Revoke invitation"
+  "Revoke_invitation": "Revoke invitation",
+  "All_directions": "All directions",
+  "Call_history": "Call history",
+  "Ended": "Ended",
+  "Inbound": "Inbound",
+  "Not_answered": "Not answered",
+  "Outbound": "Outbound",
+  "Search_calls": "Search calls",
+  "Time_slash_Date": "Time / Date"
 
 }

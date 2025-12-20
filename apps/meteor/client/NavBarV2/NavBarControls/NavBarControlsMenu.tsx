@@ -10,16 +10,17 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
 	callItem?: GenericMenuItemProps;
+	callHistoryItem?: GenericMenuItemProps;
 };
 
-const NavBarControlsMenu = ({ omnichannelItems, isPressed, callItem, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsMenu = ({ omnichannelItems, isPressed, callItem, callHistoryItem, ...props }: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const sections = [
 		{
 			title: t('Voice_Call'),
-			items: callItem ? [callItem] : [],
+			items: callItem || callHistoryItem ? ([callItem, callHistoryItem].filter(Boolean) as GenericMenuItemProps[]) : [],
 		},
 		{
 			title: t('Omnichannel'),

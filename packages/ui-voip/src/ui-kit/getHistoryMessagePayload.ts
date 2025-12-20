@@ -36,7 +36,7 @@ const buildDurationString = (...values: number[]): string => {
 	return values.map((value) => value.toString().padStart(2, '0')).join(':');
 };
 
-export const getFormattedCallDuration = (callDuration: number | undefined): TextObject | undefined => {
+export const getCallDurationText = (callDuration: number | undefined): string | undefined => {
 	if (!callDuration || typeof callDuration !== 'number') {
 		return undefined;
 	}
@@ -45,12 +45,20 @@ export const getFormattedCallDuration = (callDuration: number | undefined): Text
 	const duration = { minutes: 0, seconds: 0, ...intervalToDuration({ start: 0, end: milliseconds }) };
 
 	if (duration.hours && duration.hours > 0) {
-		return { type: 'mrkdwn', text: `*${buildDurationString(duration.hours, duration.minutes, duration.seconds)}*` } as const;
+		return buildDurationString(duration.hours, duration.minutes, duration.seconds);
+	}
+	return buildDurationString(duration.minutes, duration.seconds);
+};
+
+export const getFormattedCallDuration = (callDuration: number | undefined): TextObject | undefined => {
+	const callDurationText = getCallDurationText(callDuration);
+	if (!callDurationText) {
+		return undefined;
 	}
 
 	return {
 		type: 'mrkdwn',
-		text: `*${buildDurationString(duration.minutes, duration.seconds)}*`,
+		text: `*${callDurationText}*`,
 	} as const;
 };
 

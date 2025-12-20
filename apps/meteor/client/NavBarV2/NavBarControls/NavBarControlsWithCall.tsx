@@ -9,6 +9,7 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
 	callItem?: GenericMenuItemProps;
+	callHistoryItem?: GenericMenuItemProps;
 };
 
 const NavBarControlsWithCall = ({ omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
