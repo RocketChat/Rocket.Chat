@@ -1,11 +1,11 @@
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 
-import MediaCallHistoryContextualbar from '../../../mediaCallHistory/MediaCallHistoryContextualbar';
+import MediaCallHistoryContextualbarRoom from '../../../mediaCallHistory/MediaCallHistoryContextualbarRoom';
 
 const mediaCallHistoryRoute: RoomToolboxActionConfig = {
 	id: 'media-call-history',
 	title: 'Call_Information',
-	tabComponent: MediaCallHistoryContextualbar,
+	tabComponent: MediaCallHistoryContextualbarRoom,
 	icon: 'info-circled',
 	groups: ['direct'],
 };

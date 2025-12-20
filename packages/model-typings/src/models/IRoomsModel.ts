@@ -29,7 +29,17 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
+	findAllByTypesAndDiscussionAndTeam(
+		filters?: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		},
+		findOptions?: FindOptions<IRoom>,
+	): FindCursor<IRoom>;
+
 	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
@@ -224,6 +234,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findPrivateRoomsByIdsWithAbacAttributes(ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findAllPrivateRoomsWithAbacAttributes(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findByNameAndTypeNotDefault(
