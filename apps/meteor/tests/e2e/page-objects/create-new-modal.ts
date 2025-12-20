@@ -39,6 +39,7 @@ export class CreateNewModal extends Modal {
 		await this.root.getByRole('textbox', { name: 'Add people' }).click();
 		await this.root.getByRole('textbox', { name: 'Add people' }).fill(memberName, { force: true });
 		await this.listbox.getByRole('option', { name: memberName }).click();
+		await this.root.getByRole('textbox', { name: 'Add people' }).click();
 	}
 }
 
