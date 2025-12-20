@@ -79,8 +79,8 @@ const validateAttachmentsFields = (attachmentField: any) => {
 		}),
 	);
 
-	if (typeof attachmentField.value !== 'undefined') {
-		attachmentField.value = String(attachmentField.value);
+	if (!attachmentField.value || !attachmentField.title) {
+		throw new Error('Invalid attachment field, title and value is required');
 	}
 };
 
