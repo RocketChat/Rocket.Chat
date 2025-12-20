@@ -21,6 +21,7 @@ const appRoot = mockAppRoot()
 		Save: 'Save',
 		Required_field: '{{field}} is required',
 	})
+	.withEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', async () => ({ inUse: false }))
 	.build();
 
 const FormProviderWrapper = ({ children, defaultValues }: { children: ReactNode; defaultValues?: Partial<AttributesFormFormData> }) => {
@@ -254,5 +255,34 @@ describe('AttributesForm', () => {
 
 		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
 		expect(trashButtons).toHaveLength(1);
+	});
+
+	it('should show disclaimer when trying to delete a locked attribute value that is in use', async () => {
+		const defaultValues = {
+			name: 'Test Attribute',
+			lockedAttributes: [{ value: 'Value 1' }, { value: 'Value 2' }],
+		};
+		render(
+			<FormProviderWrapper defaultValues={defaultValues}>
+				<AttributesForm {...defaultProps} />
+			</FormProviderWrapper>,
+			{
+				wrapper: mockAppRoot()
+					.withEndpoint('GET', '/v1/abac/attributes/:key/is-in-use', async () => ({ inUse: true }))
+					.withTranslations('en', 'core', {
+						ABAC_Cannot_delete_attribute_value_in_use: 'Cannot delete attribute value assigned to rooms. <1>View rooms</1>',
+					})
+					.build(),
+			},
+		);
+
+		const trashButtons = screen.getAllByRole('button', { name: 'ABAC_Remove_attribute' });
+		await userEvent.click(trashButtons[0]);
+
+		await waitFor(() => {
+			expect(screen.getByText('Cannot delete attribute value assigned to rooms.')).toBeInTheDocument();
+		});
+
+		expect(screen.getByText('Cannot delete attribute value assigned to rooms.')).toBeInTheDocument();
 	});
 });

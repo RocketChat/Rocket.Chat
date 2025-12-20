@@ -7219,6 +7219,7 @@
   "Not_answered": "Not answered",
   "Outbound": "Outbound",
   "Search_calls": "Search calls",
-  "Time_slash_Date": "Time / Date"
+  "Time_slash_Date": "Time / Date",
+  "ABAC_Cannot_delete_attribute_value_in_use": "Cannot delete attribute value assigned to rooms. <1>View rooms</1>"
 
 }
