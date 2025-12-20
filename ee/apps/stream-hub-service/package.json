@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/stream-hub-service",
-	"version": "0.4.45",
+	"version": "0.4.46",
 	"private": true,
 	"description": "Rocket.Chat Stream Hub service",
 	"keywords": [
