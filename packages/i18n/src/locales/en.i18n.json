@@ -4743,6 +4743,10 @@
   "Search": "Search",
   "Search_Apps": "Search apps",
   "Search_Channels": "Search Channels",
+  "Search_Channels_Count": {
+    "one": "Found {{count}} result",
+    "other": "Found {{count}} results"
+  },
   "Search_Chat_History": "Search Chat History",
   "Search_Description": "Select workspace search provider and configure search related settings.",
   "Search_Devices_Users": "Search devices or users",
@@ -4759,6 +4763,10 @@
   "Search_Requested_Apps": "Search requested apps",
   "Search_Rooms": "Search Rooms",
   "Search_Users": "Search Users",
+  "Search_Users_Count": {
+    "one": "Found {{count}} result",
+    "other": "Found {{count}} results"
+  },
   "Search_by_category": "Search by category",
   "Search_by_file_name": "Search by file name",
   "Search_by_username": "Search by username",
@@ -5204,6 +5212,10 @@
   "Teams_Private_Team": "Private Team",
   "Teams_Public_Team": "Public Team",
   "Teams_Search_teams": "Search Teams",
+  "Teams_Search_Count": {
+    "one": "Found {{count}} result",
+    "other": "Found {{count}} results"
+  },
   "Teams_Select_a_team": "Select a team",
   "Teams_about_the_channels": "And about the Channels?",
   "Teams_channels": "Team channels",

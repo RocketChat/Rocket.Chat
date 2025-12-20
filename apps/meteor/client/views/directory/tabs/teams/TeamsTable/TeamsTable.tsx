@@ -13,7 +13,8 @@ import {
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { VisuallyHidden } from 'react-aria';
 
 import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
@@ -72,8 +73,18 @@ const TeamsTable = () => {
 		[channelsRoute, groupsRoute],
 	);
 
+	const [announcementText, setAnnouncementText] = useState('');
+	useEffect(() => {
+		if (data?.total !== undefined) {
+			setAnnouncementText(t('Teams_Search_Count', { count: data.total }));
+		}
+	}, [data?.total, t]);
+
 	return (
 		<>
+			<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+				{announcementText}
+			</VisuallyHidden>
 			<FilterByText placeholder={t('Teams_Search_teams')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>

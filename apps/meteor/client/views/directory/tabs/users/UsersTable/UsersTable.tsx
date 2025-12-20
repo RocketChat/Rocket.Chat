@@ -13,7 +13,8 @@ import {
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
+import { VisuallyHidden } from 'react-aria';
 
 import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
@@ -96,8 +97,18 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 		[directRoute],
 	);
 
+	const [announcementText, setAnnouncementText] = useState('');
+	useEffect(() => {
+		if (data?.total !== undefined) {
+			setAnnouncementText(t('Search_Users_Count', { count: data.total }));
+		}
+	}, [data?.total, t]);
+
 	return (
 		<>
+			<VisuallyHidden role='status' aria-live='polite' aria-atomic='true'>
+				{announcementText}
+			</VisuallyHidden>
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
