@@ -10322,7 +10322,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
-    moment-timezone: "npm:^0.5.48"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
