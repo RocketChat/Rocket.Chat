@@ -40,7 +40,6 @@ const RoomMembersItem = ({
 	subscription,
 	reload,
 	useRealName,
-	subscription,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
