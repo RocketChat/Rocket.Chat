@@ -4,11 +4,12 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
 import { createMonitor } from '../utils/omnichannel/monitors';
-import { createConversation } from '../utils/omnichannel/rooms';
+import { createConversation, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
 import { createOrUpdateUnit } from '../utils/omnichannel/units';
 import { expect, test } from '../utils/test';
 
@@ -27,6 +28,14 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	let sessions: { page: Page; poHomeOmnichannel: HomeOmnichannel }[];
 
 	let poOmnichannel: HomeOmnichannel;
+
+	test.beforeAll(async ({ api }) => {
+		const responses = await Promise.all([
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
+	});
 
 	// Create agents
 	test.beforeAll(async ({ api }) => {
@@ -59,19 +68,25 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA] = departments.map(({ data }) => data);
 
-		const conversationA = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		const conversationB = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		const conversationC = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		conversations = [conversationA, conversationB, conversationC];
+		conversations = await Promise.all([
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+		]);
+
+		await waitForInquiryToBeTaken(
+			api,
+			conversations.map((c) => c.data.room._id),
+		);
 	});
 
 	// Create monitors
@@ -115,13 +130,15 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...monitors.map((monitor) => monitor.delete()),
 			...agents.map((agent) => agent.delete()),
 			...units.map((unit) => unit.delete()),
 			...departments.map((department) => department.delete()),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 
@@ -266,6 +283,14 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 
 	let poOmnichannel: HomeOmnichannel;
 
+	test.beforeAll(async ({ api }) => {
+		const responses = await Promise.all([
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
+	});
+
 	// Create agents
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, 'rocketchat.internal.admin.test')]);
@@ -302,19 +327,25 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA] = departments.map(({ data }) => data);
 
-		const conversationA = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		const conversationB = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		const conversationC = await createConversation(api, {
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
-		conversations = [conversationA, conversationB, conversationC];
+		conversations = await Promise.all([
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+		]);
+
+		await waitForInquiryToBeTaken(
+			api,
+			conversations.map((c) => c.data.room._id),
+		);
 	});
 
 	// Create sessions
@@ -337,12 +368,14 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...managers.map((manager) => manager.delete()),
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 
