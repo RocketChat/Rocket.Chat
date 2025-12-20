@@ -10165,13 +10165,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/random@workspace:packages/random"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
-    "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
