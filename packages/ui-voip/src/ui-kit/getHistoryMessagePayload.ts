@@ -23,7 +23,7 @@ export const callStateToIcon = (callState: CallHistoryItemState): FrameableIconE
 		case 'ended':
 			return { type: 'icon', icon: 'phone-off', variant: 'secondary', framed: true };
 		case 'not-answered':
-			return { type: 'icon', icon: 'clock', variant: 'danger', framed: true };
+			return { type: 'icon', icon: 'phone-question-mark', variant: 'warning', framed: true };
 		case 'failed':
 		case 'error':
 			return { type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true };

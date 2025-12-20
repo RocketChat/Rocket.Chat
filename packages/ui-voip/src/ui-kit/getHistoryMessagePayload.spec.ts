@@ -42,7 +42,7 @@ describe('callStateToIcon', () => {
 
 	it('should return correct icon for "not-answered" state', () => {
 		const result = callStateToIcon('not-answered');
-		expect(result).toEqual({ type: 'icon', icon: 'clock', variant: 'danger', framed: true });
+		expect(result).toEqual({ type: 'icon', icon: 'phone-question-mark', variant: 'warning', framed: true });
 	});
 
 	it('should return correct icon for "failed" state', () => {
@@ -189,7 +189,7 @@ describe('getHistoryMessagePayload', () => {
 						{
 							background: 'default',
 							elements: [
-								{ type: 'icon', icon: 'clock', variant: 'danger', framed: true },
+								{ type: 'icon', icon: 'phone-question-mark', variant: 'warning', framed: true },
 								{ type: 'mrkdwn', i18n: { key: 'Call_not_answered_bold' }, text: 'Call not answered' },
 							],
 							action: actionObj,
