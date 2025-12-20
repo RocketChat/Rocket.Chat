@@ -6246,15 +6246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parse/node-apn@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "@parse/node-apn@npm:6.3.0"
+"@parse/node-apn@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@parse/node-apn@npm:7.0.1"
   dependencies:
-    debug: "npm:4.3.3"
+    debug: "npm:4.4.3"
     jsonwebtoken: "npm:9.0.2"
-    node-forge: "npm:1.3.1"
+    node-forge: "npm:1.3.2"
     verror: "npm:1.10.1"
-  checksum: 10/194cc2fbc86652a80dd13ff5a1c825aa52215a4e71564ff8992c7798179d8cbab58f507de088e60de0b62642fc7f342eacd085b0f7ad61595ee7824eb632f49b
+  checksum: 10/db3cd05076b4282fdd20708c9585d2b75559690efecce54dc71296683107cd4deeef340923ae94a7c5ff182193b448a0bb4b5da4cc8f53e3cdf29c4225930465
   languageName: node
   linkType: hard
 
@@ -8437,13 +8437,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/base64@workspace:packages/base64"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
-    "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
@@ -9342,7 +9338,7 @@ __metadata:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
     "@opentelemetry/sdk-node": "npm:^0.54.2"
-    "@parse/node-apn": "npm:^6.3.0"
+    "@parse/node-apn": "npm:^7.0.1"
     "@playwright/test": "npm:^1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^3.4.5"
@@ -19538,6 +19534,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debug@npm:4.4.3":
+  version: 4.4.3
+  resolution: "debug@npm:4.4.3"
+  dependencies:
+    ms: "npm:^2.1.3"
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 10/9ada3434ea2993800bd9a1e320bd4aa7af69659fb51cca685d390949434bc0a8873c21ed7c9b852af6f2455a55c6d050aa3937d52b3c69f796dab666f762acad
+  languageName: node
+  linkType: hard
+
 "debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
@@ -29111,7 +29119,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-forge@npm:1.3.1, node-forge@npm:^1":
+"node-forge@npm:1.3.2":
+  version: 1.3.2
+  resolution: "node-forge@npm:1.3.2"
+  checksum: 10/dcc54aaffe0cf52367214a20c0032aa9b209d9095dd14526504f1972d1900a07e96046b3684cb0c8d0cc3d48744dd18e02b7b447ab28fac615ffb850beeabf18
+  languageName: node
+  linkType: hard
+
+"node-forge@npm:^1":
   version: 1.3.1
   resolution: "node-forge@npm:1.3.1"
   checksum: 10/05bab6868633bf9ad4c3b1dd50ec501c22ffd69f556cdf169a00998ca1d03e8107a6032ba013852f202035372021b845603aeccd7dfcb58cdb7430013b3daa8d

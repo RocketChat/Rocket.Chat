@@ -416,8 +416,26 @@ API.v1.addRoute(
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+			// find subscriptions of those users
+			const subs = await Subscriptions.findByRoomIdAndUserIds(
+				room._id,
+				members.map((member) => member._id),
+				{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
+			).toArray();
+
+			const membersWithSubscriptionInfo = members.map((member) => {
+				const sub = subs.find((sub) => sub.u._id === member._id);
+
+				const { u: _u, ...subscription } = sub || {};
+
+				return {
+					...member,
+					subscription,
+				};
+			});
+
 			return API.v1.success({
-				members,
+				members: membersWithSubscriptionInfo,
 				count: members.length,
 				offset,
 				total,
