@@ -32,7 +32,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 
 		// Agent will be offline for these tests
-		await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
+		await poHomeOmnichannel.navbar.switchOmnichannelStatus('offline');
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
@@ -100,7 +100,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('should start the queue by making the agent available again', async () => {
-				await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+				await poHomeOmnichannel.navbar.switchOmnichannelStatus('online');
 			});
 
 			await test.step('user1 should get assigned to the first chat', async () => {

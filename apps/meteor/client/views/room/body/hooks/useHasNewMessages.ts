@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { callbacks } from '../../../../../lib/callbacks';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useChat } from '../../contexts/ChatContext';
 
@@ -49,7 +49,7 @@ export const useHasNewMessages = (
 	}, [sendToBottomIfNecessary]);
 
 	useEffect(() => {
-		callbacks.add(
+		clientCallbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
 				if (rid !== msg.rid || isEditedMessage(msg) || msg.tmid) {
@@ -66,12 +66,12 @@ export const useHasNewMessages = (
 					setHasNewMessages(true);
 				}
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			rid,
 		);
 
 		return () => {
-			callbacks.remove('streamNewMessage', rid);
+			clientCallbacks.remove('streamNewMessage', rid);
 		};
 	}, [isAtBottom, rid, sendToBottom, uid]);
 

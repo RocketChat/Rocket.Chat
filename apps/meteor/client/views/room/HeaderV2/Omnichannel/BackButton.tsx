@@ -1,9 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { HeaderToolbarAction } from '../../../../components/Header';
 
 type BackButtonProps = { routeName?: string };
 
@@ -18,13 +17,21 @@ const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
 					name: 'omnichannel-directory',
 					params: {
 						...router.getRouteParameters(),
-						bar: 'info',
+						tab: 'chats',
+						context: 'info',
 					},
 				});
 				break;
 
 			case 'omnichannel-current-chats':
-				router.navigate({ name: 'omnichannel-current-chats' });
+				router.navigate({
+					name: 'omnichannel-current-chats',
+					params: {
+						...router.getRouteParameters(),
+						tab: 'chats',
+						context: 'info',
+					},
+				});
 				break;
 		}
 	});

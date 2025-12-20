@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
+import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/create-new-modal';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -34,7 +35,7 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 
 		await expect(poHomeTeam.textPrivate).toBeDisabled();
 		await expect(poHomeTeam.textPrivate).toBeChecked();
@@ -49,13 +50,13 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openNewByLabel('Team');
+		await poHomeTeam.navbar.openCreate('Team');
 
 		await expect(poHomeTeam.textPrivate).toBeDisabled();
 		await expect(poHomeTeam.textPrivate).not.toBeChecked();
 	});
 
-	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api, page }) => {
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
 		expect(
 			(
 				await api.post('/permissions.update', {
@@ -67,14 +68,17 @@ test.describe('teams-management-permissions', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.btnCreateNew.click();
-		await expect(page.locator(`role=menuitem[name="Team"]`)).not.toBeVisible();
+		await poHomeTeam.navbar.btnCreateNew.click();
+		await expect(poHomeTeam.navbar.createNewMenu.getByRole('menuitem', { name: 'Team' })).not.toBeVisible();
 	});
 });
 
 test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
+	let newTeamModal: CreateNewTeamModal;
+	let newChannelModal: CreateNewChannelModal;
+
 	const targetTeam = faker.string.uuid();
 	const targetTeamNonPrivate = faker.string.uuid();
 	const targetTeamReadOnly = faker.string.uuid();
@@ -101,50 +105,46 @@ test.describe.serial('teams-management', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
+		newChannelModal = new CreateNewChannelModal(page);
 
 		await page.goto('/home');
 	});
 
 	test('should create targetTeam private', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeam);
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeam, {
+			private: true,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
 	});
 
 	test('should create targetTeamNonPrivate non private', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeamNonPrivate);
-		await poHomeTeam.textPrivate.click();
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeamNonPrivate, {
+			private: false,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/channel/${targetTeamNonPrivate}`);
 	});
 
 	test('should create targetTeamReadOnly readonly', async ({ page }) => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeamReadOnly);
-		await poHomeTeam.sidenav.advancedSettingsAccordion.click();
-		await poHomeTeam.textReadOnly.click();
-		await poHomeTeam.addMember('user1');
-		await poHomeTeam.btnTeamCreate.click();
+		await poHomeTeam.navbar.createNew('Team', targetTeamReadOnly, {
+			readOnly: true,
+			members: ['user1'],
+		});
 
 		await expect(page).toHaveURL(`/group/${targetTeamReadOnly}`);
 	});
 
-	test('should throw validation error if team name already exists', async () => {
-		await poHomeTeam.sidenav.openNewByLabel('Team');
-		await poHomeTeam.inputTeamName.fill(targetTeam);
-		await poHomeTeam.btnTeamCreate.click();
-
-		await expect(poHomeTeam.inputTeamName).toHaveAttribute('aria-invalid', 'true');
+	test('should throw validation error if team name already exists', async ({ page }) => {
+		newTeamModal = new CreateNewTeamModal(page);
+		await poHomeTeam.navbar.createNew('Team', targetTeam);
+		await expect(newTeamModal.inputName).toHaveAttribute('aria-invalid', 'true');
 	});
 
 	test('should send hello in the targetTeam and reply in a thread', async ({ page }) => {
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.content.sendMessage('hello');
 		await page.locator('[data-qa-type="message"]').last().hover();
 
@@ -155,7 +155,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should set targetTeam as readonly', async () => {
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnEdit.click();
 		await poHomeTeam.tabs.room.advancedSettingsAccordion.click();
@@ -170,7 +170,7 @@ test.describe.serial('teams-management', () => {
 			200,
 		);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnAddExisting).not.toBeVisible();
 	});
@@ -189,7 +189,7 @@ test.describe.serial('teams-management', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).not.toBeVisible();
 	});
@@ -208,14 +208,15 @@ test.describe.serial('teams-management', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
-		await poHomeTeam.sidenav.inputChannelName.type(targetChannelNameInTeam);
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).not.toBeChecked();
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeDisabled();
-		await poHomeTeam.sidenav.btnCreate.click();
+
+		await newChannelModal.inputName.fill(targetChannelNameInTeam);
+		await expect(newChannelModal.checkboxPrivate).not.toBeChecked();
+		await expect(newChannelModal.checkboxPrivate).toBeDisabled();
+		await newChannelModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
 	});
@@ -234,14 +235,16 @@ test.describe.serial('teams-management', () => {
 			).status(),
 		).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
 		await poHomeTeam.tabs.channels.btnCreateNew.click();
-		await poHomeTeam.sidenav.inputChannelName.type(targetGroupNameInTeam);
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeChecked();
-		await expect(poHomeTeam.sidenav.checkboxPrivateChannel).toBeDisabled();
-		await poHomeTeam.sidenav.btnCreate.click();
+
+		await newChannelModal.inputName.fill(targetGroupNameInTeam);
+		const { checkboxPrivate } = newChannelModal;
+		await expect(checkboxPrivate).toBeChecked();
+		await expect(checkboxPrivate).toBeDisabled();
+		await newChannelModal.btnCreate.click();
 
 		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
 	});
@@ -249,7 +252,7 @@ test.describe.serial('teams-management', () => {
 	test('should move targetChannel to targetTeam', async ({ page, api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'move-room-to-team', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.btnAddExisting.click();
 		await poHomeTeam.tabs.channels.inputChannels.fill(targetChannel);
@@ -260,10 +263,9 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should access team channel through targetTeam header', async ({ page }) => {
-		await poHomeTeam.sidenav.openChat(targetChannel);
+		await poHomeTeam.navbar.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
+		await page.keyboard.press('Shift+Tab');
 		await page.keyboard.press('Space');
 
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
@@ -277,7 +279,7 @@ test.describe.serial('teams-management', () => {
 			200,
 		);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
@@ -286,7 +288,7 @@ test.describe.serial('teams-management', () => {
 	test('should allow removing a targetGroup from targetTeam if user has the remove-team-channel permission', async ({ page, api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
@@ -312,7 +314,7 @@ test.describe.serial('teams-management', () => {
 		).toBe(200);
 
 		// re-add channel to team
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.btnAddExisting.click();
 		await poHomeTeam.tabs.channels.inputChannels.fill(targetGroupNameInTeam);
@@ -331,14 +333,14 @@ test.describe.serial('teams-management', () => {
 	}) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-group', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
 		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
 		await poHomeTeam.tabs.channels.confirmDeleteRoom();
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetGroupNameInTeam);
 	});
@@ -351,7 +353,7 @@ test.describe.serial('teams-management', () => {
 			200,
 		);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
@@ -360,7 +362,7 @@ test.describe.serial('teams-management', () => {
 	test('should allow removing a targetChannel from targetTeam if user has the remove-team-channel permission', async ({ page, api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
@@ -386,7 +388,7 @@ test.describe.serial('teams-management', () => {
 		).toBe(200);
 
 		// re-add channel to team
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.btnAddExisting.click();
 		await poHomeTeam.tabs.channels.inputChannels.fill(targetChannelNameInTeam);
@@ -405,14 +407,14 @@ test.describe.serial('teams-management', () => {
 	}) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-channel', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
 		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
 		await poHomeTeam.tabs.channels.confirmDeleteRoom();
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetChannelNameInTeam);
 	});
@@ -420,7 +422,7 @@ test.describe.serial('teams-management', () => {
 	test('should remove targetChannel from targetTeam', async ({ page, api }) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamChannels();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannel);
 		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
@@ -430,7 +432,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should remove user1 from targetTeamNonPrivate', async () => {
-		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
+		await poHomeTeam.navbar.openChat(targetTeamNonPrivate);
 		await poHomeTeam.tabs.kebab.click({ force: true });
 		await poHomeTeam.tabs.btnTeamMembers.click();
 		await poHomeTeam.tabs.members.showAllUsers();
@@ -443,15 +445,15 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should delete targetTeamNonPrivate', async () => {
-		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
+		await poHomeTeam.navbar.openChat(targetTeamNonPrivate);
 		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnMore.click();
 		await poHomeTeam.tabs.room.getMoreOption('Delete').click();
 		await expect(poHomeTeam.tabs.room.confirmDeleteTeamModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmDeleteTeam();
-		await poHomeTeam.sidenav.searchRoom(targetTeamNonPrivate);
-		await expect(poHomeTeam.sidenav.getSearchItemByName(targetTeamNonPrivate)).not.toBeVisible();
+		await poHomeTeam.navbar.typeSearch(targetTeamNonPrivate);
+		await expect(poHomeTeam.navbar.getSearchRoomByName(targetTeamNonPrivate)).not.toBeVisible();
 	});
 
 	test('should user1 leave from targetTeam', async ({ browser }) => {
@@ -467,7 +469,7 @@ test.describe.serial('teams-management', () => {
 		await user1Channel.tabs.room.confirmLeave();
 		await user1Page.close();
 
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.tabs.kebab.click({ force: true });
 		await poHomeTeam.tabs.btnTeamMembers.click();
 		await poHomeTeam.tabs.members.showAllUsers();
@@ -475,7 +477,7 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should convert team into a channel', async () => {
-		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.roomToolbar.openTeamInfo();
 		await poHomeTeam.tabs.room.btnMore.click();
 		await poHomeTeam.tabs.room.getMoreOption('Convert to Channel').click();

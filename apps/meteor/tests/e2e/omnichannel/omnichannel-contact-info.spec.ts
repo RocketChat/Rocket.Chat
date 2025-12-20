@@ -43,7 +43,7 @@ test.describe('Omnichannel contact info', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to see contact information and edit', async () => {
@@ -54,7 +54,7 @@ test.describe('Omnichannel contact info', () => {
 		await test.step('Expect to update room name and subscription when updating contact name', async () => {
 			await agent.poContacts.newContact.inputName.fill('Edited Contact Name');
 			await agent.poContacts.newContact.btnSave.click();
-			await expect(agent.poHomeChannel.sidenav.sidebarChannelsList.getByText('Edited Contact Name')).toBeVisible();
+			await expect(agent.poHomeChannel.sidebar.channelsList.getByText('Edited Contact Name')).toBeVisible();
 			await expect(agent.poHomeChannel.content.channelHeader.getByText('Edited Contact Name')).toBeVisible();
 		});
 	});

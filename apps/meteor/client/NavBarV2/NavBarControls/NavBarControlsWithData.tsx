@@ -1,10 +1,9 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import NavBarControlsMenu from './NavBarControlsMenu';
-import NavbarControlsWithCall from './NavBarControlsWithCall';
-import { useIsCallEnabled } from '../../contexts/CallContext';
 import { useOmnichannelContactAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelContactAction';
 import { useOmnichannelLivechatToggle } from '../NavBarOmnichannelGroup/hooks/useOmnichannelLivechatToggle';
 import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOmnichannelQueueAction';
@@ -12,8 +11,7 @@ import { useOmnichannelQueueAction } from '../NavBarOmnichannelGroup/hooks/useOm
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
-	const isCallEnabled = useIsCallEnabled();
-
+	const { t } = useTranslation();
 	const callAction = useMediaCallAction();
 
 	const {
@@ -46,6 +44,14 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 			}
 		: undefined;
 
+	const callHistoryItem = callAction
+		? {
+				id: 'rcx-media-call-history',
+				icon: 'clock' as const,
+				content: t('Call_history'),
+			}
+		: undefined;
+
 	const omnichannelItems = [
 		queueEnabled && {
 			id: 'omnichannelQueue',
@@ -69,11 +75,15 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 
 	const isPressed = isQueuePressed || isContactPressed;
 
-	if (isCallEnabled) {
-		return <NavbarControlsWithCall callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
-	}
-
-	return <NavBarControlsMenu callItem={callItem} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
+	return (
+		<NavBarControlsMenu
+			callHistoryItem={callHistoryItem}
+			callItem={callItem}
+			omnichannelItems={omnichannelItems}
+			isPressed={isPressed}
+			{...props}
+		/>
+	);
 };
 
 export default NavBarControlsWithData;

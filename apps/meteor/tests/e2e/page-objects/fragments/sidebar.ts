@@ -54,8 +54,16 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
-	getSearchRoomByName(name: string) {
-		return this.channelsList.getByRole('button', { name, exact: true });
+	getSidebarItemByName(name: string) {
+		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getFilterItemByName(name: string): Locator {
+		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarListItem(name: string): Locator {
+		return this.root.getByRole('listitem').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	get firstCollapser(): Locator {
@@ -78,10 +86,6 @@ export class RoomSidebar extends Sidebar {
 		return this.channelsList.getByRole('listitem').first();
 	}
 
-	async escSearch(): Promise<void> {
-		await this.page.keyboard.press('Escape');
-	}
-
 	async markItemAsUnread(item: Locator): Promise<void> {
 		await item.hover();
 		await item.focus();
@@ -96,11 +100,27 @@ export class RoomSidebar extends Sidebar {
 	getItemUnreadBadge(item: Locator): Locator {
 		return item.getByRole('status', { name: 'unread' });
 	}
+
+	async selectPriority(name: string, priority: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.hover();
+		await sidebarItem.focus();
+		await sidebarItem.getByRole('button', { name: 'Options', exact: true }).click();
+		await this.page.getByRole('menuitem', { name: priority }).click();
+	}
+
+	getSidebarListItemByName(name: string): Locator {
+		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+	}
 }
 
 export class AdminSidebar extends Sidebar {
 	constructor(page: Page) {
 		super(page.getByRole('navigation', { name: 'Administration' }));
+	}
+
+	get linkEmoji() {
+		return this.root.getByRole('link', { name: 'Emoji' });
 	}
 
 	async close(): Promise<void> {

@@ -1,4 +1,4 @@
-import { isInviteSubscription, isVoipRoom } from '@rocket.chat/core-typings';
+import { isInviteSubscription } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -6,7 +6,6 @@ import { lazy, memo } from 'react';
 
 const RoomInviteHeader = lazy(() => import('./RoomInviteHeader'));
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
-const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
@@ -31,10 +30,6 @@ const Header = ({ room, subscription }: HeaderProps): ReactElement | null => {
 
 	if (room.t === 'l') {
 		return <OmnichannelRoomHeader />;
-	}
-
-	if (isVoipRoom(room)) {
-		return <VoipRoomHeader room={room} />;
 	}
 
 	if (shouldDisplayE2EESetup) {

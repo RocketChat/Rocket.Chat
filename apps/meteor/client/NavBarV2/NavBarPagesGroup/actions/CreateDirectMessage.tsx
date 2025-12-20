@@ -20,7 +20,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateDirectMessageProps = { onClose: () => void };
@@ -28,6 +28,7 @@ type CreateDirectMessageProps = { onClose: () => void };
 const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const createDMFormId = useId();
 	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -57,9 +58,13 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	};
 
 	return (
-		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
+		<Modal
+			aria-labelledby={`${createDMFormId}-title`}
+			data-qa='create-direct-modal'
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+		>
 			<ModalHeader>
-				<ModalTitle>{t('Create_direct_message')}</ModalTitle>
+				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent mbe={2}>
@@ -78,11 +83,12 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 								}}
 								control={control}
 								render={({ field: { name, onChange, value, onBlur } }) => (
-									<UserAutoCompleteMultipleFederated
+									<UserAutoCompleteMultiple
 										name={name}
 										onChange={onChange}
 										value={value}
 										onBlur={onBlur}
+										federated
 										id={membersFieldId}
 										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
 										aria-required='true'
