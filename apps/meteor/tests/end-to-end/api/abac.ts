@@ -416,6 +416,167 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
+		describe('Audit messages by user and ABAC-managed rooms', () => {
+			let auditUser: IUser;
+			let auditUserCreds: Credentials;
+			let auditRoom: IRoom;
+			const auditAttrKey = `audit_attr_${Date.now()}`;
+			let startDate: Date;
+			let endDate: Date;
+
+			before(async () => {
+				startDate = new Date();
+				endDate = new Date(startDate.getTime() + 1000 * 60);
+
+				auditUser = await createUser();
+				auditUserCreds = await login(auditUser.username, password);
+
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: auditAttrKey, values: ['v1'] })
+					.expect(200);
+
+				await addAbacAttributesToUserDirectly(auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
+
+				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
+				auditRoom = roomRes.body.group as IRoom;
+
+				await request
+					.post(`${v1}/abac/rooms/${auditRoom._id}/attributes/${auditAttrKey}`)
+					.set(credentials)
+					.send({ values: ['v1'] })
+					.expect(200);
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'p', roomId: auditRoom._id });
+				await deleteUser(auditUser);
+			});
+
+			it("should return no messages when auditing a user that's part of an ABAC-managed room", async () => {
+				await request
+					.post(`${v1}/chat.sendMessage`)
+					.set(auditUserCreds)
+					.send({ message: { rid: auditRoom._id, msg: 'audit message in abac room' } })
+					.expect(200);
+
+				await request
+					.post(methodCall('auditGetMessages'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'auditGetMessages',
+							params: [
+								{
+									type: 'u',
+									msg: 'audit message in abac room',
+									startDate: { $date: startDate },
+									endDate: { $date: endDate },
+									rid: '',
+									users: [auditUser.username],
+									visitor: '',
+									agent: '',
+								},
+							],
+							id: 'abac-audit-1',
+							msg: 'method',
+						}),
+					})
+					.expect(200)
+					.expect((res) => {
+						const parsed = JSON.parse(res.body.message);
+						expect(parsed).to.have.property('result');
+						expect(parsed.result).to.be.an('array').that.is.empty;
+					});
+			});
+
+			it('should return no messages when auditing a user that WAS part of an ABAC-managed room', async () => {
+				await request
+					.post(`${v1}/chat.sendMessage`)
+					.set(auditUserCreds)
+					.send({ message: { rid: auditRoom._id, msg: 'audit message before removal' } })
+					.expect(200);
+
+				await request.post(`${v1}/groups.kick`).set(credentials).send({ roomId: auditRoom._id, username: auditUser.username }).expect(200);
+
+				await request
+					.post(methodCall('auditGetMessages'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'auditGetMessages',
+							params: [
+								{
+									type: 'u',
+									msg: 'audit message before removal',
+									startDate: { $date: startDate },
+									endDate: { $date: endDate },
+									rid: '',
+									users: [auditUser.username],
+									visitor: '',
+									agent: '',
+								},
+							],
+							id: 'abac-audit-2',
+							msg: 'method',
+						}),
+					})
+					.expect(200)
+					.expect((res) => {
+						const parsed = JSON.parse(res.body.message);
+						expect(parsed).to.have.property('result');
+						expect(parsed.result).to.be.an('array').that.is.empty;
+					});
+			});
+
+			it("should return messages when auditing a user that is part of a room that's no longer ABAC-managed", async () => {
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: auditRoom._id, usernames: [auditUser.username] })
+					.expect(200);
+
+				await request.delete(`${v1}/abac/rooms/${auditRoom._id}/attributes/${auditAttrKey}`).set(credentials).expect(200);
+
+				await request
+					.post(`${v1}/chat.sendMessage`)
+					.set(auditUserCreds)
+					.send({ message: { rid: auditRoom._id, msg: 'audit message after room no longer abac' } })
+					.expect(200);
+
+				await request
+					.post(methodCall('auditGetMessages'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'auditGetMessages',
+							params: [
+								{
+									type: 'u',
+									msg: 'audit message after room no longer abac',
+									startDate: { $date: startDate },
+									endDate: { $date: endDate },
+									rid: '',
+									users: [auditUser.username],
+									visitor: '',
+									agent: '',
+								},
+							],
+							id: 'abac-audit-3',
+							msg: 'method',
+						}),
+					})
+					.expect(200)
+					.expect((res) => {
+						const parsed = JSON.parse(res.body.message);
+						expect(parsed).to.have.property('result');
+						expect(parsed.result).to.be.an('array').with.lengthOf.greaterThan(0);
+					});
+			});
+		});
+
 		it('PUT room attribute should replace values and keep inUse=true', async () => {
 			await request
 				.put(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)

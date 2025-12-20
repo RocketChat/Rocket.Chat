@@ -1311,6 +1311,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
+	findAllPrivateRoomsWithAbacAttributes(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			t: 'p',
+			abacAttributes: { $exists: true, $ne: [] },
+		};
+
+		return this.find(query, options);
+	}
+
 	async findBySubscriptionUserId(userId: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<FindCursor<IRoom>> {
 		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
