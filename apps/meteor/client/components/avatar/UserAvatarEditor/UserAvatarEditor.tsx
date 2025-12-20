@@ -32,11 +32,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
-			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
 				if (await isValidImageFormat(dataURL)) {
+					setAvatarObj(avatarObj);
 					setNewAvatarSource(dataURL);
 				} else {
 					dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
