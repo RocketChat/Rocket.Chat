@@ -1,26 +1,27 @@
-import { SidebarSection } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
-import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
-import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type RoomListRowProps = {
-	extended: boolean;
-	t: TFunction;
-	SideBarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
-	openedRoom: string;
-	sidebarViewMode: 'extended' | 'condensed' | 'medium';
-	isAnonymous: boolean;
+	data: {
+		extended: boolean;
+		t: TFunction;
+		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
+		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+		openedRoom: string;
+		sidebarViewMode: 'extended' | 'condensed' | 'medium';
+		isAnonymous: boolean;
+	};
+	item: SubscriptionWithRoom;
 };
 
-const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: SubscriptionWithRoom }): ReactElement => {
-	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+const RoomListRow = ({ data, item }: RoomListRowProps) => {
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -36,22 +37,14 @@ const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: Subscriptio
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	if (typeof item === 'string') {
-		return (
-			<SidebarSection>
-				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
-			</SidebarSection>
-		);
-	}
-
 	return (
-		<SideBarItemTemplateWithData
+		<SidebarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
 			selected={item.rid === openedRoom}
 			t={t}
 			room={item}
 			extended={extended}
-			SideBarItemTemplate={SideBarItemTemplate}
+			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 		/>

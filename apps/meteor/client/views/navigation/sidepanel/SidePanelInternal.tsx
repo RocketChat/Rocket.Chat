@@ -8,8 +8,8 @@ import { Virtuoso } from 'react-virtuoso';
 import SidePanelNoResults from './SidePanelNoResults';
 import SidepanelListWrapper from './SidepanelListWrapper';
 import { useOpenedRoom } from '../../../lib/RoomManager';
-import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
+import { usePreventDefault } from '../sidebar/hooks/usePreventDefault';
 
 type SidePanelProps<R = any> = {
 	title: string;

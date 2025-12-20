@@ -69,7 +69,9 @@ describe('SidebarItemBadges', () => {
 	});
 
 	it('should not render InvitationBadge when subscription does not have status INVITED', () => {
-		render(<SidebarItemBadges room={createFakeSubscription()} />, { wrapper: appRoot });
+		render(<SidebarItemBadges room={createFakeSubscription()} />, {
+			wrapper: appRoot,
+		});
 
 		expect(screen.queryByRole('status', { name: /Invited/ })).not.toBeInTheDocument();
 	});

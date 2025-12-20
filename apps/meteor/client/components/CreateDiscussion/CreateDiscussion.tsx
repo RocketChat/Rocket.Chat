@@ -27,10 +27,10 @@ import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 import DefaultParentRoomField from './DefaultParentRoomField';
-import { useEncryptedRoomDescription } from '../../NavBarV2/NavBarPagesGroup/actions/useEncryptedRoomDescription';
 
 type CreateDiscussionFormValues = {
 	name: string;

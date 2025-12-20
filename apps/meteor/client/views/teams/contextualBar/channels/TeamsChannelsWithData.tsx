@@ -10,7 +10,7 @@ import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
+import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
 import { useRoom } from '../../../room/contexts/RoomContext';
 
 const TeamsChannelsWithData = () => {
@@ -45,7 +45,7 @@ const TeamsChannelsWithData = () => {
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelModal teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {

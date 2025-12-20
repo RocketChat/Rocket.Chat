@@ -6,7 +6,7 @@ import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
-import HeaderSkeleton from '../HeaderV2/HeaderSkeleton';
+import HeaderSkeleton from '../Header/HeaderSkeleton';
 
 type RoomLayoutProps = {
 	header?: ReactNode;

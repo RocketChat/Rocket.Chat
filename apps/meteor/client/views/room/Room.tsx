@@ -8,10 +8,10 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
-import Header from './HeaderV2';
+import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomInvite from './RoomInvite';
-import RoomBody from './body/RoomBodyV2';
+import RoomBody from './body/RoomBody';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
