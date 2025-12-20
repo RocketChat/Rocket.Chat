@@ -32,15 +32,22 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
+			if (!file.type.startsWith('image/')) {
+				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				return;
+			}
+
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
 				if (await isValidImageFormat(dataURL)) {
 					setNewAvatarSource(dataURL);
+				} else {
+					dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 				}
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				dispatchToastMessage({ type: 'error', message: t('FileUpload_Error') });
 			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
