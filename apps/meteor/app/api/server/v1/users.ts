@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -69,6 +70,7 @@ import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnA
 import { settings } from '../../../settings/server';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -95,17 +97,93 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const usersGetAvatarSuggestionEndpoints = API.v1.get(
 	'users.getAvatarSuggestion',
 	{
 		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
+		response: {
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+				details?: string;
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<{
+				suggestions: Record<
+					string,
+					{
+						blob: string;
+						contentType: string;
+						service: string;
+						url: string;
+					}
+				>;
+			}>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+					suggestions: {
+						type: 'object',
+						additionalProperties: {
+							type: 'object',
+							properties: {
+								blob: {
+									type: 'string',
+								},
+								contentType: {
+									type: 'string',
+								},
+								service: {
+									type: 'string',
+								},
+								url: {
+									type: 'string',
+									format: 'uri',
+								},
+							},
+							required: ['blob', 'contentType', 'service', 'url'],
+							additionalProperties: false,
+						},
+					},
+				},
+				required: ['success', 'suggestions'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action() {
+		const suggestions = await getAvatarSuggestionForUser(this.user);
+
+		return API.v1.success({ suggestions });
 	},
 );
 
@@ -1441,3 +1519,12 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+type UsersGetAvatarSuggestionEndpoints = ExtractRoutesFromAPI<typeof usersGetAvatarSuggestionEndpoints>;
+
+export type UsersEndpoints = UsersGetAvatarSuggestionEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UsersGetAvatarSuggestionEndpoints {}
+}
