@@ -29,7 +29,17 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
+	findAllByTypesAndDiscussionAndTeam(
+		filters?: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		},
+		findOptions?: FindOptions<IRoom>,
+	): FindCursor<IRoom>;
+
 	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
@@ -329,4 +339,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	insertAbacAttributeIfNotExistsById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
+	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;
 }

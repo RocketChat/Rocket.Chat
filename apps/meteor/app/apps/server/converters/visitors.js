@@ -36,6 +36,7 @@ export class AppVisitorsConverter {
 			visitorEmails: 'visitorEmails',
 			livechatData: 'livechatData',
 			status: 'status',
+			activity: 'activity',
 		};
 
 		return transformMappedData(visitor, map);

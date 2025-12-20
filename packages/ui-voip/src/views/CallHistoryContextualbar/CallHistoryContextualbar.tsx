@@ -16,9 +16,8 @@ import { useTranslation } from 'react-i18next';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
-import CallHistoryExternalUser from './CallHistoryExternalUser';
-import CallHistoryInternalUser from './CallHistoryInternalUser';
 import { useFullStartDate } from './useFullStartDate';
+import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
 export type InternalCallHistoryContact = {
