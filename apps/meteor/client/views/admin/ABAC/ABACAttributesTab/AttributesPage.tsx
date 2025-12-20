@@ -25,7 +25,7 @@ const AttributesPage = () => {
 	const searchTerm = useSearchParameter('searchTerm');
 	const [text, setText] = useState(searchTerm ?? '');
 
-	const debouncedText = useDebouncedValue(text, 200);
+	const debouncedText = useDebouncedValue(text, 400);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();

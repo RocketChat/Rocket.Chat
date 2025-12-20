@@ -74,47 +74,52 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 
 	return (
 		<>
-			<ContextualbarScrollableContent>
-				<Box is='form' onSubmit={handleSubmit(handleSave)} id={formId}>
-					<Field mb={16}>
-						<FieldLabel id={nameField} required>
-							{t('ABAC_Room_to_be_managed')}
-						</FieldLabel>
-						<FieldRow>
-							{roomInfo ? (
-								<RoomFormAutocompleteDummy roomInfo={roomInfo} />
-							) : (
-								<Controller
-									name='room'
-									control={control}
-									rules={{ required: t('Required_field', { field: t('ABAC_Room_to_be_managed') }) }}
-									render={({ field }) => (
-										<RoomFormAutocomplete
-											{...field}
-											error={!!errors.room?.message}
-											aria-labelledby={nameField}
-											onSelectedRoom={(value: string, label: string) => {
-												field.onChange(value);
-												setSelectedRoomLabel(label);
-											}}
-										/>
-									)}
-								/>
-							)}
-						</FieldRow>
-						{errors.room && <FieldError>{errors.room.message}</FieldError>}
-					</Field>
-					<RoomFormAttributeFields fields={fields} remove={remove} />
-					<Button
-						w='full'
-						disabled={fields.length >= 10}
-						onClick={() => {
-							append({ key: '', values: [] });
-						}}
-					>
-						{t('ABAC_Add_Attribute')}
-					</Button>
-				</Box>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} id={formId}>
+				<Field>
+					<FieldLabel id={nameField} required>
+						{t('ABAC_Room_to_be_managed')}
+					</FieldLabel>
+					<FieldRow>
+						{roomInfo ? (
+							<RoomFormAutocompleteDummy roomInfo={roomInfo} />
+						) : (
+							<Controller
+								name='room'
+								control={control}
+								rules={{ required: t('Required_field', { field: t('ABAC_Room_to_be_managed') }) }}
+								render={({ field }) => (
+									<RoomFormAutocomplete
+										{...field}
+										error={!!errors.room?.message}
+										aria-labelledby={nameField}
+										aria-required='true'
+										aria-invalid={errors.room ? 'true' : 'false'}
+										aria-describedby={`${nameField}-error`}
+										onSelectedRoom={(value: string, label: string) => {
+											field.onChange(value);
+											setSelectedRoomLabel(label);
+										}}
+									/>
+								)}
+							/>
+						)}
+					</FieldRow>
+					{errors.room && (
+						<FieldError id={`${nameField}-error`} role='alert'>
+							{errors.room.message}
+						</FieldError>
+					)}
+				</Field>
+				<RoomFormAttributeFields fields={fields} remove={remove} />
+				<Button
+					w='full'
+					disabled={fields.length >= 10}
+					onClick={() => {
+						append({ key: '', values: [] });
+					}}
+				>
+					{t('ABAC_Add_Attribute')}
+				</Button>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

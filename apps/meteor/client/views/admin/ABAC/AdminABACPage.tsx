@@ -76,22 +76,18 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 					{tab === 'logs' && <LogsPage />}
 				</PageContent>
 			</Page>
-			{tab !== undefined && context !== undefined && (
+			{isABACAvailable === true && tab !== undefined && context !== undefined && (
 				<ContextualbarDialog onClose={() => handleCloseContextualbar()}>
 					{tab === 'room-attributes' && (
 						<>
-							{context === 'new' && isABACAvailable === true && <AttributesContextualBar onClose={() => handleCloseContextualbar()} />}
-							{context === 'edit' && _id && isABACAvailable === true && (
-								<AttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
-							)}
+							{context === 'new' && <AttributesContextualBar onClose={() => handleCloseContextualbar()} />}
+							{context === 'edit' && _id && <AttributesContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />}
 						</>
 					)}
 					{tab === 'rooms' && (
 						<>
-							{context === 'new' && isABACAvailable === true && <RoomsContextualBar onClose={() => handleCloseContextualbar()} />}
-							{context === 'edit' && _id && isABACAvailable === true && (
-								<RoomsContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />
-							)}
+							{context === 'new' && <RoomsContextualBar onClose={() => handleCloseContextualbar()} />}
+							{context === 'edit' && _id && <RoomsContextualBarWithData id={_id} onClose={() => handleCloseContextualbar()} />}
 						</>
 					)}
 				</ContextualbarDialog>
