@@ -7,12 +7,14 @@ import { useTranslation } from 'react-i18next';
 import type { RoomFormData } from './RoomForm';
 
 type ABACAttributeAutocompleteProps = {
+	labelId: string;
 	onRemove: () => void;
 	index: number;
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
+	required?: boolean;
 };
 
-const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
@@ -60,6 +62,11 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 				<SelectFiltered
 					{...keyField}
 					options={options}
+					required={required}
+					aria-required={required}
+					aria-labelledby={labelId}
+					aria-invalid={keyFieldState.error ? 'true' : 'false'}
+					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 					placeholder={t('ABAC_Search_Attribute')}
 					mbe={4}
 					error={keyFieldState.error?.message}
@@ -70,10 +77,18 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 					}}
 				/>
 			</FieldRow>
-			{keyFieldState.error && <FieldError>{keyFieldState.error.message}</FieldError>}
-
+			{keyFieldState.error && (
+				<FieldError id={`${keyField.name}-error`} role='alert'>
+					{keyFieldState.error.message}
+				</FieldError>
+			)}
 			<FieldRow>
 				<MultiSelect
+					required={required}
+					aria-required={required}
+					aria-labelledby={labelId}
+					aria-invalid={valuesFieldState.error ? 'true' : 'false'}
+					aria-describedby={valuesFieldState.error ? `${valuesField.name}-error` : undefined}
 					withTruncatedText
 					{...valuesField}
 					options={valueOptions}
@@ -81,11 +96,16 @@ const RoomFormAttributeField = ({ onRemove, index, attributeList }: ABACAttribut
 					error={valuesFieldState.error?.message}
 				/>
 			</FieldRow>
-			{valuesFieldState.error && <FieldError>{valuesFieldState.error.message}</FieldError>}
-
-			<Button onClick={onRemove} title={t('Remove')} mbs={4}>
-				{t('Remove')}
-			</Button>
+			{valuesFieldState.error && (
+				<FieldError id={`${valuesField.name}-error`} role='alert'>
+					{valuesFieldState.error.message}
+				</FieldError>
+			)}
+			{index !== 0 && (
+				<Button onClick={onRemove} title={t('Remove')} mbs={8}>
+					{t('Remove')}
+				</Button>
+			)}
 		</Box>
 	);
 };
