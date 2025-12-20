@@ -9,7 +9,7 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,9 @@ import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 const AttributesPage = () => {
 	const { t } = useTranslation();
 
-	const [text, setText] = useState('');
+	const searchTerm = useSearchParameter('searchTerm');
+	const [text, setText] = useState(searchTerm ?? '');
+
 	const debouncedText = useDebouncedValue(text, 400);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
