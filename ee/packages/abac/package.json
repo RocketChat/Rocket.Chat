@@ -17,6 +17,12 @@
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck"
 	},
+	"config": {
+		"mongodbMemoryServer": {
+			"downloadDir": "../../../node_modules/.cache/mongodb-memory-server",
+			"preferGlobalPath": false
+		}
+	},
 	"volta": {
 		"extends": "../../../package.json"
 	},
