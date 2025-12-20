@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import { e2e } from '../../../lib/e2ee';
-import RoomBody from '../body/RoomBodyV2';
+import RoomBody from '../body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
