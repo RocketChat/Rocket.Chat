@@ -1,3 +1,4 @@
+import { SetupWizardRoute } from '@rocket.chat/ui-client';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
@@ -14,7 +15,6 @@ const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CM
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const LoginTokenRoute = lazy(() => import('../views/root/LoginTokenRoute'));
 const SAMLLoginRoute = lazy(() => import('../views/root/SAMLLoginRoute'));
@@ -24,6 +24,7 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -106,6 +107,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'saml': {
 			pathname: `/saml/${string}`;
 			pattern: '/saml/:token';
+		};
+		'call-history': {
+			pathname: `/call-history${`/details/${string}` | ''}`;
+			pattern: '/call-history/:tab?/:historyId?';
 		};
 	}
 }
@@ -232,6 +237,15 @@ router.defineRoutes([
 		path: '/saml/:token',
 		id: 'saml',
 		element: appLayout.wrap(<SAMLLoginRoute />),
+	},
+	{
+		path: '/call-history/:tab?/:historyId?',
+		id: 'call-history',
+		element: appLayout.wrap(
+			<MainLayout>
+				<CallHistoryPage />
+			</MainLayout>,
+		),
 	},
 	{
 		path: '*',

@@ -19,7 +19,7 @@
 		"test": "echo \"no tests\" && exit 1"
 	},
 	"dependencies": {
-		"@rocket.chat/icons": "~0.45.0",
+		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"typia": "~9.7.2"
