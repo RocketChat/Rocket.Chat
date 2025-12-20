@@ -7209,6 +7209,8 @@
   "Call_info_could_not_be_loaded": "Call info could not be loaded",
   "Please_try_again": "Please try again.",
   "Invited__date__": "Invited {date}",
-  "Apps_Permissions_room_system_view-all": "View all rooms in the workspace"
+  "Apps_Permissions_room_system_view-all": "View all rooms in the workspace",
+  "Invitation_date": "Invitation date",
+  "Revoke_invitation": "Revoke invitation"
 
 }

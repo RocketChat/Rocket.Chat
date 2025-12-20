@@ -52,6 +52,7 @@ type UserInfoProps = UserInfoDataProps & {
 	actions: ReactElement;
 	roles: ReactElement[];
 	reason?: string;
+	invitationDate?: string;
 };
 
 const UserInfo = ({
@@ -75,6 +76,7 @@ const UserInfo = ({
 	reason,
 	freeSwitchExtension,
 	abacAttributes,
+	invitationDate,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -205,6 +207,13 @@ const UserInfo = ({
 									</InfoPanelText>
 								</InfoPanelField>
 							),
+					)}
+
+					{invitationDate && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Invitation_date')}</InfoPanelLabel>
+							<InfoPanelText>{timeAgo(invitationDate)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 
 					{createdAt && (

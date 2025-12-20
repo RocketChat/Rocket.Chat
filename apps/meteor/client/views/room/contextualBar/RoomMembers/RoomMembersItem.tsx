@@ -37,12 +37,14 @@ const RoomMembersItem = ({
 	freeSwitchExtension,
 	onClickView,
 	rid,
+	subscription,
 	reload,
 	useRealName,
-	subscription,
 }: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const isInvited = subscription?.status === 'INVITED';
+	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
@@ -52,7 +54,14 @@ const RoomMembersItem = ({
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	return (
-		<Option data-username={username} data-userid={_id} onClick={onClickView} style={{ paddingInline: 24 }} {...handleMenuEvent}>
+		<Option
+			data-username={username}
+			data-userid={_id}
+			data-invitationdate={invitationDate}
+			onClick={onClickView}
+			style={{ paddingInline: 24 }}
+			{...handleMenuEvent}
+		>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
@@ -67,7 +76,15 @@ const RoomMembersItem = ({
 			)}
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
-					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
+					<UserActions
+						username={username}
+						name={name}
+						rid={rid}
+						_id={_id}
+						freeSwitchExtension={freeSwitchExtension}
+						isInvited={isInvited}
+						reload={reload}
+					/>
 				) : (
 					<IconButton tiny icon='kebab' aria-hidden tabIndex={-1} />
 				)}

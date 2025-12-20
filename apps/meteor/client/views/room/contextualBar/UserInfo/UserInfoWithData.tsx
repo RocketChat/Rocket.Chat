@@ -28,11 +28,12 @@ type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
+	invitationDate?: string;
 	onClose: () => void;
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -113,7 +114,13 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 				</ContextualbarContent>
 			)}
 
-			{!isPending && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
+			{!isPending && user && (
+				<UserInfo
+					{...user}
+					invitationDate={invitationDate}
+					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
+				/>
+			)}
 		</ContextualbarDialog>
 	);
 };

@@ -13,10 +13,11 @@ import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
+	isInvited?: boolean;
 	backToList?: () => void;
 };
 
-const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsProps): ReactElement => {
 	const { t } = useTranslation();
 	const {
 		data: isMemberData,
@@ -31,8 +32,9 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
 		user: { _id: userId, username, name, freeSwitchExtension },
-		size: 3,
+		size: 2,
 		isMember,
+		isInvited,
 		reload: () => {
 			backToList?.();
 			refetch();
