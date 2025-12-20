@@ -2,7 +2,7 @@ import { isInviteSubscription } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import InvitationBadge from '../../../../components/InvitationBadge';
-import UnreadBadge from '../../../../sidebarv2/badges/UnreadBadge';
+import UnreadBadge from '../../../../sidebar/badges/UnreadBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarItemBadgesProps = {

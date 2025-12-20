@@ -2,7 +2,7 @@ import { isRoomFederated, type IInviteSubscription } from '@rocket.chat/core-typ
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Header from './HeaderV2';
+import Header from './Header';
 import RoomInviteBody from './body/RoomInviteBody';
 import type { IRoomWithFederationOriginalName } from './contexts/RoomContext';
 import { useRoomInvitation } from './hooks/useRoomInvitation';

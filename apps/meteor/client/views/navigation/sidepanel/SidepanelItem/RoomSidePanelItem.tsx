@@ -12,7 +12,7 @@ import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
-import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
+import { useUnreadDisplay } from '../../../../sidebar/hooks/useUnreadDisplay';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
 

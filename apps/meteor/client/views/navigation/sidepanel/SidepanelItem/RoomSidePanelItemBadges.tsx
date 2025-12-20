@@ -2,8 +2,8 @@ import { isInviteSubscription, isOmnichannelRoom } from '@rocket.chat/core-typin
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import InvitationBadge from '../../../../components/InvitationBadge';
-import UnreadBadge from '../../../../sidebarv2/badges/UnreadBadge';
-import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
+import UnreadBadge from '../../../../sidebar/badges/UnreadBadge';
+import { useUnreadDisplay } from '../../../../sidebar/hooks/useUnreadDisplay';
 import SidePanelOmnichannelBadges from '../omnichannel/SidePanelOmnichannelBadges';
 
 type RoomSidePanelItemBadgesProps = {

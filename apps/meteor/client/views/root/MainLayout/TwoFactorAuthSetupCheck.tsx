@@ -3,7 +3,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { lazy } from 'react';
 
-import LayoutWithSidebar from './LayoutWithSidebarV2';
+import LayoutWithSidebar from './LayoutWithSidebar';
 import MainContent from './MainContent';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 

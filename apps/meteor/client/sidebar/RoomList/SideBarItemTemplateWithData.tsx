@@ -1,9 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Sidebar, SidebarItemAction, SidebarItemActions } from '@rocket.chat/fuselage';
+import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import DOMPurify from 'dompurify';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
@@ -18,7 +17,7 @@ import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+export const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -40,18 +39,18 @@ const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefine
 type RoomListRowProps = {
 	extended: boolean;
 	t: TFunction;
-	SideBarItemTemplate: ComponentType<
+	SidebarItemTemplate: ComponentType<
 		{
 			icon: ReactNode;
 			title: ReactNode;
 			avatar: ReactNode;
-			actions: unknown;
+			actions: ReactNode;
 			href: string;
 			time?: Date;
 			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
-			titleIcon?: string;
+			titleIcon?: ReactNode;
 			badges?: ReactNode;
 			threadUnread?: boolean;
 			unread?: boolean;
@@ -77,41 +76,41 @@ type RoomListRowProps = {
 	};
 };
 
-function SideBarItemTemplateWithData({
+const SidebarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
 	style,
 	extended,
-	SideBarItemTemplate,
+	SidebarItemTemplate,
 	AvatarTemplate,
 	t,
 	isAnonymous,
 	videoConfActions,
-}: RoomListRowProps): ReactElement {
+}: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
+	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
+
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
-	const { unreadCount, unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
-
 	const icon = (
-		// TODO: Remove icon='at'
-		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
-			<RoomIcon room={room} placement='sidebar' isIncomingCall={Boolean(videoConfActions)} />
-		</Sidebar.Item.Icon>
+		<SidebarV2ItemIcon
+			highlighted={highlighted}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
+		/>
 	);
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
-					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-				</SidebarItemActions>
+				<SidebarV2Actions>
+					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarV2Actions>
 			),
 		[videoConfActions],
 	);
@@ -120,12 +119,10 @@ function SideBarItemTemplateWithData({
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const message = extended && getMessage(room, lastMessage, t);
-	const subtitle = message ? (
-		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
-	) : null;
+	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
-		<SideBarItemTemplate
+		<SidebarItemTemplate
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
@@ -164,7 +161,7 @@ function SideBarItemTemplateWithData({
 			}
 		/>
 	);
-}
+};
 
 function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
 	if (!a || !b) {
@@ -178,7 +175,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'style',
 	'extended',
 	'selected',
-	'SideBarItemTemplate',
+	'SidebarItemTemplate',
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
@@ -186,7 +183,7 @@ const keys: (keyof RoomListRowProps)[] = [
 ];
 
 // eslint-disable-next-line react/no-multi-comp
-export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
+export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}

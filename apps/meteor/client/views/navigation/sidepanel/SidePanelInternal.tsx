@@ -8,7 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 import SidePanelNoResults from './SidePanelNoResults';
 import SidepanelListWrapper from './SidepanelListWrapper';
 import { useOpenedRoom } from '../../../lib/RoomManager';
-import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
+import { usePreventDefault } from '../../../sidebar/hooks/usePreventDefault';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps<R = any> = {
