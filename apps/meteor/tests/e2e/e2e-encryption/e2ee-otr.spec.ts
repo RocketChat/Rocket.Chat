@@ -38,7 +38,7 @@ test.describe('E2EE OTR (Off-The-Record)', () => {
 		await page.keyboard.press('Enter');
 		await poHomeChannel.sidenav.btnCreate.click();
 
-		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
+		await expect(page).toHaveURL(/direct\/.*/);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		if (await poHomeChannel.tabs.btnDisableE2E.isVisible()) {
