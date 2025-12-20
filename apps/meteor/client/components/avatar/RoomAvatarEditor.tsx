@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
+import { readFileAsDataURL } from './UserAvatarEditor/readFileAsDataURL';
 
 type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -24,18 +25,18 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleChangeAvatar = useEffectEvent(async (file: File) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onloadend = async (): Promise<void> => {
-			const { result } = reader;
-			if (typeof result === 'string' && (await isValidImageFormat(result))) {
-				onChangeAvatar(result);
-				return;
-			}
-			dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-		};
-	});
+const handleChangeAvatar = useEffectEvent(async (file: File) => {
+    try {
+        const result = await readFileAsDataURL(file);
+        if (typeof result === 'string' && (await isValidImageFormat(result))) {
+            onChangeAvatar(result);
+            return;
+        }
+        dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+    } catch (error) {
+        dispatchToastMessage({ type: 'error', message: error });
+    }
+});
 
 	const [clickUpload, reset] = useSingleFileInput(handleChangeAvatar);
 	const clickReset = useEffectEvent(() => {

@@ -31,20 +31,21 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
-		async (file: File, avatarObj: AvatarObject) => {
-			setAvatarObj(avatarObj);
-			try {
-				const dataURL = await readFileAsDataURL(file);
-
-				if (await isValidImageFormat(dataURL)) {
-					setNewAvatarSource(dataURL);
-				}
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-			}
-		},
-		[setAvatarObj, t, dispatchToastMessage],
-	);
+        async (file: File, avatarObj: AvatarObject) => {
+            try {
+                const dataURL = await readFileAsDataURL(file);
+                if (await isValidImageFormat(dataURL)) {
+                    setAvatarObj(avatarObj);
+                    setNewAvatarSource(dataURL);
+                    return;
+                }
+                dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+            } catch (error) {
+                dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+            }
+        },
+        [setAvatarObj, t, dispatchToastMessage],
+    );
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
