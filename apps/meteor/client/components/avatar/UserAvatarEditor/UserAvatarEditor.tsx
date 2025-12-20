@@ -38,9 +38,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 				if (await isValidImageFormat(dataURL)) {
 					setNewAvatarSource(dataURL);
+				} else {
+					dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 				}
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				dispatchToastMessage({ type: 'error', message: t('FileUpload_Error') });
 			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
