@@ -9,27 +9,31 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
 import GenericNoResults from '../../../../components/GenericNoResults';
+import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 
 const RoomsPage = () => {
 	const { t } = useTranslation();
+	const router = useRouter();
 
-	const [text, setText] = useState('');
-	const [filterType, setFilterType] = useState<'all' | 'roomName' | 'attribute' | 'value'>('all');
+	const searchTerm = useSearchParameter('searchTerm');
+	const searchType = useSearchParameter('type') as 'roomName' | 'attribute' | 'value';
+
+	const [text, setText] = useState(searchTerm ?? '');
+	const [filterType, setFilterType] = useState<'all' | 'roomName' | 'attribute' | 'value'>(searchType ?? 'all');
 	const debouncedText = useDebouncedValue(text, 200);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getRooms = useEndpoint('GET', '/v1/abac/rooms');
 	const isABACAvailable = useIsABACAvailable();
 
-	const router = useRouter();
 	const handleNewAttribute = useEffectEvent(() => {
 		router.navigate({
 			name: 'admin-ABAC',
@@ -104,7 +108,12 @@ const RoomsPage = () => {
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
-									<GenericTableCell>{room.fname || room.name}</GenericTableCell>
+									<GenericTableCell withTruncatedText>
+										<Margins inline={8}>
+											<RoomIcon room={room} size='x20' />
+										</Margins>
+										{room.fname || room.name}
+									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
 									<GenericTableCell withTruncatedText>
 										{room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
