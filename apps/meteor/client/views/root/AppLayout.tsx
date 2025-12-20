@@ -21,6 +21,7 @@ import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
@@ -71,6 +72,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useStartupEvent();
+	useIframeCommands();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
