@@ -169,7 +169,7 @@ export class SynapseClient {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
-		await this.matrixClient.invite(userId, roomId);
+		await this.matrixClient.invite(roomId, userId);
 	}
 
 	/**
