@@ -31,6 +31,7 @@
   "ABAC_Element_Name": "Element Name",
   "ABAC_Cannot_delete_attribute": "Cannot delete attribute assigned to rooms",
   "ABAC_Cannot_delete_attribute_content": "Unassign <bold>{{attributeName}}</bold> from all rooms before attempting to delete it.",
+  "ABAC_Cannot_delete_attribute_value_in_use": "Cannot delete attribute value assigned to rooms. <1>View rooms</1>",
   "ABAC_Delete_room_attribute": "Delete attribute",
   "ABAC_Delete_room_attribute_content": "Are you sure you want to delete <bold>{{attributeName}}</bold> ?<br/>Existing rooms will not be affected as it is not currently assigned to any.",
   "ABAC_Attribute_created": "{{attributeName}} attribute created",
