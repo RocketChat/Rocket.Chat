@@ -2,9 +2,10 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
-import { createConversation } from '../utils/omnichannel/rooms';
+import { createConversation, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
 import { createTag } from '../utils/omnichannel/tags';
 import { test, expect } from '../utils/test';
 
@@ -25,6 +26,14 @@ test.describe('OC - Tags Visibility', () => {
 	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
+
+	test.beforeAll('Configure queue settings', async ({ api }) => {
+		const responses = await Promise.all([
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
+	});
 
 	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
@@ -52,17 +61,22 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test.beforeAll('Create conversations', async ({ api }) => {
-		const conversationA = await createConversation(api, {
-			visitorName: visitorA.name,
-			agentId: 'user1',
-			departmentId: departmentA.data._id,
-		});
-		const conversationB = await createConversation(api, {
-			visitorName: visitorB.name,
-			agentId: 'user1',
-			departmentId: departmentB.data._id,
-		});
-		conversations = [conversationA, conversationB];
+		conversations = await Promise.all([
+			createConversation(api, {
+				visitorName: visitorA.name,
+				agentId: 'user1',
+				departmentId: departmentA.data._id,
+			}),
+			createConversation(api, {
+				visitorName: visitorB.name,
+				agentId: 'user1',
+				departmentId: departmentB.data._id,
+			}),
+		]);
+		await waitForInquiryToBeTaken(
+			api,
+			conversations.map((c) => c.data.room._id),
+		);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -70,12 +84,16 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
-	test.afterAll(async () => {
-		await Promise.all(conversations.map((conversation) => conversation.delete()));
-		await Promise.all([tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()));
-		await agent.delete();
-		await departmentA.delete();
-		await departmentB.delete();
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			...conversations.map((conversation) => conversation.delete()),
+			[tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()),
+			agent.delete(),
+			departmentA.delete(),
+			departmentB.delete(),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
+		]);
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {

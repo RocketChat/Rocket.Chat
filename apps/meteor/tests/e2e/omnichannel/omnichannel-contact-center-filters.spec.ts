@@ -3,9 +3,10 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from '../page-objects/omnichannel-section';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
-import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
+import { createConversation, updateRoom, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
 import { createTag } from '../utils/omnichannel/tags';
 import { createOrUpdateUnit } from '../utils/omnichannel/units';
 import { test, expect } from '../utils/test';
@@ -32,11 +33,12 @@ test.describe('OC - Contact Center', async () => {
 	let poContacts: OmnichannelContacts;
 	let poOmniSection: OmnichannelSection;
 
-	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
 		const responses = await Promise.all([
-			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
-			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+			setSettingValueById(api, 'Livechat_allow_manual_on_hold', true),
+			setSettingValueById(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', false),
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
 		]);
 		responses.forEach((res) => expect(res.status()).toBe(200));
 	});
@@ -95,36 +97,38 @@ test.describe('OC - Contact Center', async () => {
 	test.beforeAll(async ({ api }) => {
 		const [departmentA, departmentB] = departments.map(({ data }) => data);
 
-		const conversationA = await createConversation(api, {
-			visitorName: visitorA,
-			visitorToken: visitorA,
-			agentId: `user1`,
-			departmentId: departmentA._id,
-		});
+		conversations = await Promise.all([
+			createConversation(api, {
+				visitorName: visitorA,
+				visitorToken: visitorA,
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				visitorName: visitorB,
+				visitorToken: visitorB,
+				agentId: `user2`,
+				departmentId: departmentB._id,
+			}),
+			createConversation(api, {
+				visitorName: visitorC,
+				visitorToken: visitorC,
+			}),
+		]);
 
-		const conversationB = await createConversation(api, {
-			visitorName: visitorB,
-			visitorToken: visitorB,
-			agentId: `user2`,
-			departmentId: departmentB._id,
-		});
+		await waitForInquiryToBeTaken(api, [conversations[0].data.room._id, conversations[1].data.room._id]);
 
-		const conversationC = await createConversation(api, {
-			visitorName: visitorC,
-			visitorToken: visitorC,
-		});
-
-		conversations = [conversationA, conversationB, conversationC];
+		const [conversationA, conversationB] = conversations.map(({ data }) => data);
 
 		await Promise.all([
 			updateRoom(api, {
-				roomId: conversationA.data.room._id,
-				visitorId: conversationA.data.visitor._id,
+				roomId: conversationA.room._id,
+				visitorId: conversationA.visitor._id,
 				tags: [tagA.data.name],
 			}),
 			updateRoom(api, {
-				roomId: conversationB.data.room._id,
-				visitorId: conversationB.data.visitor._id,
+				roomId: conversationB.room._id,
+				visitorId: conversationB.visitor._id,
 				tags: [tagB.data.name],
 			}),
 		]);
@@ -143,8 +147,10 @@ test.describe('OC - Contact Center', async () => {
 			// Delete units
 			...units.map((unit) => unit.delete()),
 			// Reset setting
-			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
-			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
+			setSettingValueById(api, 'Livechat_allow_manual_on_hold', false),
+			setSettingValueById(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', true),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 
