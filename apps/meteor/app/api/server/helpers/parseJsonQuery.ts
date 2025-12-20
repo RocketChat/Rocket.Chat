@@ -57,7 +57,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	let fields: Record<string, 0 | 1> | undefined;
 	if (typeof params?.fields === 'string' && isUnsafeQueryParamsAllowed) {
 		try {
-			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
+			apiDeprecationLogger.parameter(route, 'fields', '9.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
@@ -106,7 +106,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 
 	let query: Record<string, any> = {};
 	if (typeof params?.query === 'string' && isUnsafeQueryParamsAllowed) {
-		apiDeprecationLogger.parameter(route, 'query', '8.0.0', response, messageGenerator);
+		apiDeprecationLogger.parameter(route, 'query', '9.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
