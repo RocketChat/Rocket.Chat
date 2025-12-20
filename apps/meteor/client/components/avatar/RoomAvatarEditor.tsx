@@ -33,8 +33,8 @@ const handleChangeAvatar = useEffectEvent(async (file: File) => {
             return;
         }
         dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-    } catch (error) {
-        dispatchToastMessage({ type: 'error', message: error });
+   } catch (error) {
+        dispatchToastMessage({ type: 'error', message: String(error) });
     }
 });
 

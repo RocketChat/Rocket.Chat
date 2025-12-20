@@ -40,9 +40,9 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
                     return;
                 }
                 dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-            } catch (error) {
-                dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-            }
+   				} catch (error) {
+        		dispatchToastMessage({ type: 'error', message: t('Avatar_upload_failed') });
+    			}
         },
         [setAvatarObj, t, dispatchToastMessage],
     );
