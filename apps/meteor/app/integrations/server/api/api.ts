@@ -193,7 +193,11 @@ async function executeIntegrationRest(
 				return API.v1.failure(result.error);
 			}
 
-			bodyParams = result?.content;
+			bodyParams = result?.content ?? {};
+
+			if (!isPlainObject(bodyParams)) {
+				bodyParams = {};
+			}
 
 			if (!('separateResponse' in bodyParams)) {
 				bodyParams.separateResponse = separateResponse;
