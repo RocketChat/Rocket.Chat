@@ -19,10 +19,10 @@ export const defaultFields = {
 	reason: 1,
 	statusText: 1,
 	avatarETag: 1,
-	extension: 1,
 	federated: 1,
 	statusLivechat: 1,
 	abacAttributes: 1,
+	freeSwitchExtension: 1,
 } as const;
 
 export const fullFields = {
@@ -36,7 +36,6 @@ export const fullFields = {
 	requirePasswordChangeReason: 1,
 	roles: 1,
 	importIds: 1,
-	freeSwitchExtension: 1,
 } as const;
 
 let publicCustomFields: Record<string, 0 | 1> = {};
@@ -87,7 +86,6 @@ export async function getFullUserDataByIdOrUsernameOrImportId(
 		(searchType === 'username' && searchValue === caller.username) ||
 		(searchType === 'importId' && caller.importIds?.includes(searchValue));
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
-	const canViewExtension = !!myself || (await hasPermissionAsync(userId, 'view-user-voip-extension'));
 
 	// Only search for importId if the user has permission to view the import id
 	if (searchType === 'importId' && !canViewAllInfo) {
@@ -99,7 +97,6 @@ export async function getFullUserDataByIdOrUsernameOrImportId(
 	const options = {
 		projection: {
 			...fields,
-			...(canViewExtension && { freeSwitchExtension: 1 }),
 			...(myself && { services: 1 }),
 		},
 	};

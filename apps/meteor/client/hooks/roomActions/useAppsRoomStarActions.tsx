@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { GenericMenu, HeaderV1ToolbarAction } from '@rocket.chat/ui-client';
+import { GenericMenu, HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -39,7 +39,7 @@ export const useAppsRoomStarActions = () => {
 			order: 3,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
-					button={<HeaderV1ToolbarAction icon={icon} />}
+					button={<HeaderToolbarAction icon={icon} />}
 					key={id}
 					title={title}
 					disabled={disabled}

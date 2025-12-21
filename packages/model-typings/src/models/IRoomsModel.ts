@@ -193,8 +193,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
-	setCallStatus(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
-	setCallStatusAndCallStartTime(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
 	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<Document | UpdateResult>;
@@ -258,7 +256,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByCreatedOTR(): FindCursor<IRoom>;
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom>;
 	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
@@ -308,7 +305,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
-	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
@@ -327,7 +323,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<WithId<IRoom> | null>;
 	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
-	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;

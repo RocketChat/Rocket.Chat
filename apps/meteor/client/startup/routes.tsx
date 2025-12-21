@@ -6,7 +6,6 @@ import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
-const MeetRoute = lazy(() => import('../views/meet/MeetRoute'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
@@ -131,11 +130,6 @@ router.defineRoutes([
 
 			return null;
 		}),
-	},
-	{
-		path: '/meet/:rid',
-		id: 'meet',
-		element: appLayout.wrap(<MeetRoute />),
 	},
 	{
 		path: '/home',

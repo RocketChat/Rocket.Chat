@@ -18,6 +18,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	ajv,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -69,6 +70,7 @@ import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnA
 import { settings } from '../../../settings/server';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -326,7 +328,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.userId, this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -761,17 +763,70 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const usersEndpoints = API.v1.post(
 	'users.createToken',
-	{ authRequired: true, deprecationVersion: '8.0.0' },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			const data = await generateAccessToken(this.userId, user._id);
-
-			return data ? API.v1.success({ data }) : API.v1.forbidden();
+		authRequired: true,
+		body: ajv.compile<{ userId: string; secret: string }>({
+			type: 'object',
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				secret: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'secret'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+				type: 'object',
+				properties: {
+					data: {
+						type: 'object',
+						properties: {
+							userId: {
+								type: 'string',
+								minLength: 1,
+							},
+							authToken: {
+								type: 'string',
+								minLength: 1,
+							},
+						},
+						required: ['userId'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['data', 'success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		const data = await generateAccessToken(user._id, this.bodyParams.secret);
+
+		return API.v1.success({ data });
 	},
 );
 
@@ -1441,3 +1496,10 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UsersEndpoints {}
+}

@@ -4,7 +4,9 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const BackButton = ({ routeName }: { routeName?: string }): ReactElement => {
+type BackButtonProps = { routeName?: string };
+
+const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
 	const router = useRouter();
 	const { t } = useTranslation();
 
@@ -15,16 +17,26 @@ export const BackButton = ({ routeName }: { routeName?: string }): ReactElement 
 					name: 'omnichannel-directory',
 					params: {
 						...router.getRouteParameters(),
+						tab: 'chats',
 						context: 'info',
 					},
 				});
 				break;
 
 			case 'omnichannel-current-chats':
-				router.navigate({ name: 'omnichannel-current-chats' });
+				router.navigate({
+					name: 'omnichannel-current-chats',
+					params: {
+						...router.getRouteParameters(),
+						tab: 'chats',
+						context: 'info',
+					},
+				});
 				break;
 		}
 	});
 
 	return <HeaderToolbarAction title={t('Back')} icon='back' onClick={back} />;
 };
+
+export default BackButton;

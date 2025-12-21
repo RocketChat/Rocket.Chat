@@ -24,7 +24,6 @@ services:
       - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
       - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
@@ -130,27 +129,6 @@ services:
       traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
-
-  stream-hub-service:
-    build:
-      dockerfile: ee/apps/stream-hub-service/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
-      args:
-        SERVICE: stream-hub-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-      - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS:-}
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   queue-worker-service:
     build:
