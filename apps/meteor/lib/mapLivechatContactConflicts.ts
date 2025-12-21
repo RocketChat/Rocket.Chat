@@ -1,9 +1,10 @@
 import type { CustomFieldMetadata, ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 
 const fieldNameMap: { [key: string]: TranslationKey } = {
 	name: 'Name',
-	contactManager: 'Contact_Manager',
+	contactManager: 'Manager',
 };
 
 type MappedContactConflicts = Record<string, { name: string; label: string; values: string[] }>;
