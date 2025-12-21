@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/jwt",
-	"version": "0.1.1",
+	"version": "0.2.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
