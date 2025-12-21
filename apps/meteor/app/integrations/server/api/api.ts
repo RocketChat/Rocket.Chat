@@ -9,7 +9,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { isPlainObject } from '@rocket.chat/mongo-adapter';
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 
 import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
@@ -140,10 +140,6 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
-	if (this.request.integration.scriptEnabled && !scriptEngine.integrationHasValidScript(this.request.integration)) {
-		return API.v1.failure('script-compilation-failed');
-	}
-
 	let bodyParams = isPlainObject(this.bodyParams) ? this.bodyParams : {};
 	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
@@ -197,7 +193,7 @@ async function executeIntegrationRest(
 				return API.v1.failure(result.error);
 			}
 
-			bodyParams = result && result.content;
+			bodyParams = result?.content;
 
 			if (!('separateResponse' in bodyParams)) {
 				bodyParams.separateResponse = separateResponse;
