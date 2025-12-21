@@ -112,8 +112,6 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		try {
 			let babelOptions = Babel.getDefaultOptions({ runtime: false });
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
-			babelOptions.plugins = babelOptions.plugins || [];
-			babelOptions.plugins.push('@babel/plugin-proposal-nullish-coalescing-operator');
 
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			integrationData.scriptError = undefined;

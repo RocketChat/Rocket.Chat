@@ -9,6 +9,8 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { isPlainObject } from '@rocket.chat/mongo-adapter';
+
 import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
