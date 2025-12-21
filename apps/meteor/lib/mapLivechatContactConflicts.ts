@@ -1,10 +1,9 @@
 import type { CustomFieldMetadata, ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 
 const fieldNameMap: { [key: string]: TranslationKey } = {
 	name: 'Name',
-	contactManager: 'Manager',
+	contactManager: 'Contact_Manager',
 };
 
 type MappedContactConflicts = Record<string, { name: string; label: string; values: string[] }>;
@@ -41,6 +40,13 @@ export function mapLivechatContactConflicts(
 	// If there's a manager conflict, add the current manager to the conflict values as well
 	if (conflicts.contactManager?.values.length && contact.contactManager) {
 		conflicts.contactManager.values.push(contact.contactManager);
+	}
+
+	// If there's a custom field conflict, add the current custom field value to the conflict values as well
+	for (const [fieldName, conflict] of Object.entries(conflicts)) {
+		if (fieldName !== 'name' && fieldName !== 'contactManager' && contact.customFields?.[fieldName]) {
+			conflict.values.push(String(contact.customFields[fieldName]));
+		}
 	}
 
 	return conflicts;
