@@ -38,7 +38,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
         if (await isValidImageFormat(dataURL)) {
           setNewAvatarSource(dataURL);
         } else {
-          // Invalid image format is notified to the user
           dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
         }
 			} catch (error) {
