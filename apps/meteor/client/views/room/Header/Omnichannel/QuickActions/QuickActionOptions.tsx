@@ -1,11 +1,11 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { memo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HeaderToolbarAction } from '../../../../../components/Header';
-import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
+import { useDropdownVisibility } from './hooks/useDrowdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
 type QuickActionOptionsProps = {

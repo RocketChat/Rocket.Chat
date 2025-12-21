@@ -76,6 +76,8 @@ export interface ISubscription extends IRocketChatRecord {
 
 	status?: SubscriptionStatus;
 	inviter?: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+
+	abacLastTimeChecked?: Date;
 }
 
 export interface IInviteSubscription extends ISubscription {

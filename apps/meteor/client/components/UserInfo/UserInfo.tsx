@@ -41,6 +41,7 @@ type UserInfoDataProps = Serialized<
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
+		| 'abacAttributes'
 	>
 >;
 
@@ -51,6 +52,7 @@ type UserInfoProps = UserInfoDataProps & {
 	actions: ReactElement;
 	roles: ReactElement[];
 	reason?: string;
+	invitationDate?: string;
 };
 
 const UserInfo = ({
@@ -73,8 +75,8 @@ const UserInfo = ({
 	actions,
 	reason,
 	freeSwitchExtension,
-	// @ts-expect-error - abacAttributes is not yet implemented in Users properties
-	abacAttributes = null,
+	abacAttributes,
+	invitationDate,
 	...props
 }: UserInfoProps): ReactElement => {
 	const { t } = useTranslation();
@@ -189,7 +191,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{abacAttributes?.length > 0 && (
+					{abacAttributes && abacAttributes.length > 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
 							<UserInfoABACAttributes abacAttributes={abacAttributes} />
@@ -205,6 +207,13 @@ const UserInfo = ({
 									</InfoPanelText>
 								</InfoPanelField>
 							),
+					)}
+
+					{invitationDate && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Invitation_date')}</InfoPanelLabel>
+							<InfoPanelText>{timeAgo(invitationDate)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 
 					{createdAt && (

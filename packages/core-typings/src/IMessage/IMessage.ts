@@ -22,17 +22,6 @@ export type MessageUrl = {
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
-const VoipMessageTypesValues = [
-	'voip-call-started',
-	'voip-call-declined',
-	'voip-call-on-hold',
-	'voip-call-unhold',
-	'voip-call-ended',
-	'voip-call-duration',
-	'voip-call-wrapup',
-	'voip-call-ended-unexpectedly',
-] as const;
-
 const TeamMessageTypesValues = [
 	'removed-user-from-team',
 	'added-user-to-team',
@@ -52,18 +41,12 @@ const LivechatMessageTypesValues = [
 	'livechat_video_call',
 	'livechat_transfer_history_fallback',
 	'livechat-close',
-	'livechat_webrtc_video_call',
 	'livechat-started',
 	'omnichannel_priority_change_history',
 	'omnichannel_sla_change_history',
 	'omnichannel_placed_chat_on_hold',
 	'omnichannel_on_hold_chat_resumed',
 ] as const;
-
-const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
-
-export const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
-export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
 
 const MessageTypes = [
 	'e2e',
@@ -106,11 +89,9 @@ const MessageTypes = [
 	'new-leader',
 	'leader-removed',
 	'discussion-created',
+	'abac-removed-user-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
-	...VoipMessageTypesValues,
-	...OtrMessageTypeValues,
-	...OtrSystemMessagesValues,
 ] as const;
 export type MessageTypesValues = (typeof MessageTypes)[number];
 
@@ -197,7 +178,6 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
 	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
-	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -404,13 +384,6 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	comment?: string;
 }
 
-export type IVoipMessage = IMessage & {
-	voipData: {
-		callDuration?: number;
-		callStarted?: string;
-		callWaitingTime?: string;
-	};
-};
 export interface IMessageDiscussion extends IMessage {
 	drid: RoomID;
 }
@@ -429,7 +402,6 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
-export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
 
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
@@ -442,23 +414,12 @@ export type IE2EEPinnedMessage = IMessage & {
 	attachments: [MessageAttachment & { content: EncryptedContent }];
 };
 
-export interface IOTRMessage extends IMessage {
-	t: 'otr';
-	otrAck?: string;
-}
-
-export interface IOTRAckMessage extends IMessage {
-	t: 'otr-ack';
-}
-
 export type IVideoConfMessage = IMessage & {
 	t: 'videoconf';
 };
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
-export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
-export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
 
 export type IMessageWithPendingFileImport = IMessage & {

@@ -1575,6 +1575,18 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
+	async logoutAllByUserId(userId: IUser['_id'], logoutBy: IUser['_id']): Promise<UpdateResult | Document> {
+		const logoutAt = new Date();
+		const updateObj = {
+			$set: {
+				logoutAt,
+				logoutBy,
+			},
+		};
+
+		return this.updateMany({ userId, logoutAt: { $exists: false } }, updateObj);
+	}
+
 	async createBatch(sessions: OptionalId<ISession>[]): Promise<BulkWriteResult | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;

@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';

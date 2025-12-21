@@ -1,6 +1,6 @@
 import 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
@@ -39,7 +39,12 @@ declare module 'meteor/meteor' {
 			isDesktop: () => boolean;
 		}
 
-		const server: any;
+		const server: {
+			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat }>;
+			publish_handlers: {
+				meteor_autoupdate_clientVersions(): void;
+			};
+		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
 
@@ -79,7 +84,6 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				allowConnection: () => void;
 				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 

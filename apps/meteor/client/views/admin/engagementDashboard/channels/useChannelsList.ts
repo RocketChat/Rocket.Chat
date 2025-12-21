@@ -25,7 +25,6 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 				end: end.toISOString(),
 				offset,
 				count,
-				hideRoomsWithNoActivity: true,
 			});
 
 			return response

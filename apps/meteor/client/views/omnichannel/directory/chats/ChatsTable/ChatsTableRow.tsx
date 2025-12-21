@@ -1,18 +1,19 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
+import RemoveChatButton from './RemoveChatButton';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
 import RoomActivityIcon from '../../../components/RoomActivityIcon';
-import RemoveChatButton from '../../../currentChats/RemoveChatButton';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import { PriorityIcon } from '../../../priorities/PriorityIcon';
+import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
@@ -22,7 +23,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { getSourceLabel } = useOmnichannelSource();
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const getStatusText = (open = false, onHold = false): string => {
 		if (!open) {
@@ -37,7 +38,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	};
 
 	const onRowClick = useEffectEvent((id: string) =>
-		directoryRoute.push({
+		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',
 			id,
