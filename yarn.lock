@@ -6246,15 +6246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parse/node-apn@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "@parse/node-apn@npm:6.3.0"
+"@parse/node-apn@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@parse/node-apn@npm:7.0.1"
   dependencies:
-    debug: "npm:4.3.3"
+    debug: "npm:4.4.3"
     jsonwebtoken: "npm:9.0.2"
-    node-forge: "npm:1.3.1"
+    node-forge: "npm:1.3.2"
     verror: "npm:1.10.1"
-  checksum: 10/194cc2fbc86652a80dd13ff5a1c825aa52215a4e71564ff8992c7798179d8cbab58f507de088e60de0b62642fc7f342eacd085b0f7ad61595ee7824eb632f49b
+  checksum: 10/db3cd05076b4282fdd20708c9585d2b75559690efecce54dc71296683107cd4deeef340923ae94a7c5ff182193b448a0bb4b5da4cc8f53e3cdf29c4225930465
   languageName: node
   linkType: hard
 
@@ -8437,13 +8437,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/base64@workspace:packages/base64"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
-    "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
@@ -8723,23 +8719,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/freeswitch@workspace:packages/freeswitch"
-  dependencies:
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/tools": "workspace:^"
-    "@rocket.chat/tsconfig": "workspace:*"
-    "@types/jest": "npm:~30.0.0"
-    esl: "github:pierre-lehnen-rc/esl"
-    eslint: "npm:~8.45.0"
-    jest: "npm:~30.2.0"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/fuselage-forms@npm:~0.1.1":
   version: 0.1.1
   resolution: "@rocket.chat/fuselage-forms@npm:0.1.1"
@@ -8980,7 +8959,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~8.45.0"
     express: "npm:^4.21.2"
-    hono: "npm:^4.6.19"
+    hono: "npm:^4.10.7"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.0"
     supertest: "npm:~7.1.4"
@@ -9342,7 +9321,7 @@ __metadata:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
     "@opentelemetry/sdk-node": "npm:^0.54.2"
-    "@parse/node-apn": "npm:^6.3.0"
+    "@parse/node-apn": "npm:^7.0.1"
     "@playwright/test": "npm:^1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^3.4.5"
@@ -9364,7 +9343,6 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.3.5"
-    "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
@@ -9633,7 +9611,7 @@ __metadata:
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^6.9.16"
+    nodemailer: "npm:^7.0.7"
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
@@ -9680,7 +9658,6 @@ __metadata:
     semver: "npm:^7.6.3"
     sharp: "npm:^0.33.5"
     sinon: "npm:^19.0.5"
-    sip.js: "npm:^0.21.2"
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
     source-map: "npm:~0.7.6"
@@ -10169,13 +10146,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/random@workspace:packages/random"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
-    "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     typescript: "npm:~5.9.3"
@@ -10310,41 +10283,6 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@storybook/react": "*"
     react: "*"
-  languageName: unknown
-  linkType: soft
-
-"@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
-  dependencies:
-    "@rocket.chat/core-services": "workspace:^"
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/model-typings": "workspace:^"
-    "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/network-broker": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.32.0"
-    "@rocket.chat/tracing": "workspace:^"
-    "@rocket.chat/tsconfig": "workspace:*"
-    "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.5"
-    "@types/polka": "npm:^0.5.8"
-    "@types/prometheus-gc-stats": "npm:^0.6.4"
-    ejson: "npm:^2.2.3"
-    eslint: "npm:~8.45.0"
-    eventemitter3: "npm:^5.0.1"
-    mem: "npm:^8.1.1"
-    moleculer: "npm:^0.14.35"
-    mongodb: "npm:6.16.0"
-    nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
-    polka: "npm:^0.5.2"
-    prometheus-gc-stats: "npm:^1.1.0"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -10745,7 +10683,6 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
-    sip.js: "npm:^0.21.2"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -19538,6 +19475,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debug@npm:4.4.3":
+  version: 4.4.3
+  resolution: "debug@npm:4.4.3"
+  dependencies:
+    ms: "npm:^2.1.3"
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 10/9ada3434ea2993800bd9a1e320bd4aa7af69659fb51cca685d390949434bc0a8873c21ed7c9b852af6f2455a55c6d050aa3937d52b3c69f796dab666f762acad
+  languageName: node
+  linkType: hard
+
 "debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
@@ -21175,13 +21124,6 @@ __metadata:
   version: 2.0.0
   resolution: "escape-string-regexp@npm:2.0.0"
   checksum: 10/9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
-  languageName: node
-  linkType: hard
-
-"esl@github:pierre-lehnen-rc/esl":
-  version: 11.1.1
-  resolution: "esl@https://github.com/pierre-lehnen-rc/esl.git#commit=22f2167a4acaa129d214592cfb0d46a419d08663"
-  checksum: 10/6a67c2e77b292d1dc419f753d67ef0114b8509d1c21a8b4509233d09d0e69d603a2451feae36f7bc380875587a6826cd7d9e7608e8d64b937cf2711546e6cbed
   languageName: node
   linkType: hard
 
@@ -23473,10 +23415,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.6.19":
-  version: 4.6.19
-  resolution: "hono@npm:4.6.19"
-  checksum: 10/b3e317bdaf868359b68271d5aa395b1561ceedf3ac97f2d76cc5b9e00e01a794f862bdb5d5574b96b284f5456e2be4d42e6f9511a479d1afdf8c09dff75150e7
+"hono@npm:^4.10.7":
+  version: 4.10.7
+  resolution: "hono@npm:4.10.7"
+  checksum: 10/564be57c7e037ad1237b5451cee52b3d39d89fb7cefa00976ccb4650e1c4eeb37b928e87b85255b1595eb28f18e80ea5effdb1998b8464b742b434bee3e1dda7
   languageName: node
   linkType: hard
 
@@ -29111,7 +29053,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-forge@npm:1.3.1, node-forge@npm:^1":
+"node-forge@npm:1.3.2":
+  version: 1.3.2
+  resolution: "node-forge@npm:1.3.2"
+  checksum: 10/dcc54aaffe0cf52367214a20c0032aa9b209d9095dd14526504f1972d1900a07e96046b3684cb0c8d0cc3d48744dd18e02b7b447ab28fac615ffb850beeabf18
+  languageName: node
+  linkType: hard
+
+"node-forge@npm:^1":
   version: 1.3.1
   resolution: "node-forge@npm:1.3.1"
   checksum: 10/05bab6868633bf9ad4c3b1dd50ec501c22ffd69f556cdf169a00998ca1d03e8107a6032ba013852f202035372021b845603aeccd7dfcb58cdb7430013b3daa8d
@@ -29204,10 +29153,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.9.16":
-  version: 6.9.16
-  resolution: "nodemailer@npm:6.9.16"
-  checksum: 10/f131888d3111238fde4ee03539e62f1764b99365ff31d556dde0367dfefcee1f2eb8948558f35ba84fe5cd805f2d01294eee63a5675d3aa501e7df548a2518ce
+"nodemailer@npm:^7.0.7":
+  version: 7.0.11
+  resolution: "nodemailer@npm:7.0.11"
+  checksum: 10/2ad4dd56a4caf84a83aa6f4378ded26d5ef8a644ca3be09c3b4fb2255d861369e620f29be6c3c97148ac4a50aa5fdff6240b9d60805362bd99ca15f2ea62e8a2
   languageName: node
   linkType: hard
 
@@ -34246,13 +34195,6 @@ __metadata:
   version: 0.1.0
   resolution: "sip-status@npm:0.1.0"
   checksum: 10/6f63c78d9df22f3b3039a885a77cc23b8443eabb4b2a371e7c6b1230b17e2bbef00520b6ed36f96140d2bfa435cbcdbe82069fc2ef99a1b498bd75133339baa5
-  languageName: node
-  linkType: hard
-
-"sip.js@npm:^0.21.2":
-  version: 0.21.2
-  resolution: "sip.js@npm:0.21.2"
-  checksum: 10/ccddbf7e297b8f0517a6c59fa3e6e56b1fed84f10c518fdda3e84d99178295f1710448d0e6bd0c964c4f23bbf6288795cfcf3fa1224cfb2d75e9341f34ec077a
   languageName: node
   linkType: hard
 

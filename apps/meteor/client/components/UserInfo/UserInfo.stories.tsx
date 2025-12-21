@@ -53,3 +53,8 @@ WithABACAttributes.args = {
 		},
 	],
 };
+
+export const InvitedUser = Template.bind({});
+InvitedUser.args = {
+	invitationDate: '2025-01-01T12:00:00Z',
+};

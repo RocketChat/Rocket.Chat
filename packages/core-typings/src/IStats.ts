@@ -176,7 +176,6 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
-		omnichannelPdfTranscriptRequested?: number;
 		omnichannelPdfTranscriptSucceeded?: number;
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;
@@ -189,8 +188,6 @@ export interface IStats {
 		};
 	};
 	createdAt: Date | string;
-	totalOTR: number;
-	totalOTRRooms: number;
 	slashCommandsJitsi: number;
 	messageAuditApply: number;
 	messageAuditLoad: number;

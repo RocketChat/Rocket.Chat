@@ -8,8 +8,6 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
-type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-
 export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
@@ -49,7 +47,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
 		_id: string;
@@ -81,7 +78,6 @@ export interface IRoom extends IRocketChatRecord {
 	favorite?: boolean;
 	archived?: boolean;
 	description?: string;
-	createdOTR?: boolean;
 	e2eKeyId?: string;
 
 	/* @deprecated */
@@ -197,7 +193,7 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
-	t: 'l' | 'v';
+	t: 'l';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
@@ -323,37 +319,9 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	verified?: boolean;
 }
 
-export interface IVoipRoom extends IOmnichannelGenericRoom {
-	t: 'v';
-	name: string;
-	// The timestamp when call was started
-	callStarted: Date;
-	// The amount of time the call lasted, in milliseconds
-	callDuration?: number;
-	// The amount of time call was in queue in milliseconds
-	callWaitingTime?: number;
-	// The total of hold time for call (calculated at closing time) in seconds
-	callTotalHoldTime?: number;
-	// The pbx queue the call belongs to
-	queue: string;
-	// The ID assigned to the call (opaque ID)
-	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
-		lastMessageTs?: Date;
-		phone?: string;
-	};
-	// Outbound means the call was initiated from Rocket.Chat and vise versa
-	direction: 'inbound' | 'outbound';
-}
-
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	source: IOmnichannelSourceFromApp;
 }
-
-export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
-	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
-		serviceTimeDuration?: number;
-	};
 
 export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
 	serviceTimeDuration?: number;
@@ -363,8 +331,6 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
 
 export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
-
-export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
 	return source?.type === OmnichannelSourceType.APP;
