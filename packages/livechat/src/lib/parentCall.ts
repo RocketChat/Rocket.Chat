@@ -1,4 +1,5 @@
 import { VALID_CALLBACKS } from '../widget';
+import { store } from '../store';
 
 const getParentWindowTarget = () => {
 	if (window.opener && !window.opener.closed) {
@@ -16,8 +17,15 @@ export const parentCall = (method: string, ...args: any[]) => {
 	};
 
 	const target = getParentWindowTarget();
-	// TODO: This lgtm ignoring deserves more attention urgently!
-	target.postMessage(data, '*'); // lgtm [js/cross-window-information-leak]
+	let origin;
+	if (store.state.parentUrl) {
+		try {
+			origin = new URL(store.state.parentUrl).origin;
+		} catch {}
+	}
+	if (origin) {
+		target.postMessage(data, origin);
+	}
 };
 
 export const runCallbackEventEmitter = (callbackName: string, data: unknown) =>

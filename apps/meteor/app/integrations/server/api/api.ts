@@ -138,6 +138,10 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
+	if (this.request.integration.scriptEnabled && !scriptEngine.integrationHasValidScript(this.request.integration)) {
+		return API.v1.failure('script-compilation-failed');
+	}
+
 	let { bodyParams } = this;
 	const separateResponse = this.bodyParams?.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
