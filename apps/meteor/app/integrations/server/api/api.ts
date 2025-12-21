@@ -142,8 +142,8 @@ async function executeIntegrationRest(
 		return API.v1.failure('script-compilation-failed');
 	}
 
-	let { bodyParams } = this;
-	const separateResponse = this.bodyParams?.separateResponse === true;
+	let bodyParams = isPlainObject(this.bodyParams) ? this.bodyParams : {};
+	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
