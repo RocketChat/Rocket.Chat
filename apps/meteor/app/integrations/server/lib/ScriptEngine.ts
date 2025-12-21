@@ -332,8 +332,7 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 		});
 
 		if (!script[method]) {
-			this.logger.error(`Method "${method}" not found in the Integration "${integration.name}"`);
-			return;
+			throw new Error(`Method "${method}" not found in the Integration "${integration.name}"`);
 		}
 
 		return wrapExceptions(() =>
