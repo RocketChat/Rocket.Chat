@@ -1,16 +1,16 @@
-import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
+import { Avatar, Box, Button, IconButton, Label, TextInput } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
@@ -35,10 +35,12 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
-
-				if (await isValidImageFormat(dataURL)) {
-					setNewAvatarSource(dataURL);
-				}
+        if (await isValidImageFormat(dataURL)) {
+          setNewAvatarSource(dataURL);
+        } else {
+          // Invalid image format is notified to the user
+          dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+        }
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
 			}
