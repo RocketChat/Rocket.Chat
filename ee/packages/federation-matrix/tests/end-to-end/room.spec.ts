@@ -1613,7 +1613,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				describe('It should reflect all the members and messagens on the rocket.chat side', () => {
 					it('It should show all the three users in the members list', async () => {
-						retry(
+						await retry(
 							'Getting room members until all are present',
 							async () => {
 								const members = await getRoomMembers(rid, rc1AdminRequestConfig);
