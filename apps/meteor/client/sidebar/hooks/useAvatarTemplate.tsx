@@ -1,16 +1,13 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
 
-const isSubscriptionWithRoom = (room: SubscriptionWithRoom | IRoom): room is SubscriptionWithRoom => 'rid' in room;
-
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
 	sidebarDisplayAvatar?: boolean,
-): ComponentType<SubscriptionWithRoom | IRoom> | null => {
+): null | ComponentType<SubscriptionWithRoom & { rid: string }> => {
 	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 	const sidebarDisplayAvatarFromSettings = useUserPreference('sidebarDisplayAvatar');
 
@@ -21,7 +18,7 @@ export const useAvatarTemplate = (
 			return null;
 		}
 
-		const size = ((): 'x36' | 'x28' | 'x16' => {
+		const size = ((): 'x36' | 'x28' | 'x20' => {
 			switch (viewMode) {
 				case 'extended':
 					return 'x36';
@@ -29,14 +26,13 @@ export const useAvatarTemplate = (
 					return 'x28';
 				case 'condensed':
 				default:
-					return 'x16';
+					return 'x20';
 			}
 		})();
 
-		const renderRoomAvatar: ComponentType<SubscriptionWithRoom | IRoom> = (room) => {
-			const roomId = isSubscriptionWithRoom(room) ? room.rid : room._id;
-			return <RoomAvatar size={size} room={{ ...room, _id: roomId, type: room.t }} />;
-		};
+		const renderRoomAvatar: ComponentType<SubscriptionWithRoom & { rid: string }> = (room) => (
+			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+		);
 
 		return renderRoomAvatar;
 	}, [displayAvatar, viewMode]);

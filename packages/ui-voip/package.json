@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "15.0.1",
+	"version": "15.0.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -23,8 +23,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/media-signaling": "workspace:~",
 		"@tanstack/react-query": "~5.65.1",
-		"react-i18next": "~13.2.2",
-		"sip.js": "^0.21.2"
+		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.52.0",

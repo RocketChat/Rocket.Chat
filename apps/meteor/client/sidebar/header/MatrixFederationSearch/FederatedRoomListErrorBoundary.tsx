@@ -1,6 +1,6 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
@@ -9,11 +9,12 @@ type FederatedRoomListErrorBoundaryProps = {
 	resetKeys?: unknown[];
 };
 
-const FederatedRoomListErrorBoundary = ({ children, resetKeys }: FederatedRoomListErrorBoundaryProps): ReactElement => {
+const FederatedRoomListErrorBoundary = ({ children, resetKeys }: FederatedRoomListErrorBoundaryProps) => {
 	const { t } = useTranslation();
+
 	return (
 		<QueryErrorResetBoundary>
-			{({ reset }): ReactElement => (
+			{({ reset }) => (
 				<ErrorBoundary
 					children={children}
 					resetKeys={resetKeys}

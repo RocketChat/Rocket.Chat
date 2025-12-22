@@ -6,13 +6,13 @@ import type {
 	IUser,
 	SelectedAgent,
 	TransferByData,
+	TransferData,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
-	isPOSTLivechatRoomTransferParams,
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
@@ -24,7 +24,9 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	ajv,
 } from '@rocket.chat/rest-typings';
+import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
@@ -237,43 +239,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecation: { version: '7.0.0' } },
-	{
-		async post() {
-			const { rid, token, department } = this.bodyParams;
-
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Error('invalid-token');
-			}
-
-			let room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			// update visited page history to not expire
-			await Messages.keepHistoryForToken(token);
-
-			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
-
-			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
-				return API.v1.failure();
-			}
-
-			room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			return API.v1.success({ room });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'livechat/room.survey',
 	{ validateParams: isPOSTLivechatRoomSurveyParams },
 	{
@@ -364,6 +329,74 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatVisitorDepartmentTransfer = API.v1.post(
+	'livechat/visitor/department.transfer',
+	{
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+		},
+		body: isPOSTLivechatVisitorDepartmentTransferParams,
+	},
+	async function action() {
+		const { rid, token, department } = this.bodyParams;
+
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			return API.v1.failure('invalid-token');
+		}
+		const room = await LivechatRooms.findOneById(rid);
+
+		if (!room || room.t !== 'l') {
+			return API.v1.failure('error-invalid-room');
+		}
+
+		if (!room.open) {
+			return API.v1.failure('This_conversation_is_already_closed');
+		}
+
+		// As this is a visitor endpoint, we should not show the mac limit error
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return API.v1.failure('error-transefing-chat');
+		}
+
+		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+		if (!guest) {
+			return API.v1.failure('error-invalid-visitor');
+		}
+
+		const transferredBy = normalizeTransferredByData(
+			{ _id: guest._id, username: guest.username, name: guest.name, userType: 'visitor' },
+			room,
+		);
+
+		const transferData: TransferData = { transferredBy, departmentId: department };
+
+		const chatForwardedResult = await transfer(room, guest, transferData);
+		if (!chatForwardedResult) {
+			return API.v1.failure('error-transfering-chat');
+		}
+
+		return API.v1.success();
+	},
+);
+
+type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatAnalyticsEndpoints {}
+}
 
 API.v1.addRoute(
 	'livechat/room.join',

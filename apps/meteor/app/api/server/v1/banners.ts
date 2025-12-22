@@ -1,72 +1,7 @@
 import { Banner } from '@rocket.chat/core-services';
-import { isBannersDismissProps, isBannersGetNewProps, isBannersProps } from '@rocket.chat/rest-typings';
+import { isBannersDismissProps, isBannersProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
-
-/**
- * @deprecated
- * @openapi
- *  /api/v1/banners.getNew:
- *    get:
- *      description: Gets the banners to be shown to the authenticated user
- *      deprecated: true
- *      security:
- *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: platform
- *          in: query
- *          description: The platform rendering the banner
- *          required: true
- *          schema:
- *            type: string
- *            enum: [web, mobile]
- *          example: web
- *        - name: bid
- *          in: query
- *          description: The id of a single banner
- *          required: false
- *          schema:
- *            type: string
- *          example: ByehQjC44FwMeiLbX
- *      responses:
- *        200:
- *          description: The banners matching the criteria
- *          content:
- *            application/json:
- *              schema:
- *                allOf:
- *                  - $ref: '#/components/schemas/ApiSuccessV1'
- *                  - type: object
- *                    properties:
- *                      banners:
- *                        type: array
- *                        items:
- *                           $ref: '#/components/schemas/IBanner'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'banners.getNew',
-	{
-		authRequired: true,
-		validateParams: isBannersGetNewProps,
-		deprecation: { version: '8.0.0', alternatives: ['/v1/banners/:id', '/v1/banners'] },
-	},
-	{
-		// deprecated
-		async get() {
-			const { platform, bid: bannerId } = this.queryParams;
-
-			const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
-
-			return API.v1.success({ banners });
-		},
-	},
-);
 
 /**
  * @openapi

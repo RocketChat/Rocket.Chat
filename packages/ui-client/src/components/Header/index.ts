@@ -1,37 +1,12 @@
-import Header from './Header';
-import HeaderAvatar from './HeaderAvatar';
-import HeaderContent from './HeaderContent';
-import HeaderContentRow from './HeaderContentRow';
-import HeaderDivider from './HeaderDivider';
-import HeaderIcon from './HeaderIcon';
-import HeaderState from './HeaderState';
-import HeaderSubtitle from './HeaderSubtitle';
-import HeaderTag from './HeaderTag';
-import HeaderTagIcon from './HeaderTagIcon';
-import HeaderTagSkeleton from './HeaderTagSkeleton';
-import HeaderTitle from './HeaderTitle';
-import HeaderTitleButton from './HeaderTitleButton';
-import HeaderToolbar from './HeaderToolbar';
-import HeaderToolbarAction from './HeaderToolbarAction';
-import HeaderToolbarActionBadge from './HeaderToolbarActionBadge';
-import HeaderToolbarDivider from './HeaderToolbarDivider';
-
-export {
-	Header,
-	HeaderAvatar,
-	HeaderContent,
-	HeaderContentRow,
-	HeaderDivider,
-	HeaderIcon,
-	HeaderState,
-	HeaderSubtitle,
-	HeaderTag,
-	HeaderTagIcon,
-	HeaderTagSkeleton,
-	HeaderTitle,
-	HeaderTitleButton,
-	HeaderToolbar,
-	HeaderToolbarAction,
-	HeaderToolbarActionBadge,
-	HeaderToolbarDivider,
-};
+export { default as Header } from './Header';
+export { default as HeaderAvatar } from './HeaderAvatar';
+export { default as HeaderContent } from './HeaderContent';
+export { default as HeaderContentRow } from './HeaderContentRow';
+export { default as HeaderDivider } from './HeaderDivider';
+export { default as HeaderIcon } from './HeaderIcon';
+export { default as HeaderState } from './HeaderState';
+export { default as HeaderSubtitle } from './HeaderSubtitle';
+export { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from './HeaderTag';
+export { default as HeaderTitle } from './HeaderTitle';
+export { default as HeaderTitleButton } from './HeaderTitleButton';
+export { HeaderToolbar, HeaderToolbarAction, HeaderToolbarActionBadge, HeaderToolbarDivider } from './HeaderToolbar';

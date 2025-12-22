@@ -129,6 +129,16 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
 	}
 
+	private getContactDataForInternalHistory(
+		contact: IMediaCall['caller'] | IMediaCall['callee'],
+	): Pick<IInternalMediaCallHistoryItem, 'contactId' | 'contactName' | 'contactUsername'> {
+		return {
+			contactId: contact.id,
+			contactName: contact.displayName,
+			contactUsername: contact.username,
+		};
+	}
+
 	private async saveInternalCallToHistory(call: IMediaCall): Promise<void> {
 		if (call.caller.type !== 'user' || call.callee.type !== 'user') {
 			logger.warn({ msg: 'Attempt to save an internal call history with a call that is not internal', callId: call._id });
@@ -158,14 +168,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			...sharedData,
 			uid: call.caller.id,
 			direction: 'outbound',
-			contactId: call.callee.id,
+			...this.getContactDataForInternalHistory(call.callee),
 		} as const;
 
 		const inboundHistoryItem = {
 			...sharedData,
 			uid: call.callee.id,
 			direction: 'inbound',
-			contactId: call.caller.id,
+			...this.getContactDataForInternalHistory(call.caller),
 		} as const;
 
 		await CallHistory.insertMany([outboundHistoryItem, inboundHistoryItem]).catch((err: unknown) =>
@@ -188,7 +198,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const state = this.getCallHistoryItemState(call);
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration);
+		const record = getHistoryMessagePayload(state, duration, call._id);
 
 		try {
 			const message = await sendMessage(user, record, room, false);
@@ -276,12 +286,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
-		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
-		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const sipEnabled = settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false;
 		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
-			enabled,
 			internalCalls: {
 				requireExtensions: forceSip,
 				routeExternally: forceSip ? 'always' : 'never',
