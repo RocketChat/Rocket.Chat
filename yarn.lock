@@ -8461,9 +8461,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-services@workspace:packages/core-services"
   dependencies:
-    "@babel/core": "npm:~7.28.5"
-    "@babel/preset-env": "npm:~7.28.5"
-    "@babel/preset-typescript": "npm:~7.27.1"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -8479,7 +8476,6 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/jest": "npm:~30.0.0"
-    babel-jest: "npm:~30.2.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
