@@ -293,7 +293,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 					try {
 						await federationSDK.inviteUserToRoom(
-							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
+							userIdSchema.parse(isUserNativeFederated(member) ? member.username : `@${member.username}:${this.serverName}`),
 							roomIdSchema.parse(matrixRoomResult.room_id),
 							userIdSchema.parse(actualMatrixUserId),
 						);
