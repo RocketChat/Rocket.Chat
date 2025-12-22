@@ -1204,22 +1204,7 @@ const waitForRoomEvent = async (
 						});
 
 						beforeAll(async () => {
-							// Create non-federated DM between rcUser1 and rcUser2
-							const nonFedDmResponse = await rcUser1.config.request
-								.post(api('dm.create'))
-								.set(rcUser1.config.credentials)
-								.send({
-									username: rcUser2.username,
-								})
-								.expect(200);
-
-							expect(nonFedDmResponse.body).toHaveProperty('success', true);
-
-							const roomInfoNonFed = await getRoomInfo(nonFedDmResponse.body.room._id, rcUser1.config);
-
-							rcRoomNonFed = roomInfoNonFed.room as IRoomNativeFederated;
-
-							// Create federated DM between rcUser1 and rcUser2 and the Synapse user
+							// First create a federated DM between rcUser1 and rcUser2 and the Synapse user, so this is the oldest room
 							const fedDmResponse = await rcUser1.config.request
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
@@ -1260,6 +1245,21 @@ const waitForRoomEvent = async (
 								// After acceptance, should display the Synapse user's ID
 								expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminMatrixUserId}, ${rcUser1.fullName}`);
 							});
+
+							// Then create non-federated DM between rcUser1 and rcUser2 which should be returned on duplication
+							const nonFedDmResponse = await rcUser1.config.request
+								.post(api('dm.create'))
+								.set(rcUser1.config.credentials)
+								.send({
+									username: rcUser2.username,
+								})
+								.expect(200);
+
+							expect(nonFedDmResponse.body).toHaveProperty('success', true);
+
+							const roomInfoNonFed = await getRoomInfo(nonFedDmResponse.body.room._id, rcUser1.config);
+
+							rcRoomNonFed = roomInfoNonFed.room as IRoomNativeFederated;
 						});
 
 						it('should have two DMs with same users', async () => {
@@ -1322,9 +1322,6 @@ const waitForRoomEvent = async (
 
 							expect(response.body).toHaveProperty('success', true);
 
-							// expect(response.body).toHaveProperty('room._id', rcRoom._id);
-
-							// TODO this is currently wrong, the correct value should be rcRoom._id
 							expect(response.body).toHaveProperty('room._id', rcRoomNonFed._id);
 						});
 					});
@@ -1488,10 +1485,19 @@ const waitForRoomEvent = async (
 
 							const response = await acceptRoomInvite(rcRoom._id, rcUser2.config);
 							expect(response.success).toBe(true);
+
+							await retry(
+								'wait for the join to be processed',
+								async () => {
+									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
+
+									expect(sub).not.toHaveProperty('status');
+								},
+								{ delayMs: 100 },
+							);
 						});
 
-						// TODO this is failing because we cannot accept the invite properly on the line above
-						it.failing('should have two DMs with same users', async () => {
+						it('should have a single DM with same users before one leaves', async () => {
 							const roomsResponse = await rcUser1.config.request.get(api('rooms.get')).set(rcUser1.config.credentials).expect(200);
 
 							const dmRooms = roomsResponse.body.update.filter(
@@ -1505,7 +1511,9 @@ const waitForRoomEvent = async (
 
 							// at this time there should be only one DM with only two users (the non-federated one)
 							expect(dmRooms.length).toBe(1);
+						});
 
+						it('should leave the federated DM with three users', async () => {
 							// now the rc user leaves the federated DM
 							const response = await rcUser2.config.request
 								.post(api('rooms.leave'))
@@ -1517,19 +1525,21 @@ const waitForRoomEvent = async (
 
 							expect(response.body).toHaveProperty('success', true);
 
-							await retry(
-								'wait for the leave to be processed',
-								async () => {
-									expect(hs1Room1.getMyMembership()).toBe('leave');
+							// Verify room is no longer accessible to RC users
+							await retry('waiting for room cleanup', async () => {
+								const roomsResponse = await rcUser2.config.request.get(api('rooms.get')).set(rcUser2.config.credentials).expect(200);
 
-									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser1.config.credentials, rcUser1.config.request);
+								expect(roomsResponse.body).toHaveProperty('update');
+								expect(roomsResponse.body.update).toBeInstanceOf(Array);
 
-									// After leave, should display only the RC user's full name
-									expect(sub).toHaveProperty('fname', rcUser2.fullName);
-								},
-								{ delayMs: 100 },
-							);
+								const room = roomsResponse.body.update?.find((r: IRoom) => r._id === rcRoom._id);
 
+								// Room should not be in active rooms list
+								expect(room).toBeUndefined();
+							});
+						});
+
+						it('should have two DMs with same users', async () => {
 							// now there should be two DMs with the same users
 							const roomsResponseAfterLeave = await rcUser1.config.request
 								.get(api('rooms.get'))
@@ -1559,9 +1569,6 @@ const waitForRoomEvent = async (
 
 							expect(response.body).toHaveProperty('success', true);
 
-							// expect(response.body).toHaveProperty('room._id', rcRoom._id);
-
-							// TODO this is currently wrong, the correct value should be rcRoom._id
 							expect(response.body).toHaveProperty('room._id', rcRoom1on1._id);
 						});
 					});
