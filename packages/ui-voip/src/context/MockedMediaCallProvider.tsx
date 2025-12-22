@@ -127,6 +127,7 @@ const MockedMediaCallProvider = ({
 		state: widgetState,
 		hidden: false,
 		connectionState: 'CONNECTED' as const,
+		expanded: widgetState === 'ongoing',
 		peerInfo,
 		transferredBy,
 		muted: mutedState,

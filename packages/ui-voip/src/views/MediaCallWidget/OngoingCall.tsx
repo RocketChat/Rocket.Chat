@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -21,7 +21,7 @@ import { useMediaCallContext } from '../../context';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState } =
+	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState, expanded } =
 		useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
@@ -38,18 +38,33 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget>
+		<Widget expanded={expanded}>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				<Box display='flex' flexDirection='column' flexGrow={1}>
+					<Box display='flex' flexDirection='column' w={432} h={243}>
+						<video controls preload='metadata' style={{ width: '100%', height: '100%' }}>
+							<track kind='captions' />
+						</video>
+					</Box>
+					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='center' w={432} h={160}>
+						<video controls preload='metadata' style={{ width: '50%', height: '100%' }}>
+							<track kind='captions' />
+						</video>
+						<video controls preload='metadata' style={{ width: '50%', height: '100%' }}>
+							<track kind='captions' />
+						</video>
+					</Box>
+				</Box>
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{keypad}
-				<ButtonGroup large>
+				<ButtonGroup large align='center'>
 					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
