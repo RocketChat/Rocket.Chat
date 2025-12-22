@@ -13,7 +13,7 @@ import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
 
-const exitIfNotBypassed = (ignore, errorCode = 1) => {
+const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
 		return;
 	}
@@ -28,10 +28,16 @@ Meteor.startup(async () => {
 	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
-	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
+	const parsedSemVer = semver.parse(desiredNodeVersion);
+	if (!parsedSemVer) {
+		console.error('Failed to parse desired Node.js version from .node_version.txt');
+		process.exit(1);
+	}
+
+	const desiredNodeVersionMajor = String(parsedSemVer.major);
 
 	return setTimeout(async () => {
-		let msg = [
+		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
 			`    MongoDB Version: ${mongoVersion}`,
@@ -63,7 +69,9 @@ Meteor.startup(async () => {
 			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (semver.satisfies(semver.coerce(mongoVersion), '<7.0.0')) {
+		const mongoSemver = semver.coerce(mongoVersion);
+
+		if (!mongoSemver || semver.satisfies(mongoSemver, '<7.0.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 7.0 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
