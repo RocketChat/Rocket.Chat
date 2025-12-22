@@ -220,7 +220,7 @@ jobs:
             $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -228,7 +228,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: turbo-build
           path: .turbo/cache
@@ -657,7 +657,7 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: reports-coverage
           path: /tmp/coverage_report
