@@ -80,7 +80,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					size='x124'
 					url={url}
 					key={url}
-					data-qa-id='UserAvatarEditor'
+					alt={t('__username__profile_picture', { username: currentUsername || 'user' })}
 					username={currentUsername || ''}
 					etag={etag}
 					style={{

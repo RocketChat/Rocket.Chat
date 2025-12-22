@@ -33,7 +33,7 @@ export class AccountProfile extends Account {
 	}
 
 	get userAvatarEditor(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+		return this.page.getByAltText('profile picture');
 	}
 
 	get emailTextInput(): Locator {
