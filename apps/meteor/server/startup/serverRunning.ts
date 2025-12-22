@@ -41,11 +41,11 @@ Meteor.startup(async () => {
 			`           Site URL: ${settings.get('Site_Url')}`,
 		];
 
-		if (Info.commit && Info.commit.hash) {
+		if (Info.commit?.hash) {
 			msg.push(`        Commit Hash: ${Info.commit.hash.substr(0, 10)}`);
 		}
 
-		if (Info.commit && Info.commit.branch) {
+		if (Info.commit?.branch) {
 			msg.push(`      Commit Branch: ${Info.commit.branch}`);
 		}
 
