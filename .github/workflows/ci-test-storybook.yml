@@ -55,7 +55,7 @@ jobs:
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v3
         with:
           flags: unit
           verbose: true

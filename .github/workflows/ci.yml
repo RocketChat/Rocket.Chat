@@ -664,7 +664,7 @@ jobs:
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v3
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -673,7 +673,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v3
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
