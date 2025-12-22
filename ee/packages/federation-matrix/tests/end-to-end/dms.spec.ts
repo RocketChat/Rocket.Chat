@@ -1097,7 +1097,7 @@ const waitForRoomEvent = async (
 					});
 				});
 
-				it.failing('should accept the invitation by the Rocket.Chat user', async () => {
+				it('should accept the invitation by the Rocket.Chat user', async () => {
 					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig2);
 					expect(response.success).toBe(true);
 				});
@@ -1435,7 +1435,7 @@ const waitForRoomEvent = async (
 							});
 						});
 
-						it.failing('should create a federated DM between rcUser1 and rcUser2 and the Synapse user', async () => {
+						it('should create a federated DM between rcUser1 and rcUser2 and the Synapse user', async () => {
 							const fedDmResponse = await rcUser1.config.request
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
@@ -1486,7 +1486,6 @@ const waitForRoomEvent = async (
 								{ delayMs: 100 },
 							);
 
-							// TODO accept not working
 							const response = await acceptRoomInvite(rcRoom._id, rcUser2.config);
 							expect(response.success).toBe(true);
 						});
