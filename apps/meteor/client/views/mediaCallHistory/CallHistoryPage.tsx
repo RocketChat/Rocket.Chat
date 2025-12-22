@@ -4,7 +4,7 @@ import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryTableInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryTableInternalContact, CallHistoryUnknownContact, CallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -101,7 +101,7 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, isFetching, error, refetch, ...result } = useQuery({
+	const { data, isPending, error, refetch } = useQuery({
 		queryKey: [
 			'call-history',
 			'list',
@@ -126,10 +126,7 @@ const CallHistoryPage = () => {
 				...(debouncedSearchText && { filter: debouncedSearchText }),
 			});
 		},
-		placeholderData: keepPreviousData,
 	});
-
-	console.log('rest', { isPending, isFetching, ...result });
 
 	const tableData = useMemo(() => {
 		return data?.items.map((item) => {
@@ -187,6 +184,9 @@ const CallHistoryPage = () => {
 			<CallHistoryPageLayout filterProps={filterProps}>
 				<MediaCallHistoryTable sort={sortProps}>
 					<GenericTableLoadingRow cols={5} />
+					<GenericTableLoadingRow cols={5} />
+					<GenericTableLoadingRow cols={5} />
+					<GenericTableLoadingRow cols={5} />
 				</MediaCallHistoryTable>
 				{pagination}
 			</CallHistoryPageLayout>
@@ -212,7 +212,6 @@ const CallHistoryPage = () => {
 			{!tableData || (tableData.length === 0 && <GenericNoResults />)}
 			{tableData && tableData.length > 0 && (
 				<MediaCallHistoryTable sort={sortProps}>
-					{isFetching && <GenericTableLoadingRow cols={5} />}
 					{tableData.map((item) => {
 						if (isCallHistoryUnknownContact(item.contact)) {
 							return <CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
