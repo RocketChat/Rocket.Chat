@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.2.45",
+	"version": "0.2.46",
 	"private": true,
 	"main": "./dist/Presence.js",
 	"typings": "./dist/Presence.d.ts",
@@ -9,11 +9,11 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"testunit": "jest",
-		"typecheck": "tsc --noEmit --skipLibCheck"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -22,14 +22,10 @@
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/preset-env": "~7.28.5",
-		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "~22.16.5",
-		"babel-jest": "~30.2.0",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"

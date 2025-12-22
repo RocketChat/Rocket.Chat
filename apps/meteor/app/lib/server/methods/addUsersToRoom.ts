@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -52,8 +52,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// TODO: Can't add to direct room ever, unless it's a federated room
-	if (room.t === 'd') {
+	if (room.t === 'd' && !isRoomNativeFederated(room)) {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
 		});

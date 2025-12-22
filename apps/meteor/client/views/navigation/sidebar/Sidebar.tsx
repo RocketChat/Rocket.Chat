@@ -3,8 +3,8 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarRoomList from './RoomList';
-import SidebarFooter from '../../../sidebarv2/footer';
-import BannerSection from '../../../sidebarv2/sections/BannerSection';
+import SidebarFooter from '../../../sidebar/footer';
+import BannerSection from '../../../sidebar/sections/BannerSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();

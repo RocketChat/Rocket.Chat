@@ -77,10 +77,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { createdOTR: 1 },
-				sparse: true,
-			},
-			{
 				key: { encrypted: 1 },
 				sparse: true,
 			}, // used on statistics
@@ -113,6 +109,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{
 				key: { 'abacAttributes.key': 1, 'abacAttributes.values': 1 },
 				partialFilterExpression: { abacAttributes: { $exists: true } },
+			},
+			{
+				key: { teamMain: 1 },
+				sparse: true,
 			},
 		];
 	}
@@ -1000,35 +1000,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T>({ _id: roomId, t: type }, options);
 	}
 
-	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	setCallStatusAndCallStartTime(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-				webRtcCallStartTime: new Date(),
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	setReactionsInLastMessage(roomId: IRoom['_id'], reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
 	}
@@ -1307,6 +1278,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
+	findAllPrivateRoomsWithAbacAttributes(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			t: 'p',
+			abacAttributes: { $exists: true, $ne: [] },
+		};
+
+		return this.find(query, options);
+	}
+
 	async findBySubscriptionUserId(userId: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<FindCursor<IRoom>> {
 		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
@@ -1562,14 +1542,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			options,
 		);
-	}
-
-	findByCreatedOTR(): FindCursor<IRoom> {
-		return this.find({ createdOTR: true });
-	}
-
-	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
-		return this.countDocuments({ createdOTR: true }, options);
 	}
 
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
@@ -2122,18 +2094,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments({ prid: { $exists: true } });
 	}
 
-	setOTRForDMByRoomID(rid: IRoom['_id']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id: rid, t: 'd' };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				createdOTR: true,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
 		return (
 			await this.col
@@ -2317,6 +2277,33 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
+	findAllByTypesAndDiscussionAndTeam(
+		filters: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		} = {},
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const { types, discussions, teams } = filters;
+
+		const query: Filter<IRoom> = {};
+
+		if (types) {
+			query.t = { $in: types };
+		}
+
+		if (typeof discussions !== 'undefined') {
+			query.prid = { $exists: discussions };
+		}
+
+		if (typeof teams !== 'undefined') {
+			query.teamMain = { $exists: teams };
+		}
+
+		return this.find(query, options);
+	}
+
 	resetRoomKeyAndSetE2EEQueueByRoomId(
 		roomId: string,
 		e2eKeyId: string,
@@ -2344,5 +2331,21 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	countAbacEnabled(): Promise<number> {
 		return this.countDocuments({ abacAttributes: { $exists: true }, archived: { $ne: true } });
+	}
+
+	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: roomId,
+			t: 'd',
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usernames: username,
+				uids: userId,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

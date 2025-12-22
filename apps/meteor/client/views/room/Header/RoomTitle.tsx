@@ -2,11 +2,15 @@ import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useButtonPattern, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useDocumentTitle, HeaderTitle, HeaderTitleButton } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 
-const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
+type RoomTitleProps = { room: IRoom };
+
+const RoomTitle = ({ room }: RoomTitleProps) => {
+	const { t } = useTranslation();
+
 	useDocumentTitle(room.name, false);
 	const { openTab } = useRoomToolbox();
 
@@ -18,10 +22,6 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 		switch (room.t) {
 			case 'l':
 				openTab('room-info');
-				break;
-
-			case 'v':
-				openTab('voip-room-info');
 				break;
 
 			case 'd':
@@ -37,9 +37,9 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	const buttonProps = useButtonPattern(handleOpenRoomInfo);
 
 	return (
-		<HeaderTitleButton {...buttonProps} mie={4}>
+		<HeaderTitleButton aria-label={`${room.name}${room.encrypted ? ` - ${t('encrypted')}` : ''}`} {...buttonProps} mie={4}>
 			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
+			<HeaderTitle>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
 	);
 };

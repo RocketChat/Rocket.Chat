@@ -5,7 +5,7 @@ import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { memo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
+import { useDropdownVisibility } from './hooks/useDrowdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
 type QuickActionOptionsProps = {

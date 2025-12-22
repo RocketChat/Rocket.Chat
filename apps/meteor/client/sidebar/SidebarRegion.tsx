@@ -7,7 +7,7 @@ import { FocusScope } from 'react-aria';
 import Sidebar from './Sidebar';
 
 const SidebarRegion = () => {
-	const { isMobile, sidebar } = useLayout();
+	const { sidebar } = useLayout();
 
 	const sidebarMobileClass = css`
 		position: absolute;
@@ -93,14 +93,17 @@ const SidebarRegion = () => {
 		<FocusScope>
 			<Box
 				id='sidebar-region'
-				className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle, isMobile && sidebarMobileClass].filter(
-					Boolean,
-				)}
+				className={[
+					'rcx-sidebar',
+					!sidebar.isCollapsed && sidebar.shouldToggle && 'opened',
+					sideBarStyle,
+					sidebar.shouldToggle && sidebarMobileClass,
+				].filter(Boolean)}
 			>
 				<Sidebar />
 			</Box>
-			{isMobile && (
-				<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()}></Box>
+			{sidebar.shouldToggle && (
+				<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()} />
 			)}
 		</FocusScope>
 	);

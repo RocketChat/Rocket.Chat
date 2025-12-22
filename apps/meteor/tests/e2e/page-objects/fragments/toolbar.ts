@@ -59,6 +59,10 @@ export class RoomToolbar extends Toolbar {
 		return this.root.getByRole('button', { name: 'Options' });
 	}
 
+	get btnSearchMessages(): Locator {
+		return this.root.getByRole('button', { name: 'Search Messages' });
+	}
+
 	get btnDisableE2EEncryption(): Locator {
 		return this.root.getByRole('button', { name: 'Disable E2E encryption' });
 	}
