@@ -102,7 +102,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 							title={t('Add_URL')}
 							mi={4}
 							onClick={handleAddUrl}
-							data-qa-id='UserAvatarEditorSetAvatarLink'
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>

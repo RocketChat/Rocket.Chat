@@ -16,7 +16,7 @@ export class AccountProfile extends Account {
 	}
 
 	get btnSetAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
+		return this.page.getByRole('button', { name: 'Add URL', exact: true });
 	}
 
 	get inputUsername(): Locator {
