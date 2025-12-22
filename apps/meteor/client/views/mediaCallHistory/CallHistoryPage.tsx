@@ -1,14 +1,15 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSort, Page, PageHeader, PageContent, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
+import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryTableInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryTableInternalContact, CallHistoryUnknownContact, CallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import CallHistoryPageLayout from './CallHistoryPageLayout';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
@@ -100,7 +101,7 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, error, refetch } = useQuery({
+	const { data, isPending, isFetching, error, refetch, ...result } = useQuery({
 		queryKey: [
 			'call-history',
 			'list',
@@ -112,9 +113,11 @@ const CallHistoryPage = () => {
 			states,
 			debouncedSearchText,
 		],
-		queryFn: () => {
+		queryFn: async () => {
 			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
 			const stateFilter = getStateFilter(states);
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			return getCallHistory({
 				count: paginationProps.itemsPerPage,
@@ -125,7 +128,10 @@ const CallHistoryPage = () => {
 				...(debouncedSearchText && { filter: debouncedSearchText }),
 			});
 		},
+		placeholderData: keepPreviousData,
 	});
+
+	console.log('rest', { isPending, isFetching, ...result });
 
 	const tableData = useMemo(() => {
 		return data?.items.map((item) => {
@@ -164,77 +170,74 @@ const CallHistoryPage = () => {
 		});
 	}, [data]);
 
+	const contextualBar = (() => {
+		if (tab?.openTab === 'user-info') {
+			return <UserInfoWithData rid={tab.rid} uid={tab.userId} onClose={closeTab} onClickBack={historyId ? handleBack : undefined} />;
+		}
+		if (tab?.openTab === 'details' && historyId) {
+			return <MediaCallHistoryContextualbar historyId={historyId} onClose={closeTab} messageRoomId={tab.rid} openUserInfo={openUserInfo} />;
+		}
+		return null;
+	})();
+
+	const pagination = (
+		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
+	);
+
 	if (isPending) {
 		return (
-			<PageContent>
+			<CallHistoryPageLayout filterProps={filterProps}>
 				<MediaCallHistoryTable sort={sortProps}>
 					<GenericTableLoadingRow cols={5} />
 				</MediaCallHistoryTable>
-			</PageContent>
+				{pagination}
+			</CallHistoryPageLayout>
 		);
 	}
 
 	if (error) {
 		return (
-			<Page>
-				<PageHeader title={t('Call_history')} />
-				<PageContent>
-					<GenericNoResults
-						icon='warning'
-						title={t('Something_went_wrong')}
-						description={t('Please_try_again')}
-						buttonTitle={t('Reload_page')}
-						buttonAction={() => refetch()}
-					/>
-				</PageContent>
-			</Page>
+			<CallHistoryPageLayout filterProps={filterProps}>
+				<GenericNoResults
+					icon='warning'
+					title={t('Something_went_wrong')}
+					description={t('Please_try_again')}
+					buttonTitle={t('Reload_page')}
+					buttonAction={() => refetch()}
+				/>
+			</CallHistoryPageLayout>
 		);
 	}
 
 	return (
-		<Page flexDirection='row'>
-			<Page>
-				<PageHeader title={t('Call_history')} />
-				<PageContent>
-					<CallHistoryPageFilters {...filterProps} />
-					{!tableData || (tableData.length === 0 && <GenericNoResults />)}
-					{tableData && tableData.length > 0 && (
-						<MediaCallHistoryTable sort={sortProps}>
-							{tableData.map((item) => {
-								if (isCallHistoryUnknownContact(item.contact)) {
-									return (
-										<CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
-									);
-								}
-								if (isCallHistoryTableInternalContact(item.contact)) {
-									return (
-										<CallHistoryRowInternalUser
-											key={item._id}
-											{...item}
-											contact={item.contact}
-											onClick={() => onClickRow(item.rid ?? '', item._id)}
-											rid={item.rid ?? ''}
-											onClickUserInfo={item.rid ? openUserInfo : undefined}
-										/>
-									);
-								}
+		<CallHistoryPageLayout filterProps={filterProps} contextualBar={contextualBar}>
+			{!tableData || (tableData.length === 0 && <GenericNoResults />)}
+			{tableData && tableData.length > 0 && (
+				<MediaCallHistoryTable sort={sortProps}>
+					{isFetching && <GenericTableLoadingRow cols={5} />}
+					{tableData.map((item) => {
+						if (isCallHistoryUnknownContact(item.contact)) {
+							return <CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
+						}
+						if (isCallHistoryTableInternalContact(item.contact)) {
+							return (
+								<CallHistoryRowInternalUser
+									key={item._id}
+									{...item}
+									contact={item.contact}
+									onClick={() => onClickRow(item.rid ?? '', item._id)}
+									rid={item.rid ?? ''}
+									onClickUserInfo={item.rid ? openUserInfo : undefined}
+								/>
+							);
+						}
 
-								return (
-									<CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />
-								);
-							})}
-						</MediaCallHistoryTable>
-					)}
-					<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
-				</PageContent>
-			</Page>
-			{tab?.openTab === 'user-info' && (
-				<UserInfoWithData rid={tab.rid} uid={tab.userId} onClose={closeTab} onClickBack={historyId ? handleBack : undefined} />
+						return <CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
+					})}
+				</MediaCallHistoryTable>
 			)}
-			{tab?.openTab === 'details' && historyId && (
-				<MediaCallHistoryContextualbar historyId={historyId} onClose={closeTab} messageRoomId={tab.rid} openUserInfo={openUserInfo} />
-			)}
-		</Page>
+			{pagination}
+		</CallHistoryPageLayout>
 	);
 };
 
