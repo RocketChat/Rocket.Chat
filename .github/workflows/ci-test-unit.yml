@@ -61,7 +61,7 @@ jobs:
       - name: Unit Test
         run: yarn testunit
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
           flags: unit
           verbose: true
