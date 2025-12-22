@@ -1,4 +1,4 @@
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -45,7 +45,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				<Box display='flex' flexDirection='column' flexGrow={1}>
+				{/* <Box display='flex' flexDirection='column' flexGrow={1}>
 					<Box display='flex' flexDirection='column' w={432} h={243}>
 						<video controls preload='metadata' style={{ width: '100%', height: '100%' }}>
 							<track kind='captions' />
@@ -59,7 +59,7 @@ const OngoingCall = () => {
 							<track kind='captions' />
 						</video>
 					</Box>
-				</Box>
+				</Box>*/}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>

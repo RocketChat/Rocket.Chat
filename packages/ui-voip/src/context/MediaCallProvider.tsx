@@ -24,6 +24,7 @@ import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { isValidTone, useTonePlayer } from './useTonePlayer';
+import useVideoStream from './useVideoStream';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
@@ -47,6 +48,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	useDesktopNotifications(session);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
+	const [remoteStreamVideoRefCallback] = useVideoStream(instance);
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
@@ -283,6 +285,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 				<audio ref={remoteStreamRefCallback}>
 					<track kind='captions' />
 				</audio>,
+				document.body,
+			)}
+			{createPortal(
+				<video ref={remoteStreamVideoRefCallback}>
+					<track kind='captions' />
+				</video>,
 				document.body,
 			)}
 			<AnchorPortal id='rcx-media-call-widget-portal'>

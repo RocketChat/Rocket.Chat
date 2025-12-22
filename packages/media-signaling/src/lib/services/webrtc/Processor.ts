@@ -698,6 +698,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
 		// Received a remote stream
+
+		if (event.track.kind === 'video') {
+			this.remoteStream.setVideoTrack(event.track);
+			return;
+		}
 		this.remoteStream.setAudioTrack(event.track);
 	}
 
@@ -752,7 +757,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private async loadVideoTrack(): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.loadVideoTrack');
-		await this.localStream.setLocalTrack(this.inputTrack, 'video');
+		await this.localStream.setLocalTrack(this.videoTrack, 'video');
 	}
 
 	private onIceGatheringComplete() {
