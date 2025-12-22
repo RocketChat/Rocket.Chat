@@ -2035,7 +2035,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		type: IRoom['t'],
 		name: IRoom['name'],
-		extraData?: Record<string, string>,
+		extraData?: Record<string, unknown>,
 	): Promise<IRoom> {
 		const room: IRoom = {
 			_id,
