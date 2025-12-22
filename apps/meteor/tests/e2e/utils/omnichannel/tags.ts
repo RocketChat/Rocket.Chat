@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from '../test';
@@ -11,12 +12,12 @@ type CreateTagParams = {
 
 const removeTag = async (api: BaseTest['api'], id: string) => api.post('/livechat/tags.delete', { id });
 
-export const createTag = async (api: BaseTest['api'], { id = null, name, description = '', departments = [] }: CreateTagParams = {}) => {
+export const createTag = async (api: BaseTest['api'], { id = null, name, description, departments = [] }: CreateTagParams = {}) => {
 	const response = await api.post('/livechat/tags.save', {
 		_id: id,
 		tagData: {
-			name,
-			description,
+			name: name ?? faker.string.alpha({ length: 8 }),
+			description: description ?? faker.string.alpha({ length: 16 }),
 		},
 		...(departments.length > 0 && { tagDepartments: departments }),
 	});
