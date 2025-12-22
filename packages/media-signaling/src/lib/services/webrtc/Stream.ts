@@ -28,7 +28,7 @@ export class Stream {
 	}
 
 	public stopAudio(): void {
-		this.removeAudioTracks();
+		this.removeTracks('audio');
 	}
 
 	protected toggleAudioTracks(): void {
@@ -42,31 +42,17 @@ export class Stream {
 		});
 	}
 
-	protected removeAudioTracks(): void {
-		this.logger?.debug('Stream.removeAudioTracks');
-		this.mediaStream.getAudioTracks().forEach((track) => {
+	protected removeTracks(kind: 'audio' | 'video' = 'audio'): void {
+		this.logger?.debug('Stream.removeTracks', kind);
+
+		const tracks = kind === 'video' ? this.mediaStream.getVideoTracks() : this.mediaStream.getAudioTracks();
+
+		tracks.forEach((track) => {
 			if (!track) {
 				return;
 			}
 
 			this.mediaStream.removeTrack(track);
 		});
-	}
-
-	protected setAudioTrack(newTrack: MediaStreamTrack): boolean {
-		if (newTrack.kind !== 'audio') {
-			return false;
-		}
-
-		this.logger?.debug('Stream.setAudioTrack', newTrack.id);
-		const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
-		if (matchingTrack) {
-			this.logger?.debug('Stream.setAudioTrack.return', 'track found by id');
-			return false;
-		}
-
-		this.removeAudioTracks();
-		this.mediaStream.addTrack(newTrack);
-		return true;
 	}
 }

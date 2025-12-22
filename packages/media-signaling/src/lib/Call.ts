@@ -182,6 +182,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private inputTrack: MediaStreamTrack | null;
 
+	private videoTrack: MediaStreamTrack | null;
+
 	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
 
@@ -206,7 +208,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
-		{ inputTrack }: { inputTrack?: MediaStreamTrack | null } = {},
+		{ inputTrack, videoTrack }: { inputTrack?: MediaStreamTrack | null; videoTrack?: MediaStreamTrack | null } = {},
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -225,6 +227,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
+		this.videoTrack = videoTrack || null;
 		this.creationTimestamp = new Date();
 
 		this.earlySignals = new Set();
@@ -436,6 +439,53 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (newInputTrack && !hadInputTrack) {
 			await this.negotiationManager.processNegotiations();
 		}
+	}
+
+	public async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('ClientMediaCall.setVideoTrack', Boolean(newVideoTrack));
+		if (newVideoTrack && (this.isOver() || this.hidden)) {
+			return;
+		}
+
+		const hadVideoTrack = Boolean(this.videoTrack);
+
+		this.videoTrack = newVideoTrack;
+		if (this.webrtcProcessor) {
+			await this.webrtcProcessor.setVideoTrack(newVideoTrack);
+		}
+
+		if (newVideoTrack && !hadVideoTrack) {
+			await this.negotiationManager.processNegotiations();
+		}
+	}
+
+	public mayNeedVideoTrack(): boolean {
+		if (this.isOver() || this._ignored || this.hidden) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public needsVideoTrack(): boolean {
+		if (!this.mayNeedVideoTrack()) {
+			return false;
+		}
+
+		if (this.role === 'caller') {
+			return this.hasRemoteData;
+		}
+
+		// return this.busy;
+		return false;
+	}
+
+	public hasVideoTrack(): boolean {
+		return Boolean(this.videoTrack);
+	}
+
+	public isMissingVideoTrack(): boolean {
+		return !this.hasVideoTrack() && this.mayNeedVideoTrack();
 	}
 
 	public getRemoteMediaStream(): MediaStream {
@@ -1158,10 +1208,10 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
-		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 		if (this.webrtcProcessor) {
 			return;
 		}
+		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 
 		const {
 			logger,
@@ -1178,6 +1228,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
+			videoTrack: this.videoTrack,
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));

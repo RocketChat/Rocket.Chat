@@ -28,6 +28,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private inputTrack: MediaStreamTrack | null;
 
+	private videoTrack: MediaStreamTrack | null;
+
 	private _muted = false;
 
 	public get muted(): boolean {
@@ -73,6 +75,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteMediaStream = new MediaStream();
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
+		this.videoTrack = config.videoTrack || null;
 		this._audioLevel = 0;
 		this._localAudioLevel = 0;
 		this._audioLevelTracker = null;
@@ -110,6 +113,18 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.loadInputTrack();
 	}
 
+	public async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.setVideoTrack');
+		if (newVideoTrack && newVideoTrack.kind !== 'video') {
+			throw new Error('Unsupported track kind');
+		}
+
+		await this.initialization;
+
+		this.videoTrack = newVideoTrack;
+		await this.loadVideoTrack();
+	}
+
 	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer');
 		if (this.stopped) {
@@ -125,6 +140,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 			if (!transceivers.length) {
 				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
+				this.addedEmptyTransceiver = true;
+			}
+
+			// if (this.cal)
+			const videoTransceivers = this.getVideoTransceivers();
+
+			if (!videoTransceivers.length && this.videoTrack) {
+				this.peer.addTransceiver('video', { direction: 'sendrecv' });
 				this.addedEmptyTransceiver = true;
 			}
 		}
@@ -345,6 +368,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.inputTrack) {
 			await this.loadInputTrack();
 		}
+
+		if (this.videoTrack) {
+			await this.loadVideoTrack();
+		}
 	}
 
 	private startNewGathering(): void {
@@ -406,6 +433,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.peer
 			.getTransceivers()
 			.filter((transceiver) => transceiver.sender.track?.kind === 'audio' || transceiver.receiver.track?.kind === 'audio');
+	}
+
+	private getVideoTransceivers(): RTCRtpTransceiver[] {
+		return this.peer
+			.getTransceivers()
+			.filter((transceiver) => transceiver.sender.track?.kind === 'video' || transceiver.receiver.track?.kind === 'video');
 	}
 
 	private updateAudioDirectionWithoutNegotiation(): void {
@@ -665,7 +698,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
 		// Received a remote stream
-		this.remoteStream.setTrack(event.track);
+		this.remoteStream.setAudioTrack(event.track);
 	}
 
 	private onConnectionStateChange() {
@@ -714,7 +747,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private async loadInputTrack(): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.loadInputTrack');
-		await this.localStream.setTrack(this.inputTrack);
+		await this.localStream.setLocalTrack(this.inputTrack, 'audio');
+	}
+
+	private async loadVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.loadVideoTrack');
+		await this.localStream.setLocalTrack(this.inputTrack, 'video');
 	}
 
 	private onIceGatheringComplete() {
