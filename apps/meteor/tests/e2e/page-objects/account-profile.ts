@@ -12,7 +12,7 @@ export class AccountProfile extends Account {
 	}
 
 	get inputAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
+		return this.page.getByRole('textbox', { name: 'Use URL for avatar' });
 	}
 
 	get btnSetAvatarLink(): Locator {

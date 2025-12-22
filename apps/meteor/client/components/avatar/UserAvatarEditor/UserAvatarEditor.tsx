@@ -109,7 +109,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						{t('Use_url_for_avatar')}
 					</Label>
 					<TextInput
-						data-qa-id='UserAvatarEditorLink'
 						id={imageUrlField}
 						flexGrow={0}
 						placeholder={t('Use_url_for_avatar')}
