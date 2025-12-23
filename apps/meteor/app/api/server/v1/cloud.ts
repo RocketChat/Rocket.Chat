@@ -85,7 +85,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.registrationStatus',
-	{ authRequired: true },
+	{ authRequired: true, deprecationVersion: '9.0.0' },
 	{
 		async get() {
 			if (!(await hasRoleAsync(this.userId, 'admin'))) {
