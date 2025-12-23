@@ -174,8 +174,6 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
-          COVERAGE_DIR: '/tmp/coverage'
-          COVERAGE_REPORTER: 'lcov'
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 
@@ -248,7 +246,7 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -264,7 +262,7 @@ jobs:
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
