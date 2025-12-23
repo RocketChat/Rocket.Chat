@@ -25,7 +25,7 @@ type VideoConfListProps = {
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
-	loadMoreItems: (min: number, max: number) => void;
+	loadMoreItems: () => void;
 };
 
 const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
@@ -76,13 +76,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 									width: inlineSize,
 								}}
 								totalCount={total}
-								endReached={
-									loading
-										? (): void => undefined
-										: (start) => {
-												loadMoreItems(start, Math.min(50, total - start));
-											}
-								}
+								endReached={loadMoreItems}
 								overscan={25}
 								data={videoConfs}
 								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
