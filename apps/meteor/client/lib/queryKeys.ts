@@ -32,6 +32,7 @@ export const roomsQueryKeys = {
 			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
+	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
 };
 
 export const subscriptionsQueryKeys = {
