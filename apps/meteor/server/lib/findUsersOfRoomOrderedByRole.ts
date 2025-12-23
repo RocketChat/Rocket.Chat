@@ -34,11 +34,12 @@ export async function findUsersOfRoomOrderedByRole({
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
 
-	const { rolePriority: rolePrioritySort, username: usernameSort } = sort;
+	const { rolePriority: rolePrioritySort, username: usernameSort, ...sortRest } = sort;
 
 	const sortCriteria = {
-		rolePriority: rolePrioritySort ?? 1,
-		statusSortKey: -1,
+		...(sort.rolePriority == null && { rolePriority: rolePrioritySort ?? 1 }),
+		...(sort.statusSortKey == null && { statusSortKey: -1 }),
+		...sortRest,
 		...(usernameSort
 			? { username: usernameSort }
 			: {
