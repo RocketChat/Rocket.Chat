@@ -15,10 +15,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator(`tr[data-qa-id="${name}"]`);
 	}
 
-	btnRemoveByName(name: string) {
-		return this.findRowByName(name).locator('role=button[name="remove"]');
-	}
-
 	get inputName() {
 		return this.page.locator('[name="name"]');
 	}
@@ -55,13 +51,13 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
 		await this.findOption(name).click();
-		await this.contextualBar.click({ position: { x: 0, y: 0 } });
+		await this.inputDepartments.click();
 	}
 
 	async selectMonitor(option: string) {
 		await this.inputMonitors.click();
 		await this.findOption(option).click();
-		await this.contextualBar.click({ position: { x: 0, y: 0 } });
+		await this.inputMonitors.click();
 	}
 
 	async selectVisibility(option: string) {
@@ -71,10 +67,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	get btnCreateUnit() {
 		return this.page.locator('header').locator('role=button[name="Create unit"]');
-	}
-
-	get btnCreateUnitEmptyState() {
-		return this.page.locator('.rcx-states').locator('role=button[name="Create unit"]');
 	}
 
 	get contextualBar() {
@@ -99,10 +91,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	get confirmDeleteModal() {
 		return this.page.locator('dialog[data-qa-id="units-confirm-delete-modal"]');
-	}
-
-	get btnCancelDeleteModal() {
-		return this.confirmDeleteModal.locator('role=button[name="Cancel"]');
 	}
 
 	get btnConfirmDeleteModal() {

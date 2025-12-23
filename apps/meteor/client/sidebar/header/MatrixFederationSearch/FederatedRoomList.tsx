@@ -1,5 +1,6 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
+import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { Virtuoso } from 'react-virtuoso';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
-import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
@@ -29,8 +29,9 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const { mutate: onClickJoin, isPending: isLoadingMutation } = useMutation({
 		mutationKey: ['federation/joinExternalPublicRoom'],
 
-		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) =>
-			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
+		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) => {
+			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
+		},
 
 		onSuccess: (_, data) => {
 			dispatchToastMessage({
@@ -70,7 +71,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 						Footer: () => (isFetchingNextPage ? <Throbber /> : null),
 						EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 					}}
-					endReached={isLoadingMutation || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+					endReached={isPending || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
 					itemContent={(_, room) => (
 						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 					)}

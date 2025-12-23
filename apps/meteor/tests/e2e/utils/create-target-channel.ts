@@ -56,10 +56,7 @@ export async function createTargetPrivateChannel(api: BaseTest['api'], options?:
 	return name;
 }
 
-export async function createTargetTeam(
-	api: BaseTest['api'],
-	options?: { sidepanel?: IRoom['sidepanel'] } & Omit<GroupsCreateProps, 'name'>,
-): Promise<string> {
+export async function createTargetTeam(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
 	const name = faker.string.uuid();
 	await api.post('/teams.create', { name, type: 1, members: ['user2', 'user1'], ...options });
 
@@ -102,4 +99,28 @@ export async function createChannelWithTeam(api: BaseTest['api']): Promise<Recor
 	await api.post('/channels.create', { name: channelName, members: ['user1'], extraData: { teamId: team._id } });
 
 	return { channelName, teamName };
+}
+
+export async function createArchivedChannel(api: BaseTest['api']): Promise<string> {
+	const { channel } = await createTargetChannelAndReturnFullRoom(api);
+
+	try {
+		await api.post('/channels.archive', { roomId: channel._id });
+	} catch (error) {
+		throw new Error(`Error archiving the channel: ${error}`);
+	}
+
+	if (!channel.name) {
+		throw new Error('Invalid channel was created');
+	}
+
+	return channel.name;
+}
+
+export async function createTargetGroupAndReturnFullRoom(
+	api: BaseTest['api'],
+	options?: Omit<GroupsCreateProps, 'name'>,
+): Promise<{ group: IRoom }> {
+	const name = faker.string.uuid();
+	return (await api.post('/groups.create', { name, ...options })).json();
 }

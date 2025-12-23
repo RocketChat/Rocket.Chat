@@ -19,7 +19,7 @@ test.describe.serial('file-upload', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -100,7 +100,7 @@ test.describe('file-upload-not-member', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {

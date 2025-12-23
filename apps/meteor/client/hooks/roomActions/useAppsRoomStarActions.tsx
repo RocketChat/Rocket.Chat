@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericMenu, HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,6 @@ import { UiKitTriggerTimeoutError } from '../../../app/ui-message/client/UiKitTr
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useAppActionButtons } from '../useAppActionButtons';
 import { useApplyButtonFilters } from '../useApplyButtonFilters';
 
@@ -24,7 +24,6 @@ export const useAppsRoomStarActions = () => {
 		if (!result.data) {
 			return undefined;
 		}
-
 		const filteredActions = result.data.filter(applyButtonFilters);
 
 		if (filteredActions.length === 0) {
@@ -37,9 +36,10 @@ export const useAppsRoomStarActions = () => {
 			icon: 'stars',
 			groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 			featured: true,
+			order: 3,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
-					button={<HeaderToolbarAction />}
+					button={<HeaderToolbarAction icon={icon} />}
 					key={id}
 					title={title}
 					disabled={disabled}

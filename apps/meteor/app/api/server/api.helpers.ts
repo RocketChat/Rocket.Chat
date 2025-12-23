@@ -1,6 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
+import type { ActionThis } from './definition';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../authorization/server/functions/hasPermission';
+import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
 import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
@@ -103,7 +105,10 @@ export function checkPermissions(options: { permissionsRequired?: PermissionsReq
 	return false;
 }
 
-export function parseDeprecation(methodThis: any, { alternatives, version }: { version: string; alternatives?: string[] }): void {
+export function parseDeprecation(
+	methodThis: ActionThis<any, any, any>,
+	{ alternatives, version }: { version: DeprecationLoggerNextPlannedVersion; alternatives?: string[] },
+): void {
 	const infoMessage = alternatives?.length ? ` Please use the alternative(s): ${alternatives.join(',')}` : '';
-	apiDeprecationLogger.endpoint(methodThis.request.route, version, methodThis.response, infoMessage);
+	apiDeprecationLogger.endpoint(methodThis.route, version, methodThis.response, infoMessage);
 }

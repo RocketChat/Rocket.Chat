@@ -8,6 +8,11 @@ import {
 	isGETOmnichannelContactsSearchProps,
 	isGETOmnichannelContactsCheckExistenceProps,
 	isPOSTOmnichannelContactsConflictsProps,
+	isPOSTOmnichannelContactDeleteProps,
+	POSTOmnichannelContactDeleteSuccessSchema,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -15,8 +20,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
+import { disableContactById } from '../../lib/contacts/disableContact';
 import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannelsGrouped';
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
@@ -154,7 +161,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const contact = await LivechatContacts.findOneById(contactId);
+			const contact = await LivechatContacts.findOneEnabledById(contactId);
 
 			if (!contact) {
 				return API.v1.notFound();
@@ -224,3 +231,39 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const omnichannelContactsEndpoints = API.v1.post(
+	'omnichannel/contacts.delete',
+	{
+		response: {
+			200: POSTOmnichannelContactDeleteSuccessSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['delete-livechat-contact'],
+		body: isPOSTOmnichannelContactDeleteProps,
+	},
+	async function action() {
+		const { contactId } = this.bodyParams;
+
+		try {
+			await disableContactById(contactId);
+			return API.v1.success();
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return API.v1.failure('error-invalid-contact');
+			}
+
+			return API.v1.failure(error.message);
+		}
+	},
+);
+
+type OmnichannelContactsEndpoints = ExtractRoutesFromAPI<typeof omnichannelContactsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OmnichannelContactsEndpoints {}
+}

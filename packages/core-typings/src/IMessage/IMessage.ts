@@ -22,17 +22,6 @@ export type MessageUrl = {
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
-const VoipMessageTypesValues = [
-	'voip-call-started',
-	'voip-call-declined',
-	'voip-call-on-hold',
-	'voip-call-unhold',
-	'voip-call-ended',
-	'voip-call-duration',
-	'voip-call-wrapup',
-	'voip-call-ended-unexpectedly',
-] as const;
-
 const TeamMessageTypesValues = [
 	'removed-user-from-team',
 	'added-user-to-team',
@@ -52,7 +41,6 @@ const LivechatMessageTypesValues = [
 	'livechat_video_call',
 	'livechat_transfer_history_fallback',
 	'livechat-close',
-	'livechat_webrtc_video_call',
 	'livechat-started',
 	'omnichannel_priority_change_history',
 	'omnichannel_sla_change_history',
@@ -60,14 +48,11 @@ const LivechatMessageTypesValues = [
 	'omnichannel_on_hold_chat_resumed',
 ] as const;
 
-const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
-
-export const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
-export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
-
 const MessageTypes = [
 	'e2e',
 	'uj',
+	'ui',
+	'uir',
 	'ul',
 	'ru',
 	'au',
@@ -104,11 +89,9 @@ const MessageTypes = [
 	'new-leader',
 	'leader-removed',
 	'discussion-created',
+	'abac-removed-user-from-room',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
-	...VoipMessageTypesValues,
-	...OtrMessageTypeValues,
-	...OtrSystemMessagesValues,
 ] as const;
 export type MessageTypesValues = (typeof MessageTypes)[number];
 
@@ -134,6 +117,30 @@ export type MessageMention = {
 };
 
 export interface IMessageCustomFields {}
+
+interface IEncryptedContent {
+	algorithm: string;
+	ciphertext: string;
+}
+
+interface IEncryptedContentV1 extends IEncryptedContent {
+	algorithm: 'rc.v1.aes-sha2';
+	ciphertext: string;
+}
+
+interface IEncryptedContentV2 extends IEncryptedContent {
+	algorithm: 'rc.v2.aes-sha2';
+	ciphertext: string;
+	iv: string; // Initialization Vector
+	kid: string; // ID of the key used to encrypt the message
+}
+
+interface IEncryptedContentFederation extends IEncryptedContent {
+	algorithm: 'm.megolm.v1.aes-sha2';
+	ciphertext: string;
+}
+
+export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -171,7 +178,6 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
 	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
-	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -195,7 +201,7 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
+		[key: string]: { names?: string[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;
@@ -215,6 +221,7 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+		version?: number;
 	};
 
 	/* used when message type is "omnichannel_sla_change_history" */
@@ -231,12 +238,30 @@ export interface IMessage extends IRocketChatRecord {
 
 	customFields?: IMessageCustomFields;
 
-	content?: {
-		algorithm: string; // 'rc.v1.aes-sha2'
-		ciphertext: string; // Encrypted subset JSON of IMessage
-	};
+	content?: EncryptedContent;
 }
 
+export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;
+
+export function isEncryptedMessageContent(value: unknown): value is EncryptedMessageContent {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'content' in value &&
+		typeof value.content === 'object' &&
+		value.content !== null &&
+		'algorithm' in value.content &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' || value.content.algorithm === 'rc.v2.aes-sha2') &&
+		'ciphertext' in value.content &&
+		typeof value.content.ciphertext === 'string' &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' ||
+			(value.content.algorithm === 'rc.v2.aes-sha2' &&
+				'iv' in value.content &&
+				typeof value.content.iv === 'string' &&
+				'kid' in value.content &&
+				typeof value.content.kid === 'string'))
+	);
+}
 export interface ISystemMessage extends IMessage {
 	t: MessageTypesValues;
 }
@@ -259,8 +284,25 @@ export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
 	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
-export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+
+export interface IFederatedMessage extends IMessage {
+	federation: {
+		eventId: string;
+	};
+}
+
+export interface INativeFederatedMessage extends IMessage {
+	federation: {
+		version: number;
+		eventId: string;
+	};
+}
+
+export const isMessageFromMatrixFederation = (message: IMessage): message is IFederatedMessage =>
 	'federation' in message && Boolean(message.federation?.eventId);
+
+export const isMessageFromNativeFederation = (message: IMessage): message is INativeFederatedMessage =>
+	isMessageFromMatrixFederation(message) && 'version' in message.federation;
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };
@@ -342,13 +384,6 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	comment?: string;
 }
 
-export type IVoipMessage = IMessage & {
-	voipData: {
-		callDuration?: number;
-		callStarted?: string;
-		callWaitingTime?: string;
-	};
-};
 export interface IMessageDiscussion extends IMessage {
 	drid: RoomID;
 }
@@ -367,25 +402,17 @@ export type IMessageInbox = IMessage & {
 };
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
-export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
 
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
 	e2e: 'pending' | 'done';
+	content: EncryptedContent;
 };
 
 export type IE2EEPinnedMessage = IMessage & {
 	t: 'message_pinned_e2e';
+	attachments: [MessageAttachment & { content: EncryptedContent }];
 };
-
-export interface IOTRMessage extends IMessage {
-	t: 'otr';
-	otrAck?: string;
-}
-
-export interface IOTRAckMessage extends IMessage {
-	t: 'otr-ack';
-}
 
 export type IVideoConfMessage = IMessage & {
 	t: 'videoconf';
@@ -393,8 +420,6 @@ export type IVideoConfMessage = IMessage & {
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
-export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
-export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
 
 export type IMessageWithPendingFileImport = IMessage & {

@@ -85,7 +85,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await expect(result.current.isLoading).toBe(true);
@@ -107,7 +107,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'p',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		expect(result.current.isLoading).toBe(true);
@@ -130,7 +130,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'd',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -152,7 +152,6 @@ describe('useMembersList', () => {
 					roomType: 'c',
 				}),
 			{
-				legacyRoot: true,
 				wrapper: wrapper
 					.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', ({ offset }) => {
 						if (offset === 0) {
@@ -199,7 +198,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(subscribeMock).toHaveBeenCalledWith('roles-change', expect.any(Function)));
@@ -229,7 +228,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -285,7 +284,6 @@ describe('useMembersList', () => {
 					roomType: 'c',
 				}),
 			{
-				legacyRoot: true,
 				wrapper: wrapper.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', (_params) => customPage as any).build(),
 			},
 		);
@@ -362,7 +360,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: testWrapper.build() },
+			{ wrapper: testWrapper.build() },
 		);
 
 		// Page 1

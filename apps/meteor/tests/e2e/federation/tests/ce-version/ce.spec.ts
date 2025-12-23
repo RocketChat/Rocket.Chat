@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { CreateNewChannelModal } from '../../../page-objects/create-new-modal';
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';
@@ -14,6 +15,7 @@ test.describe.parallel('Federation - CE version', () => {
 	let userFromServer1UsernameOnly: string;
 	let fullUsernameFromServer1: string;
 	let fullUsernameFromServer2: string;
+	let newChannelModal: CreateNewChannelModal;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		await setupTesting(apiServer1);
@@ -44,14 +46,16 @@ test.describe.parallel('Federation - CE version', () => {
 		await page.goto(`${constants.RC_SERVER_2.url}/home`);
 	});
 
-	test('expect to not be able to create channels from the UI', async () => {
-		await poFederationChannelServer2.sidenav.openNewByLabel('Channel');
-		await expect(poFederationChannelServer2.sidenav.checkboxFederatedChannel).toBeDisabled();
+	test('expect to not be able to create channels from the UI', async ({ page }) => {
+		newChannelModal = new CreateNewChannelModal(page);
+		await poFederationChannelServer2.navbar.openChat('Channel');
+		await newChannelModal.advancedSettingsAccordion.click();
+		await expect(newChannelModal.checkboxFederated).toBeDisabled();
 	});
 
 	test('expect to not be able to create DMs from UI inviting external users (an user who does not exists on the server yet)', async () => {
 		await poFederationChannelServer2.createDirectMessagesUsingModal([fullUsernameFromServer1]);
-		await expect(poFederationChannelServer2.toastError).toBeVisible();
+		await poFederationChannelServer2.toastMessage.waitForDisplay({ type: 'error' });
 	});
 
 	test('expect to not be able to create DMs from UI inviting external users (an user who already exists in the server)', async ({
@@ -66,7 +70,7 @@ test.describe.parallel('Federation - CE version', () => {
 			server: constants.RC_SERVER_1,
 		});
 		await poFederationChannelServer2.createDirectMessagesUsingModal([fullUsernameFromServer1]);
-		await expect(poFederationChannelServer2.toastError).toBeVisible();
+		await poFederationChannelServer2.toastMessage.waitForDisplay({ type: 'error' });
 	});
 
 	test('expect to not be able to invite federated users to non-federated rooms (using modal)', async () => {
@@ -75,8 +79,8 @@ test.describe.parallel('Federation - CE version', () => {
 			fullUsernameFromServer2,
 		]);
 
-		await poFederationChannelServer2.sidenav.openChat(channelName);
-		await poFederationChannelServer2.tabs.btnTabMembers.click();
+		await poFederationChannelServer2.navbar.openChat(channelName);
+		await poFederationChannelServer2.roomToolbar.openMembersTab();
 		await poFederationChannelServer2.tabs.members.showAllUsers();
 
 		await expect(poFederationChannelServer2.tabs.members.getUserInList(constants.RC_SERVER_2.username)).toBeVisible();

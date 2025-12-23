@@ -115,8 +115,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await poOmnichannelAgents.btnEdit.click();
 		await poOmnichannelAgents.selectDepartment(department.data.name);
-		const reg = new RegExp(`/api/v1/method.call/${encodeURIComponent('livechat:saveAgentInfo')}`);
-		const response = page.waitForResponse(reg);
+		const response = page.waitForResponse('**/api/v1/livechat/agents.saveInfo');
 		await poOmnichannelAgents.btnSave.click();
 
 		/**

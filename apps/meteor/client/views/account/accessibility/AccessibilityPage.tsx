@@ -16,10 +16,11 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -27,8 +28,8 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
+import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
@@ -96,15 +97,13 @@ const AccessibilityPage = () => {
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
 						<ul aria-labelledby={linkListId}>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-statement'>{t('Accessibility_statement')}</ExternalLink>
+								<ExternalLink to={links.go.accessibilityStatement}>{t('Accessibility_statement')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
+								<ExternalLink to={links.go.glossary}>{t('Glossary_of_simplified_terms')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-and-appearance'>
-									{t('Accessibility_feature_documentation')}
-								</ExternalLink>
+								<ExternalLink to={links.go.accessibilityAndAppearance}>{t('Accessibility_feature_documentation')}</ExternalLink>
 							</li>
 						</ul>
 					</Box>
@@ -134,6 +133,9 @@ const AccessibilityPage = () => {
 						</AccordionItem>
 						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
+								<VisuallyHidden>
+									<legend>{t('Adjustable_layout')}</legend>
+								</VisuallyHidden>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
 										{t('Font_size')}
@@ -143,7 +145,7 @@ const AccessibilityPage = () => {
 											control={control}
 											name='fontSize'
 											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes} />
+												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes(t)} />
 											)}
 										/>
 									</FieldRow>

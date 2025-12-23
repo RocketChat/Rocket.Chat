@@ -1,16 +1,11 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.25",
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
-		"@types/strict-uri-encode": "^2.0.2",
-		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
-		"jest-fetch-mock": "^3.0.3",
-		"typescript": "~5.8.3"
-	},
+	"version": "0.2.47-rc.1",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
@@ -19,11 +14,6 @@
 		"test": "jest",
 		"testunit": "jest"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
@@ -32,7 +22,17 @@
 		"split-on-first": "^3.0.0",
 		"strict-uri-encode": "^2.0.0"
 	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"@types/strict-uri-encode": "^2.0.2",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"jest-fetch-mock": "~3.0.3",
+		"typescript": "~5.9.3"
+	},
 	"volta": {
-		"extends": "../../../package.json"
+		"extends": "../../package.json"
 	}
 }

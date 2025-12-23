@@ -31,7 +31,7 @@ import {
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
-import { removeEmpty } from '@rocket.chat/tools';
+import { removeEmpty, validateEmail as validatorFunc } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -44,8 +44,7 @@ import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissi
 import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
-import { callbacks } from '../../../../lib/callbacks';
-import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
@@ -55,6 +54,8 @@ import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
@@ -98,7 +99,7 @@ export const prepareLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+		(await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
 			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
@@ -555,6 +556,12 @@ export const updateChatDepartment = async ({
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
 	]);
 
+	if (responses[0].modifiedCount) {
+		void notifyOnRoomChangedById(rid);
+	}
+	if (responses[1].modifiedCount) {
+		void notifyOnLivechatInquiryChangedByRoom(rid);
+	}
 	if (responses[2].modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}
@@ -627,14 +634,29 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		},
 	});
 
+	// Cases:
+	// 1. Routing is manual
+	// 2. Server is out of macs
+	// 3. Department allows to forward when offline and department is offline
+	// 4. Department is online && waiting queue is enabled
+	const onlineAgents = await checkOnlineAgents(departmentId);
+	const isWaitingQueueEnabled = settings.get('Livechat_waiting_queue');
 	if (
 		!RoutingManager.getConfig()?.autoAssignAgent ||
 		!(await Omnichannel.isWithinMACLimit(room)) ||
-		(department?.allowReceiveForwardOffline && !(await checkOnlineAgents(departmentId)))
+		(department?.allowReceiveForwardOffline && !onlineAgents) ||
+		(isWaitingQueueEnabled && onlineAgents)
 	) {
-		logger.debug(`Room ${room._id} will be on department queue`);
+		logger.debug({
+			msg: 'Room will be on department queue',
+			roomId: room._id,
+			departmentId,
+			departmentAllowOffline: department?.allowReceiveForwardOffline,
+			areAgentsOnline: onlineAgents,
+			isWaitingQueueEnabled,
+		});
 		await saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId, true);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true, agent);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success
@@ -658,7 +680,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
-			throw new Error('error-no-agents-online-in-department');
+			throw new Error('error-no-agents-available-for-service-on-department');
 		}
 
 		if (!transferData.originalDepartmentName) {

@@ -103,6 +103,8 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
+	findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null>;
+
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
 
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
@@ -137,7 +139,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;
-	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
@@ -272,10 +273,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;
 	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null>;
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
-	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
+	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>>;
 	findUnreadThreadMessagesByDate(
+		rid: string,
 		tmid: string,
 		userId: string,
 		after: Date,

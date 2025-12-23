@@ -5,9 +5,8 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -465,6 +464,126 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
+		it('should throw an error when the properties (attachments.fields.title) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									value: 'This is attachment field value',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when the properties (attachments.fields.value) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									title: 'This is attachment field title',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('attachment.fields should work fine when value and title are provided', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					attachments: [
+						{
+							text: 'This is attachment field',
+							color: '#764FA5',
+							fields: [{ short: true, value: 'This is value', title: 'This is title' }],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
+					expect(res.body).to.have.nested.property('message.attachments').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].short', true);
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].value', 'This is value');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
+				})
+				.end(done);
+		});
+
 		it('should return statusCode 200 when postMessage successfully', (done) => {
 			void request
 				.post(api('chat.postMessage'))
@@ -513,6 +632,60 @@ describe('[Chat]', () => {
 					message = { _id: res.body.message._id };
 				})
 				.end(done);
+		});
+
+		it('should not parse urls when parseUrls=false is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.not.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls=true is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls is not provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: undefined,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
 		});
 
 		describe('text message allowed size', () => {
@@ -1369,17 +1542,6 @@ describe('[Chat]', () => {
 					.expect(statusCode)
 					.expect(testCb);
 
-				await (
-					customFields
-						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-						: request.post(api(`rooms.upload/${testChannel._id}`))
-				)
-					.set(credentials)
-					.attach('file', imgURL)
-					.expect('Content-Type', 'application/json')
-					.expect(statusCode)
-					.expect(testCb);
-
 				await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
@@ -1678,6 +1840,27 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'The room id provided does not match where the message is from.');
 				});
+		});
+
+		it('should fail updating a message with "content" if it is not encrypted', (done) => {
+			void request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					content: {
+						algorithm: 'rc.v1.aes-sha2',
+						ciphertext: 'U2FsdGVkX1+u3j0u2+oXg4o3kw5y4t7D9sdfsdff==',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Only encrypted messages can have content updated.');
+				})
+				.end(done);
 		});
 
 		it('should update a message successfully', (done) => {

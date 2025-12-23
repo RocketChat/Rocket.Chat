@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
 import express from 'express';
@@ -9,6 +10,8 @@ import qs from 'qs'; // Using qs specifically to keep express compatibility
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
 
+const logger = new Logger('HttpRouter');
+
 type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TContext = (c: Context) => Promise<ResponseSchema<TOptions>>> = [
 	...MiddlewareHandler[],
 	TContext,
@@ -18,6 +21,24 @@ function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
 	const last = arr[arr.length - 1];
 	const rest = arr.slice(0, -1) as T[];
 	return [rest, last as U];
+}
+
+function coerceDatesToStrings(obj: unknown): unknown {
+	if (Array.isArray(obj)) {
+		return obj.map(coerceDatesToStrings);
+	}
+	if (obj && typeof obj === 'object') {
+		const newObj: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			if (value instanceof Date) {
+				newObj[key] = value.toISOString();
+			} else {
+				newObj[key] = coerceDatesToStrings(value);
+			}
+		}
+		return newObj;
+	}
+	return obj;
 }
 
 export type Route = {
@@ -181,6 +202,14 @@ export class Router<
 			if (options.query) {
 				const validatorFn = options.query;
 				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
+					logger.warn({
+						msg: 'Query parameters validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams: undefined,
+						queryParams,
+					});
 					return c.json(
 						{
 							success: false,
@@ -197,10 +226,18 @@ export class Router<
 			if (options.body) {
 				const validatorFn = options.body;
 				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+					logger.warn({
+						msg: 'Request body validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams,
+						queryParams: undefined,
+					});
 					return c.json(
 						{
 							success: false,
-							errorType: 'error-invalid-params',
+							errorType: 'invalid-params',
 							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
 						},
 						400,
@@ -221,12 +258,31 @@ export class Router<
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-				if (responseValidatorFn && !responseValidatorFn(body)) {
+				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
+					logger.warn({
+						msg: 'Response validation failed - response does not match route spec',
+						method: req.method,
+						path: req.url,
+						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalResponse: body,
+					});
 					return c.json(
 						{
 							success: false,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
+								?.map(
+									(error: any) =>
+										`${error.message} (${[
+											error.instancePath,
+											Object.entries(error.params)
+												.map(([key, value]) => `${key}: ${value}`)
+												.join(', '),
+										]
+											.filter(Boolean)
+											.join(' - ')})`,
+								)
+								.join('\n')}`,
 						},
 						400,
 					);
@@ -370,6 +426,14 @@ export class Router<
 			),
 		);
 		return router;
+	}
+
+	getHonoRouter(): Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}> {
+		return this.innerRouter;
 	}
 }
 

@@ -20,8 +20,6 @@ import type {
 	IExportOperationsModel,
 	IFederationKeysModel,
 	IFederationServersModel,
-	IFreeSwitchCallModel,
-	IFreeSwitchEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -51,7 +49,6 @@ import type {
 	IOAuthAccessTokensModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
-	IPbxEventsModel,
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
@@ -72,10 +69,7 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
-	IVoipRoomModel,
 	IWebdavAccountsModel,
-	IMatrixBridgedRoomModel,
-	IMatrixBridgedUserModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -89,6 +83,11 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
+	IMediaCallsModel,
+	IMediaCallChannelsModel,
+	IMediaCallNegotiationsModel,
+	ICallHistoryModel,
+	IAbacAttributesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -103,7 +102,6 @@ import {
 	IntegrationHistoryRaw,
 	IntegrationsRaw,
 	EmailInboxRaw,
-	PbxEventsRaw,
 	LivechatRoomsRaw,
 	LivechatPriorityRaw,
 	UploadsRaw,
@@ -115,6 +113,8 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
+	AbacAttributesRaw,
+	ServerEventsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -123,12 +123,7 @@ export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
 
-const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
-
-export const dbWatchersDisabled = !['no', 'false'].includes(disabledEnvVar);
-
 export * from './modelClasses';
-export * from './DatabaseWatcher';
 
 export * from './dummy/ReadReceipts';
 
@@ -143,6 +138,7 @@ export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
 export const Banners = proxify<IBannersModel>('IBannersModel');
+export const CallHistory = proxify<ICallHistoryModel>('ICallHistoryModel');
 export const CannedResponse = proxify<ICannedResponseModel>('ICannedResponseModel');
 export const CredentialTokens = proxify<ICredentialTokensModel>('ICredentialTokensModel');
 export const CustomSounds = proxify<ICustomSoundsModel>('ICustomSoundsModel');
@@ -154,8 +150,6 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
-export const FreeSwitchCall = proxify<IFreeSwitchCallModel>('IFreeSwitchCallModel');
-export const FreeSwitchEvent = proxify<IFreeSwitchEventModel>('IFreeSwitchEventModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
@@ -178,6 +172,9 @@ export const LivechatUnit = proxify<ILivechatUnitModel>('ILivechatUnitModel');
 export const LivechatUnitMonitors = proxify<ILivechatUnitMonitorsModel>('ILivechatUnitMonitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
+export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
+export const MediaCallChannels = proxify<IMediaCallChannelsModel>('IMediaCallChannelsModel');
+export const MediaCallNegotiations = proxify<IMediaCallNegotiationsModel>('IMediaCallNegotiationsModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
@@ -186,7 +183,6 @@ export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesMode
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
-export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
@@ -207,10 +203,7 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
-export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
-export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
-export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
@@ -220,6 +213,7 @@ export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
+export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -249,15 +243,10 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
-	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
 	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
-}
-
-if (!dbWatchersDisabled) {
-	console.warn(
-		`Database watchers is enabled and this is not the default option.\nRocket.Chat deprecated the usage of \`oplog/change streams\` and are going to remove it the next major version (8.0.0).`,
-	);
+	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 }

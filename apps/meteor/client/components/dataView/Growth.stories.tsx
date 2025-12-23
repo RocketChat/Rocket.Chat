@@ -5,7 +5,6 @@ import Growth from './Growth';
 import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
-	title: 'Components/Data/Growth',
 	component: Growth,
 	parameters: {
 		layout: 'centered',

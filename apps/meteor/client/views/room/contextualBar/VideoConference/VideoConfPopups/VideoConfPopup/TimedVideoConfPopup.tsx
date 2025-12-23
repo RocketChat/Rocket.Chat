@@ -9,7 +9,8 @@ import {
 	useVideoConfDismissOutgoing,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useFocusManager } from 'react-aria';
 
 import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
@@ -38,7 +39,12 @@ const TimedVideoConfPopup = ({
 	const dismissCall = useVideoConfDismissCall();
 	const startCall = useVideoConfStartCall();
 	const dismissOutgoing = useVideoConfDismissOutgoing();
+	const focusManager = useFocusManager();
 	const room = useUserRoom(rid);
+
+	useEffect(() => {
+		focusManager?.focusFirst();
+	}, [focusManager]);
 
 	if (!room) {
 		return null;

@@ -11,17 +11,17 @@ import {
 } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import moment from 'moment-timezone';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { MessageTypes } from '../../../ui-utils/lib/MessageTypes';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const logger = new Logger('Livechat-SendTranscript');
@@ -105,17 +105,11 @@ export async function sendTranscript({
 			author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 		}
 
-		const isSystemMessage = MessageTypes.isSystemMessage(message);
-		const messageType = isSystemMessage && MessageTypes.getType(message);
+		const messageType = MessageTypes.getType(message);
 
-		let messageContent = messageType
+		let messageContent = messageType?.system
 			? DOMPurify.sanitize(`
-				<i>${i18n.t(
-					messageType.message,
-					messageType.data
-						? { ...messageType.data(message), interpolation: { escapeValue: false } }
-						: { interpolation: { escapeValue: false } },
-				)}</i>`)
+				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);
 
 		let filesHTML = '';

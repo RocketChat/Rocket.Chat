@@ -43,7 +43,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	// move indexes from constructor to here using IndexDescription as type
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { open: 1 }, sparse: true },
 			{ key: { departmentId: 1 }, sparse: true },
@@ -68,10 +68,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			// TODO: Remove index on next major
-			// { key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
-			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
 			{ key: { slaId: 1 }, sparse: true },
 			{ key: { source: 1, ts: 1 }, partialFilterExpression: { source: { $exists: true }, t: 'l' } },
@@ -83,11 +80,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		];
 	}
 
-	async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 
-	async findOneById<P extends Document = IOmnichannelRoom>(_id: IOmnichannelRoom['_id'], options?: FindOptions<P>): Promise<P | null>;
+	override async findOneById<P extends Document = IOmnichannelRoom>(
+		_id: IOmnichannelRoom['_id'],
+		options?: FindOptions<P>,
+	): Promise<P | null>;
 
-	async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+	override async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
 		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
 		if (options) {
 			return this.findOne(query, options);
@@ -2409,7 +2409,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteMany(query);
 	}
 
-	removeById(_id: string) {
+	removeByVisitorId(_id: string) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'v._id': _id,
+		};
+
+		return this.deleteMany(query);
+	}
+
+	override removeById(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id,
 			t: 'l',
@@ -2798,5 +2807,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({ open: true, contactId }, options);
+	}
+
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
+		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
 	}
 }

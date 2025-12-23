@@ -1,6 +1,14 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,23 +17,14 @@ import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableBody,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useIsCallReady } from '../../../../contexts/CallContext';
+import { links } from '../../../../lib/links';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 function ContactTable() {
 	const { t } = useTranslation();
 
 	const [term, setTerm] = useState('');
-	const directoryRoute = useRoute('omnichannel-directory');
-	const isCallReady = useIsCallReady();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
@@ -44,7 +43,7 @@ function ContactTable() {
 	);
 
 	const onButtonNewClick = useEffectEvent(() =>
-		directoryRoute.push({
+		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'new',
 		}),
@@ -87,7 +86,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			{isCallReady && <GenericTableHeaderCell key='call' width={44} />}
+			<GenericTableHeaderCell key='spacer' w={40} />
 		</>
 	);
 
@@ -116,7 +115,7 @@ function ContactTable() {
 					description={t('No_contacts_yet_description')}
 					buttonTitle={t('New_contact')}
 					buttonAction={onButtonNewClick}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}

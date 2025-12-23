@@ -1,5 +1,218 @@
 # @rocket.chat/i18n
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP permissions
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP from Omnichannel
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes Deprecated FreeSwitch integration
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+### Minor Changes
+
+- ([#36941](https://github.com/RocketChat/Rocket.Chat/pull/36941)) Makes Voice Calls enabled by default when available
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
+### Patch Changes
+
+- ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
+
+- ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
+
+- <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
+
+  - @rocket.chat/tools@0.2.4-rc.0
+  </details>
+
+## 1.13.0
+
+### Minor Changes
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37492](https://github.com/RocketChat/Rocket.Chat/pull/37492)) Introduces native desktop notifications for voice calls when using the desktop app.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#36308](https://github.com/RocketChat/Rocket.Chat/pull/36308) by [@sandranymark](https://github.com/sandranymark)) Improves inline error in report message modal to meet WCAG compliance.
+
+## 1.13.0-rc.0
+
+### Minor Changes
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37492](https://github.com/RocketChat/Rocket.Chat/pull/37492)) Introduces native desktop notifications for voice calls when using the desktop app.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#36308](https://github.com/RocketChat/Rocket.Chat/pull/36308) by [@sandranymark](https://github.com/sandranymark)) Improves inline error in report message modal to meet WCAG compliance.
+
+## 1.12.0
+
+### Minor Changes
+
+- ([#37207](https://github.com/RocketChat/Rocket.Chat/pull/37207)) Adds call transfer requester information on call widget
+
+## 1.12.0-rc.0
+
+### Minor Changes
+
+- ([#37207](https://github.com/RocketChat/Rocket.Chat/pull/37207)) Adds call transfer requester information on call widget
+
+## 1.11.0
+
+### Minor Changes
+
+- ([#36923](https://github.com/RocketChat/Rocket.Chat/pull/36923)) Replaces some texts in order to improve the E2E encryption communication on the UI
+
+- ([#36589](https://github.com/RocketChat/Rocket.Chat/pull/36589)) Adds new endpoint to disable Livechat Contacts by its id, with a new permission `delete-livechat-contact`.
+
+- ([#36778](https://github.com/RocketChat/Rocket.Chat/pull/36778)) Introduces the ability to reset the e2e encrypted password from the enter e2e encrypted password modal
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- ([#36717](https://github.com/RocketChat/Rocket.Chat/pull/36717)) Introduces a new voice call architecture along with a new and improved call widget experience.
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- ([#37068](https://github.com/RocketChat/Rocket.Chat/pull/37068)) Changes the feedback message when inviting external users to a federated channel
+
+- ([#37065](https://github.com/RocketChat/Rocket.Chat/pull/37065)) Adds missing tooltip when adding users to federated room, indicating verification status
+
+- ([#36797](https://github.com/RocketChat/Rocket.Chat/pull/36797)) Fixes an issue where the encryption toggle was incorrectly reset/disabled/enabled in the Teams creation modal when Broadcast or Private was toggled, or when the user lacked unrelated permissions.
+
+- ([#37050](https://github.com/RocketChat/Rocket.Chat/pull/37050)) Adds a validation to external users when creating a channel that is not federated
+
+## 1.11.0-rc.0
+
+### Minor Changes
+
+- ([#36923](https://github.com/RocketChat/Rocket.Chat/pull/36923)) Replaces some texts in order to improve the E2E encryption communication on the UI
+
+- ([#36589](https://github.com/RocketChat/Rocket.Chat/pull/36589)) Adds new endpoint to disable Livechat Contacts by its id, with a new permission `delete-livechat-contact`.
+
+- ([#36778](https://github.com/RocketChat/Rocket.Chat/pull/36778)) Introduces the ability to reset the e2e encrypted password from the enter e2e encrypted password modal
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- ([#36717](https://github.com/RocketChat/Rocket.Chat/pull/36717)) Introduces a new voice call architecture along with a new and improved call widget experience.
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- ([#37068](https://github.com/RocketChat/Rocket.Chat/pull/37068)) Changes the feedback message when inviting external users to a federated channel
+
+- ([#37065](https://github.com/RocketChat/Rocket.Chat/pull/37065)) Adds missing tooltip when adding users to federated room, indicating verification status
+
+- ([#36797](https://github.com/RocketChat/Rocket.Chat/pull/36797)) Fixes an issue where the encryption toggle was incorrectly reset/disabled/enabled in the Teams creation modal when Broadcast or Private was toggled, or when the user lacked unrelated permissions.
+
+- ([#37050](https://github.com/RocketChat/Rocket.Chat/pull/37050)) Adds a validation to external users when creating a channel that is not federated
+
+## 1.10.0
+
+### Minor Changes
+
+- ([#36558](https://github.com/RocketChat/Rocket.Chat/pull/36558)) Adds a "Collapse All" button to the Apps Logs Filter and moves existing "Expand All" button to a kebab menu
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+## 1.10.0-rc.0
+
+### Minor Changes
+
+- ([#36558](https://github.com/RocketChat/Rocket.Chat/pull/36558)) Adds a "Collapse All" button to the Apps Logs Filter and moves existing "Expand All" button to a kebab menu
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+## 1.9.0
+
+### Minor Changes
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/tools@0.2.3
+  </details>
+
+## 1.9.0-rc.0
+
+### Minor Changes
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/tools@0.2.3-rc.0
+  </details>
+
+## 1.8.0
+
+### Minor Changes
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
+## 1.8.0-rc.0
+
+### Minor Changes
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
 ## 1.7.0
 
 ### Minor Changes

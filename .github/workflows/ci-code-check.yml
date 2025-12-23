@@ -15,7 +15,7 @@ env:
 
 jobs:
   code-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
@@ -30,7 +30,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -41,21 +41,21 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Free disk space
-      #   run: |
-      #     sudo apt clean
-      #     docker rmi $(docker image ls -aq)
-      #     df -h
-
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
+      - name: Restore packages build
+        uses: actions/download-artifact@v7
         with:
-          name: turbo-build
-          path: .turbo/cache
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
       - name: Cache TypeCheck
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
@@ -91,7 +91,7 @@ jobs:
         run: yarn turbo run typecheck
 
       - name: Cache eslint
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: matrix.check == 'lint'
         with:
           path: ./apps/meteor/.eslintcache

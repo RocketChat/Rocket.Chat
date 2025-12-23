@@ -18,10 +18,12 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [displaySidePanel, setDisplaySidePanel] = useState(true);
+	const [overlayed, setOverlayed] = useState(false);
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
-	const enhancedNavigationEnabled = useFeaturePreview('newNavigation');
+	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const router = useRouter();
 	// Once the layout is embedded, it can't be changed
@@ -30,7 +32,9 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isMobile = !breakpoints.includes('md');
 	const isTablet = !breakpoints.includes('lg');
 
-	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
+	const shouldToggle = secondSidebarEnabled ? isTablet || isMobile : isMobile;
+	const shouldDisplaySidePanel = !isTablet || displaySidePanel;
+	const defaultSidebarWidth = secondSidebarEnabled ? '220px' : '240px';
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);
@@ -63,14 +67,22 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
 					},
 					sidebar: {
+						overlayed,
+						setOverlayed,
 						isCollapsed,
+						shouldToggle,
 						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
+					sidePanel: {
+						displaySidePanel: shouldDisplaySidePanel,
+						closeSidePanel: () => setDisplaySidePanel(false),
+						openSidePanel: () => setDisplaySidePanel(true),
+					},
 					size: {
-						sidebar: '240px',
+						sidebar: shouldToggle ? '280px' : defaultSidebarWidth,
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
@@ -83,11 +95,14 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 				[
 					isMobile,
 					isTablet,
-					navBarSearchExpanded,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navBarSearchExpanded,
+					overlayed,
 					isCollapsed,
 					shouldToggle,
+					shouldDisplaySidePanel,
+					defaultSidebarWidth,
 					breakpoints,
 					hiddenActions,
 					router,

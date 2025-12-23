@@ -181,7 +181,7 @@ describe('LIVECHAT - Queue', () => {
 		});
 
 		it('should increase chats when a new room for same department is created', async () => {
-			const newVisitor = await createVisitor();
+			const newVisitor = await createVisitor(deptd1._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
 			roomsToClose.push(newRoom);

@@ -1,4 +1,20 @@
-import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Box,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	Button,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import { memo, useId } from 'react';
@@ -32,11 +48,11 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
-				<Modal.Header>
-					<Modal.Title id={`${fileUploadFormId}-title`}>{t('FileUpload')}</Modal.Title>
-					<Modal.Close onClick={onClose} />
-				</Modal.Header>
-				<Modal.Content>
+				<ModalHeader>
+					<ModalTitle id={`${fileUploadFormId}-title`}>{t('FileUpload')}</ModalTitle>
+					<ModalClose onClick={onClose} />
+				</ModalHeader>
+				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
 						<FilePreview file={file} />
 					</Box>
@@ -58,17 +74,17 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 							{errors.name && <FieldError id={`${fileNameField}-error`}>{errors.name.message}</FieldError>}
 						</Field>
 					</FieldGroup>
-				</Modal.Content>
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				</ModalContent>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
 						<Button primary type='submit' loading={isSubmitting}>
 							{t('Update')}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Box>
 		</Modal>
 	);

@@ -1,14 +1,15 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -17,16 +18,18 @@ export const LivechatEnterprise = {
 		});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
 				method: 'livechat:addMonitor',
 			});
 		}
 
-		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
-			return user;
+		if (!(await addUserRolesAsync(user._id, ['livechat-monitor']))) {
+			throw new MeteorError('error-adding-monitor-role', 'Error adding monitor role', {
+				method: 'livechat:addMonitor',
+			});
 		}
 
-		return false;
+		return user;
 	},
 
 	async removeMonitor(username: string) {
@@ -138,7 +141,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.removeById(_id);
 	},
 
-	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[]) {
+	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[] | undefined) {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 

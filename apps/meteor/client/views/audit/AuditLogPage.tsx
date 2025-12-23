@@ -1,8 +1,8 @@
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AuditLogTable from './components/AuditLogTable';
-import { Page, PageHeader, PageContent } from '../../components/Page';
 
 const AuditLogPage = (): ReactElement => {
 	const { t } = useTranslation();

@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import { isE2EEMessage, type IMessage, type IRoom, type IUpload, type IUploadToConfirm } from '@rocket.chat/core-typings';
 import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -80,8 +80,8 @@ const validateAttachmentsFields = (attachmentField: any) => {
 		}),
 	);
 
-	if (typeof attachmentField.value !== 'undefined') {
-		attachmentField.value = String(attachmentField.value);
+	if (!attachmentField.value || !attachmentField.title) {
+		throw new Error('Invalid attachment field, title and value is required');
 	}
 };
 
@@ -269,11 +269,6 @@ export const sendMessage = async (
 	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
 
-	if (message.t === 'otr') {
-		void api.broadcast('otrMessage', { roomId: message.rid, message, user, room });
-		return message;
-	}
-
 	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
@@ -336,7 +331,7 @@ export const sendMessage = async (
 	}
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
-	await afterSaveMessage(message, room);
+	await afterSaveMessage(message, room, user);
 
 	if (uploadIdsToConfirm?.length) {
 		await Uploads.confirmTemporaryFiles(uploadIdsToConfirm, user._id);

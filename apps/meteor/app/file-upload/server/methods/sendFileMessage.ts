@@ -15,9 +15,9 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';

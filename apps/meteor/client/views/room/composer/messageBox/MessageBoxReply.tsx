@@ -4,12 +4,14 @@ import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 
 const MessageBoxReply = ({ reply }: { reply: IMessage }): ReactElement | null => {
+	const { t } = useTranslation();
 	const chat = useChat();
 
 	const displayName = useUserDisplayName(reply?.u);
@@ -45,7 +47,7 @@ const MessageBoxReply = ({ reply }: { reply: IMessage }): ReactElement | null =>
 						chat?.composer?.dismissQuotedMessage(reply._id);
 					}}
 				>
-					<IconButton mini icon='cross' />
+					<IconButton mini icon='cross' aria-label={t('Dismiss_quoted_message')} />
 				</Box>
 			</Box>
 		</Margins>

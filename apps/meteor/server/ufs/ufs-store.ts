@@ -368,4 +368,8 @@ export class Store {
 			await this.onValidate(file, options);
 		}
 	}
+
+	async getUrlExpiryTimeSpan(): Promise<number | null> {
+		throw new Error('getUrlExpiryTimeSpan is not implemented');
+	}
 }

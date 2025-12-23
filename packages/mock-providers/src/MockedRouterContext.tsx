@@ -11,11 +11,10 @@ export const MockedRouterContext = ({ children, router }: { children: ReactNode;
 				getRouteParameters: () => ({}),
 				getSearchParameters: () => ({}),
 				getRouteName: () => undefined,
+				getPreviousRouteName: () => undefined,
 				buildRoutePath: () => '/',
 				navigate: () => undefined,
 				defineRoutes: () => () => undefined,
-				getRoutes: () => [],
-				subscribeToRoutesChange: () => () => undefined,
 				getRoomRoute: () => ({ path: '/' }),
 				...router,
 			}}

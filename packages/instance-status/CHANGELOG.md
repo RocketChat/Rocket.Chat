@@ -1,5 +1,527 @@
 # @rocket.chat/instance-status
 
+## 0.1.47-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@2.0.0-rc.1
+  </details>
+
+## 0.1.47-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, be80b724a636877294b5e5baa501d070941131dd]:</summary>
+
+  - @rocket.chat/models@2.0.0-rc.0
+  </details>
+
+## 0.1.46
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.8.2
+  </details>
+
+## 0.1.45
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.8.1
+  </details>
+
+## 0.1.44
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc]:</summary>
+
+  - @rocket.chat/models@1.8.0
+  </details>
+
+## 0.1.44-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.8.0-rc.2
+  </details>
+
+## 0.1.44-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.8.0-rc.1
+  </details>
+
+## 0.1.44-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc]:</summary>
+
+  - @rocket.chat/models@1.8.0-rc.0
+  </details>
+
+## 0.1.43
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.3
+  </details>
+
+## 0.1.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8cbd9bfd0566cbd7d86d8b40ea7d58d6ef382742]:</summary>
+
+  - @rocket.chat/models@1.7.2
+  </details>
+
+## 0.1.41
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1
+  </details>
+
+## 0.1.41-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1-rc.4
+  </details>
+
+## 0.1.41-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1-rc.3
+  </details>
+
+## 0.1.41-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1-rc.2
+  </details>
+
+## 0.1.41-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1-rc.1
+  </details>
+
+## 0.1.41-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.1-rc.0
+  </details>
+
+## 0.1.40
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, 3e177dbd0b65d70bce8587287ba73b30170eb0f7]:</summary>
+
+  - @rocket.chat/models@1.7.0
+  </details>
+
+## 0.1.40-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.7
+  </details>
+
+## 0.1.40-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.6
+  </details>
+
+## 0.1.39-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.5
+  </details>
+
+## 0.1.39-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.4
+  </details>
+
+## 0.1.39-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.3
+  </details>
+
+## 0.1.39-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.7.0-rc.2
+  </details>
+
+## 0.1.39-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.1
+  </details>
+
+## 0.1.39-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, 3e177dbd0b65d70bce8587287ba73b30170eb0f7]:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.0
+
+  </details>
+
+## 0.1.39
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.6.2
+  </details>
+
+## 0.1.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.6.1
+
+  </details>
+
+## 0.1.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b25f05acd07762387fa45d67a1241b982c192f5d, fd32867fd4949bc2951a22075498ccb551cc6bbc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/models@1.6.0
+  </details>
+
+## 0.1.37-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.6.0-rc.6
+  </details>
+
+## 0.1.37-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.6.0-rc.5
+  </details>
+
+## 0.1.34-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.6.0-rc.4
+  </details>
+
+## 0.1.34-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.6.0-rc.3
+  </details>
+
+## 0.1.34-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.6.0-rc.2
+  </details>
+
+## 0.1.34-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.6.0-rc.1
+  </details>
+
+## 0.1.34-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b25f05acd07762387fa45d67a1241b982c192f5d, fd32867fd4949bc2951a22075498ccb551cc6bbc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/models@1.6.0-rc.0
+  </details>
+
+## 0.1.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.15
+  </details>
+
+## 0.1.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.14
+  </details>
+
+## 0.1.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/models@1.5.13
+</details>
+
+## 0.1.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/models@1.5.12
+  </details>
+
+## 0.1.33-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.11-rc.2
+  </details>
+
+## 0.1.33-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.11-rc.1
+  </details>
+
+## 0.1.33-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/models@1.5.11-rc.0
+
+## 0.1.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.11
+  </details>
+
+## 0.1.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [617caa8e7be9c650b96cc1fcc5b836eaa3e7ae39]:</summary>
+
+  - @rocket.chat/models@1.5.10
+  </details>
+
+## 0.1.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.9
+  </details>
+
+## 0.1.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, dc26071ba3e0242d1ea7cf819f05c76ab307b229]:</summary>
+
+  - @rocket.chat/models@1.5.8
+  </details>
+
+## 0.1.29-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.8-rc.9
+  </details>
+
+## 0.1.26-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.8
+  </details>
+
+## 0.1.26-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.7
+  </details>
+
+## 0.1.26-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.6
+  </details>
+
+## 0.1.26-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.5
+  </details>
+
+## 0.1.26-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.4
+  </details>
+
+## 0.1.26-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.3
+  </details>
+
+## 0.1.26-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.2
+  </details>
+
+## 0.1.26-rc.1
+
+## 0.1.29-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.5-rc.1
+  </details>
+
+## 0.1.26-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, dc26071ba3e0242d1ea7cf819f05c76ab307b229]:</summary>
+
+  - @rocket.chat/models@1.5.5-rc.0
+  </details>
+
+## 0.1.28
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/models@1.5.7
+  </details>
+
+## 0.1.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.6
+  </details>
+
+## 0.1.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@1.5.5
+  </details>
+
 ## 0.1.25
 
 ### Patch Changes

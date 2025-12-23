@@ -1,42 +1,14 @@
 import * as path from 'path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
-import type { ILivechatAgent, ILivechatVisitor, IOmnichannelSystemMessage, Serialized } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import type { Root } from '@rocket.chat/message-parser';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { Header } from './components/Header';
 import { MessageList } from './components/MessageList';
+import type { ChatTranscriptData } from '../../types/ChatTranscriptData';
 
 const FONT_PATH = path.resolve(__dirname, '../../public');
-
-export type PDFFile = { name?: string; buffer: Buffer | null; extension?: 'png' | 'jpg' };
-
-export type Quote = { md: Root; name: string; ts: string };
-
-export type PDFMessage = Serialized<
-	Omit<
-		Pick<
-			IOmnichannelSystemMessage,
-			'msg' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData' | 'requestData' | 'webRtcCallEndTs' | 'comment'
-		>,
-		'files'
-	>
-> & {
-	files?: PDFFile[];
-} & { divider?: string } & { quotes?: Quote[] };
-
-export type ChatTranscriptData = {
-	header: {
-		agent: Pick<ILivechatAgent, 'name' | 'username'>;
-		visitor: Pick<ILivechatVisitor, 'name' | 'username'>;
-		siteName: string;
-		date: string;
-		time: string;
-	};
-	messages: PDFMessage[];
-	t: (key: string) => string;
-};
 
 const styles = StyleSheet.create({
 	page: {
@@ -57,9 +29,12 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const ChatTranscriptPDF = ({ header, messages, t }: ChatTranscriptData) => {
+type ChatTranscriptPDFProps = Omit<ChatTranscriptData, 'i18n'>;
+
+export const ChatTranscriptPDF = ({ header, messages }: ChatTranscriptPDFProps) => {
+	const { t } = useTranslation();
 	const agentValue = header.agent?.name || header.agent?.username || t('Not_assigned');
-	const customerValue = header.visitor?.name || header.visitor?.username;
+	const customerValue = header.visitor?.name || header.visitor?.username || t('Guest');
 	const dateValue = header.date;
 	const timeValue = header.time;
 
@@ -82,7 +57,7 @@ export const ChatTranscriptPDF = ({ header, messages, t }: ChatTranscriptData) =
 	);
 };
 
-export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> => {
+export default async ({ i18n, ...data }: ChatTranscriptData): Promise<NodeJS.ReadableStream> => {
 	Font.register({
 		family: 'Inter',
 		fonts: [
@@ -100,5 +75,9 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 	});
 	Font.registerHyphenationCallback((word) => [word]);
 
-	return ReactPDF.renderToStream(<ChatTranscriptPDF {...data} />);
+	return ReactPDF.renderToStream(
+		<I18nextProvider i18n={i18n}>
+			<ChatTranscriptPDF {...data} />
+		</I18nextProvider>,
+	);
 };

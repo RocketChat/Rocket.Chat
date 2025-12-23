@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import SettingsGroupSelector from './SettingsGroupSelector';
 
 export default {
-	title: 'Admin/Settings/SettingsGroupSelector',
 	component: SettingsGroupSelector,
 	parameters: {
 		layout: 'fullscreen',

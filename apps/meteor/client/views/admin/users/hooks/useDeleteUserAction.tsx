@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
@@ -14,7 +15,6 @@ import { useMemo } from 'react';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
-import GenericModal from '../../../../components/GenericModal';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
 	const t = useTranslation();

@@ -1,29 +1,32 @@
 {
 	"name": "@rocket.chat/agenda",
-	"description": "Fork of https://github.com/agenda/agenda",
 	"version": "0.1.0",
 	"private": true,
+	"description": "Fork of https://github.com/agenda/agenda",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix"
+	},
 	"dependencies": {
 		"cron": "~1.8.2",
 		"date.js": "~0.3.3",
 		"debug": "~4.3.7",
 		"human-interval": "^2.0.1",
 		"moment-timezone": "~0.5.48",
-		"mongodb": "6.10.0"
+		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.12",
 		"eslint": "~8.45.0",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.3"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	]
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

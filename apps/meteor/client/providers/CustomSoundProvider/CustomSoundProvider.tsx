@@ -4,7 +4,7 @@ import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/u
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
-import { defaultSounds, formatVolume, getCustomSoundURL } from './lib/helpers';
+import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
 
@@ -75,8 +75,10 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const contextValue = useMemo(() => {
 		const notificationSounds = {
 			playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
+			playNewRoomLoop: () => play(newRoomNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
 			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-			playNewMessageLoop: () => play(newMessageNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
+			playNewMessageCustom: (soundId: ICustomSound['_id']) =>
+				play(soundId, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
 			stopNewRoom: () => stop(newRoomNotification),
 			stopNewMessage: () => stop(newMessageNotification),
 		};

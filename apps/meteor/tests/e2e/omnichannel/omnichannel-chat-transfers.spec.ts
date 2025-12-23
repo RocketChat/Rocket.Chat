@@ -126,19 +126,18 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		]);
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async () => {
 		const [, departmentB] = departments.map(({ data }) => data);
 		const [roomA] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomA.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomA.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -157,12 +156,12 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).not.toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname).click();
+			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname).click();
 			await agentB.poHomeOmnichannel.content.findSystemMessage(
 				`Transfer: user3 transferred the chat to the department ${departmentB.name}}`,
 			);
@@ -170,18 +169,17 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, different department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, different department`, async () => {
 		const [, roomB] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomB.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomB._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomB.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -200,12 +198,12 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).not.toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname).click();
+			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname).click();
 			await expect(
 				agentB.poHomeOmnichannel.content.findSystemMessage(
 					`New Chat Transfer: user3 transferred the chat to user2 with a comment: any_comment`,
@@ -215,18 +213,17 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, same department`, async ({ page }) => {
+	test(`OC - Chat transfers [Monitor role] - Transfer to another agent, same department`, async () => {
 		const [, , roomC] = conversations.map(({ data }) => data.room);
 		const [agentA, , agentC] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).not.toBeVisible();
+			await expect(agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomC.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomC._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomC.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -245,12 +242,12 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).not.toBeVisible();
-			await expect(agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).not.toBeVisible();
+			await expect(agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname).click();
+			await agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname).click();
 			await expect(
 				agentC.poHomeOmnichannel.content.findSystemMessage(
 					`New Chat Transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,
@@ -351,19 +348,18 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		]);
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another department`, async () => {
 		const [, departmentB] = departments.map(({ data }) => data);
 		const [roomA] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomA.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomA._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomA.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -382,12 +378,12 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).not.toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomA.fname).click();
+			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname).click();
 			await agentB.poHomeOmnichannel.content.findSystemMessage(
 				`Transfer: user3 transferred the chat to the department ${departmentB.name}}`,
 			);
@@ -395,18 +391,17 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another agent, different department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another agent, different department`, async () => {
 		const [, roomB] = conversations.map(({ data }) => data.room);
 		const [agentA, agentB] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomB.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomB._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomB.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -425,12 +420,12 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).not.toBeVisible();
-			await expect(agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).not.toBeVisible();
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentB.poHomeOmnichannel.sidenav.getSidebarItemByName(roomB.fname).click();
+			await agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomB.fname).click();
 			await expect(
 				agentB.poHomeOmnichannel.content.findSystemMessage(
 					`New Chat Transfer: user3 transferred the chat to user2 with a comment: any_comment`,
@@ -440,18 +435,17 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 	});
 
-	test(`OC - Chat transfers [Manager role] - Transfer to another agent, same department`, async ({ page }) => {
+	test(`OC - Chat transfers [Manager role] - Transfer to another agent, same department`, async () => {
 		const [, , roomC] = conversations.map(({ data }) => data.room);
 		const [agentA, , agentC] = sessions;
 
 		await test.step('expect room a to bot be visible for user2', async () => {
-			await expect(agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).not.toBeVisible();
+			await expect(agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
-			await poOmnichannel.currentChats.findRowByName(roomC.fname).click();
-			await expect(page).toHaveURL(`/omnichannel/current/${roomC._id}`);
-			await poOmnichannel.content.btnForwardChat.click();
+			await poOmnichannel.chats.openChat(roomC.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
@@ -470,12 +464,12 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 
 		await test.step('expect conversation to have been assigned to user 2', async () => {
 			await expect(agentA.page).toHaveURL(`/home`);
-			await expect(agentA.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).not.toBeVisible();
-			await expect(agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname)).toBeVisible();
+			await expect(agentA.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).not.toBeVisible();
+			await expect(agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname)).toBeVisible();
 		});
 
 		await test.step('expect user 1 to have left the conversation', async () => {
-			await agentC.poHomeOmnichannel.sidenav.getSidebarItemByName(roomC.fname).click();
+			await agentC.poHomeOmnichannel.sidebar.getSidebarItemByName(roomC.fname).click();
 			await expect(
 				agentC.poHomeOmnichannel.content.findSystemMessage(
 					`New Chat Transfer: user3 transferred the chat to RocketChat Internal Admin Test with a comment: any_comment`,

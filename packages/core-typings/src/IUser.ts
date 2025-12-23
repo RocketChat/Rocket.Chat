@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
@@ -217,7 +218,6 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	extension?: string;
 	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
@@ -227,6 +227,9 @@ export interface IUser extends IRocketChatRecord {
 	federated?: boolean;
 	// @deprecated
 	federation?: {
+		version?: number;
+		mui?: string;
+		origin?: string;
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
@@ -249,6 +252,9 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
+
+	abacAttributes?: IAbacAttributeDefinition[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -257,7 +263,21 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
+
+export interface IUserNativeFederated extends IUser {
+	federated: true;
+	username: `@${string}:${string}`;
+	federation: {
+		version: number;
+		mui: `@${string}:${string}`;
+		origin: string;
+	};
+}
+
+export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
+	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
 
 export type IUserDataEvent = {
 	id: unknown;
@@ -272,7 +292,7 @@ export type IUserDataEvent = {
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<string, number>;
+			unset: Partial<Record<keyof IUser, number>>;
 	  }
 );
 

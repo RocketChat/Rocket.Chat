@@ -1,7 +1,7 @@
-import { e2e } from '../../../../app/e2e/client';
-import { settings } from '../../../../app/settings/client';
 import { t } from '../../../../app/utils/lib/i18n';
 import { MAX_MULTIPLE_UPLOADED_FILES } from '../../constants';
+import { e2e } from '../../e2ee';
+import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI, UploadsAPI, EncryptedFileUploadContent } from '../ChatAPI';
 
@@ -50,7 +50,7 @@ export const uploadFiles = async (
 			return;
 		}
 
-		if (!settings.get('E2E_Enable_Encrypt_Files')) {
+		if (!settings.peek('E2E_Enable_Encrypt_Files')) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('Encrypted_file_not_allowed'),

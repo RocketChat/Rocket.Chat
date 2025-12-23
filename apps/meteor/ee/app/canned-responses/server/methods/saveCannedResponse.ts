@@ -1,5 +1,4 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatDepartment, CannedResponse, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -14,15 +13,6 @@ type ResponseData = {
 	tags?: string[];
 	departmentId?: string;
 };
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveCannedResponse(
-			_id: string,
-			responseData: ResponseData,
-		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date }>;
-	}
-}
 
 export const saveCannedResponse = async (
 	userId: string,
@@ -98,7 +88,11 @@ export const saveCannedResponse = async (
 			});
 		}
 
-		result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
+		result = await CannedResponse.updateCannedResponse(_id, {
+			...responseData,
+			...(cannedResponse.scope === 'user' && { userId: cannedResponse.userId }),
+			createdBy: cannedResponse.createdBy,
+		});
 	} else {
 		const user = await Users.findOneById(userId);
 
@@ -119,14 +113,3 @@ export const saveCannedResponse = async (
 
 	return result;
 };
-
-Meteor.methods<ServerMethods>({
-	async saveCannedResponse(_id, responseData) {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
-		}
-
-		return saveCannedResponse(userId, responseData, _id);
-	},
-});

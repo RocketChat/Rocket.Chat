@@ -58,7 +58,7 @@ export class AppSchedulerManager {
 			}
 
 			try {
-				await app.getDenoRuntime().sendRequest({
+				await app.getRuntimeController().sendRequest({
 					method: `scheduler:${processor.id}`,
 					params: [jobContext],
 				});

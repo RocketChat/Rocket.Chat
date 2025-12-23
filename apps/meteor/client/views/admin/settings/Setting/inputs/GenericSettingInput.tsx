@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -12,6 +12,7 @@ function GenericSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -45,6 +46,7 @@ function GenericSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

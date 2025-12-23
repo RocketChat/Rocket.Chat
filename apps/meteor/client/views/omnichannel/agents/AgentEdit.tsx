@@ -2,22 +2,23 @@ import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } 
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { useForm, Controller, FormProvider } from 'react-hook-form';
-
-import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
+
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { UserInfoAvatar } from '../../../components/UserInfo';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type AgentEditFormData = {
 	name: string | undefined;
@@ -26,7 +27,6 @@ type AgentEditFormData = {
 	departments: { label: string; value: string }[];
 	status: ILivechatAgentStatus;
 	maxNumberSimultaneousChat: number;
-	voipExtension: string;
 };
 
 type AgentEditProps = {
@@ -39,7 +39,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
-	const voipEnabled = useSetting('VoIP_Enabled');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { name, username, livechat, statusLivechat } = agentData;
@@ -67,7 +66,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 			departments: initialDepartmentValue,
 			status: statusLivechat,
 			maxNumberSimultaneousChat: livechat?.maxNumberSimultaneousChat || 0,
-			voipExtension: '',
 		},
 	});
 
@@ -78,22 +76,22 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 		formState: { isDirty },
 	} = methods;
 
-	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
+	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
 	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
-			await saveAgentInfo(
-				agentData._id,
-				data,
-				departments.map((dep) => dep.value),
-			);
+			await saveAgentInfo({
+				agentId: agentData._id,
+				agentData: data,
+				agentDepartments: departments.map((dep) => dep.value),
+			});
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
 
-			queryClient.invalidateQueries({ queryKey: ['livechat-agents'] });
-			queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', agentData._id] });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(agentData._id) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -105,7 +103,6 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const emailField = useId();
 	const departmentsFieldId = useId();
 	const statusField = useId();
-	const voipExtensionField = useId();
 
 	return (
 		<>
@@ -118,7 +115,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					<form id={formId} onSubmit={handleSubmit(handleSave)}>
 						{username && (
 							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfoAvatar data-qa-id='agent-edit-avatar' username={username} />
+								<UserInfoAvatar username={username} />
 							</Box>
 						)}
 						<FieldGroup>
@@ -138,15 +135,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='username'
 										control={control}
-										render={({ field }) => (
-											<TextInput
-												id={usernameField}
-												data-qa-id='agent-edit-username'
-												{...field}
-												readOnly
-												addon={<Icon name='at' size='x20' />}
-											/>
-										)}
+										render={({ field }) => <TextInput id={usernameField} {...field} readOnly addon={<Icon name='at' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -156,15 +145,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='email'
 										control={control}
-										render={({ field }) => (
-											<TextInput
-												id={emailField}
-												data-qa-id='agent-edit-email'
-												{...field}
-												readOnly
-												addon={<Icon name='mail' size='x20' />}
-											/>
-										)}
+										render={({ field }) => <TextInput id={emailField} {...field} readOnly addon={<Icon name='mail' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -199,25 +180,13 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 								</FieldRow>
 							</Field>
 							{MaxChatsPerAgent && <MaxChatsPerAgent />}
-							{voipEnabled && (
-								<Field>
-									<FieldLabel htmlFor={voipExtensionField}>{t('VoIP_Extension')}</FieldLabel>
-									<FieldRow>
-										<Controller
-											name='voipExtension'
-											control={control}
-											render={({ field }) => <TextInput id={voipExtensionField} {...field} data-qa-id='agent-edit-voip-extension' />}
-										/>
-									</FieldRow>
-								</Field>
-							)}
 						</FieldGroup>
 					</form>
 				</FormProvider>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button data-qa-id='agent-edit-reset' type='reset' disabled={!isDirty} onClick={() => reset()}>
+					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
 					<Button form={formId} primary type='submit' data-qa-id='agent-edit-save' disabled={!isDirty}>

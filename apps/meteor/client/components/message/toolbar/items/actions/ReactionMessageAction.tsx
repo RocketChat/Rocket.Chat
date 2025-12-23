@@ -1,9 +1,17 @@
-import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useMethod } from '@rocket.chat/ui-contexts';
+import {
+	isOmnichannelRoom,
+	isRoomFederated,
+	isRoomNativeFederated,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
+import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
@@ -18,30 +26,48 @@ type ReactionMessageActionProps = {
 const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
-	const setReaction = useMethod('setReaction');
-	const quickReactionsEnabled = useFeaturePreview('quickReactions');
+	const setReaction = useEndpoint('POST', '/v1/chat.react');
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
 
-	if (!chat || !room || isOmnichannelRoom(room) || !subscription || message.private || !user) {
-		return null;
-	}
+	const isFederated = room && isRoomFederated(room);
+	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
 
-	if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
+	const enabled = useReactiveValue(
+		useCallback(() => {
+			if (isFederationBlocked) {
+				return false;
+			}
+
+			if (!chat || isOmnichannelRoom(room) || !subscription || message.private || !user) {
+				return false;
+			}
+
+			if (roomCoordinator.readOnly(room, user) && !room.reactWhenReadOnly) {
+				return false;
+			}
+
+			return true;
+		}, [chat, room, subscription, message.private, user, isFederationBlocked]),
+	);
+
+	if (!enabled) {
 		return null;
 	}
 
 	const toggleReaction = (emoji: string) => {
-		setReaction(`:${emoji}:`, message._id);
+		setReaction({
+			emoji: `:${emoji}:`,
+			messageId: message._id,
+		});
 		addRecentEmoji(emoji);
 	};
 
 	return (
 		<>
-			{quickReactionsEnabled &&
-				quickReactions.slice(0, 3).map(({ emoji, image }) => {
-					return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
-				})}
+			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
+				return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
+			})}
 			<MessageToolbarItem
 				id='reaction-message'
 				icon='add-reaction'
@@ -49,7 +75,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				qa='Add_Reaction'
 				onClick={(event) => {
 					event.stopPropagation();
-					chat.emojiPicker.open(event.currentTarget, (emoji) => {
+					chat?.emojiPicker.open(event.currentTarget, (emoji) => {
 						toggleReaction(emoji);
 					});
 				}}

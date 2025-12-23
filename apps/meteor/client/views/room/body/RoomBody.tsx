@@ -1,30 +1,28 @@
 import { Box } from '@rocket.chat/fuselage';
-import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
-import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword/RoomForeword';
-import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
+import DropTargetOverlay from './DropTargetOverlay';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
+import RetentionPolicyWarning from './RetentionPolicyWarning';
+import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
-import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
@@ -33,7 +31,7 @@ import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
-import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
+import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
 import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
@@ -87,7 +85,7 @@ const RoomBody = (): ReactElement => {
 	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
 
 	const {
-		wrapperRef: unreadBarWrapperRef,
+		wrapperRef,
 		innerRef: unreadBarInnerRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
@@ -110,11 +108,11 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
 	const jumpToRef = useMergedRefsV2(
-		jumpToRefGetMore,
 		jumpToRefIsAtBottom,
+		jumpToRefGetMore,
 		jumpToRefRestoreScrollPosition,
-		surroundingMessagesJumpTpRef,
 		jumpToRefGetMoreImperative,
+		surroundingMessagesJumpTpRef,
 	);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.uploads);
@@ -140,8 +138,6 @@ const RoomBody = (): ReactElement => {
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
 	);
-
-	const wrapperBoxRefs = useMergedRefsV2(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -198,7 +194,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
 								{Boolean(unread) && (
@@ -210,14 +206,18 @@ const RoomBody = (): ReactElement => {
 								)}
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
-
-							<div className='messages-box'>
+							<div className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
 									onClick={handleJumpToRecentButtonClick}
 									text={t('Jump_to_recent_messages')}
 								/>
+								{!canPreview ? (
+									<div className='content room-not-found error-color'>
+										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
+									</div>
+								) : null}
 								<div
 									className={[
 										'wrapper',

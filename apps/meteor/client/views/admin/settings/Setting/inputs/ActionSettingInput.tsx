@@ -5,14 +5,15 @@ import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ActionSettingInputProps = {
-	_id: string;
-	actionText: TranslationKey;
+import type { SettingInputProps } from './types';
+
+type ActionSettingInputProps = SettingInputProps & {
 	value: keyof ServerMethods;
-	disabled: boolean;
+	actionText: TranslationKey;
 	sectionChanged: boolean;
 };
-function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
+
+function ActionSettingInput({ _id, actionText, value, hint, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
 	const { t } = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -37,6 +38,7 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 				</Button>
 			</FieldRow>
 			{sectionChanged && <FieldHint>{t('Save_to_enable_this_action')}</FieldHint>}
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</>
 	);
 }

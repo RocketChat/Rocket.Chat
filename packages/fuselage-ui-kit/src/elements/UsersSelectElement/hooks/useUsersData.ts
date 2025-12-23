@@ -4,31 +4,31 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { UserAutoCompleteOptionType } from '../UsersSelectElement';
 
 type useUsersDataProps = {
-  filter: string;
+	filter: string;
 };
 
 export const useUsersData = ({ filter }: useUsersDataProps) => {
-  const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
+	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-  const { data } = useQuery({
-    queryKey: ['users.autoComplete', filter],
+	const { data } = useQuery({
+		queryKey: ['users.autoComplete', filter],
 
-    queryFn: async () => {
-      const users = await getUsers({
-        selector: JSON.stringify({ term: filter }),
-      });
-      const options = users.items.map(
-        (item): UserAutoCompleteOptionType => ({
-          value: item.username,
-          label: item.name || item.username,
-        }),
-      );
+		queryFn: async () => {
+			const users = await getUsers({
+				selector: JSON.stringify({ term: filter }),
+			});
+			const options = users.items.map(
+				(item): UserAutoCompleteOptionType => ({
+					value: item.username,
+					label: item.name || item.username,
+				}),
+			);
 
-      return options || [];
-    },
+			return options || [];
+		},
 
-    placeholderData: keepPreviousData,
-  });
+		placeholderData: keepPreviousData,
+	});
 
-  return data;
+	return data;
 };

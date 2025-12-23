@@ -1,7 +1,6 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
@@ -12,6 +11,7 @@ import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
+import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
@@ -64,6 +64,7 @@ const MessageBoxActionsToolbar = ({
 	const webdavActions = useWebdavActions(uploadsStore);
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
+	const timestampAction = useTimestampAction(chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -74,14 +75,20 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, fileUploadAction) && { fileUploadAction }),
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
-		...(!hiddenActions.includes('webdav-add') && { webdavActions }),
+		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
 
 	const featured = [];
 	const createNew = [];
 	const share = [];
+	const insert = [];
 
 	createNew.push(allActions.createDiscussionAction);
+
+	if (allActions.timestampAction) {
+		insert.push(allActions.timestampAction);
+	}
 
 	if (variant === 'small') {
 		featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
@@ -103,7 +110,6 @@ const MessageBoxActionsToolbar = ({
 			}),
 		...messageBox.actions.get(),
 	};
-
 	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
 		const items: GenericMenuItemProps[] = group
 			.filter((item) => !hiddenActions.includes(item.id))
@@ -129,6 +135,7 @@ const MessageBoxActionsToolbar = ({
 
 	const createNewFiltered = createNew.filter(isTruthy);
 	const shareFiltered = share.filter(isTruthy);
+	const insertFiltered = insert.filter(isTruthy);
 
 	const renderAction = ({ id, icon, content, disabled, onClick }: GenericMenuItemProps) => {
 		if (!icon) {
@@ -147,7 +154,12 @@ const MessageBoxActionsToolbar = ({
 				data-qa-id='menu-more-actions'
 				detached
 				icon='plus'
-				sections={[{ title: t('Create_new'), items: createNewFiltered }, { title: t('Share'), items: shareFiltered }, ...messageBoxActions]}
+				sections={[
+					{ title: t('Create_new'), items: createNewFiltered },
+					{ title: t('Share'), items: shareFiltered },
+					...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
+					...messageBoxActions,
+				]}
 				title={t('More_actions')}
 			/>
 		</>

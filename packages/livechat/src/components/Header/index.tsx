@@ -2,9 +2,9 @@ import type { ComponentChildren, Ref } from 'preact';
 import { toChildArray } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import styles from './styles.scss';
 import { type Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
-import styles from './styles.scss';
 
 type HeaderProps = {
 	children?: ComponentChildren;

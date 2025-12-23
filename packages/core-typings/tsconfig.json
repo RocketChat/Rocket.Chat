@@ -4,7 +4,8 @@
 		"lib": ["dom", "dom.iterable"],
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"plugins": [{ "transform": "typia/lib/transform" }]
 	},
 	"include": ["./src/**/*"]
 }

@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		findOneById: sinon.stub(),
+		findOneEnabledById: sinon.stub(),
 		findSimilarVerifiedContacts: sinon.stub(),
 		deleteMany: sinon.stub(),
 	},
@@ -45,7 +45,7 @@ describe('mergeContacts', () => {
 	};
 
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findOneById.reset();
+		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.reset();
 		modelsMock.LivechatContacts.deleteMany.reset();
 		modelsMock.LivechatRooms.updateMergedContactIds.reset();
@@ -60,7 +60,7 @@ describe('mergeContacts', () => {
 	});
 
 	it('should throw an error if contact does not exist', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves(undefined);
+		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
 
 		await expect(runMergeContacts(() => undefined, 'invalidId', { visitorId: 'visitorId', source: { type: 'sms' } })).to.be.rejectedWith(
 			'error-invalid-contact',
@@ -68,7 +68,7 @@ describe('mergeContacts', () => {
 	});
 
 	it('should throw an error if contact channel does not exist', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			_id: 'contactId',
 			channels: [{ name: 'channelName', visitor: { visitorId: 'visitorId', source: { type: 'sms' } } }],
 		});
@@ -79,12 +79,12 @@ describe('mergeContacts', () => {
 	});
 
 	it('should do nothing if there are no similar verified contacts', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId', channels: [targetChannel] });
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({ _id: 'contactId', channels: [targetChannel] });
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([]);
 
 		await runMergeContacts(() => undefined, 'contactId', { visitorId: 'visitorId', source: { type: 'sms' } });
 
-		expect(modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId')).to.be.true;
+		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId')).to.be.true;
 		expect(modelsMock.LivechatContacts.findSimilarVerifiedContacts.calledOnceWith(targetChannel, 'contactId')).to.be.true;
 		expect(modelsMock.LivechatContacts.deleteMany.notCalled).to.be.true;
 		expect(contactMergerStub.getAllFieldsFromContact.notCalled).to.be.true;
@@ -105,14 +105,14 @@ describe('mergeContacts', () => {
 			channels: [targetChannel],
 		};
 
-		modelsMock.LivechatContacts.findOneById.resolves(originalContact);
+		modelsMock.LivechatContacts.findOneEnabledById.resolves(originalContact);
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([similarContact]);
 		modelsMock.Settings.incrementValueById.resolves({ value: undefined });
 
 		await runMergeContacts(() => undefined, 'contactId', { visitorId: 'visitorId', source: { type: 'sms' } });
 
-		expect(modelsMock.LivechatContacts.findOneById.calledTwice).to.be.true;
-		expect(modelsMock.LivechatContacts.findOneById.calledWith('contactId')).to.be.true;
+		expect(modelsMock.LivechatContacts.findOneEnabledById.calledTwice).to.be.true;
+		expect(modelsMock.LivechatContacts.findOneEnabledById.calledWith('contactId')).to.be.true;
 		expect(modelsMock.LivechatContacts.findSimilarVerifiedContacts.calledOnceWith(targetChannel, 'contactId')).to.be.true;
 		expect(contactMergerStub.getAllFieldsFromContact.calledOnceWith(similarContact)).to.be.true;
 

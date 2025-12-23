@@ -1,21 +1,38 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoom,
+	IUser,
+	SelectedAgent,
+	TransferByData,
+	TransferData,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
-	isPOSTLivechatRoomTransferParams,
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
+	isPOSTLivechatRoomsCloseAll,
+	isPOSTLivechatRoomsCloseAllSuccessResponse,
+	POSTLivechatRemoveRoomSuccess,
+	isPOSTLivechatRemoveRoomParams,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	ajv,
 } from '@rocket.chat/rest-typings';
+import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check } from 'meteor/check';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -27,7 +44,7 @@ import { closeRoom } from '../../lib/closeRoom';
 import { saveGuest } from '../../lib/guests';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
-import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { createRoom, removeOmnichannelRoom, saveRoomInfo } from '../../lib/rooms';
 import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
@@ -222,43 +239,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecation: { version: '7.0.0' } },
-	{
-		async post() {
-			const { rid, token, department } = this.bodyParams;
-
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Error('invalid-token');
-			}
-
-			let room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			// update visited page history to not expire
-			await Messages.keepHistoryForToken(token);
-
-			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
-
-			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
-				return API.v1.failure();
-			}
-
-			room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			return API.v1.success({ room });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'livechat/room.survey',
 	{ validateParams: isPOSTLivechatRoomSurveyParams },
 	{
@@ -350,6 +330,74 @@ API.v1.addRoute(
 	},
 );
 
+const livechatVisitorDepartmentTransfer = API.v1.post(
+	'livechat/visitor/department.transfer',
+	{
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+		},
+		body: isPOSTLivechatVisitorDepartmentTransferParams,
+	},
+	async function action() {
+		const { rid, token, department } = this.bodyParams;
+
+		const visitor = await findGuest(token);
+		if (!visitor) {
+			return API.v1.failure('invalid-token');
+		}
+		const room = await LivechatRooms.findOneById(rid);
+
+		if (!room || room.t !== 'l') {
+			return API.v1.failure('error-invalid-room');
+		}
+
+		if (!room.open) {
+			return API.v1.failure('This_conversation_is_already_closed');
+		}
+
+		// As this is a visitor endpoint, we should not show the mac limit error
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return API.v1.failure('error-transefing-chat');
+		}
+
+		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+		if (!guest) {
+			return API.v1.failure('error-invalid-visitor');
+		}
+
+		const transferredBy = normalizeTransferredByData(
+			{ _id: guest._id, username: guest.username, name: guest.name, userType: 'visitor' },
+			room,
+		);
+
+		const transferData: TransferData = { transferredBy, departmentId: department };
+
+		const chatForwardedResult = await transfer(room, guest, transferData);
+		if (!chatForwardedResult) {
+			return API.v1.failure('error-transfering-chat');
+		}
+
+		return API.v1.success();
+	},
+);
+
+type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatAnalyticsEndpoints {}
+}
+
 API.v1.addRoute(
 	'livechat/room.join',
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLiveChatRoomJoinProps },
@@ -427,3 +475,66 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatRoomsEndpoints = API.v1
+	.post(
+		'livechat/rooms.delete',
+		{
+			response: {
+				200: POSTLivechatRemoveRoomSuccess,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['remove-closed-livechat-room'],
+			body: isPOSTLivechatRemoveRoomParams,
+		},
+		async function action() {
+			const { roomId } = this.bodyParams;
+
+			try {
+				await removeOmnichannelRoom(roomId);
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (error instanceof Meteor.Error) {
+					return API.v1.failure(error.reason);
+				}
+
+				return API.v1.failure('error-removing-room');
+			}
+		},
+	)
+	.post(
+		'livechat/rooms.removeAllClosedRooms',
+		{
+			response: {
+				200: isPOSTLivechatRoomsCloseAllSuccessResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['remove-closed-livechat-rooms'],
+			body: isPOSTLivechatRoomsCloseAll,
+		},
+		async function action() {
+			livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
+
+			const params = this.bodyParams;
+
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
+			const promises: Promise<void>[] = [];
+			await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
+				promises.push(removeOmnichannelRoom(_id));
+			});
+			await Promise.all(promises);
+
+			livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
+			return API.v1.success({ removedRooms: promises.length });
+		},
+	);
+
+type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatRoomsEndpoints {}
+}

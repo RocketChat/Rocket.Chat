@@ -1,6 +1,9 @@
-import type { Data } from './Data';
+import type { i18n } from 'i18next';
+
+import type { ChatTranscriptData } from './ChatTranscriptData';
+import type { WorkerData } from './WorkerData';
 
 export interface IStrategy {
-	renderTemplate(data: Data): Promise<NodeJS.ReadableStream>;
-	parseTemplateData(data: Record<string, unknown | unknown[]>): Data;
+	renderTemplate(data: ChatTranscriptData): Promise<NodeJS.ReadableStream>;
+	parseTemplateData(data: WorkerData, i18n: i18n): ChatTranscriptData;
 }

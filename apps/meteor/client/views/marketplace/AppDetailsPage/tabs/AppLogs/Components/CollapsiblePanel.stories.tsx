@@ -5,13 +5,10 @@ import { CollapsiblePanel } from './CollapsiblePanel';
 import { CollapsibleRegion } from './CollapsibleRegion';
 
 export default {
-	title: 'Components/CollapsiblePanel',
 	component: CollapsiblePanel,
-
 	args: {
 		expanded: true,
 	},
-
 	parameters: {
 		layout: 'centered',
 	},

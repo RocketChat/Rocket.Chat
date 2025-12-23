@@ -43,7 +43,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private checkMAC: BeforeSaveCheckMAC;
 
-	async created() {
+	override async created() {
 		this.preventMention = new BeforeSavePreventMention();
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
@@ -83,6 +83,48 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
 		return executeSendMessage(fromId, { rid, msg });
+	}
+
+	async saveMessageFromFederation({
+		fromId,
+		rid,
+		federation_event_id,
+		msg,
+		e2e_content,
+		file,
+		files,
+		attachments,
+		thread,
+	}: {
+		fromId: string;
+		rid: string;
+		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: 'm.megolm.v1.aes-sha2';
+			ciphertext: string;
+		};
+		file?: IMessage['file'];
+		files?: IMessage['files'];
+		attachments?: IMessage['attachments'];
+		thread?: { tmid: string; tshow: boolean };
+	}): Promise<IMessage> {
+		return executeSendMessage(fromId, {
+			rid,
+			msg,
+			...thread,
+			federation: {
+				eventId: federation_event_id,
+				version: 1,
+			},
+			...(file && { file }),
+			...(files && { files }),
+			...(attachments && { attachments }),
+			...(e2e_content && {
+				t: 'e2e',
+				content: e2e_content,
+			}),
+		});
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {

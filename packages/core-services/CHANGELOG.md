@@ -1,5 +1,720 @@
 # @rocket.chat/core-services
 
+## 0.12.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/rest-typings@8.0.0-rc.1
+  - @rocket.chat/http-router@7.9.14-rc.1
+  - @rocket.chat/models@2.0.0-rc.1
+  </details>
+
+## 0.12.0-rc.0
+
+### Minor Changes
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP from Omnichannel
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes Deprecated FreeSwitch integration
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
+### Patch Changes
+
+- ([#37791](https://github.com/RocketChat/Rocket.Chat/pull/37791)) Fixes an issue where cases of invites that were canceled or disinvited were not being handled.
+
+- ([#37551](https://github.com/RocketChat/Rocket.Chat/pull/37551)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [347b8f973440f3e2239f79c00c2d9b430859eef2, b802430fbfdc7fa69a976468dc6dee6f3c4de26f, 872da49986436d2efa65fc42e416b45d706fd59c, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, f3f0b273ab49e9d1048ba43d52eb36005274905e, ac11ea05ffadeca978c794ff38d5199d9acb2c29, a1d65f493fdb039d34ef4f65d243a97931763f4b, ddc935727e9a7275813006d9dcaa7fe866610844, 733c94b996204151f580de2dd7f3402124b70977, d3538e7045c41f91b8c561d44e5485ff93b93745, a5a7343a835b04812c70699be1b13e54f0e10d48, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 476a070b0099b95e4c463ee85960c4dcfbd87120, 239f4b1171bcf448cfba345cc90c4b5cd7c21afc, dc67590d14d510b069dee074c55314c56f74bb11, be80b724a636877294b5e5baa501d070941131dd, dccdcc5b4a0da4814f72a020bc4eccb8ea2497d8, 5ac1863be4c6e82666989f4b569928c0805691ff, ec0f8b435dd12c218adffa8892737c7ced4debb8, cb3c5e3455606a045f95f168dae6ed32a387697c, 5b3f93c47a03b628d613a77005e92021cd6cee4b]:</summary>
+
+  - @rocket.chat/rest-typings@8.0.0-rc.0
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/models@2.0.0-rc.0
+  - @rocket.chat/media-signaling@0.1.1-rc.0
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  - @rocket.chat/http-router@7.9.14-rc.0
+  </details>
+
+## 0.11.2
+
+### Patch Changes
+
+- ([#37883](https://github.com/RocketChat/Rocket.Chat/pull/37883) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.2
+  - @rocket.chat/rest-typings@7.13.2
+  - @rocket.chat/http-router@7.9.13
+  - @rocket.chat/models@1.8.2
+  </details>
+
+## 0.11.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.1
+  - @rocket.chat/rest-typings@7.13.1
+  - @rocket.chat/http-router@7.9.12
+  - @rocket.chat/models@1.8.1
+  </details>
+
+## 0.11.0
+
+### Minor Changes
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Adds a `deletedRooms` field to the `users.delete` endpoint response, indicating which rooms were deleted as part of the user deletion process.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 65fbcbed9f64004b953dd9d4182b3fccb8147339, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd, 035e0c7c387d6c99703513c7c00bf37e86538b71]:</summary>
+
+  - @rocket.chat/models@1.8.0
+  - @rocket.chat/core-typings@7.13.0
+  - @rocket.chat/ui-kit@0.38.0
+  - @rocket.chat/media-signaling@0.1.0
+  - @rocket.chat/rest-typings@7.13.0
+  - @rocket.chat/http-router@7.9.11
+  </details>
+
+## 0.11.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  - @rocket.chat/rest-typings@7.13.0-rc.2
+  - @rocket.chat/http-router@7.9.11-rc.2
+  - @rocket.chat/models@1.8.0-rc.2
+  </details>
+
+## 0.11.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  - @rocket.chat/rest-typings@7.13.0-rc.1
+  - @rocket.chat/http-router@7.9.9-rc.1
+  - @rocket.chat/models@1.8.0-rc.1
+  </details>
+
+## 0.11.0-rc.0
+
+### Minor Changes
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Adds a `deletedRooms` field to the `users.delete` endpoint response, indicating which rooms were deleted as part of the user deletion process.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [83642cbe499ba399329449fb8cd652a0405c0795, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 65fbcbed9f64004b953dd9d4182b3fccb8147339, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd, 035e0c7c387d6c99703513c7c00bf37e86538b71]:</summary>
+
+  - @rocket.chat/models@1.8.0-rc.0
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  - @rocket.chat/ui-kit@0.38.0-rc.0
+  - @rocket.chat/media-signaling@0.1.0-rc.0
+  - @rocket.chat/rest-typings@7.13.0-rc.0
+  - @rocket.chat/http-router@7.9.9-rc.0
+  </details>
+
+## 0.10.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/rest-typings@7.12.2
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/models@1.7.3
+  </details>
+
+## 0.10.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8cbd9bfd0566cbd7d86d8b40ea7d58d6ef382742]:</summary>
+
+  - @rocket.chat/models@1.7.2
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/rest-typings@7.12.1
+  - @rocket.chat/http-router@7.9.9
+  </details>
+
+## 0.10.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [48d1442a07e860fefd6991c97e94d6a9de345afe, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f, 4ab2b7fdb9314538d45abdf4474ea9d2409799be, fd4f9b2523dae23518561cdcfa8d931f87d8964d]:</summary>
+
+  - @rocket.chat/rest-typings@7.12.0
+  - @rocket.chat/core-typings@7.12.0
+  - @rocket.chat/http-router@7.9.8
+  - @rocket.chat/models@1.7.1
+  </details>
+
+## 0.10.4-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.4
+  - @rocket.chat/rest-typings@7.12.0-rc.4
+  - @rocket.chat/http-router@7.9.8-rc.4
+  - @rocket.chat/models@1.7.1-rc.4
+  </details>
+
+## 0.10.4-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.3
+  - @rocket.chat/rest-typings@7.12.0-rc.3
+  - @rocket.chat/http-router@7.9.8-rc.3
+  - @rocket.chat/models@1.7.1-rc.3
+  </details>
+
+## 0.10.4-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.2
+  - @rocket.chat/rest-typings@7.12.0-rc.2
+  - @rocket.chat/http-router@7.9.8-rc.2
+  - @rocket.chat/models@1.7.1-rc.2
+  </details>
+
+## 0.10.4-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.1
+  - @rocket.chat/rest-typings@7.12.0-rc.1
+  - @rocket.chat/http-router@7.9.8-rc.1
+  - @rocket.chat/models@1.7.1-rc.1
+  </details>
+
+## 0.10.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [48d1442a07e860fefd6991c97e94d6a9de345afe, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f, 4ab2b7fdb9314538d45abdf4474ea9d2409799be, fd4f9b2523dae23518561cdcfa8d931f87d8964d]:</summary>
+
+  - @rocket.chat/rest-typings@7.12.0-rc.0
+  - @rocket.chat/core-typings@7.12.0-rc.0
+  - @rocket.chat/http-router@7.9.8-rc.0
+  - @rocket.chat/models@1.7.1-rc.0
+  </details>
+
+## 0.10.3
+
+### Patch Changes
+
+- ([#36852](https://github.com/RocketChat/Rocket.Chat/pull/36852)) Fixes `teams.addMembers` API to assign team member roles properly.
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, d76a5578ed0e14fae2a041c0e09d565b28630d76, 8d2ad40c46334aaf35816e52a3b28dc2ac23ce2d, ba793542644d2b725924c4cef253e7d84bc2ff71, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, c5ee569cc3120bb616001fd78687dbf623a6a504, 00611aceec7f158064863f2e829c5a6698687512, c15a47ee1d55118342d0f0ece7af77f6f41132b7, 276c270f34293729182e9ebab61e1ff2c35398fc, b0a4602a4461200b9872b2b073ec56fa55ecb466, 80fbb2eb421253e6066207949eaf2b41871e4428, 90a1759df57814306cbc859409fe041b33db7a39, b74ab6f18ff1343f4835975f663211b005ccc5a1]:</summary>
+
+  - @rocket.chat/models@1.7.0
+  - @rocket.chat/rest-typings@7.11.0
+  - @rocket.chat/core-typings@7.11.0
+  - @rocket.chat/http-router@7.9.7
+  </details>
+
+## 0.10.3-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.7
+  - @rocket.chat/rest-typings@7.11.0-rc.7
+  - @rocket.chat/http-router@7.9.7-rc.7
+  - @rocket.chat/models@1.7.0-rc.7
+  </details>
+
+## 0.10.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.6
+  - @rocket.chat/rest-typings@7.11.0-rc.6
+  - @rocket.chat/http-router@7.9.6-rc.6
+  - @rocket.chat/models@1.7.0-rc.6
+  </details>
+
+## 0.10.2-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.5
+  - @rocket.chat/rest-typings@7.11.0-rc.5
+  - @rocket.chat/http-router@7.9.6-rc.5
+  - @rocket.chat/models@1.7.0-rc.5
+  </details>
+
+## 0.10.2-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.4
+  - @rocket.chat/rest-typings@7.11.0-rc.4
+  - @rocket.chat/http-router@7.9.6-rc.4
+  - @rocket.chat/models@1.7.0-rc.4
+  </details>
+
+## 0.10.2-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.3
+  - @rocket.chat/rest-typings@7.11.0-rc.3
+  - @rocket.chat/http-router@7.9.6-rc.3
+  - @rocket.chat/models@1.7.0-rc.3
+  </details>
+
+## 0.10.2-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.11.0-rc.2
+  - @rocket.chat/rest-typings@7.11.0-rc.2
+  - @rocket.chat/http-router@7.9.5-rc.2
+  - @rocket.chat/models@1.7.0-rc.2
+  </details>
+
+## 0.10.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.1
+  - @rocket.chat/rest-typings@7.11.0-rc.1
+  - @rocket.chat/http-router@7.9.5-rc.1
+  - @rocket.chat/models@1.7.0-rc.1
+  </details>
+
+## 0.10.2-rc.0
+
+### Patch Changes
+
+- ([#36852](https://github.com/RocketChat/Rocket.Chat/pull/36852)) Fixes `teams.addMembers` API to assign team member roles properly.
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, d76a5578ed0e14fae2a041c0e09d565b28630d76, 8d2ad40c46334aaf35816e52a3b28dc2ac23ce2d, ba793542644d2b725924c4cef253e7d84bc2ff71, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, c5ee569cc3120bb616001fd78687dbf623a6a504, 00611aceec7f158064863f2e829c5a6698687512, c15a47ee1d55118342d0f0ece7af77f6f41132b7, 276c270f34293729182e9ebab61e1ff2c35398fc, b0a4602a4461200b9872b2b073ec56fa55ecb466, 80fbb2eb421253e6066207949eaf2b41871e4428, 90a1759df57814306cbc859409fe041b33db7a39, b74ab6f18ff1343f4835975f663211b005ccc5a1]:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.0
+  - @rocket.chat/rest-typings@7.11.0-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  - @rocket.chat/http-router@7.9.5-rc.0
+    </details>
+
+  </details>
+
+## 0.10.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  - @rocket.chat/rest-typings@7.10.2
+  - @rocket.chat/models@1.6.2
+  </details>
+
+## 0.10.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.1
+  - @rocket.chat/rest-typings@7.10.1
+  - @rocket.chat/models@1.6.1
+    </details>
+
+## 0.10.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, dc6acda84bf7452d96f375be3cd97748ed016bfc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0
+  - @rocket.chat/models@1.6.0
+  - @rocket.chat/core-typings@7.10.0
+  </details>
+
+## 0.10.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.6
+  - @rocket.chat/rest-typings@7.10.0-rc.6
+  - @rocket.chat/models@1.6.0-rc.6
+  </details>
+
+## 0.10.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.0-rc.5
+  - @rocket.chat/rest-typings@7.10.0-rc.5
+  - @rocket.chat/models@1.6.0-rc.5
+  </details>
+
+## 0.10.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.0-rc.4
+  - @rocket.chat/rest-typings@7.10.0-rc.4
+  - @rocket.chat/models@1.6.0-rc.4
+  </details>
+
+## 0.10.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.3
+  - @rocket.chat/rest-typings@7.10.0-rc.3
+  - @rocket.chat/models@1.6.0-rc.3
+  </details>
+
+## 0.10.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.2
+  - @rocket.chat/rest-typings@7.10.0-rc.2
+  - @rocket.chat/models@1.6.0-rc.2
+  </details>
+
+## 0.10.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.1
+  - @rocket.chat/rest-typings@7.10.0-rc.1
+  - @rocket.chat/models@1.6.0-rc.1
+  </details>
+
+## 0.10.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, dc6acda84bf7452d96f375be3cd97748ed016bfc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.0
+  - @rocket.chat/models@1.6.0-rc.0
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  </details>
+
+## 0.9.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/rest-typings@7.9.3
+  - @rocket.chat/models@1.5.15
+  </details>
+
+## 0.9.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/rest-typings@7.9.2
+  - @rocket.chat/models@1.5.14
+  </details>
+
+## 0.9.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/rest-typings@7.9.1
+  - @rocket.chat/models@1.5.13
+  </details>
+
+## 0.9.12
+
+### Patch Changes
+
+- ([#36099](https://github.com/RocketChat/Rocket.Chat/pull/36099)) Fixes missing UI updates after pruning messages with "Files only" enabled.
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/models@1.5.12
+  - @rocket.chat/rest-typings@7.9.0
+  - @rocket.chat/core-typings@7.9.0
+  </details>
+
+## 0.9.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/rest-typings@7.9.0-rc.2
+  - @rocket.chat/models@1.5.11-rc.2
+  </details>
+
+## 0.9.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/rest-typings@7.9.0-rc.1
+  - @rocket.chat/models@1.5.11-rc.1
+  </details>
+
+## 0.9.11-rc.0
+
+### Patch Changes
+
+- ([#36099](https://github.com/RocketChat/Rocket.Chat/pull/36099)) Fixes missing UI updates after pruning messages with "Files only" enabled.
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/models@1.5.11-rc.0
+  - @rocket.chat/rest-typings@7.9.0-rc.0
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  </details>
+
+## 0.9.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/rest-typings@7.8.3
+  - @rocket.chat/models@1.5.11
+  </details>
+
+## 0.9.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [617caa8e7be9c650b96cc1fcc5b836eaa3e7ae39]:</summary>
+
+  - @rocket.chat/models@1.5.10
+  - @rocket.chat/core-typings@7.8.2
+  - @rocket.chat/rest-typings@7.8.2
+  </details>
+
+## 0.9.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.1
+  - @rocket.chat/rest-typings@7.8.1
+  - @rocket.chat/models@1.5.9
+  </details>
+
+## 0.9.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, da288f69a4c169eee942af73f490e7570fe41cc5, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, dc26071ba3e0242d1ea7cf819f05c76ab307b229, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c, d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0
+  - @rocket.chat/models@1.5.8
+  - @rocket.chat/core-typings@7.8.0
+  </details>
+
+## 0.9.8-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  - @rocket.chat/rest-typings@7.8.0-rc.9
+  - @rocket.chat/models@1.5.8-rc.9
+  </details>
+
+## 0.9.5-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  - @rocket.chat/rest-typings@7.8.0-rc.8
+  - @rocket.chat/models@1.5.5-rc.8
+  </details>
+
+## 0.9.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.7
+  - @rocket.chat/rest-typings@7.8.0-rc.7
+  - @rocket.chat/models@1.5.5-rc.7
+  </details>
+
+## 0.9.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.6
+  - @rocket.chat/rest-typings@7.8.0-rc.6
+  - @rocket.chat/models@1.5.5-rc.6
+  </details>
+
+## 0.9.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.5
+  - @rocket.chat/rest-typings@7.8.0-rc.5
+  - @rocket.chat/models@1.5.5-rc.5
+  </details>
+
+## 0.9.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.4
+  - @rocket.chat/rest-typings@7.8.0-rc.4
+  - @rocket.chat/models@1.5.5-rc.4
+  </details>
+
+## 0.9.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.3
+  - @rocket.chat/models@1.5.5-rc.3
+  - @rocket.chat/core-typings@7.8.0-rc.3
+  </details>
+
+## 0.9.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.2
+  - @rocket.chat/rest-typings@7.8.0-rc.2
+  - @rocket.chat/models@1.5.5-rc.2
+  </details>
+
+## 0.9.5-rc.1
+
+## 0.9.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.8.0-rc.1
+  - @rocket.chat/rest-typings@7.8.0-rc.1
+  - @rocket.chat/models@1.5.5-rc.1
+  </details>
+
+## 0.9.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, da288f69a4c169eee942af73f490e7570fe41cc5, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, dc26071ba3e0242d1ea7cf819f05c76ab307b229, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.0
+  - @rocket.chat/models@1.5.5-rc.0
+  - @rocket.chat/core-typings@7.8.0-rc.0
+  </details>
+
+## 0.9.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.4
+  - @rocket.chat/rest-typings@7.7.4
+  - @rocket.chat/models@1.5.7
+  </details>
+
+## 0.9.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.3
+  - @rocket.chat/rest-typings@7.7.3
+  - @rocket.chat/models@1.5.6
+  </details>
+
+## 0.9.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8874a5aab72c962f213d128a54393d95f7dabef8]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.2
+  - @rocket.chat/models@1.5.5
+  - @rocket.chat/core-typings@7.7.2
+  </details>
+
 ## 0.9.4
 
 ### Patch Changes
