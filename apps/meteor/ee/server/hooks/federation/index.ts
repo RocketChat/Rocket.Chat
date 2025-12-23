@@ -262,7 +262,7 @@ callbacks.add(
 			try {
 				const federatedUsers = members.filter((username) => username.includes(':'));
 				await FederationMatrix.validateFederatedUsers(federatedUsers);
-			} catch (error) {
+			} catch (error: FederationValidationError | unknown) {
 				if (error instanceof FederationValidationError) {
 					throw new Meteor.Error(error.error, error.userMessage);
 				}

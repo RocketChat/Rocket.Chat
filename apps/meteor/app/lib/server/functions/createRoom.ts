@@ -209,7 +209,7 @@ export const createRoom = async <T extends RoomType>(
 				.filter((member: string | IUser) => (typeof member === 'string' ? member.includes(':') : member.username?.includes(':')))
 				.map((member: string | IUser) => (typeof member === 'string' ? member : member.username!));
 			await FederationMatrix.validateFederatedUsers(federatedUsers);
-		} catch (error) {
+		} catch (error: FederationValidationError | unknown) {
 			if (error instanceof FederationValidationError) {
 				throw new Meteor.Error(error.error, error.userMessage, { method: 'createRoom' });
 			}
