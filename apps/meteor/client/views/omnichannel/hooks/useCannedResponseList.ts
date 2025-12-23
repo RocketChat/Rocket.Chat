@@ -1,75 +1,57 @@
+import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { CannedResponseList } from '../../../lib/lists/CannedResponseList';
+import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 
-export const useCannedResponseList = (
-	options: any,
-): {
-	reload: () => void;
-	cannedList: CannedResponseList;
-	initialItemCount: number;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const [cannedList, setCannedList] = useState(() => new CannedResponseList(options));
-	const reload = useCallback(() => setCannedList(new CannedResponseList(options)), [options]);
-
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
-
-	useEffect(() => {
-		if (cannedList.options !== options) {
-			cannedList.updateFilters(options);
-		}
-	}, [cannedList, options]);
-
+export const useCannedResponseList = ({ filter, type }: { filter: string; type: string }) => {
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	const fetchData = useCallback(
-		async (start: number, end: number) => {
+	const count = 25;
+
+	return useInfiniteQuery({
+		queryKey: cannedResponsesQueryKeys.list({ filter, type }),
+		queryFn: async ({ pageParam: offset }) => {
 			const { cannedResponses, total } = await getCannedResponses({
-				...(options.filter && { text: options.filter }),
-				...(options.type && ['global', 'user'].find((option) => option === options.type) && { scope: options.type }),
-				...(options.type &&
-					!['global', 'user', 'all'].find((option) => option === options.type) && {
+				...(filter && { text: filter }),
+				...(type && ['global', 'user'].find((option) => option === type) && { scope: type }),
+				...(type &&
+					!['global', 'user', 'all'].find((option) => option === type) && {
 						scope: 'department',
-						departmentId: options.type,
+						departmentId: type,
 					}),
-				offset: start,
-				count: end + start,
+				offset,
+				count,
 			});
 
 			const { departments } = await getDepartments({ text: '' });
 
 			return {
-				items: cannedResponses.map((cannedResponse: any) => {
-					if (cannedResponse.departmentId) {
-						departments.forEach((department: any) => {
-							if (cannedResponse.departmentId === department._id) {
-								cannedResponse.departmentName = department.name;
-							}
-						});
-					}
-					cannedResponse._updatedAt = new Date(cannedResponse._updatedAt);
-					cannedResponse._createdAt = new Date(cannedResponse._createdAt);
-					return cannedResponse;
+				items: cannedResponses.map((cannedResponse): IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] } => {
+					const departmentName = cannedResponse.departmentId
+						? departments.find((department) => department._id === cannedResponse.departmentId)?.name
+						: undefined;
+
+					return {
+						...cannedResponse,
+						_updatedAt: new Date(cannedResponse._updatedAt),
+						_createdAt: new Date(cannedResponse._createdAt),
+						departmentName: departmentName!,
+					};
 				}),
 				itemCount: total,
 			};
 		},
-		[getCannedResponses, getDepartments, options.filter, options.type],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(cannedList, fetchData);
-
-	return {
-		reload,
-		cannedList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _, lastOffset) => {
+			const nextOffset = lastOffset + count;
+			if (nextOffset >= lastPage.itemCount) return undefined;
+			return nextOffset;
+		},
+		select: ({ pages }) => ({
+			cannedItems: pages.flatMap((page) => page.items),
+			total: pages.at(-1)?.itemCount,
+		}),
+	});
 };

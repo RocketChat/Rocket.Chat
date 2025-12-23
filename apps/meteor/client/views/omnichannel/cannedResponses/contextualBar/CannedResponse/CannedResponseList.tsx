@@ -21,11 +21,10 @@ import WrapCannedResponse from './WrapCannedResponse';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
 type CannedResponseListProps = {
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
 	itemCount: number;
-	onClose: any;
-	loading: boolean;
+	onClose: () => void;
 	options: [string, string][];
 	text: string;
 	setText: FormEventHandler<HTMLInputElement>;
@@ -43,7 +42,6 @@ const CannedResponseList = ({
 	cannedItems,
 	itemCount,
 	onClose,
-	loading,
 	options,
 	text,
 	setText,
@@ -110,7 +108,7 @@ const CannedResponseList = ({
 							<Virtuoso
 								style={{ width: inlineSize }}
 								totalCount={itemCount}
-								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}
 								itemContent={(_index, data): ReactElement => (
