@@ -112,25 +112,20 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
-				throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
-			}
-
-			const isAllowed = await isFederationDomainAllowedForUsernames([user.username]);
-			if (!isAllowed) {
-				throw new MeteorError(
-					'federation-policy-denied',
-					"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
-				);
-			}
-
-			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
 		}
 
-		// TODO should we really check for "user" here? it is potentially an external user
 		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+		}
+
+		const isAllowed = await isFederationDomainAllowedForUsernames([user.username]);
+		if (!isAllowed) {
+			throw new MeteorError(
+				'federation-policy-denied',
+				"Action Blocked. Communication with one of the domains in the list is restricted by your organization's security policy.",
+			);
 		}
 
 		// If inviter is federated, the invite came from an external transaction.
