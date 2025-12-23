@@ -151,3 +151,24 @@ export const callHistoryQueryKeys = {
 	all: ['call-history'] as const,
 	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };
+
+export const marketplaceQueryKeys = {
+	all: ['marketplace'] as const,
+	appsMarketplace: (canManageApps?: boolean) => [...marketplaceQueryKeys.all, 'apps-marketplace', canManageApps] as const,
+	appsInstance: (canManageApps?: boolean) => [...marketplaceQueryKeys.all, 'apps-instance', canManageApps] as const,
+	appsStored: (...args: unknown[]) => [...marketplaceQueryKeys.all, 'apps-stored', ...args] as const,
+	app: (appId: string) => [...marketplaceQueryKeys.all, 'apps', appId] as const,
+	appStatus: (appId: string) => [...marketplaceQueryKeys.app(appId), 'status'] as const,
+	appLogs: (
+		appId: string,
+		query: {
+			instanceId?: string | undefined;
+			endDate?: string | undefined;
+			startDate?: string | undefined;
+			method?: string | undefined;
+			logLevel?: '0' | '1' | '2' | undefined;
+			count: number;
+			offset: number;
+		},
+	) => [...marketplaceQueryKeys.app(appId), 'logs', query] as const,
+} as const;
