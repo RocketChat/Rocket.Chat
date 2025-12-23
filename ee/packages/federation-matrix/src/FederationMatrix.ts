@@ -252,7 +252,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			return matrixRoomResult;
 		} catch (error) {
-			this.logger.error('Failed to create room:', error);
+			this.logger.error(error, 'Failed to create room');
 			throw error;
 		}
 	}
