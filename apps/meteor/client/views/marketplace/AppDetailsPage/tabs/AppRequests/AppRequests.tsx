@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { useAppRequests } from '../../../hooks/useAppRequests';
+import { useAppsReload } from '../../../hooks/useAppsReload';
 
 type itemsPerPage = 25 | 50 | 100;
 

@@ -5,8 +5,6 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 import type { IAppExternalURL, ICategory } from '../apps/@types/IOrchestrator';
-import type { AsyncState } from '../lib/asyncState';
-import { AsyncStatePhase } from '../lib/asyncState';
 import type { App } from '../views/marketplace/types';
 
 export interface IAppsOrchestrator {
@@ -27,27 +25,9 @@ export interface IAppsOrchestrator {
 }
 
 export type AppsContextValue = {
-	installedApps: AsyncState<{ apps: App[] }>;
-	marketplaceApps: AsyncState<{ apps: App[] }>;
-	privateApps: AsyncState<{ apps: App[] }>;
 	orchestrator?: IAppsOrchestrator;
 };
 
 export const AppsContext = createContext<AppsContextValue>({
-	installedApps: {
-		phase: AsyncStatePhase.LOADING,
-		value: undefined,
-		error: undefined,
-	},
-	marketplaceApps: {
-		phase: AsyncStatePhase.LOADING,
-		value: undefined,
-		error: undefined,
-	},
-	privateApps: {
-		phase: AsyncStatePhase.LOADING,
-		value: undefined,
-		error: undefined,
-	},
 	orchestrator: undefined,
 });
