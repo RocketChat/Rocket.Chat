@@ -1,4 +1,3 @@
-import fs from 'fs';
 import type { Readable } from 'stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -36,20 +35,21 @@ export async function ufsComplete(
 
 			const validateOptions = { session: options?.session, stream: fileStream };
 
-			if (fileStream instanceof fs.ReadStream) {
-				delete validateOptions.stream;
-			}
+			// if (fileStream instanceof fs.ReadStream) {
+			// 	delete validateOptions.stream;
+			// }
 
 			// validate might pipe the stream - when it happens, it modifies the reference in the validateOptions object
 			let { stream } = (await store.validate(file, validateOptions)) || {};
+			// let stream;
 
 			console.log('UFS COMPLETE AFTER VALIDATE', { $: { stream, fileStream } });
 
-			if (fileStream instanceof fs.ReadStream) {
-				// rewind the stream
-				fileStream.close();
-				stream = fs.createReadStream(fileStream.path);
-			}
+			// if (fileStream instanceof fs.ReadStream) {
+			// 	// rewind the stream
+			// 	fileStream.close();
+			// 	stream = fs.createReadStream(fileStream.path);
+			// }
 
 			if (!stream) {
 				stream = fileStream;

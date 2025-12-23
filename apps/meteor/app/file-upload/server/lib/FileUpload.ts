@@ -430,7 +430,32 @@ export const FileUpload = {
 		file: IUpload,
 		options: { session?: ClientSession },
 	): { stream: NodeJS.ReadableStream } {
-		const transformer = sharp().rotate();
+		const transformer = sharp()
+			.rotate()
+			.on('info', async function sharpStreamMetadata(metadata: sharp.Metadata) {
+				const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+				const width = rotated ? metadata.height : metadata.width;
+				const height = rotated ? metadata.width : metadata.height;
+
+				const identify = {
+					format: metadata.format,
+					size:
+						width != null && height != null
+							? {
+									width,
+									height,
+								}
+							: undefined,
+				};
+
+				await store.getCollection().updateOne(
+					{ _id: file._id },
+					{
+						$set: { identify },
+					},
+					options,
+				);
+			});
 
 		// void transformer.metadata().then(async function sharpStreamMetadata(metadata) {
 		// 	const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;

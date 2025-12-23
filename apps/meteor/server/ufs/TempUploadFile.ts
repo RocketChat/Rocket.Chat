@@ -1,5 +1,5 @@
 import fs from 'fs';
-import Stream, { Readable, Writable } from 'stream';
+import { Readable } from 'stream';
 
 import { UploadFS } from './ufs';
 
@@ -8,6 +8,10 @@ type TempUploadFileDeps = {
 };
 
 const noop = () => void 0;
+
+const registry = new FinalizationRegistry((id: NonNullable<unknown>) => {
+	console.log('TEMP UPLOAD FILE FINALIZED, CLEANING UP', { id });
+});
 
 export class TempUploadFile {
 	private readonly path: string;
@@ -28,6 +32,10 @@ export class TempUploadFile {
 	) {
 		this.path = UploadFS.getTempFilePath(this.fileId);
 		this.writableStream = fs.createWriteStream(this.path);
+
+		registry.register(this, { kind: this.constructor.name, id: this.path.substring(0) });
+		registry.register(this.writableStream, { kind: this.writableStream.constructor.name, id: this.path.substring(0) });
+		registry.register(this.pipeline, { kind: 'Pipeline', id: this.path.substring(0) });
 
 		this.writableStream.once('error', this.safeUnlink.bind(this));
 	}
@@ -81,14 +89,21 @@ export class TempUploadFile {
 	}
 
 	private wrapPipe<T extends NodeJS.ReadableStream>(stream: T): T {
+		registry.register(stream, { kind: stream.constructor.name, id: this.path.substring(0) });
 		const pipe = stream.pipe.bind(stream);
 		const wrap = this.wrapPipe.bind(this);
 		const { pipeline } = this;
 
 		stream.pipe = function <T extends NodeJS.WritableStream>(destination: T, options?: any) {
-			console.log('PIPE CALLED', { pipeline, origin: { $: { $: this } }, destination: { $: { $: destination } } });
+			console.log('PIPE CALLED', {
+				pipeline,
+				origin: { $: { $: this }, didRead: (this as Readable).readableDidRead },
+				destination: { $: { $: destination } },
+			});
 			if (destination instanceof Readable) {
 				wrap(destination);
+			} else {
+				registry.register(destination, { kind: destination.constructor.name, id: pipeline.at(0)?.path?.substring(0) });
 			}
 
 			pipeline.push(destination);
