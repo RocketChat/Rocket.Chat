@@ -275,6 +275,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		onSelectPeer,
 		getAutocompleteOptions,
 		getRemoteStream: session.getRemoteStream,
+		toggleScreenSharing: session.toggleScreenSharing,
 		getPeerInfo: () => Promise.resolve(session.peerInfo), // TODO remove this probably
 	};
 

@@ -1,4 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -22,6 +23,7 @@ import useMediaStream from '../../context/useMediaStream';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
+	const [sharingScreen, setSharingScreen] = useState<boolean>(false);
 	const {
 		muted,
 		held,
@@ -36,6 +38,7 @@ const OngoingCall = () => {
 		connectionState,
 		expanded,
 		getRemoteStream,
+		toggleScreenSharing,
 	} = useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
@@ -47,6 +50,11 @@ const OngoingCall = () => {
 	const reconnecting = connectionState === 'RECONNECTING';
 
 	const [remoteStreamRefCallback] = useMediaStream(getRemoteStream());
+
+	const onClickShareScreen = () => {
+		toggleScreenSharing();
+		setSharingScreen((prev) => !prev);
+	};
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -88,6 +96,13 @@ const OngoingCall = () => {
 				<ButtonGroup large align='center'>
 					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					<ToggleButton
+						label={t('Screen_sharing')}
+						icons={['computer', 'computer']}
+						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+						pressed={sharingScreen}
+						onToggle={onClickShareScreen}
+					/>
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}

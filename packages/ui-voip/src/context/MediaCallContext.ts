@@ -42,7 +42,7 @@ type MediaCallContextType = {
 	expanded?: boolean;
 
 	getRemoteStream: () => MediaStream | null;
-
+	toggleScreenSharing: () => void;
 	onMute: () => void;
 	onHold: () => void;
 
@@ -80,6 +80,7 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	expanded: false,
 
 	getRemoteStream: () => null,
+	toggleScreenSharing: () => undefined,
 
 	onMute: () => undefined,
 	onHold: () => undefined,

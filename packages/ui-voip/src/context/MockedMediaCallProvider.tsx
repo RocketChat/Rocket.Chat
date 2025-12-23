@@ -131,6 +131,7 @@ const MockedMediaCallProvider = ({
 		peerInfo,
 		transferredBy,
 		getRemoteStream: () => null,
+		toggleScreenSharing: () => undefined,
 		muted: mutedState,
 		held: heldState,
 		remoteMuted,

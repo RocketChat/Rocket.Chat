@@ -23,6 +23,7 @@ const defaultSessionInfo: SessionInfo = {
 type MediaSession = SessionInfo & {
 	toggleMute: () => void;
 	toggleHold: () => void;
+	toggleScreenSharing: () => void;
 
 	toggleWidget: (peerInfo?: PeerInfo) => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
@@ -351,6 +352,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const toggleScreenSharing = () => {
+			if (!instance) {
+				return undefined;
+			}
+
+			// TODO: Implement screen sharing
+		};
+
 		return {
 			toggleWidget,
 			toggleHold,
@@ -361,6 +370,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			sendTone,
 			selectPeer,
 			toggleMute,
+			toggleScreenSharing,
 			acceptCall,
 			getRemoteStream,
 		};
