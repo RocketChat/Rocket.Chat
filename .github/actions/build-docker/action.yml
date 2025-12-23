@@ -119,22 +119,24 @@ runs:
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+          SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
 
-        mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+          mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
 
-        # Get digest and image info
-        DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
-        IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
-        FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
+          # Get digest and image info
+          DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+          IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
+          FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
 
-        echo "Inspecting image: $FULL_IMAGE"
+          echo "Inspecting image: $FULL_IMAGE"
 
-        # Inspect the image and save complete manifest with sizes (using -v for verbose)
-        docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          # Inspect the image and save complete manifest with sizes (using -v for verbose)
+          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
 
-        echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
-        cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+          echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+        fi
 
     - uses: actions/upload-artifact@v4
       if: inputs.publish-image == 'true'
