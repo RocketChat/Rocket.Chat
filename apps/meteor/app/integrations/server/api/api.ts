@@ -14,11 +14,15 @@ import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import { loggerMiddleware } from '../../../api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
-import { incomingLogger } from '../logger';
+import { incomingLogger, integrationLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
@@ -248,6 +252,7 @@ async function executeIntegrationRest(
 		}
 		return API.v1.success();
 	} catch ({ error, message }: any) {
+		incomingLogger.error({ msg: 'Error processing webhook message', error, message });
 		return API.v1.failure(error || message);
 	}
 }
@@ -377,6 +382,11 @@ const Api = new WebHookAPI({
 	useDefaultAuth: false,
 	prettyJson: process.env.NODE_ENV === 'development',
 });
+
+Api.router
+	.use(loggerMiddleware(integrationLogger))
+	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
+	.use(tracerSpanMiddleware);
 
 const middleware = async (c: Context, next: Next): Promise<void> => {
 	const { req } = c;
