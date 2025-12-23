@@ -10,6 +10,7 @@ import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
+import { marketplaceQueryKeys } from '../../lib/queryKeys';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../../views/marketplace/types';
 
@@ -40,7 +41,7 @@ type AppsProviderProps = {
 };
 
 const AppsProvider = ({ children }: AppsProviderProps) => {
-	const isAdminUser = usePermission('manage-apps');
+	const canManageApps = usePermission('manage-apps');
 
 	const queryClient = useQueryClient();
 
@@ -54,9 +55,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries({
-				queryKey: ['marketplace', 'apps-instance'],
-			});
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.appsInstance() });
 			invalidateAppsCountQuery();
 		},
 		100,
@@ -75,23 +74,20 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 	}, [invalidate, invalidateLicenseQuery, isEnterprise, stream]);
 
 	const marketplace = useQuery({
-		queryKey: ['marketplace', 'apps-marketplace', isAdminUser],
-
+		queryKey: marketplaceQueryKeys.appsMarketplace(canManageApps),
 		queryFn: async () => {
-			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
+			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(canManageApps);
 			if (result.error && typeof result.error === 'string') {
 				throw new Error(result.error);
 			}
 			return result.apps;
 		},
-
 		staleTime: Infinity,
 		placeholderData: keepPreviousData,
 	});
 
 	const instance = useQuery({
-		queryKey: ['marketplace', 'apps-instance', isAdminUser],
-
+		queryKey: marketplaceQueryKeys.appsInstance(canManageApps),
 		queryFn: async () => {
 			const result = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
@@ -101,13 +97,12 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 			);
 			return result;
 		},
-
 		staleTime: Infinity,
 		refetchOnMount: 'always',
 	});
 
 	const { isPending: isMarketplaceDataLoading, data: marketplaceData } = useQuery({
-		queryKey: ['marketplace', 'apps-stored', instance.data, marketplace.data],
+		queryKey: marketplaceQueryKeys.appsStored(instance.data, marketplace.data),
 		queryFn: () => storeQueryFunction(marketplace, instance),
 		enabled: marketplace.isFetched && instance.isFetched,
 		placeholderData: keepPreviousData,
@@ -117,9 +112,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	useEffect(() => {
 		if (instance.data && marketplace.data) {
-			queryClient.invalidateQueries({
-				queryKey: ['marketplace', 'apps-stored'],
-			});
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.appsStored() });
 		}
 	}, [marketplace.data, instance.data, queryClient]);
 
@@ -134,13 +127,8 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 					marketplace.error instanceof Error ? marketplace.error : undefined,
 				),
 				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
-
 				reload: async () => {
-					await Promise.all([
-						queryClient.invalidateQueries({
-							queryKey: ['marketplace'],
-						}),
-					]);
+					await queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
 				},
 				orchestrator: AppClientOrchestratorInstance,
 				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
