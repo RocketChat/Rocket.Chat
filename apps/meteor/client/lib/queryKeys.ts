@@ -154,8 +154,8 @@ export const callHistoryQueryKeys = {
 
 export const marketplaceQueryKeys = {
 	all: ['marketplace'] as const,
-	appsMarketplace: (canManageApps?: boolean) => [...marketplaceQueryKeys.all, 'apps-marketplace', canManageApps] as const,
-	appsInstance: (canManageApps?: boolean) => [...marketplaceQueryKeys.all, 'apps-instance', canManageApps] as const,
+	appsMarketplace: (...args: [canManageApps?: boolean]) => [...marketplaceQueryKeys.all, 'apps-marketplace', ...args] as const,
+	appsInstance: (...args: [canManageApps?: boolean]) => [...marketplaceQueryKeys.all, 'apps-instance', ...args] as const,
 	appsStored: (...args: unknown[]) => [...marketplaceQueryKeys.all, 'apps-stored', ...args] as const,
 	app: (appId: string) => [...marketplaceQueryKeys.all, 'apps', appId] as const,
 	appStatus: (appId: string) => [...marketplaceQueryKeys.app(appId), 'status'] as const,

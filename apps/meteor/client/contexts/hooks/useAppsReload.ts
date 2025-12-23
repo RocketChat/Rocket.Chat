@@ -1,8 +1,11 @@
-import { useContext } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
-import { AppsContext } from '../AppsContext';
+import { marketplaceQueryKeys } from '../../lib/queryKeys';
 
-export const useAppsReload = (): (() => void) => {
-	const { reload } = useContext(AppsContext);
-	return reload;
+export const useAppsReload = () => {
+	const queryClient = useQueryClient();
+	return useCallback(() => {
+		queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
+	}, [queryClient]);
 };
