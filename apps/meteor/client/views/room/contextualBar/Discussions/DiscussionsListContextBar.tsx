@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 import DiscussionsList from './DiscussionsList';
 import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useRoom } from '../../contexts/RoomContext';
 
 const DiscussionListContextBar = (): ReactElement | null => {
