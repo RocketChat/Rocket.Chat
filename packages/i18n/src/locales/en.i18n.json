@@ -5760,6 +5760,7 @@
   "VoIP_TeamCollab_SIP_Integration": "SIP Integration",
   "VoIP_TeamCollab_SIP_Integration_Enabled": "SIP Integration Enabled",
   "VoIP_TeamCollab_SIP_Integration_For_Internal_Calls": "Route internal calls through the SIP integration",
+  "VoIP_TeamCollab_Internal_SIP_Beta_Alert": "Routing of internal calls through SIP is in beta and is not recommended for production use.",
   "VoIP_TeamCollab_Drachtio_Host": "Drachtio Host",
   "VoIP_TeamCollab_Drachtio_Port": "Drachtio Port",
   "VoIP_TeamCollab_Drachtio_Password": "Drachtio Password",
@@ -7080,7 +7081,7 @@
   "timestamps.longDateDescription": "12/31/2020, 12:00 AM",
   "timestamps.fullDateTimeDescription": "December 31, 2020 12:00 AM",
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
-  "timestamps.relativeTimeDescription": "1 year ago",
   "__username__profile_picture": "{{username}}'s profile picture",
-  "User_card": "User card"
+  "User_card": "User card",
+  "timestamps.relativeTimeDescription": "1 year ago"
 }
