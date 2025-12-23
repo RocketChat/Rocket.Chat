@@ -59,9 +59,7 @@ export const mockedAppsContext = (children: ReactNode) => (
 				phase: AsyncStatePhase.RESOLVED,
 				value: { apps: faker.helpers.multiple(createFakeApp) },
 			},
-			reload: () => Promise.resolve(),
 			orchestrator: mockAppsOrchestrator(),
-			privateAppsEnabled: false,
 		}}
 	>
 		{children}

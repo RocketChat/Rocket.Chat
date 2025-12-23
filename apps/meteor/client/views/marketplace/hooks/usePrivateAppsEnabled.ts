@@ -1,9 +1,3 @@
-import { useContext } from 'react';
+import { useLicense } from '@rocket.chat/ui-client';
 
-import { AppsContext } from '../../../contexts/AppsContext';
-
-export const usePrivateAppsEnabled = () => {
-	const { privateAppsEnabled } = useContext(AppsContext);
-
-	return privateAppsEnabled;
-};
+export const usePrivateAppsEnabled = () => (useLicense({ loadValues: true }).data?.limits?.privateApps?.max ?? 0) !== 0;

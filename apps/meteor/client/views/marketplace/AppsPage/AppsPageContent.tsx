@@ -15,6 +15,7 @@ import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import PrivateEmptyState from './PrivateEmptyState';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
+import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
@@ -28,7 +29,8 @@ type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested'
 
 const AppsPageContent = (): ReactElement => {
 	const { t } = useTranslation();
-	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
+	const { marketplaceApps, installedApps, privateApps } = useAppsResult();
+	const reload = useAppsReload();
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();

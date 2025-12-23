@@ -45,7 +45,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const { isPending: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
+	const { isPending: isLicenseInformationLoading, data: { license } = {} } = useLicense({ loadValues: true });
 	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
@@ -127,11 +127,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 					marketplace.error instanceof Error ? marketplace.error : undefined,
 				),
 				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
-				reload: async () => {
-					await queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
-				},
 				orchestrator: AppClientOrchestratorInstance,
-				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
 			}}
 		/>
 	);
