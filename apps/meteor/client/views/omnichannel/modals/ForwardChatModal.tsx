@@ -80,7 +80,11 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 	}, [register]);
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />} {...props}>
+		<Modal
+			aria-label={t('Forward_chat')}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
+			{...props}
+		>
 			<ModalHeader>
 				<ModalIcon name='baloon-arrow-top-right' />
 				<ModalTitle>{t('Forward_chat')}</ModalTitle>
