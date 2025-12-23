@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import VideoConfList from './VideoConfList';
 import { useVideoConfList } from './useVideoConfList';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { useRoom } from '../../../contexts/RoomContext';
 
 const VideoConfListWithData = () => {

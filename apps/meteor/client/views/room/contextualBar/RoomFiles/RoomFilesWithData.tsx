@@ -7,7 +7,7 @@ import RoomFiles from './RoomFiles';
 import { useDeleteFile } from './hooks/useDeleteFile';
 import { useFilesList } from './hooks/useFilesList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useRoom } from '../../contexts/RoomContext';
 
 const RoomFilesWithData = () => {
