@@ -41,7 +41,8 @@ export const subscriptionsQueryKeys = {
 
 export const cannedResponsesQueryKeys = {
 	all: ['canned-responses'] as const,
-};
+	list: (params: { filter: string; type: string }) => [...cannedResponsesQueryKeys.all, params] as const,
+} as const;
 
 export const rolesQueryKeys = {
 	all: ['roles'] as const,
