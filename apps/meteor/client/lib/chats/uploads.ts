@@ -6,10 +6,10 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
-import { settings } from '../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { i18n } from '../../../app/utils/lib/i18n';
+import { settings } from '../settings';
 
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
@@ -80,7 +80,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	clear = () => this.set([]);
 
 	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
-		const maxFileSize = settings.get('FileUpload_MaxFileSize');
+		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(file.type);
 		const id = Random.id();
 

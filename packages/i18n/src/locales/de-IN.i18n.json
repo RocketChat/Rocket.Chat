@@ -2985,8 +2985,6 @@
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen",
   "unarchive-room": "Raum aus dem Archiv holen",
   "unarchive-room_description": "Berechtigung, einen Raum aus dem Archiv holen",
-  "User_added": "Der Benutzer {{user_added}} wurde hinzugefügt",
-  "User_left": "Benutzer {{user_left}} hat den Kanal verlassen",
   "user-generate-access-token": "Zugriffs-Token erzeugen",
   "user-generate-access-token_description": "Bereichtigung, Zugangs-Tokens für Benutzer zu erstellen",
   "user_sent_an_attachment": "{{user}} hat einen Anhang gesendet",
