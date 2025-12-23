@@ -1758,7 +1758,7 @@ const waitForRoomEvent = async (
 					expect(roomInfo.room).toHaveProperty('usersCount', 3);
 				});
 
-				it.failing('should invite a fourth Rocket.Chat user by the invited Synapse user', async () => {
+				it('should invite a fourth Rocket.Chat user by the invited Synapse user', async () => {
 					await hs1User1.inviteUserToRoom(hs1Room1.roomId, rcUser2.matrixId);
 
 					await retry(
@@ -1777,18 +1777,11 @@ const waitForRoomEvent = async (
 					await retry(
 						'waiting for fourth user to receive invitation',
 						async () => {
-							const response = await rcUser1.config.request
-								.get(api('im.members'))
-								.query({ roomId: rcRoom._id })
-								.set(rcUser1.config.credentials)
-								.expect(200);
+							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
-							const { members } = response.body;
-
-							const user4Member = members.find((m: any) => m._id === rcUser2.matrixId);
-
-							expect(user4Member).toBeDefined();
-							expect(user4Member.subscription.status).toBe('invite');
+							expect(sub).toHaveProperty('status', 'INVITED');
+							expect(sub).toHaveProperty('name', federationConfig.hs1.additionalUser1.matrixUserId);
+							expect(sub).toHaveProperty('fname', federationConfig.hs1.additionalUser1.matrixUserId);
 						},
 						{ delayMs: 100 },
 					);
