@@ -121,6 +121,8 @@ export const teamsQueryKeys = {
 	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
+	listChannels: (teamId: ITeam['_id'], options?: { type: 'all' | 'autoJoin'; text: string }) =>
+		[...teamsQueryKeys.team(teamId), 'channels', options] as const,
 };
 
 export const appsQueryKeys = {
