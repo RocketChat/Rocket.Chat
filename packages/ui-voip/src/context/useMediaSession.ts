@@ -35,6 +35,8 @@ type MediaSession = SessionInfo & {
 
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
+
+	getRemoteStream: () => MediaStream | null;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -331,6 +333,24 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const getRemoteStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+
+				if (mainCall.hidden) {
+					return null;
+				}
+
+				return mainCall.getRemoteMediaStream();
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
+				return null;
+			}
+		};
+
 		return {
 			toggleWidget,
 			toggleHold,
@@ -342,6 +362,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			selectPeer,
 			toggleMute,
 			acceptCall,
+			getRemoteStream,
 		};
 	}, [instance]);
 

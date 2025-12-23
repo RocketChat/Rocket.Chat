@@ -130,6 +130,7 @@ const MockedMediaCallProvider = ({
 		expanded: widgetState === 'ongoing',
 		peerInfo,
 		transferredBy,
+		getRemoteStream: () => null,
 		muted: mutedState,
 		held: heldState,
 		remoteMuted,

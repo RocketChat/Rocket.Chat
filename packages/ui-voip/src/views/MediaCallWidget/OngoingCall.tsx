@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,12 +17,26 @@ import {
 	useInfoSlots,
 } from '../../components';
 import { useMediaCallContext } from '../../context';
+import useMediaStream from '../../context/useMediaStream';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState, expanded } =
-		useMediaCallContext();
+	const {
+		muted,
+		held,
+		remoteMuted,
+		remoteHeld,
+		onMute,
+		onHold,
+		onForward,
+		onEndCall,
+		onTone,
+		peerInfo,
+		connectionState,
+		expanded,
+		getRemoteStream,
+	} = useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
@@ -31,6 +45,8 @@ const OngoingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
+
+	const [remoteStreamRefCallback] = useMediaStream(getRemoteStream());
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -45,6 +61,11 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				<Box display='flex' flexDirection='column' w={432} h={243}>
+					<video controls preload='metadata' style={{ width: '100%', height: '100%' }} ref={remoteStreamRefCallback}>
+						<track kind='captions' />
+					</video>
+				</Box>
 				{/* <Box display='flex' flexDirection='column' flexGrow={1}>
 					<Box display='flex' flexDirection='column' w={432} h={243}>
 						<video controls preload='metadata' style={{ width: '100%', height: '100%' }}>

@@ -41,6 +41,8 @@ type MediaCallContextType = {
 	remoteHeld: boolean;
 	expanded?: boolean;
 
+	getRemoteStream: () => MediaStream | null;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -76,6 +78,8 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	remoteMuted: false,
 	remoteHeld: false,
 	expanded: false,
+
+	getRemoteStream: () => null,
 
 	onMute: () => undefined,
 	onHold: () => undefined,
