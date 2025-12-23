@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/queue-worker",
-	"version": "0.4.47-rc.0",
+	"version": "0.4.47-rc.1",
 	"private": true,
 	"description": "Rocket.Chat service",
 	"keywords": [

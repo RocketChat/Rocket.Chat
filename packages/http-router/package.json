@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.14-rc.0",
+	"version": "7.9.14-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
