@@ -13,12 +13,12 @@ type UploadResultMeta<K> = {
 	filename: string;
 	encoding: string;
 	mimetype: string;
+	sizeInBytes: number;
 	fields: K;
 };
 
 type UploadResult<K> = UploadResultMeta<K> & {
 	fileBuffer: Buffer;
-	sizeInBytes: number;
 };
 
 type UploadResultWithOptionalFile<K> =
@@ -44,9 +44,9 @@ type UploadResultWithOptionalFileStream<K> =
 // Shared implementation for processing form data
 async function processUploadFormData<
 	T extends string,
+	R extends UploadResultWithOptionalFile<K> | UploadResultWithOptionalFileStream<K>,
 	K extends Record<string, string> = Record<string, string>,
 	V extends ValidateFunction<K> = ValidateFunction<K>,
-	R = UploadResultWithOptionalFile<K> | UploadResultWithOptionalFileStream<K>,
 >(
 	{ request }: { request: Request },
 	options: {
@@ -75,19 +75,21 @@ async function processUploadFormData<
 	const bb = busboy({ headers: Object.fromEntries(request.headers.entries()), defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: R;
-
 	const { promise: resultPromise, resolve, reject } = Promise.withResolvers<R>();
 
 	function onField(fieldname: keyof K, value: K[keyof K]) {
 		fields[fieldname] = value;
 	}
 
-	function onEnd() {
+	function onEnd(uploadedFile: R) {
 		if (!uploadedFile) {
 			return reject(new MeteorError('No file or fields were uploaded'));
 		}
-		if (!options.fileOptional && !uploadedFile.fileBuffer && !(uploadedFile as UploadResultWithOptionalFileStream<K>).fileStream) {
+		if (
+			!options.fileOptional &&
+			!(uploadedFile as UploadResultWithOptionalFile<K>).fileBuffer &&
+			!(uploadedFile as UploadResultWithOptionalFileStream<K>).tempFile
+		) {
 			return reject(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
@@ -108,7 +110,7 @@ async function processUploadFormData<
 
 		fileHandler(fieldname, file, fileInfo, fields, reject)
 			.then((file) => {
-				uploadedFile = file;
+				onEnd(file);
 			})
 			.catch((err) => {
 				reject(err);
@@ -122,8 +124,6 @@ async function processUploadFormData<
 	bb.on('field', onField);
 	bb.on('file', onFile);
 	bb.on('close', cleanup);
-	bb.on('end', onEnd);
-	bb.on('finish', onEnd);
 
 	bb.on('error', (err: Error) => {
 		reject(err);
@@ -186,7 +186,7 @@ export async function getUploadFormData<
 		fileOptional?: boolean;
 	} = {},
 ): Promise<UploadResultWithOptionalFile<K>> {
-	return processUploadFormData<T, K, V, UploadResultWithOptionalFile<K>>(
+	return processUploadFormData<T, UploadResultWithOptionalFile<K>, K, V>(
 		{ request },
 		options,
 		async (fieldname, file, { filename, encoding, mimeType: mimetype }, fields, reject) => {
@@ -262,7 +262,7 @@ export async function getUploadFormDataStream<
 		fileOptional?: boolean;
 	} = {},
 ): Promise<UploadResultWithOptionalFileStream<K>> {
-	return processUploadFormData<T, K, V, UploadResultWithOptionalFileStream<K>>(
+	return processUploadFormData<T, UploadResultWithOptionalFileStream<K>, K, V>(
 		{ request },
 		options,
 		async (fieldname, file, { filename, encoding, mimeType: mimetype }, fields, reject) => {
@@ -290,6 +290,7 @@ export async function getUploadFormDataStream<
 							fieldname,
 							fields,
 							tempFile,
+							sizeInBytes: tempFile.getBytesWritten(),
 						}),
 					);
 				});

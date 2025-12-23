@@ -202,7 +202,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormDataStream(
+			const file = await getUploadFormData(
 				{
 					request: this.request,
 				},
@@ -214,10 +214,11 @@ API.v1.addRoute(
 			}
 
 			const { fields } = file;
+			let { fileBuffer } = file;
 
 			const details = {
 				name: file.filename,
-				size: file.tempFile.getBytesWritten(),
+				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -226,7 +227,8 @@ API.v1.addRoute(
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				void Media.stripExifFromImageStream(file.tempFile.getReadableStream());
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -291,6 +293,7 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
+				size: file.tempFile.getBytesWritten(),
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -301,7 +304,7 @@ API.v1.addRoute(
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				void Media.stripExifFromImageStream(tempFile.getReadableStream());
+				await Media.stripExifFromImageStream(tempFile.getReadableStream());
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
