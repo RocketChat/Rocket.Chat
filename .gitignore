@@ -41,6 +41,8 @@ storybook-static
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+yarn.lock
+deno.lock
 
 .nvmrc
 .idea/
