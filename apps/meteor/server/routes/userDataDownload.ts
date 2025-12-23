@@ -47,7 +47,8 @@ const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id'])
 const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: ServerResponse, next: () => void) => {
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 	if (!userDataStore?.get) {
-		res.writeHead(403).end(); // @todo: maybe we should return a better error?
+		res.writeHead(500);
+		res.end('User Data Store not configured');
 		return;
 	}
 
