@@ -26,4 +26,8 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 	get btnOpenChat(): Locator {
 		return this.dialogContactInfo.getByRole('button', { name: 'Open chat' });
 	}
+
+	get btnSeeConflicts(): Locator {
+		return this.dialogContactInfo.getByRole('button', { name: 'See conflicts' });
+	}
 }

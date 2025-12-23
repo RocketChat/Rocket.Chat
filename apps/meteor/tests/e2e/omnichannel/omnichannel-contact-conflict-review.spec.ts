@@ -79,7 +79,7 @@ test.describe.serial('OC - Contact Review', () => {
 		await poHomeChannel.sidebar.getSidebarItemByName(visitor.name).click();
 		await poHomeChannel.roomToolbar.openContactInfo();
 
-		await poHomeChannel.content.contactReviewModal.btnSeeConflicts.click();
+		await poHomeChannel.contacts.contactInfo.btnSeeConflicts.click();
 
 		await poHomeChannel.content.contactReviewModal.getFieldByName(customFieldName).click();
 		await poHomeChannel.content.contactReviewModal.findOption('custom-field-value-2').click();
