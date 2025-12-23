@@ -30,6 +30,7 @@ export const roomsQueryKeys = {
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
 			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
+	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 };
 
 export const subscriptionsQueryKeys = {
