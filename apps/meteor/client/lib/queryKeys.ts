@@ -174,3 +174,8 @@ export const marketplaceQueryKeys = {
 		},
 	) => [...marketplaceQueryKeys.app(appId), 'logs', query] as const,
 } as const;
+
+export const videoConferenceQueryKeys = {
+	all: ['video-conference'] as const,
+	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+} as const;
