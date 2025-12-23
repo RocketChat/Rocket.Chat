@@ -937,6 +937,10 @@ const waitForRoomEvent = async (
 					});
 				});
 
+				it('should show the room name as the inviter name on Synapse before join', async () => {
+					expect(hs1Room1.name).toBe(rcUser1.username);
+				});
+
 				it('should display the fname containing the two invited users for the inviter', async () => {
 					// Check the subscription for the inviter
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig1.credentials, rcUserConfig1.request);
@@ -954,16 +958,23 @@ const waitForRoomEvent = async (
 					expect(sub).toHaveProperty('fname', rcUser1.username);
 				});
 
-				it.failing('should keep the fname to the RC invited user when the Synapse invited user accepts the DM', async () => {
-					const waitForRoomEventPromise1 = waitForRoomEvent(hs1Room1, RoomStateEvent.Members, ({ event }) => {
-						expect(event).toHaveProperty('content.membership', 'join');
-						expect(event).toHaveProperty('state_key', federationConfig.hs1.adminMatrixUserId);
-					});
-
+				it('should accept the invitation on Synapse', async () => {
 					await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
-					await waitForRoomEventPromise1;
+					await retry(
+						'wait for the join to be processed',
+						async () => {
+							expect(hs1Room1.getMyMembership()).toBe('join');
+						},
+						{ delayMs: 100 },
+					);
+				});
 
+				it('should show the room name with all members on Synapse after join', async () => {
+					expect(hs1Room1.name).toBe(`${rcUser1.username} and ${rcUser2.username}`);
+				});
+
+				it.failing('should keep the fname to the RC invited user when the Synapse invited user accepts the DM', async () => {
 					await retry(
 						'this is an async operation, so we need to wait for the event to be processed',
 						async () => {
@@ -990,11 +1001,6 @@ const waitForRoomEvent = async (
 						},
 						{ delayMs: 100 },
 					);
-				});
-
-				it('should validate the room name for group DMs on Synapse', async () => {
-					// TODO this should probably change
-					expect(hs1Room1.name).toBe('Group chat with 3 members');
 				});
 			});
 
@@ -1103,12 +1109,11 @@ const waitForRoomEvent = async (
 				});
 
 				// TODO maybe we should allow it
-				// is this working now?
-				it.failing('should fail if a user from rc try to add another user to the group DM', async () => {
+				it('should fail if a user from rc try to add another user to the group DM', async () => {
 					const response = await addUserToRoom({
 						usernames: [rcUser3.username],
 						rid: rcRoom._id,
-						config: rcUserConfig1,
+						config: rcUserConfig2,
 					});
 
 					expect(response.body).toHaveProperty('success', true);
@@ -1120,23 +1125,32 @@ const waitForRoomEvent = async (
 					expect(messageData).toHaveProperty('error.error', 'error-not-allowed');
 				});
 
-				// TODO we're creating DMs with powerlevel 50 for invites, so this is not working
-				it.failing('should add another user by another user than the initial inviter', async () => {
+				it('should add another user by another user than the initial inviter', async () => {
 					await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
-					await retry('waiting for join', async () => {
-						const members = await hs1Room1.getMembers();
-						expect(members.length).toBe(3);
-					});
+					await retry(
+						'waiting for join',
+						async () => {
+							expect(hs1Room1.getMyMembership()).toBe('join');
+
+							const members = await hs1Room1.getMembers();
+							expect(members.length).toBe(3);
+						},
+						{ delayMs: 100 },
+					);
 
 					await hs1AdminApp.inviteUserToRoom(hs1Room1.roomId, userDmId3);
 
-					await retry('waiting for user4 to receive invitation', async () => {
-						const members = await hs1Room1.getMembers();
-						const user4Member = members.find((m) => m.userId === userDmId3);
-						expect(user4Member).toBeDefined();
-						expect(user4Member?.membership).toBe('invite');
-					});
+					await retry(
+						'waiting for user4 to receive invitation',
+						async () => {
+							const members = await hs1Room1.getMembers();
+							const user4Member = members.find((m) => m.userId === userDmId3);
+							expect(user4Member).toBeDefined();
+							expect(user4Member?.membership).toBe('invite');
+						},
+						{ delayMs: 100 },
+					);
 				});
 			});
 
@@ -1662,7 +1676,7 @@ const waitForRoomEvent = async (
 					expect(messageData).toHaveProperty('error.error', 'error-cant-invite-for-direct-room');
 				});
 
-				it('should create a 1:1 a federated DM between', async () => {
+				it('should create a 1:1 federated DM', async () => {
 					// Create 1:1 DM from RC user to another RC user
 					const response = await rcUser1.config.request
 						.post(api('dm.create'))
@@ -1696,7 +1710,7 @@ const waitForRoomEvent = async (
 					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminMatrixUserId);
 				});
 
-				it('should show the invite to the third user', async () => {
+				it('should send an invite to another Synapse user', async () => {
 					// invite from rocket.chat
 					const response = await addUserToRoom({
 						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
@@ -1744,19 +1758,40 @@ const waitForRoomEvent = async (
 					expect(roomInfo.room).toHaveProperty('usersCount', 3);
 				});
 
-				// TODO we're creating DMs with powerlevel 50 for invites, so this is not working
-				it.failing('should invite a fourth user from Rocket.Chat by a Synapse user', async () => {
+				it.failing('should invite a fourth Rocket.Chat user by the invited Synapse user', async () => {
 					await hs1User1.inviteUserToRoom(hs1Room1.roomId, rcUser2.matrixId);
 
-					await retry('waiting for fourth user to receive invitation', async () => {
-						const subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
+					await retry(
+						'waiting for user4 to receive invitation',
+						async () => {
+							const members = await hs1Room1.getMembers();
 
-						expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-						expect(subscriptionInvite).toHaveProperty(
-							'fname',
-							`${federationConfig.hs1.adminMatrixUserId}, ${federationConfig.hs1.additionalUser1.matrixUserId}, ${rcUser1.matrixId}`,
-						);
-					});
+							const user4Member = members.find((m) => m.userId === rcUser2.matrixId);
+
+							expect(user4Member).toBeDefined();
+							expect(user4Member?.membership).toBe('invite');
+						},
+						{ delayMs: 100 },
+					);
+
+					await retry(
+						'waiting for fourth user to receive invitation',
+						async () => {
+							const response = await rcUser1.config.request
+								.get(api('im.members'))
+								.query({ roomId: rcRoom._id })
+								.set(rcUser1.config.credentials)
+								.expect(200);
+
+							const { members } = response.body;
+
+							const user4Member = members.find((m: any) => m._id === rcUser2.matrixId);
+
+							expect(user4Member).toBeDefined();
+							expect(user4Member.subscription.status).toBe('invite');
+						},
+						{ delayMs: 100 },
+					);
 				});
 			});
 		});
