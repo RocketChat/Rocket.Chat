@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.46",
+	"version": "0.2.47-rc.1",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
