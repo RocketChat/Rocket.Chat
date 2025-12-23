@@ -15,21 +15,17 @@ import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import PrivateEmptyState from './PrivateEmptyState';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
-import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import { useAppsReload } from '../hooks/useAppsReload';
 import { useCategories } from '../hooks/useCategories';
 import { useFilteredApps } from '../hooks/useFilteredApps';
-import type { appsDataType } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
 
 type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
 const AppsPageContent = (): ReactElement => {
 	const { t } = useTranslation();
-	const { marketplaceApps, installedApps, privateApps } = useAppsResult();
 	const reload = useAppsReload();
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
@@ -96,19 +92,6 @@ const AppsPageContent = (): ReactElement => {
 
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
-	const getAppsData = useCallback((): appsDataType => {
-		switch (context) {
-			case 'premium':
-			case 'explore':
-			case 'requested':
-				return marketplaceApps;
-			case 'private':
-				return privateApps;
-			default:
-				return installedApps;
-		}
-	}, [context, marketplaceApps, installedApps, privateApps]);
-
 	const findSort = () => {
 		const possibleSort = sortFilterStructure.items.find(({ checked }) => checked);
 
@@ -128,8 +111,7 @@ const AppsPageContent = (): ReactElement => {
 	};
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
-	const appsResult = useFilteredApps({
-		appsData: getAppsData(),
+	const { isPending, isError, error, isSuccess, data } = useFilteredApps({
 		text: debouncedText,
 		current,
 		itemsPerPage,
@@ -140,23 +122,17 @@ const AppsPageContent = (): ReactElement => {
 		context,
 	});
 
-	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
+	const noInstalledApps = isSuccess && !isMarketplace && data.totalAppsLength === 0;
 
 	// TODO: Introduce error codes, so we can avoid using error message strings for this kind of logic
 	//       whenever we change the error message, this code ends up breaking.
-	const unsupportedVersion =
-		appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'Marketplace_Unsupported_Version';
+	const unsupportedVersion = isError && error.message === 'Marketplace_Unsupported_Version';
 
-	const noMarketplaceOrInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
+	const noMarketplaceOrInstalledAppMatches = isSuccess && (isMarketplace || isPremium) && data.count === 0;
 
-	const noInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED &&
-		context === 'installed' &&
-		appsResult.value?.totalAppsLength !== 0 &&
-		appsResult.value?.count === 0;
+	const noInstalledAppMatches = isSuccess && context === 'installed' && data.totalAppsLength !== 0 && data.count === 0;
 
-	const noAppRequests = context === 'requested' && appsResult?.value?.count === 0;
+	const noAppRequests = context === 'requested' && data?.count === 0;
 
 	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
@@ -211,16 +187,12 @@ const AppsPageContent = (): ReactElement => {
 		}
 
 		if (noMarketplaceOrInstalledAppMatches) {
-			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!appsResult.value?.shouldShowSearchText} text={text} />;
+			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />;
 		}
 
 		if (noInstalledAppMatches) {
 			return (
-				<NoInstalledAppMatchesEmptyState
-					shouldShowSearchText={!!appsResult.value?.shouldShowSearchText}
-					text={text}
-					onButtonClick={handleReturn}
-				/>
+				<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
 			);
 		}
 
@@ -247,12 +219,12 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterOnSelected={statusFilterOnSelected}
 				context={context || 'explore'}
 			/>
-			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion && (
+			{isPending && <AppsPageContentSkeleton />}
+			{isSuccess && noErrorsOcurred && !unsupportedVersion && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}
-					appsResult={appsResult.value}
+					appsResult={data}
 					itemsPerPage={itemsPerPage}
 					current={current}
 					onSetItemsPerPage={onSetItemsPerPage}
@@ -262,7 +234,7 @@ const AppsPageContent = (): ReactElement => {
 				/>
 			)}
 			{getEmptyState()}
-			{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
+			{isError && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
 };
