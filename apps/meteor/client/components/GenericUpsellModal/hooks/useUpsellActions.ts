@@ -13,8 +13,8 @@ export const useUpsellActions = (hasLicenseModule = false) => {
 	const handleOpenLink = useExternalLink();
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);
 
-	const { data } = useIsEnterprise();
-	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;
+	const { data, isSuccess } = useIsEnterprise();
+	const shouldShowUpsell = isSuccess && (!data?.isEnterprise || !hasLicenseModule);
 
 	const openExternalLink = useExternalLink();
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'upsell-modal', action: 'upgrade' });
