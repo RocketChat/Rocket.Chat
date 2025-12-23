@@ -16,7 +16,7 @@ import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import { links } from '../../../lib/links';
 import { useActiveConnections } from '../../hooks/useActiveConnections';
 
@@ -28,7 +28,7 @@ const CustomUserStatusService = () => {
 	const disablePresenceService = useMutation({
 		mutationFn: () => togglePresenceServiceEndpoint(),
 	});
-	const { data: license, isPending: licenseIsLoading } = useIsEnterprise();
+	const { data: license, isPending: licenseIsLoading } = useWorkspacesInfo();
 
 	if (result.isPending || disablePresenceService.isPending || licenseIsLoading) {
 		return (
@@ -69,9 +69,9 @@ const CustomUserStatusService = () => {
 					</Box>
 					<Box display='flex' fontScale='c1' justifyContent='space-between' mb={16}>
 						<Box>{t('Active_connections')}</Box>
-						<Box>{license?.isEnterprise ? current : `${current}/${max}`}</Box>
+						<Box>{license?.license.isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
-					{!license?.isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
+					{!license?.license.isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
 					{presenceDisabled && (
 						<Margins block={16}>
 							<Callout type='danger' title={t('Service_disabled')}>
@@ -81,7 +81,7 @@ const CustomUserStatusService = () => {
 					)}
 				</div>
 				<Box display='flex' flexDirection='column' mb={16}>
-					{license?.isEnterprise ? (
+					{license?.license.isEnterprise ? (
 						<>
 							<Box fontScale='p2' mb={8}>
 								{t('Premium_cap_description')}
@@ -108,7 +108,7 @@ const CustomUserStatusService = () => {
 					)}
 				</Box>
 			</ContextualbarContent>
-			{!license?.isEnterprise && (
+			{!license?.license.isEnterprise && (
 				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
 						<Button primary width='100%' is='a' href={links.enterprise} target='_blank'>

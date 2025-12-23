@@ -9,7 +9,7 @@ import DeploymentCard from './DeploymentCard/DeploymentCard';
 import MessagesRoomsCard from './MessagesRoomsCard/MessagesRoomsCard';
 import UsersUploadsCard from './UsersUploadsCard/UsersUploadsCard';
 import VersionCard from './VersionCard/VersionCard';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 
 type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;
@@ -32,9 +32,9 @@ const WorkspacePage = ({
 }: WorkspaceStatusPageProps) => {
 	const { t } = useTranslation();
 
-	const { data } = useIsEnterprise();
+	const { data: workspaceInfo } = useWorkspacesInfo();
 
-	const warningMultipleInstances = !data?.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
+	const warningMultipleInstances = !workspaceInfo?.license.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (

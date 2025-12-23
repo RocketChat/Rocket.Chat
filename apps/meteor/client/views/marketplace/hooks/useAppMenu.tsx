@@ -22,7 +22,7 @@ import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewM
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
@@ -56,8 +56,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const appCountQuery = useAppsCountQuery(context);
 
 	const isAdminUser = usePermission('manage-apps');
-	const { data } = useIsEnterprise();
-	const isEnterpriseLicense = !!data?.isEnterprise;
+	const { data: workspaceInfo } = useWorkspacesInfo();
+	const isEnterpriseLicense = !!workspaceInfo?.license.isEnterprise;
 
 	const { data: workspaceHasMarketplaceAddon = false } = useHasLicenseModule(app.addon);
 	const { data: workspaceHasInstalledAddon = false } = useHasLicenseModule(app.installedAddon);

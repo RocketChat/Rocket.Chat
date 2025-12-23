@@ -2,7 +2,7 @@ import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import CustomHomepageContent from '../CustomHomePageContent';
 
 const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement | null => {
@@ -10,7 +10,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
 
-	const { data } = useIsEnterprise();
+	const { data: workspaceInfo } = useWorkspacesInfo();
 	const isAdmin = useRole('admin');
 	const customContentBody = useSetting('Layout_Home_Body', '');
 	const isCustomContentBodyEmpty = customContentBody === '';
@@ -36,7 +36,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 		}
 	};
 
-	const isEnterprise = data?.isEnterprise;
+	const isEnterprise = workspaceInfo?.license.isEnterprise;
 	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
 	const userVisibilityTooltipText = isCustomContentVisible ? t('Now_Its_Visible_For_Everyone') : t('Now_Its_Visible_Only_For_Admins');

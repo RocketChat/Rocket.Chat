@@ -30,8 +30,7 @@ import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
@@ -53,8 +52,7 @@ function useShowLicense() {
 const SubscriptionPage = () => {
 	const showLicense = useShowLicense();
 	const router = useRouter();
-	const { data: enterpriseData } = useIsEnterprise();
-	const { isRegistered } = useRegistrationStatus();
+	const { data: workspaceInfo } = useWorkspacesInfo();
 	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -64,7 +62,8 @@ const SubscriptionPage = () => {
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isPending, 10000);
 
 	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
-	const { isEnterprise = true } = enterpriseData || {};
+	const isEnterprise = workspaceInfo?.license?.isEnterprise ?? false;
+	const isRegistered = workspaceInfo?.workspace?.isRegistered ?? false;
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
 		const { max, value } = limits?.[key] || {};

@@ -17,7 +17,7 @@ import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { useWorkspacesInfo } from '../../../../hooks/useWorkspacesInfo';
 import { links } from '../../../../lib/links';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
@@ -47,7 +47,8 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const formatDate = useFormatDate();
 
 	const { data: licenseData, isPending, refetch: refetchLicense } = useLicense({ loadValues: true });
-	const { isRegistered } = useRegistrationStatus();
+	const { data: workspaceInfo } = useWorkspacesInfo();
+	const isRegistered = workspaceInfo?.workspace?.isRegistered;
 
 	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;

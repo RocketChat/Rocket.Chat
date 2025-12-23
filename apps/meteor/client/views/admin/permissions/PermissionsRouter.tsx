@@ -4,14 +4,14 @@ import type { ReactElement } from 'react';
 import PermissionsPage from './PermissionsPage';
 import UsersInRole from './UsersInRole';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const PermissionsRouter = (): ReactElement => {
 	const canViewPermission = usePermission('access-permissions');
 	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const context = useRouteParameter('context');
-	const { data, isLoading } = useIsEnterprise();
+	const { data: workspaceInfo, isLoading } = useWorkspacesInfo();
 
 	if (isLoading) {
 		<PageSkeleton />;
@@ -25,7 +25,7 @@ const PermissionsRouter = (): ReactElement => {
 		return <UsersInRole />;
 	}
 
-	return <PermissionsPage isEnterprise={!!data?.isEnterprise} />;
+	return <PermissionsPage isEnterprise={!!workspaceInfo?.license.isEnterprise} />;
 };
 
 export default PermissionsRouter;

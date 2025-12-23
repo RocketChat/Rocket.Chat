@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import AppExemptModal from '../AppExemptModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
@@ -24,7 +24,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 	const uploadAppEndpoint = useUpload('/apps');
 	const uploadUpdateEndpoint = useUpload('/apps/update');
-	const { data } = useIsEnterprise();
+	const { data: workspaceInfo } = useWorkspacesInfo();
 
 	const [isInstalling, setInstalling] = useState(false);
 
@@ -92,7 +92,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 	const uploadFile = async (appFile: File, { id, permissions }: { id: string; permissions: AppPermission[] }) => {
 		const isInstalled = await isAppInstalled(id);
 
-		const isExempt = !data?.isEnterprise && isInstalled;
+		const isExempt = !workspaceInfo?.license.isEnterprise && isInstalled;
 		if (isInstalled && isExempt) {
 			return setModal(<AppExemptModal appName={appFile.name} onCancel={cancelAction} />);
 		}

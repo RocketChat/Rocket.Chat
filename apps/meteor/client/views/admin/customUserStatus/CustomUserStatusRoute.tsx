@@ -16,7 +16,7 @@ import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../hooks/useWorkspacesInfo';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomUserStatusRoute = (): ReactElement => {
@@ -25,7 +25,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
-	const { data: license } = useIsEnterprise();
+	const { data: license } = useWorkspacesInfo();
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	useEffect(() => {
@@ -65,7 +65,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				<PageHeader title={t('User_Status')}>
-					{!license?.isEnterprise && <CustomUserActiveConnections />}
+					{!license?.license.isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>

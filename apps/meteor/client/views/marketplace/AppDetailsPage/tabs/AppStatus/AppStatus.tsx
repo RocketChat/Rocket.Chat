@@ -9,7 +9,7 @@ import semver from 'semver';
 
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
-import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
+import { useWorkspacesInfo } from '../../../../../hooks/useWorkspacesInfo';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
@@ -39,8 +39,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
-	const { data } = useIsEnterprise();
-	const isEnterprise = data?.isEnterprise ?? false;
+	const { data: workspaceInfo } = useWorkspacesInfo();
+	const isEnterprise = workspaceInfo?.license.isEnterprise ?? false;
 
 	const appAddon = app.addon;
 	const { data: workspaceHasAddon = false } = useHasLicenseModule(appAddon);
