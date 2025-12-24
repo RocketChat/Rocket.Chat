@@ -33,6 +33,7 @@ export const roomsQueryKeys = {
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
+	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
 };
 
 export const subscriptionsQueryKeys = {
@@ -88,7 +89,9 @@ export const omnichannelQueryKeys = {
 	},
 	contacts: (query?: { filter: string; limit?: number }) =>
 		!query ? [...omnichannelQueryKeys.all, 'contacts'] : ([...omnichannelQueryKeys.all, 'contacts', query] as const),
-	contact: (contactId?: string) => [...omnichannelQueryKeys.contacts(), contactId] as const,
+	contact: (contactId?: IRoom['_id']) => [...omnichannelQueryKeys.contacts(), contactId] as const,
+	contactMessages: (contactId: IRoom['_id'], filter: { searchTerm: string }) =>
+		[...omnichannelQueryKeys.contact(contactId), 'messages', filter] as const,
 	outboundProviders: (filter?: { type: IOutboundProvider['providerType'] }) =>
 		!filter
 			? ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers'] as const)

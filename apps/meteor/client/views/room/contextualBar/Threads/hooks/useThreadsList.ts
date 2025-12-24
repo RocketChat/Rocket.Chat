@@ -1,53 +1,118 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import type { IThreadMainMessage, IMessage, IUser, ISubscription } from '@rocket.chat/core-typings';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
-import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
-import type { ThreadsListOptions } from '../../../../../lib/lists/ThreadsList';
-import { ThreadsList } from '../../../../../lib/lists/ThreadsList';
+import { useInfiniteMessageQueryUpdates } from '../../../../../hooks/useInfiniteMessageQueryUpdates';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { getConfig } from '../../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
-export const useThreadsList = (
-	options: ThreadsListOptions,
-	uid: IUser['_id'] | undefined,
-): {
-	threadsList: ThreadsList;
-	initialItemCount: number;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const threadsList = useMemo(() => new ThreadsList(options), [options]);
+type ThreadsListOptions =
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type: 'unread';
+			tunread: ISubscription['tunread'];
+			uid?: IUser['_id'];
+	  }
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type: 'following';
+			tunread?: never;
+			uid: IUser['_id'];
+	  }
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type?: undefined;
+			tunread?: never;
+			uid?: IUser['_id'];
+	  };
 
+const isThreadMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is IThreadMainMessage =>
+	message.rid === rid && typeof (message as IThreadMainMessage).tcount === 'number';
+
+const isThreadFollowedByUser = (threadMessage: IThreadMainMessage, uid: IUser['_id']): boolean =>
+	threadMessage.replies?.includes(uid) ?? false;
+
+const isThreadUnread = (threadMessage: IThreadMainMessage, tunread: ISubscription['tunread']): boolean =>
+	Boolean(tunread?.includes(threadMessage._id));
+
+const isThreadTextMatching = (threadMessage: IThreadMainMessage, regex: RegExp): boolean => regex.test(threadMessage.msg);
+
+const compare = (a: IThreadMainMessage, b: IThreadMainMessage): number => (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
+
+export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
-	const fetchMessages = useCallback(
-		async (start: number, end: number) => {
+	const count = parseInt(`${getConfig('threadsListSize', 10)}`, 10);
+
+	const userId = useUserId();
+
+	const filter = useEffectEvent((message: IMessage): message is IThreadMainMessage => {
+		if (!isThreadMessageInRoom(message, rid)) {
+			return false;
+		}
+
+		if (type === 'following' && userId) {
+			if (!isThreadFollowedByUser(message, userId)) {
+				return false;
+			}
+		}
+
+		if (type === 'unread') {
+			if (!isThreadUnread(message, tunread)) {
+				return false;
+			}
+		}
+
+		if (text) {
+			const regex = new RegExp(escapeRegExp(text), 'i');
+			if (!isThreadTextMatching(message, regex)) {
+				return false;
+			}
+		}
+
+		return true;
+	}) as (message: IMessage) => message is IThreadMainMessage; // TODO: Remove type assertion when useEffectEvent types are fixed
+
+	useInfiniteMessageQueryUpdates({
+		queryKey: roomsQueryKeys.threads(rid),
+		roomId: rid,
+		filter,
+		compare,
+	});
+
+	return useInfiniteQuery({
+		queryKey: roomsQueryKeys.threads(rid),
+		queryFn: async ({ pageParam: offset }) => {
 			const { threads, total } = await getThreadsList({
-				rid: options.rid,
-				type: options.type,
-				text: options.text,
-				offset: start,
-				count: end,
+				rid,
+				type,
+				text,
+				offset,
+				count,
 			});
 
 			return {
-				items: threads,
+				items: threads
+					.map((message) => mapMessageFromApi(message) as IThreadMainMessage)
+					.filter(filter)
+					.toSorted(compare),
 				itemCount: total,
 			};
 		},
-		[getThreadsList, options.rid, options.text, options.type],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
-		threadsList,
-		fetchMessages,
-		useMemo(() => parseInt(`${getConfig('threadsListSize', 10)}`), []),
-	);
-	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
-
-	return {
-		threadsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
+			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
+		},
+		select: ({ pages }) => ({
+			items: pages.flatMap((page) => page.items),
+			itemCount: pages.at(-1)?.itemCount ?? 0,
+		}),
+	});
 };
