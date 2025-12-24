@@ -1,17 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent } from './home-content';
-import { OmnichannelTransferChatModal, OmnichannelContactReviewModal } from './modals';
+import { OmnichannelTransferChatModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
-	readonly contactReviewModal: OmnichannelContactReviewModal;
-
 	constructor(page: Page) {
 		super(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
-		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
