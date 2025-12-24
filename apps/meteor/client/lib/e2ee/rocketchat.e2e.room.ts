@@ -8,6 +8,7 @@ import type {
 	AtLeast,
 	EncryptedMessageContent,
 	EncryptedContent,
+	IUpload,
 } from '@rocket.chat/core-typings';
 import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -27,6 +28,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import type { EncryptedFile } from '../chats/Upload';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const log = createLogger('E2E:Room');
@@ -164,7 +166,7 @@ export class E2ERoom extends Emitter {
 		this.setState('KEYS_RECEIVED');
 	}
 
-	async shouldConvertSentMessages(message: { msg: string }) {
+	async readyToEncrypt() {
 		if (!this.isReady() || this[PAUSED]) {
 			return false;
 		}
@@ -175,11 +177,17 @@ export class E2ERoom extends Emitter {
 			});
 		}
 
-		if (message.msg[0] === '/') {
+		return true;
+	}
+
+	async shouldConvertSentMessages(message: { msg: string }) {
+		if (!(await this.readyToEncrypt())) {
 			return false;
 		}
 
-		return true;
+		if (message.msg[0] === '/') {
+			return false;
+		}
 	}
 
 	shouldConvertReceivedMessages() {
@@ -572,7 +580,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
-	async encryptFile(file: File) {
+	async encryptFile(file: File): Promise<EncryptedFile | void> {
 		const span = log.span('encryptFile');
 
 		const fileArrayBuffer = await file.arrayBuffer();
@@ -628,7 +636,7 @@ export class E2ERoom extends Emitter {
 
 	// Helper function for encryption of content
 	async encryptMessageContent(
-		contentToBeEncrypted: Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>,
+		contentToBeEncrypted: (Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>) | Partial<IUpload>,
 	) {
 		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
 

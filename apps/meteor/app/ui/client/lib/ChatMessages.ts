@@ -7,6 +7,7 @@ import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processMessageUploads } from '../../../../client/lib/chats/flows/processMessageUploads';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
@@ -43,6 +44,8 @@ export class ChatMessages implements ChatAPI {
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
+
+	public threadUploads: UploadsAPI;
 
 	public ActionManager: any;
 
@@ -147,7 +150,8 @@ export class ChatMessages implements ChatAPI {
 		this.tmid = tmid;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
-		this.uploads = createUploadsAPI({ rid, tmid });
+		this.uploads = createUploadsAPI({ rid });
+		this.threadUploads = createUploadsAPI({ rid });
 		this.ActionManager = params.actionManager;
 		this.currentEditingMessage = new CurrentEditingMessage(this);
 
@@ -180,6 +184,7 @@ export class ChatMessages implements ChatAPI {
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),
 			processMessageEditing: processMessageEditing.bind(null, this),
+			processMessageUploads: processMessageUploads.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),

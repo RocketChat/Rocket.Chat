@@ -3,6 +3,7 @@ import { resolve, join, relative } from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
+import waitForMediaResponse from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -137,10 +138,6 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
-	get btnModalCancel(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
-	}
-
 	get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
 	}
@@ -155,12 +152,6 @@ export class HomeContent {
 
 	get btnCreateDiscussionModal(): Locator {
 		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
-	}
-
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
 	}
 
 	get btnModalConfirm(): Locator {
@@ -183,8 +174,24 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	get inputFileUploadName(): Locator {
+		return this.fileUploadModal.getByRole('textbox', { name: 'File name' });
+	}
+
+	get btnUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Update' });
+	}
+
+	get btnCancelUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Cancel' });
+	}
+
+	getFileComposerByName(fileName: string) {
+		return this.page.getByRole('main').getByRole('button', { name: fileName });
+	}
+
+	getThreadFileComposerByName(fileName: string) {
+		return this.page.getByRole('dialog').getByRole('button', { name: fileName });
 	}
 
 	get lastMessageFileName(): Locator {
@@ -433,8 +440,11 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async sendFileMessage(fileName: string): Promise<void> {
+	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
 		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		if (waitForResponse) {
+			await waitForMediaResponse(this.page);
+		}
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -575,6 +585,14 @@ export class HomeContent {
 
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
+	}
+
+	get btnSendMainComposer() {
+		return this.page.getByRole('main').getByRole('button', { name: 'Send', exact: true });
+	}
+
+	get btnSendThreadComposer() {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true });
 	}
 
 	get btnJoinChannel() {

@@ -1,39 +1,46 @@
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 
-import { useFileUploadDropTarget } from './useFileUploadDropTarget';
+import type { UploadsAPI } from '../../../../lib/chats/ChatAPI';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { useChat } from '../../contexts/ChatContext';
 
-export const useFileUpload = () => {
+export const useFileUpload = (store: UploadsAPI) => {
 	const chat = useChat();
-	if (!chat) {
+
+	if (!chat || !store) {
 		throw new Error('No ChatContext provided');
 	}
 
 	useEffect(() => {
-		chat.uploads.wipeFailedOnes();
-	}, [chat]);
+		store.wipeFailedOnes();
+	}, [store]);
 
-	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
+	const uploads = useSyncExternalStore(store.subscribe, store.get);
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
-			chat.uploads.cancel(id);
+			store.cancel(id);
 		},
-		[chat],
+		[store],
 	);
 
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
-			chat.flows.uploadFiles(files);
+			chat?.flows.uploadFiles({ files, uploadsStore: store });
 		},
-		[chat],
+		[chat, store],
 	);
 
-	return {
-		uploads,
-		handleUploadProgressClose,
-		handleUploadFiles,
-		targeDrop: useFileUploadDropTarget(),
-	};
+	const isUploading = uploads.some((upload) => upload.percentage < 100);
+
+	return useMemo(
+		() => ({
+			uploads,
+			hasUploads: uploads.length > 0,
+			isUploading,
+			handleUploadProgressClose,
+			handleUploadFiles,
+		}),
+		[uploads, isUploading, handleUploadProgressClose, handleUploadFiles],
+	);
 };

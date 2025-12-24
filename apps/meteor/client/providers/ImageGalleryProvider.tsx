@@ -23,8 +23,17 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 				return setSingleImageUrl(target.dataset.id);
 			}
 			if (target?.classList.contains('gallery-item')) {
+				/**
+				 * When sharing multiple files, the preview incorrectly always showed the first image.
+				 * This was add to ensure the clicked image is displayed in the preview.
+				 * ROOT CAUSE: `RoomMessageContent` component was only passing the first file ID to attachment elements.
+				 * SOLUTION: We likely need to store the individual file ID within each attachment element
+				 * and use the initially passed first ID as a fallback for older records.
+				 */
+				const idFromSrc = target.dataset.src?.split('/file-upload/')[1]?.split('/')[0];
+
 				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(target.dataset.id || id);
+				return setImageId(idFromSrc || target.dataset.id || id);
 			}
 			if (target?.classList.contains('gallery-item-container')) {
 				return setImageId(target.dataset.id);
