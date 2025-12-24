@@ -4,11 +4,14 @@ import https from 'https';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
+import { checkForSsrf } from './checkForSsrf';
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
+
+const MAX_REDIRECTS = 5;
 
 function getFetchAgent<U extends string>(
 	url: U,
@@ -30,12 +33,9 @@ function getFetchAgent<U extends string>(
 		return new http.Agent();
 	}
 
-	if (isHttps) {
-		return new https.Agent({
-			rejectUnauthorized: false,
-		});
-	}
-	return null;
+	return new https.Agent({
+		rejectUnauthorized: false,
+	});
 }
 
 function getTimeout(timeout?: number) {
@@ -45,33 +45,61 @@ function getTimeout(timeout?: number) {
 	return { controller, timeoutId };
 }
 
-export function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): ReturnType<typeof fetch> {
-	const agent = getFetchAgent(input, allowSelfSignedCerts);
-	const { controller, timeoutId } = getTimeout(options?.timeout);
+export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
+	let currentUrl = input;
 
-	// Keeping the URLSearchParams since it handles other cases and type conversions
-	const params = new URLSearchParams(options?.params);
-	const url = new URL(input);
-	if (params.toString()) {
-		params.forEach((value, key) => {
-			if (value) {
-				url.searchParams.append(key, value);
+	for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+		// eslint-disable-next-line no-await-in-loop
+		if (!options?.ignoreSsrfValidation && !(await checkForSsrf(currentUrl))) {
+			throw new Error(`SSRF validation failed for URL: ${currentUrl}`);
+		}
+
+		const agent = getFetchAgent(currentUrl, allowSelfSignedCerts);
+		const { controller, timeoutId } = getTimeout(options?.timeout);
+
+		const params = new URLSearchParams(options?.params);
+		const url = new URL(currentUrl);
+
+		if (params.toString()) {
+			params.forEach((value, key) => {
+				if (value) {
+					url.searchParams.append(key, value);
+				}
+			});
+		}
+
+		// eslint-disable-next-line no-await-in-loop
+		const response = await fetch(url.toString(), {
+			// @ts-expect-error - This complained when types were moved to file :/
+			signal: controller.signal,
+			redirect: 'manual',
+			...parseRequestOptions(options),
+			...(agent ? { agent } : {}),
+		}).finally(() => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
 			}
 		});
+
+		if (response.status < 300 || response.status >= 400) {
+			return response;
+		}
+
+		const location = response.headers.get('location');
+
+		if (!location) {
+			throw new Error('Redirect response missing Location header');
+		}
+
+		if (redirectCount === MAX_REDIRECTS) {
+			throw new Error(`Too many redirects (max ${MAX_REDIRECTS})`);
+		}
+
+		currentUrl = new URL(location, currentUrl).toString();
 	}
 
-	return fetch(url.toString(), {
-		// @ts-expect-error - This complained when types were moved to file :/
-		signal: controller.signal,
-		...parseRequestOptions(options),
-		...(agent ? { agent } : {}),
-	}).finally(() => {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
-	});
+	throw new Error('Unexpected redirect handling failure');
 }
 
-export { Response } from 'node-fetch';
-
+export { Response };
 export { ExtendedFetchOptions };
