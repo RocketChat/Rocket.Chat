@@ -141,8 +141,8 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 
@@ -183,8 +183,8 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 
@@ -227,8 +227,8 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 
@@ -363,8 +363,8 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 
@@ -405,8 +405,8 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 
@@ -449,8 +449,8 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		});
 
 		await test.step('expect agent and department fields to be visible and enabled', async () => {
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardUser).toBeEnabled();
-			await expect(poOmnichannel.content.forwardChatModal.inputFowardDepartment).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardUser).toBeEnabled();
+			await expect(poOmnichannel.content.forwardChatModal.inputForwardDepartment).toBeEnabled();
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeDisabled();
 		});
 

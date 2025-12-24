@@ -73,8 +73,8 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 			await agentB.poHomeOmnichannel.navbar.changeUserStatus('offline');
 
 			await agentA.poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
-			await agentA.poHomeOmnichannel.content.forwardChatModal.inputFowardUser.click();
-			await agentA.poHomeOmnichannel.content.forwardChatModal.inputFowardUser.type('user2');
+			await agentA.poHomeOmnichannel.content.forwardChatModal.inputForwardUser.click();
+			await agentA.poHomeOmnichannel.content.forwardChatModal.inputForwardUser.type('user2');
 			await expect(agentA.page.locator('text=Empty')).toBeVisible();
 
 			await agentA.page.goto('/');

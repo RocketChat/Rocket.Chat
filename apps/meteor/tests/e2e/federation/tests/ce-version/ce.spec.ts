@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { CreateNewChannelModal } from '../../../page-objects/create-new-modal';
+import { CreateNewChannelModal } from '../../../page-objects/fragments/modals';
 import * as constants from '../../config/constants';
 import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';

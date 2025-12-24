@@ -1,8 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { EditStatusModal, CreateNewChannelModal, CreateNewDiscussionModal, CreateNewDMModal, CreateNewTeamModal } from './modals';
 import { expect } from '../../utils/test';
-import { CreateNewChannelModal, CreateNewDiscussionModal, CreateNewDMModal, CreateNewTeamModal } from '../create-new-modal';
-import { EditStatusModal } from './edit-status-modal';
 
 export class Navbar {
 	private readonly modals: {

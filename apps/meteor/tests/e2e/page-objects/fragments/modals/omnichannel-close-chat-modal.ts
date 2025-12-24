@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Modal } from './modal';
-import { ToastMessages } from './toast-messages';
+import { ToastMessages } from '../toast-messages';
 
 export class OmnichannelCloseChatModal extends Modal {
 	private readonly toastMessages: ToastMessages;
