@@ -1,3 +1,4 @@
+import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { addUserToRoom, createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
