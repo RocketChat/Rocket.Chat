@@ -1,8 +1,10 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { addUserToRoom, createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
-import type { IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
+import type { IRequestConfig, TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
@@ -120,21 +122,21 @@ import { SynapseClient } from '../helper/synapse-client';
 		});
 
 		describe('Add a user with access-federation permission to a room', () => {
-			let user;
+			let user: TestUser<IUser>;
 
 			beforeAll(async () => {
 				user = await createUser(
 					{
 						username: `g3-${Date.now()}`,
 						password: '1',
-						roles: ['user'],
+						roles: ['user', 'admin'],
 					},
 					rc1AdminRequestConfig,
 				);
 			});
 
 			afterAll(async () => {
-				await deleteUser(user._id, {}, rc1AdminRequestConfig);
+				await deleteUser(user, {}, rc1AdminRequestConfig);
 			});
 
 			it('should be able to add a user with access-federation permission to a room', async () => {
