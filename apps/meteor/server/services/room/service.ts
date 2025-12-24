@@ -36,7 +36,7 @@ import { removeRoomOwner } from '../../methods/removeRoomOwner';
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
-	async updateDirectMessageRoomName(room: IRoom): Promise<boolean> {
+	async updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean> {
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
 		const uids = subs.map((sub) => sub.u._id);
@@ -47,7 +47,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		for await (const sub of subs) {
 			// don't update the name if the user is invited but hasn't accepted yet
-			if (sub.status === 'INVITED') {
+			if (!ignoreStatusFromSubs?.includes(sub._id) && sub.status === 'INVITED') {
 				continue;
 			}
 			await Subscriptions.updateOne({ _id: sub._id }, { $set: roomNames[sub.u._id] });
