@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "25.0.1",
+	"version": "26.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -18,6 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@rocket.chat/onboarding-ui": "~0.36.0",
 		"dompurify": "~3.2.7"
 	},
 	"devDependencies": {
@@ -31,6 +32,7 @@
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
+		"@rocket.chat/models": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",

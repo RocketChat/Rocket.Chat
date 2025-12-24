@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Header } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -11,7 +12,6 @@ import RoomSkeleton from './RoomSkeleton';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { SubscriptionsCachedStore } from '../../cachedStores';
-import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';

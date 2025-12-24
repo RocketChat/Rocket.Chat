@@ -9,10 +9,11 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
-import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
@@ -39,11 +40,10 @@ type IntegrationOptions = {
 	};
 };
 
-type IntegrationThis = Omit<PartialThis, 'user'> & {
+type IntegrationThis = GenericRouteExecutionContext & {
 	request: Request & {
 		integration: IIncomingIntegration;
 	};
-	urlParams: Record<string, string>;
 	user: IUser & { username: RequiredField<IUser, 'username'> };
 };
 
@@ -138,8 +138,8 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
-	let { bodyParams } = this;
-	const separateResponse = this.bodyParams?.separateResponse === true;
+	let bodyParams = isPlainObject(this.bodyParams) ? this.bodyParams : {};
+	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
@@ -152,21 +152,22 @@ async function executeIntegrationRest(
 		const contentRaw = Buffer.concat(buffers).toString('utf8');
 		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
 		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
+		const query = isPlainObject(this.queryParams) ? this.queryParams : {};
 
 		const request = {
 			url: {
+				query,
 				hash: url.hash,
 				search: url.search,
-				query: this.queryParams,
 				pathname: url.pathname,
 				path: this.request.url,
 			},
 			url_raw: this.request.url,
 			url_params: this.urlParams,
-			content: this.bodyParams,
+			content: bodyParams,
 			content_raw: contentRaw,
 			headers: Object.fromEntries(this.request.headers.entries()),
-			body: this.bodyParams,
+			body: bodyParams,
 			user: {
 				_id: this.user._id,
 				name: this.user.name || '',
@@ -191,7 +192,7 @@ async function executeIntegrationRest(
 				return API.v1.failure(result.error);
 			}
 
-			bodyParams = result && result.content;
+			bodyParams = result?.content;
 
 			if (!('separateResponse' in bodyParams)) {
 				bodyParams.separateResponse = separateResponse;
@@ -312,8 +313,8 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 }
 
 class WebHookAPI extends APIClass<'/hooks'> {
-	override async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
-		const { integrationId, token } = this.urlParams;
+	override async authenticatedRoute(routeContext: IntegrationThis): Promise<IUser | null> {
+		const { integrationId, token } = routeContext.urlParams;
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
 		if (!integration) {
@@ -322,9 +323,9 @@ class WebHookAPI extends APIClass<'/hooks'> {
 			throw new Error('Invalid integration id or token provided.');
 		}
 
-		this.request.integration = integration;
+		routeContext.request.integration = integration;
 
-		return Users.findOneById(this.request.integration.userId);
+		return Users.findOneById(routeContext.request.integration.userId);
 	}
 
 	override shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {

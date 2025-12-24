@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/authorization-service",
-	"version": "0.4.45",
+	"version": "0.5.0-rc.1",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"keywords": [
@@ -19,6 +19,7 @@
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
+		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",

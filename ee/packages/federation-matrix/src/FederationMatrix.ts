@@ -291,13 +291,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						continue;
 					}
 
-					if (!isUserNativeFederated(member)) {
-						continue;
-					}
-
 					try {
 						await federationSDK.inviteUserToRoom(
-							userIdSchema.parse(member.username),
+							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
 							roomIdSchema.parse(matrixRoomResult.room_id),
 							userIdSchema.parse(actualMatrixUserId),
 						);
@@ -919,9 +915,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		if (action === 'accept') {
 			await federationSDK.acceptInvite(room.federation.mrid, matrixUserId);
-
-			await Room.performAcceptRoomInvite(room, subscription, user);
 		}
+
 		if (action === 'reject') {
 			try {
 				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);

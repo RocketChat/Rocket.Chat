@@ -181,16 +181,6 @@ const FingerprintSchema = {
 export const isFingerprintProps = ajv.compile<Fingerprint>(FingerprintSchema);
 
 export type MiscEndpoints = {
-	'/v1/stdout.queue': {
-		GET: () => {
-			queue: {
-				id: string;
-				string: string;
-				ts: Date;
-			}[];
-		};
-	};
-
 	'/v1/shield.svg': {
 		GET: (params: ShieldSvg) => {
 			svg: string;

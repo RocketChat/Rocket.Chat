@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/account-service",
-	"version": "0.4.45",
+	"version": "0.4.47-rc.1",
 	"private": true,
 	"description": "Rocket.Chat Account service",
 	"keywords": [

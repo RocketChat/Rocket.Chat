@@ -1,25 +1,22 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
-import ParentRoomWithData from './ParentRoomWithData';
-import ParentTeam from './ParentTeam';
+import ParentRoom from './ParentRoom';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
+import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
-import MarkdownText from '../../../components/MarkdownText';
 
 export type RoomHeaderProps = {
 	room: IRoom;
-	topic?: string;
-	slots: {
+	slots?: {
 		start?: ReactNode;
 		preContent?: ReactNode;
 		insideContent?: ReactNode;
@@ -34,34 +31,24 @@ export type RoomHeaderProps = {
 	};
 };
 
-const RoomHeader = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
+const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 	const { t } = useTranslation();
 
 	return (
 		<Header>
 			{slots?.start}
-			<HeaderAvatar>
-				<RoomAvatar room={room} />
-			</HeaderAvatar>
+			<ParentRoom room={room} />
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					{room.prid && <ParentRoomWithData room={room} />}
-					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
+					<RoomTopic room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
-				{topic && (
-					<HeaderContentRow>
-						<HeaderSubtitle is='h2'>
-							<MarkdownText pi={2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-						</HeaderSubtitle>
-					</HeaderContentRow>
-				)}
 			</HeaderContent>
 			{slots?.posContent}
 			{slots.toolbox?.hidden !== true && (
