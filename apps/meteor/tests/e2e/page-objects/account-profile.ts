@@ -25,7 +25,7 @@ export class AccountProfile extends Account {
 
 	// TODO: remove this locator
 	get btnSubmit(): Locator {
-		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
 	get avatarFileInput(): Locator {
