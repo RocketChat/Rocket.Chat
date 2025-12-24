@@ -391,7 +391,7 @@ export class CustomOAuth {
 
 					const updater = Users.getUpdater();
 
-					if (this.keyField === 'username' && serviceData.emails) {
+					if (this.keyField === 'username' && serviceData.email) {
 						updater.set('emails', [{ address: serviceData.email, verified: true }]);
 					}
 
