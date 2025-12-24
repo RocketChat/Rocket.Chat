@@ -3,12 +3,12 @@ import { withMiddleware } from './midleware';
 
 export const makeFunction = <T extends BaseFunction>(fn: T): PatchedFunction<T> => {
 	const wrapped = withMiddleware(fn);
-	const patch = (patch: PatchFunction<T>, condition?: () => boolean) => {
+	const patch = (fn: PatchFunction<T>, condition?: () => boolean) => {
 		return wrapped.use((ctx, next) => {
 			if (!condition || condition()) {
-				return patch(() => next(), ...ctx);
+				return fn(next as unknown as T, ...ctx);
 			}
-			return next();
+			return next(...ctx);
 		});
 	};
 	const originalSignature = (() => {
