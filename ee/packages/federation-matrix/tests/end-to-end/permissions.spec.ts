@@ -142,7 +142,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					type: 'p',
 					name: `federated-room-${Date.now()}`,
 					members: [],
-					credentials: rc1AdminRequestConfig.credentials,
+					extraData: {
+						federated: true,
+					},
+					config: rc1AdminRequestConfig,
 				});
 
 				expect(createResponse.status).toBe(200);
