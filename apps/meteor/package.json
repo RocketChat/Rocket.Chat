@@ -99,7 +99,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.3.5",
+		"@rocket.chat/federation-sdk": "0.3.7",
 		"@rocket.chat/fuselage": "^0.70.0",
 		"@rocket.chat/fuselage-forms": "~0.1.1",
 		"@rocket.chat/fuselage-hooks": "~0.38.1",
