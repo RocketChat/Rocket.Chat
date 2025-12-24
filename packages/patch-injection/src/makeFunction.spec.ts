@@ -133,10 +133,10 @@ describe('Chained calls', () => {
 	it('should send the parameters in the correct order every time', () => {
 		const fn = makeFunction((a: string, b: string) => `3=${[a, b].join('')}`);
 
-		fn.patch((next, a, b) => `2=${[a, b].join('')},${next()}`);
-		fn.patch((next, a, b) => `1=${[a, b].join('')},${next()}`);
+		fn.patch((next, a, b) => `2=${[a, b].join('')},${next('E', 'F')}`);
+		fn.patch((next, a, b) => `1=${[a, b].join('')},${next('C', 'D')}`);
 
-		expect(fn('A', 'B')).toBe('1=AB,2=AB,3=AB');
+		expect(fn('A', 'B')).toBe('1=AB,2=CD,3=EF');
 	});
 });
 

@@ -1,5 +1,5 @@
 type Middleware<F extends (...args: any[]) => any> = (ctx: Parameters<F>, next: NextFunction<F>) => ReturnType<F>;
-type NextFunction<F extends (...args: any[]) => any> = () => ReturnType<F>;
+type NextFunction<F extends (...args: any[]) => any> = (...args: Parameters<F> | []) => ReturnType<F>;
 
 export function withMiddleware<F extends (...args: any[]) => any>(fn: F) {
 	const middlewares: Middleware<F>[] = [];
@@ -7,7 +7,7 @@ export function withMiddleware<F extends (...args: any[]) => any>(fn: F) {
 	const buildRunner = (): ((ctx: Parameters<F>) => ReturnType<F>) => {
 		return middlewares.reduce(
 			(next, middleware) => {
-				return (ctx) => middleware(ctx, () => next(ctx));
+				return (ctx) => middleware(ctx, (...args) => next(args.length ? (args as Parameters<F>) : ctx));
 			},
 			(ctx: Parameters<F>) => fn(...ctx),
 		);
