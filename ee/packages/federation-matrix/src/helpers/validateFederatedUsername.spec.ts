@@ -72,7 +72,7 @@ describe('validateFederatedUsername', () => {
 			expect(validateFederatedUsername('@user:192.168.1.1:8008')).toBe(true);
 		});
 
-		it.failing('should return true for mxid with IPv6 address', () => {
+		it('should return true for mxid with IPv6 address', () => {
 			expect(validateFederatedUsername('@user:[::1]')).toBe(true);
 			expect(validateFederatedUsername('@user:[2001:db8::1]')).toBe(true);
 		});
