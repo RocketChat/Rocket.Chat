@@ -1,3 +1,4 @@
+import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
@@ -16,18 +17,15 @@ import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {
 		if ((await Roles.countUsersInRole('admin')) === 0) {
-			const adminUser = {
-				name: 'Administrator',
+			const adminUser: Partial<IUser> = {
+				name: process.env.ADMIN_NAME || 'Administrator',
 				username: 'admin',
-				status: 'offline',
-				statusDefault: 'online',
+				status: UserStatus.OFFLINE,
+				statusDefault: UserStatus.ONLINE,
 				utcOffset: 0,
 				active: true,
+				type: 'user',
 			};
-
-			if (process.env.ADMIN_NAME) {
-				adminUser.name = process.env.ADMIN_NAME;
-			}
 
 			console.log(colors.green(`Name: ${adminUser.name}`));
 
@@ -74,8 +72,6 @@ export async function insertAdminUserFromEnv() {
 			}
 
 			console.log(colors.green(`Username: ${adminUser.username}`));
-
-			adminUser.type = 'user';
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
@@ -137,8 +133,8 @@ Meteor.startup(async () => {
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
 				username: 'rocket.cat',
-				status: 'online',
-				statusDefault: 'online',
+				status: UserStatus.ONLINE,
+				statusDefault: UserStatus.ONLINE,
 				utcOffset: 0,
 				active: true,
 				type: 'bot',
@@ -146,20 +142,23 @@ Meteor.startup(async () => {
 
 			await addUserRolesAsync('rocket.cat', ['bot']);
 
-			const buffer = Buffer.from(await Assets.getBinaryAsync('avatars/rocketcat.png'));
+			const asset = await Assets.getBinaryAsync('avatars/rocketcat.png');
+			if (asset) {
+				const buffer = Buffer.from(asset);
 
-			const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
-			const fileStore = FileUpload.getStore('Avatars');
-			await fileStore.deleteByName('rocket.cat');
+				const rs = RocketChatFile.bufferToStream(buffer);
+				const fileStore = FileUpload.getStore('Avatars');
+				await fileStore.deleteByName('rocket.cat');
 
-			const file = {
-				userId: 'rocket.cat',
-				type: 'image/png',
-				size: buffer.length,
-			};
+				const file = {
+					userId: 'rocket.cat',
+					type: 'image/png',
+					size: buffer.length,
+				};
 
-			const upload = await fileStore.insert(file, rs);
-			await Users.setAvatarData('rocket.cat', 'local', upload.etag);
+				const upload = await fileStore.insert(file, rs);
+				await Users.setAvatarData('rocket.cat', 'local', upload.etag);
+			}
 		}
 	} catch (error) {
 		console.log(
@@ -211,7 +210,7 @@ Meteor.startup(async () => {
 	if (process.env.TEST_MODE === 'true') {
 		console.log(colors.green('Inserting admin test user:'));
 
-		const adminUser = {
+		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
 			_id: 'rocketchat.internal.admin.test',
 			name: 'RocketChat Internal Admin Test',
 			username: 'rocketchat.internal.admin.test',
@@ -221,23 +220,23 @@ Meteor.startup(async () => {
 					verified: true,
 				},
 			],
-			status: 'offline',
-			statusDefault: 'online',
+			status: UserStatus.OFFLINE,
+			statusDefault: UserStatus.ONLINE,
 			utcOffset: 0,
 			active: true,
 			type: 'user',
 		};
 
 		console.log(colors.green(`Name: ${adminUser.name}`));
-		console.log(colors.green(`Email: ${adminUser.emails[0].address}`));
+		console.log(colors.green(`Email: ${adminUser.emails![0].address}`));
 		console.log(colors.green(`Username: ${adminUser.username}`));
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
-		if (await Users.findOneByEmailAddress(adminUser.emails[0].address)) {
-			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
+		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
+			throw new Meteor.Error(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!(await checkUsernameAvailability(adminUser.username))) {
+		if (!(await checkUsernameAvailability(adminUser.username!))) {
 			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
@@ -252,7 +251,7 @@ Meteor.startup(async () => {
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 
-		await addUserToDefaultChannels(adminUser, true);
+		await addUserToDefaultChannels(adminUser as IUser, true);
 
 		// Create sample call history for API tests
 		return addCallHistoryTestData('rocketchat.internal.admin.test', 'rocket.cat');
