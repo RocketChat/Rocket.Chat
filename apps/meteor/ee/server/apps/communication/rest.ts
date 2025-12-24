@@ -259,7 +259,7 @@ export class AppsRestApi {
 
 					if (this.bodyParams.url) {
 						try {
-							const response = await fetch(this.bodyParams.url);
+							const response = await fetch(this.bodyParams.url, { ignoreSsrfValidation: true });
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 								return API.v1.failure({
@@ -282,6 +282,7 @@ export class AppsRestApi {
 								Apps.getMarketplaceClient()
 									.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
 										headers,
+										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
 										throw new Error('App package download failed', { cause });
@@ -292,6 +293,7 @@ export class AppsRestApi {
 											Authorization: `Bearer ${marketplaceToken}`,
 											...headers,
 										},
+										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
 										throw new Error('App metadata download failed', { cause });
@@ -532,7 +534,9 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers, ignoreSsrfValidation: true });
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
 							return API.v1.failure();
@@ -561,7 +565,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, { headers });
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, { headers, ignoreSsrfValidation: true });
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
 							return API.v1.failure();
@@ -594,6 +598,7 @@ export class AppsRestApi {
 							.getMarketplaceClient()
 							.fetch(`v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 								headers,
+								ignoreSsrfValidation: true,
 							});
 						const result = await request.json();
 
@@ -623,7 +628,9 @@ export class AppsRestApi {
 					}
 
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/app-request/stats`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/app-request/stats`, { headers, ignoreSsrfValidation: true });
 						const result = await request.json();
 						if (!request.ok) {
 							throw new Error(result.error);
@@ -657,6 +664,7 @@ export class AppsRestApi {
 							method: 'POST',
 							headers,
 							body: { ids: unseenRequests },
+							ignoreSsrfValidation: true,
 						});
 						const result = await request.json();
 
@@ -727,7 +735,7 @@ export class AppsRestApi {
 						try {
 							const request = await orchestrator
 								.getMarketplaceClient()
-								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
+								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers, ignoreSsrfValidation: true });
 							if (request.status !== 200) {
 								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', await request.json());
 								return API.v1.failure();
@@ -753,6 +761,7 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
 									headers,
+									ignoreSsrfValidation: true,
 								});
 							if (request.status !== 200) {
 								orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', await request.json());
@@ -780,7 +789,7 @@ export class AppsRestApi {
 					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
-						const response = await fetch(this.bodyParams.url);
+						const response = await fetch(this.bodyParams.url, { ignoreSsrfValidation: true });
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 							return API.v1.failure({
@@ -798,6 +807,7 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
 									headers,
+									ignoreSsrfValidation: true,
 								});
 
 							if (response.status !== 200) {
@@ -934,7 +944,9 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${this.urlParams.id}`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/apps/${this.urlParams.id}`, { headers, ignoreSsrfValidation: true });
 						statusCode = request.status;
 						result = await request.json();
 
@@ -976,7 +988,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
-							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers, ignoreSsrfValidation: true });
 
 						statusCode = request.status;
 						result = await request.json();
@@ -1041,7 +1053,9 @@ export class AppsRestApi {
 					const headers = getDefaultHeaders();
 
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${appId}/screenshots`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/apps/${appId}/screenshots`, { headers, ignoreSsrfValidation: true });
 						const data = await request.json();
 
 						return API.v1.success({

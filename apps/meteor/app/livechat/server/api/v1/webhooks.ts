@@ -63,6 +63,7 @@ API.v1.addRoute(
 					'Accept': 'application/json',
 				},
 				body: sampleData,
+				ignoreSsrfValidation: true,
 			};
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');

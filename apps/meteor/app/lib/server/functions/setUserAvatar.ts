@@ -7,7 +7,6 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { checkUrlForSsrf } from './checkUrlForSsrf';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -103,16 +102,8 @@ export async function setUserAvatar(
 		if (service === 'url' && typeof dataURI === 'string') {
 			let response: Response;
 
-			const isSsrfSafe = await checkUrlForSsrf(dataURI);
-			if (!isSsrfSafe) {
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
-					function: 'setUserAvatar',
-					url: dataURI,
-				});
-			}
-
 			try {
-				response = await fetch(dataURI, { redirect: 'error' });
+				response = await fetch(dataURI);
 			} catch (e) {
 				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {

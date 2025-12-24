@@ -51,6 +51,7 @@ class ExternalQueue implements IRoutingMethod {
 					...(department && { departmentId: department }),
 					...(ignoreAgentId && { ignoreAgentId }),
 				},
+				ignoreSsrfValidation: true,
 			});
 			const result = (await request.json()) as { username?: string };
 

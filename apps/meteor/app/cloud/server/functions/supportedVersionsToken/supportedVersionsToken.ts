@@ -115,6 +115,7 @@ const getSupportedVersionsFromCloud = async () => {
 		fetch(releaseEndpoint, {
 			headers,
 			timeout: 5000,
+			ignoreSsrfValidation: true,
 		}),
 	);
 

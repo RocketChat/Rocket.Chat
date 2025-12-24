@@ -36,6 +36,7 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			ignoreSsrfValidation: true,
 		});
 
 		if (!result.ok) {

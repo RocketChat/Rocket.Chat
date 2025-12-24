@@ -27,6 +27,7 @@ export async function sendRequest(
 			},
 			body: postData,
 			timeout,
+			ignoreSsrfValidation: true,
 		});
 
 		if (result.status === 200) {

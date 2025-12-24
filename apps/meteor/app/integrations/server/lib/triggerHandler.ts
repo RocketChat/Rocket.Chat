@@ -614,6 +614,7 @@ class RocketChatIntegrationHandler {
 				headers: opts.headers,
 				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
+				ignoreSsrfValidation: true,
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
