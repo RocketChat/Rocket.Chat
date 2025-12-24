@@ -8,7 +8,7 @@ type StringifyBuffers<T extends unknown[]> = {
 
 declare global {
 	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
 
 		function getTextAsync(assetPath: string): Promise<string | undefined>;
 	}
