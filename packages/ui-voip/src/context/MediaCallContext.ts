@@ -119,6 +119,12 @@ const MediaCallContext = createContext<MediaCallContextType | MediaCallUnauthori
 	defaultMediaCallContextValue,
 );
 
+export type MediaCallExternalState = State | 'unauthorized' | 'unlicensed';
+
+export const isAbleToMakeCall = (state: MediaCallExternalState) => {
+	return state === 'new' || state === 'closed';
+};
+
 // This hook is for internal use only. It will only be available if the user has the necessary permissions and the workspace has the necessary modules.
 export const useMediaCallContext = (): MediaCallContextType => {
 	const context = useContext(MediaCallContext);
