@@ -9,6 +9,7 @@ import {
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
 } from '@rocket.chat/core-typings';
+import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
@@ -161,7 +162,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
-		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (
+			FederationActions.shouldPerformFederationAction(room) &&
+			!isUserNativeFederated(user) &&
+			!(await Authorization.hasPermission(user._id, 'access-federation'))
+		) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
