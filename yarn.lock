@@ -8467,7 +8467,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.7"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8674,7 +8674,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.7"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -8700,9 +8700,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.3.5":
-  version: 0.3.5
-  resolution: "@rocket.chat/federation-sdk@npm:0.3.5"
+"@rocket.chat/federation-sdk@npm:0.3.7":
+  version: 0.3.7
+  resolution: "@rocket.chat/federation-sdk@npm:0.3.7"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -8715,7 +8715,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/47de2265555649b375620c7a90cf84134b14f3e38d171d84276dee9196b7b303a2d8c6f693223d63ba1c464ce12c128c5f6a795c0bb42c0e5339587b2429d034
+  checksum: 10/fd3bce12146ad906970ebe88ddc54f118362a52fe600d90d39a99a684aa7c637922b39791b671f1b9de8fb160076468de5034286673da443dfad6a68924fed91
   languageName: node
   linkType: hard
 
@@ -9342,7 +9342,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.7"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
@@ -10797,7 +10797,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.4-rc.0
-    "@rocket.chat/ui-contexts": 26.0.0-rc.0
+    "@rocket.chat/ui-contexts": 26.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
