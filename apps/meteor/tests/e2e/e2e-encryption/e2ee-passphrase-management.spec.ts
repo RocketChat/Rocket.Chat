@@ -5,12 +5,8 @@ import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { Navbar } from '../page-objects/fragments';
-import {
-	E2EEKeyDecodeFailureBanner,
-	EnterE2EEPasswordBanner,
-	EnterE2EEPasswordModal,
-	ResetE2EEPasswordModal,
-} from '../page-objects/fragments/e2ee';
+import { E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
+import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';

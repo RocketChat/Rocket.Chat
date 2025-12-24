@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { AdminSidebar, ToastMessages } from './fragments';
-import { ConfirmDeleteModal } from './fragments/modal';
+import { ConfirmDeleteModal } from './fragments/modals';
 
 export enum AdminSectionsHref {
 	Workspace = '/admin/info',
