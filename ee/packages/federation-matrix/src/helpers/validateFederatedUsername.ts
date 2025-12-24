@@ -10,7 +10,7 @@ export function validateFederatedUsername(mxid: string): mxid is UserID {
 	const localpart = parts[0];
 	const domainAndPort = parts.slice(1).join(':');
 
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
+	const localpartRegex = /^(?:[a-zA-Z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
 	if (!localpartRegex.test(localpart)) return false;
 
 	const [domain, port] = domainAndPort.split(':');

@@ -6,10 +6,6 @@ describe('validateFederatedUsername', () => {
 			expect(validateFederatedUsername('user:example.com')).toBe(false);
 		});
 
-		it('should return false when localpart contains uppercase letters', () => {
-			expect(validateFederatedUsername('@User:example.com')).toBe(false);
-		});
-
 		it('should return false when mxid has no colon separator', () => {
 			expect(validateFederatedUsername('@user')).toBe(false);
 		});
@@ -44,6 +40,10 @@ describe('validateFederatedUsername', () => {
 	describe('valid formats', () => {
 		it('should return true for basic valid mxid', () => {
 			expect(validateFederatedUsername('@user:example.com')).toBe(true);
+		});
+
+		it('should return true when localpart contains uppercase letters', () => {
+			expect(validateFederatedUsername('@User:example.com')).toBe(true);
 		});
 
 		it('should return true for mxid with dots and hyphens in localpart', () => {
