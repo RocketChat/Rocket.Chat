@@ -1,7 +1,7 @@
 import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { addUserToRoom, createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import { getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
+import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
@@ -30,10 +30,6 @@ import { SynapseClient } from '../helper/synapse-client';
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
-	});
-
-	beforeAll(async () => {
-		// Remove permissions for access-federation to any user but admin
 		await rc1AdminRequestConfig.request
 			.post(api('permissions.update'))
 			.set(rc1AdminRequestConfig.credentials)
@@ -66,7 +62,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				extraData: {
 					federated: true,
 				},
-				config: rc1AdminRequestConfig,
+				config: rc1User1RequestConfig,
 			});
 
 			expect(createResponse.status).toBe(400);
@@ -80,15 +76,18 @@ import { SynapseClient } from '../helper/synapse-client';
 				type: 'p',
 				name: channelName,
 				members: [],
+				extraData: {
+					federated: true,
+				},
 				config: rc1AdminRequestConfig,
 			});
 
 			expect(createResponse.status).toBe(200);
 			expect(createResponse.body).toHaveProperty('success', true);
-			expect(createResponse.body).toHaveProperty('room');
-			expect(createResponse.body.room).toHaveProperty('_id');
-			expect(createResponse.body.room).toHaveProperty('t', 'p');
-			expect(createResponse.body.room).toHaveProperty('federated', true);
+			expect(createResponse.body).toHaveProperty('group');
+			expect(createResponse.body.group).toHaveProperty('_id');
+			expect(createResponse.body.group).toHaveProperty('t', 'p');
+			expect(createResponse.body.group).toHaveProperty('federated', true);
 		});
 
 		it('should not be able to add a user without access-federation permission to a room', async () => {
@@ -96,25 +95,68 @@ import { SynapseClient } from '../helper/synapse-client';
 				type: 'p',
 				name: `federated-room-${Date.now()}`,
 				members: [],
+				extraData: {
+					federated: true,
+				},
 				config: rc1AdminRequestConfig,
 			});
 
 			expect(createResponse.status).toBe(200);
 			expect(createResponse.body).toHaveProperty('success', true);
-			expect(createResponse.body).toHaveProperty('room');
-			expect(createResponse.body.room).toHaveProperty('_id');
-			expect(createResponse.body.room).toHaveProperty('t', 'p');
-			expect(createResponse.body.room).toHaveProperty('federated', true);
+			expect(createResponse.body).toHaveProperty('group');
+			expect(createResponse.body.group).toHaveProperty('_id');
+			expect(createResponse.body.group).toHaveProperty('t', 'p');
+			expect(createResponse.body.group).toHaveProperty('federated', true);
 
 			const addUserResponse = await addUserToRoom({
 				usernames: [federationConfig.hs1.adminMatrixUserId],
-				rid: createResponse.body.room._id,
+				rid: createResponse.body.group._id,
 				config: rc1User1RequestConfig,
 			});
 
-			expect(addUserResponse.status).toBe(400);
-			expect(addUserResponse.body).toHaveProperty('success', false);
-			expect(addUserResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+			expect(addUserResponse.status).toBe(200);
+			expect(addUserResponse.body).toHaveProperty('success', true);
+			expect(addUserResponse.body.message).toMatch(/error-not-allowed/);
+		});
+
+		describe('Add a user with access-federation permission to a room', () => {
+			let user;
+
+			beforeAll(async () => {
+				user = await createUser(
+					{
+						username: `g3-${Date.now()}`,
+						password: '1',
+						roles: ['user'],
+					},
+					rc1AdminRequestConfig,
+				);
+			});
+
+			afterAll(async () => {
+				await deleteUser(user._id, {}, rc1AdminRequestConfig);
+			});
+
+			it('should be able to add a user with access-federation permission to a room', async () => {
+				const createResponse = await createRoom({
+					type: 'p',
+					name: `federated-room-${Date.now()}`,
+					members: [],
+					credentials: rc1AdminRequestConfig.credentials,
+				});
+
+				expect(createResponse.status).toBe(200);
+				const addUserResponse = await addUserToRoom({
+					usernames: [user.username],
+					rid: createResponse.body.group._id,
+					config: rc1AdminRequestConfig,
+				});
+
+				expect(addUserResponse.status).toBe(200);
+				expect(addUserResponse.body).toHaveProperty('success', true);
+				expect(addUserResponse.body).toHaveProperty('message');
+				expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+			});
 		});
 	});
 });
