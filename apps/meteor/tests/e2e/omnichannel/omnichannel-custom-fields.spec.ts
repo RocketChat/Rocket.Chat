@@ -1,5 +1,5 @@
 import { Users } from '../fixtures/userStates';
-import { OmnichannelCustomFields } from '../page-objects';
+import { OmnichannelCustomFields } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,7 +11,7 @@ test.describe('omnichannel-customFields', () => {
 		poOmnichannelCustomFields = new OmnichannelCustomFields(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelCustomFields.sidenav.linkCustomFields.click();
+		await poOmnichannelCustomFields.sidebar.linkCustomFields.click();
 	});
 
 	test('expect add new "custom field"', async ({ page }) => {

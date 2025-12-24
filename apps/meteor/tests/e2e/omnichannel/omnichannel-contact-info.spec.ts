@@ -3,15 +3,15 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
-import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat, OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
 import { expect, test } from '../utils/test';
 
 test.describe('Omnichannel contact info', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeOmnichannel; poContacts: OmnichannelContacts };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel; poContacts: OmnichannelContactCenterContacts };
 
 	test.beforeAll(async ({ api, browser }) => {
 		newVisitor = createFakeVisitor();
@@ -21,7 +21,7 @@ test.describe('Omnichannel contact info', () => {
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
 		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeOmnichannel(page), poContacts: new OmnichannelContacts(page) };
+		agent = { page, poHomeChannel: new HomeOmnichannel(page), poContacts: new OmnichannelContactCenterContacts(page) };
 	});
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);

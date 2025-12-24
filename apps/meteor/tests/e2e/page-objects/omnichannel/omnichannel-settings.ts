@@ -1,12 +1,8 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-export class OmnichannelSettings {
-	protected readonly page: Page;
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-	constructor(page: Page) {
-		this.page = page;
-	}
-
+export class OmnichannelSettings extends OmnichannelAdmin {
 	get labelLivechatLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_livechat_widget_logo"]');
 	}
@@ -29,9 +25,5 @@ export class OmnichannelSettings {
 
 	get labelHideWatermark(): Locator {
 		return this.page.locator('label', { has: this.page.locator('[data-qa-setting-id="Livechat_hide_watermark"]') });
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save changes"]');
 	}
 }

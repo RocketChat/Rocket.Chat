@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
-import { expect } from '../utils/test';
+import { expect } from '../../utils/test';
 
 export class OmnichannelLiveChat {
 	readonly page: Page;

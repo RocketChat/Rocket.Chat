@@ -1,8 +1,8 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdministration } from './omnichannel-administration';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelLivechatAppearance extends OmnichannelAdministration {
+export class OmnichannelLivechatAppearance extends OmnichannelAdmin {
 	get inputHideSystemMessages(): Locator {
 		return this.page.locator('[name="Livechat_hide_system_messages"]');
 	}
@@ -25,9 +25,5 @@ export class OmnichannelLivechatAppearance extends OmnichannelAdministration {
 
 	findHideSystemMessageOption(option: string): Locator {
 		return this.page.locator(`[role="option"][value="${option}"]`);
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save changes"]');
 	}
 }

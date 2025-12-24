@@ -1,9 +1,8 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelDepartments } from '../page-objects';
+import { OmnichannelDepartments } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,28 +10,23 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('OC - Manage Departments (CE)', () => {
 	test.skip(IS_EE, 'Community Edition Only');
 	let poOmnichannelDepartments: OmnichannelDepartments;
-
 	let departmentName: string;
 
 	test.beforeAll(async () => {
 		departmentName = faker.string.uuid();
 	});
 
-	test.beforeEach(async ({ page }: { page: Page }) => {
+	test.beforeEach(async ({ page }) => {
 		poOmnichannelDepartments = new OmnichannelDepartments(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelDepartments.sidenav.linkDepartments.click();
+		await poOmnichannelDepartments.sidebar.linkDepartments.click();
 	});
 
 	test('OC - Manage Departments (CE) - Create department', async () => {
 		await test.step('expect create new department', async () => {
 			await poOmnichannelDepartments.headingButtonNew('Create department').click();
-			await poOmnichannelDepartments.btnEnabled.click();
-			await poOmnichannelDepartments.inputName.fill(departmentName);
-			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
-			await poOmnichannelDepartments.btnSave.click();
-			await poOmnichannelDepartments.toastMessage.dismissToast();
+			await poOmnichannelDepartments.createDepartment(departmentName, faker.internet.email());
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();

@@ -1,29 +1,20 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelAgents {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
-
+export class OmnichannelAgents extends OmnichannelAdmin {
 	readonly editCtxBar: Locator;
 
 	readonly infoCtxBar: Locator;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
+		super(page);
 		this.editCtxBar = page.getByRole('dialog', { name: 'Edit User' });
 		this.infoCtxBar = page.getByRole('dialog', { name: 'User Info' });
 	}
 
 	get inputUsername(): Locator {
 		return this.page.locator('[data-qa-id="UserAutoComplete"]');
-	}
-
-	get inputSearch(): Locator {
-		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get btnAdd(): Locator {
@@ -34,16 +25,10 @@ export class OmnichannelAgents {
 		return this.page.locator('[data-qa-id="agents-table"] tr:first-child td:first-child');
 	}
 
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('[data-qa-id="agents-table"] tr:first-child').locator('role=button[name="Remove"]');
-	}
-
-	get modalRemoveAgent(): Locator {
-		return this.page.locator('[data-qa-id="remove-agent-modal"]');
-	}
-
-	get btnModalRemove(): Locator {
-		return this.modalRemoveAgent.locator('role=button[name="Delete"]');
+	async deleteAgent(name: string) {
+		await this.search(name);
+		await this.firstRowInTable.getByRole('button', { name: 'Remove' }).click();
+		await this.deleteModal.confirmDelete();
 	}
 
 	get btnEdit(): Locator {

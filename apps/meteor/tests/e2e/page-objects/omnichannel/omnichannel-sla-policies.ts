@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
 class OmnichannelManageSlaPolicy {
 	private readonly page: Page;
@@ -30,17 +30,12 @@ class OmnichannelManageSlaPolicy {
 	}
 }
 
-export class OmnichannelSlaPolicies {
-	private readonly page: Page;
-
+export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	readonly manageSlaPolicy: OmnichannelManageSlaPolicy;
 
-	readonly sidenav: OmnichannelSidenav;
-
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.manageSlaPolicy = new OmnichannelManageSlaPolicy(page);
-		this.sidenav = new OmnichannelSidenav(page);
 	}
 
 	findRowByName(name: string) {
@@ -51,20 +46,12 @@ export class OmnichannelSlaPolicies {
 		return this.findRowByName(name).locator('button[title="Remove"]');
 	}
 
-	get inputSearch() {
-		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
-	}
-
-	headingButtonNew(name: string) {
-		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
+	btnCreateSlaPolicy(name: string) {
+		return this.createByName(name);
 	}
 
 	get btnDelete() {
 		return this.page.locator('button.rcx-button >> text="Delete"');
-	}
-
-	get txtDeleteModalTitle() {
-		return this.page.locator('role=dialog >> text="Are you sure?"');
 	}
 
 	get txtEmptyState() {

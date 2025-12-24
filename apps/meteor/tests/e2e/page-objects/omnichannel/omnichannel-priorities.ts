@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav, ToastMessages } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
+import { Modal } from '../fragments/modal';
 
 class OmnichannelManagePriority {
 	private readonly page: Page;
@@ -26,32 +27,34 @@ class OmnichannelManagePriority {
 	}
 }
 
-export class OmnichannelPriorities {
-	private readonly page: Page;
+export class OmnichannelResetPrioritiesModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Reset priorities' }));
+	}
 
+	private get btnResetConfirm() {
+		return this.root.getByRole('button', { name: 'Reset' });
+	}
+
+	async reset() {
+		await this.btnResetConfirm.click();
+		await this.waitForDismissal();
+	}
+}
+
+export class OmnichannelPriorities extends OmnichannelAdmin {
 	readonly managePriority: OmnichannelManagePriority;
 
-	readonly sidenav: OmnichannelSidenav;
-
-	// TODO: This will be inherited from a BasePage Object
-	readonly toastMessage: ToastMessages;
-
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.managePriority = new OmnichannelManagePriority(page);
-		this.sidenav = new OmnichannelSidenav(page);
-		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnReset() {
 		return this.page.locator('role=button[name="Reset"]');
 	}
 
-	get btnResetConfirm() {
-		return this.page.locator('.rcx-modal').locator('role=button[name="Reset"]');
-	}
-
 	findPriority(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
+		return this.page.getByRole('link', { name, exact: true });
 	}
 }

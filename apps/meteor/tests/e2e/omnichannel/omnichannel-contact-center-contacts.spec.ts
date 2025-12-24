@@ -3,8 +3,8 @@ import { randomBytes } from 'crypto';
 import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
-import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
-import { OmnichannelSection } from '../page-objects/omnichannel-section';
+import { Navbar } from '../page-objects/fragments';
+import { OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const createToken = (): string => {
@@ -66,8 +66,8 @@ const ERROR = {
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Contact Center - Contacts', () => {
-	let poContacts: OmnichannelContacts;
-	let poOmniSection: OmnichannelSection;
+	let poContacts: OmnichannelContactCenterContacts;
+	let poNavbar: Navbar;
 
 	test.beforeAll(async ({ api }) => {
 		// Add contacts
@@ -80,8 +80,8 @@ test.describe('OC - Contact Center - Contacts', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poContacts = new OmnichannelContacts(page);
-		poOmniSection = new OmnichannelSection(page);
+		poContacts = new OmnichannelContactCenterContacts(page);
+		poNavbar = new Navbar(page);
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -104,8 +104,8 @@ test.describe('OC - Contact Center - Contacts', () => {
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
-		await poOmniSection.btnContactCenter.click();
-		await poOmniSection.tabContacts.click();
+		await poNavbar.btnContactCenter.click();
+		await poContacts.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);
 	});
 

@@ -1,8 +1,8 @@
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
-import { OmnichannelSection } from '../page-objects/omnichannel-section';
+import { Navbar } from '../page-objects/fragments';
+import { OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
@@ -29,8 +29,8 @@ test.describe('OC - Contact Center', async () => {
 	let tagA: Awaited<ReturnType<typeof createTag>>;
 	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
-	let poContacts: OmnichannelContacts;
-	let poOmniSection: OmnichannelSection;
+	let poNavbar: Navbar;
+	let poContacts: OmnichannelContactCenterContacts;
 
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
@@ -164,10 +164,11 @@ test.describe('OC - Contact Center', async () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poContacts = new OmnichannelContacts(page);
-		poOmniSection = new OmnichannelSection(page);
+		poContacts = new OmnichannelContactCenterContacts(page);
+		poNavbar = new Navbar(page);
+
 		await page.goto('/');
-		await poOmniSection.btnContactCenter.click();
+		await poNavbar.btnContactCenter.click();
 		await poContacts.tabChats.click();
 		await page.waitForURL(URL.contactCenterChats);
 	});

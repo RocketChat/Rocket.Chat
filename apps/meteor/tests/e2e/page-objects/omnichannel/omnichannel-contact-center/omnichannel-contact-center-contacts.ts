@@ -1,31 +1,22 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelContactInfo } from './omnichannel-info';
-import { OmnichannelManageContact } from './omnichannel-manage-contact';
+import { OmnichannelContactInfo } from '../omnichannel-info';
+import { OmnichannelManageContact } from '../omnichannel-manage-contact';
+import { OmnichannelContactCenter } from './omnichannel-contact-center';
 
-export class OmnichannelContacts {
-	private readonly page: Page;
-
+export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	readonly newContact: OmnichannelManageContact;
 
 	readonly contactInfo: OmnichannelContactInfo;
 
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.newContact = new OmnichannelManageContact(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
 	}
 
 	get btnNewContact(): Locator {
 		return this.page.locator('button >> text="New contact"');
-	}
-
-	get inputSearch(): Locator {
-		return this.page.locator('input[placeholder="Search"]');
-	}
-
-	findRowByName(contactName: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${contactName}"`) });
 	}
 
 	findRowMenu(contactName: string): Locator {
@@ -46,10 +37,6 @@ export class OmnichannelContacts {
 
 	get btnDeleteContact(): Locator {
 		return this.deleteContactModal.getByRole('button', { name: 'Delete' });
-	}
-
-	get btnFilters(): Locator {
-		return this.page.getByRole('button', { name: 'Filters' });
 	}
 
 	get inputServedBy(): Locator {
@@ -155,5 +142,31 @@ export class OmnichannelContacts {
 		await this.inputUnits.fill(unitName);
 		await this.findOption(unitName).click();
 		await this.btnApply.click();
+	}
+
+	private get contactCenterChatsTable(): Locator {
+		return this.page.getByRole('table', { name: 'Omnichannel Contact Center Chats' });
+	}
+
+	findRowByName(contactName: string) {
+		return this.contactCenterChatsTable.getByRole('link', { name: contactName, exact: true });
+	}
+
+	get inputStatus(): Locator {
+		return this.page.locator('[data-qa="current-chats-status"]');
+	}
+
+	get inputDepartmentValue(): Locator {
+		return this.page.locator('[data-qa="autocomplete-department"] span');
+	}
+
+	get modalConfirmRemoveAllClosed(): Locator {
+		return this.page.locator('[data-qa-id="current-chats-modal-remove-all-closed"]');
+	}
+
+	async addTag(option: string) {
+		await this.inputTags.click();
+		await this.page.locator(`[role='option'][value='${option}']`).click();
+		await this.inputTags.click();
 	}
 }

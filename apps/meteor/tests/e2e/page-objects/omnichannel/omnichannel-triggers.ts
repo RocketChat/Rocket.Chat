@@ -1,21 +1,8 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-import { OmnichannelSidenav, ToastMessages } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelTriggers {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
-
-	// TODO: This will be inherited from a BasePage Object
-	readonly toastMessage: ToastMessages;
-
-	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
-		this.toastMessage = new ToastMessages(page);
-	}
-
+export class OmnichannelTriggers extends OmnichannelAdmin {
 	headingButtonNew(name: string) {
 		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
 	}

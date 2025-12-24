@@ -1,28 +1,10 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelSidenav, ToastMessages } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelDepartments {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
-
-	// TODO: This will be inherited from a BasePage Object
-	readonly toastMessage: ToastMessages;
-
+export class OmnichannelDepartments extends OmnichannelAdmin {
 	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
-		this.toastMessage = new ToastMessages(page);
-	}
-
-	get inputSearch() {
-		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
-	}
-
-	async search(text: string) {
-		await this.inputSearch.fill(text);
-		await this.page.waitForTimeout(500);
+		super(page);
 	}
 
 	headingButtonNew(name: string) {
@@ -63,10 +45,6 @@ export class OmnichannelDepartments {
 
 	get btnSave() {
 		return this.page.locator('role=button[name="Save"]');
-	}
-
-	get btnBack() {
-		return this.page.locator('role=button[name="Back"]');
 	}
 
 	get archivedDepartmentsTab() {
@@ -161,5 +139,13 @@ export class OmnichannelDepartments {
 
 	findAgentRow(name: string) {
 		return this.page.locator('tr', { has: this.page.getByText(name, { exact: true }) });
+	}
+
+	async createDepartment(departmentName: string, email: string) {
+		await this.btnEnabled.click();
+		await this.inputName.fill(departmentName);
+		await this.inputEmail.fill(email);
+		await this.btnSave.click();
+		await this.toastMessage.dismissToast();
 	}
 }

@@ -1,17 +1,8 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelCustomFields {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
-
-	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
-	}
-
+export class OmnichannelCustomFields extends OmnichannelAdmin {
 	get btnAdd(): Locator {
 		return this.page.locator('[data-qa-id="CustomFieldPageBtnNew"]');
 	}
@@ -30,10 +21,6 @@ export class OmnichannelCustomFields {
 
 	get btnSave(): Locator {
 		return this.page.locator('button >> text=Save');
-	}
-
-	get inputSearch(): Locator {
-		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	firstRowInTable(filedName: string) {

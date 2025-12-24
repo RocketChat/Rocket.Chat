@@ -1,11 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
-import { Listbox } from './listbox';
 
-export class EditRoomFlexTab extends FlexTab {
+export class RoomInfoFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Room Information' }));
+	}
+
+	get btnEdit(): Locator {
+		return this.root.getByRole('button', { name: 'Edit' });
 	}
 
 	get btnSave(): Locator {
@@ -53,36 +56,23 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 }
 
-export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
-	private readonly listbox: Listbox;
-
-	constructor(page: Page) {
-		super(page);
-		this.listbox = new Listbox(page);
+export class OmnichannelRoomInfoFlexTab extends RoomInfoFlexTab {
+	getInfo(value: string): Locator {
+		return this.root.locator(`span >> text="${value}"`);
 	}
 
-	get inputTopic(): Locator {
-		return this.root.getByRole('textbox', { name: 'Topic' });
+	getLabel(label: string): Locator {
+		return this.root.locator(`div >> text="${label}"`);
 	}
 
-	get btnSaveEditRoom(): Locator {
-		return this.root.getByRole('button', { name: 'Save' });
+	getInfoByLabel(label: string): Locator {
+		return this.root.getByLabel(label);
 	}
 
-	get inputSLAPolicy(): Locator {
-		return this.root.getByRole('button', { name: 'SLA Policy' });
-	}
-
-	async selectTag(name: string): Promise<void> {
-		await this.root.getByRole('option', { name, exact: true }).click();
-	}
-
-	async selectSLA(name: string): Promise<void> {
-		await this.inputSLAPolicy.click();
-		await this.listbox.root.getByRole('option', { name, exact: true }).click();
-	}
-
-	get inputTags(): Locator {
-		return this.root.getByRole('textbox', { name: 'Select an option' });
+	// getBadgeIndicator(name: string, title: string): Locator {
+	// 	return this.homeSidenav.getSidebarItemByName(name).getByTitle(title);
+	// }
+	getTagInfoByLabel(label: string): Locator {
+		return this.root.getByRole('list', { name: 'Tags' }).getByText(label, { exact: true });
 	}
 }

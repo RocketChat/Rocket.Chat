@@ -1,26 +1,14 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdministration } from './omnichannel-administration';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelMonitors extends OmnichannelAdministration {
-	get modalConfirmRemove(): Locator {
-		return this.page.locator('[data-qa-id="manage-monitors-confirm-remove"]');
-	}
-
-	get btnConfirmRemove(): Locator {
-		return this.modalConfirmRemove.locator('role=button[name="Delete"]');
-	}
-
+export class OmnichannelMonitors extends OmnichannelAdmin {
 	get btnAddMonitor(): Locator {
-		return this.page.locator('role=button[name="Add monitor"]');
+		return this.createByName('Add monitor');
 	}
 
 	get inputMonitor(): Locator {
 		return this.page.locator('input[name="monitor"]');
-	}
-
-	get inputSearch(): Locator {
-		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	findRowByName(name: string): Locator {

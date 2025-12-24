@@ -16,7 +16,7 @@ const OmnichannelSidebar = () => {
 
 	return (
 		<SettingsProvider>
-			<Sidebar>
+			<Sidebar aria-label={t('Omnichannel')}>
 				<Sidebar.Header onClose={sidebar.close} title={t('Omnichannel')} />
 				<Sidebar.Content>
 					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />

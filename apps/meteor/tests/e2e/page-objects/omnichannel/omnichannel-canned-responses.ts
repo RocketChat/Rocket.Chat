@@ -1,8 +1,8 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdministration } from './omnichannel-administration';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelCannedResponses extends OmnichannelAdministration {
+export class OmnichannelCannedResponses extends OmnichannelAdmin {
 	get inputShortcut() {
 		return this.page.getByRole('textbox', { name: 'Shortcut', exact: true });
 	}

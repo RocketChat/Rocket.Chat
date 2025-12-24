@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelBusinessHours } from '../page-objects';
+import { OmnichannelBusinessHours } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
@@ -42,7 +42,7 @@ test.describe('OC - Business Hours', () => {
 
 	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
 		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
@@ -95,7 +95,7 @@ test.describe('OC - Business Hours', () => {
 		});
 
 		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
 
 		await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
@@ -144,10 +144,10 @@ test.describe('OC - Business Hours', () => {
 		});
 
 		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
 
 		await test.step('expect to disable business hours', async () => {
-			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+			await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
 
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
@@ -159,7 +159,7 @@ test.describe('OC - Business Hours', () => {
 		});
 
 		await test.step('expect to enable business hours', async () => {
-			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+			await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
 
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();

@@ -143,3 +143,85 @@ export class AccountSidebar extends Sidebar {
 		await this.waitForDismissal();
 	}
 }
+
+export class OmnichannelSidebar extends Sidebar {
+	constructor(page: Page) {
+		super(page.getByRole('navigation', { name: 'Omnichannel' }));
+	}
+
+	// openSidebarLink(name: string): Promise<void> {
+	// 	return this.root.getByRole('link', { name }).click();
+	// }
+
+	get linkContactCenterChats(): Locator {
+		return this.root.getByRole('link', { name: 'Contact Center Chats' });
+	}
+
+	get linkDepartments(): Locator {
+		return this.root.locator('a[href="/omnichannel/departments"]');
+	}
+
+	get linkAgents(): Locator {
+		return this.root.locator('a[href="/omnichannel/agents"]');
+	}
+
+	get linkManagers(): Locator {
+		return this.root.locator('a[href="/omnichannel/managers"]');
+	}
+
+	get linkCustomFields(): Locator {
+		return this.root.locator('a[href="/omnichannel/customfields"]');
+	}
+
+	get linkCurrentChats(): Locator {
+		return this.root.locator('a[href="/omnichannel/current"]');
+	}
+
+	get linkTriggers(): Locator {
+		return this.root.locator('a[href="/omnichannel/triggers"]');
+	}
+
+	get linkSlaPolicies(): Locator {
+		return this.root.locator('a[href="/omnichannel/sla-policies"]');
+	}
+
+	get linkPriorities(): Locator {
+		return this.root.locator('a[href="/omnichannel/priorities"]');
+	}
+
+	get linkMonitors(): Locator {
+		return this.root.locator('a[href="/omnichannel/monitors"]');
+	}
+
+	get linkBusinessHours(): Locator {
+		return this.root.locator('a[href="/omnichannel/businessHours"]');
+	}
+
+	get linkAnalytics(): Locator {
+		return this.root.locator('a[href="/omnichannel/analytics"]');
+	}
+
+	get linkRealTimeMonitoring(): Locator {
+		return this.root.locator('a[href="/omnichannel/realtime-monitoring"]');
+	}
+
+	get linkReports(): Locator {
+		return this.root.locator('a[href="/omnichannel/reports"]');
+	}
+
+	get linkCannedResponses(): Locator {
+		return this.root.locator('a[href="/omnichannel/canned-responses"]');
+	}
+
+	get linkUnits(): Locator {
+		return this.root.locator('a[href="/omnichannel/units"]');
+	}
+
+	get linkLivechatAppearance(): Locator {
+		return this.root.locator('a[href="/omnichannel/appearance"]');
+	}
+
+	get linkTags(): Locator {
+		return this.root.locator('a[href="/omnichannel/tags"]');
+	}
+}
