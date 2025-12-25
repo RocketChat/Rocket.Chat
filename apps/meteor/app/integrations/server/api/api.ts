@@ -318,7 +318,7 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
 		if (!integration) {
-			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
+			incomingLogger.info({ msg: 'Invalid integration id or token', integrationId, token });
 
 			throw new Error('Invalid integration id or token provided.');
 		}

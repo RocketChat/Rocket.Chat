@@ -43,8 +43,12 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 				}
 			});
 		} catch (e) {
-			logger.warn(`Invalid sort parameter provided "${params.sort}":`, e);
-			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: "${params.sort}"`, {
+			logger.warn({
+				msg: 'Invalid sort parameter provided',
+				sort: params.sort,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}
@@ -67,8 +71,12 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 				}
 			});
 		} catch (e) {
-			logger.warn(`Invalid fields parameter provided "${params.fields}":`, e);
-			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: "${params.fields}"`, {
+			logger.warn({
+				msg: 'Invalid fields parameter provided',
+				fields: params.fields,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: \"${params.fields}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}
@@ -111,8 +119,12 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
 		} catch (e) {
-			logger.warn(`Invalid query parameter provided "${params.query}":`, e);
-			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${params.query}"`, {
+			logger.warn({
+				msg: 'Invalid query parameter provided',
+				query: params.query,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: \"${params.query}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}
