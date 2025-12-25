@@ -2,6 +2,7 @@ import type { IWebdavNode, IWebdavAccountIntegration } from '@rocket.chat/core-t
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Modal, Box, IconButton, Select, ModalHeader, ModalTitle, ModalClose, ModalContent, ModalFooter } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSort } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +13,6 @@ import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';

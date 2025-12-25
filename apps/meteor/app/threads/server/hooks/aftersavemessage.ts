@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';

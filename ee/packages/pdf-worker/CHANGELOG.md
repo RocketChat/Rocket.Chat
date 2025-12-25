@@ -1,5 +1,93 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.26-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  </details>
+
+## 0.3.26-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  </details>
+
+## 0.3.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.2
+  </details>
+
+## 0.3.24
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.1
+  </details>
+
+## 0.3.23
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
+
+  - @rocket.chat/core-typings@7.13.0
+  </details>
+
+## 0.3.23-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  </details>
+
+## 0.3.23-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  </details>
+
+## 0.3.23-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  </details>
+
+## 0.3.22
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.12.2
+  </details>
+
+## 0.3.21
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.1
+  </details>
+
 ## 0.3.20
 
 ### Patch Changes

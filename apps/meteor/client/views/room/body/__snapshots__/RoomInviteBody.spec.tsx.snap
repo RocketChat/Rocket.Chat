@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RoomInvite renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-b4escz"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Message_request
+        </h3>
+        <div
+          class="rcx-states__subtitle"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ctk2ij"
+          >
+            You_have_been_invited_to_have_a_conversation_with
+          </div>
+          <button
+            class="rcx-box rcx-chip"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-box rcx-chip__text rcx-css-trljwa"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  data-username="rocket.cat"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  title="rocket.cat"
+                />
+              </figure>
+               
+              Rocket Cat
+            </span>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Reject
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Accept
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`RoomInvite renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-b4escz"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Message_request
+        </h3>
+        <div
+          class="rcx-states__subtitle"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ctk2ij"
+          >
+            You_have_been_invited_to_have_a_conversation_with
+          </div>
+          <button
+            class="rcx-box rcx-chip"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-box rcx-chip__text rcx-css-trljwa"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  data-username="rocket.cat"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  title="rocket.cat"
+                />
+              </figure>
+               
+              Rocket Cat
+            </span>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Reject
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button rcx-button-group__item"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Accept
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-b4escz"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Message_request
+        </h3>
+        <div
+          class="rcx-states__subtitle"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ctk2ij"
+          >
+            You_have_been_invited_to_have_a_conversation_with
+          </div>
+          <button
+            class="rcx-box rcx-chip"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-box rcx-chip__text rcx-css-trljwa"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  data-username="rocket.cat"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  title="rocket.cat"
+                />
+              </figure>
+               
+              Rocket Cat
+            </span>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Reject
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Accept
+            </span>
+          </button>
+        </div>
+        <a
+          class="rcx-box rcx-box--full rcx-states__link"
+          href="https://rocket.chat"
+        >
+          Learn more
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+`;

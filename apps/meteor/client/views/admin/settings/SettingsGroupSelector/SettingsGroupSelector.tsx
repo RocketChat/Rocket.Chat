@@ -5,7 +5,6 @@ import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSke
 import BaseGroupPage from '../groups/BaseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
-import VoipGroupPage from '../groups/VoipGroupPage';
 
 type SettingsGroupSelectorProps = {
 	groupId: ISetting['_id'];
@@ -25,10 +24,6 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 
 	if (groupId === 'LDAP') {
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
-	}
-
-	if (groupId === 'VoIP_Omnichannel') {
-		return <VoipGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'Assets') {

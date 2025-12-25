@@ -44,6 +44,7 @@ export const AppPermissions = {
 	'room': {
 		read: { name: 'room.read' },
 		write: { name: 'room.write' },
+		'system-view-all': { name: 'room.system.view-all' },
 	},
 	'role': {
 		read: { name: 'role.read' },
@@ -123,7 +124,7 @@ export const AppPermissions = {
 		provide: { name: 'outbound-communication.provide' },
 	},
 	'experimental': {
-		getUserRoomIds: { name: 'experimental.getUserRoomIds' },
+		default: { name: 'experimental.default' },
 	},
 };
 

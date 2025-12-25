@@ -20,9 +20,6 @@ export const createLogSettings = () =>
 			],
 			public: true,
 		});
-		await this.add('Log_View_Limit', 1000, {
-			type: 'int',
-		});
 
 		await this.add('Log_Trace_Methods', false, {
 			type: 'boolean',

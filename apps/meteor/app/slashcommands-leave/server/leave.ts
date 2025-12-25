@@ -18,14 +18,15 @@ const Leave = async function Leave({ message, userId }: SlashCommandCallbackPara
 			return;
 		}
 		await leaveRoomMethod(user, message.rid);
-	} catch ({ error }: any) {
-		if (typeof error !== 'string') {
-			return;
+	} catch (error: any) {
+		if (typeof error.error !== 'string') {
+			throw error;
 		}
 		const user = await Users.findOneById(userId);
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
+		throw new Meteor.Error(error.error, error.message);
 	}
 };
 

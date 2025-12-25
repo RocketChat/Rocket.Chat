@@ -14,8 +14,6 @@ export const omnichannelEEPermissions = [
 	{ _id: 'manage-livechat-priorities', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'manage-livechat-sla', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'manage-livechat-canned-responses', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
-	{ _id: 'spy-voip-calls', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
-	{ _id: 'outbound-voip-calls', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'request-pdf-transcript', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
 	{ _id: 'view-livechat-reports', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
 	{ _id: 'block-livechat-contact', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },

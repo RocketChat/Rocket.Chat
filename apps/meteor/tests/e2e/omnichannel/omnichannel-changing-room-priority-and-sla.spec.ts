@@ -44,7 +44,7 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -66,7 +66,7 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 
-		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 	});
 
 	test('expect to change priority of room and corresponding system message should be displayed', async ({ api }) => {

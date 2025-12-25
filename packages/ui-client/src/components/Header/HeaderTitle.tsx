@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const HeaderTitle: FC<ComponentProps<typeof Box>> = (props) => (
-	<Box color='default' mi={4} is='h1' fontScale='h4' withTruncatedText {...props} />
-);
+type HeaderTitleProps = ComponentPropsWithoutRef<typeof Box>;
+
+const HeaderTitle = (props: HeaderTitleProps) => <Box color='titles-labels' mi={4} is='h1' fontScale='h4' withTruncatedText {...props} />;
 
 export default HeaderTitle;

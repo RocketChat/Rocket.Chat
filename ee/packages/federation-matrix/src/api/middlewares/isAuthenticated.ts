@@ -1,9 +1,8 @@
-import { errCodes } from '@rocket.chat/federation-sdk';
-import type { EventAuthorizationService } from '@rocket.chat/federation-sdk';
+import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
-export const isAuthenticatedMiddleware = (federationAuth: EventAuthorizationService) =>
+export const isAuthenticatedMiddleware = () =>
 	createMiddleware(async (c: Context, next) => {
 		try {
 			const { method } = c.req;
@@ -21,7 +20,7 @@ export const isAuthenticatedMiddleware = (federationAuth: EventAuthorizationServ
 				);
 			}
 
-			const verificationResult = await federationAuth.verifyRequestSignature(authHeader, method, path, body);
+			const verificationResult = await federationSDK.verifyRequestSignature(authHeader, method, path, body);
 			if (!verificationResult) {
 				return c.json(
 					{

@@ -33,7 +33,7 @@ export class PendingAvatarImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
+	override async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
 		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {

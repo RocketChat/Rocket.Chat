@@ -220,35 +220,6 @@ export type AppsEndpoints = {
 	};
 
 	'/apps': {
-		GET:
-			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
-					url: string;
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace?: 'false';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => {
-					apps: App[];
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace: 'true';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => App[])
-			| ((params: { categories: 'true' }) => {
-					createdDate: Date;
-					description: string;
-					id: string;
-					modifiedDate: Date;
-					title: string;
-			  }[])
-			| (() => { apps: App[] });
-
 		POST: {
 			(
 				params:

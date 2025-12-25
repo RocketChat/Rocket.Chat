@@ -1,11 +1,11 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../stores';
 
@@ -16,7 +16,6 @@ export const useReplyInDMAction = (
 	const user = useUser();
 	const router = useRouter();
 	const encrypted = isE2EEMessage(message);
-	// @ts-expect-error - abacAttributes is not yet implemented in IRoom type
 	const isABACEnabled = !!room.abacAttributes;
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();

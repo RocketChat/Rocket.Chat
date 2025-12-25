@@ -30,6 +30,7 @@ export type MediaSignalingSessionConfig = {
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
+	iceServers?: RTCIceServer[];
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -90,7 +91,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.getMainCall()?.busy ?? false;
+		return this.getMainCall(false)?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -126,12 +127,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(): IClientMediaCall | null {
+	public getMainCall(skipLocal = false): IClientMediaCall | null {
 		let ringingCall: IClientMediaCall | null = null;
 		let pendingCall: IClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored) {
+				continue;
+			}
+			if (skipLocal && !call.confirmed) {
 				continue;
 			}
 
@@ -193,6 +197,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
+		if (this.getMainCall(false)) {
+			throw new Error(`Already on a call.`);
+		}
+
 		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
@@ -213,6 +221,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public setIceGatheringTimeout(newTimeout: number): void {
 		this.config.iceGatheringTimeout = newTimeout;
+	}
+
+	public setIceServers(iceServers: RTCIceServer[]): void {
+		this.config.iceServers = iceServers;
 	}
 
 	private createTemporaryCallId(): string {
@@ -450,7 +462,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
-			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
+			iceGatheringTimeout: this.config.iceGatheringTimeout || 5000,
+			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
 		};
 
@@ -462,6 +475,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('clientStateChange', () => this.onCallClientStateChange(call));
 		call.emitter.on('trackStateChange', () => this.onTrackStateChange(call));
 		call.emitter.on('initialized', () => this.onNewCall(call));
+		call.emitter.on('confirmed', () => this.onConfirmedCall(call));
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
@@ -488,6 +502,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onNewCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onNewCall');
+		this.onSessionStateChange();
+	}
+
+	private onConfirmedCall(_call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onConfirmedCall');
 		this.onSessionStateChange();
 	}
 
@@ -523,14 +542,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		const mainCall = this.getMainCall();
-		const hasCall = Boolean(mainCall);
-		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
-		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
-
 		const hadCall = this.lastState.hasCall;
 		const hadVisibleCall = this.lastState.hasVisibleCall;
 		const hadBusyCall = this.lastState.hasBusyCall;
+
+		// Do not skip local calls if we transitioned from a different active call to it
+		const mainCall = this.getMainCall(!hadCall);
+		const hasCall = Boolean(mainCall);
+		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
+		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
 
 		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
 

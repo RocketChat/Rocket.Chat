@@ -1,13 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
-import { useState, useMemo } from 'react';
-
-import DepartmentItemMenu from './DepartmentItemMenu';
-import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -16,9 +9,16 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
+
+import DepartmentItemMenu from './DepartmentItemMenu';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../lib/links';
 
 const DEPARTMENTS_ENDPOINTS = {

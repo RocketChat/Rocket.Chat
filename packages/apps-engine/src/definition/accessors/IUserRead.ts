@@ -19,4 +19,11 @@ export interface IUserRead {
 	 * @param uid user's id
 	 */
 	getUserUnreadMessageCount(uid: string): Promise<number | undefined>;
+
+	/**
+	 * Fetches the IDs of the rooms that the user is a member of.
+	 *
+	 * @param userId the user whose memberships should be returned
+	 */
+	getUserRoomIds(userId: string): Promise<string[]>;
 }

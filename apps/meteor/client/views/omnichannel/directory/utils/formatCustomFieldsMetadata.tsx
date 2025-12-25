@@ -1,7 +1,7 @@
-import type { ILivechatCustomField, Serialized, CustomFieldMetadata } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, CustomFieldMetadata } from '@rocket.chat/core-typings';
 
 export const formatCustomFieldsMetadata = (
-	customFields: Serialized<ILivechatCustomField>[],
+	customFields: ILivechatCustomField[] | undefined,
 	scope: 'visitor' | 'room',
 ): CustomFieldMetadata[] => {
 	if (!customFields) {

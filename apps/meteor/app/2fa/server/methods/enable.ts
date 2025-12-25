@@ -26,14 +26,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const hasUnverifiedEmail = user.emails?.some((email) => !email.verified);
-
-		if (hasUnverifiedEmail) {
-			throw new Meteor.Error('error-invalid-user', 'You need to verify your emails before setting up 2FA', {
-				method: '2fa:enable',
-			});
-		}
-
 		if (user.services?.totp?.enabled) {
 			throw new Meteor.Error('error-2fa-already-enabled');
 		}

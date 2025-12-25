@@ -1,0 +1,147 @@
+import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarTitle,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { useRemoveTag } from './useRemoveTag';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
+
+type TagEditPayload = {
+	name: string;
+	description: string;
+	departments: { label: string; value: string }[];
+};
+
+type TagEditProps = {
+	tagData?: ILivechatTag;
+	currentDepartments?: Serialized<ILivechatDepartment>[];
+	onClose: () => void;
+};
+
+const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
+	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const handleDeleteTag = useRemoveTag();
+
+	const dispatchToastMessage = useToastMessageDispatch();
+	const saveTag = useEndpoint('POST', '/v1/livechat/tags.save');
+
+	const { _id, name, description } = tagData || {};
+
+	const {
+		control,
+		formState: { isDirty, errors },
+		handleSubmit,
+	} = useForm<TagEditPayload>({
+		mode: 'onBlur',
+		values: {
+			name: name || '',
+			description: description || '',
+			departments: currentDepartments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
+		},
+	});
+
+	const handleSave = useEffectEvent(async ({ name, description, departments }: TagEditPayload) => {
+		const departmentsId = departments?.map((dep) => dep.value) || [''];
+
+		try {
+			await saveTag({
+				_id,
+				tagData: { name, description },
+				...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
+			});
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-tags'],
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			onClose();
+		}
+	});
+
+	const formId = useId();
+	const nameField = useId();
+	const descriptionField = useId();
+	const departmentsField = useId();
+
+	return (
+		<>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{_id ? t('Edit_Tag') : t('New_Tag')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose}></ContextualbarClose>
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
+				<Box id={formId} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor={nameField} required>
+								{t('Name')}
+							</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='name'
+									control={control}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
+									render={({ field }) => <TextInput {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />}
+								/>
+							</FieldRow>
+							{errors?.name && (
+								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+									{errors?.name?.message}
+								</FieldError>
+							)}
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
+							<FieldRow>
+								<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='departments'
+									control={control}
+									render={({ field }) => <AutoCompleteDepartmentMultiple withCheckbox id={departmentsField} showArchived {...field} />}
+								/>
+							</FieldRow>
+						</Field>
+					</FieldGroup>
+				</Box>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button form={formId} disabled={!isDirty} type='submit' primary>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				{_id && (
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
+				)}
+			</ContextualbarFooter>
+		</>
+	);
+};
+
+export default TagEdit;

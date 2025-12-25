@@ -1,11 +1,10 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
 
 export type ComposerBoxPopupProps<
 	T extends {

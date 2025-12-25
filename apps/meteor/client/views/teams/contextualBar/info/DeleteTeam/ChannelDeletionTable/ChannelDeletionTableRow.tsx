@@ -1,8 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 
-import { GenericTableRow, GenericTableCell } from '../../../../../../components/GenericTable';
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 
 type ChannelDeletionTableRowProps = {

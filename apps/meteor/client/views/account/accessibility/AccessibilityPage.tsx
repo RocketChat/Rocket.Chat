@@ -16,10 +16,11 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -27,7 +28,6 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { links } from '../../../lib/links';
 
@@ -133,6 +133,9 @@ const AccessibilityPage = () => {
 						</AccordionItem>
 						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
+								<VisuallyHidden>
+									<legend>{t('Adjustable_layout')}</legend>
+								</VisuallyHidden>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
 										{t('Font_size')}

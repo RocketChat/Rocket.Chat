@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 const handleOnAgentAssignmentFailed = async (
 	room: IOmnichannelRoom,

@@ -1,5 +1,4 @@
 import { Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle, Skeleton } from '@rocket.chat/fuselage';
-import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';
@@ -13,12 +12,11 @@ type MatrixFederationSearchProps = {
 const MatrixFederationSearch = ({ onClose, defaultSelectedServer }: MatrixFederationSearchProps) => {
 	const { t } = useTranslation();
 	const { data, isLoading } = useMatrixServerList();
-	const titleId = useId();
 
 	return (
-		<Modal open aria-labelledby={titleId}>
+		<Modal>
 			<ModalHeader>
-				<ModalTitle id={titleId}>{t('Federation_Federated_room_search')}</ModalTitle>
+				<ModalTitle>{t('Federation_Federated_room_search')}</ModalTitle>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent display='flex' flexDirection='column'>

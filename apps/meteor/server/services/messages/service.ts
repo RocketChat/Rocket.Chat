@@ -43,7 +43,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private checkMAC: BeforeSaveCheckMAC;
 
-	async created() {
+	override async created() {
 		this.preventMention = new BeforeSavePreventMention();
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();

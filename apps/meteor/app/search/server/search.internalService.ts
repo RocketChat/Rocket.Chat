@@ -8,7 +8,7 @@ import { settings } from '../../settings/server';
 class Search extends ServiceClassInternal {
 	protected name = 'search';
 
-	protected internal = true;
+	protected override internal = true;
 
 	constructor() {
 		super();

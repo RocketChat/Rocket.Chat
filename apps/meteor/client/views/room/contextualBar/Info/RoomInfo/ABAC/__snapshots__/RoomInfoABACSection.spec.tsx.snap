@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
+<body>
+  <div>
+    <hr
+      class="rcx-box rcx-box--full rcx-divider rcx-css-1972bnv"
+    />
+    <div
+      class="rcx-box rcx-box--full rcx-css-1jagyun"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-ukxwz6"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-127j9mz"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hash-shield rcx-icon rcx-css-1g87xs3"
+              >
+                
+              </i>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1hq8wl6"
+              >
+                ABAC_Managed
+              </div>
+            </div>
+          </span>
+        </span>
+      </div>
+      ABAC_Managed_description
+      <div
+        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+        id="room-attributes-list-label"
+      >
+        ABAC_Room_Attributes
+      </div>
+      <ul
+        aria-labelledby="room-attributes-list-label"
+        class="rcx-box rcx-box--full"
+      >
+        <li
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
+        >
+          <span
+            class="rcx-box rcx-box--full"
+            id="room-attribute-Chat-sensitivity-label"
+          >
+            Chat-sensitivity
+          </span>
+          <ul
+            aria-labelledby="room-attribute-Chat-sensitivity-label"
+            class="rcx-box rcx-box--full rcx-css-q18nro"
+          >
+            <li
+              class="rcx-box rcx-box--full rcx-css-sdt442"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Classified
+                </span>
+              </span>
+            </li>
+            <li
+              class="rcx-box rcx-box--full rcx-css-sdt442"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Top-Secret
+                </span>
+              </span>
+            </li>
+          </ul>
+        </li>
+        <li
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
+        >
+          <span
+            class="rcx-box rcx-box--full"
+            id="room-attribute-Country-label"
+          >
+            Country
+          </span>
+          <ul
+            aria-labelledby="room-attribute-Country-label"
+            class="rcx-box rcx-box--full rcx-css-q18nro"
+          >
+            <li
+              class="rcx-box rcx-box--full rcx-css-sdt442"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  US-only
+                </span>
+              </span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+`;

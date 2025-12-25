@@ -2,7 +2,7 @@ import { Logger } from '@rocket.chat/logger';
 import { performance } from 'universal-perf-hooks';
 
 import { metrics, StatsTracker } from '../../app/metrics/server';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 
 callbacks.setLogger(new Logger('Callbacks'));
 

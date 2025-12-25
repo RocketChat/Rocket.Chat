@@ -1,10 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useRemoveAgent } from '../hooks/useRemoveAgent';
 
 const AgentsTableRow = ({

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useAtLeastOnePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -10,9 +10,8 @@ import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
+import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
 import { useRoom } from '../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 
 const TeamsChannelsWithData = () => {
 	const room = useRoom();
@@ -46,7 +45,7 @@ const TeamsChannelsWithData = () => {
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelModal teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {

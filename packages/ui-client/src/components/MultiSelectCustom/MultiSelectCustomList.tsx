@@ -1,4 +1,4 @@
-import { Box, CheckBox, Icon, Option, SearchInput, Tile } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon, Option, OptionIcon, SearchInput, Tile } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
@@ -6,6 +6,18 @@ import { useTranslation } from 'react-i18next';
 
 import { type OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
+
+const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
+	switch (color) {
+		case 'danger':
+			return 'status-font-on-danger';
+		case 'warning':
+			return 'status-font-on-warning';
+		case 'default':
+		default:
+			return undefined;
+	}
+};
 
 const MultiSelectCustomList = ({
 	options,
@@ -46,6 +58,7 @@ const MultiSelectCustomList = ({
 						</Box>
 					) : (
 						<Option key={option.id}>
+							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} mie={4} />}
 							<Box w='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 

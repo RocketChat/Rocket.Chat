@@ -23,7 +23,6 @@ type Keys =
 	| 'requirePasswordChangeReason'
 	| 'services.github'
 	| 'services.gitlab'
-	| 'services.tokenpass'
 	| 'services.password.bcrypt'
 	| 'services.totp.enabled'
 	| 'services.email2fa.enabled'
@@ -31,8 +30,7 @@ type Keys =
 	| 'banners'
 	| 'oauth.authorizedClients'
 	| '_updatedAt'
-	| 'avatarETag'
-	| 'extension';
+	| 'avatarETag';
 
 export type MeEndpoints = {
 	'/v1/me': {

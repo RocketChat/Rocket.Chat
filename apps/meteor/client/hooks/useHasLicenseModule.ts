@@ -1,11 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
+import { useLicenseBase } from '@rocket.chat/ui-client';
 
-import { useLicenseBase } from './useLicense';
-
-export const useHasLicenseModule = (licenseName: LicenseModule | undefined): 'loading' | boolean => {
-	return (
-		useLicenseBase({
-			select: (data) => !!licenseName && data.license.activeModules.includes(licenseName),
-		}).data ?? 'loading'
-	);
-};
+export const useHasLicenseModule = (licenseName: LicenseModule | undefined) =>
+	useLicenseBase({
+		select: (data) => !!licenseName && data.license.activeModules.includes(licenseName),
+	});

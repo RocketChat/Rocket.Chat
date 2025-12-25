@@ -1,8 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Avatar } from '@rocket.chat/fuselage';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 
-import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { RoomIcon } from '../../../../../components/RoomIcon';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';

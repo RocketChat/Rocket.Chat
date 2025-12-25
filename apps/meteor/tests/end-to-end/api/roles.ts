@@ -21,7 +21,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (isEnterprise) {
 				this.skip();
-				return;
 			}
 			await request
 				.post(api('roles.create'))
@@ -43,7 +42,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 			await request
 				.post(api('roles.create'))
@@ -101,7 +99,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (isEnterprise) {
 				this.skip();
-				return;
 			}
 			await request
 				.post(api('roles.update'))
@@ -124,7 +121,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -189,7 +185,6 @@ describe('[Roles]', function () {
 		it('should successfully get an empty list of users in a role if no user has been assigned to it', async function () {
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -210,7 +205,6 @@ describe('[Roles]', function () {
 		it('should successfully get a list of users in a role', async function () {
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -245,7 +239,6 @@ describe('[Roles]', function () {
 		it('should fail getting a list of users in a role in case an invalid role is provided', async function () {
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -274,6 +267,21 @@ describe('[Roles]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+
+		(isEnterprise ? it : it.skip)('should fail getting a list of users in a role in case a role name is provided', async () => {
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({
+					role: testRoleName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-roleId');
 				});
 		});
 	});
@@ -320,7 +328,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -342,7 +349,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -365,7 +371,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -452,7 +457,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -476,7 +480,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -500,7 +503,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request
@@ -524,7 +526,6 @@ describe('[Roles]', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
-				return;
 			}
 
 			await request

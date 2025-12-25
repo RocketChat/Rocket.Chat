@@ -1,6 +1,5 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
-
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const TeamsChannels = lazy(() => import('../../views/teams/contextualBar/channels'));
 

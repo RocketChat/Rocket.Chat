@@ -201,9 +201,6 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: ise2eUpdateGroupKeyParamsPOST,
-		deprecation: {
-			version: '8.0.0',
-		},
 	},
 	{
 		async post() {

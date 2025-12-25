@@ -1,8 +1,9 @@
 import type { IMessage, IMessageRaw } from '../../../src/definition/messages';
 import type { IRoom } from '../../../src/definition/rooms';
+import type { IRoomRaw } from '../../../src/definition/rooms/IRoomRaw';
 import type { IUser } from '../../../src/definition/users';
 import { RoomBridge } from '../../../src/server/bridges';
-import type { GetMessagesOptions } from '../../../src/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsOptions, GetRoomsFilters } from '../../../src/server/bridges/RoomBridge';
 
 export class TestsRoomBridge extends RoomBridge {
 	public create(room: IRoom, members: Array<string>, appId: string): Promise<string> {
@@ -30,6 +31,10 @@ export class TestsRoomBridge extends RoomBridge {
 	}
 
 	public getMembers(roomName: string, appId: string): Promise<Array<IUser>> {
+		throw new Error('Method not implemented.');
+	}
+
+	public getAllRooms(filter: GetRoomsFilters, options: GetRoomsOptions, appId: string): Promise<IRoomRaw[]> {
 		throw new Error('Method not implemented.');
 	}
 

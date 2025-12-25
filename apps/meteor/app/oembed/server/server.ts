@@ -16,8 +16,8 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
 
-import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
+import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
 

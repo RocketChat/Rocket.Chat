@@ -2,7 +2,7 @@ import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-ty
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export async function findRooms({
 	agents,

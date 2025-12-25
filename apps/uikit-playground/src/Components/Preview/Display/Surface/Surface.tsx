@@ -91,7 +91,7 @@ const Surface: FC = () => {
       >
         <SurfaceRender type={screens[activeScreen]?.payload.surface}>
           <DraggableList
-            surface={SurfaceOptions.Modal}
+            surface={screens[activeScreen]?.payload.surface || SurfaceOptions.Message}
             blocks={uniqueBlocks.block || []}
             onDragEnd={onDragEnd}
           />

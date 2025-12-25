@@ -7,7 +7,7 @@ const AirGappedRestrictionWarning = ({ isRestricted, remainingDays }: { isRestri
 			<Trans i18nKey='Airgapped_workspace_restriction'>
 				This air-gapped workspace is in read-only mode.{' '}
 				<Box fontScale='p2' is='span'>
-					Connect it to the internet or upgrade to a premium plan to restore full functionality.
+					Connect it to internet or upgraded to a premium plan to restore full functionality.
 				</Box>
 			</Trans>
 		);
@@ -17,7 +17,7 @@ const AirGappedRestrictionWarning = ({ isRestricted, remainingDays }: { isRestri
 		<Trans i18nKey='Airgapped_workspace_warning' values={{ remainingDays }}>
 			This air-gapped workspace will enter read-only mode in {remainingDays} days.{' '}
 			<Box fontScale='p2' is='span'>
-				Connect it to the internet or upgrade to a premium plan to prevent this.
+				Connect it to internet or upgrade to a premium plan to prevent this.
 			</Box>
 		</Trans>
 	);

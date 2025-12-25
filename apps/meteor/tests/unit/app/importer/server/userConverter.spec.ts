@@ -21,7 +21,7 @@ const sha = sinon.stub();
 const generateTempPassword = sinon.stub();
 
 const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
-	'../../../../../lib/callbacks': {
+	'../../../../../server/lib/callbacks': {
 		callbacks,
 	},
 	'../../../settings/server': {

@@ -4,7 +4,7 @@ import type { Updater } from '@rocket.chat/models';
 import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { isMessageFromBot } from '../lib/isMessageFromBot';

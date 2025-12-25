@@ -35,7 +35,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
 				<Chip key={value} {...props} value={value} onClick={onRemove}>
-					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
+					<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />
 					<Box is='span' margin='none' mis={4}>
 						{label?.name}
 					</Box>
@@ -46,7 +46,7 @@ const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps
 					key={value}
 					{...props}
 					label={label.name}
-					avatar={<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />}
+					avatar={<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />}
 				/>
 			)}
 			options={options}

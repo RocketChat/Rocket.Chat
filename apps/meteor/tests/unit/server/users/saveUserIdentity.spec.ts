@@ -10,6 +10,7 @@ const stubs = {
 	updateAllUsernamesByUserId: sinon.stub(),
 	updateDirectNameAndFnameByName: sinon.stub(),
 	updateUserReferences: sinon.stub(),
+	updateHistoryReferences: sinon.stub(),
 	setUsername: sinon.stub(),
 	setRealName: sinon.stub(),
 	validateName: sinon.stub(),
@@ -31,6 +32,9 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 		},
 		VideoConference: {
 			updateUserReferences: stubs.updateUserReferences,
+		},
+		CallHistory: {
+			updateUserReferences: stubs.updateHistoryReferences,
 		},
 	},
 	'meteor/meteor': {
@@ -110,6 +114,7 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername.called).to.be.false;
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
 		expect(stubs.updateUserReferences.called).to.be.false;
+		expect(stubs.updateHistoryReferences.called).to.be.false;
 	});
 
 	it('should return false if _setName fails', async () => {
@@ -121,7 +126,7 @@ describe('Users - saveUserIdentity', () => {
 		expect(result).to.be.false;
 	});
 
-	it('should update Subscriptions and VideoConference if name changes', async () => {
+	it('should update Subscriptions, VideoConference and Call History if name changes', async () => {
 		stubs.findOneUserById.returns({ name: 'oldName', username: 'oldUsername' });
 		stubs.setRealName.returns(true);
 		const result = await saveUserIdentity({ _id: 'valid_id', name: 'name', username: 'oldUsername' });
@@ -131,6 +136,7 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUsernameOfEditByUserId.called).to.be.false;
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.true;
 		expect(stubs.updateUserReferences.called).to.be.true;
+		expect(stubs.updateHistoryReferences.called).to.be.true;
 		expect(result).to.be.true;
 	});
 });

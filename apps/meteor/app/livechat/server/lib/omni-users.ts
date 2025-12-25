@@ -5,7 +5,7 @@ import { removeEmpty } from '@rocket.chat/tools';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterAgentAdded, afterRemoveAgent } from './hooks';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { settings } from '../../../settings/server';

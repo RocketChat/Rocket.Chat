@@ -1,20 +1,10 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChanged,
 	notifyOnRoomChangedById,
 } from '../../../lib/server/lib/notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'e2e.updateGroupKey'(rid: string, uid: string, key: string): Promise<void>;
-	}
-}
 
 export async function updateGroupKey(rid: string, uid: string, key: string, callerUserId: string) {
 	// I have a subscription to this room
@@ -46,16 +36,3 @@ export async function updateGroupKey(rid: string, uid: string, key: string, call
 		}
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	async 'e2e.updateGroupKey'(rid, uid, key) {
-		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0', '/v1/e2e.acceptSuggestedGroupKey');
-
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.acceptSuggestedGroupKey' });
-		}
-
-		return updateGroupKey(rid, uid, key, userId);
-	},
-});

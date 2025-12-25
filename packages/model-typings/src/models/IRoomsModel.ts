@@ -29,6 +29,17 @@ export interface IChannelsWithNumberOfMessagesBetweenDate {
 }
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
+	findAllByTypesAndDiscussionAndTeam(
+		filters?: {
+			types?: Array<IRoom['t']>;
+			discussions?: boolean;
+			teams?: boolean;
+		},
+		findOptions?: FindOptions<IRoom>,
+	): FindCursor<IRoom>;
+
+	isAbacAttributeInUse(key: string, values: string[]): Promise<boolean>;
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
@@ -47,6 +58,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		teams?: boolean,
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
+
+	findPrivateRoomsAndTeamsPaginated(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
@@ -124,6 +137,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	countAbacEnabled(): Promise<number>;
+
 	setAsFederated(roomId: IRoom['_id'], { mrid, origin }: { mrid: string; origin: string }): Promise<UpdateResult>;
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult>;
@@ -165,6 +180,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findOneFederatedByMrid(mrid: string, options?: FindOptions<IRoomFederated>): Promise<IRoomFederated | null>;
+
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
 
 	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
@@ -176,8 +193,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
-	setCallStatus(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
-	setCallStatusAndCallStartTime(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
 	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<Document | UpdateResult>;
@@ -216,6 +231,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByIds(rids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findPrivateRoomsByIdsWithAbacAttributes(ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findAllPrivateRoomsWithAbacAttributes(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findByNameAndTypeNotDefault(
@@ -239,7 +256,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByCreatedOTR(): FindCursor<IRoom>;
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom>;
 	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
@@ -283,13 +299,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	saveRetentionOverrideGlobalById(rid: string, retentionOverrideGlobal: boolean): Promise<UpdateResult>;
 	saveEncryptedById(rid: string, encrypted: boolean): Promise<UpdateResult>;
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<UpdateResult | Document>;
-	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, string>): Promise<IRoom>;
+	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, unknown>): Promise<IRoom>;
 	createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom>;
 	removeById(rid: string): Promise<DeleteResult>;
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
-	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
@@ -308,10 +323,17 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<WithId<IRoom> | null>;
 	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
-	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
 	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
+	updateAbacConfigurationById(rid: IRoom['_id'], abac: boolean): Promise<UpdateResult>;
+	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null>;
+	unsetAbacAttributesById(rid: IRoom['_id']): Promise<UpdateResult>;
+	updateSingleAbacAttributeValuesById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
+	insertAbacAttributeIfNotExistsById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
+	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
+	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
+	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;
 }

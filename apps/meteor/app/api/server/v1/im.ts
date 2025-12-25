@@ -22,7 +22,7 @@ import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
@@ -385,12 +385,6 @@ API.v1.addRoute(
 				...(status && { status: { $in: status } }),
 			};
 
-			const canSeeExtension = await hasAtLeastOnePermissionAsync(
-				this.userId,
-				['view-full-other-user-info', 'view-user-voip-extension'],
-				room._id,
-			);
-
 			const options: FindOptions<IUser> = {
 				projection: {
 					_id: 1,
@@ -400,7 +394,7 @@ API.v1.addRoute(
 					statusText: 1,
 					utcOffset: 1,
 					federated: 1,
-					...(canSeeExtension && { freeSwitchExtension: 1 }),
+					freeSwitchExtension: 1,
 				},
 				skip: offset,
 				limit: count,
@@ -416,8 +410,26 @@ API.v1.addRoute(
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+			// find subscriptions of those users
+			const subs = await Subscriptions.findByRoomIdAndUserIds(
+				room._id,
+				members.map((member) => member._id),
+				{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
+			).toArray();
+
+			const membersWithSubscriptionInfo = members.map((member) => {
+				const sub = subs.find((sub) => sub.u._id === member._id);
+
+				const { u: _u, ...subscription } = sub || {};
+
+				return {
+					...member,
+					subscription,
+				};
+			});
+
 			return API.v1.success({
-				members,
+				members: membersWithSubscriptionInfo,
 				count: members.length,
 				offset,
 				total,

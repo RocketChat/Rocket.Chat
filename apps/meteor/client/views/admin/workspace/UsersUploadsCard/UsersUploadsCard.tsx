@@ -26,7 +26,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 		router.navigate('/admin/engagement');
 	});
 
-	const canViewEngagement = useHasLicenseModule('engagement-dashboard');
+	const { data: canViewEngagement = false } = useHasLicenseModule('engagement-dashboard');
 
 	return (
 		<Card height='full'>

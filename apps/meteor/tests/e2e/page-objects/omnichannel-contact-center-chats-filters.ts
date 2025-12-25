@@ -1,21 +1,21 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class OmnichannelChatsFilters {
-	protected readonly page: Page;
+import { FlexTab } from './fragments/flextab';
 
+export class OmnichannelChatsFilters extends FlexTab {
 	constructor(page: Page) {
-		this.page = page;
+		super(page.getByRole('dialog', { name: 'Filters' }));
 	}
 
 	get inputFrom(): Locator {
-		return this.page.locator('input[name="from"]');
+		return this.root.locator('input[name="from"]');
 	}
 
 	get inputTo(): Locator {
-		return this.page.locator('input[name="to"]');
+		return this.root.locator('input[name="to"]');
 	}
 
 	get btnApply(): Locator {
-		return this.page.locator('role=button[name="Apply"]');
+		return this.root.locator('role=button[name="Apply"]');
 	}
 }

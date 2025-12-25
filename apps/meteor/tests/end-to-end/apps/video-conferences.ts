@@ -20,8 +20,6 @@ describe('Apps - Video Conferences', () => {
 			type: 'p',
 			name: roomName,
 			username: undefined,
-			token: undefined,
-			agentId: undefined,
 			members: undefined,
 			credentials: undefined,
 			extraData: undefined,
@@ -251,7 +249,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -276,7 +273,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -301,7 +297,6 @@ describe('Apps - Video Conferences', () => {
 			it('should start a call successfully when using a provider that supports persistent chat with discussions disabled', async function () {
 				if (!process.env.IS_EE) {
 					this.skip();
-					return;
 				}
 
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
@@ -481,7 +476,6 @@ describe('Apps - Video Conferences', () => {
 				it('should load the video conference data successfully', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -535,7 +529,6 @@ describe('Apps - Video Conferences', () => {
 				it('should include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -560,7 +553,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created the discussion room using the configured name', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -585,7 +577,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created a subscription with open = false', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -635,7 +626,6 @@ describe('Apps - Video Conferences', () => {
 				it('should include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -660,7 +650,6 @@ describe('Apps - Video Conferences', () => {
 				it('should have created the discussion room using the configured name', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -739,7 +728,6 @@ describe('Apps - Video Conferences', () => {
 				it('should not include a discussion room id on the response', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request
@@ -861,7 +849,6 @@ describe('Apps - Video Conferences', () => {
 				it('should load the list of video conferences sorted by new', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
-						return;
 					}
 
 					await request

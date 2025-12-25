@@ -21,11 +21,11 @@ const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() 
 const { Base } = Serializers;
 
 class EJSONSerializer extends Base {
-	serialize(obj: any): Buffer {
+	override serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 
-	deserialize(buf: Buffer): any {
+	override deserialize(buf: Buffer): any {
 		return EJSON.parse(buf.toString());
 	}
 }
@@ -72,7 +72,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		});
 	}
 
-	async created() {
+	override async created() {
 		const transporter = getTransporter({
 			transporter: process.env.TRANSPORTER,
 			port: process.env.TCP_PORT,
@@ -162,7 +162,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
-	async started() {
+	override async started() {
 		await this.broker.start();
 
 		const instance = {

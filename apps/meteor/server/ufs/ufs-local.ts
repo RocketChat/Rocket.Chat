@@ -101,7 +101,7 @@ export class LocalStore extends Store {
 		};
 	}
 
-	async getFilePath(fileId: string, fileParam?: IUpload): Promise<string> {
+	override async getFilePath(fileId: string, fileParam?: IUpload): Promise<string> {
 		const file = fileParam || (await this.getCollection().findOne(fileId, { projection: { extension: 1 } }));
 		return (file && this.getPath(fileId + (file.extension ? `.${file.extension}` : ''))) || '';
 	}

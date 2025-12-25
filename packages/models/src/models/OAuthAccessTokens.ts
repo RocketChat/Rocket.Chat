@@ -9,7 +9,7 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		super(db, 'oauth_access_tokens', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { accessToken: 1 } },
 			{ key: { refreshToken: 1 } },

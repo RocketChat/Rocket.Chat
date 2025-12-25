@@ -1,12 +1,12 @@
 import type { App } from '@rocket.chat/core-typings';
 
 import { request, credentials } from '../api-data';
-import { apps, APP_URL, APP_NAME } from './apps-data';
+import { apps, APP_URL, APP_NAME, installedApps } from './apps-data';
 
 const getApps = () =>
 	new Promise<App[]>((resolve) => {
 		void request
-			.get(apps())
+			.get(installedApps())
 			.set(credentials)
 			.end((_err, res) => {
 				resolve(res.body.apps);

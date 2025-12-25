@@ -1,0 +1,206 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CannedResponseList Storybook Stories renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+      >
+        <div
+          aria-labelledby="contextualbarTitle"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-142wtci"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                id="contextualbarTitle"
+              >
+                Canned_Responses
+              </div>
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                data-qa="ContextualbarActionClose"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-10ikbhr"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-cb0t7p"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-t6z7xh"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1dtwr38 rcx-css-1eogw2f"
+                >
+                  <input
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1dtwr38"
+                    placeholder="Search"
+                    size="1"
+                    type="text"
+                    value=""
+                  />
+                  <span
+                    class="rcx-box rcx-box--full rcx-input-box__addon"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                    >
+                      
+                    </i>
+                  </span>
+                </label>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1dtwr38 rcx-css-njvvp7"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-label="Type"
+                    aria-labelledby="react-aria-:r8: react-aria-:r3:"
+                    class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                    type="button"
+                  >
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          tabindex="-1"
+                        >
+                          <option />
+                          <option
+                            value="all"
+                          >
+                            all
+                          </option>
+                          <option
+                            value="global"
+                          >
+                            global
+                          </option>
+                          <option
+                            value="user"
+                          >
+                            user
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-css-11g6st8"
+                      id="react-aria-:r8:"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                    >
+                      
+                    </i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-om2mbq"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              >
+                <div
+                  data-testid="virtuoso-scroller"
+                  data-virtuoso-scroller="true"
+                  style="height: 100%; outline: none; overflow-y: auto; position: relative; width: 378px;"
+                  tabindex="-1"
+                >
+                  <div
+                    data-viewport-type="element"
+                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-item-list"
+                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-r98g7d"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;

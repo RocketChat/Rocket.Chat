@@ -6,7 +6,6 @@ import {
 	type IRoom,
 	type ISubscription,
 } from '@rocket.chat/core-typings';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +27,6 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	const chat = useChat();
 	const user = useUser();
 	const setReaction = useEndpoint('POST', '/v1/chat.react');
-	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
 
@@ -67,10 +65,9 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 
 	return (
 		<>
-			{quickReactionsEnabled &&
-				quickReactions.slice(0, 3).map(({ emoji, image }) => {
-					return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
-				})}
+			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
+				return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
+			})}
 			<MessageToolbarItem
 				id='reaction-message'
 				icon='add-reaction'

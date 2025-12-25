@@ -11,7 +11,7 @@ class AirgappedRestriction extends Emitter<{ remainingDays: { days: number } }> 
 
 	isWarningPeriod = sinon.stub();
 
-	on(type: any, cb: any): any {
+	override on(type: any, cb: any): any {
 		const newCb = (...args: any) => {
 			promises.push(cb(...args));
 		};

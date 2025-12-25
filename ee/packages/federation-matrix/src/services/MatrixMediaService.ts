@@ -1,6 +1,6 @@
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
 
@@ -16,12 +16,6 @@ export interface IRemoteFileReference {
 }
 
 export class MatrixMediaService {
-	private static homeserverServices: HomeserverServices;
-
-	static setHomeserverServices(services: HomeserverServices): void {
-		this.homeserverServices = services;
-	}
-
 	static generateMXCUri(fileId: string, serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
 	}
@@ -29,7 +23,7 @@ export class MatrixMediaService {
 	static parseMXCUri(mxcUri: string): { serverName: string; mediaId: string } | null {
 		const match = mxcUri.match(/^mxc:\/\/([^/]+)\/(.+)$/);
 		if (!match) {
-			logger.error('Invalid MXC URI format', { mxcUri });
+			logger.error({ mxcUri, msg: 'Invalid MXC URI format' });
 			return null;
 		}
 		return {
@@ -61,7 +55,7 @@ export class MatrixMediaService {
 
 			return mxcUri;
 		} catch (error) {
-			logger.error('Error preparing file for Matrix:', error);
+			logger.error(error, 'Error preparing file for Matrix');
 			throw error;
 		}
 	}
@@ -80,7 +74,7 @@ export class MatrixMediaService {
 
 			return file;
 		} catch (error) {
-			logger.error('Error retrieving local file:', error);
+			logger.error(error, 'Error retrieving local file');
 			return null;
 		}
 	}
@@ -100,7 +94,7 @@ export class MatrixMediaService {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
 			if (!parts) {
-				logger.error('Invalid MXC URI format', { mxcUri });
+				logger.error({ mxcUri, msg: 'Invalid MXC URI format' });
 				throw new Error('Invalid MXC URI');
 			}
 
@@ -109,11 +103,7 @@ export class MatrixMediaService {
 				return uploadAlreadyExists._id;
 			}
 
-			if (!this.homeserverServices) {
-				throw new Error('Homeserver services not initialized. Call setHomeserverServices first.');
-			}
-
-			const buffer = await this.homeserverServices.media.downloadFromRemoteServer(parts.serverName, parts.mediaId);
+			const buffer = await federationSDK.downloadFromRemoteServer(parts.serverName, parts.mediaId);
 			if (!buffer) {
 				throw new Error('Download from remote server returned null content.');
 			}
@@ -140,7 +130,7 @@ export class MatrixMediaService {
 
 			return uploadedFile._id;
 		} catch (error) {
-			logger.error('Error downloading and storing remote file:', error);
+			logger.error(error, 'Error downloading and storing remote file');
 			throw error;
 		}
 	}

@@ -53,30 +53,15 @@ async function build() {
 	}
 
 	// ./resources
-	const allResources = resources.reduce(
-		(acc, resource) => {
-			return {
-				...acc,
-				[resource.language]: resource.content,
-			};
-		},
-		{} as Record<string, Record<string, string>>,
-	);
-	const allResourcesSerialized = JSON.stringify(allResources, null, 2);
-
-	await writeFile(join(distDirectory, 'resources.js'), `export default ${allResourcesSerialized};`);
-
-	await writeFile(
-		join(distDirectory, 'resources.cjs'),
-		`"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ${allResourcesSerialized};`,
-	);
+	const baseResource = resources.find((r) => r.language === 'en');
+	if (!baseResource) {
+		throw new Error('Base resource "en" not found');
+	}
 
 	await writeFile(
 		join(distDirectory, 'resources.d.ts'),
 		`export interface RocketchatI18n {
-	${Object.keys(allResources.en)
+	${Object.keys(baseResource.content)
 		.map((key) => `${JSON.stringify(key)}: string;`)
 		.join('\n\t')}
 }

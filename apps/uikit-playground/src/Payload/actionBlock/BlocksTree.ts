@@ -52,6 +52,7 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
+import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import { disabled, plain, selected } from '../tabNavigation';
 import { actionWithToggleSwitch } from '../action/toggleSwitch';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -228,6 +229,19 @@ const BlocksTree: Item = [
       {
         label: 'image and URL',
         payload: previewWithImageAndUrl,
+      },
+    ],
+  },
+  {
+    label: 'info card',
+    branches: [
+      {
+        label: 'plain',
+        payload: infoCardPlain,
+      },
+      {
+        label: 'multiple sections',
+        payload: infoCardMultipleRows,
       },
     ],
   },
