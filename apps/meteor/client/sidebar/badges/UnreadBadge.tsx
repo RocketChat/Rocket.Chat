@@ -1,4 +1,4 @@
-import { Badge } from '@rocket.chat/fuselage';
+import { SidebarV2ItemBadge } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 type UnreadBadgeProps = {
@@ -12,15 +12,14 @@ const UnreadBadge = ({ title, variant, total, roomTitle }: UnreadBadgeProps) => 
 	const { t } = useTranslation();
 
 	return (
-		<Badge
-			role='status'
-			{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
+		<SidebarV2ItemBadge
 			variant={variant}
 			title={title}
+			role='status'
 			aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: title, roomTitle })}
 		>
 			<span aria-hidden>{total}</span>
-		</Badge>
+		</SidebarV2ItemBadge>
 	);
 };
 

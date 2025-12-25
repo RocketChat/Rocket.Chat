@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
-import { EnterPasswordModal } from './fragments/enter-password-modal';
+import { EnterPasswordModal } from './fragments/modals';
 
 export class AccountSecurity extends Account {
 	private readonly enterPasswordModal: EnterPasswordModal;

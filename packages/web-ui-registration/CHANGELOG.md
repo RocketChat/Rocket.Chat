@@ -1,5 +1,37 @@
 # @rocket.chat/web-ui-registration
 
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  </details>
+
+## 26.0.0-rc.0
+
+### Major Changes
+
+- ([#36829](https://github.com/RocketChat/Rocket.Chat/pull/36829)) Removes the deprecated sendConfirmationEmail method
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29, 9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/tools@0.2.4-rc.0
+  </details>
+
+## 25.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.2
+  </details>
+
 ## 25.0.1
 
 ### Patch Changes

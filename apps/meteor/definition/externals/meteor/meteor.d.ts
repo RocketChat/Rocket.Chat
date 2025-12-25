@@ -8,7 +8,7 @@ type StringifyBuffers<T extends unknown[]> = {
 
 declare global {
 	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
 
 		function getTextAsync(assetPath: string): Promise<string | undefined>;
 	}
@@ -84,7 +84,6 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				allowConnection: () => void;
 				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 

@@ -163,6 +163,12 @@ Meteor.methods<ServerMethods>({
 		if (type === 'u') {
 			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
+
+			const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({ projection: { _id: 1 } })
+				.map((doc) => doc._id)
+				.toArray();
+
+			query.rid = { $nin: abacRooms };
 		} else {
 			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent, userId: user._id });
 			if (!roomInfo) {

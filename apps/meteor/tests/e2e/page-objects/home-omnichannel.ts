@@ -1,31 +1,22 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav, ToastMessages } from './fragments';
-import { OmnichannelRoomToolbar, OmnichannelQuickActionsRoomToolbar } from './fragments/toolbar';
+import { HomeOmnichannelContent, OmnichannelSidenav } from './fragments';
+import { OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar } from './fragments/toolbar';
+import { HomeChannel } from './home-channel';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
+import { OmnichannelChats } from './omnichannel-contact-center-chats';
 import { OmnichannelContacts } from './omnichannel-contacts-list';
-import { OmnichannelCurrentChats } from './omnichannel-current-chats';
 import { OmnichannelManager } from './omnichannel-manager';
 import { OmnichannelMonitors } from './omnichannel-monitors';
 import { OmnichannelRoomInfo } from './omnichannel-room-info';
 import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
 
-export class HomeOmnichannel {
-	readonly page: Page;
-
-	readonly content: HomeOmnichannelContent;
-
-	readonly sidenav: HomeSidenav;
-
-	readonly tabs: HomeFlextab;
-
+export class HomeOmnichannel extends HomeChannel {
 	readonly triggers: OmnichannelTriggers;
 
 	readonly omnisidenav: OmnichannelSidenav;
-
-	readonly currentChats: OmnichannelCurrentChats;
 
 	readonly transcript: OmnichannelTranscript;
 
@@ -39,32 +30,31 @@ export class HomeOmnichannel {
 
 	readonly contacts: OmnichannelContacts;
 
-	readonly roomInfo: OmnichannelRoomInfo;
+	readonly chats: OmnichannelChats;
 
-	readonly roomToolbar: OmnichannelRoomToolbar;
+	readonly roomInfo: OmnichannelRoomInfo;
 
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
 
-	readonly toastMessage: ToastMessages;
+	override readonly content: HomeOmnichannelContent;
+
+	override readonly roomToolbar: OmnichannelRoomToolbar;
 
 	constructor(page: Page) {
-		this.page = page;
-		this.content = new HomeOmnichannelContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.tabs = new HomeFlextab(page);
+		super(page);
 		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidenav(page);
-		this.currentChats = new OmnichannelCurrentChats(page);
 		this.transcript = new OmnichannelTranscript(page);
 		this.cannedResponses = new OmnichannelCannedResponses(page);
 		this.agents = new OmnichannelAgents(page);
 		this.managers = new OmnichannelManager(page);
 		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContacts(page);
+		this.chats = new OmnichannelChats(page);
 		this.roomInfo = new OmnichannelRoomInfo(page);
-		this.roomToolbar = new OmnichannelRoomToolbar(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
-		this.toastMessage = new ToastMessages(page);
+		this.content = new HomeOmnichannelContent(page);
+		this.roomToolbar = new OmnichannelRoomToolbar(page);
 	}
 
 	get btnContactInfo(): Locator {

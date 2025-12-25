@@ -51,17 +51,6 @@ export const omnichannelQueryKeys = {
 	agentDepartments: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agent(uid), 'departments'] as const,
 	managers: (query?: PaginatedRequest) =>
 		!query ? ([...omnichannelQueryKeys.all, 'managers'] as const) : ([...omnichannelQueryKeys.all, 'managers', query] as const),
-	extensions: (
-		params:
-			| {
-					userId: string;
-					type: 'free' | 'allocated' | 'available';
-			  }
-			| {
-					username: string;
-					type: 'free' | 'allocated' | 'available';
-			  },
-	) => [...omnichannelQueryKeys.all, 'extensions', params] as const,
 	livechat: {
 		appearance: () => [...omnichannelQueryKeys.all, 'livechat', 'appearance'] as const,
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
@@ -114,15 +103,11 @@ export const miscQueryKeys = {
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
 
-export const voipQueryKeys = {
-	all: ['voip'] as const,
-	room: (rid: IRoom['_id'], token: string) => [...voipQueryKeys.all, 'room', rid, token] as const,
-};
-
 export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
+	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
 };
 
 export const teamsQueryKeys = {
@@ -156,4 +141,9 @@ export const ABACQueryKeys = {
 		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
+};
+
+export const callHistoryQueryKeys = {
+	all: ['call-history'] as const,
+	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };

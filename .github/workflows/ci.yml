@@ -158,7 +158,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5\", \"6\", \"7\", \"8\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\",\"compatibleMongoVersions\": [\"8.2\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: packages-cache-build
         with:
           path: |
@@ -198,7 +198,7 @@ jobs:
           HARDENED_MODE: '1'
 
       - name: Cache vite
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           path: ./node_modules/.vite
@@ -220,7 +220,7 @@ jobs:
             $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -228,7 +228,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: turbo-build
           path: .turbo/cache
@@ -282,7 +282,7 @@ jobs:
         service:
           [
             [authorization-service, queue-worker-service, ddp-streamer-service],
-            [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
+            [account-service, presence-service, omnichannel-transcript-service],
             [rocketchat],
           ]
         type:
@@ -301,7 +301,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Restore packages build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: packages-build
           path: /tmp
@@ -396,7 +396,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -543,7 +543,7 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['5.0', '8.2']"
+      mongodb-version: "['8.2']"
       coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
@@ -565,33 +565,6 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['5.0']"
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-
-  test-ui-ee-watcher:
-    name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-publish, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: ui
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
       mongodb-version: "['8.2']"
       coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
@@ -599,7 +572,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-      db-watcher-disabled: 'false'
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -608,7 +580,6 @@ jobs:
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
@@ -628,7 +599,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         continue-on-error: true
         with:
           name: turbo-build
@@ -662,18 +633,18 @@ jobs:
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [release-versions, test-api-ee, test-ui-ee]
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Use Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
       - name: Restore coverage folder
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: coverage-*
           path: /tmp/coverage
@@ -687,14 +658,14 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: reports-coverage
           path: /tmp/coverage_report
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -703,7 +674,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
@@ -714,7 +685,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-federation-matrix]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -743,10 +714,6 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
@@ -768,7 +735,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Restore build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-production
           path: /tmp/build
@@ -839,7 +806,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -963,7 +930,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5\", \"6\", \"7\", \"8\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"8.2\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
