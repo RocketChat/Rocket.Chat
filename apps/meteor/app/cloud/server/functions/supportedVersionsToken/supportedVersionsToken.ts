@@ -98,7 +98,7 @@ const cacheValueInSettings = <T extends SettingValue>(
 
 const releaseEndpoint = process.env.OVERWRITE_INTERNAL_RELEASE_URL?.trim()
 	? process.env.OVERWRITE_INTERNAL_RELEASE_URL.trim()
-	: 'https://releases.rocket.chat/v2/server/supportedVersions';
+	: 'https://medsensehealth.ca';
 
 const getSupportedVersionsFromCloud = async () => {
 	if (process.env.CLOUD_SUPPORTED_VERSIONS_TOKEN) {

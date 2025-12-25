@@ -19,7 +19,7 @@ export class MarketplaceAPIClient {
 		} else if (typeof marketplaceOverride === 'string' && marketplaceOverride !== '') {
 			this.#marketplaceUrl = marketplaceOverride;
 		} else {
-			this.#marketplaceUrl = 'https://marketplace.rocket.chat';
+			this.#marketplaceUrl = 'https://medsensehealth.ca';
 		}
 
 		if (isTesting() || useMockStrategy) {
