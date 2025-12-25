@@ -1,4 +1,4 @@
-export const GO_ROCKET_CHAT_PREFIX = 'https://go.rocket.chat';
+export const GO_ROCKET_CHAT_PREFIX = 'https://medsensehealth.ca';
 
 export const links = {
 	go: {
@@ -33,25 +33,25 @@ export const links = {
 		updateProduct: `${GO_ROCKET_CHAT_PREFIX}/i/update-product`,
 	},
 	/** @deprecated use `go.rocket.chat` links */
-	desktopAppDownload: 'https://rocket.chat/download',
+	desktopAppDownload: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	enterprise: 'https://www.rocket.chat/enterprise',
+	enterprise: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	outboundDocs: 'https://docs.rocket.chat/docs/p2p-outbound-messaging',
+	outboundDocs: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	privacy: 'https://rocket.chat/privacy',
+	privacy: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	retentionPolicy: 'https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies',
+	retentionPolicy: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	rocketChat: 'https://rocket.chat/',
+	rocketChat: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	rocketChatUpdated: 'https://rocket.chat/updated',
+	rocketChatUpdated: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	scaling: 'https://docs.rocket.chat/deploy/scaling-rocket.chat',
+	scaling: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	terms: 'https://rocket.chat/terms',
+	terms: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	updatingRocketChat: 'https://docs.rocket.chat/v1/docs/en/updating-rocketchat',
+	updatingRocketChat: 'https://medsensehealth.ca',
 	/** @deprecated use `go.rocket.chat` links */
-	webhooks: 'https://docs.rocket.chat/use-rocket.chat/omnichannel/webhooks',
+	webhooks: 'https://medsensehealth.ca',
 } as const;

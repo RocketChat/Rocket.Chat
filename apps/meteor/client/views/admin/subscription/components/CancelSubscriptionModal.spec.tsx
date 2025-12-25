@@ -24,7 +24,7 @@ it('should have link to downgrade docs', async () => {
 			.withTranslations('en', 'core', {
 				Cancel__planName__subscription: 'Cancel {{planName}} subscription',
 				Cancel_subscription_message:
-					'<strong>This workspace will downgrage to Community and lose free access to premium capabilities.</strong><br/><br/> While you can keep using Rocket.Chat, your team will lose access to unlimited mobile push notifications, read receipts, marketplace apps <4>and other capabilities</4>.',
+					'<strong>This workspace will downgrage to Community and lose free access to premium capabilities.</strong><br/><br/> While you can keep using MedSense, your team will lose access to unlimited mobile push notifications, read receipts, marketplace apps <4>and other capabilities</4>.',
 			})
 			.build(),
 	});

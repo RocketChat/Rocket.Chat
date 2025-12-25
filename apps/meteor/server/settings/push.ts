@@ -44,7 +44,7 @@ export const createPushSettings = () =>
 				},
 			],
 		});
-		await this.add('Push_gateway', 'https://gateway.rocket.chat', {
+		await this.add('Push_gateway', 'https://medsensehealth.ca', {
 			type: 'string',
 			i18nDescription: 'Push_gateway_description',
 			alert: 'Push_Setting_Requires_Restart_Alert',

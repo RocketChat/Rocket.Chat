@@ -323,7 +323,7 @@
   "AutoLinker_Phone": "Telefon AutoLinker",
   "AutoLinker_Phone_Description": "Samodejno povezan za telefonske številke npr. `(123)456-7890`",
   "AutoLinker_StripPrefix": "Predpona AutoLinker Strip",
-  "AutoLinker_StripPrefix_Description": "Kratki prikaz, npr: https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Kratki prikaz, npr: https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "Regularni izraz za URL AutoLinkerja",
   "AutoLinker_Urls_Scheme": "Shema AutoLinker: // URL-ji",
   "AutoLinker_Urls_TLD": "AutoLinker TLD URL-ji",

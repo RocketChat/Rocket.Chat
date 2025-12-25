@@ -11,6 +11,7 @@ import type {
 	LimitContext,
 	LicenseModule,
 } from '@rocket.chat/core-typings';
+import { CoreModules } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { getLicenseLimit } from './deprecated';
@@ -370,22 +371,70 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		}
 	}
 
-	private triggerBehaviorEventsToggled(validationResult: BehaviorWithContext[]): void {
+	// @ts-ignore - Method preserved but unused due to license bypass
+	private _triggerBehaviorEventsToggled(validationResult: BehaviorWithContext[]): void {
 		for (const { ...options } of validationResult) {
 			behaviorTriggeredToggled.call(this, { ...options });
 		}
 	}
 
 	public hasValidLicense(): boolean {
-		return Boolean(this.getLicense());
+		// MedSense License Bypass - Always report valid license
+		return true;
+		// Original implementation: return Boolean(this.getLicense());
 	}
 
 	public getLicense(): ILicenseV3 | undefined {
-		if (this._valid && this._license) {
-			return this._license;
-		}
+		// MedSense License Bypass - Return mock unlimited enterprise license
+		const mockLicense: ILicenseV3 = {
+			version: '3.0',
+			information: {
+				id: 'medsense-unlimited',
+				autoRenew: false,
+				trial: false,
+				offline: true,
+				createdAt: new Date('2025-01-01').toISOString(),
+				grantedBy: {
+					method: 'manual',
+					seller: 'MedSense',
+				},
+				grantedTo: {
+					name: 'MedSense',
+					company: 'MedSense',
+				},
+				tags: [{ name: 'Enterprise', color: '#00AA00' }],
+			},
+			validation: {
+				serverUrls: [{ value: '.*', type: 'regex' }],
+				validPeriods: [
+					{
+						validFrom: new Date('2025-01-01').toISOString(),
+						validUntil: new Date('2099-12-31').toISOString(),
+						invalidBehavior: 'allow_action',
+					},
+				],
+				statisticsReport: {
+					required: false,
+				},
+			},
+			grantedModules: CoreModules.map((module) => ({ module, external: false as const })),
+			limits: {
+				// All limits are empty arrays = unlimited
+				activeUsers: [],
+				guestUsers: [],
+				roomsPerGuest: [],
+				privateApps: [],
+				marketplaceApps: [],
+				monthlyActiveContacts: [],
+			},
+		};
+		return mockLicense;
 
-		return undefined;
+		// Original implementation:
+		// if (this._valid && this._license) {
+		// 	return this._license;
+		// }
+		// return undefined;
 	}
 
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
@@ -438,13 +487,17 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 	}
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(
-		action: T,
-		extraCount = 0,
-		context: Partial<LimitContext<T>> = {},
-		{ suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {
+		_action: T,
+		_extraCount = 0,
+		_context: Partial<LimitContext<T>> = {},
+		{ suppressLog: _suppressLog }: Pick<LicenseValidationOptions, 'suppressLog'> = {
 			suppressLog: process.env.LICENSE_VALIDATION_SUPPRESS_LOG !== 'false',
 		},
 	): Promise<boolean> {
+		// MedSense License Bypass - Never prevent any actions
+		return false;
+
+		/* Original implementation commented out:
 		const options: LicenseValidationOptions = {
 			...(extraCount && { behaviors: ['prevent_action'] }),
 			isNewLicense: false,
@@ -509,9 +562,11 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		this.triggerBehaviorEvents(eventsToEmit);
 
 		return shouldPreventAction;
+		*/
 	}
 
-	private consolidateBehaviorState<T extends LicenseLimitKind>(action: T, behavior: LicenseBehavior, triggered: boolean): boolean {
+	// @ts-ignore - Method preserved but unused due to license bypass
+	private _consolidateBehaviorState<T extends LicenseLimitKind>(action: T, behavior: LicenseBehavior, triggered: boolean): boolean {
 		// check if the behavior changed
 		const state = this.states.get(behavior) ?? new Map<LicenseLimitKind, boolean>();
 

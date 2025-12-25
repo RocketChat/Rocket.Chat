@@ -18,9 +18,9 @@ export function useExampleData({
 			text: 'Example message',
 			attachments: [
 				{
-					title: 'Rocket.Chat',
-					title_link: 'https://rocket.chat',
-					text: 'Rocket.Chat, the best open source chat',
+					title: 'MedSense',
+					title_link: 'https://medsensehealth.ca',
+					text: 'MedSense, the best open source chat',
 					image_url: imageUrl,
 					color: '#764FA5',
 				},

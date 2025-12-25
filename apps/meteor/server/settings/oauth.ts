@@ -429,7 +429,7 @@ export const createOauthSettings = () =>
 			});
 		});
 		return this.section('Proxy', async function () {
-			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
+			await this.add('Accounts_OAuth_Proxy_host', 'https://medsensehealth.ca', {
 				type: 'string',
 				public: true,
 			});

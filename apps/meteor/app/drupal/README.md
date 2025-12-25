@@ -16,8 +16,8 @@ In the Rocket chat you have to do the following:
   than 48 characters can be problem with long URI's) 
 - fill in the  Drupal's BaseURL.
 - on the Drupal use the "Restrict redirect URIs" Setting to limit possible exploits. and set the Redirect URI's to 
-  whatever is in the Callback URL (like `https://Rocketchat.example.com/_oauth/drupal` and possibly also the 
-  `https://Rocketchat.example.com/_oauth/drupal?close` URI.).
+  whatever is in the Callback URL (like `https://medsensehealth.ca and possibly also the 
+  `https://medsensehealth.ca URI.).
 - Lastly do not forget to Enable the Drupal OAuth and `SAVE CHANGES`.   
   
 When all is a Blue Button with a drupal like logo will apear on the login page of Rocket.Chat+

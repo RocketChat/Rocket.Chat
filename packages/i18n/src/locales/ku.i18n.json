@@ -323,7 +323,7 @@
   "AutoLinker_Phone": "AutoLinker Phone",
   "AutoLinker_Phone_Description": "Otomatîk ji bo hejmara Phone ve girêdayî ye. wek nimûne `(123) 456-7890`",
   "AutoLinker_StripPrefix": "AutoLinker Strip pêşbendik",
-  "AutoLinker_StripPrefix_Description": "display Short. eg https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "display Short. eg https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker URL Bîr û Regular",
   "AutoLinker_Urls_Scheme": "AutoLinker Scheme: // URLs",
   "AutoLinker_Urls_TLD": "URLs AutoLinker TLD",

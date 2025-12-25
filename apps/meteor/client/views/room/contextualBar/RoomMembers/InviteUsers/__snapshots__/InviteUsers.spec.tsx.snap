@@ -98,7 +98,7 @@ exports[`renders Default without crashing 1`] = `
                         id=":r1:"
                         size="1"
                         type="url"
-                        value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
+                        value="https://medsensehealth.ca"
                       />
                       <span
                         class="rcx-box rcx-box--full rcx-input-box__addon"

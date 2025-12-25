@@ -13,7 +13,7 @@ addMigration({
 				'',
 				'To be able to update to version 7.x.y you need to update to version 6.x first.',
 				'',
-				'Read more: https://go.rocket.chat/i/how-to-upgrade',
+				'Read more: https://medsensehealth.ca',
 			].join('\n'),
 		);
 	},

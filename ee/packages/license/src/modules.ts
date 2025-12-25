@@ -28,7 +28,9 @@ export function invalidateAll(this: LicenseManager) {
 }
 
 export function getModules(this: LicenseManager) {
-	return [...this.modules];
+	// MedSense License Bypass - Return all available enterprise modules
+	return [...CoreModules];
+	// Original implementation: return [...this.modules];
 }
 
 export function getModuleDefinition(this: LicenseManager, moduleName: LicenseModule) {
@@ -53,8 +55,10 @@ export function getExternalModules(this: LicenseManager): ExternalModule[] {
 	return [...license.grantedModules.filter<ExternalModule>((value): value is ExternalModule => !isInternalModuleName(value.module))];
 }
 
-export function hasModule(this: LicenseManager, module: LicenseModule) {
-	return this.modules.has(module);
+export function hasModule(this: LicenseManager, _module: LicenseModule) {
+	// MedSense License Bypass - Always grant access to all modules
+	return true;
+	// Original implementation: return this.modules.has(module);
 }
 
 export function replaceModules(this: LicenseManager, newModules: LicenseModule[]): boolean {

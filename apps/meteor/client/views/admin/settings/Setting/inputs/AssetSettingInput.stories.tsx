@@ -28,7 +28,7 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
-	value: { url: 'https://rocket.chat/images/logo.svg' },
+	value: { url: 'https://medsensehealth.ca' },
 };
 
 export const WithFileConstraints = Template.bind({});

@@ -2,9 +2,12 @@ import { License } from '@rocket.chat/license';
 
 import { createPermissions } from '../lib/audit/startup';
 
-await License.onLicense('auditing', async () => {
-	await import('../lib/audit/methods');
-	await import('../api/audit');
+License.onLicense('auditing', () => {
+	// Use sync require to avoid Meteor nested async import issues.
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	require('../lib/audit/methods');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	require('../api/audit');
 
-	await createPermissions();
+	void createPermissions();
 });

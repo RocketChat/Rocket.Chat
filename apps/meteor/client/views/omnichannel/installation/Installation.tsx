@@ -13,7 +13,7 @@ const Installation = (): ReactElement => {
 	const { t } = useTranslation();
 	const siteUrl = useSetting('Site_Url', useAbsoluteUrl()('')).replace(/\/$/, '');
 
-	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
+	const installString = `<!-- Start of MedSense Livechat Script -->
 	<script type="text/javascript">
 	(function(w, d, s, u) {
 		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;

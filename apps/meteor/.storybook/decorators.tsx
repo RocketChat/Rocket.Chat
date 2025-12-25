@@ -16,7 +16,7 @@ export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
 		require('../app/theme/client/rocketchat.font.css');
 		linkElement.setAttribute('id', 'theme-styles');
 		linkElement.setAttribute('rel', 'stylesheet');
-		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');
+		linkElement.setAttribute('href', 'https://medsensehealth.ca');
 		document.head.appendChild(linkElement);
 	}
 

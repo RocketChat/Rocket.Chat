@@ -7,7 +7,7 @@ moment.tz.setDefault('UTC');
 
 describe.each([
 	['en', '12PM-1PM'],
-	/** @see: https://github.com/RocketChat/Rocket.Chat/issues/30191 */
+	/** @see: https://medsensehealth.ca */
 	['fa', '۱۲بعد از ظهر-۱بعد از ظهر'],
 ])(`%p language`, (language, expectedLabel) => {
 	beforeEach(() => {

@@ -400,7 +400,7 @@
   "AutoLinker_Phone": "ទូរស័ព្ទ AutoLinker",
   "AutoLinker_Phone_Description": "ភ្ជាប់ដោយស្វ័យប្រវត្តិសម្រាប់លេខទូរស័ព្ទ។ ឧទាហរណ៍: (123) 456-7890`",
   "AutoLinker_StripPrefix": "AutoLinker ស្ទ្រីបុព្វបទ",
-  "AutoLinker_StripPrefix_Description": "បង្ហាញខ្លី។ ឧ https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "បង្ហាញខ្លី។ ឧ https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker កន្សោមធម្មតា URL ដែល",
   "AutoLinker_Urls_Scheme": "AutoLinker គ្រោងការណ៍: // URLs ដែលបាន",
   "AutoLinker_Urls_TLD": "URLs ដែលបាន AutoLinker TLD",

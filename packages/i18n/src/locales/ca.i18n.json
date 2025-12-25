@@ -545,7 +545,7 @@
   "AutoLinker_Phone": "Auto-enllaça telèfon",
   "AutoLinker_Phone_Description": "Enllaça automàticament per als números de telèfon. Per exemple: `(123) 456-7890`",
   "AutoLinker_StripPrefix": "Auto-enllaça sense prefix",
-  "AutoLinker_StripPrefix_Description": "presentació curta. Per exemple https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "presentació curta. Per exemple https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "Auto-enllaça URL d'expressions regulars",
   "AutoLinker_Urls_Scheme": "Auto-enllaça URL tipus scheme://",
   "AutoLinker_Urls_TLD": "Auto-enllaça URL TLD",

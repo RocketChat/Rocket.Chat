@@ -31,7 +31,7 @@ test.describe('prune-messages', () => {
 			tag: '@channel',
 			annotation: {
 				type: 'issue',
-				description: 'https://rocketchat.atlassian.net/browse/CORE-1146',
+				description: 'https://medsensehealth.ca',
 			},
 		},
 		async ({ api }) => {
@@ -99,7 +99,7 @@ test.describe('prune-messages', () => {
 			tag: '@channel',
 			annotation: {
 				type: 'issue',
-				description: 'https://rocketchat.atlassian.net/browse/CORE-1168',
+				description: 'https://medsensehealth.ca',
 			},
 		},
 		async () => {
@@ -138,7 +138,7 @@ test.describe('prune-messages', () => {
 			tag: '@channel',
 			annotation: {
 				type: 'issue',
-				description: 'https://rocketchat.atlassian.net/browse/CORE-1168',
+				description: 'https://medsensehealth.ca',
 			},
 		},
 		async ({ api }) => {

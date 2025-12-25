@@ -59,7 +59,7 @@ Meteor.startup(async () => {
 				'',
 				'',
 				'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:',
-				'https://go.rocket.chat/i/oplog-required',
+				'https://medsensehealth.ca',
 			].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
@@ -99,7 +99,7 @@ Meteor.startup(async () => {
 			const id = `mongodbDeprecation_${mongoVersion.replace(/[^0-9]/g, '_')}`;
 			const title = 'MongoDB_Deprecated';
 			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
-			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
+			const link = 'https://medsensehealth.ca';
 
 			if (!(await Users.bannerExistsById(id))) {
 				if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {

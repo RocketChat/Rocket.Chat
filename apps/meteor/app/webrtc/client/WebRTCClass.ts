@@ -587,7 +587,7 @@ class WebRTCClass {
 						children: t('You_need_install_an_extension_to_allow_screen_sharing'),
 						onConfirm: () => {
 							if (this.navigator === 'chrome') {
-								const url = 'https://chrome.google.com/webstore/detail/rocketchat-screen-share/nocfbnnmjnndkbipkabodnheejiegccf';
+								const url = 'https://medsensehealth.ca';
 								try {
 									chrome.webstore.install(url, refresh, () => {
 										window.open(url);
@@ -599,7 +599,7 @@ class WebRTCClass {
 									refresh();
 								}
 							} else if (this.navigator === 'firefox') {
-								window.open('https://addons.mozilla.org/en-GB/firefox/addon/rocketchat-screen-share/');
+								window.open('https://medsensehealth.ca');
 								refresh();
 							}
 						},

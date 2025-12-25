@@ -36,22 +36,22 @@ test.each([
   ['https:/rocket.chat/', [paragraph([plain('https:/rocket.chat/')])]],
   ['https://test', [paragraph([plain('https://test')])]],
   [
-    'httpsss://rocket.chat/test',
-    [paragraph([autoLink('httpsss://rocket.chat/test')])],
+    'httpsss://medsensehealth.ca/test',
+    [paragraph([autoLink('httpsss://medsensehealth.ca/test')])],
   ],
   [
-    'https://rocket.chat:3000/test',
-    [paragraph([autoLink('https://rocket.chat:3000/test')])],
+    'https://medsensehealth.ca:3000/test',
+    [paragraph([autoLink('https://medsensehealth.ca:3000/test')])],
   ],
   [
-    'https://rocket.chat/test?search',
-    [paragraph([autoLink('https://rocket.chat/test?search')])],
+    'https://medsensehealth.ca/test?search',
+    [paragraph([autoLink('https://medsensehealth.ca/test?search')])],
   ],
   [
-    'https://rocket.chat/test?search=test',
-    [paragraph([autoLink('https://rocket.chat/test?search=test')])],
+    'https://medsensehealth.ca/test?search=test',
+    [paragraph([autoLink('https://medsensehealth.ca/test?search=test')])],
   ],
-  ['https://rocket.chat', [paragraph([autoLink('https://rocket.chat')])]],
+  ['https://medsensehealth.ca/', [paragraph([autoLink('https://medsensehealth.ca/')])]],
   ['https://localhost', [paragraph([autoLink('https://localhost')])]],
   ['https://localhost:3000', [paragraph([autoLink('https://localhost:3000')])]],
   [
@@ -187,13 +187,13 @@ test.each([
     ],
   ],
   [
-    'two urls https://developer.rocket.chat , https://rocket.chat',
+    'two urls https://developer.rocket.chat , https://medsensehealth.ca/',
     [
       paragraph([
         plain('two urls '),
         autoLink('https://developer.rocket.chat'),
         plain(' , '),
-        autoLink('https://rocket.chat'),
+        autoLink('https://medsensehealth.ca/'),
       ]),
     ],
   ],
@@ -234,20 +234,20 @@ test.each([
     [paragraph([link('http://google.com', [plain('google_search')])])],
   ],
   [
-    'app...https://rocket.chat https://rocket.chat',
+    'app...https://medsensehealth.ca/ https://medsensehealth.ca/',
     [
       paragraph([
-        plain('app...https://rocket.chat '),
-        autoLink('https://rocket.chat'),
+        plain('app...https://medsensehealth.ca/ '),
+        autoLink('https://medsensehealth.ca/'),
       ]),
     ],
   ],
   [
-    'Hey check it out the best communication platform https://rocket.chat! There is not discussion about it.',
+    'Hey check it out the best communication platform https://medsensehealth.ca! There is not discussion about it.',
     [
       paragraph([
         plain('Hey check it out the best communication platform '),
-        autoLink('https://rocket.chat'),
+        autoLink('https://medsensehealth.ca/'),
         plain('! There is not discussion about it.'),
       ]),
     ],
@@ -267,10 +267,10 @@ test.each([
     ],
   ],
   [
-    'https://www.rocket.chat/(W(601))/Main?ScreenId=GI000027',
+    'https://medsensehealth.ca/(W(601))/Main?ScreenId=GI000027',
     [
       paragraph([
-        autoLink('https://www.rocket.chat/(W(601))/Main?ScreenId=GI000027'),
+        autoLink('https://medsensehealth.ca/(W(601))/Main?ScreenId=GI000027'),
       ]),
     ],
   ],
@@ -319,30 +319,30 @@ describe('autoLink WITHOUT custom hosts settings comming from Rocket.Chat', () =
 
 describe('autoLink helper function', () => {
   it('should preserve the original protocol if the protocol is http or https', () => {
-    expect(autoLink('https://rocket.chat/test')).toMatchObject(
-      link('https://rocket.chat/test'),
+    expect(autoLink('https://medsensehealth.ca/test')).toMatchObject(
+      link('https://medsensehealth.ca/test'),
     );
 
-    expect(autoLink('http://rocket.chat/test')).toMatchObject(
-      link('http://rocket.chat/test'),
+    expect(autoLink('http://medsensehealth.ca/test')).toMatchObject(
+      link('http://medsensehealth.ca/test'),
     );
   });
 
   it('should preserve the original protocol even if for custom protocols', () => {
-    expect(autoLink('custom://rocket.chat/test')).toMatchObject(
-      link('custom://rocket.chat/test'),
+    expect(autoLink('custom://medsensehealth.ca/test')).toMatchObject(
+      link('custom://medsensehealth.ca/test'),
     );
   });
 
   it('should return // as the protocol if // is the protocol specified', () => {
-    expect(autoLink('//rocket.chat/test')).toMatchObject(
-      link('//rocket.chat/test'),
+    expect(autoLink('//medsensehealth.ca/test')).toMatchObject(
+      link('//medsensehealth.ca/test'),
     );
   });
 
   it("should return an url concatenated '//' if the url has no protocol", () => {
     expect(autoLink('rocket.chat/test')).toMatchObject(
-      link('//rocket.chat/test', [plain('rocket.chat/test')]),
+      link('//medsensehealth.ca/test', [plain('rocket.chat/test')]),
     );
   });
 

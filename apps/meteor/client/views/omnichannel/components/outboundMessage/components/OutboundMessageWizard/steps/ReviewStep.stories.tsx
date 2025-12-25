@@ -46,7 +46,7 @@ export const Default: Story = {
 		contactName: 'Jane Smith',
 		agentUsername: 'johndoe',
 		departmentName: 'Support',
-		providerName: 'Rocket.Chat',
+		providerName: 'MedSense',
 		providerType: 'phone',
 		sender: '+1234567890',
 		recipient: '+0987654321',

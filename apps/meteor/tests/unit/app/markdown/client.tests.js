@@ -185,68 +185,68 @@ const quote = {
 
 const link = {
 	'&lt;http://link|Text&gt;': escapeHTML('&lt;http://link|Text&gt;'),
-	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML(
-		'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;',
+	'&lt;https://medsensehealth.ca Site For Rocket.Chat&gt;': escapeHTML('&lt;https://medsensehealth.ca Site For Rocket.Chat&gt;'),
+	'&lt;https://medsensehealth.ca | Open Site For Rocket.Chat&gt;': escapeHTML(
+		'&lt;https://medsensehealth.ca | Open Site For Rocket.Chat&gt;',
 	),
-	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;': '&amp;lt;https://rocket.chat/|Rocket.Chat Site&amp;gt;',
-	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML(
-		'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
+	'&lt;https://medsensehealth.ca Site&gt;': '&amp;lt;https://medsensehealth.ca Site&amp;gt;',
+	'&lt;https://medsensehealth.ca Entry on Rocket.Chat Docs Site&gt;': escapeHTML(
+		'&lt;https://medsensehealth.ca Entry on Rocket.Chat Docs Site&gt;',
 	),
 	'&lt;http://linkText&gt;': escapeHTML('&lt;http://linkText&gt;'),
 	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
-	'https://open.rocket.chat/|Open Site For Rocket.Chat': escapeHTML('https://open.rocket.chat/|Open Site For Rocket.Chat'),
+	'https://medsensehealth.ca Site For Rocket.Chat': escapeHTML('https://medsensehealth.ca Site For Rocket.Chat'),
 	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;htps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;tps://rocket.chat/|Rocket.Chat Site&gt;'),
+	'&lt;htps://medsensehealth.ca/|Rocket.Chat Site&gt;': escapeHTML('&lt;htps://medsensehealth.ca/|Rocket.Chat Site&gt;'),
+	'&lt;ttps://medsensehealth.ca/|Rocket.Chat Site&gt;': escapeHTML('&lt;ttps://medsensehealth.ca/|Rocket.Chat Site&gt;'),
+	'&lt;tps://medsensehealth.ca/|Rocket.Chat Site&gt;': escapeHTML('&lt;tps://medsensehealth.ca/|Rocket.Chat Site&gt;'),
 	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML(
-		'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
+	'&lt;htts://medsensehealth.ca/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML(
+		'&lt;htts://medsensehealth.ca/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
 	),
 
 	'<http://invalid link|Text>': escapeHTML('<http://invalid link|Text>'),
 	'<http://link|Text>': linkWrapped('http://link', 'Text'),
-	'<https://open.rocket.chat/|Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'<https://open.rocket.chat/ | Open Site For Rocket.Chat>': linkWrapped(
-		encodeURI('https://open.rocket.chat/ '),
+	'<https://medsensehealth.ca Site For Rocket.Chat>': linkWrapped('https://medsensehealth.ca', 'Open Site For Rocket.Chat'),
+	'<https://medsensehealth.ca | Open Site For Rocket.Chat>': linkWrapped(
+		encodeURI('https://medsensehealth.ca '),
 		' Open Site For Rocket.Chat',
 	),
-	'<https://rocket.chat/|Rocket.Chat Site>': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
-	'<https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': linkWrapped(
-		'https://rocket.chat/docs/developer-guides/testing/#testing',
+	'<https://medsensehealth.ca Site>': linkWrapped('https://medsensehealth.ca', 'Rocket.Chat Site'),
+	'<https://medsensehealth.ca Entry on Rocket.Chat Docs Site>': linkWrapped(
+		'https://medsensehealth.ca',
 		'Testing Entry on Rocket.Chat Docs Site',
 	),
 	'<http://linkText>': escapeHTML('<http://linkText>'),
 	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': escapeHTML('<https:open.rocket.chat/ | Open Site For Rocket.Chat>'),
 	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<www.open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<htps://rocket.chat/|Rocket.Chat Site>'),
-	'<ttps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<ttps://rocket.chat/|Rocket.Chat Site>'),
-	'<tps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<tps://rocket.chat/|Rocket.Chat Site>'),
+	'<htps://medsensehealth.ca/|Rocket.Chat Site>': escapeHTML('<htps://medsensehealth.ca/|Rocket.Chat Site>'),
+	'<ttps://medsensehealth.ca/|Rocket.Chat Site>': escapeHTML('<ttps://medsensehealth.ca/|Rocket.Chat Site>'),
+	'<tps://medsensehealth.ca/|Rocket.Chat Site>': escapeHTML('<tps://medsensehealth.ca/|Rocket.Chat Site>'),
 	'<open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': escapeHTML(
-		'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>',
+	'<htts://medsensehealth.ca/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': escapeHTML(
+		'<htts://medsensehealth.ca/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>',
 	),
 
 	'[Text](http://invalid link)': '[Text](http://invalid link)',
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
-	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
-	'[ Open Site For Rocket.Chat ](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', ' Open Site For Rocket.Chat '),
-	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
-	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)': linkWrapped(
-		'https://rocket.chat/docs/developer-guides/testing/#testing',
+	'[Open Site For Rocket.Chat](https://medsensehealth.ca)': linkWrapped('https://medsensehealth.ca', 'Open Site For Rocket.Chat'),
+	'[ Open Site For Rocket.Chat ](https://medsensehealth.ca)': linkWrapped('https://medsensehealth.ca', ' Open Site For Rocket.Chat '),
+	'[Rocket.Chat Site](https://medsensehealth.ca)': linkWrapped('https://medsensehealth.ca', 'Rocket.Chat Site'),
+	'[Testing Entry on Rocket.Chat Docs Site](https://medsensehealth.ca)': linkWrapped(
+		'https://medsensehealth.ca',
 		'Testing Entry on Rocket.Chat Docs Site',
 	),
 	'[](http://linkText)': '[](http://linkText)',
 	'[text]': '[text]',
 	'[Open Site For Rocket.Chat](https:open.rocket.chat/)': '[Open Site For Rocket.Chat](https:open.rocket.chat/)',
 	'[Open Site For Rocket.Chat](www.open.rocket.chat/)': '[Open Site For Rocket.Chat](www.open.rocket.chat/)',
-	'[Rocket.Chat Site](htps://rocket.chat/)': '[Rocket.Chat Site](htps://rocket.chat/)',
-	'[Rocket.Chat Site](ttps://rocket.chat/)': '[Rocket.Chat Site](ttps://rocket.chat/)',
-	'[Rocket.Chat Site](tps://rocket.chat/)': '[Rocket.Chat Site](tps://rocket.chat/)',
+	'[Rocket.Chat Site](htps://medsensehealth.ca/)': '[Rocket.Chat Site](htps://medsensehealth.ca/)',
+	'[Rocket.Chat Site](ttps://medsensehealth.ca/)': '[Rocket.Chat Site](ttps://medsensehealth.ca/)',
+	'[Rocket.Chat Site](tps://medsensehealth.ca/)': '[Rocket.Chat Site](tps://medsensehealth.ca/)',
 	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
-	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)':
-		'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
+	'[Testing Entry on Rocket.Chat Docs Site](htts://medsensehealth.ca/docs/developer-guides/testing/#testing)':
+		'[Testing Entry on Rocket.Chat Docs Site](htts://medsensehealth.ca/docs/developer-guides/testing/#testing)',
 	'[Text](http://link?param1=1&param2=2)': linkWrapped('http://link?param1=1&amp;param2=2', 'Text'),
 	'[Testing Double parentheses](https://en.wikipedia.org/wiki/Disambiguation_(disambiguation))': linkWrapped(
 		'https://en.wikipedia.org/wiki/Disambiguation_(disambiguation)',
@@ -373,9 +373,9 @@ const quoteFiltered = {
 
 const linkFiltered = {
 	'[Text](http://link)': 'Text',
-	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': 'Open Site For Rocket.Chat',
-	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': ' Open Site For Rocket.Chat',
-	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site',
+	'[Open Site For Rocket.Chat](https://medsensehealth.ca)': 'Open Site For Rocket.Chat',
+	'[ Open Site For Rocket.Chat](https://medsensehealth.ca )': ' Open Site For Rocket.Chat',
+	'[Rocket.Chat Site](https://medsensehealth.ca)': 'Rocket.Chat Site',
 	'<http://link|Text>': 'Text',
 	'<http://link|Text for test>': 'Text for test',
 };

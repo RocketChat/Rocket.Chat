@@ -149,7 +149,7 @@ export const sectionWithButtonAsLink: readonly LayoutBlock[] = [
         text: 'Click Me',
         emoji: true,
       },
-      url: 'https://rocket.chat',
+      url: 'https://medsensehealth.ca',
     },
   },
 ];

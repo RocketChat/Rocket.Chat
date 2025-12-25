@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
 export const RegisterTitle = (): ReactElement | null => {
-	const siteName = useSetting('Site_Name', 'Rocket.Chat');
+	const siteName = useSetting('Site_Name', 'MedSense');
 	const hideTitle = useSetting('Layout_Login_Hide_Title', false);
 
 	if (hideTitle) {

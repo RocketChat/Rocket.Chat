@@ -120,7 +120,7 @@ test.describe.serial('Image Gallery', async () => {
 	});
 
 	test.describe('When sending an image as a link', () => {
-		const imageLink = 'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png';
+		const imageLink = 'https://medsensehealth.ca';
 
 		test.beforeAll(async () => {
 			await poHomeChannel.content.sendMessage(imageLink);

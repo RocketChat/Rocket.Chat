@@ -1,5 +1,7 @@
 import { License } from '@rocket.chat/license';
 
-await License.onLicense('message-read-receipt', async () => {
-	await import('./hooks');
+License.onLicense('message-read-receipt', () => {
+	// Use sync require to avoid Meteor nested async import issues.
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	require('./hooks');
 });

@@ -1194,7 +1194,7 @@ export const createSetupWSettings = () =>
 			});
 		});
 		await this.section('Cloud_Info', async function () {
-			await this.add('Nps_Url', 'https://nps.rocket.chat', {
+			await this.add('Nps_Url', 'https://medsensehealth.ca', {
 				type: 'string',
 				hidden: true,
 				readonly: true,
@@ -1212,7 +1212,7 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+			await this.add('Cloud_Url', 'https://medsensehealth.ca', {
 				type: 'string',
 				hidden: true,
 				readonly: true,
@@ -1223,7 +1223,7 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Omnigateway_Url', 'https://omni-gateway.rocket.chat', {
+			await this.add('Omnigateway_Url', 'https://medsensehealth.ca', {
 				type: 'string',
 				hidden: true,
 				secret: true,
@@ -1339,7 +1339,7 @@ export const createSetupWSettings = () =>
 				},
 				secret: true,
 			});
-			await this.add('Cloud_Billing_Url', 'https://billing.rocket.chat', {
+			await this.add('Cloud_Billing_Url', 'https://medsensehealth.ca', {
 				type: 'string',
 				hidden: true,
 				readonly: true,

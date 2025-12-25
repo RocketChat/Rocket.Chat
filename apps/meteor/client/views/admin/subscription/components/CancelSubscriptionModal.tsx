@@ -26,7 +26,7 @@ export const CancelSubscriptionModal = ({ planName, onCancel, onConfirm }: Cance
 				<strong>This workspace will downgrade to Community and lose free access to premium capabilities.</strong>
 				<br />
 				<br />
-				While you can keep using Rocket.Chat, your team will lose access to unlimited mobile push notifications, read receipts, marketplace
+				While you can keep using MedSense, your team will lose access to unlimited mobile push notifications, read receipts, marketplace
 				apps and <ExternalLink to={DOWNGRADE_LINK}>other capabilities</ExternalLink>.
 			</Trans>
 		</GenericModal>

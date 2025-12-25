@@ -209,7 +209,7 @@
   "AutoLinker_Phone": "טלפון AutoLinker",
   "AutoLinker_Phone_Description": "אוטומטית מקושר מספרי טלפון. למשל `(123) 456-7890`",
   "AutoLinker_StripPrefix": "AutoLinker רצועת קידומת",
-  "AutoLinker_StripPrefix_Description": "תצוגה קצרה. למשל https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "תצוגה קצרה. למשל https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "ביטוי AutoLinker URL רגיל",
   "AutoLinker_Urls_Scheme": "AutoLinker Scheme: // כתובות",
   "AutoLinker_Urls_TLD": "כתובות AutoLinker TLD",

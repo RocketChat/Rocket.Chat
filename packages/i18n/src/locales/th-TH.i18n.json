@@ -324,7 +324,7 @@
   "AutoLinker_Phone": "โทรศัพท์ AutoLinker",
   "AutoLinker_Phone_Description": "เชื่อมโยงหมายเลขโทรศัพท์โดยอัตโนมัติ เช่น. `(123) 456-7890`",
   "AutoLinker_StripPrefix": "คำนำหน้า Strip AutoLinker",
-  "AutoLinker_StripPrefix_Description": "จอแสดงผลแบบสั้น เช่น. https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "จอแสดงผลแบบสั้น เช่น. https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "นิพจน์ทั่วไปของ URL เครื่องมือเพิ่ม URL อัตโนมัติ",
   "AutoLinker_Urls_Scheme": "AutoLinker Scheme: // URL",
   "AutoLinker_Urls_TLD": "URL TLD ของ AutoLinker",

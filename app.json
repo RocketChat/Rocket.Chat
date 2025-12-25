@@ -1,12 +1,12 @@
 {
   "name": "Rocket.Chat",
   "description": "Have your own open-source Slack-like online chat platform.",
-  "repository": "https://github.com/RocketChat/Rocket.Chat",
-  "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png",
+  "repository": "https://medsensehealth.ca",
+  "logo": "https://medsensehealth.ca",
   "keywords": ["meteor", "social", "community", "chat"],
-  "website": "https://rocket.chat",
+  "website": "https://medsensehealth.ca",
   "env": {
-    "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
+    "BUILDPACK_URL": "https://medsensehealth.ca",
     "METEOR_APP_DIR": "apps/meteor/",
     "HEROKU_APP_NAME": {
       "description": "Please re-enter your App Name from the top.",

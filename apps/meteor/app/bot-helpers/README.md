@@ -8,7 +8,7 @@ This was an experiment in how to extend Hubot and Rocket.chat integration.
 
 Keeping controller logic out of Hubot scripts made sense to me, but its not necessarily the best approach.
 
-For bots to use these methods they obviously need this package added to Rocket.chat as well as the [rocketchat adapter](https://github.com/RocketChat/hubot-rocketchat).
+For bots to use these methods they obviously need this package added to Rocket.chat as well as the [rocketchat adapter](https://medsensehealth.ca).
 
 ## Usage
 

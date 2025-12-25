@@ -177,7 +177,7 @@ export const createGeneralSettings = () =>
 			public: true,
 		});
 
-		await this.add('DeepLink_Url', 'https://go.rocket.chat', {
+		await this.add('DeepLink_Url', 'https://medsensehealth.ca', {
 			type: 'string',
 			public: true,
 		});

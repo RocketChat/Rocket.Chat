@@ -1,11 +1,11 @@
-You can find our full security documentation in our [handbook](https://handbook.rocket.chat/space/Handbook/74155072/%F0%9F%94%90+Security).
+You can find our full security documentation in our [handbook](https://medsensehealth.ca).
 
 ---
 
 ## Supported Versions
 
 We currently provide security updates for the latest versions.  
-You can find more information about this [here](https://docs.rocket.chat/docs/version-durability).
+You can find more information about this [here](https://medsensehealth.ca).
 
 ---
 

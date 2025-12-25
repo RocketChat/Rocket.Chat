@@ -229,10 +229,10 @@ describe('Mention Server', () => {
 		describe('for message with only an md link', () => {
 			const result = [];
 			[
-				'[@rocket.cat](https://rocket.chat)',
-				'[@rocket.cat](https://rocket.chat) hello',
-				'[@rocket.cat](https://rocket.chat) hello how are you?',
-				'[test](https://rocket.chat)',
+				'[@rocket.cat](https://medsensehealth.ca)',
+				'[@rocket.cat](https://medsensehealth.ca) hello',
+				'[@rocket.cat](https://medsensehealth.ca) hello how are you?',
+				'[test](https://medsensehealth.ca)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
 					expect(result).to.be.deep.equal(mention.getUserMentions(text));
@@ -243,10 +243,10 @@ describe('Mention Server', () => {
 		describe('for message with md link and text', () => {
 			const result = ['@sauron'];
 			[
-				'@sauron please work on [user@password](https://rocket.chat)',
-				'@sauron hello [user@password](https://rocket.chat) hello',
-				'[user@password](https://rocket.chat) hello @sauron',
-				'@sauron please work on [user@password](https://rocket.chat) hello',
+				'@sauron please work on [user@password](https://medsensehealth.ca)',
+				'@sauron hello [user@password](https://medsensehealth.ca) hello',
+				'[user@password](https://medsensehealth.ca) hello @sauron',
+				'@sauron please work on [user@password](https://medsensehealth.ca) hello',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
 					expect(result).to.be.deep.equal(mention.getUserMentions(text));
@@ -259,10 +259,10 @@ describe('Mention Server', () => {
 		describe('for message with md link', () => {
 			const result = [];
 			[
-				'[#general](https://rocket.chat)',
-				'[#general](https://rocket.chat) hello',
-				'[#general](https://rocket.chat) hello how are you?',
-				'[test #general #other](https://rocket.chat)',
+				'[#general](https://medsensehealth.ca)',
+				'[#general](https://medsensehealth.ca) hello',
+				'[#general](https://medsensehealth.ca) hello how are you?',
+				'[test #general #other](https://medsensehealth.ca)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
 					expect(result).to.be.deep.equal(mention.getChannelMentions(text));
@@ -273,10 +273,10 @@ describe('Mention Server', () => {
 		describe('for message with md link and text', () => {
 			const result = ['#somechannel'];
 			[
-				'#somechannel please [user#password](https://rocket.chat)',
-				'#somechannel hello [user#password](https://rocket.chat) hello',
-				'[user#password](https://rocket.chat) hello #somechannel',
-				'#somechannel join [#general on #other](https://rocket.chat)',
+				'#somechannel please [user#password](https://medsensehealth.ca)',
+				'#somechannel hello [user#password](https://medsensehealth.ca) hello',
+				'[user#password](https://medsensehealth.ca) hello #somechannel',
+				'#somechannel join [#general on #other](https://medsensehealth.ca)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
 					expect(result).to.be.deep.equal(mention.getChannelMentions(text));

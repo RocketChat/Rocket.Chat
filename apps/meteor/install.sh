@@ -13,8 +13,8 @@ fi
 cd $ROOTPATH
 gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104
 
-curl -SLf "https://releases.rocket.chat/latest/download/" -o rocket.chat.tgz
-curl -SLf "https://releases.rocket.chat/latest/asc" -o rocket.chat.tgz.asc \
+curl -SLf "https://medsensehealth.ca" -o rocket.chat.tgz
+curl -SLf "https://medsensehealth.ca" -o rocket.chat.tgz.asc \
 
 gpg --verify rocket.chat.tgz.asc
 if [ $? -eq 0 ]; then

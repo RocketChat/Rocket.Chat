@@ -27,7 +27,7 @@ const NewZapier = ({ ...props }) => {
 	useEffect(() => {
 		const importZapier = async () => {
 			const scriptEl = await blogSpotStyleScriptImport(
-				'https://zapier.com/apps/embed/widget.js?services=rocketchat&html_id=zapier-goes-here',
+				'https://medsensehealth.ca',
 			);
 
 			setScript(scriptEl as HTMLScriptElement);

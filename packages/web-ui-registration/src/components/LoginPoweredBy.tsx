@@ -13,8 +13,8 @@ export const LoginPoweredBy = (): ReactElement | null => {
 		<Box mbe={18}>
 			<Trans i18nKey='registration.page.poweredBy'>
 				{'Powered by '}
-				<ActionLink href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
-					Rocket.Chat
+				<ActionLink href='https://medsensehealth.ca/' target='_blank' rel='noopener noreferrer'>
+					MedSense
 				</ActionLink>
 			</Trans>
 		</Box>

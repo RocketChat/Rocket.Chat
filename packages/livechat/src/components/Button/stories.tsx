@@ -21,7 +21,7 @@ export default {
 		badge: undefined,
 		icon: null,
 		img: undefined,
-		children: 'Powered by Rocket.Chat',
+		children: 'Powered by MedSense',
 		onClick: action('clicked'),
 	},
 	argTypes: {

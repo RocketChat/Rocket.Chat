@@ -1,0 +1,32 @@
+services:
+  mongo:
+    image: mongo:6
+    command: mongod --replSet rs0 --oplogSize 128
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  nats:
+    image: nats:2
+    command: -js -m 8222
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+
+  medsense-chat:
+    build:
+      context: .
+      dockerfile: Dockerfile.medsense-source
+    environment:
+      ROOT_URL: http://localhost:3000
+      PORT: "3000"
+      MONGO_URL: mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      MONGO_OPLOG_URL: mongodb://mongo:27017/local?replicaSet=rs0
+      TRANSPORTER: monolith+nats://nats:4222
+      DISABLE_PRESENCE_BROADCAST: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - nats

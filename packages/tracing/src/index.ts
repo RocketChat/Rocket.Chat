@@ -12,7 +12,7 @@ let tracer: Tracer | undefined;
 export * from './traceInstanceMethods';
 
 export function isTracingEnabled() {
-	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
+	return ['yes', 'true'].includes(String(process.env.MEDSENSE_ENABLE_TRACING).toLowerCase());
 }
 
 export const startTracing = ({ service, db }: { service: string; db: MongoClient }) => {

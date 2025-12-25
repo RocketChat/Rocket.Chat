@@ -28,8 +28,8 @@ describe('addServerUrlToIndex', () => {
 		const file = addServerUrlToIndex('<html><body></body></html>');
 		expect(file).to.equal("<html><body><script> SERVER_URL = 'http://localhost:3000'; </script></body></html>");
 
-		(global as any).__meteor_runtime_config__ = { ROOT_URL: 'http://kodiak.rocket.chat/' };
+		(global as any).__meteor_runtime_config__ = { ROOT_URL: 'https://medsensehealth.ca' };
 		const file2 = addServerUrlToIndex('<html><body></body></html>');
-		expect(file2).to.equal("<html><body><script> SERVER_URL = 'http://kodiak.rocket.chat'; </script></body></html>");
+		expect(file2).to.equal("<html><body><script> SERVER_URL = 'https://medsensehealth.ca'; </script></body></html>");
 	});
 });

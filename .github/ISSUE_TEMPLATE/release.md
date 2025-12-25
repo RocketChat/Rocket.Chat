@@ -17,34 +17,34 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] Define the highlights from release PRs as a suggestion to be included on Blog Post <!-- link to the website's issue -->
 - [ ] Talk to the Marketing Team about starting the release Blog Post
 - [ ] Talk to the Documentation Team about ensuring the Docs are up to date and all pull requests are merged
-- [ ] Sync translations from [LingoHub](https://translate.lingohub.com/rocketchat/rocket-dot-chat/dashboard)
+- [ ] Sync translations from [LingoHub](https://medsensehealth.ca)
 
 ## Release Candidate 1 - On the 20th
-- [ ] Execute action `Release Candidate` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Execute action `Release Candidate` via [Houston CLI](https://medsensehealth.ca) (`houston release`)
 - [ ] Check if `release-candidate` branch was published
 - [ ] Check if the tag was published and contains the history
-- [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
+- [ ] Ensure the build is passing on [CircleCI](https://medsensehealth.ca)
+- [ ] Ensure the image was sent to [Docker Hub](https://medsensehealth.ca)
 
 <!-- Copy following block for next release candidates
 ## Release Candidate {release-candidate-version} - On the {day}
-- [ ] Execute action `Release Candidate` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Execute action `Release Candidate` via [Houston CLI](https://medsensehealth.ca) (`houston release`)
 - [ ] Check if `release-candidate` branch was published
 - [ ] Check if the tag was published and contains the history
-- [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
+- [ ] Ensure the build is passing on [CircleCI](https://medsensehealth.ca)
+- [ ] Ensure the image was sent to [Docker Hub](https://medsensehealth.ca)
 -->
 
 ## Final Release - On the 27th
-- [ ] Execute action `Final Release` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Execute action `Final Release` via [Houston CLI](https://medsensehealth.ca) (`houston release`)
 - [ ] Check if `release-{version}` branch was published
 - [ ] Check if the release was created as **draft** and contains the history
 - [ ] Check if the release Pull Request was created and contains the history
-- [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
+- [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://medsensehealth.ca)
 - [ ] When the build is passing ask for Pull Request approval
 - [ ] When approved, merge it!
-- [ ] Ensure the **Tag** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
+- [ ] Ensure the **Tag** build is passing on [CircleCI](https://medsensehealth.ca)
+- [ ] Ensure the image was sent to [Docker Hub](https://medsensehealth.ca)
 - [ ] After all edit the release/tag and publish it
 
 ## After Release - Conclusion - 1 business day after the 27th
@@ -53,7 +53,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] Get an update from Marketing Team about the release of Blog Post
 - [ ] Check with the Documentation Team about the Docs release
 - [ ] Sync develop
-  - [ ] Execute action `Develop Sync` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
-  - [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
+  - [ ] Execute action `Develop Sync` via [Houston CLI](https://medsensehealth.ca) (`houston release`)
+  - [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://medsensehealth.ca)
   - [ ] When the build has passed, ask for approval and wait
   - [ ] Merge Sync PR

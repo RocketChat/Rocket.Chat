@@ -11,7 +11,7 @@ export class MarketplaceAPIClient {
 		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
 			this.#marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
 		} else {
-			this.#marketplaceUrl = 'https://marketplace.rocket.chat';
+			this.#marketplaceUrl = 'https://medsensehealth.ca';
 		}
 
 		if (isTesting()) {

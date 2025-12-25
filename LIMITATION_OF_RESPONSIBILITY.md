@@ -14,10 +14,10 @@ In particular:
 
 For total transparency, Rocket.Chat Technologies Corp. owns and operates only ONE publicly available Rocket.Chat server in the world. The server that Rocket.Chat Technologies Corp. operates can only be accessed at:
 
-https://open.rocket.chat     
+https://medsensehealth.ca     
 
 Any other Rocket.Chat server you access is not operated by Rocket.Chat Technologies Corp. and is subjected to the usage warning above.
 
 ## ROCKET.CHAT CLOUD
 
-Rocket.Chat Technologies Corp. provides a cloud service for hosting Rocket.Chat instances. The data, messages and files on those instances are subject to our [Terms of Use](https://rocket.chat/terms). If you have evidence of misuse or a breach of our terms, contact us at [contact@rocket.chat](mailto:contact@rocket.chat) and include a description of the breach as well as the instance's URL.
+Rocket.Chat Technologies Corp. provides a cloud service for hosting Rocket.Chat instances. The data, messages and files on those instances are subject to our [Terms of Use](https://medsensehealth.ca). If you have evidence of misuse or a breach of our terms, contact us at [contact@rocket.chat](mailto:contact@rocket.chat) and include a description of the breach as well as the instance's URL.

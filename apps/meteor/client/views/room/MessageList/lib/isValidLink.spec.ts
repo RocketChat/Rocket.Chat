@@ -7,7 +7,7 @@ describe('isValidLink', () => {
 		['test/test', false],
 		['.', false],
 		['./test', false],
-		['https://rocket.chat', true],
+		['https://medsensehealth.ca', true],
 		['rocket.chat', false],
 		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAAsBAAEAAAICTAEAOw==', true],
 	] as const;

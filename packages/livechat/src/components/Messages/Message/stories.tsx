@@ -43,7 +43,7 @@ _This is italic text_
 
 \`rocket.chat();\`
 
-https://rocket.chat
+https://medsensehealth.ca/
 `;
 
 const defaultUser = {

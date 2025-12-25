@@ -798,7 +798,7 @@ export class LDAPConnection {
 
 		if (this.options.encryption === 'tls') {
 			// Set host parameter for tls.connect which is used by ldapjs starttls. This may not be needed anymore
-			// https://github.com/RocketChat/Rocket.Chat/issues/2035
+			// https://medsensehealth.ca
 			// https://github.com/mcavage/node-ldapjs/issues/349
 			tlsOptions.host = this.options.host;
 

@@ -270,8 +270,8 @@ InlineItemPattern = Whitespace
  *
  * URL
  * e.g:
- * Reference: [Rocket.Chat Website](https://rocket.chat), [](https://rocket.chat), <rocket.chat|Rocket.Chat Website>
- * Image: ![](https://rocket.chat/logo.png)
+ * Reference: [Rocket.Chat Website](https://medsensehealth.ca/), [](https://medsensehealth.ca/), <rocket.chat|Rocket.Chat Website>
+ * Image: ![](https://medsensehealth.ca/logo.png)
  *
  */
 References
@@ -370,7 +370,7 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
 /**
  *
  * Auto Link URL
- * e.g: rocket.chat, https://rocket.chat,
+ * e.g: medsensehealth.ca, https://medsensehealth.ca,
  * with customDomains options as intranet: protocol://internaltool.intranet
  *
  */

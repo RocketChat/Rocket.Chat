@@ -324,7 +324,7 @@
   "AutoLinker_Phone": "AutoLinker Telefon",
   "AutoLinker_Phone_Description": "legate automat de numere de telefon. de exemplu, `(123) 456-7890`",
   "AutoLinker_StripPrefix": "AutoLinker Strip Prefixul",
-  "AutoLinker_StripPrefix_Description": "Afișaj scurt. de exemplu, https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Afișaj scurt. de exemplu, https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker URL Expresie regulată",
   "AutoLinker_Urls_Scheme": "Schema AutoLinker: // URL-uri",
   "AutoLinker_Urls_TLD": "Adrese URL AutoLinker TLD",

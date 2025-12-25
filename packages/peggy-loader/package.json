@@ -19,7 +19,7 @@
 	"license": "MIT",
 	"author": {
 		"name": "Rocket.Chat",
-		"url": "https://rocket.chat/"
+		"url": "https://medsensehealth.ca/"
 	},
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

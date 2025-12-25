@@ -9,7 +9,7 @@ describe('isURL', () => {
 		['test/test', false],
 		['.', false],
 		['./test', false],
-		['https://rocket.chat', true],
+		['https://medsensehealth.ca', true],
 		['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', true],
 	] as const;
 

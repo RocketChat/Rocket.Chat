@@ -13,7 +13,7 @@ const oauth2server = new OAuth2Server({
 	debug: false,
 });
 
-// https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
+// https://medsensehealth.ca
 async function getAccessToken(accessToken: string) {
 	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }

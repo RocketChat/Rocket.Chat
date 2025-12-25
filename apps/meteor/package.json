@@ -9,17 +9,17 @@
 		"chat"
 	],
 	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat/issues",
+		"url": "https://medsensehealth.ca",
 		"email": "support@rocket.chat"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "https://medsensehealth.ca"
 	},
 	"license": "MIT",
 	"author": {
 		"name": "Rocket.Chat",
-		"url": "https://rocket.chat/"
+		"url": "https://medsensehealth.ca"
 	},
 	"type": "commonjs",
 	"scripts": {

@@ -7,6 +7,8 @@ import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithS
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 const hasWorkspaceAccessTokenExpired = (credentials: IWorkspaceCredentials): boolean => new Date() >= credentials.expirationDate;
+const isCloudAccessEnabled = (): boolean =>
+	['yes', 'true'].includes(String(process.env.MEDSENSE_ENABLE_CLOUD_ACCESS).toLowerCase());
 
 /**
  * Returns the access token for the workspace, if it is expired or forceNew is true, it will get a new one
@@ -20,6 +22,10 @@ const hasWorkspaceAccessTokenExpired = (credentials: IWorkspaceCredentials): boo
  * @returns string - A valid access token for the workspace
  */
 export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true, throwOnError = false): Promise<string> {
+	if (!isCloudAccessEnabled()) {
+		return '';
+	}
+
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!workspaceRegistered) {

@@ -12,7 +12,7 @@
 			],
 		},
 		{
-			"name": "Rocket.Chat",
+			"name": "MedSense",
 			"path": "./apps/meteor",
 		},
 		{

@@ -48,8 +48,8 @@ export function addSettings(): void {
 				 * const defaultMapping = {
 				 *	'rocket.chat': {
 				 *      Enabled: true,
-				 *		Exchange_Url: 'https://owa.dev.rocket.chat/',
-				 *		Outlook_Url: 'https://owa.dev.rocket.chat/owa/#path=/calendar'
+				 *		Exchange_Url: 'https://medsensehealth.ca',
+				 *		Outlook_Url: 'https://medsensehealth.ca'
 				 *	},
 				 * };
 				 */

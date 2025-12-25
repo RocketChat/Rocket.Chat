@@ -416,7 +416,7 @@
   "AutoLinker_Phone": "Điện thoại AutoLinker",
   "AutoLinker_Phone_Description": "Tự động liên kết với Số điện thoại. ví dụ. `(123) 456-7890`",
   "AutoLinker_StripPrefix": "Xoá tiền tố AutoLinker",
-  "AutoLinker_StripPrefix_Description": "Hiển thị ngắn. ví dụ. https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Hiển thị ngắn. ví dụ. https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker URL Regular Expression",
   "AutoLinker_Urls_Scheme": "AutoLinker Scheme: // URL",
   "AutoLinker_Urls_TLD": "URL TLD Tự động Linker",

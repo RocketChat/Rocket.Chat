@@ -9,7 +9,7 @@ if (!shouldUseNativeOplog) {
 	Package['disable-oplog'] = {};
 }
 
-// FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
+// FIX For TLS error see more here https://medsensehealth.ca
 // TODO: Remove after NodeJS fix it, more information
 // https://github.com/nodejs/node/issues/16196
 // https://github.com/nodejs/node/pull/16853

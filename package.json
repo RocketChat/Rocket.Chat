@@ -2,14 +2,14 @@
 	"name": "rocket.chat",
 	"version": "7.14.0-develop",
 	"private": true,
-	"description": "Rocket.Chat Monorepo",
-	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"description": "MedSense Webchat Monorepo",
+	"homepage": "https://medsensehealth.ca",
 	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+		"url": "https://medsensehealth.ca"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "https://medsensehealth.ca"
 	},
 	"license": "MIT",
 	"author": "",

@@ -8,6 +8,9 @@ import { Meteor } from 'meteor/meteor';
 import { statistics } from '..';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
+const isUsageReportEnabled = (): boolean =>
+	['yes', 'true'].includes(String(process.env.MEDSENSE_ENABLE_USAGE_REPORT).toLowerCase());
+
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
 	try {
 		const token = await getWorkspaceAccessToken();
@@ -34,6 +37,11 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 }
 
 export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
+	if (!isUsageReportEnabled()) {
+		logger.debug('Usage/telemetry reporting disabled.');
+		return;
+	}
+
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();
 		if (last) {

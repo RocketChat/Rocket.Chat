@@ -363,7 +363,7 @@
   "AutoLinker_Phone": "AutoLinker für Telefonnummern",
   "AutoLinker_Phone_Description": "Telefonnummern automatisch verlinken. z.B. `(123) 456-7890`",
   "AutoLinker_StripPrefix": "AutoLinker Präfix entfernen",
-  "AutoLinker_StripPrefix_Description": "Kurze Anzeige. z.B. https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Kurze Anzeige. z.B. https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker RegExp für URLs",
   "AutoLinker_Urls_Scheme": "Schema des AutoLinkers: // URLs",
   "AutoLinker_Urls_TLD": "AutoLinker TLD-URLs",

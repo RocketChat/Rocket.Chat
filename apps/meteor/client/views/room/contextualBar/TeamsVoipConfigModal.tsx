@@ -66,7 +66,7 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 						<Box is='ul' pis={24}>
 							<li>
 								<Trans i18nKey='VoIP_TeamCollab_Feature1'>
-									<strong>Direct calling:</strong> Instantly start or receive calls with team members within your Rocket.Chat workspace.
+									<strong>Direct calling:</strong> Instantly start or receive calls with team members within your MedSense workspace.
 								</Trans>
 							</li>
 							<li>

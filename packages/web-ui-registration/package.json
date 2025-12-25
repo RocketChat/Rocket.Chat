@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/web-ui-registration",
 	"version": "25.0.1",
 	"private": true,
-	"homepage": "https://rocket.chat",
+	"homepage": "https://medsensehealth.ca/",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

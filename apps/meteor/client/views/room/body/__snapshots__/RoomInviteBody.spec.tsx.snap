@@ -262,7 +262,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
         </div>
         <a
           class="rcx-box rcx-box--full rcx-states__link"
-          href="https://rocket.chat"
+          href="https://medsensehealth.ca"
         >
           Learn more
         </a>

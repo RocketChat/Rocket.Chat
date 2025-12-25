@@ -343,7 +343,7 @@
   "AutoLinker_Phone": "AutoLinker电话",
   "AutoLinker_Phone_Description": "自动链接电话号码。例如`（123）456-7890`",
   "AutoLinker_StripPrefix": "自动链接条形前缀",
-  "AutoLinker_StripPrefix_Description": "短显示。例如https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "短显示。例如https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker URL正则表达式",
   "AutoLinker_Urls_Scheme": "AutoLinker计划：//网址",
   "AutoLinker_Urls_TLD": "AutoLinker TLD URL",

@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/ui-kit",
 	"version": "0.38.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
-	"homepage": "https://rocket.chat",
+	"homepage": "https://medsensehealth.ca/",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
@@ -13,7 +13,7 @@
 	"license": "MIT",
 	"author": {
 		"name": "Rocket.Chat",
-		"url": "https://rocket.chat/"
+		"url": "https://medsensehealth.ca/"
 	},
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

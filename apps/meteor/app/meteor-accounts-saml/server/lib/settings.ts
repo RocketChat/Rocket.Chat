@@ -177,7 +177,7 @@ export const addSettings = async function (name: string): Promise<void> {
 					i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
 					public: true,
 				});
-				await this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
+				await this.add(`SAML_Custom_${name}_issuer`, 'https://medsensehealth.ca', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Issuer',
 				});

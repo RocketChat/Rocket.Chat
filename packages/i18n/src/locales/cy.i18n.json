@@ -324,7 +324,7 @@
   "AutoLinker_Phone": "Ffôn AutoLinker",
   "AutoLinker_Phone_Description": "Wedi'i gysylltu yn awtomatig ar gyfer rhifau Ffôn. e.e. `(123) 456-7890`",
   "AutoLinker_StripPrefix": "Rhaeadr AutoLinker Rhagolwg",
-  "AutoLinker_StripPrefix_Description": "Arddangosiad byr. e.e. https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Arddangosiad byr. e.e. https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "URL AutoLinker Mynegiant Rheolaidd",
   "AutoLinker_Urls_Scheme": "Cynllun AutoLinker: // URLau",
   "AutoLinker_Urls_TLD": "URLau TLD AutoLinker",

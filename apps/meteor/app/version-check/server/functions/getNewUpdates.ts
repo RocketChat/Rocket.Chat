@@ -34,7 +34,7 @@ export const getNewUpdates = async () => {
 		const headers = {
 			...(token && { Authorization: `Bearer ${token}` }),
 		};
-		const url = 'https://releases.rocket.chat/updates/check';
+		const url = 'https://medsensehealth.ca';
 		const response = await fetch(url, {
 			headers,
 			params,

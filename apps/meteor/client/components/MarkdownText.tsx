@@ -172,7 +172,7 @@ const MarkdownText = ({
 				node.setAttribute('title', '');
 			} else {
 				// For internal links, add a translated title with the relative path
-				// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
+				// Example: for href "https://medsensehealth.ca" the title would be "Go to #general"
 				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
 			}
 		});

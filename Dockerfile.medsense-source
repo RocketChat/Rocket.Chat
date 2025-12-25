@@ -1,0 +1,64 @@
+FROM node:22.16.0-bullseye AS build
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    g++ \
+    git \
+    make \
+    python3 \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://install.meteor.com/ | sh
+
+RUN useradd --create-home --shell /bin/bash app \
+  && corepack enable \
+  && corepack prepare yarn@4.11.0 --activate
+
+WORKDIR /app
+
+COPY --chown=app:app . .
+
+RUN mkdir -p /app/bundle \
+  && chown -R app:app /app/bundle
+
+USER app
+
+RUN git config --global --add safe.directory /app \
+  && yarn install --immutable
+
+RUN cd apps/meteor \
+  && mkdir -p /tmp/meteor-cache /tmp/meteor-local \
+  && METEOR_CACHE_DIR=/tmp/meteor-cache METEOR_LOCAL_DIR=/tmp/meteor-local \
+     METEOR_DISABLE_OPTIMISTIC_CACHING=1 METEOR_DEBUG_BUILD=1 yarn build:ci \
+  && rm -rf /app/bundle/* \
+  && cp -a /tmp/dist/bundle/. /app/bundle/
+
+FROM node:22.16.0-bullseye-slim
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
+WORKDIR /app/bundle
+
+COPY --from=build /app/bundle /app/bundle
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    unzip \
+    python3 \
+    g++ \
+    make \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl -fsSL https://deno.land/x/install/install.sh | DENO_INSTALL=/usr/local sh \
+  && cd programs/server && npm install --omit=dev
+
+EXPOSE 3000
+
+USER node
+
+CMD ["node", "main.js"]

@@ -42,7 +42,7 @@ WithLongTextContent.storyName = 'with long text content';
 export const WithTitleAndSubtitle: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
 		<Content>
-			<Title>Rocket.Chat</Title>
+			<Title>MedSense</Title>
 			<SubTitle>Livechat</SubTitle>
 		</Content>
 	</Header>

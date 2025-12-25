@@ -21,7 +21,7 @@ Default.args = {
 export const WithLink = Template.bind({});
 WithLink.args = {
 	children: (
-		<a target='_blank' href='https://rocket.chat'>
+		<a target='_blank' href='https://medsensehealth.ca/'>
 			Announcement
 		</a>
 	),

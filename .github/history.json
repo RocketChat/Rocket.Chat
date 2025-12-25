@@ -54398,7 +54398,7 @@
           "pr": "20124",
           "title": "[FIX] Livechat.RegisterGuest method removing unset fields",
           "userLogin": "renatobecker",
-          "description": "After changes made on https://github.com/RocketChat/Rocket.Chat/pull/19931, the `Livechat.RegisterGuest` method started removing properties from the visitor inappropriately. The properties that did not receive value were removed from the object.\r\nThose changes were made to support the new Contact Form, but now the form has its own method to deal with Contact data so those changes are no longer necessary.",
+          "description": "After changes made on https://medsensehealth.ca the `Livechat.RegisterGuest` method started removing properties from the visitor inappropriately. The properties that did not receive value were removed from the object.\r\nThose changes were made to support the new Contact Form, but now the form has its own method to deal with Contact data so those changes are no longer necessary.",
           "milestone": "3.11.0",
           "contributors": [
             "ggazzo",
@@ -54755,7 +54755,7 @@
           "pr": "19916",
           "title": "Add translation of Edit Status in all languages",
           "userLogin": "sushant52",
-          "description": "Closes [#19915](https://github.com/RocketChat/Rocket.Chat/issues/19915)\r\nThe profile options menu is well translated in many languages. However, Edit Status is the only button which is not well translated. With this change, the whole profile options will be properly translated in a lot of languages.",
+          "description": "Closes [#19915](https://medsensehealth.ca)\r\nThe profile options menu is well translated in many languages. However, Edit Status is the only button which is not well translated. With this change, the whole profile options will be properly translated in a lot of languages.",
           "contributors": [
             "sushant52",
             "sampaiodiego",
@@ -55173,7 +55173,7 @@
           "pr": "20523",
           "title": "Regression: Apps-Engine - Convert streams to buffers on file upload",
           "userLogin": "d-gubert",
-          "description": "This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376",
+          "description": "This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://medsensehealth.ca",
           "milestone": "3.11.0",
           "contributors": [
             "d-gubert",
@@ -55258,7 +55258,7 @@
           "pr": "20653",
           "title": "[FIX] Livechat bridge permission checkers",
           "userLogin": "d-gubert",
-          "description": "Update to latest patch version of the Apps-Engine with a fix for the Livechat bridge, as seen in https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/379",
+          "description": "Update to latest patch version of the Apps-Engine with a fix for the Livechat bridge, as seen in https://medsensehealth.ca",
           "milestone": "3.11.1",
           "contributors": [
             "d-gubert",
@@ -55323,7 +55323,7 @@
           "pr": "20838",
           "title": "[NEW] Cloud Workspace bridge",
           "userLogin": "d-gubert",
-          "description": "Adds the new CloudWorkspace functionality.\r\n\r\nIt allows apps to request the access token for the workspace it's installed on, so it can perform actions with other Rocket.Chat services, such as the Omni Gateway.\r\n\r\nhttps://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/382",
+          "description": "Adds the new CloudWorkspace functionality.\r\n\r\nIt allows apps to request the access token for the workspace it's installed on, so it can perform actions with other Rocket.Chat services, such as the Omni Gateway.\r\n\r\nhttps://medsensehealth.ca",
           "milestone": "3.12.0",
           "contributors": [
             "d-gubert",
@@ -55975,7 +55975,7 @@
           "pr": "20653",
           "title": "[FIX] Livechat bridge permission checkers",
           "userLogin": "d-gubert",
-          "description": "Update to latest patch version of the Apps-Engine with a fix for the Livechat bridge, as seen in https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/379",
+          "description": "Update to latest patch version of the Apps-Engine with a fix for the Livechat bridge, as seen in https://medsensehealth.ca",
           "milestone": "3.11.1",
           "contributors": [
             "d-gubert",
@@ -57059,7 +57059,7 @@
           "pr": "20569",
           "title": "[FIX] OEmbedURLWidget - Show Full Embedded Text Description",
           "userLogin": "aditya-mitra",
-          "description": "Embeds were cutoff when either _urls had a long description_.\r\nThis was handled by removing `overflow:hidden;text-overflow:ellipsis;` from the inline styles in [`oembedUrlWidget.html`](https://github.com/RocketChat/Rocket.Chat/blob/develop/app/oembed/client/oembedUrlWidget.html#L28).\r\n\r\n### Earlier\r\n\r\n![earlier](https://user-images.githubusercontent.com/55396651/107110825-00dcde00-6871-11eb-866e-13cabc5b0d05.png)\r\n\r\n### Now\r\n\r\n![now](https://user-images.githubusercontent.com/55396651/107110794-ca06c800-6870-11eb-9b3b-168679936612.png)",
+          "description": "Embeds were cutoff when either _urls had a long description_.\r\nThis was handled by removing `overflow:hidden;text-overflow:ellipsis;` from the inline styles in [`oembedUrlWidget.html`](https://medsensehealth.ca).\r\n\r\n### Earlier\r\n\r\n![earlier](https://user-images.githubusercontent.com/55396651/107110825-00dcde00-6871-11eb-866e-13cabc5b0d05.png)\r\n\r\n### Now\r\n\r\n![now](https://user-images.githubusercontent.com/55396651/107110794-ca06c800-6870-11eb-9b3b-168679936612.png)",
           "contributors": [
             "aditya-mitra",
             "tassoevan",
@@ -59161,7 +59161,7 @@
           "pr": "20478",
           "title": " Doc: Corrected links to documentation of rocket.chat README.md ",
           "userLogin": "joshi008",
-          "description": "The link for documentation in the readme was previously https://rocket.chat/docs/ while that was not working and according to the website it was https://docs.rocket.chat/\r\nThe link for deployment methods in readme was corrected from https://rocket.chat/docs/installation/paas-deployments/ to https://docs.rocket.chat/installation/paas-deployments\r\nSome more links to the documentations were giving 404 error which hence updated.",
+          "description": "The link for documentation in the readme was previously https://medsensehealth.ca while that was not working and according to the website it was https://medsensehealth.ca link for deployment methods in readme was corrected from https://medsensehealth.ca to https://medsensehealth.ca more links to the documentations were giving 404 error which hence updated.",
           "contributors": [
             "joshi008",
             "web-flow"
@@ -59531,7 +59531,7 @@
           "pr": "22052",
           "title": "[NEW] Paginated and Filtered selects on new/edit unit",
           "userLogin": "MartinSchoeler",
-          "description": "REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447\r\n\r\nAdds infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
+          "description": "REQUIRES https://medsensehealth.ca infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
           "milestone": "3.14.1",
           "contributors": [
             "rafaelblink",
@@ -59932,7 +59932,7 @@
           "pr": "22080",
           "title": "Chore: Update Docker container references to use registry.rocket.chat endpoint",
           "userLogin": "aviaviavi",
-          "description": "This change updates the Docker installation instructions to use the new registry.rocket.chat endpoint to pull the rocketchat/rocket.chat container. This is part of the rollout described here: https://rocket.chat/blog/product/docker-images-change/",
+          "description": "This change updates the Docker installation instructions to use the new registry.rocket.chat endpoint to pull the rocketchat/rocket.chat container. This is part of the rollout described here: https://medsensehealth.ca",
           "contributors": [
             "aviaviavi"
           ]
@@ -59978,7 +59978,7 @@
           "pr": "22052",
           "title": "[NEW] Paginated and Filtered selects on new/edit unit",
           "userLogin": "MartinSchoeler",
-          "description": "REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447\r\n\r\nAdds infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
+          "description": "REQUIRES https://medsensehealth.ca infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
           "milestone": "3.14.1",
           "contributors": [
             "rafaelblink",
@@ -60119,7 +60119,7 @@
           "pr": "21944",
           "title": "[FIX] Wrong icon on \"Move to team\" option in the channel info actions",
           "userLogin": "gabriellsh",
-          "description": "![image](https://user-images.githubusercontent.com/40830821/117061659-d9bf6c80-acf8-11eb-8e29-be47e702dedd.png)\r\n\r\nDepends on https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/444",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/117061659-d9bf6c80-acf8-11eb-8e29-be47e702dedd.png)\r\n\r\nDepends on https://medsensehealth.ca",
           "contributors": [
             "gabriellsh",
             "web-flow",
@@ -60622,7 +60622,7 @@
           "pr": "21866",
           "title": "[FIX][APPS] Scheduler duplicating recurrent tasks after server restart",
           "userLogin": "thassiov",
-          "description": "Reintroduces the old method for creating recurring tasks in the apps' scheduler bridge to ensure tasks won't be duplicated.\r\n\r\nBy introducing the [`skipImmediate` property option](https://github.com/RocketChat/Rocket.Chat/pull/21353)  at the [`scheduleRecurring`](https://github.com/RocketChat/Rocket.Chat/blob/f8171f464ed8a7487795651767695fb33a1c709e/app/apps/server/bridges/scheduler.js#L119) method, the `every` method from _agenda.js_, which ensured no duplicates were created, was removed in favor of a more manual procedure. The new procedure was not taking into account the management of duplicates and as a result multiple copies of the same task could be created and they would get executed at the same time.\r\n\r\nIn the case of server restarts, every time this event happened and the app had the `startupSetting` configured to use _recurring tasks_, they would get recreated the same number of times. In the case of a server that restarts frequently (_n_ times), there would be the same (_n_) number of tasks duplicated (and running) in the system.",
+          "description": "Reintroduces the old method for creating recurring tasks in the apps' scheduler bridge to ensure tasks won't be duplicated.\r\n\r\nBy introducing the [`skipImmediate` property option](https://medsensehealth.ca)  at the [`scheduleRecurring`](https://medsensehealth.ca) method, the `every` method from _agenda.js_, which ensured no duplicates were created, was removed in favor of a more manual procedure. The new procedure was not taking into account the management of duplicates and as a result multiple copies of the same task could be created and they would get executed at the same time.\r\n\r\nIn the case of server restarts, every time this event happened and the app had the `startupSetting` configured to use _recurring tasks_, they would get recreated the same number of times. In the case of a server that restarts frequently (_n_ times), there would be the same (_n_) number of tasks duplicated (and running) in the system.",
           "contributors": [
             "thassiov",
             "d-gubert",
@@ -60865,7 +60865,7 @@
           "pr": "22159",
           "title": "Regression: not allowed to edit roles due to a new verification",
           "userLogin": "dougfabris",
-          "description": "introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905\r\n![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)",
+          "description": "introduced by https://medsensehealth.ca 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)",
           "milestone": "3.15.0",
           "contributors": [
             "dougfabris"
@@ -61152,7 +61152,7 @@
           "pr": "22391",
           "title": "Regression: Enable unregistered servers to use their own push gateway",
           "userLogin": "lucassartor",
-          "description": "https://github.com/RocketChat/Rocket.Chat/pull/22346 prevented unregistered servers from using the RC push gateway but was still blocking this servers from using their own push gateway, this PR looks to fix that.",
+          "description": "https://medsensehealth.ca prevented unregistered servers from using the RC push gateway but was still blocking this servers from using their own push gateway, this PR looks to fix that.",
           "contributors": [
             "lucassartor",
             "sampaiodiego"
@@ -63014,7 +63014,7 @@
           "pr": "22413",
           "title": "[FIX][ENTERPRISE] Race condition on Omnichannel visitor abandoned callback",
           "userLogin": "murtaza98",
-          "description": "As you can see [here](https://github.com/RocketChat/Rocket.Chat/blob/857791c39c97b51b5b6fd3718e0c816959a81c3b/ee/app/livechat-enterprise/server/lib/Helper.js#L127) the `predictedVisitorAbandonment` flag is not set if the room object doesn't have  `v.lastMessageTs` property. So we need to always make sure the `v.lastMessageTs` is set before this method is called.\r\n\r\nCurrently the `v.lastMessageTs` is being set in [this](https://github.com/RocketChat/Rocket.Chat/blob/857791c39c97b51b5b6fd3718e0c816959a81c3b/app/livechat/server/hooks/saveLastVisitorMessageTs.js#L4) (lets call this **hook-1**) hook which has `HIGH` priority\r\nand the `predictedVisitorAbandonment` check is inturn performed in [this](https://github.com/RocketChat/Rocket.Chat/blob/857791c39c97b51b5b6fd3718e0c816959a81c3b/ee/app/livechat-enterprise/server/hooks/setPredictedVisitorAbandonmentTime.js#L5) (let call this **hook-2**) hook which is also `HIGH` priority.\r\n\r\nSo ideally we'd except the **hook-1** to be called b4 **hook-2**, however currently since both of them are at same priority, there is no way to control which one is executed first. Hence in this PR, I'm making the priority of **hook-2** as `MEDIUM` to keeping the priority of **hook-1** the same as b4, i.e. `HIGH`. This should make sure that the **hook-1** is always executed b4 **hook-2**",
+          "description": "As you can see [here](https://medsensehealth.ca) the `predictedVisitorAbandonment` flag is not set if the room object doesn't have  `v.lastMessageTs` property. So we need to always make sure the `v.lastMessageTs` is set before this method is called.\r\n\r\nCurrently the `v.lastMessageTs` is being set in [this](https://medsensehealth.ca) (lets call this **hook-1**) hook which has `HIGH` priority\r\nand the `predictedVisitorAbandonment` check is inturn performed in [this](https://medsensehealth.ca) (let call this **hook-2**) hook which is also `HIGH` priority.\r\n\r\nSo ideally we'd except the **hook-1** to be called b4 **hook-2**, however currently since both of them are at same priority, there is no way to control which one is executed first. Hence in this PR, I'm making the priority of **hook-2** as `MEDIUM` to keeping the priority of **hook-1** the same as b4, i.e. `HIGH`. This should make sure that the **hook-1** is always executed b4 **hook-2**",
           "contributors": [
             "murtaza98",
             "web-flow",
@@ -63117,7 +63117,7 @@
           "pr": "22417",
           "title": "[FIX] Put title into AutocompleteDepartment components",
           "userLogin": "tiagoevanp",
-          "description": "Dependencies: https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/475",
+          "description": "Dependencies: https://medsensehealth.ca",
           "contributors": [
             "tiagoevanp"
           ]
@@ -63966,7 +63966,7 @@
           "pr": "22882",
           "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
           "userLogin": "thassiov",
-          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://medsensehealth.ca) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://medsensehealth.ca).",
           "milestone": "3.17.1",
           "contributors": [
             "thassiov",
@@ -64049,7 +64049,7 @@
           "pr": "22839",
           "title": "[FIX] applyChatRestictions callback not working for community version",
           "userLogin": "murtaza98",
-          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "description": "Building on top of https://medsensehealth.ca",
           "contributors": [
             "Shailesh351",
             "murtaza98",
@@ -64235,7 +64235,7 @@
           "pr": "22882",
           "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
           "userLogin": "thassiov",
-          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://medsensehealth.ca) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://medsensehealth.ca).",
           "milestone": "3.17.1",
           "contributors": [
             "thassiov",
@@ -64305,7 +64305,7 @@
           "pr": "22839",
           "title": "[FIX] applyChatRestictions callback not working for community version",
           "userLogin": "murtaza98",
-          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "description": "Building on top of https://medsensehealth.ca",
           "milestone": "3.17.2",
           "contributors": [
             "Shailesh351",
@@ -64438,7 +64438,7 @@
           "pr": "22839",
           "title": "[FIX] applyChatRestictions callback not working for community version",
           "userLogin": "murtaza98",
-          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "description": "Building on top of https://medsensehealth.ca",
           "milestone": "3.17.2",
           "contributors": [
             "Shailesh351",
@@ -64497,7 +64497,7 @@
           "pr": "22882",
           "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
           "userLogin": "thassiov",
-          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://medsensehealth.ca) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://medsensehealth.ca).",
           "milestone": "3.17.1",
           "contributors": [
             "thassiov",
@@ -64667,7 +64667,7 @@
           "pr": "23243",
           "title": "[FIX] Modals is cutting pixels of the content",
           "userLogin": "dougfabris",
-          "description": "Fuselage Dependency: [543](https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/543)\r\n![image](https://user-images.githubusercontent.com/27704687/134049227-3cd1deed-34ba-454f-a95e-e99b79a7a7b9.png)",
+          "description": "Fuselage Dependency: [543](https://medsensehealth.ca)\r\n![image](https://user-images.githubusercontent.com/27704687/134049227-3cd1deed-34ba-454f-a95e-e99b79a7a7b9.png)",
           "contributors": [
             "dougfabris"
           ]
@@ -65642,7 +65642,7 @@
           "pr": "23286",
           "title": "Regression: Fix app storage migration",
           "userLogin": "thassiov",
-          "description": "The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.\r\n\r\nAs the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.\r\n\r\nThe fix extract the data from old apps and creates new zip files with the compiled `js` already present.",
+          "description": "The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://medsensehealth.ca), which [removed the typescript compiler from the server](https://medsensehealth.ca) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.\r\n\r\nAs the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://medsensehealth.ca)), and as the zips' contents were wrong, the operation was failing.\r\n\r\nThe fix extract the data from old apps and creates new zip files with the compiled `js` already present.",
           "contributors": [
             "thassiov"
           ]
@@ -65795,7 +65795,7 @@
           "pr": "23310",
           "title": "[BREAK] Webhook will fail if user is not part of the channel",
           "userLogin": "sampaiodiego",
-          "description": "Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.\r\n\r\nStarting from 4.0.0 the webhook request will fail with `error-not-allowed` error:\r\n\r\n```\r\n{\"success\":false,\"error\":\"error-not-allowed\"}\r\n```",
+          "description": "Remove deprecated behavior added by https://medsensehealth.ca that accepts webhook integrations sending messages even if the user is not part of the channel.\r\n\r\nStarting from 4.0.0 the webhook request will fail with `error-not-allowed` error:\r\n\r\n```\r\n{\"success\":false,\"error\":\"error-not-allowed\"}\r\n```",
           "contributors": [
             "sampaiodiego"
           ]
@@ -66132,7 +66132,7 @@
           "pr": "23515",
           "title": "[IMPROVE] Make Livechat Instructions setting multi-line",
           "userLogin": "murtaza98",
-          "description": "Since now we're supporting markdown text on this field (via this PR - https://github.com/RocketChat/Rocket.Chat.Livechat/pull/648), it would be nice to make this setting multiline so users can have more space to edit the text\r\n![image](https://user-images.githubusercontent.com/34130764/138146712-13e4968b-5312-4d53-b44c-b5699c5e49c1.png)",
+          "description": "Since now we're supporting markdown text on this field (via this PR - https://medsensehealth.ca), it would be nice to make this setting multiline so users can have more space to edit the text\r\n![image](https://user-images.githubusercontent.com/34130764/138146712-13e4968b-5312-4d53-b44c-b5699c5e49c1.png)",
           "contributors": [
             "murtaza98"
           ]
@@ -67329,7 +67329,7 @@
           "pr": "23750",
           "title": "[NEW] REST endpoints to manage Omnichannel Business Units",
           "userLogin": "KevLehman",
-          "description": "Basic documentation about endpoints can be found at https://www.postman.com/kaleman960/workspace/rocketchat-public-api/request/3865466-71502450-8c8f-42b4-8954-1cd3d01fcb0c",
+          "description": "Basic documentation about endpoints can be found at https://medsensehealth.ca",
           "contributors": [
             "KevLehman"
           ]
@@ -67519,7 +67519,7 @@
           "pr": "23691",
           "title": "[FIX] Omnichannel contact center navigation",
           "userLogin": "tiagoevanp",
-          "description": "Derives from: https://github.com/RocketChat/Rocket.Chat/pull/23656\r\n\r\nThis PR includes a different approach to solving navigation problems following the same code structure and UI definitions of other \"ActionButtons\" components in Sidebar.",
+          "description": "Derives from: https://medsensehealth.ca PR includes a different approach to solving navigation problems following the same code structure and UI definitions of other \"ActionButtons\" components in Sidebar.",
           "contributors": [
             "tiagoevanp"
           ]
@@ -67926,7 +67926,7 @@
           "pr": "23925",
           "title": "[NEW][APPS] Add new email event for apps",
           "userLogin": "d-gubert",
-          "description": "Introduces a new event called before an email is sent by the Mailer. Apps can intercept and modify the email that will be sent, or even prevent it from being sent altogether. For more details, check https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/461/files#diff-301e8a58164edbf315da2a43c4923f153dbc909573de1e60aa9f730f7488ac82",
+          "description": "Introduces a new event called before an email is sent by the Mailer. Apps can intercept and modify the email that will be sent, or even prevent it from being sent altogether. For more details, check https://medsensehealth.ca",
           "milestone": "4.3.0",
           "contributors": [
             "d-gubert"
@@ -68301,7 +68301,7 @@
           "pr": "23908",
           "title": "[FIX] Translations for App Select Settings not working",
           "userLogin": "murtaza98",
-          "description": "Derived from PR https://github.com/RocketChat/Rocket.Chat/pull/19238",
+          "description": "Derived from PR https://medsensehealth.ca",
           "contributors": [
             "murtaza98"
           ]
@@ -69099,7 +69099,7 @@
           "pr": "24239",
           "title": "[IMPROVE] Show Channel Icons on Room Header & Info panels",
           "userLogin": "murtaza98",
-          "description": "Updates Omnichannel Header & room Info component to render the source info\r\nBuilt on top of https://github.com/RocketChat/Rocket.Chat/pull/24237",
+          "description": "Updates Omnichannel Header & room Info component to render the source info\r\nBuilt on top of https://medsensehealth.ca",
           "milestone": "4.4.0",
           "contributors": [
             "d-gubert",
@@ -72820,7 +72820,7 @@
           "pr": "24925",
           "title": "Chore: add some missing REST definitions",
           "userLogin": "gerzonc",
-          "description": "On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
+          "description": "On the [mobile client](https://medsensehealth.ca), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
           "contributors": [
             "gerzonc"
           ]
@@ -74579,7 +74579,7 @@
           "pr": "25391",
           "title": "[FIX] Fixing Network connectivity issues with SIP client.",
           "userLogin": "amolghode1981",
-          "description": "The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.\r\nThis PR is expected to handle\r\n1. Clearing call related UI when the network is disconnected or switched.\r\n2. Do clean connectivity. There were few issues discovered in earlier implementation. e.g endpoint would randomly\r\nget disconnected after a while. This was due to the fact that the earlier socket disconnection caused the\r\nremoval of contact on asterisk. This should be fixed in this PR.\r\n3. This PR contains a lot of logs. This will be removed before the final merge.",
+          "description": "The previous PR https://medsensehealth.ca did not handle the issues completely.\r\nThis PR is expected to handle\r\n1. Clearing call related UI when the network is disconnected or switched.\r\n2. Do clean connectivity. There were few issues discovered in earlier implementation. e.g endpoint would randomly\r\nget disconnected after a while. This was due to the fact that the earlier socket disconnection caused the\r\nremoval of contact on asterisk. This should be fixed in this PR.\r\n3. This PR contains a lot of logs. This will be removed before the final merge.",
           "milestone": "4.8.0",
           "contributors": [
             "amolghode1981"
@@ -78589,7 +78589,7 @@
           "pr": "24925",
           "title": "Chore: add some missing REST definitions",
           "userLogin": "gerzonc",
-          "description": "On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
+          "description": "On the [mobile client](https://medsensehealth.ca), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
           "contributors": [
             "gerzonc"
           ]
@@ -82686,7 +82686,7 @@
           "pr": "24925",
           "title": "Chore: add some missing REST definitions",
           "userLogin": "gerzonc",
-          "description": "On the [mobile client](https://github.com/RocketChat/Rocket.Chat.ReactNative), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
+          "description": "On the [mobile client](https://medsensehealth.ca), we made an effort to collect more `REST API` definitions that are missing on the server side during our migration to TypeScript. Since we're both migrating to TypeScript, we thought it would be a good idea to share those so you guys can benefit from our initiative.",
           "contributors": [
             "gerzonc"
           ]
@@ -85424,7 +85424,7 @@
           "pr": "26057",
           "title": "[FIX] Unable to close chats when comments is disabled",
           "userLogin": "murtaza98",
-          "description": "Fixes https://github.com/RocketChat/Rocket.Chat/issues/25954",
+          "description": "Fixes https://medsensehealth.ca",
           "milestone": "5.0.0",
           "contributors": [
             "murtaza98",
@@ -85531,7 +85531,7 @@
           "pr": "25724",
           "title": "[FIX] Not showing edit message button when blocking edit after N minutes",
           "userLogin": "matthias4217",
-          "description": "Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://github.com/RocketChat/Rocket.Chat/issues/25478, the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.",
+          "description": "Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://medsensehealth.ca the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.",
           "milestone": "5.0.0",
           "contributors": [
             "matthias4217",
@@ -87733,7 +87733,7 @@
           "pr": "25391",
           "title": "[FIX] Fixing Network connectivity issues with SIP client.",
           "userLogin": "amolghode1981",
-          "description": "The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.\r\nThis PR is expected to handle\r\n1. Clearing call related UI when the network is disconnected or switched.\r\n2. Do clean connectivity. There were few issues discovered in earlier implementation. e.g endpoint would randomly\r\nget disconnected after a while. This was due to the fact that the earlier socket disconnection caused the\r\nremoval of contact on asterisk. This should be fixed in this PR.\r\n3. This PR contains a lot of logs. This will be removed before the final merge.",
+          "description": "The previous PR https://medsensehealth.ca did not handle the issues completely.\r\nThis PR is expected to handle\r\n1. Clearing call related UI when the network is disconnected or switched.\r\n2. Do clean connectivity. There were few issues discovered in earlier implementation. e.g endpoint would randomly\r\nget disconnected after a while. This was due to the fact that the earlier socket disconnection caused the\r\nremoval of contact on asterisk. This should be fixed in this PR.\r\n3. This PR contains a lot of logs. This will be removed before the final merge.",
           "milestone": "4.8.0",
           "contributors": [
             "amolghode1981"
@@ -90115,7 +90115,7 @@
           "pr": "26197",
           "title": "Regression: Reverting @rocket.chat/mp3-encoder version to fix Audio Message",
           "userLogin": "hugocostadev",
-          "description": "An unknow breaking change (still investigating) happened when upgrading the [@rocket.chat/mp3-encoder](https://github.com/RocketChat/fuselage/tree/develop/packages/mp3-encoder) package to version 0.25.0, because of that we revert the version to 0.24.0 the last know working version.",
+          "description": "An unknow breaking change (still investigating) happened when upgrading the [@rocket.chat/mp3-encoder](https://medsensehealth.ca) package to version 0.25.0, because of that we revert the version to 0.24.0 the last know working version.",
           "milestone": "5.0.0",
           "contributors": [
             "hugocostadev"
@@ -90156,7 +90156,7 @@
           "pr": "26209",
           "title": "Regression: Livechat rooms not opening due to route desync",
           "userLogin": "aleksandernsilva",
-          "description": "Due to route information only updating on `Tracker.afterFlush` (https://github.com/RocketChat/Rocket.Chat/pull/25990), we found out that calling the `tabBar.openUserInfo()` method at this point will cause a route change to the previous route instead of the current one, preventing livechat rooms from being opened.\r\n\r\nAs a provisory solution, we're delaying the opening of the contextual bar, which then ensures that the route info is up to date. Although this solution works, we need to find a more reliable way of ensuring consistent route changes with up-to-date information.\r\n\r\n### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.",
+          "description": "Due to route information only updating on `Tracker.afterFlush` (https://medsensehealth.ca), we found out that calling the `tabBar.openUserInfo()` method at this point will cause a route change to the previous route instead of the current one, preventing livechat rooms from being opened.\r\n\r\nAs a provisory solution, we're delaying the opening of the contextual bar, which then ensures that the route info is up to date. Although this solution works, we need to find a more reliable way of ensuring consistent route changes with up-to-date information.\r\n\r\n### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.",
           "milestone": "5.0.0",
           "contributors": [
             "aleksandernsilva",
@@ -90695,7 +90695,7 @@
           "pr": "25724",
           "title": "[FIX] Not showing edit message button when blocking edit after N minutes",
           "userLogin": "matthias4217",
-          "description": "Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://github.com/RocketChat/Rocket.Chat/issues/25478, the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.",
+          "description": "Previously, in Rocketchat 4.7.0 and later,  as mentioned in https://medsensehealth.ca the edit button was not displayed on the interface in the minute after having sent a message. This is now fixed : messages can be edited right after sending them.",
           "milestone": "4.8.2",
           "contributors": [
             "matthias4217",
@@ -90961,7 +90961,7 @@
           "pr": "26057",
           "title": "[FIX] Unable to close chats when comments is disabled",
           "userLogin": "murtaza98",
-          "description": "Fixes https://github.com/RocketChat/Rocket.Chat/issues/25954",
+          "description": "Fixes https://medsensehealth.ca",
           "milestone": "5.0.0",
           "contributors": [
             "murtaza98",
@@ -91044,7 +91044,7 @@
           "pr": "26312",
           "title": "[NEW] Capability to search visitors by custom fields",
           "userLogin": "cauefcr",
-          "description": "Users of the endpoints [api/v1/omnichannel/contact.search](https://developer.rocket.chat/reference/api/rest-api/endpoints/omnichannel/livechat-endpoints/livechat-contact/omnichannel-search-contact) and [/api/v1/livechat/visitors.search](https://developer.rocket.chat/reference/api/rest-api/endpoints/omnichannel/livechat-endpoints/visitor/search-for-visitors) are now able to search by custom fields in their objects. \r\nCapability of selecting if a custom field can be searched for is added in the Omnichannel pannel as a toggle for `searchable`,  the included JSON in the Accounts' Custom Field example has been updated to make it explicit for future configurations that the field has to be enabled as searchable for that to happen.",
+          "description": "Users of the endpoints [api/v1/omnichannel/contact.search](https://medsensehealth.ca) and [/api/v1/livechat/visitors.search](https://medsensehealth.ca) are now able to search by custom fields in their objects. \r\nCapability of selecting if a custom field can be searched for is added in the Omnichannel pannel as a toggle for `searchable`,  the included JSON in the Accounts' Custom Field example has been updated to make it explicit for future configurations that the field has to be enabled as searchable for that to happen.",
           "milestone": "5.1.0",
           "contributors": [
             "cauefcr",
@@ -91148,7 +91148,7 @@
           "pr": "26655",
           "title": "Chore: Remove italic/bold font-style from system messages",
           "userLogin": "hugocostadev",
-          "description": "It was removed from system messages font-styles elements (italic and bold) that highlighted some words as `users`, `room_name` and others.\r\n\r\nIn addition to this PR, was also created a PR to Fuselage to remove italic font style in general at system messages. \r\n\r\nFuselage PR:  https://github.com/RocketChat/fuselage/pull/830",
+          "description": "It was removed from system messages font-styles elements (italic and bold) that highlighted some words as `users`, `room_name` and others.\r\n\r\nIn addition to this PR, was also created a PR to Fuselage to remove italic font style in general at system messages. \r\n\r\nFuselage PR:  https://medsensehealth.ca",
           "contributors": [
             "hugocostadev",
             "gabriellsh",
@@ -94025,7 +94025,7 @@
           "pr": "26686",
           "title": "Chore: Change BundleChips component appearance",
           "userLogin": "rique223",
-          "description": "# [MKP-44](https://rocketchat.atlassian.net/browse/MKP-44?atlOrigin=eyJpIjoiOTBiNzQ4NzE1ZTJiNDBjMGE0NjQxNmQ2MWNkMTI4YjgiLCJwIjoiaiJ9)\r\nChanged the appearance of the marketplace app bundle chips (E.G.: The blue Enterprise tag in the images bellow).\r\n\r\nDemo image for app details page:\r\n![image](https://user-images.githubusercontent.com/43561537/190232209-939d29f5-bcdb-4ce4-99d1-1b061d170ab0.png)\r\n\r\nDemo image for list view:\r\n![image](https://user-images.githubusercontent.com/43561537/190232168-ab898d8a-6a73-4e34-9f47-a5af01bf29fc.png)",
+          "description": "# [MKP-44](https://medsensehealth.ca)\r\nChanged the appearance of the marketplace app bundle chips (E.G.: The blue Enterprise tag in the images bellow).\r\n\r\nDemo image for app details page:\r\n![image](https://user-images.githubusercontent.com/43561537/190232209-939d29f5-bcdb-4ce4-99d1-1b061d170ab0.png)\r\n\r\nDemo image for list view:\r\n![image](https://user-images.githubusercontent.com/43561537/190232168-ab898d8a-6a73-4e34-9f47-a5af01bf29fc.png)",
           "contributors": [
             "rique223",
             "web-flow"
@@ -94769,7 +94769,7 @@
           "pr": "26964",
           "title": "Regression: Event handler blocking mention links",
           "userLogin": "tassoevan",
-          "description": "Fixes mention links being irresponsive to clicks.\r\nJira: [TC-55]\r\n\r\n[TC-55]: https://rocketchat.atlassian.net/browse/TC-55?atlOrigin=eyJpIjoiMmQ3ZmE0MWE2NGQwNDIzZThkMzc5NGNhMzU1MjExMGMiLCJwIjoiaiJ9",
+          "description": "Fixes mention links being irresponsive to clicks.\r\nJira: [TC-55]\r\n\r\n[TC-55]: https://medsensehealth.ca",
           "milestone": "5.2.0",
           "contributors": [
             "tassoevan",
@@ -94815,7 +94815,7 @@
           "pr": "26958",
           "title": "[FIX] Admin sidebar navigation",
           "userLogin": "juliajforesti",
-          "description": "## [MKP-125](https://rocketchat.atlassian.net/browse/MKP-125?atlOrigin=eyJpIjoiMThlMTIwYmFkZWI5NDBlYjhlMWI3YTc1ZDliYTY3NDUiLCJwIjoiaiJ9)\r\nFix the behavior of the admin sidebar, it didn't activate its options properly on pages that had sub-routes.\r\nDemo gif:\r\n![sidebar-bug](https://user-images.githubusercontent.com/43561537/192585542-ddd8fd37-e833-4960-ae67-fb408595c7ba.gif)",
+          "description": "## [MKP-125](https://medsensehealth.ca)\r\nFix the behavior of the admin sidebar, it didn't activate its options properly on pages that had sub-routes.\r\nDemo gif:\r\n![sidebar-bug](https://user-images.githubusercontent.com/43561537/192585542-ddd8fd37-e833-4960-ae67-fb408595c7ba.gif)",
           "contributors": [
             "juliajforesti",
             "rique223",
@@ -95125,7 +95125,7 @@
           "pr": "26796",
           "title": "Chore: Email Inbox Sanitization",
           "userLogin": "dougfabris",
-          "description": "Jira Issue [UFR-3]\r\n\r\n- Rewrite Email Inbox to typescript\r\n- Replace `useForm`\r\n- Fix: return an error if there are no email inboxes in `email-inbox` endpoint \r\n**documentation update**: https://github.com/RocketChat/developer-docs/pull/132\r\n- Add e2e test cases for creating email inboxes and deleting email inboxes",
+          "description": "Jira Issue [UFR-3]\r\n\r\n- Rewrite Email Inbox to typescript\r\n- Replace `useForm`\r\n- Fix: return an error if there are no email inboxes in `email-inbox` endpoint \r\n**documentation update**: https://medsensehealth.ca Add e2e test cases for creating email inboxes and deleting email inboxes",
           "milestone": "5.3.0",
           "contributors": [
             "dougfabris",
@@ -95358,7 +95358,7 @@
           "pr": "27030",
           "title": "Chore: Implement short description for marketplace apps",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-126](https://rocketchat.atlassian.net/browse/MKP-126)\r\nImplemented the shortDescription field in the marketplace app details header. Now apps have either a shorter description or nothing, in case it doesn't have a shortDescription registered, in their headers description section.\r\nDemo image: \r\n![image](https://user-images.githubusercontent.com/43561537/194640492-9942f6d9-66ad-4df9-97e8-98c7d51a724c.png)",
+          "description": "## Jira task: [MKP-126](https://medsensehealth.ca)\r\nImplemented the shortDescription field in the marketplace app details header. Now apps have either a shorter description or nothing, in case it doesn't have a shortDescription registered, in their headers description section.\r\nDemo image: \r\n![image](https://user-images.githubusercontent.com/43561537/194640492-9942f6d9-66ad-4df9-97e8-98c7d51a724c.png)",
           "milestone": "5.3.0",
           "contributors": [
             "rique223",
@@ -95369,7 +95369,7 @@
           "pr": "27044",
           "title": "[IMPROVE] Change status/price badge to fuselage tag",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-131](https://rocketchat.atlassian.net/browse/MKP-131?atlOrigin=eyJpIjoiODRjOTk4OGYyZDAwNDIzNmI5N2EyZGRhNTUxOGY2NGEiLCJwIjoiaiJ9)\r\nChanged the custom component that showed prices and statuses to a fuselage Tag component for maintainability reasons since after this PR every general design change to the tag component will be automatically reflected in the marketplace UI.\r\nDemo image (App List):\r\n![image](https://user-images.githubusercontent.com/43561537/194942430-ba4153f1-2315-4117-85e6-01832cc09d91.png)\r\n\r\nDemo Image (App price):\r\n![image](https://user-images.githubusercontent.com/43561537/194942498-5ff64a27-7232-47b8-a686-2fda2289e491.png)",
+          "description": "## Jira task: [MKP-131](https://medsensehealth.ca)\r\nChanged the custom component that showed prices and statuses to a fuselage Tag component for maintainability reasons since after this PR every general design change to the tag component will be automatically reflected in the marketplace UI.\r\nDemo image (App List):\r\n![image](https://user-images.githubusercontent.com/43561537/194942430-ba4153f1-2315-4117-85e6-01832cc09d91.png)\r\n\r\nDemo Image (App price):\r\n![image](https://user-images.githubusercontent.com/43561537/194942498-5ff64a27-7232-47b8-a686-2fda2289e491.png)",
           "milestone": "5.3.0",
           "contributors": [
             "rique223",
@@ -96059,7 +96059,7 @@
           "pr": "27181",
           "title": "[FIX] Featured apps disappearing, install toast config and save changes button behavior",
           "userLogin": "rique223",
-          "description": "## Jira tasks\r\nFeatured apps disappearing: [MKP-161](https://rocketchat.atlassian.net/browse/MKP-161?atlOrigin=eyJpIjoiYjI4MWMyODJkZjlkNDEwMjhkZWFhNjkxZjBiZTJiOGMiLCJwIjoiaiJ9)\r\nInstall toast config: [MKP-162](https://rocketchat.atlassian.net/browse/MKP-162?atlOrigin=eyJpIjoiNjNhNDJjZGE5YWQ5NDJiMWIyZjM4MjMwNmI1MmE5NjUiLCJwIjoiaiJ9)\r\nSave changes button behavior: [MKP-163](https://rocketchat.atlassian.net/browse/MKP-163?atlOrigin=eyJpIjoiZjc3MzUwZTNmYjU3NDJiZjhlOWI0OGIzMGY3ZWQ5ODUiLCJwIjoiaiJ9)\r\n\r\nFixed three bugs: In the first one featured apps would disappear from the apps list after installation, in the second one the install toast wasn't correctly configured, and in the third one the app details page save button would render even when the current app wasn't installed.\r\nDemo gif:\r\n\r\n![featured_disappearing](https://user-images.githubusercontent.com/43561537/199850435-ca9e8ba1-7924-414e-96f4-dfb373fdd754.gif)",
+          "description": "## Jira tasks\r\nFeatured apps disappearing: [MKP-161](https://medsensehealth.ca)\r\nInstall toast config: [MKP-162](https://medsensehealth.ca)\r\nSave changes button behavior: [MKP-163](https://medsensehealth.ca)\r\n\r\nFixed three bugs: In the first one featured apps would disappear from the apps list after installation, in the second one the install toast wasn't correctly configured, and in the third one the app details page save button would render even when the current app wasn't installed.\r\nDemo gif:\r\n\r\n![featured_disappearing](https://user-images.githubusercontent.com/43561537/199850435-ca9e8ba1-7924-414e-96f4-dfb373fdd754.gif)",
           "milestone": "5.4.0",
           "contributors": [
             "rique223",
@@ -96105,7 +96105,7 @@
           "pr": "27311",
           "title": "[FIX] Ensure onetime job runs according to 'startupSetting' everytime",
           "userLogin": "thassiov",
-          "description": "- Fixes the condition of not running a _onetime job_ at the app's startup scheduled to run by using the [`startupSetting`](https://github.com/RocketChat/Rocket.Chat.Apps-engine/blob/04f5930244836043040a8c42beff0690a2359a53/src/definition/scheduler/IProcessor.ts#L8) if the job was run previously at another app startup (Agenda does not remove already run jobs from the database, preventing the app from scheduling the job a second time as it thinks the job is already scheduled);\r\n- Declutters the scheduler's collection by removing _onetime jobs_ documents after they are run.",
+          "description": "- Fixes the condition of not running a _onetime job_ at the app's startup scheduled to run by using the [`startupSetting`](https://medsensehealth.ca) if the job was run previously at another app startup (Agenda does not remove already run jobs from the database, preventing the app from scheduling the job a second time as it thinks the job is already scheduled);\r\n- Declutters the scheduler's collection by removing _onetime jobs_ documents after they are run.",
           "milestone": "5.4.0",
           "contributors": [
             "thassiov"
@@ -96328,7 +96328,7 @@
           "pr": "27239",
           "title": "[IMPROVE] Marketplace feedback toasts",
           "userLogin": "rique223",
-          "description": "## Jira tasks\r\nSave app changes toast: [MKP-160](https://rocketchat.atlassian.net/browse/MKP-160?atlOrigin=eyJpIjoiMjM1YmZjMTVjZGU2NGUwMGIxNTRlYTEwODgwMDk2ZDkiLCJwIjoiaiJ9)\r\nUninstall app toast: [MKP-168](https://rocketchat.atlassian.net/browse/MKP-168?atlOrigin=eyJpIjoiOThkMjEwOTk5NjhiNDE2OGEwY2MyNWEyNWM5YzNkMTUiLCJwIjoiaiJ9)\r\nEnable/disable app feedback toast: [MKP-169](https://rocketchat.atlassian.net/browse/MKP-169?atlOrigin=eyJpIjoiN2VjODIzOGMwNmJkNGU3N2JhOWEzMDU3Y2IxZjZkNWMiLCJwIjoiaiJ9)\r\n\r\n\r\nImplemented/refactored four toast notifications and refactored another two in marketplace. The first one happens after the user saves the settings of an app, the second one when the user successfully uninstalls an app and the third and fourth ones happen when the user enables and disables an app respectfully.\r\nDemo gif:\r\n![feedback_toasts](https://user-images.githubusercontent.com/43561537/202277707-a3b38536-e090-4c4f-96b4-8e21bcd10070.gif)",
+          "description": "## Jira tasks\r\nSave app changes toast: [MKP-160](https://medsensehealth.ca)\r\nUninstall app toast: [MKP-168](https://medsensehealth.ca)\r\nEnable/disable app feedback toast: [MKP-169](https://medsensehealth.ca)\r\n\r\n\r\nImplemented/refactored four toast notifications and refactored another two in marketplace. The first one happens after the user saves the settings of an app, the second one when the user successfully uninstalls an app and the third and fourth ones happen when the user enables and disables an app respectfully.\r\nDemo gif:\r\n![feedback_toasts](https://user-images.githubusercontent.com/43561537/202277707-a3b38536-e090-4c4f-96b4-8e21bcd10070.gif)",
           "milestone": "5.4.0",
           "contributors": [
             "rique223",
@@ -96545,7 +96545,7 @@
           "pr": "27003",
           "title": "[NEW] Emphasis Elements (italic, strike and bold) in Message Parser Components",
           "userLogin": "hugocostadev",
-          "description": "Currently the message parser does not accept Emphasis elements mixed with plain text\r\n\r\n`[Normal Link - *Bold*, _Italic_  and ~strike~ Styles](https://rocket.chat/)` return plain text → Should return a Lin with bold/italic/strike\r\n\r\nTo fix this behavior it was necessary to edit LinkSpan component in gazzodown package (changes included in this PR) and the grammar/utils files in the `fuselage/message-parser` repository\r\n\r\nFuselage Pull Request:  https://github.com/RocketChat/fuselage/pull/887/",
+          "description": "Currently the message parser does not accept Emphasis elements mixed with plain text\r\n\r\n`[Normal Link - *Bold*, _Italic_  and ~strike~ Styles](https://medsensehealth.ca)` return plain text → Should return a Lin with bold/italic/strike\r\n\r\nTo fix this behavior it was necessary to edit LinkSpan component in gazzodown package (changes included in this PR) and the grammar/utils files in the `fuselage/message-parser` repository\r\n\r\nFuselage Pull Request:  https://medsensehealth.ca",
           "milestone": "5.4.0",
           "contributors": [
             "hugocostadev",
@@ -96614,7 +96614,7 @@
           "pr": "27062",
           "title": "[FIX] Marketplace app details page back-button behavior",
           "userLogin": "rique223",
-          "description": "Jira task: [MKP-26](https://rocketchat.atlassian.net/browse/MKP-26?atlOrigin=eyJpIjoiM2I4MzVhYmQ2OWRkNDE0ZGI4NWZkMzE3MDQwNmIxMzMiLCJwIjoiaiJ9)\r\n\r\nFixed the behavior of the marketplace app details page back button. Now it will return the user to the page they accessed the app details from. Also, refactored the overall routing of the marketplace and removed the admin-apps route as everything is now handled by the admin-marketplace route.\r\n\r\nDemo gif:\r\n![apps-back-button](https://user-images.githubusercontent.com/43561537/195709074-a886472e-5462-474e-8f65-5cfa33d30263.gif)",
+          "description": "Jira task: [MKP-26](https://medsensehealth.ca)\r\n\r\nFixed the behavior of the marketplace app details page back button. Now it will return the user to the page they accessed the app details from. Also, refactored the overall routing of the marketplace and removed the admin-apps route as everything is now handled by the admin-marketplace route.\r\n\r\nDemo gif:\r\n![apps-back-button](https://user-images.githubusercontent.com/43561537/195709074-a886472e-5462-474e-8f65-5cfa33d30263.gif)",
           "milestone": "5.4.0",
           "contributors": [
             "rique223",
@@ -96743,7 +96743,7 @@
           "pr": "27056",
           "title": "[IMPROVE] Move app list install logic to app menu",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-136](https://rocketchat.atlassian.net/browse/MKP-136?atlOrigin=eyJpIjoiM2M0ODhkZDc0YjQ2NGE5OGE4YTBkZDJhY2M0NGVmZDgiLCJwIjoiaiJ9)\r\nMoved the install/buy/subscribe logic from the CTA buttons that existed in the app list to the app menu. Now the user can install apps by clicking in the kebab menu in the right of the app list entry. Also solved a little undefined bug happening in the app permissions modal.\r\nDemo gif:\r\n![app_menu](https://user-images.githubusercontent.com/43561537/195204630-e66c7859-028f-4654-8367-96029a855b42.gif)",
+          "description": "## Jira task: [MKP-136](https://medsensehealth.ca)\r\nMoved the install/buy/subscribe logic from the CTA buttons that existed in the app list to the app menu. Now the user can install apps by clicking in the kebab menu in the right of the app list entry. Also solved a little undefined bug happening in the app permissions modal.\r\nDemo gif:\r\n![app_menu](https://user-images.githubusercontent.com/43561537/195204630-e66c7859-028f-4654-8367-96029a855b42.gif)",
           "milestone": "5.4.0",
           "contributors": [
             "rique223",
@@ -98265,7 +98265,7 @@
           "pr": "27389",
           "title": "[BREAK] Marketplace standalone page and app request flow",
           "userLogin": "rique223",
-          "description": "Remove marketplace from the admin menu (on both the file system and the UI), change it into a standalone page, expose its use to end-users, and create an app request flow that allows end-users to ask for app installations in their workspaces directly through Rocket Chats UI.\r\n\r\nDemo loom: https://www.loom.com/share/643ba3432225418e96c10041f386ff48\r\n\r\n## Jira tasks and ADRs\r\nAll tasks, descriptions, and designs of work done in this PR can be found on the tasks below, which also double down as simplified ADRs.\r\n\r\n### [MKP-147](https://rocketchat.atlassian.net/browse/MKP-147?atlOrigin=eyJpIjoiNDJjNjBlNjU1MjI3NGI0M2I0NDZiZTRkMjkyYjcyZWMiLCJwIjoiaiJ9) - Remove marketplace from the admin menu and put it on its own page\r\n\r\n### [MKP-68](https://rocketchat.atlassian.net/browse/MKP-68?atlOrigin=eyJpIjoiMGRhMmExYTViNDNlNGI0Y2FjY2ViNDc3MDgyNWUxNDciLCJwIjoiaiJ9) - Create an enterprise option on the new marketplace sidebar\r\n\r\n### [MKP-150](https://rocketchat.atlassian.net/browse/MKP-150?atlOrigin=eyJpIjoiOGIyOWZlMWRhNmFmNDhlODhhMmNlOWE0MmMzOTYwMTgiLCJwIjoiaiJ9) - Implement the SideNav of the new marketplace page\r\n\r\n### [MKP-151](https://rocketchat.atlassian.net/browse/MKP-151?atlOrigin=eyJpIjoiN2Y2OTc3MzhlZTAzNGJkOTgwYWVmZjFmMGY0MjA0ZmEiLCJwIjoiaiJ9) - Brainstorm and implement the new marketplace routes\r\n\r\n### [MKP-179](https://rocketchat.atlassian.net/browse/MKP-179?atlOrigin=eyJpIjoiYjBmMDgxOGE4OTAxNDgzYTgwMDkxZmQxZGQwZTliNDQiLCJwIjoiaiJ9) - Retrieve number of requested apps and make it available for components\r\n\r\n### [MKP-181](https://rocketchat.atlassian.net/browse/MKP-181?atlOrigin=eyJpIjoiNzRiNGM0MTM5NjNjNGVlNmFhZmIyZmQ1MGFhZTkzMjgiLCJwIjoiaiJ9) - Implement requested option on marketplace sidebar\r\n\r\n### [MKP-184](https://rocketchat.atlassian.net/browse/MKP-184?atlOrigin=eyJpIjoiY2RkYjJhODc2MTcyNDlkOTllNzc1ZGU4OWIyNTMwYmIiLCJwIjoiaiJ9) - Create requested apps page\r\n\r\n### [MKP-185](https://rocketchat.atlassian.net/browse/MKP-185?atlOrigin=eyJpIjoiY2M4ZjVmMzZlODA3NDBkZWE3NTU3YTQ2NWMyYWFjYTAiLCJwIjoiaiJ9) - Implement requested apps list layout and logic\r\n\r\n### [MKP-180](https://rocketchat.atlassian.net/browse/MKP-180?atlOrigin=eyJpIjoiYjQwOTVkOTQ4YmYyNDlmN2JlNWI5YzcwYmMzYTEzZmIiLCJwIjoiaiJ9) - Implement requested apps option to home screen kebab menu\r\n\r\n### [MKP-188](https://rocketchat.atlassian.net/browse/MKP-188?atlOrigin=eyJpIjoiYTkzNWMwMzdlODBlNDMwOGIzOGQ1MGJhMzFkNzhjYmMiLCJwIjoiaiJ9) - Implement the requested apps tab on app details page\r\n\r\n### [MKP-187](https://rocketchat.atlassian.net/browse/MKP-187?atlOrigin=eyJpIjoiYmUzMjI2YTE4Njc1NGFjMThjYjUxNDlhYjMwMTc2MDgiLCJwIjoiaiJ9) - Implement visualized requests system on apps list tags and app requests tab\r\n\r\n### [MKP-164](https://rocketchat.atlassian.net/browse/MKP-164?atlOrigin=eyJpIjoiMDUxOTJmNzVlNmZjNGQ4ZTljNzY2NDI4YjU5MjU0N2EiLCJwIjoiaiJ9) - ALL view the app's technical documentation page\r\n\r\n### [MKP-197](https://rocketchat.atlassian.net/browse/MKP-197) - Rocket.cat notification for admins when an app is requested\r\n\r\n### [MKP-224](https://rocketchat.atlassian.net/browse/MKP-224) - After i click submit request in the modal the modal is not closing",
+          "description": "Remove marketplace from the admin menu (on both the file system and the UI), change it into a standalone page, expose its use to end-users, and create an app request flow that allows end-users to ask for app installations in their workspaces directly through Rocket Chats UI.\r\n\r\nDemo loom: https://www.loom.com/share/643ba3432225418e96c10041f386ff48\r\n\r\n## Jira tasks and ADRs\r\nAll tasks, descriptions, and designs of work done in this PR can be found on the tasks below, which also double down as simplified ADRs.\r\n\r\n### [MKP-147](https://medsensehealth.ca) - Remove marketplace from the admin menu and put it on its own page\r\n\r\n### [MKP-68](https://medsensehealth.ca) - Create an enterprise option on the new marketplace sidebar\r\n\r\n### [MKP-150](https://medsensehealth.ca) - Implement the SideNav of the new marketplace page\r\n\r\n### [MKP-151](https://medsensehealth.ca) - Brainstorm and implement the new marketplace routes\r\n\r\n### [MKP-179](https://medsensehealth.ca) - Retrieve number of requested apps and make it available for components\r\n\r\n### [MKP-181](https://medsensehealth.ca) - Implement requested option on marketplace sidebar\r\n\r\n### [MKP-184](https://medsensehealth.ca) - Create requested apps page\r\n\r\n### [MKP-185](https://medsensehealth.ca) - Implement requested apps list layout and logic\r\n\r\n### [MKP-180](https://medsensehealth.ca) - Implement requested apps option to home screen kebab menu\r\n\r\n### [MKP-188](https://medsensehealth.ca) - Implement the requested apps tab on app details page\r\n\r\n### [MKP-187](https://medsensehealth.ca) - Implement visualized requests system on apps list tags and app requests tab\r\n\r\n### [MKP-164](https://medsensehealth.ca) - ALL view the app's technical documentation page\r\n\r\n### [MKP-197](https://medsensehealth.ca) - Rocket.cat notification for admins when an app is requested\r\n\r\n### [MKP-224](https://medsensehealth.ca) - After i click submit request in the modal the modal is not closing",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -98471,7 +98471,7 @@
           "pr": "27763",
           "title": "[NEW] Matrix federation events coverage expansion + bug fixes",
           "userLogin": "MarcosSpessatto",
-          "description": "- Disables not supported features in federated channels (#27204)\r\n- Add support for the whole Matrix Markdown spec (#27725)\r\n- Allow federated rooms with the same name per different servers when they have a contact between them (#27559)\r\n-  Matrix Federation send message when multiple users are involved was not working (#27327)\r\n- Allow the room owner to set roles on federated rooms, following a specific and different approach as normal rooms (available on docs) (https://github.com/RocketChat/Rocket.Chat/pull/27633)\r\n- E2E Tests (PS: they don't run on CI) (#27578 #27282 #27115)\r\n- Disables admin actions disallowed for federated users/rooms (https://github.com/RocketChat/Rocket.Chat/pull/27251)\r\n\r\nFED-81",
+          "description": "- Disables not supported features in federated channels (#27204)\r\n- Add support for the whole Matrix Markdown spec (#27725)\r\n- Allow federated rooms with the same name per different servers when they have a contact between them (#27559)\r\n-  Matrix Federation send message when multiple users are involved was not working (#27327)\r\n- Allow the room owner to set roles on federated rooms, following a specific and different approach as normal rooms (available on docs) (https://medsensehealth.ca)\r\n- E2E Tests (PS: they don't run on CI) (#27578 #27282 #27115)\r\n- Disables admin actions disallowed for federated users/rooms (https://medsensehealth.ca)\r\n\r\nFED-81",
           "milestone": "6.0.0",
           "contributors": [
             "MarcosSpessatto",
@@ -99113,7 +99113,7 @@
           "pr": "27947",
           "title": "[FIX] Message-parser link issues",
           "userLogin": "hugocostadev",
-          "description": "The changes were made in the fuselage repository. This PR just update the message-parser package version\r\nCheck the changes in this PR: \r\nhttps://github.com/RocketChat/fuselage/pull/962",
+          "description": "The changes were made in the fuselage repository. This PR just update the message-parser package version\r\nCheck the changes in this PR: \r\nhttps://medsensehealth.ca",
           "milestone": "6.0.0",
           "contributors": [
             "hugocostadev",
@@ -99137,7 +99137,7 @@
           "pr": "27760",
           "title": "[BREAK] Remove legacy FB Messenger integration",
           "userLogin": "murtaza98",
-          "description": "Legacy FB messenger integration has been removed in favour of the new and enhanced FB App integration. [Click here](https://docs.rocket.chat/guides/app-guides/omnichannel-apps/facebook-app) for more info",
+          "description": "Legacy FB messenger integration has been removed in favour of the new and enhanced FB App integration. [Click here](https://medsensehealth.ca) for more info",
           "milestone": "6.0.0",
           "contributors": [
             "murtaza98",
@@ -99172,7 +99172,7 @@
           "pr": "27877",
           "title": "[NEW] Bridge to get all users crated by app and also delete them",
           "userLogin": "albuquerquefabio",
-          "description": "We're working on [MS Teams bridge](https://github.com/RocketChat/Apps.teams.bridge), to make it usable we have created a new method for the apps engine to [create new users](https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/536) and we'll also need to delete all when we uninstall the app. Therefore, we created this bridge to cover the action of deleting users on the app side.",
+          "description": "We're working on [MS Teams bridge](https://medsensehealth.ca), to make it usable we have created a new method for the apps engine to [create new users](https://medsensehealth.ca) and we'll also need to delete all when we uninstall the app. Therefore, we created this bridge to cover the action of deleting users on the app side.",
           "milestone": "6.0.0",
           "contributors": [
             "albuquerquefabio",
@@ -99609,7 +99609,7 @@
           "pr": "27704",
           "title": "Chore: Update color tokens",
           "userLogin": "juliajforesti",
-          "description": "Jira issues: \r\n[DSA-25](https://rocketchat.atlassian.net/browse/DSA-25)\r\n[DSA-26](https://rocketchat.atlassian.net/browse/DSA-26)\r\n[DSA-27](https://rocketchat.atlassian.net/browse/DSA-27)\r\n[DSA-28](https://rocketchat.atlassian.net/browse/DSA-28)\r\n[DSA-30](https://rocketchat.atlassian.net/browse/DSA-30)\r\n\r\n- [x] Fix ScreenshotCarousel tokens\r\n- [x] Replace ScreenshotCarousel Button with IconButton secondary\r\n- [x] Fix UsagePieGraph tokens\r\n- [x] Fix Page.tsx tokens\r\n- [x] Fix VoipFooter tokens\r\n- [x] Fix DeviceIcon token\r\n- [x] Fix SidebarFooterWatermark token\r\n- [x] Fix PaletteDark button hover bg color\r\n- [x] Fix MessageComposerActionsDivider token\r\n- [x] Fix room Announcement colors\r\n- [x] Apply surface-room\r\n- [x] Replace all deprecated Box color tokens usage\r\n- [x] Replace all deprecated Box bg tokens usage",
+          "description": "Jira issues: \r\n[DSA-25](https://medsensehealth.ca)\r\n[DSA-26](https://medsensehealth.ca)\r\n[DSA-27](https://medsensehealth.ca)\r\n[DSA-28](https://medsensehealth.ca)\r\n[DSA-30](https://medsensehealth.ca)\r\n\r\n- [x] Fix ScreenshotCarousel tokens\r\n- [x] Replace ScreenshotCarousel Button with IconButton secondary\r\n- [x] Fix UsagePieGraph tokens\r\n- [x] Fix Page.tsx tokens\r\n- [x] Fix VoipFooter tokens\r\n- [x] Fix DeviceIcon token\r\n- [x] Fix SidebarFooterWatermark token\r\n- [x] Fix PaletteDark button hover bg color\r\n- [x] Fix MessageComposerActionsDivider token\r\n- [x] Fix room Announcement colors\r\n- [x] Apply surface-room\r\n- [x] Replace all deprecated Box color tokens usage\r\n- [x] Replace all deprecated Box bg tokens usage",
           "contributors": [
             "juliajforesti",
             "web-flow",
@@ -99801,7 +99801,7 @@
           "pr": "27330",
           "title": "[FIX] Marketplace app status initially disabled",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-20](https://rocketchat.atlassian.net/browse/MKP-20?atlOrigin=eyJpIjoiZTA3YWU5MGYwMDU1NDQ0MGJiNzQyMjYxZmMwMWVmMWQiLCJwIjoiaiJ9)\r\n\r\nCurrently, the only apps engine statuses considered enabled in the UI are the auto-enabled and manually-enabled statuses, this causes a UX problem in which the app will be considered disabled for the first few seconds of its lifecycle, upon the first installation in a workspace, since it will have the apps engine status of initialized. This PR adds the initialized status to the appEnabledStatuses list and solves this problem.\r\nDemo gif:\r\n![disabled_status_issue_solution](https://user-images.githubusercontent.com/43561537/204306496-961384c3-ec24-4959-90cd-03f4638be948.gif)\\",
+          "description": "## Jira task: [MKP-20](https://medsensehealth.ca)\r\n\r\nCurrently, the only apps engine statuses considered enabled in the UI are the auto-enabled and manually-enabled statuses, this causes a UX problem in which the app will be considered disabled for the first few seconds of its lifecycle, upon the first installation in a workspace, since it will have the apps engine status of initialized. This PR adds the initialized status to the appEnabledStatuses list and solves this problem.\r\nDemo gif:\r\n![disabled_status_issue_solution](https://user-images.githubusercontent.com/43561537/204306496-961384c3-ec24-4959-90cd-03f4638be948.gif)\\",
           "contributors": [
             "rique223",
             "web-flow",
@@ -99940,7 +99940,7 @@
           "pr": "27329",
           "title": "[FIX] Remove unnecessary permissions check on app permissions review modal",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-166](https://rocketchat.atlassian.net/browse/MKP-166?atlOrigin=eyJpIjoiYzdjNzVhMThkOThjNGEzMmIyYTE2YmY2ZDA1MzA4YjEiLCJwIjoiaiJ9)\r\nRemoved an unnecessary check that verified if the app permissions list was an array and threw an error if it wasn't. This check has become unnecessary ever since the app permission review modal changed to show a default list of permissions in case the app happened to not have one and that's what caused those \"random\" undefined toasts that showed every once in a while.\r\nDemo gif:\r\n![undefined_toast](https://user-images.githubusercontent.com/43561537/203644331-be9583e1-a92d-46a8-ab3b-add875e7a646.gif)",
+          "description": "## Jira task: [MKP-166](https://medsensehealth.ca)\r\nRemoved an unnecessary check that verified if the app permissions list was an array and threw an error if it wasn't. This check has become unnecessary ever since the app permission review modal changed to show a default list of permissions in case the app happened to not have one and that's what caused those \"random\" undefined toasts that showed every once in a while.\r\nDemo gif:\r\n![undefined_toast](https://user-images.githubusercontent.com/43561537/203644331-be9583e1-a92d-46a8-ab3b-add875e7a646.gif)",
           "contributors": [
             "rique223",
             "web-flow",
@@ -101318,7 +101318,7 @@
           "pr": "28198",
           "title": "Regression: Fix app status filter not working in private apps page",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-266](https://rocketchat.atlassian.net/browse/MKP-266?atlOrigin=eyJpIjoiMzlhNmRhZDNmOGZkNDBmZGEyY2FkNTQ5ZTVlZjUzNzkiLCJwIjoiaiJ9)\r\nFixed a bug in which the app status filter didn't work because of the new 'enabled*' and 'disabled*' app status.\r\nDemo gif:\r\n![private-apps-status-filter](https://user-images.githubusercontent.com/43561537/221709473-633f6866-e921-438d-9a20-e6b341823cbf.gif)",
+          "description": "## Jira task: [MKP-266](https://medsensehealth.ca)\r\nFixed a bug in which the app status filter didn't work because of the new 'enabled*' and 'disabled*' app status.\r\nDemo gif:\r\n![private-apps-status-filter](https://user-images.githubusercontent.com/43561537/221709473-633f6866-e921-438d-9a20-e6b341823cbf.gif)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -101448,7 +101448,7 @@
           "pr": "28200",
           "title": "Regression: Show mention instead of the name of the user in app request messages",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-249](https://rocketchat.atlassian.net/browse/MKP-249?atlOrigin=eyJpIjoiYmNmMjBjOGI5OGUwNGVhMTg1NGMyNDZhMGYzMGY4YWMiLCJwIjoiaiJ9)\r\nStopped using the name of users that requested apps and now the app request messages directly mention the users.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221995968-c6e4dc7e-9052-4121-b5d0-610a1fbe7ea1.png)",
+          "description": "## Jira task: [MKP-249](https://medsensehealth.ca)\r\nStopped using the name of users that requested apps and now the app request messages directly mention the users.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221995968-c6e4dc7e-9052-4121-b5d0-610a1fbe7ea1.png)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -101529,7 +101529,7 @@
           "pr": "28199",
           "title": "Regression: Fix private apps already in marketplace not shown properly on app details page",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-267](https://rocketchat.atlassian.net/browse/MKP-267?atlOrigin=eyJpIjoiMDVmNDJjYjFjZDNiNGU4NTk4NGQ4ODZjMjM3NDYwNDciLCJwIjoiaiJ9)\r\nFixed a bug in which apps that already existed in the marketplace would not show properly when installed via the private apps page.\r\nDemo gif:\r\n![private-apps-same-app](https://user-images.githubusercontent.com/43561537/221710893-004adb81-2dd7-4ad4-b0c6-18b644415ac0.gif)",
+          "description": "## Jira task: [MKP-267](https://medsensehealth.ca)\r\nFixed a bug in which apps that already existed in the marketplace would not show properly when installed via the private apps page.\r\nDemo gif:\r\n![private-apps-same-app](https://user-images.githubusercontent.com/43561537/221710893-004adb81-2dd7-4ad4-b0c6-18b644415ac0.gif)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -101723,7 +101723,7 @@
           "pr": "28188",
           "title": "Regression: Hide price and category filters when inside of private apps page",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-265](https://rocketchat.atlassian.net/browse/MKP-265?atlOrigin=eyJpIjoiMGUyMjI0ZTJjNjg1NDc5ZWE0Y2U4NDVkMzk4MmRmYmEiLCJwIjoiaiJ9)\r\nThe price and category filters dont make sense for private apps so when inside of the private apps page these filters will now be hidden.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221595718-c812861a-672e-44ac-bb03-6046064e420a.png)",
+          "description": "## Jira task: [MKP-265](https://medsensehealth.ca)\r\nThe price and category filters dont make sense for private apps so when inside of the private apps page these filters will now be hidden.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221595718-c812861a-672e-44ac-bb03-6046064e420a.png)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -101873,7 +101873,7 @@
           "pr": "28264",
           "title": "Regression: Apps provider not handling apps lists correctly",
           "userLogin": "rique223",
-          "description": "## Jira tasks: [MKP-272](https://rocketchat.atlassian.net/browse/MKP-272?atlOrigin=eyJpIjoiNDQzMmY4NmYyYTEyNDJjMmJmZmY3ZGUyYmQ3Y2Y2Y2EiLCJwIjoiaiJ9) [MKP-270](https://rocketchat.atlassian.net/browse/MKP-270?atlOrigin=eyJpIjoiOWRhYWM5N2VmY2UwNDAyMjlhY2ZiM2IwYjMwYWQxOWUiLCJwIjoiaiJ9)\r\nFixed a bug in which the AppsProvider would not handle the marketplace, installed, and private apps lists correctly when running the install, update, and delete listeners. This also solved related bugs of app duplication during installation and loss of reactivity during uninstalls and status changes(private apps only).\r\nDemo gif: ![apps-provider-behavior](https://user-images.githubusercontent.com/43561537/222833328-1d9836c0-738c-41d5-ac17-a5d86452ea83.gif)",
+          "description": "## Jira tasks: [MKP-272](https://medsensehealth.ca) [MKP-270](https://medsensehealth.ca)\r\nFixed a bug in which the AppsProvider would not handle the marketplace, installed, and private apps lists correctly when running the install, update, and delete listeners. This also solved related bugs of app duplication during installation and loss of reactivity during uninstalls and status changes(private apps only).\r\nDemo gif: ![apps-provider-behavior](https://user-images.githubusercontent.com/43561537/222833328-1d9836c0-738c-41d5-ac17-a5d86452ea83.gif)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -102084,7 +102084,7 @@
           "pr": "28312",
           "title": "Regression: Change names of requested apps sorting options",
           "userLogin": "rique223",
-          "description": "## Jira task: [MKP-253](https://rocketchat.atlassian.net/browse/MKP-253)\r\nChanged the name of the requested app-related sorting options to cause less confusion regarding their expected behavior and solved some UX problems with the initial state of the sorting filter when on different marketplace pages. Also fixed some typos.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/223466309-60f02a71-c21e-4607-a2b4-5de81c3b3cd5.png)",
+          "description": "## Jira task: [MKP-253](https://medsensehealth.ca)\r\nChanged the name of the requested app-related sorting options to cause less confusion regarding their expected behavior and solved some UX problems with the initial state of the sorting filter when on different marketplace pages. Also fixed some typos.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/223466309-60f02a71-c21e-4607-a2b4-5de81c3b3cd5.png)",
           "milestone": "6.0.0",
           "contributors": [
             "rique223",
@@ -102478,7 +102478,7 @@
         "pr": "27181",
         "title": "[FIX] Featured apps disappearing, install toast config and save changes button behavior",
         "userLogin": "rique223",
-        "description": "## Jira tasks\r\nFeatured apps disappearing: [MKP-161](https://rocketchat.atlassian.net/browse/MKP-161?atlOrigin=eyJpIjoiYjI4MWMyODJkZjlkNDEwMjhkZWFhNjkxZjBiZTJiOGMiLCJwIjoiaiJ9)\r\nInstall toast config: [MKP-162](https://rocketchat.atlassian.net/browse/MKP-162?atlOrigin=eyJpIjoiNjNhNDJjZGE5YWQ5NDJiMWIyZjM4MjMwNmI1MmE5NjUiLCJwIjoiaiJ9)\r\nSave changes button behavior: [MKP-163](https://rocketchat.atlassian.net/browse/MKP-163?atlOrigin=eyJpIjoiZjc3MzUwZTNmYjU3NDJiZjhlOWI0OGIzMGY3ZWQ5ODUiLCJwIjoiaiJ9)\r\n\r\nFixed three bugs: In the first one featured apps would disappear from the apps list after installation, in the second one the install toast wasn't correctly configured, and in the third one the app details page save button would render even when the current app wasn't installed.\r\nDemo gif:\r\n\r\n![featured_disappearing](https://user-images.githubusercontent.com/43561537/199850435-ca9e8ba1-7924-414e-96f4-dfb373fdd754.gif)",
+        "description": "## Jira tasks\r\nFeatured apps disappearing: [MKP-161](https://medsensehealth.ca)\r\nInstall toast config: [MKP-162](https://medsensehealth.ca)\r\nSave changes button behavior: [MKP-163](https://medsensehealth.ca)\r\n\r\nFixed three bugs: In the first one featured apps would disappear from the apps list after installation, in the second one the install toast wasn't correctly configured, and in the third one the app details page save button would render even when the current app wasn't installed.\r\nDemo gif:\r\n\r\n![featured_disappearing](https://user-images.githubusercontent.com/43561537/199850435-ca9e8ba1-7924-414e-96f4-dfb373fdd754.gif)",
         "milestone": "5.4.0",
         "contributors": [
           "rique223",
@@ -102524,7 +102524,7 @@
         "pr": "27311",
         "title": "[FIX] Ensure onetime job runs according to 'startupSetting' everytime",
         "userLogin": "thassiov",
-        "description": "- Fixes the condition of not running a _onetime job_ at the app's startup scheduled to run by using the [`startupSetting`](https://github.com/RocketChat/Rocket.Chat.Apps-engine/blob/04f5930244836043040a8c42beff0690a2359a53/src/definition/scheduler/IProcessor.ts#L8) if the job was run previously at another app startup (Agenda does not remove already run jobs from the database, preventing the app from scheduling the job a second time as it thinks the job is already scheduled);\r\n- Declutters the scheduler's collection by removing _onetime jobs_ documents after they are run.",
+        "description": "- Fixes the condition of not running a _onetime job_ at the app's startup scheduled to run by using the [`startupSetting`](https://medsensehealth.ca) if the job was run previously at another app startup (Agenda does not remove already run jobs from the database, preventing the app from scheduling the job a second time as it thinks the job is already scheduled);\r\n- Declutters the scheduler's collection by removing _onetime jobs_ documents after they are run.",
         "milestone": "5.4.0",
         "contributors": [
           "thassiov"
@@ -102747,7 +102747,7 @@
         "pr": "27239",
         "title": "[IMPROVE] Marketplace feedback toasts",
         "userLogin": "rique223",
-        "description": "## Jira tasks\r\nSave app changes toast: [MKP-160](https://rocketchat.atlassian.net/browse/MKP-160?atlOrigin=eyJpIjoiMjM1YmZjMTVjZGU2NGUwMGIxNTRlYTEwODgwMDk2ZDkiLCJwIjoiaiJ9)\r\nUninstall app toast: [MKP-168](https://rocketchat.atlassian.net/browse/MKP-168?atlOrigin=eyJpIjoiOThkMjEwOTk5NjhiNDE2OGEwY2MyNWEyNWM5YzNkMTUiLCJwIjoiaiJ9)\r\nEnable/disable app feedback toast: [MKP-169](https://rocketchat.atlassian.net/browse/MKP-169?atlOrigin=eyJpIjoiN2VjODIzOGMwNmJkNGU3N2JhOWEzMDU3Y2IxZjZkNWMiLCJwIjoiaiJ9)\r\n\r\n\r\nImplemented/refactored four toast notifications and refactored another two in marketplace. The first one happens after the user saves the settings of an app, the second one when the user successfully uninstalls an app and the third and fourth ones happen when the user enables and disables an app respectfully.\r\nDemo gif:\r\n![feedback_toasts](https://user-images.githubusercontent.com/43561537/202277707-a3b38536-e090-4c4f-96b4-8e21bcd10070.gif)",
+        "description": "## Jira tasks\r\nSave app changes toast: [MKP-160](https://medsensehealth.ca)\r\nUninstall app toast: [MKP-168](https://medsensehealth.ca)\r\nEnable/disable app feedback toast: [MKP-169](https://medsensehealth.ca)\r\n\r\n\r\nImplemented/refactored four toast notifications and refactored another two in marketplace. The first one happens after the user saves the settings of an app, the second one when the user successfully uninstalls an app and the third and fourth ones happen when the user enables and disables an app respectfully.\r\nDemo gif:\r\n![feedback_toasts](https://user-images.githubusercontent.com/43561537/202277707-a3b38536-e090-4c4f-96b4-8e21bcd10070.gif)",
         "milestone": "5.4.0",
         "contributors": [
           "rique223",
@@ -102964,7 +102964,7 @@
         "pr": "27003",
         "title": "[NEW] Emphasis Elements (italic, strike and bold) in Message Parser Components",
         "userLogin": "hugocostadev",
-        "description": "Currently the message parser does not accept Emphasis elements mixed with plain text\r\n\r\n`[Normal Link - *Bold*, _Italic_  and ~strike~ Styles](https://rocket.chat/)` return plain text → Should return a Lin with bold/italic/strike\r\n\r\nTo fix this behavior it was necessary to edit LinkSpan component in gazzodown package (changes included in this PR) and the grammar/utils files in the `fuselage/message-parser` repository\r\n\r\nFuselage Pull Request:  https://github.com/RocketChat/fuselage/pull/887/",
+        "description": "Currently the message parser does not accept Emphasis elements mixed with plain text\r\n\r\n`[Normal Link - *Bold*, _Italic_  and ~strike~ Styles](https://medsensehealth.ca)` return plain text → Should return a Lin with bold/italic/strike\r\n\r\nTo fix this behavior it was necessary to edit LinkSpan component in gazzodown package (changes included in this PR) and the grammar/utils files in the `fuselage/message-parser` repository\r\n\r\nFuselage Pull Request:  https://medsensehealth.ca",
         "milestone": "5.4.0",
         "contributors": [
           "hugocostadev",
@@ -103033,7 +103033,7 @@
         "pr": "27062",
         "title": "[FIX] Marketplace app details page back-button behavior",
         "userLogin": "rique223",
-        "description": "Jira task: [MKP-26](https://rocketchat.atlassian.net/browse/MKP-26?atlOrigin=eyJpIjoiM2I4MzVhYmQ2OWRkNDE0ZGI4NWZkMzE3MDQwNmIxMzMiLCJwIjoiaiJ9)\r\n\r\nFixed the behavior of the marketplace app details page back button. Now it will return the user to the page they accessed the app details from. Also, refactored the overall routing of the marketplace and removed the admin-apps route as everything is now handled by the admin-marketplace route.\r\n\r\nDemo gif:\r\n![apps-back-button](https://user-images.githubusercontent.com/43561537/195709074-a886472e-5462-474e-8f65-5cfa33d30263.gif)",
+        "description": "Jira task: [MKP-26](https://medsensehealth.ca)\r\n\r\nFixed the behavior of the marketplace app details page back button. Now it will return the user to the page they accessed the app details from. Also, refactored the overall routing of the marketplace and removed the admin-apps route as everything is now handled by the admin-marketplace route.\r\n\r\nDemo gif:\r\n![apps-back-button](https://user-images.githubusercontent.com/43561537/195709074-a886472e-5462-474e-8f65-5cfa33d30263.gif)",
         "milestone": "5.4.0",
         "contributors": [
           "rique223",
@@ -103162,7 +103162,7 @@
         "pr": "27056",
         "title": "[IMPROVE] Move app list install logic to app menu",
         "userLogin": "rique223",
-        "description": "## Jira task: [MKP-136](https://rocketchat.atlassian.net/browse/MKP-136?atlOrigin=eyJpIjoiM2M0ODhkZDc0YjQ2NGE5OGE4YTBkZDJhY2M0NGVmZDgiLCJwIjoiaiJ9)\r\nMoved the install/buy/subscribe logic from the CTA buttons that existed in the app list to the app menu. Now the user can install apps by clicking in the kebab menu in the right of the app list entry. Also solved a little undefined bug happening in the app permissions modal.\r\nDemo gif:\r\n![app_menu](https://user-images.githubusercontent.com/43561537/195204630-e66c7859-028f-4654-8367-96029a855b42.gif)",
+        "description": "## Jira task: [MKP-136](https://medsensehealth.ca)\r\nMoved the install/buy/subscribe logic from the CTA buttons that existed in the app list to the app menu. Now the user can install apps by clicking in the kebab menu in the right of the app list entry. Also solved a little undefined bug happening in the app permissions modal.\r\nDemo gif:\r\n![app_menu](https://user-images.githubusercontent.com/43561537/195204630-e66c7859-028f-4654-8367-96029a855b42.gif)",
         "milestone": "5.4.0",
         "contributors": [
           "rique223",

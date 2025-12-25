@@ -385,7 +385,7 @@
   "AutoLinker_Phone": "AutoLinker Telefon",
   "AutoLinker_Phone_Description": "Otomatik olarak Telefon numaraları için bağlantılı. örneğin '(123) 456-7890`",
   "AutoLinker_StripPrefix": "Otomatik Bağlantı Şeridi Öneki",
-  "AutoLinker_StripPrefix_Description": "Kısa ekran. örneğin https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Kısa ekran. örneğin https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "AutoLinker URL Düzenli İfade",
   "AutoLinker_Urls_Scheme": "AutoLinker Şeması: // URL'leri",
   "AutoLinker_Urls_TLD": "AutoLinker TLD URL'ler",

@@ -326,7 +326,7 @@
   "AutoLinker_Phone": "Telefónne číslo  pre AutoLinker",
   "AutoLinker_Phone_Description": "Automaticky prepojené na telefónne čísla. napr. `(123) 456-7890`",
   "AutoLinker_StripPrefix": "Prefix pruhu pre AutoLinker",
-  "AutoLinker_StripPrefix_Description": "Skrátené zobrazenie. napr. https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Skrátené zobrazenie. napr. https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_UrlsRegExp": "Regulárne výrazy URL pre AutoLinker",
   "AutoLinker_Urls_Scheme": "URL adresy Scheme://  pre AutoLinker",
   "AutoLinker_Urls_TLD": "Adresy TLD pre AutoLinker",

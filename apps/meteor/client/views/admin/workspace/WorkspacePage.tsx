@@ -68,7 +68,7 @@ const WorkspacePage = ({
 										rel='noopener noreferrer'
 										target='_blank'
 										href={
-											'https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-' +
+											'https://medsensehealth.ca' +
 											'performance/#running-multiple-instances-per-host-to-improve-performance'
 										}
 									>

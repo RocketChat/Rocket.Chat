@@ -40,7 +40,7 @@ it('should redirect to /home when userId is null and the stored invite token is 
 	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
-			<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+			<RouterContextMock searchParameters={{ redirectUrl: 'https://medsensehealth.ca' }} navigate={navigateStub}>
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,

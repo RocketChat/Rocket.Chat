@@ -42,23 +42,23 @@ test.each([
       ]),
     ],
   ],
-  ['[](https://rocket.chat)', [paragraph([link('https://rocket.chat')])]],
+  ['[](https://medsensehealth.ca/)', [paragraph([link('https://medsensehealth.ca/')])]],
   [
-    '[ ](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [plain(' ')])])],
+    '[ ](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [plain(' ')])])],
   ],
 
   [
-    '[ test](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [plain(' test')])])],
+    '[ test](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [plain(' test')])])],
   ],
   [
-    '[ test ](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [plain(' test ')])])],
+    '[ test ](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [plain(' test ')])])],
   ],
   [
-    '[title](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [plain('title')])])],
+    '[title](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [plain('title')])])],
   ],
   [
     '[title](http://localhost)',
@@ -69,22 +69,22 @@ test.each([
     [paragraph([link('http://localhost?testing=true', [plain('title')])])],
   ],
   [
-    '[**title**](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [bold([plain('title')])])])],
+    '[**title**](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [bold([plain('title')])])])],
   ],
   [
-    '[~~title~~](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [strike([plain('title')])])])],
+    '[~~title~~](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [strike([plain('title')])])])],
   ],
   [
-    '[__title__](https://rocket.chat)',
-    [paragraph([link('https://rocket.chat', [italic([plain('title')])])])],
+    '[__title__](https://medsensehealth.ca/)',
+    [paragraph([link('https://medsensehealth.ca/', [italic([plain('title')])])])],
   ],
   [
-    '[__**~~title~~**__](https://rocket.chat)',
+    '[__**~~title~~**__](https://medsensehealth.ca/)',
     [
       paragraph([
-        link('https://rocket.chat', [
+        link('https://medsensehealth.ca/', [
           italic([bold([strike([plain('title')])])]),
         ]),
       ]),
@@ -315,10 +315,10 @@ test.each([
     ],
   ],
   [
-    '[Rocket.Chat](https://rocket.chat) Inline Text',
+    '[Rocket.Chat](https://medsensehealth.ca/) Inline Text',
     [
       paragraph([
-        link('https://rocket.chat', [plain('Rocket.Chat')]),
+        link('https://medsensehealth.ca/', [plain('Rocket.Chat')]),
         plain(' Inline Text'),
       ]),
     ],
@@ -335,10 +335,10 @@ test.each([
     ],
   ],
   [
-    `[Rocket.Chat](https://rocket.chat)
+    `[Rocket.Chat](https://medsensehealth.ca/)
 Text after in a new line after link`,
     [
-      paragraph([link('https://rocket.chat', [plain('Rocket.Chat')])]),
+      paragraph([link('https://medsensehealth.ca/', [plain('Rocket.Chat')])]),
       paragraph([plain('Text after in a new line after link')]),
     ],
   ],
@@ -355,25 +355,25 @@ Second line`,
     ],
   ],
   [
-    `[Rocket.Chat](https://rocket.chat)
+    `[Rocket.Chat](https://medsensehealth.ca/)
 
 Text after line break`,
     [
-      paragraph([link('https://rocket.chat', [plain('Rocket.Chat')])]),
+      paragraph([link('https://medsensehealth.ca/', [plain('Rocket.Chat')])]),
       lineBreak(),
       paragraph([plain('Text after line break')]),
     ],
   ],
   [
     `
-[List Header Link](https://rocket.chat)
+[List Header Link](https://medsensehealth.ca/)
 - First item
 - Second item
 - Third item
 - *Fourth item*
 `.trim(),
     [
-      paragraph([link('https://rocket.chat', [plain('List Header Link')])]),
+      paragraph([link('https://medsensehealth.ca/', [plain('List Header Link')])]),
       unorderedList([
         listItem([plain('First item')]),
         listItem([plain('Second item')]),
@@ -383,7 +383,7 @@ Text after line break`,
     ],
   ],
   [
-    `[List Header Link](https://rocket.chat)
+    `[List Header Link](https://medsensehealth.ca/)
 7. First item
 2. Second item
 8. Third item
@@ -391,7 +391,7 @@ Text after line break`,
 15. *Fifteenth item*
 `.trim(),
     [
-      paragraph([link('https://rocket.chat', [plain('List Header Link')])]),
+      paragraph([link('https://medsensehealth.ca/', [plain('List Header Link')])]),
       orderedList([
         listItem([plain('First item')], 7),
         listItem([plain('Second item')], 2),
@@ -561,10 +561,10 @@ Text after line break`,
     ],
   ],
   [
-    '[ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [test](https://rocket.chat)',
+    '[ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [ ~ [test](https://medsensehealth.ca/)',
     [
       paragraph([
-        link('https://rocket.chat', [
+        link('https://medsensehealth.ca/', [
           plain(' '),
           strike([plain(' [ ')]),
           plain(' [ '),
@@ -585,10 +585,10 @@ Text after line break`,
     ],
   ],
   [
-    '[test **bold** and __italic__](https://rocket.chat)',
+    '[test **bold** and __italic__](https://medsensehealth.ca/)',
     [
       paragraph([
-        link('https://rocket.chat', [
+        link('https://medsensehealth.ca/', [
           plain('test '),
           bold([plain('bold')]),
           plain(' and '),
@@ -598,10 +598,10 @@ Text after line break`,
     ],
   ],
   [
-    '[test **bold with __italic__**](https://rocket.chat)',
+    '[test **bold with __italic__**](https://medsensehealth.ca/)',
     [
       paragraph([
-        link('https://rocket.chat', [
+        link('https://medsensehealth.ca/', [
           plain('test '),
           bold([plain('bold with '), italic([plain('italic')])]),
         ]),

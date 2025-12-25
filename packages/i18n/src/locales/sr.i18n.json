@@ -244,7 +244,7 @@
   "AutoLinker_Phone": "АутоЛинкер телефона",
   "AutoLinker_Phone_Description": "Аутоматски повезује на бројеве телефона. нпр `(123) 456-7890`",
   "AutoLinker_StripPrefix": "АутоЛинкер Стрип Префикс",
-  "AutoLinker_StripPrefix_Description": "Кратак приказ. нпр https://rocket.chat => rocket.chat",
+  "AutoLinker_StripPrefix_Description": "Кратак приказ. нпр https://medsensehealth.ca/ => rocket.chat",
   "AutoLinker_Urls_Scheme": "АутоЛинкер Шема: // адресе",
   "AutoLinker_Urls_www": "АутоЛинкер 'ввв' СЕО",
   "AutoTranslate": "Аутоматски преведи",

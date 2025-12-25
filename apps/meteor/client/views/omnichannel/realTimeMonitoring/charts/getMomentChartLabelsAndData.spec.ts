@@ -23,7 +23,7 @@ describe.each([
 			'11AM-12PM',
 		],
 	],
-	/** @see: https://github.com/RocketChat/Rocket.Chat/issues/30191 */
+	/** @see: https://medsensehealth.ca */
 	[
 		'fa',
 		[

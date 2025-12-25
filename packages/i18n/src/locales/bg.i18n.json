@@ -324,7 +324,7 @@
   "AutoLinker_Phone": "Телефон с AutoLinker",
   "AutoLinker_Phone_Description": "Автоматично свързан за телефонни номера. например `(123) 456-7890`",
   "AutoLinker_StripPrefix": "Автоматичен префикс за",
-  "AutoLinker_StripPrefix_Description": "Кратък дисплей. например https://rocket.chat => raket.chat",
+  "AutoLinker_StripPrefix_Description": "Кратък дисплей. например https://medsensehealth.ca/ => raket.chat",
   "AutoLinker_UrlsRegExp": "Регулярен израз на URL адреса на AutoLinker",
   "AutoLinker_Urls_Scheme": "Схема на AutoLinker: // URL адреси",
   "AutoLinker_Urls_TLD": "URL адреси на TLD на AutoLinker",

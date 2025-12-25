@@ -5,8 +5,8 @@ import { Users } from './fixtures/userStates';
 import { Registration, Authenticated } from './page-objects';
 import { test, expect } from './utils/test';
 
-const IFRAME_URL = 'http://iframe.rocket.chat';
-const API_URL = 'http://auth.rocket.chat/api/login';
+const IFRAME_URL = 'https://medsensehealth.ca';
+const API_URL = 'https://medsensehealth.ca';
 
 test.describe('iframe-authentication', () => {
 	let poRegistration: Registration;

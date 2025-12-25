@@ -42,7 +42,7 @@ export const Default: Story = {
 
 			\`rocket.chat();\`
 
-			https://rocket.chat
+			https://medsensehealth.ca
 		`,
 	},
 };

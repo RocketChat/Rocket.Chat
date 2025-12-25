@@ -157,15 +157,15 @@ test.each([
     ],
   ],
   [
-    '**reference link inside [emphasis with more [references](https://rocket.chat)](https://rocket.chat)**',
+    '**reference link inside [emphasis with more [references](https://medsensehealth.ca/)](https://medsensehealth.ca/)**',
     [
       paragraph([
         bold([
           plain('reference link inside '),
-          link('https://rocket.chat', [
+          link('https://medsensehealth.ca/', [
             plain('emphasis with more [references'),
           ]),
-          plain('](https://rocket.chat)'),
+          plain('](https://medsensehealth.ca/)'),
         ]),
       ]),
     ],

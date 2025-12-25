@@ -1,5 +1,5 @@
 /**
- * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
+ * Docs: https://medsensehealth.ca
  */
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
@@ -206,7 +206,7 @@ API.v1.addRoute(
 	},
 );
 
-// https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
+// https://medsensehealth.ca as reference
 API.v1.addRoute(
 	['dm.counters', 'im.counters'],
 	{ authRequired: true },
