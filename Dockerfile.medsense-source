@@ -41,6 +41,7 @@ FROM node:22.16.0-bullseye-slim
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV NODE_OPTIONS=--max_old_space_size=4096
+ENV DENO_VERSION=1.43.6
 
 WORKDIR /app/bundle
 
@@ -53,8 +54,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     g++ \
     make \
+  && curl -fsSL https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip -o /tmp/deno.zip \
+  && unzip /tmp/deno.zip -d /usr/local/bin \
+  && chmod +x /usr/local/bin/deno \
+  && rm -f /tmp/deno.zip \
   && rm -rf /var/lib/apt/lists/* \
-  && curl -fsSL https://deno.land/x/install/install.sh | DENO_INSTALL=/usr/local sh \
   && cd programs/server && npm install --omit=dev
 
 EXPOSE 3000
