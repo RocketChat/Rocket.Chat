@@ -81,11 +81,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		queryFn: async () => findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) }),
 	});
 
-	useEffect(() => {
-		if (isSuccess) {
-			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
-		}
-	}, [dispatchToastMessage, isSuccess, t]);
+// Toast message removed to prevent duplicate notifications (handled elsewhere or unnecessary)
 
 	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
