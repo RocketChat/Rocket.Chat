@@ -40,12 +40,16 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length);
 
 	// Apps metrics
-	const { totalInstalled, totalActive, totalFailed } = await getAppsStatistics();
+	const { totalInstalled, totalActive, totalFailed, appsFailed } = await getAppsStatistics();
 
 	metrics.totalAppsInstalled.set(totalInstalled || 0);
 	metrics.totalAppsEnabled.set(totalActive || 0);
 	metrics.totalAppsFailed.set(totalFailed || 0);
 
+	metrics.appsFailedReason.reset(); // we need to reset the gauge to avoid stale metrics
+	for (const app of appsFailed) {
+		metrics.appsFailedReason.set({ ...app }, 1);
+	}
 	const oplogQueue = (mongo as any)._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
 
