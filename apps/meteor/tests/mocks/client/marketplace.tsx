@@ -43,5 +43,5 @@ export const mockAppsOrchestrator = () => {
 };
 
 export const mockedAppsContext = (children: ReactNode) => (
-	<AppsContext.Provider value={{ orchestrator: mockAppsOrchestrator() }}>{children}</AppsContext.Provider>
+	<AppsContext.Provider value={mockAppsOrchestrator()}>{children}</AppsContext.Provider>
 );

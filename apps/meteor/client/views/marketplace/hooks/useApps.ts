@@ -94,7 +94,7 @@ export const useApps = <
 		'queryKey' | 'queryFn' | 'enabled' | 'placeholderData'
 	>,
 ) => {
-	const { orchestrator } = useContext(AppsContext);
+	const orchestrator = useContext(AppsContext);
 
 	if (!orchestrator) throw new Error('Apps Orchestrator is not available');
 
