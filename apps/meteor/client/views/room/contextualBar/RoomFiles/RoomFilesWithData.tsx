@@ -1,7 +1,7 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 
 import RoomFiles from './RoomFiles';
 import { useDeleteFile } from './hooks/useDeleteFile';
@@ -14,7 +14,17 @@ const RoomFilesWithData = () => {
 	const room = useRoom();
 	const { closeTab } = useRoomToolbox();
 	const [text, setText] = useState('');
+	const [debouncedText, setDebouncedText] = useState('');
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
+
+	// Debounce the search text to prevent excessive API calls
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setDebouncedText(text);
+		}, 400);
+
+		return () => clearTimeout(timeoutId);
+	}, [text]);
 
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
@@ -24,9 +34,9 @@ const RoomFilesWithData = () => {
 		() => ({
 			rid: room._id,
 			type,
-			text,
+			text: debouncedText,
 		}),
-		[room._id, type, text],
+		[room._id, type, debouncedText],
 	);
 
 	const { filesList, loadMoreItems, reload } = useFilesList(query);
