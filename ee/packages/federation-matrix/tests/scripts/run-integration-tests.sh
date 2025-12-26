@@ -110,7 +110,7 @@ cleanup() {
         echo "=========================================="
         echo "CONTAINER LOGS (Test Failed)"
         echo "=========================================="
-    fi 
+
         echo ""
         echo "ROCKET.CHAT (rc1) LOGS:"
         echo "----------------------------------------"
@@ -131,7 +131,7 @@ cleanup() {
 
         echo ""
         echo "=========================================="
-    
+    fi
 
     if [ "$KEEP_RUNNING" = true ]; then
         log_info "Keeping Docker containers running (--keep-running flag set)"

@@ -265,7 +265,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					}).expect(200);
 
-					console.log('createResponse', user.username);
 					const addUserResponse = await addUserToRoom({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
