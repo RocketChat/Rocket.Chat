@@ -9,6 +9,7 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageUsername,
+	
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
@@ -80,7 +81,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
-						<MessageSystemName>{displayName}</MessageSystemName>
+						<MessageSystemName style={{ whiteSpace:'pre-wrap'}} >{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
 								{' '}
@@ -88,7 +89,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
+					{messageType && <MessageSystemBody style={{whiteSpace:'normal', overflowWrap: 'break-word'}} data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
