@@ -94,7 +94,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 				)}
 				{isSuccess && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
-					{!error && totalItemCount > 0 && history.length > 0 && (
+					{!error && totalItemCount > 0 && messages.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={totalItemCount}
