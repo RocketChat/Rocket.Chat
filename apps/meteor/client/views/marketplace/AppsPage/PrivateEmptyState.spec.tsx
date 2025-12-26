@@ -2,7 +2,6 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import PrivateEmptyState from './PrivateEmptyState';
-import { AppsContext } from '../../../contexts/AppsContext';
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	...jest.requireActual('@rocket.chat/ui-client'),
@@ -24,12 +23,10 @@ describe('with private apps enabled', () => {
 		});
 	});
 
-	const appRoot = mockAppRoot()
-		.withTranslations('en', 'core', {
-			Private_apps_upgrade_empty_state_title: 'Upgrade to unlock private apps',
-			No_private_apps_installed: 'No private apps installed',
-		})
-		.wrap((children) => <AppsContext.Provider value={{ orchestrator: undefined }}>{children}</AppsContext.Provider>);
+	const appRoot = mockAppRoot().withTranslations('en', 'core', {
+		Private_apps_upgrade_empty_state_title: 'Upgrade to unlock private apps',
+		No_private_apps_installed: 'No private apps installed',
+	});
 
 	it('should offer to upgrade to unlock private apps', () => {
 		render(<PrivateEmptyState />, { wrapper: appRoot.build() });
@@ -53,12 +50,10 @@ describe('without private apps enabled', () => {
 		});
 	});
 
-	const appRoot = mockAppRoot()
-		.withTranslations('en', 'core', {
-			Private_apps_upgrade_empty_state_title: 'Upgrade to unlock private apps',
-			No_private_apps_installed: 'No private apps installed',
-		})
-		.wrap((children) => <AppsContext.Provider value={{ orchestrator: undefined }}>{children}</AppsContext.Provider>);
+	const appRoot = mockAppRoot().withTranslations('en', 'core', {
+		Private_apps_upgrade_empty_state_title: 'Upgrade to unlock private apps',
+		No_private_apps_installed: 'No private apps installed',
+	});
 
 	it('should offer to upgrade to unlock private apps', () => {
 		render(<PrivateEmptyState />, { wrapper: appRoot.build() });

@@ -24,10 +24,6 @@ export interface IAppsOrchestrator {
 	getCategories(): Promise<Serialized<ICategory[]>>;
 }
 
-export type AppsContextValue = {
-	orchestrator?: IAppsOrchestrator;
-};
+type AppsContextValue = IAppsOrchestrator | undefined;
 
-export const AppsContext = createContext<AppsContextValue>({
-	orchestrator: undefined,
-});
+export const AppsContext = createContext<AppsContextValue>(undefined);

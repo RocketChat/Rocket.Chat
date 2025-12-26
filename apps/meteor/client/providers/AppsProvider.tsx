@@ -8,7 +8,7 @@ type AppsProviderProps = {
 };
 
 const AppsProvider = ({ children }: AppsProviderProps) => {
-	return <AppsContext.Provider children={children} value={{ orchestrator: AppClientOrchestratorInstance }} />;
+	return <AppsContext.Provider children={children} value={AppClientOrchestratorInstance} />;
 };
 
 export default AppsProvider;
