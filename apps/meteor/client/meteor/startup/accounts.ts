@@ -5,12 +5,12 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
 import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
 import { dispatchToastMessage } from '../../lib/toast';
-import { userIdStore } from '../../lib/user';
+import { getUserId, userIdStore } from '../../lib/user';
 import { useUserDataSyncReady } from '../../lib/userData';
 
 const whenMainReady = (): Promise<void> => {
 	const isMainReady = (): boolean => {
-		const uid = userIdStore.getState();
+		const uid = getUserId();
 		if (!uid) return true;
 
 		const subscriptionsReady = SubscriptionsCachedStore.useReady.getState();
