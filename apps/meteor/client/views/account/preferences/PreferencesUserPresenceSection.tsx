@@ -1,5 +1,6 @@
-import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, NumberInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, NumberInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useId } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +14,11 @@ const PreferencesUserPresenceSection = () => {
 	return (
 		<AccordionItem title={t('User_Presence')}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend' aria-hidden={true}>
+						{t('User_Presence')}
+					</Box>
+				</VisuallyHidden>
 				<Field>
 					<FieldRow>
 						<FieldLabel is='span' id={enableAutoAwayId}>
