@@ -491,7 +491,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full"
                       >
-                        +1234567890
+                        1234567890
                       </div>
                     </div>
                   </div>
