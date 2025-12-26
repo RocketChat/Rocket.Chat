@@ -133,6 +133,13 @@ import { SynapseClient } from '../helper/synapse-client';
 					},
 					rc1AdminRequestConfig,
 				);
+
+				await rc1AdminRequestConfig.request
+					.post(api('permissions.update'))
+					.set(rc1AdminRequestConfig.credentials)
+					.send({ permissions: [{ _id: 'access-federation', roles: ['admin', 'user'] }] })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 			});
 
 			afterAll(async () => {
