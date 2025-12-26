@@ -14,21 +14,18 @@ type ThreadsListOptions =
 			text?: string;
 			type: 'unread';
 			tunread: ISubscription['tunread'];
-			uid?: IUser['_id'];
 	  }
 	| {
 			rid: IMessage['rid'];
 			text?: string;
 			type: 'following';
 			tunread?: never;
-			uid: IUser['_id'];
 	  }
 	| {
 			rid: IMessage['rid'];
 			text?: string;
 			type?: undefined;
 			tunread?: never;
-			uid?: IUser['_id'];
 	  };
 
 const isThreadMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is IThreadMainMessage =>
