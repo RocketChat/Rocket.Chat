@@ -41,6 +41,7 @@ import {
 	LoginServiceConfigurationRaw,
 	MediaCallsRaw,
 	MediaCallChannelsRaw,
+	MediaCallChannelLogsRaw,
 	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
@@ -130,6 +131,7 @@ registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
 registerModel('IMediaCallsModel', new MediaCallsRaw(db));
 registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
+registerModel('IMediaCallChannelLogsModel', new MediaCallChannelLogsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));

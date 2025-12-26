@@ -16,7 +16,7 @@ import type {
 	ClientMediaSignalLocalState,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
+import { MediaCallChannelLogs, MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
@@ -88,6 +88,14 @@ export class UserActorSignalProcessor {
 				signed: this.signed,
 			});
 		}
+
+		void MediaCallChannelLogs.insertOne({
+			callId: this.callId,
+			channelId: this.channel._id,
+			direction: 'recv',
+			ts: new Date(),
+			content: signal,
+		}).catch(() => null);
 
 		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
@@ -326,6 +334,14 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async sendSignal(signal: ServerMediaSignal): Promise<void> {
+		void MediaCallChannelLogs.insertOne({
+			callId: this.callId,
+			channelId: this.channel._id,
+			direction: 'send',
+			ts: new Date(),
+			content: signal,
+		}).catch(() => null);
+
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
