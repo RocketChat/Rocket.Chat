@@ -1,4 +1,4 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
@@ -101,7 +101,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					matrixRoomId = await hs1AdminApp.createRoom(channelName);
 				});
 
-				it('should throw an error if a user without access-federation permission tries to invite a user to a room', async () => {
+				it('should throw an error if a remote user tries to invite a user without access-federation permission to a room', async () => {
 					await expect(hs1AdminApp.matrixClient.invite(matrixRoomId, `@${user.username}:${federationConfig.rc1.url}`)).rejects.toThrow();
 					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
@@ -139,33 +139,70 @@ import { SynapseClient } from '../helper/synapse-client';
 				expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 			});
 
-			it('should not be able to add a user without access-federation permission to a room', async () => {
-				const createResponse = await createRoom({
-					type: 'p',
-					name: `federated-room-${Date.now()}`,
-					members: [],
-					extraData: {
-						federated: true,
-					},
-					config: rc1AdminRequestConfig,
+			describe('Inviting from a local server', () => {
+				let channelName: string;
+
+				let createResponse;
+				let addUserResponse;
+
+				beforeAll(async () => {
+					channelName = `federated-room-${Date.now()}`;
+					createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [],
+						extraData: {
+							federated: true,
+						},
+						config: rc1AdminRequestConfig,
+					});
+					expect(createResponse.status).toBe(200);
+					expect(createResponse.body).toHaveProperty('success', true);
+					expect(createResponse.body).toHaveProperty('group');
+					expect(createResponse.body.group).toHaveProperty('_id');
+					expect(createResponse.body.group).toHaveProperty('t', 'p');
+					expect(createResponse.body.group).toHaveProperty('federated', true);
+				});
+				let user: TestUser<IUser>;
+
+				beforeAll(async () => {
+					user = await createUser(
+						{
+							username: `g3-${Date.now()}`,
+							password: '1',
+							roles: ['user'],
+						},
+						rc1AdminRequestConfig,
+					);
 				});
 
-				expect(createResponse.status).toBe(200);
-				expect(createResponse.body).toHaveProperty('success', true);
-				expect(createResponse.body).toHaveProperty('group');
-				expect(createResponse.body.group).toHaveProperty('_id');
-				expect(createResponse.body.group).toHaveProperty('t', 'p');
-				expect(createResponse.body.group).toHaveProperty('federated', true);
+				afterAll(async () => {
+					await deleteUser(user, {}, rc1AdminRequestConfig);
+				});
+				it('should not be able to add a user without access-federation permission to a room', async () => {
+					const addUserResponse = await addUserToRoom({
+						usernames: [user.username],
+						rid: createResponse.body.group._id,
+						config: rc1AdminRequestConfig,
+					});
 
-				const addUserResponse = await addUserToRoom({
-					usernames: [federationConfig.hs1.adminMatrixUserId],
-					rid: createResponse.body.group._id,
-					config: rc1User1RequestConfig,
+					expect(addUserResponse.status).toBe(200);
+					expect(addUserResponse.body).toHaveProperty('success', true);
+					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 
-				expect(addUserResponse.status).toBe(200);
-				expect(addUserResponse.body).toHaveProperty('success', true);
-				expect(addUserResponse.body.message).toMatch(/error-not-allowed/);
+				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
+					addUserResponse = await addUserToRoom({
+						usernames: [federationConfig.hs1.adminMatrixUserId],
+						rid: createResponse.body.group._id,
+						config: rc1AdminRequestConfig,
+					});
+
+					expect(addUserResponse.status).toBe(200);
+					expect(addUserResponse.body).toHaveProperty('success', true);
+					expect(addUserResponse.body).toHaveProperty('message');
+					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+				});
 			});
 		});
 
