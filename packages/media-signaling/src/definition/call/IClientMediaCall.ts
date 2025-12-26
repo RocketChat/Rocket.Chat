@@ -97,7 +97,7 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream;
+	getRemoteMediaStream(): MediaStream | null;
 
 	accept(): void;
 	reject(): void;
