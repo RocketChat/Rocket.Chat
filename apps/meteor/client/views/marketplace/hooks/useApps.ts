@@ -10,7 +10,7 @@ import { AppsContext } from '../../../contexts/AppsContext';
 import { marketplaceQueryKeys } from '../../../lib/queryKeys';
 import type { App } from '../types';
 
-const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+const sortByName = (apps: App[]): App[] => apps.toSorted((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
 /**
  * Aggregates result data from marketplace request and instance installed into their appropriate lists
