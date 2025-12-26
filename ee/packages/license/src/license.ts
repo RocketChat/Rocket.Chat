@@ -568,6 +568,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
+			hasValidLicense: this.hasValidLicense(),
 		};
 	}
 }
