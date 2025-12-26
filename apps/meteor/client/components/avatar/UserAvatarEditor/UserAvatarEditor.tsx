@@ -80,7 +80,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					size='x124'
 					url={url}
 					key={url}
-					data-qa-id='UserAvatarEditor'
+					alt={t('__username__profile_picture', { username: currentUsername || 'user' })}
 					username={currentUsername || ''}
 					etag={etag}
 					style={{
@@ -102,7 +102,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 							title={t('Add_URL')}
 							mi={4}
 							onClick={handleAddUrl}
-							data-qa-id='UserAvatarEditorSetAvatarLink'
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
@@ -110,7 +109,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						{t('Use_url_for_avatar')}
 					</Label>
 					<TextInput
-						data-qa-id='UserAvatarEditorLink'
 						id={imageUrlField}
 						flexGrow={0}
 						placeholder={t('Use_url_for_avatar')}

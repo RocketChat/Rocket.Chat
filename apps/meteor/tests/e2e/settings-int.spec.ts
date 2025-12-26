@@ -9,10 +9,11 @@ test.describe.serial('settings-int', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
-		const pageTitle = page.locator('[data-qa-type="PageHeader-title"]');
+		const pageTitle = page.getByRole('main').getByRole('heading', { level: 1, name: 'Message', exact: true });
 		await page.goto('/admin/settings/Message');
 
 		await pageTitle.waitFor();
+		await expect(pageTitle).toBeVisible();
 		await expect(pageTitle).toHaveText('Message');
 	});
 

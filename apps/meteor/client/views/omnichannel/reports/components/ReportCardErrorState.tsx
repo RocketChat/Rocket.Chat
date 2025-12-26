@@ -13,7 +13,7 @@ export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps): Re
 		<States width='100%' height='100%'>
 			<StatesIcon name='circle-exclamation' />
 			<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-			<StatesActions data-qa='CardErrorState'>
+			<StatesActions>
 				<StatesAction onClick={onRetry}>{t('Retry')}</StatesAction>
 			</StatesActions>
 		</States>
