@@ -2,7 +2,7 @@ import { isCloudConfirmationPollProps, isCloudCreateRegistrationIntentProps, isC
 
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 import {
@@ -88,7 +88,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!(await hasRoleAsync(this.userId, 'admin'))) {
+			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.forbidden();
 			}
 

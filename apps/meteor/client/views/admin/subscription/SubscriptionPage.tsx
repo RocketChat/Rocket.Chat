@@ -54,7 +54,7 @@ const SubscriptionPage = () => {
 	const showLicense = useShowLicense();
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
-	const { isRegistered } = useRegistrationStatus();
+	const { canViewRegistrationStatus } = useRegistrationStatus();
 	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -108,7 +108,7 @@ const SubscriptionPage = () => {
 		<Page bg='tint'>
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
-					{isRegistered && (
+					{canViewRegistrationStatus && (
 						<Button loading={syncLicenseUpdate.isPending} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
 							{t('Sync_license_update')}
 						</Button>
