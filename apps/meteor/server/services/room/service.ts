@@ -149,7 +149,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	/**
 	 * Method called by users to join a room.
 	 */
-	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }) {
+	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id' | 'federated' | 'federation'>; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}

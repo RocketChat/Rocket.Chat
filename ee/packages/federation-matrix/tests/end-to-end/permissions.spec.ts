@@ -111,7 +111,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				it('should be able to invite a user to a room if the user has access-federation permission', async () => {
 					await expect(hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId)).resolves.not.toThrow();
 
-					retry('waiting for invitation to be processed', async () => {
+					await retry('waiting for invitation to be processed', async () => {
 						const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
 
 						const pendingInvitation = subscriptions.update.find(
@@ -263,16 +263,15 @@ import { SynapseClient } from '../helper/synapse-client';
 							federated: true,
 						},
 						config: rc1AdminRequestConfig,
-					});
+					}).expect(200);
 
-					expect(createResponse.status).toBe(200);
+					console.log('createResponse', user.username);
 					const addUserResponse = await addUserToRoom({
 						usernames: [user.username],
 						rid: createResponse.body.group._id,
 						config: rc1AdminRequestConfig,
-					});
+					}).expect(200);
 
-					expect(addUserResponse.status).toBe(200);
 					expect(addUserResponse.body).toHaveProperty('success', true);
 					expect(addUserResponse.body).toHaveProperty('message');
 					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
