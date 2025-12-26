@@ -302,7 +302,7 @@ export class AppManager {
 
 			if (AppStatusUtils.isDisabled(await rl.getStatus())) {
 				// Usually if an App is disabled before it's initialized,
-				// then something (such as an error) occured while
+				// then something (such as an error) occurred while
 				// it was compiled or something similar.
 				// We still have to validate its license, though
 				await rl.validateLicense();
