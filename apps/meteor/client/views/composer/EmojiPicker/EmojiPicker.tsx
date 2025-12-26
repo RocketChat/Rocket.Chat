@@ -20,7 +20,7 @@ import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
+import { emoji, getCategoriesList, getEmojisBySearchTerm, getCombinedEmojiSearch } from '../../../../app/emoji/client';
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
@@ -137,7 +137,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
+		const emojisResult = getCombinedEmojiSearch(e.target.value, actualTone, recentEmojis, setRecentEmojis, getEmojisBySearchTerm);
 
 		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
 			setCurrentCategory('no-results');
