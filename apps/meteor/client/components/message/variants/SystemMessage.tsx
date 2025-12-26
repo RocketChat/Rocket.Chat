@@ -21,6 +21,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Users } from '../../../stores';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -61,6 +62,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	useCountSelected();
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
+	const avatarEtag = Users.use((state) => state.get(message.u._id)?.avatarETag);
+
 	return (
 		<MessageSystem
 			role='listitem'
@@ -74,7 +77,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} etag={avatarEtag} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
