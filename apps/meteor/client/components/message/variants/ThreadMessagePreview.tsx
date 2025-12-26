@@ -115,6 +115,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 						<MessageAvatar
 							emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 							username={message.u.username}
+							avatarUrl={message.avatar}
 							size='x18'
 						/>
 					)}

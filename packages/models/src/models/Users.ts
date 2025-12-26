@@ -2872,7 +2872,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	unsetAvatarData(_id: IUser['_id']) {
+	unsetAvatarData(_id: IUser['_id'], options?: UpdateOptions) {
 		const update: UpdateFilter<IUser> = {
 			$unset: {
 				avatarOrigin: 1,
@@ -2880,7 +2880,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, options);
 	}
 
 	setUserActive(_id: IUser['_id'], active: boolean | null) {
