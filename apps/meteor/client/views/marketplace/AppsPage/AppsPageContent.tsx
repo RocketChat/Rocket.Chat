@@ -1,7 +1,6 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePagination } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +23,7 @@ import { useRadioToggle } from '../hooks/useRadioToggle';
 
 type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
-const AppsPageContent = (): ReactElement => {
+const AppsPageContent = () => {
 	const { t } = useTranslation();
 	const reload = useAppsReload();
 	const [text, setText] = useState('');
@@ -33,7 +32,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const router = useRouter();
 
-	const context = useRouteParameter('context') as AppsContext;
+	const context = useRouteParameter('context') as AppsContext | undefined;
 
 	const isMarketplace = context === 'explore';
 	const isPremium = context === 'premium';
@@ -111,7 +110,7 @@ const AppsPageContent = (): ReactElement => {
 	};
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
-	const { isPending, isError, error, isSuccess, data } = useFilteredApps({
+	const { isPending, isError, error, data } = useFilteredApps({
 		text: debouncedText,
 		current,
 		itemsPerPage,
@@ -121,20 +120,6 @@ const AppsPageContent = (): ReactElement => {
 		status: useMemo(findStatus, [statusFilterStructure]),
 		context,
 	});
-
-	const noInstalledApps = isSuccess && !isMarketplace && data.totalAppsLength === 0;
-
-	// TODO: Introduce error codes, so we can avoid using error message strings for this kind of logic
-	//       whenever we change the error message, this code ends up breaking.
-	const unsupportedVersion = isError && error.message === 'Marketplace_Unsupported_Version';
-
-	const noMarketplaceOrInstalledAppMatches = isSuccess && (isMarketplace || isPremium) && data.count === 0;
-
-	const noInstalledAppMatches = isSuccess && context === 'installed' && data.totalAppsLength !== 0 && data.count === 0;
-
-	const noAppRequests = context === 'requested' && data?.count === 0;
-
-	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -177,33 +162,61 @@ const AppsPageContent = (): ReactElement => {
 		toggleInitialSortOption(isRequested);
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
-	const getEmptyState = () => {
-		if (unsupportedVersion) {
-			return <UnsupportedEmptyState />;
-		}
+	if (isPending) {
+		return (
+			<>
+				<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
+				<AppsFilters
+					text={text}
+					setText={setText}
+					freePaidFilterStructure={freePaidFilterStructure}
+					freePaidFilterOnSelected={freePaidFilterOnSelected}
+					categories={categories}
+					selectedCategories={selectedCategories}
+					onSelected={onSelected}
+					sortFilterStructure={sortFilterStructure}
+					sortFilterOnSelected={sortFilterOnSelected}
+					categoryTagList={categoryTagList}
+					statusFilterStructure={statusFilterStructure}
+					statusFilterOnSelected={statusFilterOnSelected}
+					context={context || 'explore'}
+				/>
+				<AppsPageContentSkeleton />
+			</>
+		);
+	}
 
-		if (noAppRequests) {
-			return <NoAppRequestsEmptyState />;
-		}
+	if (isError) {
+		// TODO: Introduce error codes, so we can avoid using error message strings for this kind of logic
+		// whenever we change the error message, this code ends up breaking.
+		const unsupportedVersion = error.message === 'Marketplace_Unsupported_Version';
 
-		if (noMarketplaceOrInstalledAppMatches) {
-			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />;
-		}
-
-		if (noInstalledAppMatches) {
-			return (
-				<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
-			);
-		}
-
-		if (noInstalledApps) {
-			return context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />;
-		}
-	};
+		return (
+			<>
+				<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
+				<AppsFilters
+					text={text}
+					setText={setText}
+					freePaidFilterStructure={freePaidFilterStructure}
+					freePaidFilterOnSelected={freePaidFilterOnSelected}
+					categories={categories}
+					selectedCategories={selectedCategories}
+					onSelected={onSelected}
+					sortFilterStructure={sortFilterStructure}
+					sortFilterOnSelected={sortFilterOnSelected}
+					categoryTagList={categoryTagList}
+					statusFilterStructure={statusFilterStructure}
+					statusFilterOnSelected={statusFilterOnSelected}
+					context={context || 'explore'}
+				/>
+				{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
+			</>
+		);
+	}
 
 	return (
 		<>
-			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
+			<MarketplaceHeader unsupportedVersion={false} title={t(`Apps_context_${context}`)} />
 			<AppsFilters
 				text={text}
 				setText={setText}
@@ -219,22 +232,28 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterOnSelected={statusFilterOnSelected}
 				context={context || 'explore'}
 			/>
-			{isPending && <AppsPageContentSkeleton />}
-			{isSuccess && noErrorsOcurred && !unsupportedVersion && (
-				<AppsPageContentBody
-					isMarketplace={isMarketplace}
-					isFiltered={isFiltered}
-					appsResult={data}
-					itemsPerPage={itemsPerPage}
-					current={current}
-					onSetItemsPerPage={onSetItemsPerPage}
-					onSetCurrent={onSetCurrent}
-					paginationProps={paginationProps}
-					noErrorsOcurred={noErrorsOcurred}
-				/>
-			)}
-			{getEmptyState()}
-			{isError && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
+			{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
+				((isMarketplace || isPremium) && data.count === 0 && (
+					<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} />
+				)) ||
+				(context === 'installed' && data.totalAppsLength !== 0 && data.count === 0 && (
+					<NoInstalledAppMatchesEmptyState shouldShowSearchText={!!data.shouldShowSearchText} text={text} onButtonClick={handleReturn} />
+				)) ||
+				(context === 'private' && !isMarketplace && data.totalAppsLength === 0 && <PrivateEmptyState />) ||
+				(context !== 'private' && !isMarketplace && data.totalAppsLength === 0 && (
+					<NoInstalledAppsEmptyState onButtonClick={handleReturn} />
+				)) || (
+					<AppsPageContentBody
+						isMarketplace={isMarketplace}
+						isFiltered={isFiltered}
+						appsResult={data}
+						itemsPerPage={itemsPerPage}
+						current={current}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						paginationProps={paginationProps}
+					/>
+				)}
 		</>
 	);
 };
