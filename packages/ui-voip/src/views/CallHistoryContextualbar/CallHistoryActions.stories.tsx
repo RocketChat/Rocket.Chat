@@ -38,6 +38,7 @@ const getArgs = (index: number) => {
 
 export const Default: Story = {
 	args: {
+		state: 'closed',
 		onClose: noop,
 		actions: getArgs(5),
 	},
@@ -45,6 +46,7 @@ export const Default: Story = {
 
 export const WithLessActions: Story = {
 	args: {
+		state: 'closed',
 		onClose: noop,
 		actions: getArgs(3),
 	},
@@ -52,6 +54,15 @@ export const WithLessActions: Story = {
 
 export const WithSingleAction: Story = {
 	args: {
+		state: 'closed',
+		onClose: noop,
+		actions: getArgs(1),
+	},
+};
+
+export const WithDisabledVoiceCall: Story = {
+	args: {
+		state: 'ongoing',
 		onClose: noop,
 		actions: getArgs(1),
 	},
