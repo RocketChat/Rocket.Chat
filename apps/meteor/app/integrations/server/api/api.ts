@@ -10,6 +10,7 @@ import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
+
 import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
@@ -192,7 +193,11 @@ async function executeIntegrationRest(
 				return API.v1.failure(result.error);
 			}
 
-			bodyParams = result?.content;
+			bodyParams = result?.content ?? {};
+
+			if (!isPlainObject(bodyParams)) {
+				bodyParams = {};
+			}
 
 			if (!('separateResponse' in bodyParams)) {
 				bodyParams.separateResponse = separateResponse;

@@ -42,5 +42,12 @@ export function mapLivechatContactConflicts(
 		conflicts.contactManager.values.push(contact.contactManager);
 	}
 
+	// If there's a custom field conflict, add the current custom field value to the conflict values as well
+	for (const [fieldName, conflict] of Object.entries(conflicts)) {
+		if (fieldName !== 'name' && fieldName !== 'contactManager' && contact.customFields?.[fieldName]) {
+			conflict.values.push(String(contact.customFields[fieldName]));
+		}
+	}
+
 	return conflicts;
 }

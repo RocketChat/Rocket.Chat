@@ -184,6 +184,8 @@ export const validateOutgoingIntegration = async function (
 				minified: true,
 				comments: false,
 			});
+			babelOptions.plugins = babelOptions.plugins || [];
+			babelOptions.plugins.push('@babel/plugin-proposal-nullish-coalescing-operator');
 
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			integrationData.scriptError = undefined;
