@@ -1,8 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { CallHistoryTableRow, useMediaCallContext } from '@rocket.chat/ui-voip';
 import type { CallHistoryTableRowProps, CallHistoryTableInternalContact, MediaCallState } from '@rocket.chat/ui-voip';
-import { isAbleToMakeCall } from '@rocket.chat/ui-voip/dist/context/MediaCallContext';
+import { CallHistoryTableRow, useMediaCallContext, isAbleToMakeCall } from '@rocket.chat/ui-voip';
 import type { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
