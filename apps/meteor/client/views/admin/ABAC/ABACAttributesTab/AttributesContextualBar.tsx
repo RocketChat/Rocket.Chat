@@ -71,7 +71,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 			}
 			onClose();
 		},
-		onError: (error: { errorType: string, error: string }) => {
+		onError: (error: { errorType: string; error: string }) => {
 			if (error.errorType === 'invalid-params') {
 				dispatchToastMessage({ type: 'error', message: t('ABAC_Invalid_attribute') });
 			} else {
