@@ -44,15 +44,15 @@ const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 			return a.rolePriority - b.rolePriority;
 		}
 
-		if (a.status !== b.status) {
-			if (!a.status || a.status === 'offline') {
-				return 1;
-			}
-			if (!b.status || b.status === 'offline') {
-				return -1;
-			}
-			return a.status.localeCompare(b.status) * -1;
-		}
+		// if (a.status !== b.status) {
+		// 	if (!a.status || a.status === 'offline') {
+		// 		return 1;
+		// 	}
+		// 	if (!b.status || b.status === 'offline') {
+		// 		return -1;
+		// 	}
+		// 	return a.status.localeCompare(b.status) * -1;
+		// }
 
 		if (useRealName && a.name && b.name) {
 			return a.name.localeCompare(b.name);
@@ -146,6 +146,7 @@ export const useMembersList = (options: MembersListOptions) => {
 				count: options.limit,
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
+				sort: JSON.stringify({ ...(useRealName ? { name: 1 } : { username: 1 }) }),
 			});
 		},
 		getNextPageParam: (lastPage) => {
