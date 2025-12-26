@@ -50,6 +50,8 @@ export const useHistoryMessageList = ({ roomId, filter: searchTerm }: HistoryMes
 			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
 		},
 		select: ({ pages }) => ({
+			// FIXME: This is an estimation, as messages can be created or removed while paginating
+			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
 			items: pages.flatMap((page) => page.items),
 			itemCount: pages.at(-1)?.itemCount ?? 0,
 		}),
