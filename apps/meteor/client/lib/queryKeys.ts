@@ -128,17 +128,17 @@ export const ABACQueryKeys = {
 	all: ['abac'] as const,
 	logs: {
 		all: () => [...ABACQueryKeys.all, 'logs'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.logs.all(), 'list', ...args] as const,
 	},
 	roomAttributes: {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
 	rooms: {
 		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
-		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,
+		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
 };
