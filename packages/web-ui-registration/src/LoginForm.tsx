@@ -64,12 +64,23 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		register,
 		handleSubmit,
 		setError,
+		watch,
 		clearErrors,
 		getValues,
 		formState: { errors },
 	} = useForm<{ usernameOrEmail: string; password: string }>({
 		mode: 'onBlur',
 	});
+
+	const watchUsernameOrEmail = watch('usernameOrEmail');
+	const watchPassword = watch('password');
+
+	useEffect(() => {
+		if (watchUsernameOrEmail || watchPassword) {
+			clearErrors('usernameOrEmail');
+			clearErrors('password');
+		}
+	}, [watchUsernameOrEmail, watchPassword, clearErrors]);
 
 	const { t } = useTranslation();
 	const formLabelId = useId();
@@ -88,8 +99,19 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			return login(formData.usernameOrEmail, formData.password);
 		},
 		onError: (error: any) => {
+			setErrorOnSubmit(undefined);
+			clearErrors();
+			if (error.error === 'user-not-found' || error.error === 401 || error.reason === 'User not found') {
+				setError('password', {
+					type: 'manual',
+					message: t('registration.page.login.errors.wrongCredentials'),
+				});
+				return;
+			}
+
 			if ([error.error, error.errorType].includes('error-invalid-email')) {
 				setError('usernameOrEmail', { type: 'invalid-email', message: t('registration.page.login.errors.invalidEmail') });
+				return;
 			}
 
 			if ('error' in error && error.error !== 403) {
