@@ -11,7 +11,9 @@ import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { isURL } from '../../../lib/utils/isURL';
+import { client } from '../../../server/database/utils';
 import { callbacks } from '../../../server/lib/callbacks';
+import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
@@ -366,17 +368,55 @@ export class CustomOAuth {
 				}
 
 				const serviceIdKey = `services.${serviceName}.id`;
-				const update = {
-					$set: {
-						name: serviceData.name,
-						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
-						[serviceIdKey]: serviceData.id,
+				const successCallbacks = [
+					async () => {
+						const updatedUser = await Users.findOneById(user._id, { projection: { name: 1, emails: 1, [serviceIdKey]: 1 } });
+						if (updatedUser) {
+							const { _id, ...diff } = updatedUser;
+							void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff });
+						}
 					},
-				};
+				];
 
-				await Users.update({ _id: user._id }, update);
+				const session = client.startSession();
+				try {
+					// Extend the session to match the ExtendedSession type expected by saveUserIdentity
+					Object.assign(session, {
+						onceSuccesfulCommit: (cb) => {
+							successCallbacks.push(cb);
+						},
+					});
 
-				void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: update });
+					session.startTransaction();
+
+					const updater = Users.getUpdater();
+
+					if (this.keyField === 'username' && serviceData.email) {
+						updater.set('emails', [{ address: serviceData.email, verified: true }]);
+					}
+
+					updater.set(serviceIdKey, serviceData.id);
+
+					await saveUserIdentity({
+						_id: user._id,
+						name: serviceData.name,
+						updater,
+						session,
+						updateUsernameInBackground: true,
+						// Username needs to be included otherwise the name won't be updated in some collections
+						username: user.username,
+					});
+					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
+
+					await session.commitTransaction();
+				} catch (e) {
+					await session.abortTransaction();
+					throw e;
+				} finally {
+					await session.endSession();
+				}
+
+				void Promise.allSettled(successCallbacks.map((cb) => cb()));
 			}
 		});
 
