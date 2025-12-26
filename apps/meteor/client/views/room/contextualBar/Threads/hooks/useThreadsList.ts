@@ -1,5 +1,4 @@
 import type { IThreadMainMessage, IMessage, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -43,8 +42,6 @@ const isThreadUnread = (threadMessage: IThreadMainMessage, tunread: ISubscriptio
 
 const isThreadTextMatching = (threadMessage: IThreadMainMessage, regex: RegExp): boolean => regex.test(threadMessage.msg);
 
-const compare = (a: IThreadMainMessage, b: IThreadMainMessage): number => (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
-
 export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
@@ -52,38 +49,38 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 
 	const userId = useUserId();
 
-	const filter = useEffectEvent((message: IMessage): message is IThreadMainMessage => {
-		if (!isThreadMessageInRoom(message, rid)) {
-			return false;
-		}
-
-		if (type === 'following' && userId) {
-			if (!isThreadFollowedByUser(message, userId)) {
-				return false;
-			}
-		}
-
-		if (type === 'unread') {
-			if (!isThreadUnread(message, tunread)) {
-				return false;
-			}
-		}
-
-		if (text) {
-			const regex = new RegExp(escapeRegExp(text), 'i');
-			if (!isThreadTextMatching(message, regex)) {
-				return false;
-			}
-		}
-
-		return true;
-	}) as (message: IMessage) => message is IThreadMainMessage; // TODO: Remove type assertion when useEffectEvent types are fixed
-
 	useInfiniteMessageQueryUpdates({
 		queryKey: roomsQueryKeys.threads(rid, { type, text }),
 		roomId: rid,
-		filter,
-		compare,
+		// Replicates the filtering done server-side
+		filter: (message): message is IThreadMainMessage => {
+			if (!isThreadMessageInRoom(message, rid)) {
+				return false;
+			}
+
+			if (type === 'following' && userId) {
+				if (!isThreadFollowedByUser(message, userId)) {
+					return false;
+				}
+			}
+
+			if (type === 'unread') {
+				if (!isThreadUnread(message, tunread)) {
+					return false;
+				}
+			}
+
+			if (text) {
+				const regex = new RegExp(escapeRegExp(text), 'i');
+				if (!isThreadTextMatching(message, regex)) {
+					return false;
+				}
+			}
+
+			return true;
+		},
+		// Replicates the sorting done server-side
+		compare: (a, b) => (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime(),
 	});
 
 	return useInfiniteQuery({
@@ -98,10 +95,7 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 			});
 
 			return {
-				items: threads
-					.map((message) => mapMessageFromApi(message) as IThreadMainMessage)
-					.filter(filter)
-					.toSorted(compare),
+				items: threads.map(mapMessageFromApi),
 				itemCount: total,
 			};
 		},

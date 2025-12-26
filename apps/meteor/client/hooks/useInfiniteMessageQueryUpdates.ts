@@ -9,12 +9,12 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 	queryKey,
 	roomId,
 	filter,
-	compare,
+	compare = (a, b) => b.ts.getTime() - a.ts.getTime(),
 }: {
 	queryKey: TQueryKey;
 	roomId: IRoom['_id'];
 	filter: (message: IMessage) => message is T;
-	compare: (a: T, b: T) => number;
+	compare?: (a: T, b: T) => number;
 }) => {
 	const queryClient = useQueryClient();
 
@@ -22,8 +22,8 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	const getQueryKey = useEffectEvent(() => queryKey);
-	const getFilter = useEffectEvent(() => filter);
-	const getCompare = useEffectEvent(() => compare);
+	const doFilter = useEffectEvent(filter);
+	const doCompare = useEffectEvent(compare);
 
 	const mutateQueryData = useEffectEvent((mutation: (items: T[]) => void) => {
 		const queryData = queryClient.getQueryData<
@@ -37,19 +37,19 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 		>(queryKey);
 
 		const items = queryData?.pages.flatMap((page) => page.items) ?? [];
-
-		mutation(items);
-
 		const lastPage = queryData?.pages.at(-1) ?? { items: [], itemCount: 0 };
 
-		const itemCount = lastPage.itemCount || items.length;
+		const beforeMutationItemsLength = items.length;
+		mutation(items);
+		const afterMutationItemsLength = items.length;
+
 		const pageSize = lastPage.items.length || items.length;
-		const newPageCount = pageSize > 0 ? Math.ceil(items.length / pageSize) : 0;
+		const newPageCount = items.length > 0 ? Math.ceil(items.length / pageSize) : 0;
 
 		const newQueryData: typeof queryData = {
 			pages: Array.from({ length: newPageCount }, (_, pageIndex) => ({
 				items: items.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-				itemCount,
+				itemCount: lastPage.itemCount - (beforeMutationItemsLength - afterMutationItemsLength),
 			})),
 			pageParams: Array.from({ length: newPageCount }, (_, pageIndex) => pageIndex * pageSize),
 		};
@@ -73,7 +73,7 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 		}
 
 		const unsubscribeFromRoomMessages = subscribeToRoomMessages(roomId, (message) => {
-			if (!getFilter()(message as T)) return;
+			if (!doFilter(message as T)) return;
 
 			mutateQueryData((items) => {
 				const index = items.findIndex((i) => i._id === message._id);
@@ -81,7 +81,7 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 					items[index] = message as T;
 				} else {
 					items.push(message as T);
-					items.sort(getCompare());
+					items.sort(doCompare);
 				}
 			});
 		});
@@ -104,5 +104,5 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [subscribeToRoomMessages, subscribeToNotifyRoom, userId, roomId, queryClient, getQueryKey, getFilter, getCompare, mutateQueryData]);
+	}, [subscribeToRoomMessages, subscribeToNotifyRoom, userId, roomId, queryClient, getQueryKey, doFilter, doCompare, mutateQueryData]);
 };
