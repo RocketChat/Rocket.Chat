@@ -1077,10 +1077,24 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await sendConfirmationEmail(email)) {
-				return API.v1.success();
+      try {
+				const user = await Meteor.users.findOneAsync({ 'emails.address': email });
+				if (!user) {
+					return API.v1.failure('User not found');
+				}
+				const now = Date.now();
+				const lastSent = user?.services?.email?.lastConfirmationSent || 0;
+				if (now - lastSent < 1 * 60 * 1000) {
+					return API.v1.failure('Please wait before requesting another confirmation email.');
+				}
+				if (await sendConfirmationEmail(email)) {
+					await Meteor.users.updateAsync(user._id, { $set: { 'services.email.lastConfirmationSent': now } });
+					return API.v1.success();
+				}
+				return API.v1.failure();
+			} catch (error) {
+				return API.v1.failure('Database operation failed');
 			}
-			return API.v1.failure();
 		},
 	},
 );
