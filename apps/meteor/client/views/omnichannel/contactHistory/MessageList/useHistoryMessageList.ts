@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -22,7 +23,8 @@ export const useHistoryMessageList = ({ roomId, filter: searchTerm }: HistoryMes
 		roomId,
 		// Replicates the filtering done server-side
 		filter: (message): message is IMessage =>
-			(!('t' in message) || message.t === 'livechat-close') && (!searchTerm || new RegExp(searchTerm, 'ig').test(message.msg)),
+			(!('t' in message) || message.t === 'livechat-close') &&
+			(!searchTerm || new RegExp(escapeRegExp(searchTerm), 'ig').test(message.msg)),
 		// Replicates the sorting forced on server-side
 		compare: (a, b) => a.ts.getTime() - b.ts.getTime(),
 	});
