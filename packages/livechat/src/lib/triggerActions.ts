@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 
 import store from '../store';
 import { normalizeAgent } from './api';
-import { parentCall } from './parentCall';
+import { parentCall } from './iframe';
 import { createToken } from './random';
 import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
 import Triggers from './triggers';

@@ -8,7 +8,7 @@ import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import type { TriggerMessage } from '../definitions/triggerMessage';
-import { parentCall } from '../lib/parentCall';
+import { parentCall } from '../lib/iframe';
 import { createToken } from '../lib/random';
 
 export type LivechatHiddenSytemMessageType =
