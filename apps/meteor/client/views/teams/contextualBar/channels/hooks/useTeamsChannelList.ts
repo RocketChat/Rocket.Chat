@@ -36,7 +36,9 @@ export const useTeamsChannelList = ({ teamId, type, text }: TeamsChannelListOpti
 						_updatedAt: new Date(_updatedAt),
 						...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
 						...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
-						...usersWaitingForE2EKeys?.map(({ userId, ts }) => ({ userId, ts: new Date(ts) })),
+						...(usersWaitingForE2EKeys && {
+							usersWaitingForE2EKeys: usersWaitingForE2EKeys?.map(({ userId, ts }) => ({ userId, ts: new Date(ts) })),
+						}),
 						...room,
 					}),
 				),
