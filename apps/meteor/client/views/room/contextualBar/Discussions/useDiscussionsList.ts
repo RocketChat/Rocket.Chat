@@ -8,28 +8,23 @@ import { roomsQueryKeys } from '../../../../lib/queryKeys';
 import { getConfig } from '../../../../lib/utils/getConfig';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 
-const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is IDiscussionMessage =>
-	message.rid === rid && 'drid' in message;
-
-const isDiscussionTextMatching = (discussionMessage: IDiscussionMessage, regex: RegExp): boolean => regex.test(discussionMessage.msg);
-
 export const useDiscussionsList = ({ rid, text }: { rid: IMessage['rid']; text?: string }) => {
 	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');
 
 	const count = parseInt(`${getConfig('discussionListSize', 10)}`, 10);
 
-	useInfiniteMessageQueryUpdates<IDiscussionMessage, ReturnType<typeof roomsQueryKeys.discussions>>({
+	useInfiniteMessageQueryUpdates({
 		queryKey: roomsQueryKeys.discussions(rid, { text }),
 		roomId: rid,
 		// Replicates the filtering done server-side
 		filter: (message): message is IDiscussionMessage => {
-			if (!isDiscussionMessageInRoom(message, rid)) {
+			if (!('drid' in message)) {
 				return false;
 			}
 
 			if (text) {
 				const regex = new RegExp(escapeRegExp(text), 'i');
-				if (!isDiscussionTextMatching(message, regex)) {
+				if (!regex.test(message.msg)) {
 					return false;
 				}
 			}
@@ -49,7 +44,7 @@ export const useDiscussionsList = ({ rid, text }: { rid: IMessage['rid']; text?:
 			});
 
 			return {
-				items: messages.map(mapMessageFromApi),
+				items: messages.map(mapMessageFromApi) as IDiscussionMessage[],
 				itemCount: total,
 			};
 		},
