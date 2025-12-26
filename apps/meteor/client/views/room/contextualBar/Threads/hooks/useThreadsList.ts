@@ -1,4 +1,4 @@
-import type { IThreadMainMessage, IMessage, IUser, ISubscription } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -28,17 +28,6 @@ type ThreadsListOptions =
 			tunread?: never;
 	  };
 
-const isThreadMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is IThreadMainMessage =>
-	message.rid === rid && typeof (message as IThreadMainMessage).tcount === 'number';
-
-const isThreadFollowedByUser = (threadMessage: IThreadMainMessage, uid: IUser['_id']): boolean =>
-	threadMessage.replies?.includes(uid) ?? false;
-
-const isThreadUnread = (threadMessage: IThreadMainMessage, tunread: ISubscription['tunread']): boolean =>
-	Boolean(tunread?.includes(threadMessage._id));
-
-const isThreadTextMatching = (threadMessage: IThreadMainMessage, regex: RegExp): boolean => regex.test(threadMessage.msg);
-
 export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
@@ -51,25 +40,25 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 		roomId: rid,
 		// Replicates the filtering done server-side
 		filter: (message): message is IThreadMainMessage => {
-			if (!isThreadMessageInRoom(message, rid)) {
+			if (typeof message.tcount !== 'number') {
 				return false;
 			}
 
-			if (type === 'following' && userId) {
-				if (!isThreadFollowedByUser(message, userId)) {
+			if (type === 'following') {
+				if (!userId || !message.replies?.includes(userId)) {
 					return false;
 				}
 			}
 
 			if (type === 'unread') {
-				if (!isThreadUnread(message, tunread)) {
+				if (!tunread?.includes(message._id)) {
 					return false;
 				}
 			}
 
 			if (text) {
 				const regex = new RegExp(escapeRegExp(text), 'i');
-				if (!isThreadTextMatching(message, regex)) {
+				if (!regex.test(message.msg)) {
 					return false;
 				}
 			}
@@ -92,7 +81,7 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 			});
 
 			return {
-				items: threads.map(mapMessageFromApi),
+				items: threads.map(mapMessageFromApi) as IThreadMainMessage[],
 				itemCount: total,
 			};
 		},
