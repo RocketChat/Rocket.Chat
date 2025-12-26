@@ -1,11 +1,12 @@
 import { Stream } from './Stream';
 
 export class LocalStream extends Stream {
-	public async setTrack(newTrack: MediaStreamTrack | null): Promise<void> {
-		if (newTrack && newTrack?.kind !== 'audio') {
+	public async setLocalTrack(newTrack: MediaStreamTrack | null, kind: 'audio' | 'video' = 'audio'): Promise<void> {
+		if (newTrack && newTrack.kind !== kind) {
 			return;
 		}
-		this.logger?.debug('LocalStream.setTrack');
+
+		this.logger?.debug('LocalStream.setLocalTrack', kind);
 
 		if (newTrack) {
 			const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
@@ -17,20 +18,21 @@ export class LocalStream extends Stream {
 			newTrack.enabled = this.enabled;
 		}
 
-		this.removeAudioTracks();
+		this.removeTracks(kind);
+
 		if (newTrack) {
 			this.mediaStream.addTrack(newTrack);
-			await this.setRemoteTrack(newTrack);
+			await this.setRemoteTrack(newTrack, kind);
 		}
 	}
 
-	private async setRemoteTrack(newTrack: MediaStreamTrack | null): Promise<void> {
-		// If the peer doesn't yet have any audio track, send it to them
-		this.logger?.debug('LocalStream.setRemoteTrack');
-		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === 'audio');
+	private async setRemoteTrack(newTrack: MediaStreamTrack | null, kind: 'audio' | 'video' = 'audio'): Promise<void> {
+		// If the peer doesn't yet have any track of this kind, send it to them
+		this.logger?.debug('LocalStream.setRemoteTrack', kind);
+		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === kind);
 		if (!sender) {
 			if (newTrack) {
-				this.logger?.debug('LocalStream.setRemoteTrack.addTrack');
+				this.logger?.debug('LocalStream.setRemoteTrack.addTrack', kind);
 				// This will require a re-negotiation
 				this.peer.addTrack(newTrack, this.mediaStream);
 			}

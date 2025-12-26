@@ -46,7 +46,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	useDesktopNotifications(session);
 
-	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
+	const [remoteStreamRefCallback, audioElement] = useMediaStream(session.getRemoteStream());
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
@@ -262,6 +262,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		hidden: session.hidden,
 		remoteMuted: session.remoteMuted,
 		remoteHeld: session.remoteHeld,
+		expanded: session.state === 'ongoing',
 		onMute,
 		onHold,
 		onDeviceChange,
@@ -273,6 +274,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,
+		getRemoteStream: session.getRemoteStream,
+		toggleScreenSharing: session.toggleScreenSharing,
 		getPeerInfo: () => Promise.resolve(session.peerInfo), // TODO remove this probably
 	};
 
@@ -284,6 +287,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 				</audio>,
 				document.body,
 			)}
+			{/* {createPortal(
+				<video ref={remoteStreamVideoRefCallback}>
+					<track kind='captions' />
+				</video>,
+				document.body,
+			)} */}
 			<AnchorPortal id='rcx-media-call-widget-portal'>
 				<MediaCallWidget />
 			</AnchorPortal>

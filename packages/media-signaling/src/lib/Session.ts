@@ -27,6 +27,7 @@ export type MediaSignalingSessionConfig = {
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
+	displayMediaFactory: MediaStreamFactory;
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
@@ -50,13 +51,19 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private inputTrack: MediaStreamTrack | null;
 
+	private videoTrack: MediaStreamTrack | null;
+
 	private updatingInputTrack: boolean;
+
+	private updatingVideoTrack: boolean;
 
 	private deviceId: ConstrainDOMString | null;
 
 	private currentDeviceId: ConstrainDOMString | null;
 
 	private callsToGetUserMedia: number;
+
+	private callsToGetDisplayMedia: number;
 
 	private lastRegisterTimestamp: Date | null = null;
 
@@ -78,10 +85,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
 		this.inputTrack = null;
+		this.videoTrack = null;
 		this.updatingInputTrack = false;
+		this.updatingVideoTrack = false;
 		this.deviceId = null;
 		this.currentDeviceId = null;
 		this.callsToGetUserMedia = 0;
+		this.callsToGetDisplayMedia = 0;
 		this.lastState = { hasCall: false, hasVisibleCall: false, hasBusyCall: false };
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
@@ -114,6 +124,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		// best‑effort: stop capturing audio
 		void this.setInputTrack(null).catch(() => undefined);
+		void this.setVideoTrack(null).catch(() => undefined);
 
 		for (const call of this.knownCalls.values()) {
 			this.ignoredCalls.add(call.callId);
@@ -456,6 +467,126 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setInputTrack(null);
 	}
 
+	private async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.setVideoTrack', Boolean(newVideoTrack));
+		const { videoTrack: oldVideoTrack } = this;
+		if (newVideoTrack === oldVideoTrack) {
+			return;
+		}
+
+		this.videoTrack = newVideoTrack;
+
+		for await (const call of this.knownCalls.values()) {
+			await call.setVideoTrack(newVideoTrack).catch((error) => {
+				if (newVideoTrack) {
+					throw error;
+				}
+			});
+		}
+
+		if (oldVideoTrack) {
+			this.config.logger?.debug('MediaSignalingSession.setVideoTrack.stopOldTrack');
+			try {
+				oldVideoTrack.stop();
+			} catch {
+				//
+			}
+		}
+	}
+
+	private requestVideoTrackUpdate(): void {
+		if (this.updatingVideoTrack || this.callsToGetDisplayMedia > 0) {
+			return;
+		}
+
+		this.updateVideoTrack().catch(() => null);
+	}
+
+	private async updateVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.updateVideoTrack', this.callsToGetDisplayMedia);
+		this.updatingVideoTrack = true;
+
+		try {
+			if (this.videoTrack) {
+				await this.maybeStopVideoTrack();
+				return;
+			}
+
+			await this.maybeStartVideoTrack();
+		} finally {
+			this.updatingVideoTrack = false;
+			this.config.logger?.debug('MediaSignalingSession.updateVideoTrack.finally', this.callsToGetDisplayMedia);
+		}
+	}
+
+	private async maybeStartVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStartVideoTrack');
+		for (const call of this.knownCalls.values()) {
+			if (!call.needsVideoTrack()) {
+				continue;
+			}
+
+			return this.startVideoTrack();
+		}
+	}
+
+	private async startVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startVideoTrack', this.callsToGetDisplayMedia);
+
+		let displayMedia: MediaStream | null = null;
+		this.callsToGetDisplayMedia++;
+		try {
+			displayMedia = await this.config.displayMediaFactory({}).catch(() => null);
+		} finally {
+			this.callsToGetDisplayMedia--;
+		}
+
+		this.config.logger?.debug('MediaSignalingSession.startVideoTrack.done', this.callsToGetDisplayMedia);
+
+		// If there's multiple simultaneous attempts to get the track, only process the output of the last one
+		if (this.callsToGetDisplayMedia > 0) {
+			return;
+		}
+
+		if (!displayMedia) {
+			return this.hangupCallsThatNeedVideo();
+		}
+
+		const tracks = displayMedia.getVideoTracks();
+		if (!tracks.length) {
+			return this.hangupCallsThatNeedVideo();
+		}
+
+		return this.setVideoTrack(tracks[0]);
+	}
+
+	private hangupCallsThatNeedVideo(): void {
+		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedVideo');
+
+		for (const call of this.knownCalls.values()) {
+			if (!call.needsVideoTrack()) {
+				continue;
+			}
+
+			try {
+				call.hangup('input-error');
+			} catch {
+				//
+			}
+		}
+	}
+
+	private async maybeStopVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStopVideoTrack');
+		for (const call of this.knownCalls.values()) {
+			if (call.mayNeedVideoTrack()) {
+				return;
+			}
+		}
+
+		await this.setVideoTrack(null);
+	}
+
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
@@ -467,7 +598,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			sessionId: this._sessionId,
 		};
 
-		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
+		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack, videoTrack: this.videoTrack });
 		this.knownCalls.set(callId, call);
 
 		call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));
@@ -563,6 +694,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
+		this.requestVideoTrackUpdate();
 
 		if (hadCall && !hasCall) {
 			this.emit('endedCall');

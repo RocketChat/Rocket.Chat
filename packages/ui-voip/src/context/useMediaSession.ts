@@ -23,6 +23,7 @@ const defaultSessionInfo: SessionInfo = {
 type MediaSession = SessionInfo & {
 	toggleMute: () => void;
 	toggleHold: () => void;
+	toggleScreenSharing: () => void;
 
 	toggleWidget: (peerInfo?: PeerInfo) => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
@@ -35,6 +36,8 @@ type MediaSession = SessionInfo & {
 
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
+
+	getRemoteStream: () => MediaStream | null;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -331,6 +334,32 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const getRemoteStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+
+				if (mainCall.hidden) {
+					return null;
+				}
+
+				return mainCall.getRemoteMediaStream();
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
+				return null;
+			}
+		};
+
+		const toggleScreenSharing = () => {
+			if (!instance) {
+				return undefined;
+			}
+
+			// TODO: Implement screen sharing
+		};
+
 		return {
 			toggleWidget,
 			toggleHold,
@@ -341,7 +370,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			sendTone,
 			selectPeer,
 			toggleMute,
+			toggleScreenSharing,
 			acceptCall,
+			getRemoteStream,
 		};
 	}, [instance]);
 
