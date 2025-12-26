@@ -1,4 +1,6 @@
 module.exports = {
+	extends: ['plugin:pino/recommended'],
+	plugins: ['pino'],
 	rules: {
 		// // enforces getter/setter pairs in objects
 		// 'accessor-pairs': 'off',

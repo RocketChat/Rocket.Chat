@@ -13,7 +13,7 @@ const logger = new Logger('federation-matrix:message');
 async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
 	if (!threadRootMessage) {
-		logger.warn('Thread root message not found for event:', threadRootEventId);
+		logger.warn(threadRootEventId, 'Thread root message not found for event:');
 		return;
 	}
 
