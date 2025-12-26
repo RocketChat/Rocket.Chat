@@ -47,7 +47,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	const formatDate = useFormatDate();
 
 	const { data: licenseData, isPending, refetch: refetchLicense } = useLicense({ loadValues: true });
-	const { isRegistered } = useRegistrationStatus();
+	const { isRegistered, canViewRegistrationStatus } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
 	const isAirgapped = license?.information?.offline;
@@ -82,7 +82,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 				action: () => void;
 				label: ReactNode;
 		  } = useMemo(() => {
-		if (!isRegistered) {
+		if (canViewRegistrationStatus && !isRegistered) {
 			return {
 				action: () => {
 					const handleModalClose = (): void => {
@@ -107,7 +107,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		if (isOverLimits) {
 			return { path: '/admin/subscription', label: t('Manage_subscription') };
 		}
-	}, [isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense]);
+	}, [canViewRegistrationStatus, isRegistered, versionStatus, isOverLimits, t, setModal, refetchLicense]);
 
 	const actionItems = useMemo(() => {
 		return (
@@ -154,19 +154,30 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 						</Trans>
 					),
 				},
-				isRegistered
-					? {
-							icon: 'check',
-							label: t('Workspace_registered'),
-						}
-					: {
-							danger: true,
-							icon: 'warning',
-							label: t('Workspace_not_registered'),
-						},
+				canViewRegistrationStatus &&
+					(isRegistered
+						? {
+								icon: 'check',
+								label: t('Workspace_registered'),
+							}
+						: {
+								danger: true,
+								icon: 'warning',
+								label: t('Workspace_not_registered'),
+							}),
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.danger ? -1 : 1));
-	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
+	}, [
+		isOverLimits,
+		t,
+		isAirgapped,
+		versions,
+		versionStatus?.label,
+		versionStatus?.expiration,
+		formatDate,
+		canViewRegistrationStatus,
+		isRegistered,
+	]);
 
 	if (isPending && !licenseData) {
 		return (
