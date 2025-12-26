@@ -94,7 +94,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		return this.streamToBuffer(this.stripExifFromImageStream(this.bufferToStream(buffer)));
 	}
 
-	stripExifFromImageStream(stream: stream.Stream): Readable {
+	stripExifFromImageStream(stream: Readable): Readable {
 		return stream.pipe(new ExifTransformer());
 	}
 
@@ -104,7 +104,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		return bufferStream;
 	}
 
-	private streamToBuffer(stream: stream.Stream): Promise<Buffer> {
+	private streamToBuffer(stream: Readable): Promise<Buffer> {
 		return new Promise((resolve) => {
 			const chunks: Array<Buffer> = [];
 			stream.on('data', (data) => chunks.push(data)).on('end', () => resolve(Buffer.concat(chunks)));

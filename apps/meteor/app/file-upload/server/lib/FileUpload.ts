@@ -4,7 +4,7 @@ import fs from 'fs';
 import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
-import stream from 'stream';
+import { Readable } from 'stream';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -27,6 +27,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
+import { TempUploadFile } from '../../../../server/ufs/TempUploadFile';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -133,7 +134,7 @@ export const FileUpload = {
 		);
 	},
 
-	async validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Readable | Buffer) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -360,9 +361,17 @@ export const FileUpload = {
 		return store.insert(details, buffer);
 	},
 
-	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
-		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
+	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession; stream?: NodeJS.ReadableStream }) {
+		if (
+			!file.type ||
+			!/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type) ||
+			settings.get('FileUpload_RotateImages') !== true
+		) {
 			return;
+		}
+
+		if (options?.stream) {
+			return FileUpload._uploadsOnValidateStream(options.stream, this, file, options);
 		}
 
 		const tmpFile = UploadFS.getTempFilePath(file._id);
@@ -377,6 +386,7 @@ export const FileUpload = {
 		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
 		const width = rotated ? metadata.height : metadata.width;
 		const height = rotated ? metadata.width : metadata.height;
+		let size = metadata.size || 0;
 
 		const identify = {
 			format: metadata.format,
@@ -390,11 +400,9 @@ export const FileUpload = {
 		};
 
 		const reorientation = async () => {
-			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-				return;
-			}
+			const info = await s.rotate().toFile(`${tmpFile}.tmp`);
 
-			await s.rotate().toFile(`${tmpFile}.tmp`);
+			size = info.size;
 
 			await unlink(tmpFile);
 
@@ -402,16 +410,79 @@ export const FileUpload = {
 			// SystemLogger.error(err);
 		};
 
-		await reorientation();
+		if (rotated) {
+			await reorientation();
+		}
 
-		const { size } = await fs.lstatSync(tmpFile);
+		// const { size } = await fs.lstatSync(tmpFile);
 		await this.getCollection().updateOne(
 			{ _id: file._id },
 			{
-				$set: { size, identify },
+				$set: { identify },
 			},
 			options,
 		);
+	},
+
+	_uploadsOnValidateStream(
+		stream: NodeJS.ReadableStream,
+		store: Store,
+		file: IUpload,
+		options: { session?: ClientSession },
+	): { stream: NodeJS.ReadableStream } {
+		const transformer = sharp()
+			.rotate()
+			.on('info', async function sharpStreamMetadata(metadata: sharp.Metadata) {
+				const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+				const width = rotated ? metadata.height : metadata.width;
+				const height = rotated ? metadata.width : metadata.height;
+
+				const identify = {
+					format: metadata.format,
+					size:
+						width != null && height != null
+							? {
+									width,
+									height,
+								}
+							: undefined,
+				};
+
+				await store.getCollection().updateOne(
+					{ _id: file._id },
+					{
+						$set: { identify },
+					},
+					options,
+				);
+			});
+
+		// void transformer.metadata().then(async function sharpStreamMetadata(metadata) {
+		// 	const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		// 	const width = rotated ? metadata.height : metadata.width;
+		// 	const height = rotated ? metadata.width : metadata.height;
+
+		// 	const identify = {
+		// 		format: metadata.format,
+		// 		size:
+		// 			width != null && height != null
+		// 				? {
+		// 						width,
+		// 						height,
+		// 					}
+		// 				: undefined,
+		// 	};
+
+		// 	await store.getCollection().updateOne(
+		// 		{ _id: file._id },
+		// 		{
+		// 			$set: { identify },
+		// 		},
+		// 		options,
+		// 	);
+		// });
+
+		return { stream: stream.pipe(transformer) };
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
@@ -791,22 +862,24 @@ export class FileUploadClass {
 
 	async _doInsert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream | Buffer,
+		streamOrBuffer: ReadableStream | Buffer,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
-			if (streamOrBuffer instanceof stream) {
+			if (streamOrBuffer instanceof Readable) {
 				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
 			} else if (streamOrBuffer instanceof Buffer) {
-				fs.writeFileSync(tmpFile, streamOrBuffer);
+				await fs.promises.writeFile(tmpFile, streamOrBuffer);
 			} else {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
+			const fileStream = fs.createReadStream(tmpFile);
+
+			const file = await ufsComplete(fileId, this.name, fileStream, { session: options?.session });
 
 			return file;
 		} catch (e: any) {
@@ -816,24 +889,49 @@ export class FileUploadClass {
 
 	async insert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		fileContent: TempUploadFile | ReadableStream | Readable | Buffer,
 		options?: { session?: ClientSession },
 	) {
-		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = await streamToBuffer(streamOrBuffer);
+		if (fileContent instanceof TempUploadFile) {
+			return this.insertFromTempUploadFile(fileData, fileContent, { session: options?.session });
 		}
 
-		if (streamOrBuffer instanceof Uint8Array) {
+		if (fileContent instanceof Readable) {
+			fileContent = await streamToBuffer(fileContent);
+		}
+
+		if (fileContent instanceof Uint8Array) {
 			// Services compat :)
-			streamOrBuffer = Buffer.from(streamOrBuffer);
+			fileContent = Buffer.from(fileContent);
 		}
 
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			await filter.check(fileData, streamOrBuffer);
+			await filter.check(fileData, fileContent);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
+		return this._doInsert(fileData, fileContent, { session: options?.session });
+	}
+
+	private async insertFromTempUploadFile(
+		fileData: OptionalId<IUpload>,
+		tempUploadFile: TempUploadFile,
+		options?: { session?: ClientSession },
+	): Promise<IUpload> {
+		try {
+			console.log('PRE CHECK');
+			await this.store.getFilter()?.check?.(fileData, tempUploadFile.getReadableStream());
+
+			console.log('CREATE');
+			const fileId = await this.store.create(fileData, { session: options?.session });
+
+			console.log('COMPLETE');
+			return await ufsComplete(fileId, this.name, tempUploadFile.getReadableStream(), { session: options?.session });
+		} finally {
+			// tempUploadFile.safeUnlink();
+
+			console.log('UPLOAD FINISHED', tempUploadFile);
+		}
 	}
 }

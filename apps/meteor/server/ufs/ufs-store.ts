@@ -20,7 +20,19 @@ export type StoreOptions = {
 	onFinishUpload?: (file: IUpload) => Promise<void>;
 	onRead?: (fileId: string, file: IUpload, request: any, response: any) => Promise<boolean>;
 	onReadError?: (err: any, fileId: string, file: IUpload) => void;
-	onValidate?: (file: IUpload, options?: { session?: ClientSession }) => Promise<void>;
+	/**
+	 * Runs extra validations.
+	 *
+	 * Can optionally pipe an incoming stream to transform it. It will return a new stream in that case.
+	 *
+	 * @param file
+	 * @param options
+	 * @returns An object containig a readable stream if the stream was transformed, or void
+	 */
+	onValidate?: (
+		file: IUpload,
+		options?: { session?: ClientSession; stream?: stream.Readable },
+	) => Promise<{ stream?: stream.Readable } | undefined>;
 	onWriteError?: (err: any, fileId: string, file: IUpload) => void;
 	transformRead?: (
 		readStream: stream.Readable,
@@ -332,8 +344,8 @@ export class Store {
 		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
-	async onValidate(_file: IUpload, _options?: { session?: ClientSession }) {
-		//
+	async onValidate(_file: IUpload, _options?: { session?: ClientSession }): Promise<{ stream?: stream.Readable } | undefined> {
+		return undefined;
 	}
 
 	onWriteError(err: Error, fileId: string, _file: IUpload) {
@@ -363,9 +375,9 @@ export class Store {
 		}
 	}
 
-	async validate(file: IUpload, options?: { session?: ClientSession }) {
+	async validate(file: IUpload, options?: { session?: ClientSession; stream?: stream.Readable }) {
 		if (typeof this.onValidate === 'function') {
-			await this.onValidate(file, options);
+			return this.onValidate(file, options);
 		}
 	}
 
