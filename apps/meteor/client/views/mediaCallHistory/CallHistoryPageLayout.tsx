@@ -1,11 +1,12 @@
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallHistoryPageFilters, { type CallHistoryPageFiltersProps } from './CallHistoryPageFilters';
 
 type CallHistoryPageLayoutProps = {
-	children: React.ReactNode;
-	contextualBar?: React.ReactNode;
+	children: ReactNode;
+	contextualBar?: ReactNode;
 	filterProps: CallHistoryPageFiltersProps;
 };
 
