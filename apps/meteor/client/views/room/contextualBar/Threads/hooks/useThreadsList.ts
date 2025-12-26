@@ -80,14 +80,14 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 	}) as (message: IMessage) => message is IThreadMainMessage; // TODO: Remove type assertion when useEffectEvent types are fixed
 
 	useInfiniteMessageQueryUpdates({
-		queryKey: roomsQueryKeys.threads(rid),
+		queryKey: roomsQueryKeys.threads(rid, { type, text }),
 		roomId: rid,
 		filter,
 		compare,
 	});
 
 	return useInfiniteQuery({
-		queryKey: roomsQueryKeys.threads(rid),
+		queryKey: roomsQueryKeys.threads(rid, { type, text }),
 		queryFn: async ({ pageParam: offset }) => {
 			const { threads, total } = await getThreadsList({
 				rid,
@@ -107,6 +107,8 @@ export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions)
 		},
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, allPages) => {
+			// FIXME: This is an estimation, as threads can be created or removed while paginating
+			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
 			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
 			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
 		},
