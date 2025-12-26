@@ -22,7 +22,7 @@ import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedRespon
 
 type CannedResponseListProps = {
 	loadMoreItems: () => void;
-	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
+	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
 	onClose: () => void;
 	options: [string, string][];

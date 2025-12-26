@@ -25,10 +25,12 @@ export const useCannedResponseList = ({ filter, type }: { filter: string; type: 
 				count,
 			});
 
+			// TODO: Optimize by creating an endpoint that returns canned responses with department names
+			// TODO: Use another query for departments to avoid refetching
 			const { departments } = await getDepartments({ text: '' });
 
 			return {
-				items: cannedResponses.map((cannedResponse): IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] } => {
+				items: cannedResponses.map((cannedResponse): IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] } => {
 					const departmentName = cannedResponse.departmentId
 						? departments.find((department) => department._id === cannedResponse.departmentId)?.name
 						: undefined;
@@ -37,7 +39,7 @@ export const useCannedResponseList = ({ filter, type }: { filter: string; type: 
 						...cannedResponse,
 						_updatedAt: new Date(cannedResponse._updatedAt),
 						_createdAt: new Date(cannedResponse._createdAt),
-						departmentName: departmentName!,
+						departmentName,
 					};
 				}),
 				itemCount: total,
