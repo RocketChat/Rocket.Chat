@@ -18,6 +18,7 @@ type HideRoomProps = {
 
 type HideRoomOptions = {
 	redirect?: boolean;
+	currentRoomId?: string;
 };
 
 const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
@@ -27,7 +28,7 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	l: '/v1/channels.close', // livechat
 } as const;
 
-export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { redirect = true }: HideRoomOptions = {}) => {
+export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { redirect = true,currentRoomId="" }: HideRoomOptions = {}) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useEffectEvent(() => setModal());
@@ -48,6 +49,9 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 			}
 		},
 		onSuccess: () => {
+			if(currentRoomId===roomId){
+				redirect=true: 
+			}
 			if (redirect) {
 				router.navigate('/home');
 			}
