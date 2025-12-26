@@ -2,6 +2,8 @@ import { Settings } from '@rocket.chat/core-services';
 import { createMiddleware } from 'hono/factory';
 import mem from 'mem';
 
+import { extractDomainFromMatrixUserId } from '../../FederationMatrix';
+
 // cache for 60 seconds
 const getAllowList = mem(
 	async () => {
@@ -15,6 +17,38 @@ const getAllowList = mem(
 	},
 	{ maxAge: 60000 },
 );
+
+export async function isFederationDomainAllowed(domains: string[]): Promise<boolean> {
+	const allowList = await getAllowList();
+	if (!allowList || allowList.length === 0) {
+		return true;
+	}
+
+	const isDomainAllowed = (domain: string) => {
+		return allowList.some((pattern) => {
+			if (pattern.startsWith('*.')) {
+				const baseDomain = pattern.slice(2); // remove '*.'
+				return domain.endsWith(`.${baseDomain}`);
+			}
+
+			return domain === pattern || domain.endsWith(`.${pattern}`);
+		});
+	};
+
+	return domains.every((domain) => isDomainAllowed(domain.toLowerCase()));
+}
+
+export async function isFederationDomainAllowedForUsernames(usernames: string[]): Promise<boolean> {
+	// filter out local users (those without ':' in username) and extract domains from external users
+	const domains = usernames.filter((username) => username.includes(':')).map((username) => extractDomainFromMatrixUserId(username));
+
+	// if no federated users, allow (all local users)
+	if (domains.length === 0) {
+		return true;
+	}
+
+	return isFederationDomainAllowed(domains);
+}
 
 /**
  * Parses all key-value pairs from a Matrix authorization header.
@@ -52,8 +86,7 @@ export const isFederationDomainAllowedMiddleware = createMiddleware(async (c, ne
 		return c.json({ errcode: 'M_MISSING_ORIGIN', error: 'Missing origin in authorization header.' }, 401);
 	}
 
-	// Check if domain is in allowed list
-	if (allowList.some((allowed) => domain.endsWith(allowed))) {
+	if (await isFederationDomainAllowed([domain])) {
 		return next();
 	}
 
