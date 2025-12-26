@@ -1,5 +1,31 @@
 # @rocket.chat/gazzodown
 
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/ui-client@26.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  </details>
+
+## 26.0.0-rc.0
+
+### Major Changes
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 0c0258604632342f42fc36cabac2d6cfe0e477c4, ac11ea05ffadeca978c794ff38d5199d9acb2c29, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 55dc368f3f679e93bffb9f04efe3944832cf3336]:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/ui-client@26.0.0-rc.0
+  </details>
+
 ## 25.0.2
 
 ### Patch Changes

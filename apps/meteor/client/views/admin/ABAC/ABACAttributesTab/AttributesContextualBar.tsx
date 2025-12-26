@@ -75,7 +75,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.roomAttributes.list({}) });
+			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.roomAttributes.list() });
 		},
 	});
 

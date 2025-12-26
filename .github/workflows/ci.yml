@@ -566,6 +566,7 @@ jobs:
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
       mongodb-version: "['8.2']"
+      coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}

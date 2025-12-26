@@ -215,7 +215,7 @@ async function handleJoin({
 
 	// update room name for DMs
 	if (room.t === 'd') {
-		await Room.updateDirectMessageRoomName(room);
+		await Room.updateDirectMessageRoomName(room, [subscription._id]);
 	}
 
 	if (!subscription.status) {

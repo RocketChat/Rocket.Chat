@@ -21,7 +21,10 @@ test.describe('OC - Tags Visibility', () => {
 	let departmentA: Awaited<ReturnType<typeof createDepartment>>;
 	let departmentB: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
-	let tags: Awaited<ReturnType<typeof createTag>>[] = [];
+	let tagA: Awaited<ReturnType<typeof createTag>>;
+	let tagB: Awaited<ReturnType<typeof createTag>>;
+	let globalTag: Awaited<ReturnType<typeof createTag>>;
+	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
 	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
@@ -40,16 +43,12 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test.beforeAll('Create tags', async ({ api }) => {
-		tags = await Promise.all([
-			createTag(api, { name: 'TagA', description: 'tag A', departments: [departmentA.data._id] }),
-			createTag(api, { name: 'TagB', description: 'tag B', departments: [departmentB.data._id] }),
-			createTag(api, { name: 'GlobalTag', description: 'public tag', departments: [] }),
-			createTag(api, {
-				name: 'SharedTag',
-				description: 'tag for both departments',
-				departments: [departmentA.data._id, departmentB.data._id],
-			}),
-		]);
+		tagA = await createTag(api, { departments: [departmentA.data._id] });
+		tagB = await createTag(api, { departments: [departmentB.data._id] });
+		globalTag = await createTag(api, { departments: [] });
+		sharedTag = await createTag(api, {
+			departments: [departmentA.data._id, departmentB.data._id],
+		});
 	});
 
 	test.beforeAll('Create conversations', async ({ api }) => {
@@ -66,7 +65,7 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.afterAll(async () => {
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
-		await Promise.all(tags.map((tag) => tag.delete()));
+		await Promise.all([tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()));
 		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
@@ -88,31 +87,31 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Should see TagA (department A specific)', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('TagA')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(tagA.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see SharedTag (both departments)', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('SharedTag')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(sharedTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see Public Tags for all chats (no department restriction)', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('GlobalTag')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(globalTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should not see TagB (department B specific)', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('TagB')).not.toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(tagB.data.name)).not.toBeVisible();
 		});
 
 		await test.step('add tags and save', async () => {
-			await poOmnichannel.roomInfo.selectTag('TagA');
-			await poOmnichannel.roomInfo.selectTag('GlobalTag');
+			await poOmnichannel.roomInfo.selectTag(tagA.data.name);
+			await poOmnichannel.roomInfo.selectTag(globalTag.data.name);
 			await poOmnichannel.roomInfo.btnSaveEditRoom.click();
 		});
 
 		await test.step('verify selected tags are displayed under room information', async () => {
 			await expect(poOmnichannel.roomInfo.getLabel('Tags')).toBeVisible();
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('TagA')).toBeVisible();
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel('GlobalTag')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(tagA.data.name)).toBeVisible();
+			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(globalTag.data.name)).toBeVisible();
 		});
 	});
 
@@ -125,11 +124,11 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Agent associated with DepartmentB should be able to see tags for Department B', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('TagB')).toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(tagB.data.name)).toBeVisible();
 		});
 
 		await test.step('Agent associated with DepartmentB should not be able to see tags for DepartmentA', async () => {
-			await expect(poOmnichannel.roomInfo.optionTags('TagA')).not.toBeVisible();
+			await expect(poOmnichannel.roomInfo.optionTags(tagA.data.name)).not.toBeVisible();
 		});
 	});
 });
