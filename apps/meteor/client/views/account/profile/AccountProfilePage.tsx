@@ -21,6 +21,7 @@ import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
+import { InputError } from './DeleteAccountError';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {
@@ -96,6 +97,7 @@ const AccountProfilePage = (): ReactElement => {
 			try {
 				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+				setModal(null);
 				logout();
 			} catch (error: any) {
 				if (error.error === 'user-last-owner') {
@@ -103,6 +105,9 @@ const AccountProfilePage = (): ReactElement => {
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
 				}
 
+				if (error.errorType === 'error-invalid-password') {
+					throw new InputError(t('Invalid_password'));
+				}
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
