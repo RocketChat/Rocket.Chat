@@ -11,36 +11,34 @@ const useMailerUnsubscriptionMutation = () => {
 	const createdAt = useRouteParameter('createdAt');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const mutation = useMutation<void, Error, { _id: string; createdAt: string }>({
-		mutationFn: async ({ _id, createdAt }) => {
+	const mutation = useMutation({
+		mutationFn: async ({ _id, createdAt }: { _id: string; createdAt: string }) => {
 			await unsubscribe({ _id, createdAt });
 		},
-		onError: (error: unknown) => {
+		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
-
-	const { mutate } = mutation;
 
 	useEffect(() => {
 		if (!_id || !createdAt) {
 			return;
 		}
 
-		mutate({ _id, createdAt });
-	}, [_id, createdAt, mutate]);
+		mutation.mutate.call(null, { _id, createdAt });
+	}, [_id, createdAt, mutation.mutate]);
 
 	return mutation;
 };
 
 const MailerUnsubscriptionPage = () => {
 	const { t } = useTranslation();
-	const { isPending, isError, error, isSuccess } = useMailerUnsubscriptionMutation();
+	const { isIdle, isPending, isError, error, isSuccess } = useMailerUnsubscriptionMutation();
 
 	return (
 		<HeroLayout>
 			<Box color='default' marginInline='auto' marginBlock={16} maxWidth={800}>
-				{(isPending && <Throbber disabled />) ||
+				{((isIdle || isPending) && <Throbber disabled />) ||
 					(isError && <Callout type='danger' title={error.message} />) ||
 					(isSuccess && <Callout type='success' title={t('You_have_successfully_unsubscribed')} />)}
 			</Box>
