@@ -8,20 +8,14 @@ import {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
-import {
-	eventIdSchema,
-	roomIdSchema,
-	userIdSchema,
-	federationSDK,
-	FederationRequestError,
-	FederationValidationError,
-} from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { isFederationDomainAllowed } from './api/middlewares/isFederationDomainAllowed';
+import { FederationValidationError } from './errors/FederationValidationError';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { MatrixMediaService } from './services/MatrixMediaService';
 

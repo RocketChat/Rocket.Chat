@@ -1,7 +1,8 @@
 import { Settings } from '@rocket.chat/core-services';
-import { extractDomainFromId } from '@rocket.chat/federation-sdk';
 import { createMiddleware } from 'hono/factory';
 import mem from 'mem';
+
+import { extractDomainFromMatrixUserId } from '../../FederationMatrix';
 
 // cache for 60 seconds
 const getAllowList = mem(
@@ -39,7 +40,7 @@ export async function isFederationDomainAllowed(domains: string[]): Promise<bool
 
 export async function isFederationDomainAllowedForUsernames(usernames: string[]): Promise<boolean> {
 	// filter out local users (those without ':' in username) and extract domains from external users
-	const domains = usernames.filter((username) => username.includes(':')).map((username) => extractDomainFromId(username));
+	const domains = usernames.filter((username) => username.includes(':')).map((username) => extractDomainFromMatrixUserId(username));
 
 	// if no federated users, allow (all local users)
 	if (domains.length === 0) {

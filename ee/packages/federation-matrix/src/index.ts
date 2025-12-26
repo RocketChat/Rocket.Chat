@@ -2,7 +2,9 @@ import 'reflect-metadata';
 
 export { FederationMatrix, validateFederatedUsername } from './FederationMatrix';
 
-export { generateEd25519RandomSecretKey, FederationValidationError } from '@rocket.chat/federation-sdk';
+export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
+
+export { FederationValidationError } from './errors/FederationValidationError';
 
 export { getFederationRoutes } from './api/routes';
 
