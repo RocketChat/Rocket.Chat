@@ -25,7 +25,7 @@ function fallbackDefaultAccountSystem(bind: typeof Accounts, username: string | 
 		}
 	}
 
-	logger.info('Fallback to default account system', username);
+	logger.info({ msg: 'Fallback to default account system', username });
 
 	const loginRequest = {
 		user: username,
@@ -125,7 +125,7 @@ export class CROWD {
 			if (user) {
 				crowdUsername = user.crowd_username;
 			} else {
-				logger.debug('Could not find a user by email', username);
+				logger.debug({ msg: 'Could not find a user by email', username });
 			}
 		}
 
@@ -143,7 +143,7 @@ export class CROWD {
 			if (user) {
 				crowdUsername = user.crowd_username;
 			} else {
-				logger.debug('Could not find a user with by crowd_username', username);
+				logger.debug({ msg: 'Could not find a user with by crowd_username', username });
 			}
 		}
 
@@ -157,7 +157,7 @@ export class CROWD {
 		if (!user && crowdUsername) {
 			logger.debug('New user. User is not synced yet.');
 		}
-		logger.debug('Going to crowd:', crowdUsername);
+		logger.debug({ msg: 'Going to crowd', crowdUsername });
 
 		return new Promise((resolve, reject) =>
 			this.crowdClient.user.authenticate(crowdUsername, password, async (err: any, res: Record<string, any>) => {
@@ -241,9 +241,9 @@ export class CROWD {
 
 		for await (const user of users) {
 			let crowdUsername = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
-			logger.info('Syncing user', crowdUsername);
+			logger.info({ msg: 'Syncing user', crowdUsername });
 			if (!crowdUsername) {
-				logger.warn('User has no crowd_username', user.username);
+				logger.warn({ msg: 'User has no crowd_username', username: user.username });
 				continue;
 			}
 
@@ -252,28 +252,28 @@ export class CROWD {
 			try {
 				crowdUser = await this.fetchCrowdUser(crowdUsername);
 			} catch (err) {
-				logger.debug({ err });
+				logger.debug({ msg: 'Error while syncing user from CROWD', err });
 				logger.error({ msg: 'Could not sync user with username', crowd_username: crowdUsername });
 
 				const email = user.emails?.[0].address;
-				logger.info('Attempting to find for user by email', email);
+				logger.info({ msg: 'Attempting to find user by email', email });
 
 				const response = await this.searchForCrowdUserByMail(email);
 				if (!response || response.users.length === 0) {
-					logger.warn('Could not find user in CROWD with username or email:', crowdUsername, email);
+					logger.warn({ msg: 'Could not find user in CROWD with username or email', crowd_username: crowdUsername, email });
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
-						logger.info('Removing user:', crowdUsername);
+						logger.info({ msg: 'Removing user', crowd_username: crowdUsername });
 						setImmediate(async () => {
 							await deleteUser(user._id);
-							logger.info('User removed:', crowdUsername);
+							logger.info({ msg: 'User removed', crowd_username: crowdUsername });
 						});
 					}
 					return;
 				}
 				crowdUsername = response.users[0].name;
-				logger.info('User found by email. Syncing user', crowdUsername);
+				logger.info({ msg: 'User found by email. Syncing user', crowd_username: crowdUsername });
 				if (!crowdUsername) {
-					logger.warn('User has no crowd_username', user.username);
+					logger.warn({ msg: 'User has no crowd_username', username: user.username });
 					continue;
 				}
 
@@ -368,7 +368,7 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 		return undefined;
 	}
 
-	logger.info('Init CROWD login', loginRequest.username);
+	logger.info({ msg: 'Init CROWD login', username: loginRequest.username });
 
 	if (settings.get('CROWD_Enable') !== true) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
@@ -379,12 +379,12 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 		const user = await crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
 		if (user && user.crowd === false) {
-			logger.debug(`User ${loginRequest.username} is not a valid crowd user, falling back`);
+			logger.debug({ msg: 'User is not a valid crowd user, falling back', username: loginRequest.username });
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 		}
 
 		if (!user) {
-			logger.debug(`User ${loginRequest.username} is not allowed to access Rocket.Chat`);
+			logger.debug({ msg: 'User is not allowed to access Rocket.Chat', username: loginRequest.username });
 			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 

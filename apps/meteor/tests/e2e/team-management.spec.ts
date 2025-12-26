@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
-import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/create-new-modal';
+import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/fragments/modals';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
