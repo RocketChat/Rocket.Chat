@@ -1634,6 +1634,7 @@
   "RetentionPolicyRoom_ExcludePinned": "Искључите закачене поруке",
   "RetentionPolicyRoom_FilesOnly": "Обриши само датотеке, остави поруке",
   "RetentionPolicyRoom_OverrideGlobal": "Прекорачити глобалну политику задржавања",
+  "RetentionPolicyRoom_ReadTheDocs": "Пази! Подешавање ових поставки без велике пажње може уништити све историје порука. Молимо прочитајте документацију пре него што укључите функцију на <ЛХ_ХТМЛ_ОПЕН_а хреф = 'хттпс: //роцкет.цхат/доцс/администраторгуидес/ретентион-полициес/'_ЛХ_ХТМЛ_ЕНД> овде <ЛХ_ХТМЛ_ЦЛОСЕ_а_ЛХ_ХТМЛ_ЕНД>.",
   "RetentionPolicy_AppliesToChannels": "Примењује се на канале",
   "RetentionPolicy_AppliesToDMs": "Примењује се на директне поруке",
   "RetentionPolicy_AppliesToGroups": "Примјењује се на приватне групе",

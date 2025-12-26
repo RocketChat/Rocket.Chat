@@ -744,6 +744,7 @@
   "CROWD_Reject_Unauthorized": "Отклонить неавторизованных",
   "Call": "Звонок",
   "Call_Already_Ended": "Вызов уже завершен",
+  "Call_Information": "Информация о вызове",
   "Call_back": "Обратный звонок",
   "Call_declined": "Вызов отклонен!",
   "Call_ended": "Звонок завершен",
