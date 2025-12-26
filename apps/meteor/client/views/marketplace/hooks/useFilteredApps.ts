@@ -60,19 +60,19 @@ export const useFilteredApps = ({
 
 			const sortingMethods: Record<string, (apps: App[]) => App[]> = {
 				urf: (apps: App[]) =>
-					apps.sort(
+					apps.toSorted(
 						(firstApp, secondApp) => (secondApp?.appRequestStats?.totalUnseen || 0) - (firstApp?.appRequestStats?.totalUnseen || 0),
 					),
 				url: (apps: App[]) =>
-					apps.sort(
+					apps.toSorted(
 						(firstApp, secondApp) => (firstApp?.appRequestStats?.totalUnseen || 0) - (secondApp?.appRequestStats?.totalUnseen || 0),
 					),
-				az: (apps: App[]) => apps.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
-				za: (apps: App[]) => apps.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
+				az: (apps: App[]) => apps.toSorted((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
+				za: (apps: App[]) => apps.toSorted((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
 				mru: (apps: App[]) =>
-					apps.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
+					apps.toSorted((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(firstApp.modifiedAt, secondApp.modifiedAt)),
 				lru: (apps: App[]) =>
-					apps.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
+					apps.toSorted((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 			};
 
 			const filterByPurchaseType: Record<string, (apps: App[]) => App[]> = {
