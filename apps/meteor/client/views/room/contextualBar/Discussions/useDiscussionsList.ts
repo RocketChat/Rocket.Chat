@@ -1,5 +1,4 @@
 import type { IDiscussionMessage, IMessage } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -14,33 +13,29 @@ const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): mes
 
 const isDiscussionTextMatching = (discussionMessage: IDiscussionMessage, regex: RegExp): boolean => regex.test(discussionMessage.msg);
 
-const compare = (a: IMessage, b: IMessage): number => (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
-
 export const useDiscussionsList = ({ rid, text }: { rid: IMessage['rid']; text?: string }) => {
 	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');
 
 	const count = parseInt(`${getConfig('discussionListSize', 10)}`, 10);
 
-	const filter = useEffectEvent((message: IMessage): message is IDiscussionMessage => {
-		if (!isDiscussionMessageInRoom(message, rid)) {
-			return false;
-		}
-
-		if (text) {
-			const regex = new RegExp(escapeRegExp(text), 'i');
-			if (!isDiscussionTextMatching(message, regex)) {
-				return false;
-			}
-		}
-
-		return true;
-	}) as (message: IMessage) => message is IDiscussionMessage; // TODO: Remove type assertion when useEffectEvent types are fixed
-
 	useInfiniteMessageQueryUpdates<IDiscussionMessage, ReturnType<typeof roomsQueryKeys.discussions>>({
 		queryKey: roomsQueryKeys.discussions(rid, { text }),
 		roomId: rid,
-		filter,
-		compare,
+		// Replicates the filtering done server-side
+		filter: (message): message is IDiscussionMessage => {
+			if (!isDiscussionMessageInRoom(message, rid)) {
+				return false;
+			}
+
+			if (text) {
+				const regex = new RegExp(escapeRegExp(text), 'i');
+				if (!isDiscussionTextMatching(message, regex)) {
+					return false;
+				}
+			}
+
+			return true;
+		},
 	});
 
 	return useInfiniteQuery({
@@ -54,21 +49,18 @@ export const useDiscussionsList = ({ rid, text }: { rid: IMessage['rid']; text?:
 			});
 
 			return {
-				items: messages
-					.map((message) => mapMessageFromApi(message))
-					.filter(filter)
-					.toSorted(compare),
+				items: messages.map(mapMessageFromApi),
 				itemCount: total,
 			};
 		},
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, allPages) => {
+			// FIXME: This is an estimation, as discussions can be created or removed while paginating
+			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
 			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
 			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
 		},
 		select: ({ pages }) => ({
-			// FIXME: This is an estimation, as discussions can be created or removed while paginating
-			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
 			items: pages.flatMap((page) => page.items),
 			itemCount: pages.at(-1)?.itemCount ?? 0,
 		}),
