@@ -121,3 +121,24 @@ export const createConversation = async (
 		},
 	};
 };
+
+export const waitForInquiryToBeTaken = async (api: BaseTest['api'], roomIds: string | string[], maxAttempts = 10, intervalMs = 1000) => {
+	const ids = Array.isArray(roomIds) ? roomIds : [roomIds];
+
+	const checkInquiry = async (roomId: string) => {
+		for await (const [index] of Array(maxAttempts).entries()) {
+			const inquiry = await api.get('/livechat/inquiries.getOne', { roomId });
+			const inquiryData = await inquiry.json();
+			if (inquiryData.inquiry?.status !== 'queued') {
+				return;
+			}
+
+			if (index < maxAttempts - 1) {
+				await new Promise((resolve) => setTimeout(resolve, intervalMs));
+			}
+		}
+		throw new Error(`Inquiry for room ${roomId} was not taken after ${maxAttempts * intervalMs}ms`);
+	};
+
+	await Promise.all(ids.map(checkInquiry));
+};
