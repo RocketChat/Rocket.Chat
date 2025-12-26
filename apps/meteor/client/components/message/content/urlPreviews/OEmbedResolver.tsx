@@ -10,6 +10,18 @@ type OEmbedResolverProps = {
 };
 
 const OEmbedResolver = ({ meta }: OEmbedResolverProps): ReactElement | null => {
+
+   // We force it to render as a standard Link Preview (Image + Text) instead.
+	const isTwitter =
+	   meta.providerName?.toLowerCase() === 'twitter' ||
+	   meta.providerName === 'X' ||
+	   meta.providerUrl?.includes('twitter.com') ||
+	   meta.providerUrl?.includes('x.com');
+
+    if (isTwitter) {
+	   return <OEmbedLinkPreview {...meta} />;
+    }
+
 	switch (meta.type) {
 		case 'rich':
 		case 'video':
