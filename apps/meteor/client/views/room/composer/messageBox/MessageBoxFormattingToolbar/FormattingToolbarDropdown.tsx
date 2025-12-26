@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,7 @@ type FormattingToolbarDropdownProps = {
 
 const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingToolbarDropdownProps) => {
 	const { t } = useTranslation();
+	const menuRef = useRef<any>(null);
 
 	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
 		const handleFormattingAction = () => {
@@ -34,9 +36,30 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 		};
 	});
 
-	const sections = [{ title: t('Message_Formatting_toolbox'), items: formattingItems }];
+	// Add a new "Close" item that will trigger the menu's close method
+	const closeItem: GenericMenuItemProps = {
+		id: 'close',
+		content: t('Close'),
+		icon: 'cross',
+		onClick: () => {
+			if (menuRef.current && typeof menuRef.current.close === 'function') {
+				menuRef.current.close();
+			}
+		},
+	};
 
-	return <GenericMenu title={t('Message_Formatting_toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
+	const sections = [{ title: t('Message_Formatting_toolbox'), items: [...formattingItems, closeItem] }];
+
+	return (
+		<GenericMenu
+			ref={menuRef}
+			title={t('Message_Formatting_toolbox')}
+			disabled={disabled}
+			detached
+			icon='meatballs'
+			sections={sections}
+		/>
+	);
 };
 
 export default FormattingToolbarDropdown;
