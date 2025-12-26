@@ -83,8 +83,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 	protected async buildMessageObject(data: IImportMessage, rid: string, creator: UserIdentification): Promise<MessageObject> {
 		// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-		const mentions = data.mentions && (await this.convertMessageMentions(data));
-		const channels = data.channels && (await this.convertMessageChannels(data));
+		const mentions = (data.mentions && (await this.convertMessageMentions(data))) ?? [];
+		const channels = (data.channels && (await this.convertMessageChannels(data))) ?? [];
 
 		return {
 			rid,
@@ -94,22 +94,22 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			},
 			msg: data.msg,
 			ts: data.ts,
-			t: data.t || undefined,
-			groupable: data.groupable,
-			tmid: data.tmid,
-			tlm: data.tlm,
-			tcount: data.tcount,
-			replies: data.replies && (await this.convertMessageReplies(data.replies)),
-			editedAt: data.editedAt,
-			editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) || undefined),
+			t: data.t ?? undefined,
+			groupable: data.groupable ?? undefined,
+			tmid: data.tmid ?? undefined,
+			tlm: data.tlm ?? undefined,
+			tcount: data.tcount ?? undefined,
+			replies: (data.replies && (await this.convertMessageReplies(data.replies))) ?? undefined,
+			editedAt: data.editedAt ?? undefined,
+			editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) ?? undefined),
 			mentions,
 			channels,
-			_importFile: data._importFile,
-			url: data.url,
+			_importFile: data._importFile ?? undefined,
+			url: data.url ?? undefined,
 			attachments: data.attachments,
-			bot: data.bot,
+			bot: data.bot ?? undefined,
 			emoji: data.emoji,
-			alias: data.alias,
+			alias: data.alias ?? undefined,
 			...(data._id ? { _id: data._id } : {}),
 			...(data.reactions ? { reactions: await this.convertMessageReactions(data.reactions) } : {}),
 		};
