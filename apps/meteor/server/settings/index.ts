@@ -5,6 +5,7 @@ import { createBotsSettings } from './bots';
 import { createCasSettings } from './cas';
 import { createCrowdSettings } from './crowd';
 import { createEmojiSettings } from './custom-emoji';
+import { createEmojiPermissionsSettings } from './emoji';
 import { createSoundsSettings } from './custom-sounds';
 import { createDiscussionsSettings } from './discussions';
 import { createE2ESettings } from './e2e';
@@ -45,6 +46,7 @@ await Promise.all([
 	createCasSettings(),
 	createCrowdSettings(),
 	createEmojiSettings(),
+	createEmojiPermissionsSettings(),
 	createSoundsSettings(),
 	createDiscussionsSettings(),
 	createEmailSettings(),
