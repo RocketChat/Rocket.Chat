@@ -19,7 +19,7 @@ const WidgetBase = styled('article', ({ expanded: _expanded, ...props }: WidgetB
 	top: 11em;
 	display: flex;
 	flex-direction: column;
-	${({ expanded }) => (expanded ? `width: 458px; min-height: 525px;` : `width: 248px; min-height: 128px;`)}
+	${({ expanded }) => (expanded ? `width: 248px; min-height: 256px;` : `width: 248px; min-height: 128px;`)}
 	border-radius: 4px;
 	border: 1px solid ${Palette.stroke['stroke-dark'].toString()};
 	box-shadow:
