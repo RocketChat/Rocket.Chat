@@ -4,16 +4,21 @@
 - Start local Mongo/NATS (WSL-backed, ports on localhost):  
   `cd ~/medsense.webchat`  
   `docker compose -f deployment/docker-compose.localdeps.yml up -d`
+- Alternative (simple Docker one-shot):
+  `bash scripts/dev-local-docker.sh`
 - Run the app (from repo root):  
   ```
   cd ~/medsense.webchat
   MONGO_URL="mongodb://127.0.0.1:27017/rocketchat?replicaSet=rs0" \
   MONGO_OPLOG_URL="mongodb://127.0.0.1:27017/local?replicaSet=rs0" \
   TRANSPORTER="monolith+nats://127.0.0.1:4222" \
+  LOCAL_BROKER_TIMEOUT_MS=60000 \
   yarn dsv
   ```
 - If Mongo errors about `ENOTFOUND mongo`, reconfig RS host inside Mongo:  
   `sudo docker exec -it deployment-mongo-1 mongosh --quiet --eval 'cfg=rs.conf(); cfg.members[0].host="127.0.0.1:27017"; rs.reconfig(cfg,{force:true});'`
+- If Marketplace errors appear in dev, keep mock fetch enabled:
+  `export MARKETPLACE_FETCH_STRATEGY=mock`
 
 ## CI/CD (essentials)
 - Build app image (from repo root):  

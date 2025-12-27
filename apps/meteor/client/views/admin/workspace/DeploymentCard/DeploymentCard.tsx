@@ -24,6 +24,11 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 	const setModal = useSetModal();
 
 	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
+	const processInfo = statistics?.process ?? {};
+	const migrationInfo = statistics?.migration ?? {};
+	const mongoVersion = statistics?.mongoVersion ?? '-';
+	const mongoEngine = statistics?.mongoStorageEngine ?? '-';
+	const oplogStatus = statistics?.oplogEnabled ? t('Enabled') : t('Disabled');
 
 	const handleInstancesModal = useEffectEvent(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
@@ -60,17 +65,17 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					)}
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Node_version')} />
-						{statistics.process.nodeVersion}
+						{processInfo.nodeVersion ?? '-'}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('DB_Migration')} />
-						{`${statistics.migration.version} (${formatDateAndTime(statistics.migration.lockedAt)})`}
+						{migrationInfo.version
+							? `${migrationInfo.version} (${formatDateAndTime(migrationInfo.lockedAt)})`
+							: '-'}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('MongoDB')} />
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
-							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
-						}`}
+						{`${mongoVersion} / ${mongoEngine} ${!statistics.msEnabled ? `(oplog ${oplogStatus})` : ''}`}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Commit_details')} />
@@ -80,7 +85,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('PID')} />
-						{statistics.process.pid}
+						{processInfo.pid ?? '-'}
 					</WorkspaceCardSection>
 				</Margins>
 			</CardBody>

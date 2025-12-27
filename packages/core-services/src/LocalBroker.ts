@@ -14,7 +14,8 @@ type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; i
 const logger = new Logger('LocalBroker');
 
 const INTERVAL = 1000;
-const TIMEOUT = INTERVAL * 10;
+const timeoutOverride = Number(process.env.LOCAL_BROKER_TIMEOUT_MS ?? process.env.LOCAL_BROKER_TIMEOUT ?? NaN);
+const TIMEOUT = Number.isFinite(timeoutOverride) ? timeoutOverride : INTERVAL * 10;
 
 export class LocalBroker implements IBroker {
 	private started = false;

@@ -2,39 +2,51 @@ FROM node:22.16.0-bullseye AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "[build] apt-get deps (build stage) start" \
+  && apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     g++ \
     git \
     make \
     python3 \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && echo "[build] apt-get deps (build stage) done"
 
-RUN curl -fsSL https://install.meteor.com/ | sh
+RUN echo "[build] meteor install start" \
+  && curl -fsSL https://install.meteor.com/ | sh \
+  && echo "[build] meteor install done"
 
-RUN useradd --create-home --shell /bin/bash app \
+RUN echo "[build] create app user + corepack start" \
+  && useradd --create-home --shell /bin/bash app \
   && corepack enable \
-  && corepack prepare yarn@4.11.0 --activate
+  && corepack prepare yarn@4.11.0 --activate \
+  && echo "[build] create app user + corepack done"
 
 WORKDIR /app
 
 COPY --chown=app:app . .
 
-RUN mkdir -p /app/bundle \
-  && chown -R app:app /app/bundle
+RUN echo "[build] prepare /app/bundle start" \
+  && mkdir -p /app/bundle \
+  && chown -R app:app /app/bundle \
+  && echo "[build] prepare /app/bundle done"
 
 USER app
 
-RUN git config --global --add safe.directory /app \
-  && yarn install --immutable
+RUN echo "[build] yarn install --immutable start" \
+  && git config --global --add safe.directory /app \
+  && yarn install --immutable \
+  && echo "[build] yarn install --immutable done"
 
-RUN cd apps/meteor \
+RUN echo "[build] meteor build:ci start" \
+  && cd apps/meteor \
   && mkdir -p /tmp/meteor-cache /tmp/meteor-local \
   && METEOR_CACHE_DIR=/tmp/meteor-cache METEOR_LOCAL_DIR=/tmp/meteor-local \
      METEOR_DISABLE_OPTIMISTIC_CACHING=1 METEOR_DEBUG_BUILD=1 yarn build:ci \
   && rm -rf /app/bundle/* \
-  && cp -a /tmp/dist/bundle/. /app/bundle/
+  && cp -a /tmp/dist/bundle/. /app/bundle/ \
+  && echo "[build] meteor build:ci done"
 
 FROM node:22.16.0-bullseye
 
@@ -44,7 +56,8 @@ ENV NODE_ENV=production \
 
 WORKDIR /app/bundle
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "[build] apt-get deps (runtime stage) start" \
+  && apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     g++ \
@@ -55,17 +68,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && unzip -q /tmp/deno.zip -d /usr/local/bin \
   && chmod +x /usr/local/bin/deno \
   && rm -f /tmp/deno.zip \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && echo "[build] apt-get deps (runtime stage) done"
 
-RUN groupadd -g 1001 rocketchat \
+RUN echo "[build] create rocketchat user start" \
+  && groupadd -g 1001 rocketchat \
   && useradd -m -u 1001 -g 1001 -s /bin/bash rocketchat \
   && mkdir -p /app/uploads \
-  && chown -R rocketchat:rocketchat /app /app/uploads /tmp
+  && chown -R rocketchat:rocketchat /app /app/uploads /tmp \
+  && echo "[build] create rocketchat user done"
 
 COPY --from=build --chown=1001:1001 /app/bundle /app/bundle
 
 USER rocketchat
 
-RUN cd programs/server && npm install --omit=dev
+RUN echo "[build] npm install --omit=dev start" \
+  && cd programs/server && npm install --omit=dev \
+  && echo "[build] npm install --omit=dev done"
 
 CMD ["node","main.js"]

@@ -8,13 +8,21 @@ export class MarketplaceAPIClient {
 	#marketplaceUrl: string;
 
 	constructor() {
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
-			this.#marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
+		const marketplaceOverride = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL?.trim();
+		const strategySetting = process.env.MARKETPLACE_FETCH_STRATEGY?.trim();
+		const useMockStrategy =
+			strategySetting !== 'default' &&
+			(strategySetting === 'mock' || marketplaceOverride === 'mock' || process.env.MARKETPLACE_FETCH_STRATEGY === undefined);
+
+		if (useMockStrategy) {
+			this.#marketplaceUrl = 'http://localhost';
+		} else if (typeof marketplaceOverride === 'string' && marketplaceOverride !== '') {
+			this.#marketplaceUrl = marketplaceOverride;
 		} else {
-			this.#marketplaceUrl = 'https://medsensehealth.ca';
+			this.#marketplaceUrl = 'https://marketplace.rocket.chat';
 		}
 
-		if (isTesting()) {
+		if (isTesting() || useMockStrategy) {
 			this.#fetchStrategy = mockMarketplaceFetch;
 		} else {
 			this.#fetchStrategy = serverFetch;
