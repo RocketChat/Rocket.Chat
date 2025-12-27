@@ -9,7 +9,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
