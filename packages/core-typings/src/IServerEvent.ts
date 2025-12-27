@@ -1,4 +1,5 @@
 import type { IUser } from './IUser';
+import type { $brand } from './utils';
 
 export enum ServerEventType {
 	FAILED_LOGIN_ATTEMPT = 'failed-login-attempt',
@@ -6,7 +7,7 @@ export enum ServerEventType {
 }
 
 export interface IServerEvent {
-	_id: string;
+	_id: string & $brand<'server-event-id'>;
 	t: ServerEventType | keyof IServerEvents;
 	ts: Date;
 
