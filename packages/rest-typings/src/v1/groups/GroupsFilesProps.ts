@@ -5,6 +5,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
@@ -48,7 +49,7 @@ const GroupsFilesPropsSchema = {
 			nullable: true,
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [{ type: 'object', required: ['roomId'] }, { type: 'object', required: ['roomName'] }],
 	required: [],
 	additionalProperties: true, // keep additional properties for backwards compatibility, otherwise this would be a breaking change
 };

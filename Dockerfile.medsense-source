@@ -39,7 +39,7 @@ RUN cd apps/meteor \
 FROM node:22.16.0-bullseye
 
 ENV NODE_ENV=production \
-    DENO_VERSION=2.6.3 \
+    DENO_VERSION=1.43.5 \
     HOME=/tmp
 
 WORKDIR /app/bundle

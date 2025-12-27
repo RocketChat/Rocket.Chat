@@ -4,6 +4,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type ChannelsFilesListProps = PaginatedRequest<
@@ -50,7 +51,7 @@ const channelsFilesListPropsSchema = {
 			nullable: true,
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [{ type: 'object', required: ['roomId'] }, { type: 'object', required: ['roomName'] }],
 	required: [],
 	additionalProperties: false,
 };

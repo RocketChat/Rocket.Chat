@@ -27,7 +27,7 @@ const archiveReportPropsSchema = {
 			nullable: true,
 		},
 	},
-	oneOf: [{ required: ['msgId'] }, { required: ['userId'] }],
+	oneOf: [{ type: 'object', required: ['msgId'] }, { type: 'object', required: ['userId'] }],
 	additionalProperties: false,
 };
 

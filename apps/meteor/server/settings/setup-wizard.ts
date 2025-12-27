@@ -1212,7 +1212,7 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Url', 'https://medsensehealth.ca', {
+			await this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 				type: 'string',
 				hidden: true,
 				readonly: true,
@@ -1339,7 +1339,7 @@ export const createSetupWSettings = () =>
 				},
 				secret: true,
 			});
-			await this.add('Cloud_Billing_Url', 'https://medsensehealth.ca', {
+			await this.add('Cloud_Billing_Url', 'https://cloud.rocket.chat', {
 				type: 'string',
 				hidden: true,
 				readonly: true,
