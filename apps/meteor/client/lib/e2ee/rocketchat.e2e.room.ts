@@ -19,6 +19,7 @@ import { Binary } from './binary';
 import { decodeEncryptedContent } from './content';
 import * as Aes from './crypto/aes';
 import * as Rsa from './crypto/rsa';
+import { randomUUID } from './crypto/shared';
 import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha256HashFromText } from './helper';
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
@@ -396,7 +397,7 @@ export class E2ERoom extends Emitter {
 		// When a new e2e room is created, it will be initialized without an e2e key id
 		// This will prevent new rooms from storing `undefined` as the keyid
 		if (!this.keyID) {
-			this.keyID = this.roomKeyId || kid || crypto.randomUUID();
+			this.keyID = this.roomKeyId || kid || randomUUID();
 		}
 
 		// Import session key for use.
@@ -417,7 +418,7 @@ export class E2ERoom extends Emitter {
 		this.groupSessionKey = await Aes.generate();
 		const sessionKeyExported = await Aes.exportJwk(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-		this.keyID = crypto.randomUUID();
+		this.keyID = randomUUID();
 	}
 
 	async createGroupKey() {
