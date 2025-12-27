@@ -10,18 +10,7 @@ import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
-
-function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
-	const controller = new AbortController();
-
-	const timeoutId = setTimeout(() => {
-		controller.abort();
-	}, ms);
-
-	return fn(controller.signal).finally(() => {
-		clearTimeout(timeoutId);
-	});
-}
+import { withTimeout } from '../helper/withTimeout';
 
 const waitForRoomEvent = async (
 	room: Room,
