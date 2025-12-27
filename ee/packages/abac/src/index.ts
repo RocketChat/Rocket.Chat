@@ -216,7 +216,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
-	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor): Promise<void> {
+	async updateAbacAttributeById(_id: IAbacAttribute['_id'], update: { key?: string; values?: string[] }, actor: AbacActor): Promise<void> {
 		if (!update.key && !update.values) {
 			return;
 		}
@@ -268,7 +268,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async deleteAbacAttributeById(_id: string, actor: AbacActor): Promise<void> {
+	async deleteAbacAttributeById(_id: IAbacAttribute['_id'], actor: AbacActor): Promise<void> {
 		const existing = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!existing) {
 			throw new AbacAttributeNotFoundError();
@@ -283,7 +283,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.attributeDeleted(existing, actor);
 	}
 
-	async getAbacAttributeById(_id: string, _actor: AbacActor | undefined): Promise<{ key: string; values: string[] }> {
+	async getAbacAttributeById(_id: IAbacAttribute['_id'], _actor: AbacActor | undefined): Promise<{ key: string; values: string[] }> {
 		const attribute = await AbacAttributes.findOneById(_id, { projection: { key: 1, values: 1 } });
 		if (!attribute) {
 			throw new AbacAttributeNotFoundError();

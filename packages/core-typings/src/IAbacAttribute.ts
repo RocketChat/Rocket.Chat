@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { $brand } from './utils';
 
 export interface IAbacAttributeDefinition {
 	/**
@@ -13,4 +14,6 @@ export interface IAbacAttributeDefinition {
 	values: string[];
 }
 
-export interface IAbacAttribute extends IRocketChatRecord, IAbacAttributeDefinition {}
+export interface IAbacAttribute extends IRocketChatRecord, IAbacAttributeDefinition {
+	_id: string & $brand<'abac-attribute-id'>;
+}
