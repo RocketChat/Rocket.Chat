@@ -18,6 +18,8 @@ import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
 import { useFullStartDate } from './useFullStartDate';
 import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
+import { useMediaCallExternalContext } from '../../context';
+import { isAbleToMakeCall } from '../../context/MediaCallContext';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
 export type InternalCallHistoryContact = {
@@ -64,6 +66,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 
 	const { voiceCall, directMessage } = actions;
 	const { duration, callId, direction, startedAt } = data;
+	const { state } = useMediaCallExternalContext();
 
 	const date = useFullStartDate(startedAt);
 	return (
@@ -71,7 +74,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
-				<CallHistoryActions onClose={onClose} actions={actions} />
+				<CallHistoryActions onClose={onClose} actions={actions} state={state} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>
@@ -117,7 +120,12 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 						</Button>
 					)}
 					{voiceCall && (
-						<Button success onClick={voiceCall}>
+						<Button
+							success
+							onClick={voiceCall}
+							disabled={!isAbleToMakeCall(state)}
+							title={!isAbleToMakeCall(state) ? t('Call_in_progress') : undefined}
+						>
 							<Icon name='phone' size='x20' mie='x4' />
 							{t('Call')}
 						</Button>

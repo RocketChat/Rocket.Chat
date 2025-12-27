@@ -29,13 +29,13 @@ export const useMediaCallInternalHistoryActions = ({
 	messageRoomId,
 	openUserInfo,
 }: UseMediaCallInternalHistoryActionsBaseOptions) => {
-	const { onToggleWidget } = useMediaCallContext();
+	const { onToggleWidget, state } = useMediaCallContext();
 	const router = useRouter();
 
 	const getAvatarUrl = useUserAvatarPath();
 
 	const voiceCall = useEffectEvent(() => {
-		if (!onToggleWidget) {
+		if (state === 'unauthorized' || state === 'unlicensed' || !onToggleWidget) {
 			return;
 		}
 
