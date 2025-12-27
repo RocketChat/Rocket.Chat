@@ -1,4 +1,4 @@
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useState, useCallback, useMemo } from 'react';
@@ -16,6 +16,8 @@ const RoomFilesWithData = () => {
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 
+	const debouncedText = useDebouncedValue(text, 400);
+
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
@@ -24,9 +26,9 @@ const RoomFilesWithData = () => {
 		() => ({
 			rid: room._id,
 			type,
-			text,
+			text: debouncedText,
 		}),
-		[room._id, type, text],
+		[room._id, type, debouncedText],
 	);
 
 	const { filesList, loadMoreItems, reload } = useFilesList(query);
