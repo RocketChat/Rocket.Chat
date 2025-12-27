@@ -97,7 +97,7 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                    class="rcx-box rcx-box--full rcx-css-6p94m3"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -463,7 +463,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                    class="rcx-box rcx-box--full rcx-css-6p94m3"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
