@@ -163,5 +163,5 @@ export class Negotiation {
 }
 
 export abstract class WebRTCNegotiation extends Negotiation {
-	protected abstract webrtcProcessor: IWebRTCProcessor;
+	protected abstract override webrtcProcessor: IWebRTCProcessor;
 }

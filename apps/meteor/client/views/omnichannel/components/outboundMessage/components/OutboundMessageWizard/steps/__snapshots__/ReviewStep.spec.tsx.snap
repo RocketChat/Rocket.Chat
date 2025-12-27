@@ -27,7 +27,7 @@ exports[`ReviewStep renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-kqd92f"
+            class="rcx-box rcx-box--full rcx-css-1tty08a"
           >
             Messages_cannot_be_unsent
           </div>

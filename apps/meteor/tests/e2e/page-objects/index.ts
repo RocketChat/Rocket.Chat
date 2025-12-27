@@ -1,4 +1,5 @@
 export * from './account-profile';
+export * from './account-security';
 export * from './admin-email-inboxes';
 export * from './admin-rooms';
 export * from './admin-users';
@@ -16,7 +17,7 @@ export * from './home-discussion';
 export * from './home-team';
 export * from './omnichannel-agents';
 export * from './omnichannel-departments';
-export * from './omnichannel-current-chats';
+export * from './omnichannel-contact-center-chats';
 export * from './omnichannel-livechat';
 export * from './omnichannel-livechat-embedded';
 export * from './omnichannel-manager';

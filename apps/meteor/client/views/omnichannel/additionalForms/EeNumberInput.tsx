@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const EeNumberInput = ({ label, ...props }: { label: string } & ComponentProps<typeof NumberInput>) => {
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
 		return null;

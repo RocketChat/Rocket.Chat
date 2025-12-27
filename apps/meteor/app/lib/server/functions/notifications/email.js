@@ -1,8 +1,8 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import * as Mailer from '../../../../mailer/server/api';

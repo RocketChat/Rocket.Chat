@@ -3,10 +3,10 @@ import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
 import Queue from 'queue-fifo';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { afterLogoutCleanUpCallback } from '../../../../server/lib/callbacks/afterLogoutCleanUpCallback';
 import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as servers from '../servers';

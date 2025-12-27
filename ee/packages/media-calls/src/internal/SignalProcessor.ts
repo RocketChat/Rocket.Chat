@@ -30,8 +30,6 @@ export class GlobalSignalProcessor {
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal), uid });
-
 		switch (signal.type) {
 			case 'register':
 				return this.processRegisterSignal(uid, signal);
@@ -112,6 +110,8 @@ export class GlobalSignalProcessor {
 	}
 
 	private async processRegisterSignal(uid: IUser['_id'], signal: ClientMediaSignalRegister): Promise<void> {
+		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
+
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
 		if (!calls.length) {
 			return;
@@ -140,6 +140,7 @@ export class GlobalSignalProcessor {
 			// If it's signed to the same session that is now registering
 			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
 			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
+				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
 				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
 			}
@@ -206,8 +207,6 @@ export class GlobalSignalProcessor {
 		if (!requestedCallId) {
 			return null;
 		}
-
-		logger.debug({ msg: 'GlobalSignalProcessor.getExistingRequestedCall', uid, signal });
 
 		const caller = { type: 'user', id: uid } as const;
 		const rejection = { callId: requestedCallId, toContractId: signal.contractId, reason: 'invalid-call-id' } as const;

@@ -46,7 +46,7 @@ export class ThreadsList extends MessageList<IThreadMainMessage> {
 		this.clear();
 	}
 
-	protected filter(message: IThreadMainMessage): boolean {
+	protected override filter(message: IThreadMainMessage): boolean {
 		const { rid } = this._options;
 
 		if (!isThreadMessageInRoom(message, rid)) {
@@ -77,7 +77,7 @@ export class ThreadsList extends MessageList<IThreadMainMessage> {
 		return true;
 	}
 
-	protected compare(a: IThreadMainMessage, b: IThreadMainMessage): number {
+	protected override compare(a: IThreadMainMessage, b: IThreadMainMessage): number {
 		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }

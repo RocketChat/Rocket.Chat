@@ -11,7 +11,6 @@ import type {
 	ILoginServiceConfiguration,
 	IMessage,
 	INotificationDesktop,
-	IPbxEvent,
 	IRole,
 	IRoom,
 	ISetting,
@@ -20,7 +19,6 @@ import type {
 	IUser,
 	IInvite,
 	ICustomSound,
-	VoipEventDataSignature,
 	UserStatus,
 	ILivechatPriority,
 	VideoConference,
@@ -33,7 +31,6 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
-	IOTRMessage,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -294,9 +291,7 @@ export type EventSignatures = {
 	): void;
 
 	// Send all events from here
-	'voip.events'(userId: string, data: VoipEventDataSignature): void;
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
-	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
@@ -310,7 +305,5 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
-	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 	'media-call.updated'(data: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 };

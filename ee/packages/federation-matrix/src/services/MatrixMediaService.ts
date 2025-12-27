@@ -23,7 +23,7 @@ export class MatrixMediaService {
 	static parseMXCUri(mxcUri: string): { serverName: string; mediaId: string } | null {
 		const match = mxcUri.match(/^mxc:\/\/([^/]+)\/(.+)$/);
 		if (!match) {
-			logger.error('Invalid MXC URI format', { mxcUri });
+			logger.error({ mxcUri, msg: 'Invalid MXC URI format' });
 			return null;
 		}
 		return {
@@ -55,7 +55,7 @@ export class MatrixMediaService {
 
 			return mxcUri;
 		} catch (error) {
-			logger.error('Error preparing file for Matrix:', error);
+			logger.error(error, 'Error preparing file for Matrix');
 			throw error;
 		}
 	}
@@ -74,7 +74,7 @@ export class MatrixMediaService {
 
 			return file;
 		} catch (error) {
-			logger.error('Error retrieving local file:', error);
+			logger.error(error, 'Error retrieving local file');
 			return null;
 		}
 	}
@@ -94,7 +94,7 @@ export class MatrixMediaService {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
 			if (!parts) {
-				logger.error('Invalid MXC URI format', { mxcUri });
+				logger.error({ mxcUri, msg: 'Invalid MXC URI format' });
 				throw new Error('Invalid MXC URI');
 			}
 
@@ -130,7 +130,7 @@ export class MatrixMediaService {
 
 			return uploadedFile._id;
 		} catch (error) {
-			logger.error('Error downloading and storing remote file:', error);
+			logger.error(error, 'Error downloading and storing remote file');
 			throw error;
 		}
 	}

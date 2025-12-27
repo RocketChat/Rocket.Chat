@@ -1,4 +1,3 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -25,7 +24,7 @@ const GetVersionsResponseSchema = {
 
 const isGetVersionsResponseProps = ajv.compile(GetVersionsResponseSchema);
 
-export const getFederationVersionsRoutes = () => {
+export const getFederationVersionsRoutes = (version: string) => {
 	return new Router('/federation').get(
 		'/v1/version',
 		{
@@ -36,12 +35,9 @@ export const getFederationVersionsRoutes = () => {
 			license: ['federation'],
 		},
 		async () => {
-			const serverName = federationSDK.getConfig('serverName');
-			const version = federationSDK.getConfig('version');
-
 			const response = {
 				server: {
-					name: serverName,
+					name: 'Rocket.Chat',
 					version,
 				},
 			};

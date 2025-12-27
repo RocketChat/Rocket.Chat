@@ -1,4 +1,4 @@
-import { Media, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Media, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -15,10 +15,14 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
+	isRoomsInviteProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
@@ -179,74 +183,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.upload/:rid',
-	{
-		authRequired: true,
-		deprecation: {
-			version: '8.0.0',
-			alternatives: ['/v1/rooms.media/:rid'],
-		},
-	},
-	{
-		async post() {
-			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
-
-			if (!file) {
-				throw new Meteor.Error('invalid-field');
-			}
-
-			const { fields } = file;
-			let { fileBuffer } = file;
-
-			const details = {
-				name: file.filename,
-				size: fileBuffer.length,
-				type: file.mimetype,
-				rid: this.urlParams.rid,
-				userId: this.userId,
-			};
-
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
-
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
-
-			if ((fields.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
-				throw new Meteor.Error('error-message-size-exceeded');
-			}
-
-			uploadedFile.description = fields.description;
-
-			delete fields.description;
-
-			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields }),
-			);
-
-			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
-
-			return API.v1.success({
-				message,
 			});
 		},
 	},
@@ -1029,51 +965,152 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
-export const roomEndpoints = API.v1.get(
-	'rooms.roles',
-	{
-		authRequired: true,
-		query: ajv.compile<{
-			rid: string;
-		}>(isRoomGetRolesPropsSchema),
-		response: {
-			200: ajv.compile<{
-				roles: RoomRoles[];
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajv.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['rid', 'u', 'roles'],
+							},
+						},
+					},
+					required: ['roles'],
+				}),
+			},
+		},
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.userId);
+
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.get(
+		'rooms.adminRooms.privateRooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-room-administration'],
+			query: ajv.compile<{
+				filter?: string;
+				offset?: number;
+				count?: number;
+				sort?: string;
 			}>({
 				type: 'object',
 				properties: {
-					roles: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								u: {
-									type: 'object',
-									properties: { _id: { type: 'string' }, username: { type: 'string' } },
-									required: ['_id', 'username'],
-								},
-								roles: { type: 'array', items: { type: 'string' } },
-							},
-							required: ['rid', 'u', 'roles'],
-						},
-					},
+					filter: { type: 'string' },
+					offset: { type: 'number' },
+					count: { type: 'number' },
+					sort: { type: 'string' },
 				},
-				required: ['roles'],
+				additionalProperties: true,
+			}),
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					rooms: IRoom[];
+					count: number;
+					offset: number;
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						rooms: {
+							type: 'array',
+							items: { type: 'object' },
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['rooms', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { filter } = this.queryParams;
+
+			const name = (filter || '').trim();
+
+			const { cursor, totalCount } = Rooms.findPrivateRoomsAndTeamsPaginated(name, {
+				skip: offset,
+				limit: count,
+				sort: sort || { default: -1, name: 1 },
+				projection: adminFields,
+			});
+
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				rooms,
+				count: rooms.length,
+				offset,
+				total,
+			});
+		},
+	);
+
+const roomInviteEndpoints = API.v1.post(
+	'rooms.invite',
+	{
+		authRequired: true,
+		body: isRoomsInviteProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
 			}),
 		},
 	},
-	async function () {
-		const { rid } = this.queryParams;
-		const roles = await executeGetRoomRoles(rid, this.userId);
+	async function action() {
+		const { roomId, action } = this.bodyParams;
 
-		return API.v1.success({
-			roles,
-		});
+		try {
+			await FederationMatrix.handleInvite(roomId, this.userId, action);
+			return API.v1.success();
+		} catch (error) {
+			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+		}
 	},
 );
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

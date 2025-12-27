@@ -1,5 +1,5 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
@@ -33,7 +33,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: BroadcastActorAgent,
+		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 	) {
 		super(session, call, agent, channel);
@@ -44,8 +44,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'OutgoingSipCall.createCall', params });
-
+		logger.debug({ msg: 'OutgoingSipCall.createCall', sessionId: session.sessionId });
 		const { callee, ...extraParams } = params;
 
 		// pre-sign the callee to this session
@@ -88,7 +87,6 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
-		logger.debug({ msg: 'OutgoingSipCall.reflectCall', call, lastCallState: this.lastCallState, params });
 		if (params.dtmf && this.sipDialog) {
 			return this.sendDTMF(this.sipDialog, params.dtmf.dtmf, params.dtmf.duration || 2000);
 		}
@@ -108,6 +106,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		if (isBusyState(call.state)) {
 			return this.processNegotiations(call);
 		}
+
+		logger.debug({ msg: 'no changes detected', method: 'OutgoingSipCall.reflectCall' });
 	}
 
 	protected async createDialog(call: IMediaCall): Promise<void> {
@@ -131,6 +131,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.lastCallState = 'ringing';
 		const referredBy = call.parentCallId && this.session.geContactUri(call.createdBy);
 
+		let hangupReason: CallHangupReason | null = null;
 		try {
 			this.sipDialog = await this.session.createSipDialog(
 				this.call.callee.id,
@@ -151,9 +152,22 @@ export class OutgoingSipCall extends BaseSipCall {
 							provRes: provRes && this.session.stripDrachtioServerDetails(provRes),
 						});
 					},
-					cbRequest: (_error: unknown, req: SrfRequest) => {
-						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req: this.session.stripDrachtioServerDetails(req) });
+					cbRequest: (err: unknown, req: SrfRequest) => {
+						if (err) {
+							logger.error({
+								msg: 'OutgoingSipCall.createDialog - request failed',
+								err,
+							});
+							void mediaCallDirector.hangupByServer(call, 'signaling-error');
+							return;
+						}
+
 						if (req) {
+							logger.debug({
+								msg: 'OutgoingSipCall.createDialog - request initiated',
+								req: this.session.stripDrachtioServerDetails(req),
+							});
+
 							this.sipDialogReq = req;
 							req.on('response', (res, ack) => {
 								logger.debug({
@@ -167,21 +181,25 @@ export class OutgoingSipCall extends BaseSipCall {
 					},
 				},
 			);
+
+			if (!this.sipDialog) {
+				logger.debug({ msg: 'OutgoingSipCall.createDialog - no dialog' });
+			}
 		} catch (error) {
 			this.sipDialog = null;
-			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error, callId: call._id });
 			const errorCode = this.getSipErrorCode(error);
-			if (errorCode) {
-				void mediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
-				this.cancelAnyPendingRequest();
-				return;
+			hangupReason = this.getHangupReasonForSipErrorCode(errorCode);
+
+			if (!hangupReason || hangupReason.includes('error')) {
+				logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', err: error, callId: call._id });
+			} else {
+				logger.info({ msg: 'SIP call failed with a natural reason', hangupReason, callId: call._id, err: error });
 			}
 		}
 
 		if (!this.sipDialog) {
-			logger.debug({ msg: 'OutgoingSipCall.createDialog - no dialog' });
 			this.cancelAnyPendingRequest();
-			void mediaCallDirector.hangupByServer(call, 'failed-to-create-sip-dialog');
+			void mediaCallDirector.hangupByServer(call, hangupReason || 'signaling-error');
 			return;
 		}
 
@@ -224,8 +242,8 @@ export class OutgoingSipCall extends BaseSipCall {
 				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (error) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', error });
+			} catch (err) {
+				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', err });
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
@@ -295,8 +313,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			answer = await this.sipDialog.modify(negotiation.offer.sdp).catch(() => {
 				logger.debug('modify failed');
 			});
-		} catch (error) {
-			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', error });
+		} catch (err) {
+			logger.error({ msg: 'Error on OutgoingSipCall.processNegotiations', err });
 		}
 
 		if (!answer) {
@@ -321,6 +339,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
+		logger.debug('OutgoingSipCall.processCalleeNegotiations');
 		localNegotiation.res.send(200, {
 			body: localNegotiation.answer.sdp,
 		});
@@ -338,6 +357,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
+		logger.debug({ msg: 'OutgoingSipCall.processTransferredCall', callId: call._id, lastCallState: this.lastCallState });
 		this.processedTransfer = true;
 
 		try {
@@ -361,10 +381,10 @@ export class OutgoingSipCall extends BaseSipCall {
 			if (res.status === 202) {
 				logger.debug({ msg: 'REFER was accepted', method: 'OutgoingSipCall.processTransferredCall' });
 			}
-		} catch (error) {
-			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', error, callId: call._id });
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'OutgoingSipCall.processTransferredCall', err, callId: call._id });
 			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
+				void mediaCallDirector.hangupByServer(call, 'signaling-error');
 			}
 			return this.processEndedCall();
 		}
@@ -374,6 +394,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		if (this.lastCallState === 'hangup') {
 			return;
 		}
+
+		logger.debug({ msg: 'OutgoingSipCall.processEndedCall', lastCallState: this.lastCallState });
 
 		this.cancelAnyPendingRequest();
 
@@ -400,6 +422,23 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		return error.status;
+	}
+
+	private getHangupReasonForSipErrorCode(errorCode: number | null): CallHangupReason | null {
+		if (!errorCode) {
+			return null;
+		}
+
+		switch (errorCode) {
+			case SipErrorCodes.DECLINED:
+				return 'rejected';
+			case SipErrorCodes.UNWANTED:
+				return 'rejected';
+			case SipErrorCodes.NOT_ACCEPTABLE_HERE:
+				return 'service-error';
+		}
+
+		return null;
 	}
 
 	private cancelAnyPendingRequest(): void {

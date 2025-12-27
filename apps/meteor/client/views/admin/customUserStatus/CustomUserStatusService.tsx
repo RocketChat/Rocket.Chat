@@ -11,11 +11,11 @@ import {
 	StatesSubtitle,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
+import { ContextualbarContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { links } from '../../../lib/links';
 import { useActiveConnections } from '../../hooks/useActiveConnections';

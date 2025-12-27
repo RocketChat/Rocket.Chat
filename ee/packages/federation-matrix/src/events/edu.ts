@@ -1,19 +1,13 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { Emitter } from '@rocket.chat/emitter';
-import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
-export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
-	emitter.on('homeserver.matrix.typing', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processTyping) {
-			return;
-		}
-
+export const edus = async () => {
+	federationSDK.eventEmitterService.on('homeserver.matrix.typing', async (data) => {
 		try {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
@@ -27,16 +21,11 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				roomId: matrixRoom._id,
 			});
 		} catch (error) {
-			logger.error('Error handling Matrix typing event:', error);
+			logger.error(error, 'Error handling Matrix typing event');
 		}
 	});
 
-	emitter.on('homeserver.matrix.presence', async (data) => {
-		const config = federationSDK.getConfig('edu');
-		if (!config.processPresence) {
-			return;
-		}
-
+	federationSDK.eventEmitterService.on('homeserver.matrix.presence', async (data) => {
 		try {
 			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
@@ -79,7 +68,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 			});
 			logger.debug(`Updated presence for user ${matrixUser._id} to ${status} from Matrix federation`);
 		} catch (error) {
-			logger.error('Error handling Matrix presence event:', error);
+			logger.error(error, 'Error handling Matrix presence event');
 		}
 	});
 };

@@ -76,7 +76,7 @@ test.describe.serial('OC - Contact Review', () => {
 	});
 
 	test('OC - Contact Review - Update custom field conflicting', async ({ page }) => {
-		await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
+		await poHomeChannel.sidebar.getSidebarItemByName(visitor.name).click();
 		await poHomeChannel.roomToolbar.openContactInfo();
 
 		await poHomeChannel.content.contactReviewModal.btnSeeConflicts.click();

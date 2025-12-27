@@ -30,8 +30,8 @@ import { getRequiredDepartment } from './departmentsLib';
 import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
-import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	notifyOnLivechatInquiryChangedByRoom,

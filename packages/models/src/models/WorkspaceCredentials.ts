@@ -9,7 +9,7 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 		super(db, 'workspace_credentials');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { scope: 1, expirationDate: 1, accessToken: 1 }, unique: true }];
 	}
 

@@ -157,10 +157,6 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 	},
 	{
-		_id: 'view-livechat-current-chats',
-		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
-	},
-	{
 		_id: 'view-livechat-real-time-monitoring',
 		roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 	},
@@ -210,23 +206,6 @@ export const permissions = [
 	{ _id: 'view-all-teams', roles: ['admin'] },
 	{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
-
-	// VOIP Permissions
-	// allows to manage voip calls configuration
-	{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
-	{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
-	// allows agent-extension association.
-	{ _id: 'manage-agent-extension-association', roles: ['admin'] },
-	{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
-	// allows to receive a voip call
-	{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
-
-	// Allow managing team collab voip extensions
-	{ _id: 'manage-voip-extensions', roles: ['admin'] },
-	// Allow viewing the extension number of other users
-	{ _id: 'view-user-voip-extension', roles: ['admin', 'user'] },
-	// Allow viewing details of an extension
-	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
 
 	// New Media calls permissions
 	{ _id: 'allow-internal-voice-calls', roles: ['admin', 'user'] },

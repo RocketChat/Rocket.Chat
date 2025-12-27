@@ -54,14 +54,14 @@ test.describe.serial('OC - Livechat', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
 	});
 
 	test('OC - Livechat - Send message to livechat customer', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect message to be sent by agent', async () => {
 			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
@@ -99,7 +99,7 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test('OC - Livechat - Close livechat conversation', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
 			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
@@ -152,7 +152,7 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 	});
 
 	test('OC - Livechat - Close chat disabled, agents can close', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
 			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
@@ -201,7 +201,7 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(secondVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(secondVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
@@ -248,7 +248,7 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});

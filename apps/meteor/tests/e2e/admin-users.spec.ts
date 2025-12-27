@@ -1,5 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AdminUsers } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
@@ -11,11 +12,13 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('Admin > Users', () => {
 	test.beforeAll('Create a new user', async ({ api }) => {
+		await setSettingValueById(api, 'Accounts_ManuallyApproveNewUsers', true);
 		user = await createTestUser(api);
 	});
 
-	test.afterAll('Delete the new user', async () => {
+	test.afterAll('Delete the new user', async ({ api }) => {
 		await user.delete();
+		await setSettingValueById(api, 'Accounts_ManuallyApproveNewUsers', false);
 	});
 
 	test.beforeEach('Go to /admin/users', async ({ page }) => {
@@ -44,19 +47,19 @@ test.describe('Admin > Users', () => {
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
 		});
 
-		await test.step('should move from Pending to Deactivated tab', async () => {
+		await test.step('should move from Pending to Active tab', async () => {
 			await admin.getTabByName('Pending').click();
-			await admin.dispatchUserAction(user.data.username, 'Deactivate');
+			await admin.dispatchUserAction(user.data.username, 'Activate');
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
-			await admin.getTabByName('Deactivated').click();
+			await admin.getTabByName('Active').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
 		});
 
-		await test.step('should move from Deactivated to Pending tab', async () => {
-			await admin.getTabByName('Deactivated').click();
-			await admin.dispatchUserAction(user.data.username, 'Activate');
+		await test.step('should move from Active to Deactivated tab', async () => {
+			await admin.getTabByName('Active').click();
+			await admin.dispatchUserAction(user.data.username, 'Deactivate');
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
-			await admin.getTabByName('Pending').click();
+			await admin.getTabByName('Deactivated').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
 		});
 	});

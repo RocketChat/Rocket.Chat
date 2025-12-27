@@ -11,7 +11,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		super(db, 'uploads', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			...super.modelIndexes(),
 			{ key: { uploadedAt: -1 } },

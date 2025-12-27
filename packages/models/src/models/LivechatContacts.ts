@@ -33,7 +33,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		super(db, 'livechat_contact', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { name: 1 },

@@ -3,20 +3,18 @@ import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
-type OTREnded = { rid: string };
-
 type SlashCommand = { command: string };
 
 type SettingsCounter = { settingsId: string };
 
-export type TelemetryMap = { otrStats: OTREnded; slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
+export type TelemetryMap = { slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
 
 export type TelemetryEvents = keyof TelemetryMap;
 
 type Param = {
 	eventName: TelemetryEvents;
 	timestamp?: number;
-} & (OTREnded | SlashCommand | SettingsCounter);
+} & (SlashCommand | SettingsCounter);
 
 type TelemetryPayload = {
 	params: Param[];

@@ -1,5 +1,11 @@
 # @rocket.chat/jwt
 
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
 ## 0.1.1
 
 ### Patch Changes

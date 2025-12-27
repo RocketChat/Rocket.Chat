@@ -1,14 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
+import { HomeContent, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
+import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
 	public readonly page: Page;
 
 	readonly content: HomeContent;
-
-	readonly sidenav: HomeSidenav;
 
 	readonly sidebar: RoomSidebar;
 
@@ -20,17 +19,19 @@ export class HomeChannel {
 
 	readonly roomToolbar: RoomToolbar;
 
+	readonly voiceCalls: VoiceCalls;
+
 	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
-		this.sidenav = new HomeSidenav(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 		this.roomToolbar = new RoomToolbar(page);
+		this.voiceCalls = new VoiceCalls(page);
 		this.toastMessage = new ToastMessages(page);
 	}
 
@@ -116,5 +117,17 @@ export class HomeChannel {
 
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
+	}
+
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.homepageHeader.waitFor({ state: 'visible' });
+	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
 	}
 }

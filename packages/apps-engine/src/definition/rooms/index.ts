@@ -5,10 +5,12 @@ import { IPreRoomCreateModify } from './IPreRoomCreateModify';
 import { IPreRoomCreatePrevent } from './IPreRoomCreatePrevent';
 import { IPreRoomDeletePrevent } from './IPreRoomDeletePrevent';
 import { IRoom } from './IRoom';
+import { IRoomRaw } from './IRoomRaw';
 import { RoomType } from './RoomType';
 
 export {
 	IRoom,
+	IRoomRaw,
 	RoomType,
 	IPostRoomCreate,
 	IPostRoomDeleted,

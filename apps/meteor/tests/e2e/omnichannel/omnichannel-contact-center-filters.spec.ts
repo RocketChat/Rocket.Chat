@@ -26,7 +26,8 @@ test.describe('OC - Contact Center', async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
-	let tags: Awaited<ReturnType<typeof createTag>>[];
+	let tagA: Awaited<ReturnType<typeof createTag>>;
+	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
 	let poContacts: OmnichannelContacts;
 	let poOmniSection: OmnichannelSection;
@@ -68,9 +69,10 @@ test.describe('OC - Contact Center', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		tags = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
+		tagA = await createTag(api);
+		tagB = await createTag(api);
 
-		tags.forEach((res) => expect(res.response.status()).toBe(200));
+		[tagA, tagB].forEach((res) => expect(res.response.status()).toBe(200));
 	});
 
 	// Create unit
@@ -118,12 +120,12 @@ test.describe('OC - Contact Center', async () => {
 			updateRoom(api, {
 				roomId: conversationA.room._id,
 				visitorId: conversationA.visitor._id,
-				tags: ['tagA'],
+				tags: [tagA.data.name],
 			}),
 			updateRoom(api, {
 				roomId: conversationB.room._id,
 				visitorId: conversationB.visitor._id,
-				tags: ['tagB'],
+				tags: [tagB.data.name],
 			}),
 		]);
 	});
@@ -132,12 +134,12 @@ test.describe('OC - Contact Center', async () => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
-			// // Delete departments
+			// Delete departments
 			...departments.map((department) => department.delete()),
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
 			// Delete tags
-			...tags.map((tag) => tag.delete()),
+			...[tagA, tagB].map((tag) => tag.delete()),
 			// Delete units
 			...units.map((unit) => unit.delete()),
 			// Reset setting
@@ -264,19 +266,19 @@ test.describe('OC - Contact Center', async () => {
 		});
 
 		await test.step('expect to filter by tags', async () => {
-			await poContacts.selectTag('tagA');
+			await poContacts.selectTag(tagA.data.name);
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 
-			await poContacts.selectTag('tagB');
+			await poContacts.selectTag(tagB.data.name);
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 
-			await poContacts.removeTag('tagA');
+			await poContacts.removeTag(tagA.data.name);
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 
-			await poContacts.removeTag('tagB');
+			await poContacts.removeTag(tagB.data.name);
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 		});
@@ -312,7 +314,7 @@ test.describe('OC - Contact Center', async () => {
 			await poContacts.selectServedBy('user1');
 			await poContacts.selectStatus('onhold');
 			await poContacts.selectDepartment(departmentA.name);
-			await poContacts.selectTag('tagA');
+			await poContacts.selectTag(tagA.data.name);
 			await poContacts.selectUnit(unitA.name);
 
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();

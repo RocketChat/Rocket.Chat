@@ -20,7 +20,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		return this.convertData(callbacks);
 	}
 
-	protected async convertRecord(record: IImportChannelRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportChannelRecord): Promise<boolean> {
 		const { data } = record;
 
 		if (!data.name && data.t !== 'd') {
@@ -193,7 +193,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		throw new Error('importer-channel-invalid-creator');
 	}
 
-	protected getDataType(): 'channel' {
+	protected override getDataType(): 'channel' {
 		return 'channel';
 	}
 }

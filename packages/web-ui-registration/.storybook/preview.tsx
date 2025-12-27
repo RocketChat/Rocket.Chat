@@ -1,5 +1,6 @@
-import { themes } from '@storybook/theming';
 import type { Parameters } from '@storybook/react';
+import { themes } from '@storybook/theming';
+
 import manifest from '../package.json';
 import logo from './logo.svg';
 import '@rocket.chat/fuselage/dist/fuselage.css';

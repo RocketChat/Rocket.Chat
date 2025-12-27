@@ -1,6 +1,5 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
-
-import type { RoomToolboxActionConfig } from '../../room/contexts/RoomToolboxContext';
 
 const ContactInfoRouter = lazy(() => import('../contactInfo/ContactInfoRouter'));
 
@@ -8,7 +7,7 @@ export const useContactProfileRoomAction = () => {
 	return useMemo(
 		(): RoomToolboxActionConfig => ({
 			id: 'contact-profile',
-			groups: ['live' /* , 'voip'*/],
+			groups: ['live'],
 			title: 'Contact_Info',
 			icon: 'user',
 			tabComponent: ContactInfoRouter,

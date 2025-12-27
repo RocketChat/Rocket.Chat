@@ -1,34 +1,46 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "prettier"],
+	"extends": ["@rocket.chat/eslint-config", "prettier", "plugin:storybook/recommended"],
 	"plugins": ["react", "react-hooks", "prettier"],
 	"env": {
 		"jest": true
 	},
 	"rules": {
-		"import/order": ["error", {
-			"newlines-between": "always",
-			"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
-			"alphabetize": {
-				"order": "asc"
+		"import/order": [
+			"error",
+			{
+				"newlines-between": "always",
+				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+				"alphabetize": {
+					"order": "asc"
+				}
 			}
-		}],
+		],
 		"jsx-quotes": ["error", "prefer-single"],
-		"react/display-name": ["warn", {
-			"ignoreTranspilerName": false
-		}],
+		"react/display-name": [
+			"warn",
+			{
+				"ignoreTranspilerName": false
+			}
+		],
 		"react/jsx-fragments": ["error", "syntax"],
-		"react/jsx-no-bind": ["warn", {
-			"ignoreRefs": true,
-			"allowFunctions": true,
-			"allowArrowFunctions": true
-		}],
+		"react/jsx-no-bind": [
+			"warn",
+			{
+				"ignoreRefs": true,
+				"allowFunctions": true,
+				"allowArrowFunctions": true
+			}
+		],
 		"react/jsx-no-comment-textnodes": "error",
 		"react/jsx-no-duplicate-props": "error",
 		"react/jsx-no-target-blank": "error",
 		"react/jsx-no-undef": "error",
-		"react/jsx-tag-spacing": ["error", {
-			"beforeSelfClosing": "always"
-		}],
+		"react/jsx-tag-spacing": [
+			"error",
+			{
+				"beforeSelfClosing": "always"
+			}
+		],
 		"react/jsx-uses-react": "error",
 		"react/jsx-uses-vars": "error",
 		"react/no-danger": "warn",
@@ -43,26 +55,23 @@
 		"react/require-render-return": "error",
 		"react/self-closing-comp": "error",
 		"react-hooks/rules-of-hooks": "error",
-    	"react-hooks/exhaustive-deps": "warn",
+		"react-hooks/exhaustive-deps": "warn",
 		"no-sequences": "off",
 		"no-extra-parens": "off"
 	},
 	"settings": {
 		"import/resolver": {
 			"node": {
-			  "extensions": [
-				".js",
-				".ts",
-				".tsx"
-			  ]
+				"extensions": [".js", ".ts", ".tsx"]
 			}
-		  },
+		},
 		"react": {
-				"pragma": "h",
-				"pragmaFrag": "Fragment",
-				"version": "detect"
+			"pragma": "h",
+			"pragmaFrag": "Fragment",
+			"version": "detect"
 		}
 	},
+	"ignorePatterns": ["dist", "build", "!.storybook"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],

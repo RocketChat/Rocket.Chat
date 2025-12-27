@@ -1,6 +1,8 @@
 import {
-	isPOSTLivechatTagsRemoveParams,
-	POSTLivechatTagsRemoveSuccessResponse,
+	isPOSTLivechatTagsSaveParams,
+	POSTLivechatTagsSaveSuccessResponse,
+	isPOSTLivechatTagsDeleteParams,
+	POSTLivechatTagsDeleteSuccessResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -67,35 +69,51 @@ API.v1.addRoute(
 	},
 );
 
-const livechatTagsEndpoints = API.v1.post(
-	'livechat/tags.delete',
-	{
-		response: {
-			200: POSTLivechatTagsRemoveSuccessResponse,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
+const livechatTagsEndpoints = API.v1
+	.post(
+		'livechat/tags.save',
+		{
+			response: {
+				200: POSTLivechatTagsSaveSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissions: ['manage-livechat-tags'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatTagsSaveParams,
 		},
-		authRequired: true,
-		permissions: ['manage-livechat-tags'],
-		license: ['livechat-enterprise'],
-		body: isPOSTLivechatTagsRemoveParams,
-	},
-	async function action() {
-		const { id } = this.bodyParams;
-		try {
+		async function action() {
+			const { _id, tagData, tagDepartments } = this.bodyParams;
+
+			const result = await LivechatEnterprise.saveTag(_id, tagData, tagDepartments);
+
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'livechat/tags.delete',
+		{
+			response: {
+				200: POSTLivechatTagsDeleteSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissions: ['manage-livechat-tags'],
+			license: ['livechat-enterprise'],
+			body: isPOSTLivechatTagsDeleteParams,
+		},
+		async function action() {
+			const { id } = this.bodyParams;
+
 			await LivechatEnterprise.removeTag(id);
 
 			return API.v1.success();
-		} catch (error: unknown) {
-			if (error instanceof Meteor.Error) {
-				return API.v1.failure(error.reason);
-			}
-
-			return API.v1.failure('error-removing-tag');
-		}
-	},
-);
+		},
+	);
 
 type LivechatTagsEndpoints = ExtractRoutesFromAPI<typeof livechatTagsEndpoints>;
 

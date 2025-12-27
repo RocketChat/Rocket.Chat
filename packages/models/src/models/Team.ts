@@ -9,7 +9,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		super(db, 'team', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { name: 1 }, unique: true }];
 	}
 

@@ -49,10 +49,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
 	}
 
-	get invalidInputTags() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]:invalid');
-	}
-
 	get invalidInputName() {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]:invalid');
 	}

@@ -1,10 +1,10 @@
 import { Button } from '@rocket.chat/fuselage';
-import type { ComponentProps, MouseEvent } from 'react';
+import type { ComponentPropsWithoutRef, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useWizardContext } from './useWizardContext';
 
-type WizardBackButtonProps = Omit<ComponentProps<typeof Button>, 'primary' | 'onClick'> & {
+type WizardBackButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
 	manual?: boolean;
 	onClick?(event?: MouseEvent<HTMLElement>): unknown | Promise<unknown>;
 };

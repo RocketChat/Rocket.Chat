@@ -22,7 +22,7 @@ test.describe.serial('Apps > Modal', () => {
 		poModal = new AppsModal(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.navbar.openChat('general');
 	});
 
 	test.afterAll(async () => {

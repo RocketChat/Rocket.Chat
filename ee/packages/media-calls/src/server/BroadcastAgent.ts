@@ -15,42 +15,31 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public provider: BaseCallProvider | null = null;
 
 	public async onCallAccepted(callId: string, _signedContractId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onCallAccepted', callId });
-
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onCallEnded', callId });
-
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onCallActive', callId });
-
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onCallCreated', call });
+		logger.debug({ msg: 'BroadcastActorAgent.onCallCreated', call, role: this.role });
 		// there's no point in broadcasting onCallCreated as it can only be called from within the call provider
 	}
 
-	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
-
+	public async onRemoteDescriptionChanged(callId: string, _negotiationId: string): Promise<void> {
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onCallTransferred', callId });
-
 		this.reportCallUpdated({ callId });
 	}
 
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onDTMF', callId, dtmf, duration });
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
 

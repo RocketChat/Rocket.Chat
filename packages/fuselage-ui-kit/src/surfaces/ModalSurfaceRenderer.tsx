@@ -5,7 +5,7 @@ export class ModalSurfaceRenderer extends FuselageSurfaceRenderer {
 		super(['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'callout']);
 	}
 
-	plain_text = renderTextObject;
+	override plain_text = renderTextObject;
 
-	mrkdwn = renderTextObject;
+	override mrkdwn = renderTextObject;
 }

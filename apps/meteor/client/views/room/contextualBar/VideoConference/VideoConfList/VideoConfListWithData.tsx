@@ -1,3 +1,4 @@
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import VideoConfList from './VideoConfList';
@@ -5,7 +6,6 @@ import { useVideoConfList } from './useVideoConfList';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
 const VideoConfListWithData = () => {
 	const room = useRoom();

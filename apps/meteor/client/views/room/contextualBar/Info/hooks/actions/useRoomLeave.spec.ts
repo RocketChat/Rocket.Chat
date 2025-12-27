@@ -1,5 +1,4 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomLeave } from './useRoomLeave';
@@ -25,7 +24,7 @@ jest.mock('../../../../../../../client/lib/rooms/roomCoordinator', () => ({
 it('should return leave function if user has subscription', () => {
 	const wrapper = mockAppRoot()
 		.withPermission('leave-c')
-		.withSubscriptions([{ ...mockSubscription, rid: 'room1' }] as unknown as SubscriptionWithRoom[])
+		.withSubscription({ ...mockSubscription, rid: 'room1' })
 		.build();
 
 	const { result } = renderHook(() => useRoomLeave(mockRoom), { wrapper });

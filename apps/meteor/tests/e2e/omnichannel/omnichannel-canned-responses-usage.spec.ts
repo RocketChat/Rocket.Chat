@@ -99,7 +99,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to receive and open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use the canned response in the chat', async () => {
@@ -129,7 +129,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to receive and open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use the canned response with placeholder', async () => {
@@ -154,7 +154,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use existing canned response and modify it', async () => {
@@ -188,7 +188,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use first canned response', async () => {

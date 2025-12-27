@@ -345,6 +345,10 @@ class E2E extends Emitter {
 	}
 
 	async startClient(userId: string): Promise<void> {
+		if (!isSecureContext) {
+			throw new Error('E2E encryption can only be enabled in secure contexts (HTTPS)');
+		}
+
 		const span = log.span('startClient');
 		if (this.userId === userId) {
 			return;

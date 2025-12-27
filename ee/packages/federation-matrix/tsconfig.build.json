@@ -1,12 +1,9 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"noEmit": false,
-		"skipLibCheck": true,
+		"outDir": "./dist",
 		"isolatedModules": true,
-		"allowJs": false,
-		"checkJs": false,
-		"esModuleInterop": true
+		"declaration": true,
 	},
 	"include": [
 		"src/**/*.ts"

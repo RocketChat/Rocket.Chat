@@ -28,7 +28,6 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
-	PartialThis,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -37,6 +36,7 @@ import type {
 	RedirectStatusCodes,
 	RedirectResult,
 	UnavailableResult,
+	GenericRouteExecutionContext,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -156,12 +156,7 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-export class APIClass<
-	TBasePath extends string = '',
-	TOperations extends {
-		[x: string]: unknown;
-	} = {},
-> {
+export class APIClass<TBasePath extends string = '', TOperations extends Record<string, unknown> = Record<string, never>> {
 	public typedRoutes: Record<string, Record<string, Route>> = {};
 
 	protected apiPath?: string;
@@ -170,7 +165,7 @@ export class APIClass<
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
-	public authMethods: ((...args: any[]) => any)[];
+	public authMethods: ((routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
@@ -248,11 +243,11 @@ export class APIClass<
 		};
 	}
 
-	async parseJsonQuery(this: PartialThis) {
-		return parseJsonQuery(this);
+	async parseJsonQuery(routeContext: GenericRouteExecutionContext) {
+		return parseJsonQuery(routeContext);
 	}
 
-	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
+	public addAuthMethod(func: (routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>): void {
 		this.authMethods.push(func);
 	}
 
@@ -818,12 +813,21 @@ export class APIClass<
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+
+				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
+					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+				}
+
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
+						this.logger = logger;
+
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute.call(this, this.request);
+							const user = await api.authenticatedRoute(this);
 							this.user = user!;
 							this.userId = this.user?._id;
 							const authToken = this.request.headers.get('x-auth-token');
@@ -918,9 +922,7 @@ export class APIClass<
 									connection: connection as unknown as IMethodConnection,
 								}));
 
-							this.queryOperations = options.queryOperations;
-							(this as any).queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
+							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
 						} catch (e: any) {
@@ -972,12 +974,9 @@ export class APIClass<
 		});
 	}
 
-	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const headers = Object.fromEntries(req.headers.entries());
-
-		const { 'x-user-id': userId } = headers;
-
-		const userToken = String(headers['x-auth-token']);
+	protected async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
+		const userId = routeContext.request.headers.get('x-user-id');
+		const userToken = routeContext.request.headers.get('x-auth-token');
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -990,6 +989,16 @@ export class APIClass<
 				},
 			);
 		}
+
+		for (const method of this.authMethods) {
+			// eslint-disable-next-line no-await-in-loop -- we want serial execution
+			const user = await method(routeContext);
+
+			if (user) {
+				return user;
+			}
+		}
+
 		return null;
 	}
 

@@ -28,7 +28,7 @@ export { RadioButtonElement } from './blocks/elements/RadioButtonElement';
 export { TimePickerElement } from './blocks/elements/TimePickerElement';
 export { BlockElement } from './blocks/BlockElement';
 export { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
-export { IconElement } from './blocks/elements/IconElement';
+export { IconElement, FrameableIconElement } from './blocks/elements/IconElement';
 export { IconButtonElement } from './blocks/elements/IconButtonElement';
 
 export { ActionsBlock } from './blocks/layout/ActionsBlock';

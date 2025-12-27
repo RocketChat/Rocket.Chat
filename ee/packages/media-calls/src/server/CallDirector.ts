@@ -32,7 +32,7 @@ class MediaCallDirector {
 		}
 	}
 
-	public async hangupByServer(call: MediaCallHeader, serverErrorCode: string): Promise<void> {
+	public async hangupByServer(call: MediaCallHeader, serverErrorCode: string): Promise<boolean> {
 		return this.hangupDetachedCall(call, { reason: serverErrorCode });
 	}
 
@@ -44,6 +44,7 @@ class MediaCallDirector {
 			return;
 		}
 
+		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
@@ -67,13 +68,17 @@ class MediaCallDirector {
 			return false;
 		}
 
+		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
 		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
 
 		if (data.webrtcAnswer && negotiation) {
-			await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+			if (negotiationResult.modifiedCount) {
+				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId: negotiation._id });
+			}
 			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 		}
 
@@ -110,15 +115,16 @@ class MediaCallDirector {
 		};
 
 		const result = await MediaCallNegotiations.insertOne(newNegotiation);
+		logger.info({ msg: 'New Negotiation started', callId: call._id, negotiationId: result.insertedId, hasOffer: Boolean(offer) });
 		return result.insertedId;
 	}
 
 	public get cast(): IMediaCallCastDirector {
 		try {
 			return getCastDirector();
-		} catch (error) {
-			logger.error({ msg: 'Failed to access castDirector', error });
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Failed to access castDirector', err });
+			throw err;
 		}
 	}
 
@@ -155,15 +161,13 @@ class MediaCallDirector {
 			return;
 		}
 
+		logger.info({ msg: `Negotiation's ${session.sdp.type} was saved`, callId: call._id, negotiationId: negotiation._id });
+
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
 		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy } = params;
-		logger.debug({
-			msg: 'MediaCallDirector.createCall',
-			params: { caller, callee, requestedCallId, requestedService, parentCallId, requestedBy },
-		});
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -223,6 +227,7 @@ class MediaCallDirector {
 			throw new Error('failed-to-retrieve-call');
 		}
 
+		logger.info({ msg: `New call was created`, callId: newCall._id });
 		this.scheduleExpirationCheckByCallId(newCall._id);
 
 		return newCall;
@@ -244,14 +249,16 @@ class MediaCallDirector {
 			return;
 		}
 
+		logger.info({ msg: `Call was flagged as transferred`, callId: call._id });
+
 		await agent.oppositeAgent.onCallTransferred(call._id);
 	}
 
-	public async hangupTransferredCallById(callId: string): Promise<void> {
+	public async hangupTransferredCallById(callId: string): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.hangupTransferredCallById', callId });
 		const call = await MediaCalls.findOneById(callId);
 		if (!call?.transferredBy) {
-			return;
+			return false;
 		}
 
 		return this.hangupDetachedCall(call, { endedBy: call.transferredBy, reason: 'transfer' });
@@ -275,7 +282,7 @@ class MediaCallDirector {
 				expectedCallWasExpired = true;
 			}
 
-			await this.hangupByServer(call, 'timeout');
+			await this.hangupByServer(call, 'expired');
 		}
 
 		if (typeof expectedCallId === 'string') {
@@ -303,8 +310,8 @@ class MediaCallDirector {
 			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheckByCallId.timeout', callId });
 			scheduledExpirationChecks.delete(callId);
 
-			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((error) =>
-				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }),
+			const expectedCallWasExpired = await this.hangupExpiredCalls(callId).catch((err) =>
+				logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', err }),
 			);
 
 			if (!expectedCallWasExpired) {
@@ -321,19 +328,19 @@ class MediaCallDirector {
 	public scheduleExpirationCheck(): void {
 		setTimeout(async () => {
 			logger.debug({ msg: 'MediaCallDirector.scheduleExpirationCheck.timeout' });
-			await this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error }));
+			await this.hangupExpiredCalls().catch((err) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', err }));
 		}, EXPIRATION_CHECK_TIMEOUT);
 	}
 
 	public async runOnCallCreatedForAgent(call: IMediaCall, agent: IMediaCallAgent, agentToNotifyIfItFails?: IMediaCallAgent): Promise<void> {
 		try {
 			await agent.onCallCreated(call);
-		} catch (error) {
+		} catch (err) {
 			// If the agent failed, we assume they cleaned up after themselves and just hangup the call
 			// We then notify the other agent that the call has ended, but only if it the agent was already notified about this call in the first place
 			logger.error({
 				msg: 'Agent failed to process a new call.',
-				error,
+				err,
 				agentRole: agent.role,
 				callerType: call.caller.type,
 				calleeType: call.callee.type,
@@ -342,7 +349,7 @@ class MediaCallDirector {
 				endedBy: agent.getMyCallActor(call),
 				reason: 'error',
 			});
-			throw error;
+			throw err;
 		}
 	}
 
@@ -358,19 +365,20 @@ class MediaCallDirector {
 			...(endedBy && { endedBy }),
 		};
 
-		const result = await MediaCalls.hangupCallById(callId, cleanedParams).catch((error) => {
+		const result = await MediaCalls.hangupCallById(callId, cleanedParams).catch((err) => {
 			logger.error({
 				msg: 'Failed to hangup a call.',
 				callId,
-				hangupError: error,
+				err,
 				hangupReason: params?.reason,
 				hangupActor: params?.endedBy,
 			});
-			throw error;
+			throw err;
 		});
 
 		const ended = Boolean(result.modifiedCount);
 		if (ended) {
+			logger.info({ msg: 'Call was flagged as ended', callId, reason: params?.reason });
 			getMediaCallServer().updateCallHistory({ callId });
 		}
 
@@ -381,27 +389,29 @@ class MediaCallDirector {
 		callId: string,
 		agents: IMediaCallAgent[],
 		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
-	): Promise<void> {
+	): Promise<boolean> {
 		const modified = await this.hangupCallById(callId, params).catch(() => false);
 		if (!modified || !agents?.length) {
-			return;
+			return modified;
 		}
 
 		await Promise.allSettled(
 			agents.map(async (agent) =>
-				agent.onCallEnded(callId).catch((error) => logger.error({ msg: 'Failed to notify agent of a hangup', error, actor: agent.actor })),
+				agent.onCallEnded(callId).catch((err) => logger.error({ msg: 'Failed to notify agent of a hangup', err, actor: agent.actor })),
 			),
 		);
+		return modified;
 	}
 
-	public async hangupDetachedCall(call: MediaCallHeader, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<void> {
+	public async hangupDetachedCall(call: MediaCallHeader, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.hangupDetachedCall', callId: call._id, params });
+		let modified = false;
 		try {
 			const endedBy = params?.endedBy || ({ type: 'server', id: 'server' } as ServerActor);
 
-			const modified = await this.hangupCallById(call._id, { ...params, endedBy });
+			modified = await this.hangupCallById(call._id, { ...params, endedBy });
 			if (!modified) {
-				return;
+				return modified;
 			}
 
 			// Try to notify the agents but there's no guarantee they are reachable
@@ -413,8 +423,10 @@ class MediaCallDirector {
 			} catch {
 				// Ignore errors on the ended event
 			}
-		} catch (error) {
-			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, params });
+			return modified;
+		} catch (err) {
+			logger.error({ msg: 'Failed to terminate call.', err, callId: call._id, params });
+			return modified;
 		}
 	}
 }

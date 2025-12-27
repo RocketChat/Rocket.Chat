@@ -31,7 +31,7 @@ export class RocketChatAPIRouter<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > extends Router<TBasePath, TOperations, APIActionHandler> {
-	protected convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
+	protected override convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
 			const queryParams = this.parseQueryParams(req);

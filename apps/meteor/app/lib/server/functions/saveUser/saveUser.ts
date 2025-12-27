@@ -6,9 +6,17 @@ import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { handleBio } from './handleBio';
+import { handleNickname } from './handleNickname';
+import { saveNewUser } from './saveNewUser';
+import { sendPasswordEmail } from './sendUserEmail';
+import { setPasswordUpdater } from './setPasswordUpdater';
+import { validateUserData } from './validateUserData';
+import { validateUserEditing } from './validateUserEditing';
 import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
 import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
+import { callbacks } from '../../../../../server/lib/callbacks';
+import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
 import { generatePassword } from '../../lib/generatePassword';
@@ -18,14 +26,6 @@ import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
 import { setStatusText } from '../setStatusText';
-import { handleBio } from './handleBio';
-import { handleNickname } from './handleNickname';
-import { saveNewUser } from './saveNewUser';
-import { sendPasswordEmail } from './sendUserEmail';
-import { setPasswordUpdater } from './setPasswordUpdater';
-import { validateUserData } from './validateUserData';
-import { validateUserEditing } from './validateUserEditing';
-import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -125,7 +125,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (typeof userData.statusText === 'string') {
-			await setStatusText(userData._id, userData.statusText, updater, session);
+			await setStatusText(userData._id, userData.statusText, { updater, session });
 		}
 
 		if (userData.email) {

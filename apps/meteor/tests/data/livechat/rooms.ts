@@ -244,6 +244,13 @@ export const updateDepartment = ({
 	});
 };
 
+export const deleteAgent = async (agentId: string = credentials['X-User-Id']): Promise<void> => {
+	await request
+		.delete(api(`livechat/users/agent/${agentId}`))
+		.set(credentials)
+		.expect(200);
+};
+
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		void request
@@ -480,16 +487,9 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
 
 export const moveBackToQueue = async (roomId: string, overrideCredentials?: Credentials): Promise<void> => {
 	await request
-		.post(methodCall('livechat:returnAsInquiry'))
+		.post(api('livechat/inquiries.returnAsInquiry'))
 		.set(overrideCredentials || credentials)
-		.send({
-			message: JSON.stringify({
-				method: 'livechat:returnAsInquiry',
-				params: [roomId],
-				id: 'id',
-				msg: 'method',
-			}),
-		})
+		.send({ roomId })
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 };

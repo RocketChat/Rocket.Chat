@@ -1,0 +1,361 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders PermissionFlowModalDenied without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r0:"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id=":r0:"
+            >
+              Mic/speaker access required
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-1ntdv01 rcx-css-1gd28qh"
+            >
+              Your web browser stopped http://localhost:3000/ from using your microphone and/or speaker.
+
+Allow speaker and microphone access in your browser settings to prevent seeing this message again.
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders PermissionFlowModalDeviceChangePrompt without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r1:"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id=":r1:"
+            >
+              Mic/speaker access required
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-1ntdv01 rcx-css-1gd28qh"
+            >
+              Your web browser stopped http://localhost:3000/ from using your microphone and/or speaker.
+
+Allow speaker and microphone access in your browser settings to prevent seeing this message again.
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Allow
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders PermissionFlowModalIncomingPrompt without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r2:"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id=":r2:"
+            >
+              Mic/speaker access required
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-1ntdv01 rcx-css-1gd28qh"
+            >
+              Your web browser stopped http://localhost:3000/ from using your microphone and/or speaker.
+
+Allow speaker and microphone access in your browser settings to prevent seeing this message again.
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--danger rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Cancel and reject
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Allow and accept
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r3:"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id=":r3:"
+            >
+              Mic/speaker access required
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-1ntdv01 rcx-css-1gd28qh"
+            >
+              Your web browser stopped http://localhost:3000/ from using your microphone and/or speaker.
+
+Allow speaker and microphone access in your browser settings to prevent seeing this message again.
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Allow and call
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;

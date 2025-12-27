@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Registration } from './page-objects';
-import { HomeSidenav } from './page-objects/fragments/home-sidenav';
+import { Navbar, RoomSidebar } from './page-objects/fragments';
 import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
@@ -10,7 +10,8 @@ import { createTestUser } from './utils/user-helpers';
 
 test.describe('User - Password change required', () => {
 	let poRegistration: Registration;
-	let poSidenav: HomeSidenav;
+	let navbar: Navbar;
+	let sidebar: RoomSidebar;
 	let userRequiringPasswordChange: ITestUser;
 	let userNotRequiringPasswordChange: ITestUser;
 	let userNotAbleToLogin: ITestUser;
@@ -26,7 +27,8 @@ test.describe('User - Password change required', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
-		poSidenav = new HomeSidenav(page);
+		navbar = new Navbar(page);
+		sidebar = new RoomSidebar(page);
 		await page.goto('/home');
 	});
 
@@ -68,8 +70,8 @@ test.describe('User - Password change required', () => {
 		});
 
 		await test.step('verify user is properly logged in', async () => {
-			await expect(poSidenav.btnUserProfileMenu).toBeVisible();
-			await expect(poSidenav.sidebarChannelsList).toBeVisible();
+			await expect(navbar.btnUserMenu).toBeVisible();
+			await expect(sidebar.channelsList).toBeVisible();
 		});
 	});
 
@@ -128,7 +130,8 @@ test.describe('User - Password change required', () => {
 
 test.describe('User - Password change not required', () => {
 	let poRegistration: Registration;
-	let poSidenav: HomeSidenav;
+	let navbar: Navbar;
+	let sidebar: RoomSidebar;
 	let userNotRequiringPasswordChange: ITestUser;
 	let settingDefaultValue: unknown;
 
@@ -139,7 +142,8 @@ test.describe('User - Password change not required', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
-		poSidenav = new HomeSidenav(page);
+		navbar = new Navbar(page);
+		sidebar = new RoomSidebar(page);
 		await page.goto('/home');
 	});
 
@@ -159,8 +163,8 @@ test.describe('User - Password change not required', () => {
 
 		await test.step('verify user is properly logged in', async () => {
 			await page.waitForURL('/home');
-			await expect(poSidenav.btnUserProfileMenu).toBeVisible();
-			await expect(poSidenav.sidebarChannelsList).toBeVisible();
+			await expect(navbar.btnUserMenu).toBeVisible();
+			await expect(sidebar.channelsList).toBeVisible();
 		});
 	});
 });

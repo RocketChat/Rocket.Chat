@@ -1,6 +1,6 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
@@ -9,7 +9,6 @@ import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { useChat } from '../../../../room/contexts/ChatContext';
 import { useRoom } from '../../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
 import { useIsRoomOverMacLimit } from '../../../hooks/useIsRoomOverMacLimit';

@@ -229,7 +229,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.onDepartmentDisabled(department);
 	}
 
-	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+	override allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 

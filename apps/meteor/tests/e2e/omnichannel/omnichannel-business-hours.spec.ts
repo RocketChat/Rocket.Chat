@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
@@ -19,7 +18,6 @@ test.describe('OC - Business Hours', () => {
 	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	const BHid = faker.string.uuid();
 	const BHName = 'TEST Business Hours';
 
 	test.beforeAll(async ({ api }) => {
@@ -89,7 +87,6 @@ test.describe('OC - Business Hours', () => {
 	test('OC - Business hours - Edit BH departments', async ({ api, page }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: BHid,
 				name: BHName,
 				departments: [department.data._id],
 			});
@@ -139,7 +136,6 @@ test.describe('OC - Business Hours', () => {
 	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: BHid,
 				name: BHName,
 				departments: [department.data._id],
 			});

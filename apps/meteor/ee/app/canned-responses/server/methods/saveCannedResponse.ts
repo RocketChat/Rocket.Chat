@@ -1,11 +1,9 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatDepartment, CannedResponse, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 type ResponseData = {
@@ -15,15 +13,6 @@ type ResponseData = {
 	tags?: string[];
 	departmentId?: string;
 };
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveCannedResponse(
-			_id: string,
-			responseData: ResponseData,
-		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date }>;
-	}
-}
 
 export const saveCannedResponse = async (
 	userId: string,
@@ -124,15 +113,3 @@ export const saveCannedResponse = async (
 
 	return result;
 };
-
-Meteor.methods<ServerMethods>({
-	async saveCannedResponse(_id, responseData) {
-		methodDeprecationLogger.method('saveCannedResponse', '8.0.0', 'POST /v1/canned-responses');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
-		}
-
-		return saveCannedResponse(userId, responseData, _id);
-	},
-});

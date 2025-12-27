@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users, CallHistory } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
 import { _setRealName } from './setRealName';
@@ -181,5 +181,8 @@ async function updateUsernameReferences({
 
 		// update name and username of users on video conferences
 		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
+
+		// update name and username of users on call history
+		await CallHistory.updateUserReferences(user._id, username || previousUsername, name || previousName);
 	}
 }
