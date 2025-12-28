@@ -532,7 +532,7 @@ class RocketChatIntegrationHandler {
 			step: 'start-execute-trigger-url',
 			integration: trigger,
 			event,
-			historyId: '',
+			historyId: '' as IIntegrationHistory['_id'], // TODO is this correct???
 		});
 
 		const data: IntegrationData = {

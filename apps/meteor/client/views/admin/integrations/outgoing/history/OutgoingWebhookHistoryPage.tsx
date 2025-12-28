@@ -84,6 +84,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 						if (!oldData) {
 							return;
 						}
+						// @ts-expect-error - comparing integration history id with integration id???
 						const index = oldData.history.findIndex(({ _id }) => _id === id);
 						if (index === -1) {
 							return;

@@ -303,9 +303,9 @@ export interface StreamerEvents {
 		{
 			key: string;
 			args: [
-				| { type: 'removed'; id: string }
+				| { type: 'removed'; id: IIntegrationHistory['_id'] }
 				| {
-						id: string;
+						id: IIntegrationHistory['_id'];
 						diff: unknown;
 						type: 'updated';
 				  }

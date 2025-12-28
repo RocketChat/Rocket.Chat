@@ -1,4 +1,4 @@
-import type { IIntegrationHistory } from '@rocket.chat/core-typings';
+import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription, InsertOneResult, FindOneAndUpdateOptions } from 'mongodb';
 
@@ -16,11 +16,14 @@ export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implemen
 		];
 	}
 
-	removeByIntegrationId(integrationId: string): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {
+	removeByIntegrationId(integrationId: IIntegration['_id']): ReturnType<BaseRaw<IIntegrationHistory>['deleteMany']> {
 		return this.deleteMany({ 'integration._id': integrationId });
 	}
 
-	findOneByIntegrationIdAndHistoryId(integrationId: string, historyId: string): Promise<IIntegrationHistory | null> {
+	findOneByIntegrationIdAndHistoryId(
+		integrationId: IIntegration['_id'],
+		historyId: IIntegrationHistory['_id'],
+	): Promise<IIntegrationHistory | null> {
 		return this.findOne({ 'integration._id': integrationId, '_id': historyId });
 	}
 

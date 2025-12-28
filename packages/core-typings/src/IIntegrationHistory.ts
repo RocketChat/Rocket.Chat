@@ -1,8 +1,10 @@
 import type { IIntegration, OutgoingIntegrationEvent } from './IIntegration';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { $brand } from './utils';
 
 export interface IIntegrationHistory extends IRocketChatRecord {
+	_id: string & $brand<'integration-history-id'>;
 	type: string;
 	step: string;
 	integration: {
