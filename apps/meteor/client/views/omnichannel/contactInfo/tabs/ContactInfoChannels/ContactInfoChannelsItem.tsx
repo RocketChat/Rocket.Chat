@@ -1,4 +1,4 @@
-import type { ILivechatContact, ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -12,7 +12,7 @@ import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOutboundMessageModal } from '../../../components/outboundMessage/modals/OutboundMessageModal';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
-type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
+type ContactInfoChannelsItemProps = ILivechatContactChannel & {
 	contact?: Pick<ILivechatContact, '_id' | 'unknown'>;
 	canSendOutboundMessage?: boolean;
 };

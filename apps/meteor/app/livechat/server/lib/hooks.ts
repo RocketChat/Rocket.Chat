@@ -10,6 +10,7 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	ILivechatInquiryRecord,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -54,7 +55,7 @@ export async function afterDepartmentUnarchived(department: AtLeast<ILivechatDep
 }
 
 export const checkDefaultAgentOnNewRoom = makeFunction(
-	async (defaultAgent?: SelectedAgent, _params?: { visitorId?: string; source?: IOmnichannelSource }) => defaultAgent,
+	async (defaultAgent?: SelectedAgent, _params?: { visitorId?: ILivechatVisitor['_id']; source?: IOmnichannelSource }) => defaultAgent,
 );
 
 export const beforeDelegateAgent = async (

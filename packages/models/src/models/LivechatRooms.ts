@@ -11,6 +11,7 @@ import type {
 	ILivechatContactVisitorAssociation,
 	ILivechatContact,
 	AtLeast,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -2409,7 +2410,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteMany(query);
 	}
 
-	removeByVisitorId(_id: string) {
+	removeByVisitorId(_id: ILivechatVisitor['_id']) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v._id': _id,

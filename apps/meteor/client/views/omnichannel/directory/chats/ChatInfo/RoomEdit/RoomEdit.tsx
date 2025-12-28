@@ -25,7 +25,7 @@ type RoomEditFormData = {
 
 type RoomEditProps = {
 	room: Serialized<IOmnichannelRoom>;
-	visitor: Serialized<ILivechatVisitor>;
+	visitor: Pick<ILivechatVisitor, '_id'>;
 	reload?: () => void;
 	reloadInfo?: () => void;
 	onClose: () => void;

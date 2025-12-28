@@ -1,11 +1,11 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 export type VerifyContactChannelParams = {
 	contactId: string;
 	field: string;
 	value: string;
-	visitorId: string;
+	visitorId: ILivechatVisitor['_id'];
 	roomId: string;
 };
 

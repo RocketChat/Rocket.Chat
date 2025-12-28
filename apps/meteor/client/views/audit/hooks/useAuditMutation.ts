@@ -1,4 +1,4 @@
-import type { IAuditLog } from '@rocket.chat/core-typings';
+import type { IAuditLog, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
@@ -19,7 +19,7 @@ export const useAuditMutation = (type: IAuditLog['fields']['type']) => {
 					startDate: dateRange.start ?? new Date(0),
 					endDate: dateRange.end ?? new Date(),
 					users,
-					visitor: '',
+					visitor: '' as ILivechatVisitor['_id'], // TODO: is this correct?
 					agent: '',
 				});
 			}

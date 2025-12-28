@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import {
 	AppSubscriptionStatus,
 	ILivechatAgentStatus,
@@ -21,6 +20,8 @@ import type {
 	IOmnichannelBusinessUnit,
 	ILivechatDepartment,
 	ILivechatMonitor,
+	ILivechatContact,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
@@ -322,7 +323,7 @@ export function createFakeContactChannel(overrides?: Partial<Serialized<ILivecha
 		verified: false,
 		...overrides,
 		visitor: {
-			visitorId: faker.string.uuid(),
+			visitorId: faker.string.uuid() as ILivechatVisitor['_id'],
 			source: {
 				type: OmnichannelSourceType.WIDGET,
 			},

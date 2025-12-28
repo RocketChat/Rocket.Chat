@@ -1,3 +1,4 @@
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +20,11 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};
 
-	const { data: visitor, isLoading: isVisitorLoading, isError: isVisitorError } = useVisitorInfo(visitorId!, { enabled: !!visitorId });
+	const {
+		data: visitor,
+		isLoading: isVisitorLoading,
+		isError: isVisitorError,
+	} = useVisitorInfo(visitorId! as ILivechatVisitor['_id'], { enabled: !!visitorId });
 
 	if (isRoomLoading || isVisitorLoading) {
 		return <FormSkeleton />;

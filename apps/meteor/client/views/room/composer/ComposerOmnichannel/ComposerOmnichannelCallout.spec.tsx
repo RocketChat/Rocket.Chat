@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,7 +13,7 @@ jest.mock('../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockCha
 }));
 
 const fakeVisitor = {
-	_id: faker.string.uuid(),
+	_id: faker.string.uuid() as ILivechatVisitor['_id'],
 	token: faker.string.uuid(),
 	username: faker.internet.userName(),
 };

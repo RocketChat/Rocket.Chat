@@ -207,7 +207,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			id: visitor.id,
+			id: visitor.id as ILivechatVisitor['_id'] | undefined,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
@@ -232,7 +232,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			id: visitor.id,
+			id: visitor.id as ILivechatVisitor['_id'] | undefined,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
@@ -302,7 +302,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		);
 	}
 
-	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
+	protected async findVisitorById(id: ILivechatVisitor['_id'], appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
 		return this.orch.getConverters()?.get('visitors').convertById(id);

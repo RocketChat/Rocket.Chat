@@ -1,3 +1,4 @@
+import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { IUser } from './IUser';
@@ -10,7 +11,7 @@ export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 export type SubscriptionStatus = 'INVITED';
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
-	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
+	v?: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'status' | 'token'>;
 	rid: RoomID;
 	open: boolean;
 	ts: Date;

@@ -361,7 +361,7 @@ export const isLiveChatRoomForwardProps = ajv.compile<LiveChatRoomForward>(LiveC
 
 type LiveChatRoomSaveInfo = {
 	guestData: {
-		_id: string;
+		_id: ILivechatVisitor['_id'];
 		name?: string;
 		email?: string;
 		phone?: string;

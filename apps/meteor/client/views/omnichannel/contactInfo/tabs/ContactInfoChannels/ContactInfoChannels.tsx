@@ -1,4 +1,4 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, Throbber } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -19,7 +19,26 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
 	const { data, isError, isPending } = useQuery({
 		queryKey: ['getContactChannels', contact._id],
-		queryFn: () => getContactChannels({ contactId: contact._id }),
+		queryFn: async (): Promise<ILivechatContactChannel[] | null> => {
+			const { channels } = await getContactChannels({ contactId: contact._id });
+
+			if (!channels) return null;
+
+			return channels.map((channel) => ({
+				...channel,
+				visitor: {
+					...channel.visitor,
+					visitorId: channel.visitor.visitorId as ILivechatContactChannel['visitor']['visitorId'],
+				},
+				verifiedAt: channel.verifiedAt ? new Date(channel.verifiedAt) : undefined,
+				lastChat: channel.lastChat
+					? {
+							_id: channel.lastChat._id,
+							ts: new Date(channel.lastChat.ts),
+						}
+					: undefined,
+			}));
+		},
 	});
 
 	const { data: providers = [] } = useOutboundProvidersList({
@@ -49,10 +68,10 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 
 	return (
 		<ContextualbarContent paddingInline={0}>
-			{data.channels?.length === 0 && (
+			{data?.length === 0 && (
 				<ContextualbarEmptyContent icon='balloon' title={t('No_channels_yet')} subtitle={t('No_channels_yet_description')} />
 			)}
-			{data.channels && data.channels.length > 0 && (
+			{data && data.length > 0 && (
 				<>
 					<Box is='span' fontScale='p2' pbs={24} pis={24} mbe={8}>
 						{t('Last_contacts')}
@@ -60,9 +79,9 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 						<VirtualizedScrollbars>
 							<Virtuoso
-								totalCount={data.channels.length}
+								totalCount={data.length}
 								overscan={25}
-								data={data?.channels}
+								data={data}
 								itemContent={(index, data) => (
 									<ContactInfoChannelsItem
 										key={index}

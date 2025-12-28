@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import { ContactBridge } from '@rocket.chat/apps-engine/server/bridges';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 
 import { addContactEmail } from '../../../livechat/server/lib/contacts/addContactEmail';
 import { verifyContactChannel } from '../../../livechat/server/lib/contacts/verifyContactChannel';
@@ -20,7 +21,7 @@ export class AppContactBridge extends ContactBridge {
 			contactId: string;
 			field: string;
 			value: string;
-			visitorId: string;
+			visitorId: ILivechatVisitor['_id'];
 			roomId: string;
 		},
 		appId: string,

@@ -1,4 +1,10 @@
-import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Serialized } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelAgent,
+	Serialized,
+} from '@rocket.chat/core-typings';
 
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
@@ -86,7 +92,11 @@ const updateInquiries = async (inquiries: Serialized<ILivechatInquiryRecord>[] =
 			...inquiry,
 			alert: true,
 			ts: new Date(inquiry.ts),
-			v: { ...inquiry.v, lastMessageTs: inquiry.v.lastMessageTs ? new Date(inquiry.v.lastMessageTs) : undefined },
+			v: {
+				...inquiry.v,
+				_id: inquiry.v._id as ILivechatVisitor['_id'],
+				lastMessageTs: inquiry.v.lastMessageTs ? new Date(inquiry.v.lastMessageTs) : undefined,
+			},
 			estimatedInactivityCloseTimeAt: inquiry.estimatedInactivityCloseTimeAt ? new Date(inquiry.estimatedInactivityCloseTimeAt) : undefined,
 			lockedAt: inquiry.lockedAt ? new Date(inquiry.lockedAt) : undefined,
 			lastMessage: inquiry.lastMessage ? mapMessageFromApi(inquiry.lastMessage) : undefined,

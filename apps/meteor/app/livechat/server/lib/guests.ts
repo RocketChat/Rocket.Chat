@@ -74,12 +74,12 @@ export async function saveGuest(
 	return ret;
 }
 
-export async function removeGuest({ _id }: { _id: string }) {
+export async function removeGuest({ _id }: { _id: ILivechatVisitor['_id'] }) {
 	await cleanGuestHistory(_id);
 	return LivechatVisitors.disableById(_id);
 }
 
-export async function removeContactsByVisitorId({ _id }: { _id: string }) {
+export async function removeContactsByVisitorId({ _id }: { _id: ILivechatVisitor['_id'] }) {
 	// A visitor shouldn't have many contacts associated, so we can remove them like this
 	const contacts = await LivechatContacts.findAllByVisitorId(_id).toArray();
 	if (!contacts.length) {
@@ -98,7 +98,7 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 	}
 }
 
-async function cleanGuestHistory(_id: string) {
+async function cleanGuestHistory(_id: ILivechatVisitor['_id']) {
 	// This shouldn't be possible, but just in case
 	if (!_id) {
 		throw new Error('error-invalid-guest');

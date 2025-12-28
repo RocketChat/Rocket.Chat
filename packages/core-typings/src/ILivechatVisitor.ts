@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { UserStatus } from './UserStatus';
+import type { $brand } from './utils';
 
 export interface IVisitorPhone {
 	phoneNumber: string;
@@ -26,6 +27,7 @@ interface ILivechatData {
 }
 
 export interface ILivechatVisitor extends IRocketChatRecord {
+	_id: string & $brand<'livechat-visitor-id'>;
 	username: string;
 	ts: Date;
 	token: string;

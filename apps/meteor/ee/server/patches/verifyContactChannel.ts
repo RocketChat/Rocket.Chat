@@ -1,5 +1,5 @@
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
@@ -13,7 +13,7 @@ type VerifyContactChannelParams = {
 	contactId: string;
 	field: string;
 	value: string;
-	visitorId: string;
+	visitorId: ILivechatVisitor['_id'];
 	roomId: string;
 };
 
@@ -62,7 +62,7 @@ export const runVerifyContactChannel = async (
 		contactId: string;
 		field: string;
 		value: string;
-		visitorId: string;
+		visitorId: ILivechatVisitor['_id'];
 		roomId: string;
 	},
 ): Promise<ILivechatContact | null> => {

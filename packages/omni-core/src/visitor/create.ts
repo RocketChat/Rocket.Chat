@@ -7,7 +7,7 @@ import { validateEmail } from '@rocket.chat/tools';
 const logger = new Logger('Livechat - Visitor');
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
-	id?: string;
+	id?: ILivechatVisitor['_id'];
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };

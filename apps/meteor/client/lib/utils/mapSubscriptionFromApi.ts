@@ -1,4 +1,4 @@
-import type { ISubscription, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ISubscription, Serialized } from '@rocket.chat/core-typings';
 
 export const mapSubscriptionFromApi = ({
 	ts,
@@ -11,6 +11,12 @@ export const mapSubscriptionFromApi = ({
 	...subscription
 }: Serialized<ISubscription>): ISubscription => ({
 	...subscription,
+	v: subscription.v
+		? {
+				...subscription.v,
+				_id: subscription.v._id as ILivechatVisitor['_id'],
+			}
+		: undefined,
 	ts: new Date(ts),
 	ls: new Date(ls),
 	lr: new Date(lr),

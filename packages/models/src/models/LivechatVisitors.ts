@@ -63,9 +63,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	/**
 	 * Find visitors by _id
-	 * @param {string} token - Visitor token
 	 */
-	findById(_id: string, options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+	findById(_id: ILivechatVisitor['_id'], options: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
 		const query = {
 			_id,
 		};
@@ -83,7 +82,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null> {
+	findOneEnabledById<T extends Document = ILivechatVisitor>(
+		_id: ILivechatVisitor['_id'],
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<T | null> {
 		const query = {
 			_id,
 			disabled: { $ne: true },
@@ -287,7 +289,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne(query, update);
 	}
 
-	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
+	updateById(_id: ILivechatVisitor['_id'], update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
 	}
 
@@ -301,14 +303,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			query = { _id: update._id };
 		} else if (update.token) {
 			query = { token: update.token };
-			update._id = new ObjectId().toHexString();
+			update._id = new ObjectId().toHexString() as ILivechatVisitor['_id'];
 		}
 
 		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
 
 	saveGuestById(
-		_id: string,
+		_id: ILivechatVisitor['_id'],
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean> {
 		const setData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$set']> = {};
@@ -361,15 +363,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne({ _id }, update);
 	}
 
-	removeDepartmentById(_id: string): Promise<UpdateResult> {
+	removeDepartmentById(_id: ILivechatVisitor['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $unset: { department: 1 } });
 	}
 
-	override removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: ILivechatVisitor['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ _id });
 	}
 
-	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
+	saveGuestEmailPhoneById(_id: ILivechatVisitor['_id'], emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
@@ -411,7 +413,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	disableById(_id: string): Promise<UpdateResult> {
+	disableById(_id: ILivechatVisitor['_id']): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
 			{
@@ -436,7 +438,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult> {
+	setLastChatById(_id: ILivechatVisitor['_id'], lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
 			{
@@ -447,7 +449,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	updateDepartmentById(_id: string, department: string) {
+	updateDepartmentById(_id: ILivechatVisitor['_id'], department: string) {
 		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
 	}
 }

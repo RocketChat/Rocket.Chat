@@ -19,7 +19,7 @@ const testDate = new Date();
 const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactParams][] = [
 	[
 		{
-			_id: 'visitor1',
+			_id: 'visitor1' as ILivechatVisitor['_id'],
 			username: 'Username',
 			name: 'Name',
 			visitorEmails: [{ address: 'email1@domain.com' }, { address: 'email2@domain.com' }],
@@ -40,7 +40,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				{
 					name: 'widget',
 					visitor: {
-						visitorId: 'visitor1',
+						visitorId: 'visitor1' as ILivechatVisitor['_id'],
 						source: {
 							type: OmnichannelSourceType.WIDGET,
 						},
@@ -60,7 +60,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 
 	[
 		{
-			_id: 'visitor1',
+			_id: 'visitor1' as ILivechatVisitor['_id'],
 			username: 'Username',
 		},
 		{
@@ -75,7 +75,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				{
 					name: 'sms',
 					visitor: {
-						visitorId: 'visitor1',
+						visitorId: 'visitor1' as ILivechatVisitor['_id'],
 						source: {
 							type: OmnichannelSourceType.SMS,
 						},
@@ -95,7 +95,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 
 	[
 		{
-			_id: 'visitor1',
+			_id: 'visitor1' as ILivechatVisitor['_id'],
 			username: 'Username',
 			activity: ['2024-11'],
 			lastChat: {
@@ -115,7 +115,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				{
 					name: 'sms',
 					visitor: {
-						visitorId: 'visitor1',
+						visitorId: 'visitor1' as ILivechatVisitor['_id'],
 						source: {
 							type: OmnichannelSourceType.WIDGET,
 						},
@@ -143,7 +143,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 
 	[
 		{
-			_id: 'visitor1',
+			_id: 'visitor1' as ILivechatVisitor['_id'],
 			username: 'Username',
 			livechatData: {
 				customFieldId: 'customFieldValue',
@@ -163,7 +163,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				{
 					name: 'sms',
 					visitor: {
-						visitorId: 'visitor1',
+						visitorId: 'visitor1' as ILivechatVisitor['_id'],
 						source: {
 							type: OmnichannelSourceType.WIDGET,
 						},
