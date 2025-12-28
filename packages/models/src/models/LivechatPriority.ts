@@ -25,11 +25,11 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		];
 	}
 
-	findOneByIdOrName(_idOrName: string, options = {}): Promise<ILivechatPriority | null> {
+	findOneByIdOrName(_idOrName: ILivechatPriority['_id'] | string, options = {}): Promise<ILivechatPriority | null> {
 		const query = {
 			$or: [
 				{
-					_id: _idOrName,
+					_id: _idOrName as ILivechatPriority['_id'],
 				},
 				{
 					name: _idOrName,
@@ -60,7 +60,7 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		await this.updateMany({ _id: { $in: ids } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
 	}
 
-	async updatePriority(_id: string, reset: boolean, name?: string): Promise<null | WithId<ILivechatPriority>> {
+	async updatePriority(_id: ILivechatPriority['_id'], reset: boolean, name?: string): Promise<null | WithId<ILivechatPriority>> {
 		const query = {
 			_id,
 		};

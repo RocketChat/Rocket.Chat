@@ -277,7 +277,7 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	};
 
 	// Following props are used for priorities feature
-	priorityId?: string;
+	priorityId?: ILivechatPriority['_id'];
 	priorityWeight: ILivechatPriority['sortItem']; // It should always have a default value for sorting mechanism to work
 
 	// Following props are used for SLA feature

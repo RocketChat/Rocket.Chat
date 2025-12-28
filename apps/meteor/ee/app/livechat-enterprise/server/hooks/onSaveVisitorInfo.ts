@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, IUser, ILivechatPriority } from '@rocket.chat/core-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
@@ -21,7 +21,11 @@ const updateSLA = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id
 	await updateRoomSLA(room._id, user, sla);
 };
 
-const updatePriority = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>, priorityId?: string) => {
+const updatePriority = async (
+	room: IOmnichannelRoom,
+	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
+	priorityId?: ILivechatPriority['_id'],
+) => {
 	if (!priorityId) {
 		return removePriorityFromRoom(room._id, user);
 	}

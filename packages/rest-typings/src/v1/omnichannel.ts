@@ -3525,7 +3525,7 @@ const GETLivechatRoomsParamsSchema = {
 export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
 
 export type POSTLivechatRoomPriorityParams = {
-	priorityId: string;
+	priorityId: ILivechatPriority['_id'];
 };
 
 const POSTLivechatRoomPriorityParamsSchema = {

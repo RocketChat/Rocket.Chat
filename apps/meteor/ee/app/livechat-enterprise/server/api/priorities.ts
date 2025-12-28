@@ -1,3 +1,4 @@
+import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import { LivechatPriority } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
@@ -47,7 +48,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { priorityId } = this.urlParams;
+			const priorityId = this.urlParams.priorityId as ILivechatPriority['_id'];
 			const priority = await LivechatPriority.findOneById(priorityId);
 
 			if (!priority) {
@@ -57,7 +58,7 @@ API.v1.addRoute(
 			return API.v1.success(priority);
 		},
 		async put() {
-			const { priorityId } = this.urlParams;
+			const priorityId = this.urlParams.priorityId as ILivechatPriority['_id'];
 
 			await updatePriority(priorityId, this.bodyParams);
 

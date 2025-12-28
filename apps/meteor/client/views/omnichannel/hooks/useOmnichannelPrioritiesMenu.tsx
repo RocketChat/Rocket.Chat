@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatPriority, IRoom } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMemo(() => {
-		const handlePriorityChange = (priorityId: string) => async () => {
+		const handlePriorityChange = (priorityId: ILivechatPriority['_id'] | undefined) => async () => {
 			try {
 				priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
 				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
@@ -33,7 +33,7 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 			icon: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
 			iconColor: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].color,
 			content: t('Unprioritized'),
-			onClick: handlePriorityChange(''),
+			onClick: handlePriorityChange(undefined),
 		};
 
 		const options = priorities.map(({ _id: priorityId, name, i18n, dirty, sortItem }) => {

@@ -63,7 +63,7 @@ export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 
 export const updateRoomPriority = async (
 	rid: string,
 	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
-	priorityId: string,
+	priorityId: ILivechatPriority['_id'],
 ): Promise<void> => {
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
