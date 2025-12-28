@@ -120,6 +120,7 @@ API.v1.addRoute(
 			await saveUser(this.userId, userData, { auditStore });
 
 			
+			
 			if (this.bodyParams.data.customFields) {
 				validateCustomFields(this.bodyParams.data.customFields);
 
@@ -131,10 +132,14 @@ API.v1.addRoute(
 
 				await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
 				
-				await Subscriptions.setCustomFieldsDirectMessagesByUserId(this.bodyParams.userId, this.bodyParams.data.customFields);
+				
+				const updatedUser = await Users.findOneById(this.bodyParams.userId, { projection: { customFields: 1 } });
+				if (updatedUser?.customFields) {
+					await Subscriptions.setCustomFieldsDirectMessagesByUserId(this.bodyParams.userId, updatedUser.customFields);
+				}
 			}
 
-			// [THEIR CHANGE] Active Status
+			
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
 					userId,
