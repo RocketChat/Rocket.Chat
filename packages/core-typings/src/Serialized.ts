@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import type { $brand } from './utils';
+
 type SerializablePrimitive = boolean | number | string | null;
 
 type UnserializablePrimitive = Function | bigint | symbol | undefined;
@@ -18,10 +20,14 @@ export type Serialized<T> =
 			? { [K in keyof T]: T extends UnserializablePrimitive ? null : Serialized<T[K]> }
 			: T extends any[]
 				? Serialized<T[number]>[]
-				: T extends object
-					? { [K in keyof T]: Serialized<T[K]> }
-					: T extends SerializablePrimitive
-						? T
-						: T extends UnserializablePrimitive
-							? undefined
-							: null;
+				: T extends SerializablePrimitive & $brand<any>
+					? T
+					: T extends UnserializablePrimitive & $brand<any>
+						? undefined
+						: T extends object
+							? { [K in keyof T]: Serialized<T[K]> }
+							: T extends SerializablePrimitive
+								? T
+								: T extends UnserializablePrimitive
+									? undefined
+									: null;

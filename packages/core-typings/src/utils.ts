@@ -29,9 +29,11 @@ export type RequiredField<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 export type DeepWritable<T> = T extends (...args: any) => any
 	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
+	: T extends $brand<any> | Date | RegExp
+		? T
+		: {
+				-readonly [P in keyof T]: DeepWritable<T[P]>;
+			};
 
 export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
 
@@ -50,3 +52,11 @@ export type DeepPartial<T> = {
 };
 
 export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;
+
+export const $brand: unique symbol = Symbol('$brand');
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type $brand<T extends string | number | symbol = string | number | symbol> = {
+	[$brand]: { [k in T]: true };
+};
+
+export type Unbranded<T> = T extends $brand<infer V> ? (T extends infer U & $brand<V> ? U : never) : T;
