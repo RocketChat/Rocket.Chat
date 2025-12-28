@@ -297,7 +297,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
-				<Field mbe='x12'>
+			<Field mbe='x12'>
 							<Box display='flex' alignItems='center' style={{ opacity: 0.8 }}> 
 								<CheckBox 
 									id='remember-me' 
@@ -307,10 +307,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								<FieldLabel 
 									htmlFor='remember-me' 
 									mis='x8' 
-									title="This allows you to access this website without logging in again, but only on this specific system."
+								    title={t('Remember_Me_Description')}
 									style={{ cursor: 'help', color: 'var(--rcx-color-font-annotation, #9EA2A8)' }}
 								>
-									Remember Me
+								{t('Remember_Me')}
+
+
 									<Icon name='info-circled' size='x16' mis='x4' color='hint' />
 								</FieldLabel>
 							</Box>
