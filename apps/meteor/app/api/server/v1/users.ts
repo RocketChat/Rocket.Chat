@@ -91,41 +91,46 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.update',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
-	{
-		async post() {
-			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
+    'users.update',
+    { authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
+    {
+        async post() {
+            const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
-			if (userData.name && !validateNameChars(userData.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
+            if (userData.name && !validateNameChars(userData.name)) {
+                return API.v1.failure('Name contains invalid characters');
+            }
 
-			await saveUser(this.userId, userData);
+            await saveUser(this.userId, userData);
 
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
-			}
+            if (this.bodyParams.data.customFields) {
+                const flattenedFields = {};
+                Object.keys(this.bodyParams.data.customFields).forEach((key) => {
+                    flattenedFields[`customFields.${key}`] = this.bodyParams.data.customFields[key];
+                });
 
-			if (typeof this.bodyParams.data.active !== 'undefined') {
-				const {
-					userId,
-					data: { active },
-					confirmRelinquish,
-				} = this.bodyParams;
+                await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
+            }
 
-				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
-			}
-			const { fields } = await this.parseJsonQuery();
+            if (typeof this.bodyParams.data.active !== 'undefined') {
+                const {
+                    userId,
+                    data: { active },
+                    confirmRelinquish,
+                } = this.bodyParams;
 
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
+                await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+            }
+            const { fields } = await this.parseJsonQuery();
 
-			return API.v1.success({ user });
-		},
-	},
+            const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+            if (!user) {
+                return API.v1.failure('User not found');
+            }
+
+            return API.v1.success({ user });
+        },
+    },
 );
 
 API.v1.addRoute(
