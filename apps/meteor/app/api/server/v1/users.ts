@@ -108,7 +108,7 @@ API.v1.addRoute(
 				return API.v1.failure('Name contains invalid characters');
 			}
 
-			// [THEIR CHANGE] Audit Store
+			
 			const auditStore = new UserChangedAuditStore({
 				_id: this.user._id,
 				ip: this.requestIp,
@@ -116,10 +116,10 @@ API.v1.addRoute(
 				username: this.user.username || '',
 			});
 
-			// [THEIR CHANGE] Save User
+			
 			await saveUser(this.userId, userData, { auditStore });
 
-			// [YOUR FIX] Custom Fields: Validate & Flatten
+			
 			if (this.bodyParams.data.customFields) {
 				validateCustomFields(this.bodyParams.data.customFields);
 
@@ -130,6 +130,8 @@ API.v1.addRoute(
 				});
 
 				await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
+				
+				await Subscriptions.setCustomFieldsDirectMessagesByUserId(this.bodyParams.userId, this.bodyParams.data.customFields);
 			}
 
 			// [THEIR CHANGE] Active Status
