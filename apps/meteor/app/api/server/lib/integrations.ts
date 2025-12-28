@@ -23,7 +23,7 @@ export const findOneIntegration = async ({
 	createdBy,
 }: {
 	userId: string;
-	integrationId: string;
+	integrationId: IIntegration['_id'];
 	createdBy?: IUser['_id'];
 }): Promise<IIntegration> => {
 	const integration = await Integrations.findOneByIdAndCreatedByIfExists({

@@ -1,4 +1,4 @@
-import type { IOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { IOutgoingIntegration, IIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +9,7 @@ import { triggerHandler } from '../../lib/triggerHandler';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		replayOutgoingIntegration(params: { integrationId: string; historyId: string }): Promise<boolean>;
+		replayOutgoingIntegration(params: { integrationId: IIntegration['_id']; historyId: string }): Promise<boolean>;
 	}
 }
 

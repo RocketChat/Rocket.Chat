@@ -1,4 +1,4 @@
-import type { IIncomingIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration } from '@rocket.chat/core-typings';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import EditIncomingWebhook from './incoming/EditIncomingWebhook';
 import EditOutgoingWebhook from './outgoing/EditOutgoingWebhook';
 
-const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncomingIntegration['_id'] }) => {
+const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIntegration['_id'] }) => {
 	const { t } = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);

@@ -1,3 +1,4 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
 import { useRouteParameter, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -9,7 +10,7 @@ import OutgoingWebhookHistoryPage from './outgoing/history/OutgoingWebhookHistor
 
 const IntegrationsRoute = () => {
 	const context = useRouteParameter('context');
-	const integrationId = useRouteParameter('id');
+	const integrationId = useRouteParameter('id') as IIntegration['_id'];
 
 	const canViewIntegrationsPage = useAtLeastOnePermission(
 		useMemo(

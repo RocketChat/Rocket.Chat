@@ -273,7 +273,7 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
-	'watch.integrations'(data: { clientAction: ClientAction; data: Partial<IIntegration>; id: string }): void;
+	'watch.integrations'(data: { clientAction: ClientAction; data: Partial<IIntegration>; id: IIntegration['_id'] }): void;
 	'watch.emailInbox'(data: { clientAction: ClientAction; data: Partial<IEmailInbox>; id: IEmailInbox['_id'] }): void;
 	'watch.livechatDepartmentAgents'(data: {
 		clientAction: ClientAction;

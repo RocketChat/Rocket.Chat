@@ -1,3 +1,4 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -8,11 +9,11 @@ import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notif
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		deleteIncomingIntegration(integrationId: string): Promise<boolean>;
+		deleteIncomingIntegration(integrationId: IIntegration['_id']): Promise<boolean>;
 	}
 }
 
-export const deleteIncomingIntegration = async (integrationId: string, userId: string): Promise<void> => {
+export const deleteIncomingIntegration = async (integrationId: IIntegration['_id'], userId: string): Promise<void> => {
 	let integration;
 
 	if (userId && (await hasPermissionAsync(userId, 'manage-incoming-integrations'))) {

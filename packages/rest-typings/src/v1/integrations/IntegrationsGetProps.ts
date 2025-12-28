@@ -1,8 +1,9 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type IntegrationsGetProps = { integrationId: string; createdBy?: string };
+export type IntegrationsGetProps = { integrationId: IIntegration['_id']; createdBy?: string };
 
 const integrationsGetSchema = {
 	type: 'object',

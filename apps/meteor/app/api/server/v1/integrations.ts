@@ -189,7 +189,7 @@ API.v1.addRoute(
 						}),
 					);
 
-					integration = await Integrations.findOne({ _id: bodyParams.integrationId });
+					integration = await Integrations.findOne({ _id: bodyParams.integrationId as IIntegration['_id'] });
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');

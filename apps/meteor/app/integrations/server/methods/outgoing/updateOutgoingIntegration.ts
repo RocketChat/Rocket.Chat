@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateOutgoingIntegration(
-			integrationId: string,
+			integrationId: IIntegration['_id'],
 			integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
 		): IIntegration | null;
 	}
@@ -21,7 +21,7 @@ declare module '@rocket.chat/ddp-client' {
 
 export const updateOutgoingIntegration = async (
 	userId: string,
-	integrationId: string,
+	integrationId: IIntegration['_id'],
 	_integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
 ): Promise<IIntegration | null> => {
 	const integration = await validateOutgoingIntegration(_integration, userId);

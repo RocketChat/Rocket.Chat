@@ -17,7 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateIncomingIntegration(
-			integrationId: string,
+			integrationId: IIntegration['_id'],
 			integration: INewIncomingIntegration | IUpdateIncomingIntegration,
 		): IIntegration | null;
 	}
@@ -45,7 +45,7 @@ function validateChannels(channelString: string | undefined): string[] {
 
 export const updateIncomingIntegration = async (
 	userId: string,
-	integrationId: string,
+	integrationId: IIntegration['_id'],
 	integration: INewIncomingIntegration | IUpdateIncomingIntegration,
 ): Promise<IIntegration | null> => {
 	const channels = validateChannels(integration.channel);

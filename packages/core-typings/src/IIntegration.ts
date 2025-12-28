@@ -1,9 +1,11 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
+import type { $brand } from './utils';
 
 export type IntegrationScriptEngine = 'isolated-vm';
 
 export interface IIncomingIntegration extends IRocketChatRecord {
+	_id: string & $brand<'integration-id'>;
 	type: 'webhook-incoming';
 	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;
@@ -38,6 +40,7 @@ export type OutgoingIntegrationEvent =
 	| 'userCreated';
 
 export interface IOutgoingIntegration extends IRocketChatRecord {
+	_id: string & $brand<'integration-id'>;
 	type: 'webhook-outgoing';
 	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;

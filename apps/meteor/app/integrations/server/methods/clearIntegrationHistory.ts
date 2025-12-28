@@ -1,3 +1,4 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -8,7 +9,7 @@ import notifications from '../../../notifications/server/lib/Notifications';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		clearIntegrationHistory(integrationId: string): Promise<boolean>;
+		clearIntegrationHistory(integrationId: IIntegration['_id']): Promise<boolean>;
 	}
 }
 

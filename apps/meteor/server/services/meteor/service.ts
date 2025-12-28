@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IIntegration, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -215,7 +215,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					}
 					break;
 				case 'removed':
-					triggerHandler.removeIntegration({ _id: id });
+					if (isOutgoingIntegration(data)) {
+						triggerHandler.removeIntegration({ _id: id as IIntegration['_id'] });
+					}
 					break;
 			}
 		});

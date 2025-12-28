@@ -71,7 +71,7 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 				scriptEnabled: false,
 				script: '',
 				enabled: true,
-				_id: Random.id(),
+				_id: Random.id() as IIntegration['_id'],
 				_updatedAt: new Date(),
 			});
 		case 'newMessageToUser':
@@ -88,7 +88,7 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 				name: options.name,
 				channel: options.data.username,
 				triggerWords: options.data.trigger_words,
-				_id: '',
+				_id: '' as IIntegration['_id'], // TODO is this correct???
 				type: 'webhook-outgoing',
 				token: '',
 				scriptEnabled: false,
@@ -315,7 +315,10 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 class WebHookAPI extends APIClass<'/hooks'> {
 	override async authenticatedRoute(routeContext: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = routeContext.urlParams;
-		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
+		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(
+			integrationId as IIntegration['_id'],
+			decodeURIComponent(token),
+		);
 
 		if (!integration) {
 			incomingLogger.info({ msg: 'Invalid integration id or token', integrationId, token });

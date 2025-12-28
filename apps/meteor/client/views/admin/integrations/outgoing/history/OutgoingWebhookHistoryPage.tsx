@@ -1,3 +1,4 @@
+import type { IIntegration } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
 import { CustomScrollbars, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -20,7 +21,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	const clearIntegrationHistory = useMethod('clearIntegrationHistory');
 
-	const id = useRouteParameter('id') as string;
+	const id = useRouteParameter('id') as IIntegration['_id'];
 
 	const query = useMemo(
 		() => ({
