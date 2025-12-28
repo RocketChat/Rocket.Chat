@@ -1,5 +1,7 @@
+import type { $brand } from './utils';
+
 export interface ILoginServiceConfiguration {
-	_id: string;
+	_id: string & $brand<'login-service-configuration-id'>;
 	service: string;
 }
 
